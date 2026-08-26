@@ -71,7 +71,7 @@ const id_ID = {
   },
   "remove_busi": {
     "title": "Keluarkan dari grup bisnis",
-    "msg": "Perhatian: setelah dikeluarkan dari grup bisnisnya, pengelola grup itu tidak lagi berwenang atas objek-objek pemantauan ini. Kamu mungkin perlu mengosongkan label dan catatannya terlebih dahulu.",
+    "msg": "Perhatian: setelah dikeluarkan dari grup bisnisnya, pengelola grup itu tidak lagi berwenang atas objek-objek pemantauan ini. Anda mungkin perlu mengosongkan label dan catatannya terlebih dahulu.",
     "btn": "Keluarkan"
   },
   "update_note": {

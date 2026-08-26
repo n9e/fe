@@ -220,7 +220,7 @@ const es_ES = {
           "label": "Modo de visualización",
           "table": "Tabla",
           "list": "Lista",
-          "hidden": "Ocultar"
+          "hidden": "Oculto"
         },
         "placement": "Posición",
         "max": "Máximo",
@@ -471,7 +471,7 @@ const es_ES = {
               "options": {
                 "color": "Color",
                 "text": "Texto",
-                "hidden": "Ocultar"
+                "hidden": "Oculto"
               }
             }
           }

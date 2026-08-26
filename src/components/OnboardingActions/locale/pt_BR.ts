@@ -31,8 +31,8 @@ const pt_BR = {
   "pack": {
     "title": "Ativar o pacote básico de monitoramento de hosts",
     "intro": "Serão importados e ativados:",
-    "boards": "Dashboard",
-    "rules": "Regra de alerta",
+    "boards": "Dashboards",
+    "rules": "Regras de alerta",
     "boards_count": "Dashboards × {{count}}",
     "rules_count": "Regras de alerta × {{count}}, ativadas logo após a importação",
     "preview": "Visualizar e selecionar",

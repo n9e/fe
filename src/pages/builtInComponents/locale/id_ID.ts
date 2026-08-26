@@ -44,9 +44,9 @@ const id_ID = {
       "dashboard": "Pilih dasbor"
     },
     "help": {
-      "alert": "Buat dan sunting aturan alert di grup bisnismu sendiri, lalu ekspor JSON-nya dan tempelkan di bawah",
-      "dashboard": "Buat dan sunting dasbor di grup bisnismu sendiri, lalu ekspor JSON-nya dan tempelkan di bawah",
-      "firemap": "Buat dan sunting aturan Firemap di ruang kerjamu, lalu gunakan “Ekspor ke templat” pada menu Tindakan lainnya dan tempelkan hasilnya di bawah"
+      "alert": "Buat dan sunting aturan alert di grup bisnis Anda sendiri, lalu ekspor JSON-nya dan tempelkan di bawah",
+      "dashboard": "Buat dan sunting dasbor di grup bisnis Anda sendiri, lalu ekspor JSON-nya dan tempelkan di bawah",
+      "firemap": "Buat dan sunting aturan Firemap di ruang kerja Anda, lalu gunakan “Ekspor ke templat” pada menu Tindakan lainnya dan tempelkan hasilnya di bawah"
     }
   },
   "payloads": "Templat",

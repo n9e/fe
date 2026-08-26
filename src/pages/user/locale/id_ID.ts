@@ -19,7 +19,7 @@ const id_ID = {
     "create": "Buat tim",
     "edit": "Ubah tim",
     "add_member": "Tambah anggota",
-    "empty": "Tidak ada tim yang berkaitan denganmu. Silakan",
+    "empty": "Tidak ada tim yang berkaitan dengan Anda. Silakan",
     "name": "Nama tim",
     "add_member_selected": "{{num}} item dipilih",
     "delete_success": "Tim berhasil dihapus",

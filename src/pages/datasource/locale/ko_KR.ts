@@ -15,7 +15,7 @@ const ko_KR = {
     "username": "사용자 이름",
     "password": "비밀번호",
     "skip_tls": "TLS 인증서 검증 건너뛰기",
-    "fetch_btn": "가져오기",
+    "fetch_btn": "불러오기",
     "import_btn": "가져오기",
     "done_btn": "완료",
     "fetch_failed": "Grafana 데이터 소스를 가져오지 못했습니다",

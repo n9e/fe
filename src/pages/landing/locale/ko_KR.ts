@@ -27,7 +27,7 @@ const ko_KR = {
         "desc": "내장 호스트 알림 규칙을 한 번에 가져와 켭니다"
       },
       "testDelivered": {
-        "title": "테스트 통지 보내기",
+        "title": "테스트 알림 보내기",
         "desc": "시뮬레이션 이벤트로 통지가 실제로 도착하는지 확인합니다"
       },
       "datasource": {

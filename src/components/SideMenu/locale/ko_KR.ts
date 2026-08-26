@@ -29,7 +29,7 @@ const ko_KR = {
     "recording_rules": "레코딩 규칙",
     "logs_explorer": "로그",
     "monitors": "알림",
-    "alerts_notifications": "통지",
+    "alerts_notifications": "알림과 통지",
     "rules": "규칙 관리",
     "alert_rules": "알림 규칙",
     "alert_mutes": "차단 규칙",

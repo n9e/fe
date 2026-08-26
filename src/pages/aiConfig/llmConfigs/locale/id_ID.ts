@@ -8,7 +8,7 @@ const id_ID = {
   "model": "Model",
   "enabled": "Aktif",
   "disabled": "Nonaktif",
-  "is_default": "Bawaan",
+  "is_default": "Default",
   "builtin": "Bawaan",
   "is_default_tip": "Bila diaktifkan, agen yang tidak punya model LLM sendiri akan memakai model ini",
   "add_btn": "Konfigurasi LLM baru",

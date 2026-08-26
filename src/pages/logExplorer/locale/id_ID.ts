@@ -151,7 +151,7 @@ const id_ID = {
     "aggregate": "dikelompokkan,",
     "cannot_aggregate": "belum bisa dikelompokkan untuk",
     "full_aggregate_logs": "Pengelompokan seluruh log",
-    "need_aggregate": "Bila kamu ingin mengelompokkan seluruh",
+    "need_aggregate": "Bila Anda ingin mengelompokkan seluruh",
     "click_to_aggregate": "log, klik",
     "full_aggregate": "Kelompokkan semuanya",
     "field_label": "Field pengelompokan",

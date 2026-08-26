@@ -51,7 +51,7 @@ const ko_KR = {
       "delay": "지연 실행"
     },
     "event": {
-      "groupBy": "{{field}}로 그룹화하며 일치 개수는 {{size}}, 문서 최솟값은 {{min_doc_count}}입니다",
+      "groupBy": "{{field}}(으)로 그룹화하며 일치 개수는 {{size}}, 문서 최솟값은 {{min_doc_count}}입니다",
       "logs": {
         "title": "로그 상세",
         "size": "결과 수",
@@ -82,10 +82,10 @@ const ko_KR = {
       "title": "보조 설정",
       "tags_placeholder": "Enter로 여러 개 입력",
       "valueKey": "값 필드",
-      "valueKey_tip": "SQL 조회 결과에는 보통 여러 열이 있으며, 어떤 열의 값을 그래프의 시계열로 그릴지 지정할 수 있습니다",
+      "valueKey_tip": "SQL 조회 결과에는 보통 여러 열이 있으며, 어떤 열의 값을 그래프의 계열로 그릴지 지정할 수 있습니다",
       "valueKey_required": "값 필드는 비워 둘 수 없습니다",
       "labelKey": "레이블 필드",
-      "labelKey_tip": "SQL 조회 결과에는 보통 여러 열이 있으며, 어떤 열을 시계열의 레이블 메타데이터로 쓸지 지정할 수 있습니다"
+      "labelKey_tip": "SQL 조회 결과에는 보통 여러 열이 있으며, 어떤 열을 계열의 레이블 메타데이터로 쓸지 지정할 수 있습니다"
     }
   }
 };

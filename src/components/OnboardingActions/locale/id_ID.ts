@@ -2,7 +2,7 @@ const id_ID = {
   "close": "Tutup",
   "card": {
     "title": "Langkah berikutnya",
-    "later": "Kamu juga bisa melanjutkannya nanti dari daftar mesin",
+    "later": "Anda juga bisa melanjutkannya nanti dari daftar mesin",
     "optional": "Opsional",
     "dismiss": "Jangan tampilkan lagi",
     "rows": {
@@ -23,7 +23,7 @@ const id_ID = {
       },
       "test": {
         "title": "Kirim alert uji",
-        "desc": "Pastikan alert benar-benar sampai kepadamu",
+        "desc": "Pastikan alert benar-benar sampai kepada Anda",
         "action": "Kirim"
       }
     }

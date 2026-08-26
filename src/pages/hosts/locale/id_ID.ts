@@ -53,7 +53,7 @@ const id_ID = {
   "tags": "Label khusus",
   "group_objs": "Grup bisnis",
   "beat_time": "Diperbarui pada",
-  "beat_time_tip": "\n    Detak jantung dalam 1 menit terakhir: hijau <1 />\n    Detak jantung dalam 3 menit terakhir: kuning <1 />\n    Tanpa detak jantung selama 3 menit: merah\n  ",
+  "beat_time_tip": "\n    Heartbeat dalam 1 menit terakhir: hijau <1 />\n    Heartbeat dalam 3 menit terakhir: kuning <1 />\n    Tanpa heartbeat selama 3 menit: merah\n  ",
   "beat_time_just_now": "Just now",
   "beat_time_mins_ago_one": "1 min ago",
   "beat_time_mins_ago_other": "{{count}} mins ago",
@@ -107,7 +107,7 @@ const id_ID = {
   },
   "remove_busi": {
     "title": "Keluarkan dari grup bisnis",
-    "msg": "Perhatian: setelah dikeluarkan dari grup bisnisnya, pengelola grup itu tidak lagi berwenang atas objek-objek pemantauan ini. Kamu mungkin perlu mengosongkan label dan catatannya terlebih dahulu.",
+    "msg": "Perhatian: setelah dikeluarkan dari grup bisnisnya, pengelola grup itu tidak lagi berwenang atas objek-objek pemantauan ini. Anda mungkin perlu mengosongkan label dan catatannya terlebih dahulu.",
     "btn": "Keluarkan"
   },
   "update_note": {
@@ -274,17 +274,17 @@ const id_ID = {
       "datasource_placeholder": "Pilih sumber data Prometheus",
       "datasource_required": "Pilih setidaknya satu sumber data, jika tidak pengiriman metrik tidak bisa diperiksa",
       "targets_label": "Mesin tujuan (opsional)",
-      "targets_tip": "Pilih mesin tempat kamu akan menjalankan perintahnya agar pengirimannya bisa dipastikan satu per satu. Bila tidak dipilih, pengiriman baru dari semua mesin ikut dipantau",
+      "targets_tip": "Pilih mesin tempat Anda akan menjalankan perintahnya agar pengirimannya bisa dipastikan satu per satu. Bila tidak dipilih, pengiriman baru dari semua mesin ikut dipantau",
       "targets_placeholder": "Pilih identitas mesin",
       "detected_targets": "Semua {{count}} mesin yang dipilih sudah mengirim metrik {{metric}}: {{idents}} (sumber data: {{datasource}})",
       "detected_partial": "{{arrived}} dari {{total}} mesin sudah mengirim metrik {{metric}}: {{idents}} (sumber data: {{datasource}})",
       "missing_note": "Belum mengirim: {{idents}}. Pemeriksaan berlanjut sampai semuanya masuk atau waktunya habis",
       "fallback_note": "Metrik persisnya tidak ditemukan berkali-kali, jadi pemeriksaan beralih ke pencocokan awalan {{prefix}}. Dalam mode ini mesin yang sudah lebih dulu mengirim tidak bisa dibedakan",
-      "preexisting_note": "{{idents}} sudah mengirim sebelum pemeriksaan dimulai. Bila kamu hanya mengubah konfigurasi, metrik yang terus terkirim berarti perubahannya berlaku",
+      "preexisting_note": "{{idents}} sudah mengirim sebelum pemeriksaan dimulai. Bila Anda hanya mengubah konfigurasi, metrik yang terus terkirim berarti perubahannya berlaku",
       "partial": "{{arrived}} dari {{total}} mesin sudah mengirim: {{idents}}",
       "timeout_targets": "Waktu tunggu habis dan mesin berikut belum mengirim: {{idents}}",
       "timeout": "Waktu tunggu habis dan belum ada mesin baru yang mengirim metrik komponen ini",
-      "timeout_tip": "Periksa: 1) apakah perintahnya berhasil dijalankan; 2) apakah categraf berjalan di mesin tujuan (journalctl -u categraf -n 50); 3) kamu juga bisa memastikannya lewat kueri sesaat dengan mencari metrik berawalan {{prefix}}. Bila kamu hanya mengubah konfigurasi mesin yang sudah ada, tidak akan ada mesin \"baru\" di sini, dan metrik yang terus terkirim berarti perubahannya berlaku.",
+      "timeout_tip": "Periksa: 1) apakah perintahnya berhasil dijalankan; 2) apakah categraf berjalan di mesin tujuan (journalctl -u categraf -n 50); 3) Anda juga bisa memastikannya lewat kueri sesaat dengan mencari metrik berawalan {{prefix}}. Bila Anda hanya mengubah konfigurasi mesin yang sudah ada, tidak akan ada mesin \"baru\" di sini, dan metrik yang terus terkirim berarti perubahannya berlaku.",
       "explore": "Buka kueri sesaat untuk memastikan"
     },
     "prev": "Langkah sebelumnya",

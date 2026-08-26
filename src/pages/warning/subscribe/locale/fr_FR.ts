@@ -49,7 +49,7 @@ const fr_FR = {
   "prod": "Type de supervision",
   "subscribe_btn": "Abonnement",
   "basic_configs": "Configuration de base",
-  "severities": "Gravités abonnées",
+  "severities": "Gravités à suivre",
   "severities_msg": "La gravité de l'abonnement est obligatoire",
   "tags_groups_require": "Au moins une étiquette ou un groupe destinataire doit être renseigné",
   "note": "Nom de l'abonnement",

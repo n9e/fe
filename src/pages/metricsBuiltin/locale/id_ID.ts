@@ -40,7 +40,7 @@ const id_ID = {
   },
   "filter": {
     "title": "Filter",
-    "title_tip": "Filter mempersempit cakupan data saat kamu mengeklik sebuah metrik di kanan untuk melihat datanya. Bila filter {ident=\"n9e01\"} dikonfigurasi dan dipilih, kueri atas cpu_usage_idle dikirim sebagai cpu_usage_idle{ident=\"n9e01\"}, sehingga jumlah seri yang ditarik jauh berkurang",
+    "title_tip": "Filter mempersempit cakupan data saat Anda mengeklik sebuah metrik di kanan untuk melihat datanya. Bila filter {ident=\"n9e01\"} dikonfigurasi dan dipilih, kueri atas cpu_usage_idle dikirim sebagai cpu_usage_idle{ident=\"n9e01\"}, sehingga jumlah seri yang ditarik jauh berkurang",
     "add_title": "Tambah filter",
     "edit_title": "Ubah filter",
     "import_title": "Impor filter",

@@ -25,7 +25,7 @@ const ko_KR = {
   "cate": "분류",
   "content": "내용",
   "format": "정리",
-  "format_failed": "정리하지 못했습니다. 내용이 올바른 JSON인지 확인하세요",
+  "format_failed": "서식을 적용하지 못했습니다. 내용이 올바른 JSON인지 확인하세요",
   "formModal": {
     "edit": {
       "alert": "알림 규칙 수정",

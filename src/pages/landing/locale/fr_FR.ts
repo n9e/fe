@@ -4,7 +4,7 @@ const fr_FR = {
     "dismiss": "Ne plus afficher",
     "title": "Guide de démarrage",
     "subtitle": "Suivez ces quelques étapes et votre supervision tourne en quelques minutes",
-    "progress": "{{done}} étapes sur {{total}}",
+    "progress": "Terminé : {{done}}/{{total}}",
     "hostTrack": "Parcours supervision des hôtes",
     "dataTrack": "Parcours mise en place des données",
     "aiTrack": "Intelligence",
@@ -28,27 +28,27 @@ const fr_FR = {
       },
       "testDelivered": {
         "title": "Envoyer une alerte de test",
-        "desc": "Vérifier avec un événement simulé que les notifications vous parviennent réellement"
+        "desc": "Vérifiez avec un événement simulé que les notifications vous parviennent réellement"
       },
       "datasource": {
         "title": "Configurer une source de données",
-        "desc": "Raccorder une source de données comme Prometheus ou VictoriaMetrics"
+        "desc": "Raccordez une source de données comme Prometheus ou VictoriaMetrics"
       },
       "dashboard": {
         "title": "Créer un tableau de bord",
-        "desc": "Transformer les métriques qui vous importent en tableau de bord"
+        "desc": "Transformez les métriques qui vous importent en tableau de bord"
       },
       "alert": {
         "title": "Configurer une règle d'alerte",
-        "desc": "Créer votre première règle d'alerte sur une métrique clé"
+        "desc": "Créez votre première règle d'alerte sur une métrique clé"
       },
       "notification": {
         "title": "Configurer les notifications",
-        "desc": "Faire partir réellement les alertes par DingTalk, e-mail ou tout autre média"
+        "desc": "Faites réellement partir les alertes par DingTalk, e-mail ou tout autre média"
       },
       "llm": {
         "title": "Raccorder un grand modèle de langage",
-        "desc": "Configurer un LLM pour débloquer l'assistant IA et les analyses intelligentes"
+        "desc": "Configurez un LLM pour débloquer l'assistant IA et les analyses intelligentes"
       }
     }
   },

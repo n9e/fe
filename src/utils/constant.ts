@@ -115,7 +115,7 @@ export const LANGUAGE_MAP = {
   ru_RU: 'Русский',
   id_ID: 'Bahasa Indonesia',
   es_ES: 'Español',
-  pt_BR: 'Português',
+  pt_BR: 'Português (Brasil)',
   ko_KR: '한국어',
   fr_FR: 'Français',
 };

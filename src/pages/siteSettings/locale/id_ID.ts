@@ -16,7 +16,7 @@ const id_ID = {
   "page_title": "Judul situs",
   "page_title_tip": "Menimpa judul bawaan (Nightingale)",
   "home_page_url": "Alamat akses bawaan",
-  "home_page_url_tip": "Membuka jalur akar / akan menuju alamat yang kamu tentukan; nilai bawaannya /landing",
+  "home_page_url_tip": "Membuka jalur akar / akan menuju alamat yang Anda tentukan; nilai bawaannya /landing",
   "displayMode": {
     "tree": "Pohon",
     "list": "Daftar"

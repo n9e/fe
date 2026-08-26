@@ -1,7 +1,7 @@
 const fr_FR = {
   "tip3": "(utilisable uniquement si la variable est suivie d'un & ou se trouve en fin d'URL) ; la forme ${key3}, valable n'importe où, est également acceptée",
   "unauthorized": "Aucun droit",
-  "title": "Index pattern",
+  "title": "Index patterns",
   "name": "Nom",
   "name_msg1": "Saisissez un nom",
   "name_msg2": "Une règle du même nom existe déjà",

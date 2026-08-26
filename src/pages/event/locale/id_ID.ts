@@ -41,7 +41,7 @@ const id_ID = {
   "detail": {
     "title": "Detail alert",
     "card_title": "Detail event alert",
-    "buisness_not_exist": "Grup bisnis ini sudah dihapus, atau kamu tidak punya izin melihatnya",
+    "buisness_not_exist": "Grup bisnis ini sudah dihapus, atau Anda tidak punya izin melihatnya",
     "rule_name": "Judul aturan",
     "hash": "Hash",
     "group_name": "Grup bisnis",

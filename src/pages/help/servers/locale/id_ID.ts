@@ -5,7 +5,7 @@ const id_ID = {
   "datasource": "Sumber data",
   "modify_datasource": "Ubah sumber data",
   "clock": "Detak jantung terakhir",
-  "unauthorized": "Kamu tidak punya izin melihat ini"
+  "unauthorized": "Anda tidak punya izin melihat ini"
 };
 
 export default id_ID;

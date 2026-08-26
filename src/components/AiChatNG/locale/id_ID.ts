@@ -50,7 +50,7 @@ const id_ID = {
     }
   },
   "input": {
-    "placeholder": "Ketik pertanyaanmu. Enter untuk mengirim, Shift + Enter untuk baris baru",
+    "placeholder": "Ketik pertanyaan Anda. Enter untuk mengirim, Shift + Enter untuk baris baru",
     "share_readonly_placeholder": "Mode berbagi hanya-baca"
   },
   "query": {
@@ -66,7 +66,7 @@ const id_ID = {
   "message": {
     "generating": "Sedang berpikir...",
     "processing": "Masih diproses",
-    "hint": "Info",
+    "hint": "Petunjuk",
     "no_llm_title": "Belum ada model bahasa yang dikonfigurasi di lingkungan ini",
     "no_llm_content": "Buka halaman <a>Manajemen LLM</a> untuk menambahkan konfigurasi model",
     "stopped": "Pembuatan dihentikan",

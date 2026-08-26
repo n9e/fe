@@ -220,7 +220,7 @@ const ko_KR = {
           "label": "표시 모드",
           "table": "표",
           "list": "목록",
-          "hidden": "숨기기"
+          "hidden": "숨김"
         },
         "placement": "위치",
         "max": "최댓값",
@@ -230,8 +230,8 @@ const ko_KR = {
         "last": "현재 값",
         "variance": "분산",
         "stdDev": "표준편차",
-        "series": "시계열",
-        "seriesFilter": "시계열 필터",
+        "series": "계열",
+        "seriesFilter": "계열 필터",
         "columns": "표시할 열",
         "none": "없음",
         "behaviour": {
@@ -471,7 +471,7 @@ const ko_KR = {
               "options": {
                 "color": "색상",
                 "text": "텍스트",
-                "hidden": "숨기기"
+                "hidden": "숨김"
               }
             }
           }

@@ -18,12 +18,12 @@ const id_ID = {
   "etime_msg": "Waktu selesai peredaman tidak boleh kosong",
   "etime_before_btime_msg": "Waktu selesai peredaman harus setelah waktu mulainya",
   "expired_tip": "Aturan ini sudah kedaluwarsa dan kini tidak meredam alert apa pun. Untuk memberlakukannya lagi, pilih durasi cepat atau ubah waktu selesainya",
-  "long_duration_tip": "Peredaman berlangsung lebih dari {{days}} hari, sehingga alert selama itu lama tidak terlihat. Pastikan ini memang yang kamu maksud",
+  "long_duration_tip": "Peredaman berlangsung lebih dari {{days}} hari, sehingga alert selama itu lama tidak terlihat. Pastikan ini memang yang Anda maksud",
   "prod": "Jenis pemantauan",
-  "severities": "Tingkat event",
+  "severities": "Tingkat keparahan event",
   "severities_tip": "Hanya tingkat yang dicentang yang diredam; tingkat lainnya tetap memicu alert seperti biasa",
-  "severities_msg": "Tingkat event tidak boleh kosong",
-  "scope_unlimited_tip": "Sumber data dan label event belum dikonfigurasi, sehingga aturan ini meredam semua event alert di grup bisnis yang dipilih. Pastikan ini memang yang kamu maksud",
+  "severities_msg": "Tingkat keparahan event tidak boleh kosong",
+  "scope_unlimited_tip": "Sumber data dan label event belum dikonfigurasi, sehingga aturan ini meredam semua event alert di grup bisnis yang dipilih. Pastikan ini memang yang Anda maksud",
   "mute_type": {
     "0": "Waktu tetap",
     "1": "Waktu berulang",
@@ -50,7 +50,7 @@ const id_ID = {
     "label": "Mode peredaman",
     "0_desc": "(event tidak dibuat dan notifikasi tidak dikirim)",
     "1_desc": "(event tetap tercatat, hanya notifikasi yang tidak dikirim)",
-    "tip": "Dengan Redam notifikasi saja, alert yang cocok selama periode peredaman tetap menghasilkan event dan tercatat, hanya notifikasinya yang ditahan. Ini memudahkanmu melihat apakah ada anomali selama masa perubahan, lalu mencabut peredamannya setelah semuanya pulih."
+    "tip": "Dengan Redam notifikasi saja, alert yang cocok selama periode peredaman tetap menghasilkan event dan tercatat, hanya notifikasinya yang ditahan. Ini memudahkan Anda melihat apakah ada anomali selama masa perubahan, lalu mencabut peredamannya setelah semuanya pulih."
   },
   "tag": {
     "key": {
@@ -71,7 +71,7 @@ const id_ID = {
   "basic_configs": "Informasi dasar",
   "basic_configs_desc": "Judul aturan dan alasan peredaman, agar tim mudah berkoordinasi dan menemukannya kembali",
   "filter_configs": "Filter",
-  "filter_configs_desc": "Menentukan event alert mana yang diredam: grup bisnis, sumber data, tingkat event, dan label event. Antar kondisi berlaku DAN, dan yang dikosongkan tidak membatasi apa pun",
+  "filter_configs_desc": "Menentukan event alert mana yang diredam: grup bisnis, sumber data, tingkat keparahan event, dan label event. Antar kondisi berlaku DAN, dan yang dikosongkan tidak membatasi apa pun",
   "mute_configs": "Pengaturan peredaman",
   "mute_configs_desc": "Menentukan kapan peredaman berlaku dan sejauh apa: sebuah rentang waktu tetap, atau periode yang berulang tiap minggu",
   "alert_content": "Agar aturan yang salah konfigurasi tidak meredam seluruh alert perusahaan, aturan ini hanya berlaku bagi event alert di grup bisnis tertentu",

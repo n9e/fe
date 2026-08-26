@@ -2,7 +2,7 @@ const fr_FR = {
   "title": "Règle de notification",
   "empty_guide": {
     "title": "Aucune règle de notification",
-    "desc": "Une règle de notification détermine à qui les alertes sont envoyées et par quel média. Sans elle, les événements ne parviennent réellement ni sur DingTalk ni par e-mail.",
+    "desc": "Une règle de notification détermine à qui les alertes sont envoyées et par quel média. Sans elle, les événements ne parviennent réellement à aucun canal — DingTalk, e-mail ou autre.",
     "config_channel": "Configurer d'abord un média de notification"
   },
   "rule_select": {

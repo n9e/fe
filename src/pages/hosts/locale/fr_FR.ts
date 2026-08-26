@@ -116,7 +116,7 @@ const fr_FR = {
   },
   "batch_delete": {
     "title": "Supprimer en masse",
-    "msg": "Attention : cette action supprime définitivement l'objet du système. C'est très risqué, procédez avec prudence.",
+    "msg": "Attention : cette action supprime définitivement les objets supervisés du système. C'est très risqué, procédez avec prudence.",
     "btn": "Supprimer"
   },
   "meta_tip": "Voir les métadonnées",

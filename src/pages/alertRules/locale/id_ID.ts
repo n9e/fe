@@ -27,7 +27,7 @@ const id_ID = {
     "funnel": "Pemrosesan event",
     "funnel_fired": "Terpicu",
     "funnel_pending": "Menunggu durasi terpenuhi",
-    "funnel_muted": "Redam",
+    "funnel_muted": "Diredam",
     "funnel_dropped": "Dibuang oleh alur kerja",
     "funnel_inhibited": "Disupresi",
     "series_total": "{{count}} seri",
@@ -437,7 +437,7 @@ const id_ID = {
     "title": "Pemrosesan event",
     "desc": "Proses dan perkaya event alert",
     "select_workflow": "Pilih pemroses yang sudah ada",
-    "select_workflow_tooltip": "Gunakan kembali pemroses event yang sudah ada di grup bisnis ini agar beberapa aturan alert berbagi satu konfigurasi. Kamu juga bisa memilih \"Pemroses baru\" di sini untuk mengelola logika aturan ini secara terpisah.",
+    "select_workflow_tooltip": "Gunakan kembali pemroses event yang sudah ada di grup bisnis ini agar beberapa aturan alert berbagi satu konfigurasi. Anda juga bisa memilih \"Pemroses baru\" di sini untuk mengelola logika aturan ini secara terpisah.",
     "add_workflow": "Pemroses baru",
     "add_pipeline": "Tambah pemroses",
     "enabled": "Aktifkan",
@@ -452,7 +452,7 @@ const id_ID = {
     "save_workflow_failed": "Gagal menyimpan pemroses",
     "reference_workflow_tip": "Pemroses «{{workflowName}}» sedang dirujuk. Perubahan pada konfigurasi di bawah berlaku untuk semua aturan yang merujuknya.",
     "no_changes": "Konfigurasi pemroses tidak berubah",
-    "save_workflow_tip": "Pemroses event baru benar-benar dibuat atau diubah setelah kamu mengeklik Simpan pemroses"
+    "save_workflow_tip": "Pemroses event baru benar-benar dibuat atau diubah setelah Anda mengeklik Simpan pemroses"
   },
   "form_ng": {
     "cate": "Jenis sumber data",
@@ -516,9 +516,9 @@ const id_ID = {
       "title_result": "Hasil simulasi pemicu",
       "intro": "Tanpa menunggu kondisi alert terpenuhi, sebuah event uji dibuat dari konfigurasi saat ini dan dijalankan melalui rantai pemrosesan, peredaman, dan notifikasi yang sesungguhnya untuk memastikan konfigurasinya bekerja",
       "validate_first": "Lengkapi dulu field wajib pada formulir",
-      "severity": "Tingkat simulasi",
+      "severity": "Tingkat keparahan simulasi",
       "severity_single": "Aturan ini hanya punya {{severity}}, sehingga event uji dibuat pada tingkat tersebut",
-      "severity_multi_tip": "Aturan ini punya beberapa tingkat alert; pilih tingkat mana yang akan disimulasikan",
+      "severity_multi_tip": "Aturan ini punya beberapa tingkat keparahan; pilih tingkat mana yang akan disimulasikan",
       "event_type": "Jenis event",
       "event_type_trigger": "Terpicu",
       "event_type_recover": "Pulih",

@@ -22,7 +22,7 @@ const ko_KR = {
   "document_title": "문서",
   "product_document_title": "제품 문서",
   "more_document_link": "문서 더 보기",
-  "and": "그리고",
+  "and": "AND",
   "yes": "예",
   "no": "아니요",
   "please_select": "선택하세요",
@@ -112,7 +112,7 @@ const ko_KR = {
       "match_type_1_tip": "와일드카드 두 가지를 지원합니다<br>*는 임의의 문자 0개 이상과 일치합니다<br>?는 임의의 문자 정확히 하나와 일치합니다",
       "match_type_2": "모든 데이터 소스",
       "op_in": "포함",
-      "op_not_in": "제외",
+      "op_not_in": "미포함",
       "preview": "데이터 미리보기"
     },
     "managePageLink": "클릭해서 데이터 소스 관리로 이동"

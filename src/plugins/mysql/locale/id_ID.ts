@@ -45,7 +45,7 @@ const id_ID = {
       "addr_tip": "Alamat basis data harus unik",
       "user": "Nama pengguna",
       "password": "Kata sandi",
-      "help": "Catatan: akunnya harus punya izin baca pada basis data terkait agar langkah berikutnya bisa dijalankan. Bila kamu menggantinya dengan akun lain, sebaiknya pakai akun yang hanya berizin baca."
+      "help": "Catatan: akunnya harus punya izin baca pada basis data terkait agar langkah berikutnya bisa dijalankan. Bila Anda menggantinya dengan akun lain, sebaiknya pakai akun yang hanya berizin baca."
     },
     "max_query_rows": "Jumlah baris maksimum yang dikembalikan satu permintaan",
     "max_idle_conns": "Maksimum koneksi menganggur",

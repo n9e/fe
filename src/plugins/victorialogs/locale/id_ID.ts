@@ -39,7 +39,7 @@ const id_ID = {
       "display_fields_help": "Pilih field yang ditampilkan; bawaannya _msg",
       "date_format": "Format tanggal",
       "date_format_help01": "Tetapkan format tanggal, misalnya YYYY-MM-DD HH:mm:ss. <a>Lihat dokumentasi ini untuk selengkapnya</a>",
-      "date_format_help02": "Format tanggalmu saat ini: {{dateFormat}}"
+      "date_format_help02": "Format tanggal Anda saat ini: {{dateFormat}}"
     },
     "table_view_settings": {
       "title": "Pengaturan tampilan tabel",

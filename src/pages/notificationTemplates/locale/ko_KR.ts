@@ -15,7 +15,7 @@ const ko_KR = {
     "edit_title": "템플릿 필드 수정",
     "preview": "템플릿 내용 미리보기",
     "contentKey": "필드 식별자",
-    "tip": "통지 매체에서 쓸 수 있는 필드이며 $tpl.{{contentKey}}로 그 내용을 참조합니다",
+    "tip": "통지 매체에서 쓸 수 있는 필드이며 $tpl.{{contentKey}}(으)로 그 내용을 참조합니다",
     "prompt": "내용이 바뀌었습니다. 변경 내용을 버릴까요?",
     "value_msg": "필드 내용을 입력하세요",
     "ai_generate": "AI로 생성"

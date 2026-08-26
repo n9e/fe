@@ -1,7 +1,7 @@
 const id_ID = {
   "builder_btn": "Mode pemula",
   "query_btn": "Kueri",
-  "table_promql_interpolate_string": "Kami menemukan variabel di dalam PromQL kamu dan menggantinya secara otomatis dengan 5m. PromQL hasilnya: {{query}}",
+  "table_promql_interpolate_string": "Kami menemukan variabel di dalam PromQL Anda dan menggantinya secara otomatis dengan 5m. PromQL hasilnya: {{query}}",
   "tab_table": "Tabel (Table)",
   "tab_graph": "Grafik (Graph)",
   "max_data_points": "Jumlah titik data maksimum",

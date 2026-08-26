@@ -3,7 +3,7 @@ const id_ID = {
   "onboarding": {
     "dismiss": "Jangan tampilkan lagi",
     "title": "Panduan pemula",
-    "subtitle": "Ikuti langkah-langkah ini dan pemantauanmu berjalan dalam hitungan menit",
+    "subtitle": "Ikuti langkah-langkah ini dan pemantauan Anda berjalan dalam hitungan menit",
     "progress": "{{done}} dari {{total}} selesai",
     "hostTrack": "Jalur pemantauan host",
     "dataTrack": "Jalur penyiapan data",
@@ -20,7 +20,7 @@ const id_ID = {
       },
       "hostDashboard": {
         "title": "Terapkan dasbor pemantauan host",
-        "desc": "Impor dasbor host bawaan sekali klik dan langsung lihat data mesinmu"
+        "desc": "Impor dasbor host bawaan sekali klik dan langsung lihat data mesin Anda"
       },
       "hostAlert": {
         "title": "Aktifkan alert host",
@@ -28,7 +28,7 @@ const id_ID = {
       },
       "testDelivered": {
         "title": "Kirim alert uji",
-        "desc": "Pastikan notifikasi benar-benar sampai ke tanganmu lewat event simulasi"
+        "desc": "Pastikan notifikasi benar-benar sampai ke tangan Anda lewat event simulasi"
       },
       "datasource": {
         "title": "Konfigurasikan sumber data",
@@ -36,11 +36,11 @@ const id_ID = {
       },
       "dashboard": {
         "title": "Buat dasbor",
-        "desc": "Visualkan metrik yang kamu pedulikan menjadi sebuah dasbor"
+        "desc": "Visualkan metrik yang Anda pedulikan menjadi sebuah dasbor"
       },
       "alert": {
         "title": "Konfigurasikan aturan alert",
-        "desc": "Buat aturan alert pertamamu untuk metrik yang penting"
+        "desc": "Buat aturan alert pertama Anda untuk metrik yang penting"
       },
       "notification": {
         "title": "Konfigurasikan notifikasi",

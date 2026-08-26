@@ -79,7 +79,7 @@ const id_ID = {
     "title": "Filter bawaan",
     "public": "Dasbor publik",
     "all": "Dasbor grup bisnis saya",
-    "all_tip": "Opsi ini menampilkan semua dasbor yang terkait dengan grup bisnismu"
+    "all_tip": "Opsi ini menampilkan semua dasbor yang terkait dengan grup bisnis Anda"
   },
   "create_title": "Buat dasbor",
   "edit_title": "Ubah dasbor",
@@ -220,7 +220,7 @@ const id_ID = {
           "label": "Mode tampilan",
           "table": "Tabel",
           "list": "Daftar",
-          "hidden": "Sembunyikan"
+          "hidden": "Tersembunyi"
         },
         "placement": "Posisi",
         "max": "Maksimum",
@@ -471,7 +471,7 @@ const id_ID = {
               "options": {
                 "color": "Warna",
                 "text": "Teks",
-                "hidden": "Sembunyikan"
+                "hidden": "Tersembunyi"
               }
             }
           }
@@ -524,7 +524,7 @@ const id_ID = {
         },
         "showPoints": "Tampilkan titik",
         "showPoints_always": "Tampilkan",
-        "showPoints_none": "Sembunyikan",
+        "showPoints_none": "Jangan tampilkan",
         "pointSize": "Ukuran titik"
       },
       "iframe": {

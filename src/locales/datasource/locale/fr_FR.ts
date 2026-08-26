@@ -5,7 +5,7 @@ const fr_FR = {
     "index_tip": "\n      Plusieurs écritures sont possibles\n      <1 />\n      1. Un seul index : gb cherche tous les documents de l'index gb\n      <1 />\n      2. Plusieurs index : gb,us cherche tous les documents des index gb et us\n      <1 />\n      3. Un préfixe d'index : g*,u* cherche tous les documents des index commençant par g ou u\n      <1 />\n      ",
     "index_msg": "L'index est obligatoire",
     "indexPattern": "Index pattern",
-    "indexPatterns": "Index pattern",
+    "indexPatterns": "Index patterns",
     "indexPattern_msg": "L'index pattern est obligatoire",
     "indexPatterns_manage": "Gérer les index patterns",
     "filter": "Filtre",

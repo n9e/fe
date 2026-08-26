@@ -38,7 +38,7 @@ const id_ID = {
       "required": "Nilai tidak boleh kosong"
     }
   },
-  "redefine_severity": "Tetapkan ulang tingkat alert",
+  "redefine_severity": "Tetapkan ulang tingkat keparahan alert",
   "redefine_channels": "Tetapkan ulang media notifikasi",
   "redefine_webhooks": "Tetapkan ulang URL callback",
   "user_group_ids": "Grup penerima alert langganan",
@@ -49,8 +49,8 @@ const id_ID = {
   "prod": "Jenis pemantauan",
   "subscribe_btn": "Langganan",
   "basic_configs": "Konfigurasi dasar",
-  "severities": "Tingkat event langganan",
-  "severities_msg": "Tingkat event langganan tidak boleh kosong",
+  "severities": "Tingkat keparahan event yang dilanggan",
+  "severities_msg": "Tingkat keparahan event yang dilanggan tidak boleh kosong",
   "tags_groups_require": "Setidaknya salah satu dari label atau grup penerima harus diisi",
   "note": "Nama langganan",
   "filter_configs": "Konfigurasi filter",
@@ -93,7 +93,7 @@ const id_ID = {
   },
   "scenario_tips": {
     "title": "Aturan langganan cocok untuk tiga jenis skenario",
-    "cross_team": "Melanggan alert milik orang lain: layanan hilir yang kamu andalkan dikelola tim lain, tetapi gangguannya berdampak padamu, sehingga kamu ingin menerima alert SLI-nya",
+    "cross_team": "Melanggan alert milik orang lain: layanan hilir yang Anda andalkan dikelola tim lain, tetapi gangguannya berdampak pada Anda, sehingga Anda ingin menerima alert SLI-nya",
     "escalation": "Jaring pengaman eskalasi: alert yang belum pulih selama satu jam diberitahukan sekali lagi ke penanggung jawab tim",
     "global_callback": "Callback global: semua event alert dikirim ke sebuah webhook untuk keperluan otomasi",
     "more": "Pelajari lebih lanjut"

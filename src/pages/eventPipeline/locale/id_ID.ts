@@ -283,7 +283,7 @@ const id_ID = {
   "ai_summary": {
     "llm_config": "Gunakan kembali konfigurasi LLM",
     "llm_config_placeholder": "Pilih LLM yang sudah dikonfigurasi, atau kosongkan untuk mengisi parameternya sendiri di bawah",
-    "llm_config_tip": "Pilih konfigurasi model yang sudah ada di Konfigurasi AI - Konfigurasi LLM untuk memakai ulang model, kunci, dan alamatnya. Bila dikosongkan, parameter yang kamu isi di bawah yang dipakai.",
+    "llm_config_tip": "Pilih konfigurasi model yang sudah ada di Konfigurasi AI - Konfigurasi LLM untuk memakai ulang model, kunci, dan alamatnya. Bila dikosongkan, parameter yang Anda isi di bawah yang dipakai.",
     "url_placeholder": "Masukkan URL layanan API",
     "url_required": "Masukkan URL",
     "api_key_placeholder": "Kunci API",

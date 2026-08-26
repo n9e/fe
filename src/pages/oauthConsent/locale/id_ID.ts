@@ -1,6 +1,6 @@
 const id_ID = {
   "title": "Permintaan otorisasi",
-  "intro": "Aplikasi berikut meminta akses ke antarmuka MCP / A2A Nightingale atas namamu:",
+  "intro": "Aplikasi berikut meminta akses ke antarmuka MCP / A2A Nightingale atas nama Anda:",
   "asUser": "Masuk sebagai:",
   "redirectTo": "URL callback:",
   "scope": "Izin yang diminta:",

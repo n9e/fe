@@ -1,7 +1,7 @@
 const id_ID = {
   "auth": {
-    "403": "Kamu tidak punya izin membuka halaman ini. Hubungi administrator.",
-    "404": "Halaman yang kamu buka tidak ada.",
+    "403": "Anda tidak punya izin membuka halaman ini. Hubungi administrator.",
+    "404": "Halaman yang Anda buka tidak ada.",
     "403_admin": "Administrator:",
     "403_back": "Kembali ke halaman sebelumnya",
     "404_btn": "Kembali ke beranda"
@@ -64,7 +64,7 @@ const id_ID = {
     "batch_export": "Ekspor massal",
     "batch_import": "Impor massal",
     "test": "Uji",
-    "expand": "Bentangkan",
+    "expand": "Perluas",
     "collapse": "Ciutkan",
     "copy": "Salin",
     "config": "Konfigurasi",

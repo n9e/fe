@@ -59,7 +59,7 @@ const id_ID = {
     },
     "warn_message_btn_1": "Tetap jalankan kueri",
     "warn_message_btn_2": "Kembali dan ubah",
-    "warn_message": "Kueri ini tidak memuat makro waktu, sehingga rentang waktu yang kamu pilih tidak berlaku!",
+    "warn_message": "Kueri ini tidak memuat makro waktu, sehingga rentang waktu yang Anda pilih tidak berlaku!",
     "warn_message_content_1": "Kueri ini berpotensi memindai seluruh tabel. Pertimbangkan dampaknya terhadap performa penyimpanan, lalu putuskan untuk melanjutkan atau kembali menambahkan makro waktu.",
     "warn_message_content_2": "Makro waktu yang umum: ",
     "warn_message_content_3": "Contoh:",

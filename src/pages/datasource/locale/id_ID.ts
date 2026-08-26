@@ -67,8 +67,8 @@ const id_ID = {
   "rename_title": "Ubah nama sumber data",
   "type_btn_add": "Tambah",
   "default": "Jadikan sumber data bawaan",
-  "default_msg": "Kluster bawaan untuk jenis sumber data ini. Data deret waktu dari fitur pemantauan jaringan dikirim ke sumber data ini",
-  "default_tip": "Data deret waktu dari fitur pemantauan jaringan dikirim ke sumber data ini",
+  "default_msg": "Kluster bawaan untuk jenis sumber data ini. Data deret waktu dari fitur probing jaringan dikirim ke sumber data ini",
+  "default_tip": "Data deret waktu dari fitur probing jaringan dikirim ke sumber data ini",
   "auth": {
     "name": "Otorisasi",
     "not-support": "Belum didukung"

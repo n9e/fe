@@ -220,7 +220,7 @@ const pt_BR = {
           "label": "Modo de exibição",
           "table": "Tabela",
           "list": "Lista",
-          "hidden": "Ocultar"
+          "hidden": "Oculto"
         },
         "placement": "Posição",
         "max": "Máximo",
@@ -471,7 +471,7 @@ const pt_BR = {
               "options": {
                 "color": "Cor",
                 "text": "Texto",
-                "hidden": "Ocultar"
+                "hidden": "Oculto"
               }
             }
           }

@@ -42,8 +42,8 @@ const id_ID = {
     "detail": "Detail"
   },
   "empty_guide": {
-    "title": "Buat templat pesan pertamamu",
-    "desc": "Templat pesan menentukan tata isi notifikasi alert. Saat dibuat, sebuah templat siap pakai dihasilkan otomatis sesuai media notifikasi yang dipilih, dan kamu bisa menyesuaikannya dari sana."
+    "title": "Buat templat pesan pertama Anda",
+    "desc": "Templat pesan menentukan tata isi notifikasi alert. Saat dibuat, sebuah templat siap pakai dihasilkan otomatis sesuai media notifikasi yang dipilih, dan Anda bisa menyesuaikannya dari sana."
   },
   "fields_panel": {
     "desc": "Variabel event alert yang bisa dirujuk di dalam templat. Klik salah satunya untuk menyalin, lalu tempelkan di editor sebelah kiri.",
@@ -65,7 +65,7 @@ const id_ID = {
       "RuleName": "Nama aturan",
       "RuleNote": "Catatan aturan",
       "RuleHash": "Hash aturan",
-      "Severity": "Tingkat alert (1-3)",
+      "Severity": "Tingkat keparahan alert (1-3)",
       "Status": "Status alert",
       "PromQl": "Kueri alert",
       "PromForDuration": "Durasi (detik)",
@@ -81,9 +81,9 @@ const id_ID = {
       "LastSentTime": "Waktu pengiriman terakhir",
       "TagsJSON": "Larik label",
       "TagsMap": "Pemetaan pasangan kunci-nilai label",
-      "TagsMap_instance": "Mengambil satu label tertentu; ganti instance dengan nama labelmu",
+      "TagsMap_instance": "Mengambil satu label tertentu; ganti instance dengan nama label Anda",
       "AnnotationsJSON": "Pemetaan pasangan kunci-nilai anotasi",
-      "AnnotationsJSON_summary": "Mengambil satu anotasi tertentu; ganti summary dengan nama anotasimu",
+      "AnnotationsJSON_summary": "Mengambil satu anotasi tertentu; ganti summary dengan nama anotasi Anda",
       "TargetIdent": "Identitas target",
       "TargetNote": "Catatan target",
       "NotifyRecovered": "Beritahukan pemulihan",

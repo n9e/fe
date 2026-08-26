@@ -24,7 +24,7 @@ const id_ID = {
   "trigger_value": "Nilai saat terpicu",
   "aggregate_rule": "Aturan agregasi",
   "aggregate_rule_mgs": "Pilih aturan agregasi",
-  "aggregate_rule_tip": "Kelompokkan alert berdasarkan atribut dan label event agar lebih mudah ditinjau. Gunakan Go Template untuk merujuk field event, misalnya:\n\n- Menurut grup bisnis dan tingkat event: `Group:{{.GroupName}} Severity:{{.Severity}}`\n- Menurut judul aturan alert: `{{.RuleName}}`\n- Menurut label instance pada event: `{{.TagsMap.instance}}`",
+  "aggregate_rule_tip": "Kelompokkan alert berdasarkan atribut dan label event agar lebih mudah ditinjau. Gunakan Go Template untuk merujuk field event, misalnya:\n\n- Menurut grup bisnis dan tingkat keparahan event: `Group:{{.GroupName}} Severity:{{.Severity}}`\n- Menurut judul aturan alert: `{{.RuleName}}`\n- Menurut label instance pada event: `{{.TagsMap.instance}}`",
   "aggr_result": "grup agregasi",
   "aggregate_rule_name": "Nama aturan",
   "aggregate_rule_title": "Judul kartu agregasi",

@@ -62,7 +62,7 @@ const ko_KR = {
   "empty_value_not_supported_tip": "빈 값 검색은 아직 지원하지 않습니다",
   "unsupported_datasource_type": "지원하지 않는 데이터 소스 유형이라 표시할 수 없습니다: {{type}}",
   "no_supported_datasource_types_title": "사용할 수 있는 데이터 소스 유형이 없습니다",
-  "no_supported_datasource_types_desc": "<a>데이터 소스 관리</a> 페이지에서 설정하거나 관리자에게 요청하세요. 현재 지원하는 데이터 소스 유형은 {{types}}이며,",
+  "no_supported_datasource_types_desc": "<a>데이터 소스 관리</a> 페이지에서 설정하거나 관리자에게 요청하세요. 현재 지원하는 데이터 소스 유형은 {{types}}(이)며,",
   "field_tip": "클릭해서 통계 보기",
   "field_value_statistic": {
     "view_statistic": "통계 값 보기",
