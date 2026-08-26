@@ -84,6 +84,7 @@ export interface BaseSeriesItem {
   n9e_internal: {
     id: string;
     refId: string;
+    bucketInterval?: number;
     offset?: number;
     metric: Record<string, string>;
     values?: (number | null | undefined)[];

@@ -93,6 +93,8 @@ export default function index(props: Props) {
     pointSize?: number;
     spanNulls?: boolean;
     stack?: string;
+    barAlignment?: -1 | 0 | 1;
+    barWidthFactor?: number;
   };
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);

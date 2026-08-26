@@ -137,7 +137,7 @@ export default function useQuery(props: IProps) {
         }
         const response = await fetchDashboardQuery(requestData, controller.signal);
         if (!mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
-        const normalized = normalizeDashboardQueryResponse(response, targets);
+        const normalized = normalizeDashboardQueryResponse(response, targets, requestData);
         const error = Object.entries(normalized.errorsByRef)
           .map(([refId, item]) => `${refId}: ${item.message}${item.dependency_ref_ids?.length ? ` (${item.dependency_ref_ids.join(', ')})` : ''}`)
           .join('; ');
