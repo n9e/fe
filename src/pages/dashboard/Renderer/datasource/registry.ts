@@ -127,13 +127,19 @@ const hasQueryText = (target: ITarget, key: 'query' | 'sql' = 'query') => {
   return typeof value === 'string' && value.trim().length > 0;
 };
 
+const hasESValueKey = (keys: unknown) => {
+  if (!keys || typeof keys !== 'object' || Array.isArray(keys) || !('valueKey' in keys)) return false;
+  const valueKey = keys.valueKey;
+  return Array.isArray(valueKey) ? valueKey.length > 0 : typeof valueKey === 'string' && valueKey.trim().length > 0;
+};
+
 // 沿用旧版各数据源查询函数的静默短路条件：未就绪的 target 不进入 query-batch，且不触发表单校验提示。
 const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number], (target: ITarget) => boolean>> = {
   elasticsearch: (target) => {
     const query = target.query ?? {};
     if (query.syntax === 'sql') {
       if (query.mode === 'raw') return Boolean(typeof query.sql === 'string' && query.sql.trim());
-      return Boolean(typeof query.sql === 'string' && query.sql.trim() && query.keys?.valueKey && (Array.isArray(query.keys.valueKey) ? query.keys.valueKey.length : query.keys.valueKey));
+      return Boolean(typeof query.sql === 'string' && query.sql.trim() && hasESValueKey(query.keys));
     }
     return query.index_type === 'index_pattern' ? Boolean(query.index_pattern) : Boolean(query.index && query.date_field);
   },
