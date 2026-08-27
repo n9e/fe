@@ -176,6 +176,13 @@ export const defaultCustomValuesMap = {
     tableLayout: 'auto',
     nowrap: true,
   },
+  tableNG: {
+    showHeader: true,
+    filterable: false,
+    cellOptions: {
+      type: 'none',
+    },
+  },
   hexbin: {
     textMode: 'valueAndName',
     calc: 'lastNotNull',
@@ -224,6 +231,7 @@ export const defaultOptionsValuesMap = {
   stat: defaultOptionsValues,
   pie: defaultOptionsValues,
   table: defaultOptionsValues,
+  tableNG: defaultOptionsValues,
   hexbin: defaultOptionsValues,
   barGauge: defaultOptionsValues,
   text: defaultOptionsValues,
