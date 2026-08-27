@@ -6,9 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 import { normalizeTime } from '../utils';
 import { getDsQuery } from './services';
+import { esSQLDsQuery } from '../services';
 
 interface IProps {
   datasourceValue: number;
@@ -30,6 +32,7 @@ export default function GraphPreview(props: IProps) {
   const { data, disabled } = props;
   const divRef = useRef<HTMLDivElement>(null);
   const cate = Form.useWatch('cate');
+  const esDatasourceCate = cate === DatasourceCateEnum.opensearch ? DatasourceCateEnum.opensearch : DatasourceCateEnum.elasticsearch;
   const datasource_values = Form.useWatch('datasource_values');
   const [visible, setVisible] = useState(false);
   const [series, setSeries] = useState<any[]>([]);
@@ -45,7 +48,23 @@ export default function GraphPreview(props: IProps) {
     const start = moment(parsedRange.start).unix();
     const end = moment(parsedRange.end).unix();
 
-    getDsQuery(
+    const request = data?.syntax === 'sql'
+      ? esSQLDsQuery({
+          cate: esDatasourceCate,
+          datasource_id: datasourceValue,
+          query: [{
+            ref: data?.ref,
+            sql: data?.sql,
+            from: start,
+            to: end,
+            keys: {
+              ...data?.keys,
+              valueKey: Array.isArray(data?.keys?.valueKey) ? _.join(data.keys.valueKey, ' ') : data?.keys?.valueKey,
+              labelKey: Array.isArray(data?.keys?.labelKey) ? _.join(data.keys.labelKey, ' ') : data?.keys?.labelKey,
+            },
+          }],
+        }).then((dat) => ({ dat }))
+      : getDsQuery(
       {
         cate,
         datasource_id: datasourceValue,
@@ -68,7 +87,9 @@ export default function GraphPreview(props: IProps) {
         }),
       },
       false,
-    )
+    );
+
+    request
       .then((res) => {
         setSeries(
           _.map(res.dat, (item) => {

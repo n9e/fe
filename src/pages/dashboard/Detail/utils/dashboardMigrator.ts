@@ -142,8 +142,13 @@ const migratePanelToV4 = (panel: LegacyPanel): LegacyPanel => {
       }
       const datasourceCate = targetCopy.datasource?.cate ?? panelCopy.datasourceCate;
       if ((datasourceCate === 'elasticsearch' || datasourceCate === 'opensearch') && targetCopy.query) {
-        targetCopy.query.filter_language = targetCopy.query.filter_language ?? (targetCopy.query.syntax === 'kuery' || targetCopy.query.syntax === 'kql' ? 'kql' : 'lucene');
-        delete targetCopy.query.syntax;
+        // SQL is a persisted query mode. Only migrate the legacy DSL syntax
+        // field into filter_language; otherwise an ES SQL dashboard reopens in
+        // DSL mode after every load.
+        if (targetCopy.query.syntax !== 'sql') {
+          targetCopy.query.filter_language = targetCopy.query.filter_language ?? (targetCopy.query.syntax === 'kuery' || targetCopy.query.syntax === 'kql' ? 'kql' : 'lucene');
+          delete targetCopy.query.syntax;
+        }
       }
       targetCopy.resultType = inferTargetResultType(targetCopy);
     }

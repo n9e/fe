@@ -369,6 +369,7 @@ export function esLogsQuery(data: {
   cate: DatasourceCateEnum;
   datasource_id: number;
   query: {
+    ref?: string;
     sql: string;
     index: string;
     start: number; // unix timestamp

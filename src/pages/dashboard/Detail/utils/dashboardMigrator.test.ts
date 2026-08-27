@@ -268,6 +268,28 @@ describe('dashboard v4 migration', () => {
     expect(migrated.panels[0].targets[0].query).not.toHaveProperty('syntax');
   });
 
+  it('preserves the Elasticsearch SQL query mode', () => {
+    const migrated = dashboardMigrator({
+      version: '4.0.0',
+      panels: [{
+        id: 'panel-es-sql',
+        version: '4.0.0',
+        type: 'tableNG',
+        datasourceCate: 'elasticsearch',
+        datasourceValue: 12,
+        targets: [{
+          refId: 'A',
+          kind: 'query',
+          query: { syntax: 'sql', mode: 'timeSeries', sql: 'SELECT time, value FROM logs', keys: { valueKey: ['value'], timeKey: 'time' } },
+        }],
+        custom: {},
+        options: {},
+      }],
+    });
+
+    expect(migrated.panels[0].targets[0].query).toMatchObject({ syntax: 'sql', sql: 'SELECT time, value FROM logs' });
+  });
+
   it('is idempotent', () => {
     const once = dashboardMigrator({
       version: '3.4.0',
@@ -344,9 +366,9 @@ describe('dashboard v4 migration', () => {
 
     expect(migrated.options?.thresholds).toEqual({ mode: 'percentage' });
     expect(migrated.targets).toMatchObject([
-      { refId: 'A', resultType: 'logs', query: { filter_language: 'lucene' } },
+      { refId: 'A', resultType: 'logs', query: { syntax: 'sql', mode: 'logs' } },
       { refId: 'B', resultType: 'logs' },
     ]);
-    expect(migrated.targets[0].query).not.toHaveProperty('syntax');
+    expect(migrated.targets[0].query).not.toHaveProperty('filter_language');
   });
 });
