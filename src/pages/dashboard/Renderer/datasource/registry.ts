@@ -131,6 +131,10 @@ const hasQueryText = (target: ITarget, key: 'query' | 'sql' = 'query') => {
 const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number], (target: ITarget) => boolean>> = {
   elasticsearch: (target) => {
     const query = target.query ?? {};
+    if (query.syntax === 'sql') {
+      if (query.mode === 'raw') return Boolean(typeof query.sql === 'string' && query.sql.trim());
+      return Boolean(typeof query.sql === 'string' && query.sql.trim() && query.keys?.valueKey && (Array.isArray(query.keys.valueKey) ? query.keys.valueKey.length : query.keys.valueKey));
+    }
     return query.index_type === 'index_pattern' ? Boolean(query.index_pattern) : Boolean(query.index && query.date_field);
   },
   opensearch: (target) => {
@@ -164,9 +168,14 @@ const serializeTarget = (target: ITarget, cate: string) => {
   if (target.queries) {
     payload.queries = _.cloneDeep(target.queries);
   }
+  // Builder configuration is editor state used to reopen the builder. The
+  // datasource query APIs only need the generated query fields.
+  delete payload.builderConfig;
   if (_.includes(['elasticsearch', 'opensearch'], cate)) {
-    payload.filter_language = payload.filter_language ?? (payload.syntax === 'kuery' || payload.syntax === 'kql' ? 'kql' : 'lucene');
-    delete payload.syntax;
+    if (payload.syntax !== 'sql') {
+      payload.filter_language = payload.filter_language ?? (payload.syntax === 'kuery' || payload.syntax === 'kql' ? 'kql' : 'lucene');
+      delete payload.syntax;
+    }
   }
   return payload;
 };

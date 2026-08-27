@@ -97,6 +97,7 @@ export function processFormValues(values) {
   }
   if (values?.rule_config?.queries) {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
+      const isESDSLQuery = ['elasticsearch', 'opensearch'].includes(values.cate) && item.syntax !== 'sql';
       let parsedRange;
       if (item.range) {
         parsedRange = mapOptionToRelativeTimeRange(item.range);
@@ -110,8 +111,13 @@ export function processFormValues(values) {
       if (_.isArray(item?.keys?.metricKey)) {
         item.keys.metricKey = _.join(item.keys.metricKey, ' ');
       }
+      // 提交前剥离仅前端使用的编辑态字段，后端只消费编译产物：
+      // - builderConfig 仅用于回填 Builder 表单，若随规则落库，切回 Builder 时会用
+      //   过期配置生成与当前 sql 不一致的查询（手改过 sql 的场景尤其明显）；
+      // - editMode 是纯前端视图状态；ES/OpenSearch 的 DSL 查询（syntax !== 'sql'）
+      //   还会清除 SQL 模式遗留的 sql/keys，避免两套语义并存。
       return {
-        ..._.omit(item, ['interval_unit', 'range']),
+        ..._.omit(item, ['interval_unit', 'range', 'builderConfig', 'editMode', ...(isESDSLQuery ? ['sql', 'keys'] : [])]),
         interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
         from: parsedRange?.start,
         to: parsedRange?.end,
