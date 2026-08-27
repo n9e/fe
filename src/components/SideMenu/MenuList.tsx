@@ -27,6 +27,7 @@ interface IMenuProps {
   onClick?: (key: any) => void;
   sideMenuBgColor: string;
   isCustomBg: boolean;
+  isDarkMode?: boolean;
   quickMenuRef: React.MutableRefObject<{ open: () => void }>;
   isGoldTheme?: boolean;
   /** 浅色默认侧栏（非自定义底、非蓝主题、非金主题） */
@@ -52,16 +53,17 @@ function isMenuGroupActive(item: IMenuItem, selectedKeys?: string[]): boolean {
   return Boolean(selectedKeys?.includes(item.key) || selectedKeys?.some((k) => keyOfChildrens.includes(k)));
 }
 
-function getMenuGroupIconColorClass(opts: {
+export function getSideMenuIconColorClass(opts: {
   isLight: boolean;
   isActive: boolean;
   isBlueTheme: boolean;
   isCustomBg: boolean;
   isBgBlack: boolean;
+  isDarkMode?: boolean;
   /** 浮层内无侧栏 row 的 group-hover */
   forHoverPanel?: boolean;
 }): string {
-  const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, forHoverPanel } = opts;
+  const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, isDarkMode, forHoverPanel } = opts;
 
   if (forHoverPanel === true) {
     return '';
@@ -71,6 +73,9 @@ function getMenuGroupIconColorClass(opts: {
 
   if (isLight) {
     return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
+  }
+  if (isDarkMode) {
+    return isActive ? 'text-[#fff]' : 'text-link';
   }
   if (isActive) {
     if (isBlueTheme) {
@@ -155,12 +160,13 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const visibleChildren = item.children?.filter((c) => c && (c.type === 'tabs' ? c.children && c.children.length > 0 : true)) || [];
 
-  const iconColor = getMenuGroupIconColorClass({
+  const iconColor = getSideMenuIconColorClass({
     isLight: Boolean(isLight),
     isActive,
     isBlueTheme,
     isCustomBg: props.isCustomBg,
     isBgBlack,
+    isDarkMode: props.isDarkMode,
     forHoverPanel: false,
   });
 
@@ -296,6 +302,14 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
   const to = getMenuItemPath(item);
 
   const isSubTreeLayout = Boolean(isSub && !collapsed);
+  const iconColor = getSideMenuIconColorClass({
+    isLight: Boolean(isLight),
+    isActive: Boolean(isActive),
+    isBlueTheme,
+    isCustomBg,
+    isBgBlack: Boolean(isBgBlack),
+    isDarkMode: props.isDarkMode,
+  });
 
   const activeBg = isSubTreeLayout
     ? ''
@@ -398,17 +412,7 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
         <div
           className={cn(
             'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
-            isLight
-              ? isActive
-                ? 'text-[var(--fc-sidemenu-item-active-text)]'
-                : 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]'
-              : isActive
-              ? isCustomBg
-                ? isBgBlack
-                  ? 'text-[#ccccdc]'
-                  : 'text-[#fff]'
-                : 'text-title'
-              : '',
+            iconColor,
             !collapsed ? 'mr-2' : '',
           )}
         >
@@ -451,6 +455,14 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
   const { item, isSub = false, isCustomBg, collapsed, onClick, isLight } = props;
 
   const isSubTreeLayout = Boolean(isSub && !collapsed);
+  const iconColor = getSideMenuIconColorClass({
+    isLight: Boolean(isLight),
+    isActive: false,
+    isBlueTheme,
+    isCustomBg,
+    isBgBlack: Boolean(props.isBgBlack),
+    isDarkMode: props.isDarkMode,
+  });
 
   const rowClass = isSubTreeLayout
     ? cn(
@@ -476,7 +488,7 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
           className={cn(
             'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
             !collapsed ? 'mr-2' : '',
-            isLight ? 'text-[var(--fc-sidemenu-item-icon)] group-hover:text-[var(--fc-sidemenu-item-hover-text)]' : '',
+            iconColor,
           )}
         >
           {item.icon}
@@ -523,6 +535,23 @@ export default function MenuList(
   const isBlueTheme = localStorage.getItem('n9e-dark-mode') === '3';
   const isMac = /Mac/i.test(navigator.userAgent) || navigator.platform.includes('Mac');
   const isLight = !props.isCustomBg && !props.isGoldTheme && !isBlueTheme;
+  const isLandingActive = Boolean(props.selectedKeys?.includes('/landing'));
+  const landingIconColor = getSideMenuIconColorClass({
+    isLight,
+    isActive: isLandingActive,
+    isBlueTheme,
+    isCustomBg: props.isCustomBg,
+    isBgBlack: props.sideMenuBgColor === 'rgb(24,27,31)',
+    isDarkMode: props.isDarkMode,
+  });
+  const searchIconColor = getSideMenuIconColorClass({
+    isLight,
+    isActive: false,
+    isBlueTheme,
+    isCustomBg: props.isCustomBg,
+    isBgBlack: props.sideMenuBgColor === 'rgb(24,27,31)',
+    isDarkMode: props.isDarkMode,
+  });
 
   const chunks = useMemo(() => chunkMenusBySection(list), [list]);
 
@@ -588,7 +617,7 @@ export default function MenuList(
             <div
               className={cn(
                 'mr-2 inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
-                isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '',
+                landingIconColor,
               )}
             >
               <IconFont type='icon-ic_home_light' />
@@ -608,7 +637,7 @@ export default function MenuList(
             )}
           >
             <div
-              className={cn('inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center', !props.collapsed && 'mr-2', isLight ? 'text-[var(--fc-sidemenu-item-icon)]' : '')}
+              className={cn('inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center', !props.collapsed && 'mr-2', landingIconColor)}
             >
               <House strokeWidth={1} />
             </div>
@@ -630,7 +659,7 @@ export default function MenuList(
               className={cn(
                 'inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center children-icon2:h-[16px] children-icon2:w-[16px]',
                 !props.collapsed && 'mr-2',
-                isBlueTheme ? 'text-[#427AF4]' : isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? '' : 'text-[#6E6587]',
+                searchIconColor,
               )}
             >
               {<IconFont type='icon-ic_search_light' />}
@@ -655,12 +684,13 @@ export default function MenuList(
                   const hoverEnabled = props.collapsed && hoverChildren.length > 0;
                   const open = hoverEnabled && activeHoverGroupKey === menu.key;
                   const menuGroupActive = isMenuGroupActive(menu, props.selectedKeys);
-                  const hoverPanelIconClass = getMenuGroupIconColorClass({
+                  const hoverPanelIconClass = getSideMenuIconColorClass({
                     isLight,
                     isActive: menuGroupActive,
                     isBlueTheme,
                     isCustomBg: props.isCustomBg,
                     isBgBlack: props.sideMenuBgColor === 'rgb(24,27,31)',
+                    isDarkMode: props.isDarkMode,
                     forHoverPanel: true,
                   });
 

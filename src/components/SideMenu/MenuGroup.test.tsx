@@ -6,14 +6,27 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 // MenuList's module graph reaches `import.meta` (ESM-only), which ts-jest cannot parse.
-jest.mock('@/components/IconFont', () => ({ __esModule: true, default: () => null }));
+jest.mock('@/components/IconFont', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({ type }: { type: string }) => React.createElement('span', { 'data-icon-type': type }),
+  };
+});
 jest.mock('@/utils/constant', () => ({ __esModule: true, IS_PLUS: false, IS_ENT: false, N9E_PATHNAME: 'n9e' }));
 jest.mock('react-i18next', () => ({ __esModule: true, useTranslation: () => ({ t: (key: string) => key }) }));
 // antd/es and lucide-react ship untranspiled ESM, which jest does not transform inside node_modules.
 jest.mock('antd/es/_util/placements', () => ({ __esModule: true, default: () => ({ rightTop: {} }) }));
-jest.mock('lucide-react', () => ({ __esModule: true, House: () => null, Sparkles: () => null }));
+jest.mock('lucide-react', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    House: () => React.createElement('span', { 'data-icon-type': 'house' }),
+    Sparkles: () => React.createElement('span', { 'data-icon-type': 'sparkles' }),
+  };
+});
 
-import { MenuGroup } from './MenuList';
+import MenuList, { getSideMenuIconColorClass, MenuGroup } from './MenuList';
 import { IMenuItem } from './types';
 
 const baseProps = {
@@ -88,5 +101,98 @@ describe('collapsed MenuGroup row', () => {
     expect(groupRow?.tagName).toBe('DIV');
     const hrefs = Array.from(container.querySelectorAll('a')).map((a) => a.getAttribute('href'));
     expect(hrefs).toEqual(['/log/explorer']);
+  });
+});
+
+describe('side menu icon colors', () => {
+  const baseColorOptions = {
+    isLight: false,
+    isActive: false,
+    isBlueTheme: false,
+    isCustomBg: true,
+    isBgBlack: false,
+  };
+
+  it('uses the theme link color for inactive dark-mode icons and white for active icons', () => {
+    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true })).toBe('text-link');
+    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true, isActive: true })).toBe('text-[#fff]');
+  });
+
+  it('preserves the existing colors for light, blue, and custom side menu themes', () => {
+    expect(getSideMenuIconColorClass({ ...baseColorOptions, isLight: true, isCustomBg: false })).toContain('var(--fc-sidemenu-item-icon)');
+    expect(getSideMenuIconColorClass({ ...baseColorOptions, isBlueTheme: true, isCustomBg: false })).toBe('text-[#427AF4]');
+    expect(getSideMenuIconColorClass(baseColorOptions)).toBe('');
+  });
+
+  it.each([true, false])('applies the dark-mode rule to collapsed=%s top-level icon variants', (collapsed) => {
+    localStorage.removeItem('n9e-dark-mode');
+    const list: IMenuItem[] = [
+      {
+        key: '/flashai',
+        label: 'FlashAI',
+        icon: <span data-icon-type='flashai' />,
+        children: [],
+      },
+      {
+        key: 'dashboards-group',
+        label: 'menu.dashboards',
+        icon: <span data-icon-type='dashboard-group' />,
+        children: [{ key: '/dashboards', label: 'menu.dashboards' }],
+      },
+    ];
+    const { container } = render(
+      <MemoryRouter initialEntries={['/elsewhere']}>
+        <MenuList
+          list={list}
+          collapsed={collapsed}
+          selectedKeys={[]}
+          sideMenuBgColor='var(--fc-menu-dark-bg)'
+          isCustomBg
+          isDarkMode
+          quickMenuRef={{ current: { open: () => {} } }}
+        />
+      </MemoryRouter>,
+    );
+
+    for (const type of ['house', 'icon-ic_search_light', 'flashai', 'dashboard-group']) {
+      expect(container.querySelector(`[data-icon-type='${type}']`)?.parentElement).toHaveClass('text-link');
+    }
+  });
+
+  it.each([
+    ['/landing', 'house'],
+    ['/flashai', 'flashai'],
+    ['/dashboards', 'dashboard-group'],
+  ])('uses white for the active %s icon', (selectedKey, iconType) => {
+    localStorage.removeItem('n9e-dark-mode');
+    const list: IMenuItem[] = [
+      {
+        key: '/flashai',
+        label: 'FlashAI',
+        icon: <span data-icon-type='flashai' />,
+        children: [],
+      },
+      {
+        key: 'dashboards-group',
+        label: 'menu.dashboards',
+        icon: <span data-icon-type='dashboard-group' />,
+        children: [{ key: '/dashboards', label: 'menu.dashboards' }],
+      },
+    ];
+    const { container } = render(
+      <MemoryRouter initialEntries={[selectedKey]}>
+        <MenuList
+          list={list}
+          collapsed
+          selectedKeys={[selectedKey]}
+          sideMenuBgColor='var(--fc-menu-dark-bg)'
+          isCustomBg
+          isDarkMode
+          quickMenuRef={{ current: { open: () => {} } }}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(container.querySelector(`[data-icon-type='${iconType}']`)?.parentElement).toHaveClass('text-[#fff]');
   });
 });
