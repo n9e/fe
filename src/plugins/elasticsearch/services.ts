@@ -389,6 +389,7 @@ export function esSQLDsQuery(data: {
   cate: DatasourceCateEnum;
   datasource_id: number;
   query: {
+    ref?: string;
     sql: string;
     from: number; // unix timestamp
     to: number; // unix timestamp
