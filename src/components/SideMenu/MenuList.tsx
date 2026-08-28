@@ -96,6 +96,16 @@ export function getSideMenuIconColorClass(opts: {
 }
 
 /**
+ * The sidebar's base text color. A row rendered as an anchor has to carry it
+ * explicitly: a bare <a> takes the global link color instead of inheriting, and
+ * on the theme-color sidebar that link color is the very same purple as the
+ * background, so the row's icon turns invisible.
+ */
+function getSideMenuRowTextClass(opts: { isLight: boolean; isCustomBg: boolean }): string {
+  return opts.isLight ? 'text-[var(--fc-sidemenu-item-text)]' : opts.isCustomBg ? 'text-[#e6e6e8]' : 'text-main';
+}
+
+/**
  * Collapsed top-level rows show an icon only, so the label has to come from a tooltip.
  * Sub rows live inside the hover panel, which already renders their labels.
  */
@@ -192,6 +202,7 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
 
   const rowClassName = cn(
     'group flex h-8 cursor-pointer items-center justify-between rounded-md px-3 transition-colors duration-75',
+    getSideMenuRowTextClass({ isLight: Boolean(isLight), isCustomBg: props.isCustomBg }),
     rowHover,
     collapsed && isActive ? collapsedActiveBg : '',
   );
@@ -602,7 +613,7 @@ export default function MenuList(
 
   return (
     <>
-      <div className={cn('h-full pl-2 pr-4 pb-2.5', isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main')}>
+      <div className={cn('h-full pl-2 pr-4 pb-2.5', getSideMenuRowTextClass({ isLight, isCustomBg: props.isCustomBg }))}>
         {IS_ENT ? (
           <Link
             to='/landing'
@@ -610,7 +621,7 @@ export default function MenuList(
               'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
               'h-8 rounded-md',
               'px-3',
-              isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main',
+              getSideMenuRowTextClass({ isLight, isCustomBg: props.isCustomBg }),
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
             )}
           >
@@ -632,7 +643,7 @@ export default function MenuList(
               'group relative flex min-w-0 cursor-pointer items-center transition-colors transition-spacing duration-75',
               'h-8 rounded-md',
               'px-3',
-              isLight ? 'text-[var(--fc-sidemenu-item-text)]' : props.isCustomBg ? 'text-[#e6e6e8]' : 'text-main',
+              getSideMenuRowTextClass({ isLight, isCustomBg: props.isCustomBg }),
               isLight ? 'hover:bg-[var(--fc-sidemenu-item-hover-bg)]' : props.isCustomBg ? 'hover:bg-[rgba(204,204,220,0.12)]' : 'hover:bg-fc-200',
             )}
           >
