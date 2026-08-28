@@ -98,4 +98,23 @@ describe('replaceTemplateVariables', () => {
   test('should interpolate empty datasource variable as empty string', () => {
     expect(replaceTemplateVariables('${db}')).toBe('');
   });
+
+  test('should support { value } shaped scopedVars', () => {
+    expect(
+      replaceTemplateVariables('host=$host', {
+        scopedVars: { host: { value: 'api-1' } },
+      }),
+    ).toBe('host=api-1');
+  });
+
+  test('should support flat scopedVars values including undefined without crashing', () => {
+    expect(
+      replaceTemplateVariables('/x?name=${__field.name}&value=${__field.value}', {
+        scopedVars: {
+          '__field.name': 'cpu',
+          '__field.value': undefined,
+        },
+      } as unknown as { scopedVars: Record<string, { value?: string }> }),
+    ).toBe('/x?name=cpu&value=');
+  });
 });
