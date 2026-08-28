@@ -80,8 +80,7 @@ export default function List() {
       .then((res) => {
         setData({ list: res, loading: false, loaded: true });
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setData((prev) => ({ ...prev, loading: false }));
       });
   };
@@ -159,9 +158,7 @@ export default function List() {
         // 重新拉列表而不是本地打补丁：还要刷新「更新时间 / 更新人」两列
         featchData();
       })
-      .catch((err) => {
-        console.error(err);
-      })
+      .catch(() => {})
       .finally(() => {
         setTogglingIds((prev) => _.without(prev, record.id));
       });

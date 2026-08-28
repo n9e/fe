@@ -104,8 +104,7 @@ export default function PreviewMutedEvents(props: Props) {
                     setData(dat);
                   }
                 })
-                .catch((err) => {
-                  console.error(err);
+                .catch(() => {
                   setVisible(false);
                   setData([]);
                 });

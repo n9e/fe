@@ -205,7 +205,7 @@ export default function index() {
                             run();
                             message.success(t('common:success.import'));
                           })
-                          .catch(console.error);
+                          .catch(() => {});
                       },
                     });
                   }}
@@ -304,8 +304,8 @@ export default function index() {
                               mutate(newData);
                             })
                             // 请求失败的提示由 request.tsx 的全局 errorHandler 统一弹出，
-                            // 这里只记录并复位，不重复 toast
-                            .catch(console.error)
+                            // 这里只兜住 rejection，复位交给下面的 finally
+                            .catch(() => {})
                             .finally(() => {
                               setTogglingId(undefined);
                             });

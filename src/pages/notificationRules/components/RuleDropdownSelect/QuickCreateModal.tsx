@@ -52,8 +52,7 @@ export default function QuickCreateModal(props: Props) {
           form.setFieldsValue({ user_group_ids: [list[0].id] });
         }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         setTeams([]);
       });
   }, [visible]);

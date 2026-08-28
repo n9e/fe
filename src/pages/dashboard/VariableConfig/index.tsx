@@ -169,8 +169,8 @@ function index(props: IProps) {
                 );
                 options = datasourceCate === 'prometheus' ? _.sortBy(_.uniq(options)) : _.uniq(options);
                 options = _.map(options, _.toString); // 2024-09-03 统一将选项转为字符串，以防一些数据返回非字符串类型，比如 ES 的 status: 200
-              } catch (error) {
-                console.error(error);
+              } catch {
+                // 取不到选项就按空列表继续渲染
               }
             } else {
               try {
@@ -187,8 +187,8 @@ function index(props: IProps) {
                 });
                 options = _.sortBy(_.uniq(options));
                 options = _.map(options, _.toString);
-              } catch (error) {
-                console.error(error);
+              } catch {
+                // 取不到选项就按空列表继续渲染
               }
             }
 
@@ -287,8 +287,8 @@ function index(props: IProps) {
                 limit: 5000,
               });
               options = _.sortBy(_.uniq(_.map(res?.dat?.list, 'ident')));
-            } catch (error) {
-              console.error(error);
+            } catch {
+              // 取不到选项就按空列表继续渲染
             }
             const regFilterOptions = filterOptionsByReg(options, item.reg, result, idx, id);
             result[idx] = item;

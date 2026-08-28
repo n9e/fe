@@ -54,9 +54,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
             message.success(t('common:success.modify'));
             onFinished?.();
           })
-          .catch((err) => {
-            console.error(err);
-          }),
+          .catch(() => {}),
     });
   };
 
@@ -76,9 +74,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
           message.success(t('common:success.delete'));
           onFinished?.();
         })
-        .catch((err) => {
-          console.error(err);
-        });
+        .catch(() => {});
 
     Modal.confirm({
       title: enabled.length ? t('batch.delete_enabled_confirm', { count: enabled.length }) : t('batch.delete_confirm', { count: selectedRows.length }),

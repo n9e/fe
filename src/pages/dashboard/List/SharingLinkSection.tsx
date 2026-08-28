@@ -66,7 +66,6 @@ export default function SharingLinkSection(props: Props) {
         setTokens(res);
       })
       .catch((error) => {
-        console.error(error);
         message.error(t('sharing_link.fetch_failed'));
       });
   }, [boardId, t]);
@@ -102,7 +101,6 @@ export default function SharingLinkSection(props: Props) {
         fetchTokens();
       })
       .catch((error) => {
-        console.error(error);
         message.error(t('sharing_link.generate_failed'));
       })
       .finally(() => {
@@ -117,7 +115,6 @@ export default function SharingLinkSection(props: Props) {
         fetchTokens();
       })
       .catch((error) => {
-        console.error(error);
         message.error(t('sharing_link.revoke_failed'));
       });
   };

@@ -148,8 +148,8 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
           if (semver.gte(version, '7.17.0')) {
             intervalkey = 'fixed_interval';
           }
-        } catch (e) {
-          console.error(new Error('get es version error'));
+        } catch {
+          // 取不到版本就按默认的 interval 参数名走
         }
 
         _.forEach(batchDsParams, (item) => {

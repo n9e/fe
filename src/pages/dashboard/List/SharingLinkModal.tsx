@@ -36,8 +36,7 @@ function SharingLinkModal(props: IProps & ModalWrapProps) {
           setHostIdentState('blocked');
         }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         setHostIdentState('blocked');
       });
   }, [boardId]);

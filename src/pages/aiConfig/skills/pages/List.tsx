@@ -285,8 +285,7 @@ export default function List() {
             </div>
           ),
         });
-      } catch (error) {
-        console.error(error);
+      } catch {
         Modal.success({ title: t('git.update_success_title') });
       }
       await refreshSkill(skillId);

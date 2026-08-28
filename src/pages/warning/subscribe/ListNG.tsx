@@ -341,8 +341,7 @@ const Subscribe = (props: Props) => {
       .then((res) => {
         setNotificationRules(res);
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         setNotificationRules([]);
       });
   }, [notificationRulesAuthorized]);

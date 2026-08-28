@@ -122,8 +122,7 @@ export default function GitUpdateModal(props: Props) {
             </div>
           ),
         });
-      } catch (error) {
-        console.error(error);
+      } catch {
         Modal.success({ title: t('git.update_success_title') });
       }
       form.resetFields();

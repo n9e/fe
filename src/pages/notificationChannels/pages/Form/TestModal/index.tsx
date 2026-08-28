@@ -78,16 +78,14 @@ export default function TestModal(props: Props) {
       .then((res) => {
         setUserOptions(_.map(res?.dat?.list, (item: any) => ({ label: item.username, value: item.id })));
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setUserOptions([]);
       });
     getTeamInfoList({ limit: 5000, query: '' })
       .then((res) => {
         setTeamOptions(_.map(res?.dat, (item: any) => ({ label: item.name, value: item.id })));
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setTeamOptions([]);
       });
   }, [visible, contactKey]);
@@ -136,9 +134,7 @@ export default function TestModal(props: Props) {
         setResult(res);
         setView('result');
       })
-      .catch((err) => {
-        console.error(err);
-      })
+      .catch(() => {})
       .finally(() => {
         setLoading(false);
       });

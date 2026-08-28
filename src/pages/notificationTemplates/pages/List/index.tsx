@@ -47,8 +47,7 @@ export default function ListCpt() {
         setData(res);
         return res;
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setData([]);
         return [] as Item[];
       })

@@ -364,9 +364,8 @@ export default function Metric(props: Props) {
         setSeries(nextSeries);
         setDataRefresh(_.uniqueId('dataRefresh_'));
       })
-      .catch((err) => {
+      .catch(() => {
         if (requestId !== timeseriesRequestIdRef.current) return;
-        console.error('victorialogs dsQuery failed:', err);
         setSeries([]);
         setDataRefresh(_.uniqueId('dataRefresh_'));
       })

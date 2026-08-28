@@ -211,8 +211,7 @@ export default function TimeseriesCpt(props: Props) {
               setData({ frames, baseSeries });
               setDataRefresh(_.uniqueId('dataRefresh_'));
             })
-            .catch((err) => {
-              console.error('esSQLDsQuery failed:', err);
+            .catch(() => {
               setData({ frames: [[]], baseSeries: [] });
               setDataRefresh(_.uniqueId('dataRefresh_'));
             })

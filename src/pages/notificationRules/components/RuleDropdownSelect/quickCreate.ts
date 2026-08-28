@@ -326,8 +326,7 @@ export async function quickCreateNotifyRule(input: QuickCreateInput): Promise<Qu
   try {
     const templates = await getTemplateItems(String(channelId));
     templateId = templates?.[0]?.id;
-  } catch (error) {
-    console.error(error);
+  } catch {
     templateId = undefined;
   }
   return createRule({ name, userGroupIds, channelId, templateId, params: { [parsed.paramKey as string]: parsed.token } });

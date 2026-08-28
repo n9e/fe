@@ -200,8 +200,7 @@ export default function index(props: IProps) {
           setDisplayTimes(`${moment(start).format(TIME_FORMAT)} - ${moment(end).format(TIME_FORMAT)}`);
           setSeries(res || []);
         })
-        .catch((e) => {
-          console.error(e);
+        .catch(() => {
           setSeries([]);
         })
         .finally(() => {
@@ -279,7 +278,6 @@ export default function index(props: IProps) {
           tableEleNodes?.scrollTo(0, 0);
         })
         .catch((e: any) => {
-          console.error(e);
           if (e.name !== 'AbortError') {
             setErrorContent(_.get(e, 'message', t('datasource:es.queryFailed')));
             setData([]);

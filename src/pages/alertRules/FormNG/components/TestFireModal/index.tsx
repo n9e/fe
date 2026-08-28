@@ -85,9 +85,8 @@ export default function TestFireModal(props: Props) {
         setSeries(parsed);
         setSelectedSeriesIndex(parsed.length > 0 ? 0 : undefined);
       })
-      .catch((error) => {
+      .catch(() => {
         if (reqId !== seriesReqIdRef.current) return;
-        console.error(error);
         setSeries([]);
         setSelectedSeriesIndex(undefined);
       })
@@ -175,9 +174,7 @@ export default function TestFireModal(props: Props) {
         setResult(res.dat);
         setPhase('result');
       })
-      .catch((error) => {
-        console.error(error);
-      })
+      .catch(() => {})
       .finally(() => {
         setLoading(false);
       });

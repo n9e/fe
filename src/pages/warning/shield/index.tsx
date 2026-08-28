@@ -320,8 +320,8 @@ const Shield: React.FC = () => {
       if (success) {
         setCurrentShieldDataAll(dat || []);
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // 失败保持上一次的数据
     } finally {
       // 请求失败也要结束 loading，否则表格会一直转圈且空态引导永远不出现
       setLoading(false);

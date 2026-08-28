@@ -117,8 +117,8 @@ export default function List(props: IProps) {
                     try {
                       const result = await featchData({ current: 1, pageSize: tableProps.pagination.total });
                       tobeCopy = _.map(result.list, (item) => item.ident);
-                    } catch (error) {
-                      console.error(error);
+                    } catch {
+                      // 拉全量失败就沿用当前页已加载的 ident
                     }
                   } else if (key === 'selected') {
                     tobeCopy = selectedIdents;

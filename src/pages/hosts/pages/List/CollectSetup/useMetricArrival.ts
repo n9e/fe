@@ -117,8 +117,7 @@ export default function useMetricArrival(options: Options) {
           const result = _.get(data, 'result', []);
           return _.uniq(_.compact(_.map(result, (item) => _.get(item, ['metric', 'ident'])))) as string[];
         })
-        .catch((err) => {
-          console.error('probe metric arrival failed, datasource:', datasourceId, err);
+        .catch(() => {
           return null; // 单个数据源失败不建基线、不判失败，下一轮重试
         });
 

@@ -83,7 +83,6 @@ export default async function iotdbQuery(options: IOptions): Promise<Result> {
       }
       return Promise.resolve(resolveData);
     } catch (e) {
-      console.error(e);
       return Promise.reject(e);
     }
   }

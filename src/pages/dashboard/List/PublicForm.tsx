@@ -71,8 +71,7 @@ function PublicForm(props: IProps & ModalWrapProps) {
           });
           setConfigState('loaded');
         })
-        .catch((error) => {
-          console.error(error);
+        .catch(() => {
           setDashboardConfig({});
           setConfigState('failed');
         });
@@ -120,7 +119,6 @@ function PublicForm(props: IProps & ModalWrapProps) {
             revokeAll(tokens)
               .then(() => submit(values))
               .catch((error) => {
-                console.error(error);
                 return Promise.reject(error);
               }),
         });

@@ -43,7 +43,6 @@ export default function PagerDuty(props: Props) {
         integrationKeysCacheMap.current[val] = res?.integration_key || res?.key || '';
         return { val, ok: true };
       } catch (e) {
-        console.error('Failed to fetch integration key for', val, e);
         // 失败写占位，后面会从表单中移除该 id
         integrationKeysCacheMap.current[val] = '';
         return { val, ok: false, err: e };

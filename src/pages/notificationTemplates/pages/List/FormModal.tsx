@@ -68,9 +68,8 @@ export default function FormModal(props: IProps) {
     try {
       const channel = await getNotificationChannelById(simplified.id);
       return buildStarterContent(channel, starterTexts);
-    } catch (err) {
+    } catch {
       // 拿不到完整配置不该挡住新建，退回按 request_type 能推出多少算多少
-      console.error(err);
       return buildStarterContent(simplified, starterTexts);
     }
   };

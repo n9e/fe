@@ -126,8 +126,7 @@ export default function index(props: IProps) {
                 };
               }),
             };
-          } catch (e) {
-            console.error(e);
+          } catch {
             return {
               topNumber,
               topN: [],

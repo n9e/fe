@@ -159,15 +159,12 @@ export default function Field(props: Props) {
                 .then((res) => {
                   setTopnData(res);
                 })
-                .catch((e) => {
-                  console.error(e);
-                })
+                .catch(() => {})
                 .finally(() => {
                   setTopnLoading(false);
                 });
             });
-          } catch (e) {
-            console.error(e);
+          } catch {
             setTopnLoading(false);
           }
         } else {

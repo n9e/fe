@@ -201,8 +201,7 @@ export default function CollectSetup(props: Props) {
         setTomlText(text);
         setTemplateState('idle');
       })
-      .catch((err) => {
-        console.error('load collect template failed', err);
+      .catch(() => {
         setTomlText('');
         setTemplateState('error');
       });

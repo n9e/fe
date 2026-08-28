@@ -133,8 +133,7 @@ export default function Table(props: IProps) {
             colWidths: calcColWidthByData(newLogs),
           };
         })
-        .catch((err) => {
-          console.error('esLogsQuery failed:', err);
+        .catch(() => {
           loadTimeRef.current = null;
           setLogs({
             data: [],

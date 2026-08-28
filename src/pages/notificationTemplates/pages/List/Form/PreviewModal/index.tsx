@@ -52,8 +52,7 @@ export default function PreviewModal(props: Props) {
       .then((res) => {
         setPreviewData(res);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         setPreviewData(undefined);
       });
   }, [resultModalVisible, mode, _.join(selectedEventIds), mockEvent.severity, mockEvent.isRecovered]);

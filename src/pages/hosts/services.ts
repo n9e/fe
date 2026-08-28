@@ -111,10 +111,8 @@ export function getCategrafInstallMeta(): Promise<CategrafInstallMeta | null> {
           metric_datasource_ids: Array.isArray(dat.metric_datasource_ids) ? dat.metric_datasource_ids.filter((id) => typeof id === 'number') : [],
         } as CategrafInstallMeta;
       })
-      .catch((err) => {
-        // 按「不支持」降级，但必须留痕：这个探测决定入口是否出现，
-        // 静默失败会让一键安装按钮无声消失且毫无排查线索
-        console.error('categraf install meta probe failed', err);
+      .catch(() => {
+        // 按「不支持」降级：这个探测决定安装入口是否出现，失败时不缓存，下次进入再探一次
         categrafMetaPromise = undefined;
         return null;
       }); // 这个 promise 永不 reject
@@ -135,8 +133,7 @@ export function probeTargets(params?: { gids?: string; limit?: number }): Promis
     silence: true, // silence 会把原始 error 抛回来，所以下面必须自己 catch
   })
     .then((res) => ({ total: res?.dat?.total ?? 0, list: (res?.dat?.list ?? []) as Item[] }))
-    .catch((err) => {
-      console.error('probe targets failed', err);
+    .catch(() => {
       return null;
     });
 }

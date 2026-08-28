@@ -122,8 +122,7 @@ export default function index(props: Props) {
         .then((info) => {
           setSupportsSQL(info?.is_sql_supported ?? false);
         })
-        .catch((err) => {
-          console.error('getESClusterInfo failed:', err);
+        .catch(() => {
           setSupportsSQL(false);
         });
     }

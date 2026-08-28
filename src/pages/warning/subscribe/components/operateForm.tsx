@@ -187,8 +187,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
       .then((res) => {
         setNotificationRules(res);
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         setNotificationRules([]);
       })
       .finally(() => {
