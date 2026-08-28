@@ -16,6 +16,7 @@
  */
 import React from 'react';
 import { Modal, Form, Input, Select, Radio, message } from 'antd';
+import type { FormInstance } from 'antd/es/form';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useDeepCompareEffect } from 'ahooks';
@@ -42,30 +43,51 @@ interface DashboardFormValues {
   graphZoom?: IDashboardConfig['graphZoom'];
 }
 
+function setDashboardFormFields(form: FormInstance, initialValues: IDashboard, configs: IDashboardConfig) {
+  form.setFieldsValue({
+    name: initialValues?.name,
+    ident: initialValues?.ident,
+    tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
+    note: initialValues?.note,
+    graphTooltip: configs.graphTooltip || 'default',
+    graphZoom: configs.graphZoom || 'default',
+  });
+}
+
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
   const { visible, destroy, busiId, action, initialValues, dashboardSaveMode, onOk } = props;
   const [form] = Form.useForm();
 
   useDeepCompareEffect(() => {
-    if (initialValues?.id) {
+    if (!initialValues?.id) {
+      return;
+    }
+    // 详情页手动保存模式下可能存在未保存到服务端的本地配置，
+    // 优先使用调用方传入的 initialValues.configs，否则再从服务端获取
+    let configs = {} as IDashboardConfig;
+    const rawConfigs: unknown = initialValues?.configs;
+    if (typeof rawConfigs === 'string') {
+      try {
+        configs = JSONParse(rawConfigs) as IDashboardConfig;
+      } catch (e) {
+        console.warn(e);
+      }
+    } else if (rawConfigs != null && _.isPlainObject(rawConfigs)) {
+      configs = rawConfigs as IDashboardConfig;
+    }
+    if (_.isEmpty(configs)) {
       getDashboard(initialValues.id).then((res) => {
-        let configs = {} as IDashboardConfig;
         try {
           configs = JSONParse(res.configs) as IDashboardConfig;
         } catch (e) {
           console.warn(e);
         }
-        form.setFieldsValue({
-          name: initialValues?.name,
-          ident: initialValues?.ident,
-          tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
-          note: initialValues?.note,
-          graphTooltip: configs.graphTooltip || 'default',
-          graphZoom: configs.graphZoom || 'default',
-        });
+        setDashboardFormFields(form, initialValues, configs);
       });
+      return;
     }
+    setDashboardFormFields(form, initialValues, configs);
   }, [initialValues]);
 
   return (
