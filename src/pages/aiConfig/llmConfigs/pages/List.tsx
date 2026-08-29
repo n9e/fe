@@ -11,6 +11,7 @@ import EllipsisText from '@/components/EllipsisText';
 
 import { NS } from '../constants';
 import { getList, deleteItem, putItem } from '../services';
+import { isBuiltinConfig } from '../utils/isBuiltinConfig';
 import AddDrawer from './AddDrawer';
 import EditDrawer from './EditDrawer';
 
@@ -89,7 +90,7 @@ export default function List() {
                       icon: 'delete',
                       text: t('common:btn.delete'),
                       danger: true,
-                      disabled: record.enabled === true || record.created_by === 'system',
+                      disabled: record.enabled === true || isBuiltinConfig(record),
                       tooltip: record.enabled === true ? t('cannot_delete_when_enabled') : undefined,
                       onClick: () => {
                         Modal.confirm({
@@ -119,7 +120,7 @@ export default function List() {
                       <Space>
                         <span>{val}</span>
                         {record.is_default && <Tag color='purple'>{t('is_default')}</Tag>}
-                        {record.created_by === 'system' && (
+                        {isBuiltinConfig(record) && (
                           <Tag className='m-0' color='purple'>
                             {t('builtin')}
                           </Tag>
@@ -169,7 +170,7 @@ export default function List() {
                       <Switch
                         size='small'
                         checked={val}
-                        disabled={record.created_by === 'system'}
+                        disabled={isBuiltinConfig(record)}
                         onChange={(checked) => {
                           putItem(record.id, {
                             ...record,

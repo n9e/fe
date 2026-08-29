@@ -11,24 +11,24 @@ import './style.less';
 
 interface Props {
   form: FormInstance;
-  isSystemConfig?: boolean;
+  isBuiltin?: boolean;
 }
 
 export default function FormCpt(props: Props) {
   const { t } = useTranslation(NS);
-  const { form, isSystemConfig = false } = props;
+  const { form, isBuiltin = false } = props;
 
   return (
     <Form form={form} layout='vertical'>
       <Row gutter={SIZE}>
         <Col flex='auto'>
           <Form.Item label={t('name')} name='name' rules={[{ required: true }]}>
-            <Input disabled={isSystemConfig} placeholder={t('form.name_placeholder')} />
+            <Input disabled={isBuiltin} placeholder={t('form.name_placeholder')} />
           </Form.Item>
         </Col>
         <Col flex='none'>
           <Form.Item label={t('enabled')} name='enabled' valuePropName='checked' initialValue={true}>
-            <Switch disabled={isSystemConfig} />
+            <Switch disabled={isBuiltin} />
           </Form.Item>
         </Col>
         <Col flex='none'>
@@ -37,7 +37,7 @@ export default function FormCpt(props: Props) {
           </Form.Item>
         </Col>
       </Row>
-      <div className={isSystemConfig ? 'hidden' : undefined}>
+      <div className={isBuiltin ? 'hidden' : undefined}>
         <Form.Item label={t('description')} name='description'>
           <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} placeholder={t('form.description_placeholder')} />
         </Form.Item>

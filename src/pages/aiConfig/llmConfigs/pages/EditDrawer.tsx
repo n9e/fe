@@ -8,6 +8,7 @@ import { getItem, putItem, testConnection } from '../services';
 import type { Item } from '../types';
 import FormCpt from './Form';
 import { adjustFormValues, adjustSubmitValues } from '../utils/adjustFormValues';
+import { isBuiltinConfig } from '../utils/isBuiltinConfig';
 
 interface Props {
   id?: number;
@@ -22,7 +23,7 @@ export default function EditDrawer(props: Props) {
   const { visible, onOk, onClose, id } = props;
   const [form] = Form.useForm();
   const [item, setItem] = useState<Item>();
-  const isSystemConfig = item?.created_by === 'system';
+  const isBuiltin = isBuiltinConfig(item);
 
   const { loading } = useRequest(
     () => {
@@ -116,7 +117,7 @@ export default function EditDrawer(props: Props) {
       }
     >
       <Spin spinning={loading}>
-        <FormCpt form={form} isSystemConfig={isSystemConfig} />
+        <FormCpt form={form} isBuiltin={isBuiltin} />
       </Spin>
     </Drawer>
   );
