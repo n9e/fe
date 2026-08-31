@@ -1,27 +1,11 @@
-import React, { useRef, useEffect, useContext } from 'react';
-import classNames from 'classnames';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import i18next from 'i18next';
+import { KQLMonacoEditor } from '@fc-components/monaco-editor';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import { EditorView, highlightSpecialChars, keymap, ViewUpdate, placeholder as placeholderFunc } from '@codemirror/view';
-import { EditorState, Prec, Compartment } from '@codemirror/state';
-import { indentOnInput } from '@codemirror/language';
-import { history, historyKeymap } from '@codemirror/history';
-import { defaultKeymap, insertNewlineAndIndent } from '@codemirror/commands';
-import { bracketMatching } from '@codemirror/matchbrackets';
-import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
-import { highlightSelectionMatches } from '@codemirror/search';
-import { commentKeymap } from '@codemirror/comment';
-import { lintKeymap } from '@codemirror/lint';
-import { autocompletion, completionKeymap, startCompletion, closeCompletion } from '@codemirror/autocomplete';
 import { CommonStateContext } from '@/App';
-import { kQLExtension } from './kql';
-import { baseTheme, lightTheme, darkTheme, highlighter } from './CMTheme';
-import './style.less';
+import { HTTPClient as ESHTTPClient, CachedClient as ESCachedClient } from './client/elasticsearch';
 import './locale';
-
-const dynamicConfigCompartment = new Compartment();
-const QLExtension = new kQLExtension();
 
 export interface Props {
   datasourceValue?: number;
@@ -37,16 +21,29 @@ export interface Props {
   onChange?: (expr?: string) => void;
   executeQuery?: (expr?: string) => void;
   completeEnabled?: boolean;
-  trigger?: ('onBlur' | 'onEnter')[]; // 触发 onChang 的事件
+  trigger?: ('onBlur' | 'onEnter' | 'onChange')[]; // 触发 onChange 的事件
   placeholder?: string | false;
   onEnter?: () => void;
 }
 
-export default function index(props: Props) {
+// editor 类型与 @fc-components/monaco-editor 同源，避免类型冲突
+type KQLEditorProps = React.ComponentProps<typeof KQLMonacoEditor>;
+type MonacoEditorInstance = Parameters<NonNullable<KQLEditorProps['editorDidMount']>>[0];
+
+const handleEditorDidMount = (editor: MonacoEditorInstance) => {
+  // 点击输入框时唤起补全，与旧 CodeMirror 编辑器行为一致（旧编辑器点击总是重新触发补全）
+  editor.onMouseDown(() => {
+    setTimeout(() => {
+      editor.trigger('kql', 'editor.action.triggerSuggest', {});
+    }, 0);
+  });
+};
+
+export default function KQLInput(props: Props) {
   const {
     datasourceValue,
     query,
-    historicalRecords,
+    historicalRecords, // 新编辑器暂不支持历史记录补全，保留 prop 以兼容旧调用方
     value,
     onChange,
     executeQuery,
@@ -56,152 +53,89 @@ export default function index(props: Props) {
     placeholder,
     onEnter,
   } = props;
-  const containerRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef<EditorView | null>(null);
-  const executeQueryCallback = useRef(executeQuery);
-  const realValue = useRef<string | undefined>(value || '');
-  query.range = query.range || {
-    start: 'now-12h',
-    end: 'now',
-  };
   const { darkMode } = useContext(CommonStateContext);
-  const dynamicConfig = [darkMode ? darkTheme : lightTheme];
+  const [innerValue, setInnerValue] = useState<string | undefined>(value);
+  const innerValueRef = useRef<string | undefined>(value);
+  // KQLMonacoEditor 的 onBlur/onEnter 仅在挂载时注册一次，闭包会过期，
+  // 这里通过 ref 始终拿到最新的 props（与 react-monaco-editor 内部 onChangeRef 同一模式）
+  const latestPropsRef = useRef({ value, onChange, executeQuery, onEnter, trigger });
+  latestPropsRef.current = { value, onChange, executeQuery, onEnter, trigger };
 
   useEffect(() => {
-    executeQueryCallback.current = executeQuery;
-    QLExtension.activateCompletion(true).setComplete(
-      completeEnabled
-        ? {
-            remote: {
-              datasourceValue,
-              query,
-            },
-            historicalRecords,
-          }
-        : undefined,
-    );
-
-    const view = viewRef.current;
-    if (view === null) {
-      if (!containerRef.current) {
-        throw new Error('expected CodeMirror container element to exist');
-      }
-
-      const startState = EditorState.create({
-        doc: value,
-        extensions: [
-          baseTheme,
-          highlightSpecialChars(),
-          history(),
-          EditorState.allowMultipleSelections.of(true),
-          indentOnInput(),
-          bracketMatching(),
-          closeBrackets(),
-          autocompletion({
-            maxRenderedOptions: 10,
-          }),
-          highlightSelectionMatches(),
-          highlighter,
-          EditorView.lineWrapping,
-          keymap.of([...closeBracketsKeymap, ...defaultKeymap, ...historyKeymap, ...commentKeymap, ...completionKeymap, ...lintKeymap]),
-          placeholderFunc(placeholder === false || !placeholder ? i18next.t('kql:search') : placeholder),
-          QLExtension.asExtension(),
-          EditorView.editable.of(!readonly),
-          dynamicConfigCompartment.of(dynamicConfig),
-          keymap.of([
-            {
-              key: 'Escape',
-              run: (v: EditorView): boolean => {
-                v.contentDOM.blur();
-                return false;
-              },
-            },
-          ]),
-          Prec.override(
-            keymap.of([
-              {
-                key: 'Enter',
-                run: (v: EditorView): boolean => {
-                  if (typeof executeQueryCallback.current === 'function') {
-                    executeQueryCallback.current(realValue.current);
-                  }
-                  if (typeof onChange === 'function' && _.includes(trigger, 'onEnter')) {
-                    onChange(realValue.current);
-                  }
-                  if (onEnter) {
-                    onEnter();
-                  }
-                  return true;
-                },
-              },
-              {
-                key: 'Shift-Enter',
-                run: insertNewlineAndIndent,
-              },
-            ]),
-          ),
-          EditorView.updateListener.of((update: ViewUpdate): void => {
-            if (typeof onChange === 'function') {
-              const val = update.state.doc.toString();
-              if (val !== realValue.current) {
-                realValue.current = val;
-                if (_.includes(trigger, 'onChange')) {
-                  onChange(val);
-                }
-                if (val === '' && viewRef.current) {
-                  startCompletion(viewRef.current);
-                }
-              }
-            }
-          }),
-        ],
-      });
-
-      const view = new EditorView({
-        state: startState,
-        parent: containerRef.current,
-      });
-
-      viewRef.current = view;
-    }
-  }, [completeEnabled, datasourceValue, JSON.stringify(query), JSON.stringify(historicalRecords)]);
-
-  useEffect(() => {
-    if (realValue.current !== value) {
-      const oldValue = realValue.current;
-      realValue.current = value || '';
-      const view = viewRef.current;
-      if (view === null) {
-        return;
-      }
-      view.dispatch(
-        view.state.update({
-          changes: { from: 0, to: oldValue?.length || 0, insert: value },
-        }),
-      );
-    }
+    innerValueRef.current = value;
+    setInnerValue(value);
   }, [value]);
 
+  const queryKey = JSON.stringify(query);
+  const queryWithDefaultRange = useMemo(
+    () => ({
+      ...query,
+      range: query.range || {
+        start: 'now-12h',
+        end: 'now',
+      },
+    }),
+    [queryKey],
+  );
+
+  const completeClient = useMemo(() => {
+    if (!completeEnabled) {
+      return undefined;
+    }
+    return new ESCachedClient(
+      new ESHTTPClient({
+        datasourceValue,
+        query: queryWithDefaultRange,
+      }),
+    );
+  }, [completeEnabled, datasourceValue, JSON.stringify(queryWithDefaultRange)]);
+
+  const fetchFieldNames = useCallback(async () => {
+    if (!completeClient) return [];
+    return completeClient.fields();
+  }, [completeClient]);
+
+  const fetchFieldValues = useCallback(
+    async (fieldName: string) => {
+      if (!completeClient) return [];
+      return completeClient.fieldValues(fieldName);
+    },
+    [completeClient],
+  );
+
   return (
-    <div
-      className={classNames({ 'ant-input': true, readonly: readonly, 'kql-input': true })}
+    <KQLMonacoEditor
+      size='middle'
+      theme={darkMode ? 'dark' : 'light'}
+      value={innerValue}
+      readOnly={readonly}
+      maxHeight={100}
+      placeholder={placeholder === false || !placeholder ? i18next.t('kql:search') : placeholder}
+      enableAutocomplete={completeEnabled && !readonly}
+      fetchFieldNames={fetchFieldNames}
+      fetchFieldValues={fetchFieldValues}
+      editorDidMount={handleEditorDidMount}
+      onChange={(newValue: string) => {
+        innerValueRef.current = newValue;
+        setInnerValue(newValue);
+        if (_.includes(latestPropsRef.current.trigger, 'onChange')) {
+          latestPropsRef.current.onChange?.(newValue);
+        }
+      }}
       onBlur={() => {
-        if (typeof onChange === 'function' && _.includes(trigger, 'onBlur')) {
-          if (realValue.current !== value) {
-            onChange(realValue.current);
-          }
-        }
-        if (viewRef.current) {
-          closeCompletion(viewRef.current);
+        const { value, onChange, trigger } = latestPropsRef.current;
+        if (_.includes(trigger, 'onBlur') && innerValueRef.current !== value) {
+          onChange?.(innerValueRef.current);
         }
       }}
-      onClick={() => {
-        if (viewRef.current) {
-          startCompletion(viewRef.current);
+      onEnter={() => {
+        const { onChange, executeQuery, onEnter: onEnterProp, trigger } = latestPropsRef.current;
+        executeQuery?.(innerValueRef.current);
+        if (_.includes(trigger, 'onEnter')) {
+          onChange?.(innerValueRef.current);
         }
+        onEnterProp?.();
       }}
-    >
-      <div className='input-content' ref={containerRef} />
-    </div>
+    />
   );
 }
