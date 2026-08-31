@@ -8,11 +8,12 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import { AppError, AppErrorOwner } from '@/utils/appError';
 import { copy2ClipBoard } from '@/utils';
+import { canGoBackInApp } from '@/utils/pageError';
 
 import { getAdminList } from './services';
 import './locale';
 
-export type PageErrorStatus = 401 | 403 | 404 | 500;
+export type PageErrorStatus = 403 | 404 | 500;
 
 interface IProps {
   /** 状态码。传了 error 时以 error.status 为准 */
@@ -44,7 +45,6 @@ export default function PageError(props: IProps) {
   const [adminNames, setAdminNames] = useState<string[]>();
 
   const isForbidden = status === 403;
-  const isUnauthorized = status === 401;
   const isServerError = status >= 500 && status < 600;
 
   const ownerNames = useMemo(() => {
@@ -68,18 +68,17 @@ export default function PageError(props: IProps) {
   }, [isForbidden, error?.owners]);
 
   const subTitle = useMemo(() => {
-    if (isUnauthorized) return t('401.desc');
     if (isServerError) return t('500.desc');
     if (status === 404) return t('404.desc');
     // 403：能说清是哪个资源就说清，说不清就退回泛化文案
     const resourceName = error?.resource?.name;
     return resourceName ? t('403.desc_with_resource', { resource: resourceName }) : t('403.desc');
-  }, [status, isUnauthorized, isServerError, error?.resource?.name, t]);
+  }, [status, isServerError, error?.resource?.name, t]);
 
   const handleGoBack = () => {
     // 不能无脑 goBack：用户可能是直接粘贴链接进来的（没有上一页），
     // 也可能上一页就是同一个没权限的地址，退回去还会再错一次。
-    if (history.length > 1) {
+    if (canGoBackInApp()) {
       history.goBack();
     } else {
       history.replace(siteInfo?.home_page_url || '/');
@@ -103,25 +102,17 @@ export default function PageError(props: IProps) {
   }, [error, t]);
 
   const extra = _.compact([
-    isUnauthorized ? (
-      <Button key='login' type='primary' onClick={() => history.replace('/login')}>
-        {t('action.login')}
-      </Button>
-    ) : (
-      <Button key='back' type='primary' onClick={handleGoBack}>
-        {t('action.back')}
-      </Button>
-    ),
+    <Button key='back' type='primary' onClick={handleGoBack}>
+      {t('action.back')}
+    </Button>,
     isServerError && onRetry ? (
       <Button key='retry' onClick={onRetry}>
         {t('action.retry')}
       </Button>
     ) : null,
-    !isUnauthorized ? (
-      <Button key='home' onClick={() => history.replace(siteInfo?.home_page_url || '/')}>
-        {t('action.home')}
-      </Button>
-    ) : null,
+    <Button key='home' onClick={() => history.replace(siteInfo?.home_page_url || '/')}>
+      {t('action.home')}
+    </Button>,
   ]);
 
   return (

@@ -61,9 +61,11 @@ export interface NormalizeErrorParams {
   /** 响应体，两种信封都能吃：{ error: {...} } 和 n9e 的 { err, dat } */
   data?: any;
   action?: string;
+  /** 发起请求时所在的路径。不传则取当前地址 */
+  path?: string;
 }
 
-export function normalizeError({ status, message, data, action }: NormalizeErrorParams): AppError {
+export function normalizeError({ status, message, data, action, path }: NormalizeErrorParams): AppError {
   const raw = isPlainObject(data?.error) ? data.error : undefined;
   return {
     isAppError: true,
@@ -73,7 +75,7 @@ export function normalizeError({ status, message, data, action }: NormalizeError
     resource: isPlainObject(raw?.resource) ? raw.resource : undefined,
     requiredPerm: typeof raw?.required_perm === 'string' ? raw.required_perm : undefined,
     owners: Array.isArray(raw?.owners) ? raw.owners : undefined,
-    path: `${window.location.pathname}${window.location.search}`,
+    path: path || `${window.location.pathname}${window.location.search}`,
     from: document.referrer || undefined,
     action,
     occurredAt: Date.now(),

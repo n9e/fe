@@ -216,6 +216,9 @@ export default function ChatPanel(props: IAiChatProps) {
   const loadMessages = useCallback(
     async (targetChatId: string) => {
       const requestId = ++messageLoadRequestRef.current;
+      // 记下发起时所在的页面：请求还没回来用户就翻走了的话，这个 403 属于上一页，
+      // 不能拿它去顶掉用户当前正看着的那一屏
+      const sourcePathname = window.location.pathname;
       const isLatestRequest = () => requestId === messageLoadRequestRef.current && isCurrentChat(targetChatId);
       setMessagesLoading(true);
       try {
@@ -255,13 +258,14 @@ export default function ChatPanel(props: IAiChatProps) {
           setSubmitting(false);
           // 读不到这个会话（多半是没有 FlashAI 权限，或会话不属于自己）：
           // 这个请求带着 silence，不报出来就是白屏转圈，所以在这里显式交给整页错误
-          if ((error as { status?: number })?.status === 403) {
+          if ((error as { status?: number })?.status === 403 && window.location.pathname === sourcePathname) {
             reportPageError(
               normalizeError({
                 status: 403,
                 message: (error as { message?: string })?.message || '',
                 data: (error as { data?: any })?.data,
                 action: 'ai_chat.load_messages',
+                path: sourcePathname,
               }),
             );
             return;

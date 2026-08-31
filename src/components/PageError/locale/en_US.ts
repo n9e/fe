@@ -1,5 +1,4 @@
 const en_US = {
-  '401': { title: 'Session expired', desc: 'Your session has expired, please sign in again' },
   '403': {
     title: 'No permission',
     desc: 'You do not have permission to access this page',
@@ -9,7 +8,7 @@ const en_US = {
   },
   '404': { title: 'Page not found', desc: 'This page does not exist, it may have been deleted or the address is wrong' },
   '500': { title: 'Service unavailable', desc: 'The service is having trouble, please try again later' },
-  action: { back: 'Go back', home: 'Go home', retry: 'Retry', login: 'Sign in' },
+  action: { back: 'Go back', home: 'Go home', retry: 'Retry' },
   diagnosis: {
     title: 'Diagnostics',
     copy: 'Copy diagnostics',

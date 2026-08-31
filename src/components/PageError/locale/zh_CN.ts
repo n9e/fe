@@ -1,5 +1,4 @@
 const zh_CN = {
-  '401': { title: '登录已失效', desc: '登录状态已过期，请重新登录' },
   '403': {
     title: '无访问权限',
     desc: '您没有访问该页面的权限',
@@ -9,7 +8,7 @@ const zh_CN = {
   },
   '404': { title: '页面不存在', desc: '当前页面找不到了，可能已被删除或地址有误' },
   '500': { title: '服务开小差了', desc: '当前服务存在问题，请稍后重试' },
-  action: { back: '返回上一页', home: '回首页', retry: '重试', login: '去登录' },
+  action: { back: '返回上一页', home: '回首页', retry: '重试' },
   diagnosis: {
     title: '诊断信息',
     copy: '复制诊断信息',

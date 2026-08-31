@@ -44,3 +44,20 @@ export function usePageError(): AppError | null {
   }, []);
   return error;
 }
+
+/**
+ * 应用内是否发生过跳转。
+ *
+ * 「返回上一页」不能用 history.length 判断：那是整个标签页的会话长度，
+ * 用户先逛了别的网站再把 flashcat 地址粘贴进来，length 一样大于 1，
+ * 但点回退会直接离开本应用。这里只数应用内自己的跳转次数。
+ */
+let inAppNavigationCount = 0;
+
+export function markInAppNavigation() {
+  inAppNavigationCount += 1;
+}
+
+export function canGoBackInApp(): boolean {
+  return inAppNavigationCount > 1;
+}

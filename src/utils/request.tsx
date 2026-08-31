@@ -79,12 +79,19 @@ const processError = (res: any): string => {
  */
 const reportForbidden = (data: any, options: any) => {
   if (options?.silence) return;
+  // 请求发出后用户可能已经翻到别的页面了。这种迟到的 403 属于上一页，不能拿来
+  // 顶掉当前这一屏 —— errorHandler 里对通知也是同一套判断。
+  const sourcePathname = options?.sourcePathname;
+  if (sourcePathname && sourcePathname !== location.pathname) return;
   reportPageError(
     normalizeError({
       status: 403,
       message: processError(data),
       data,
       action: options?.action,
+      // 用发起请求时的路径，而不是响应回来时的 location：后者可能已经变了，
+      // 那样诊断信息里的「访问路径」会指向一个没出错的页面
+      path: sourcePathname,
     }),
   );
 };
@@ -235,6 +242,11 @@ request.interceptors.response.use(
       }
     } else if (
       status === 403 &&
+      // 只有这两组接口的 403 才接管整页。这正是改造前会整页跳 /403 的那一组，
+      // 范围保持不变：其余接口（/api/n9e/* 等）里混着不少可选请求，
+      // 比如仪表盘的标注 getAnnotations 没权限也不该把整个大盘顶掉。
+      // 放宽覆盖面要先逐个 call site 审一遍谁是「页面主请求」，那是另一件事。
+      (response.url.includes('/api/v1') || response.url.includes('/api/v2')) &&
       // 排除掉 proxy 的接口
       !_.includes(response.url, '/api/n9e-plus/proxy') &&
       !_.includes(response.url, '/api/n9e/proxy')
