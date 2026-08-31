@@ -12,6 +12,8 @@ import { IAiChatAction, IAiChatHistoryItem, IAiChatMessage, IAiChatMessageLocato
 import { applyStreamChunk, buildStreamingMessage, cn, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
 import { useAiChatStream } from './useStream';
 import { useAiChatContext } from './context';
+import { normalizeError } from '@/utils/appError';
+import { reportPageError } from '@/utils/pageError';
 
 const POLLING_INTERVAL = 3000;
 const STREAM_RENDER_INTERVAL = 50;
@@ -251,6 +253,19 @@ export default function ChatPanel(props: IAiChatProps) {
       } catch (error) {
         if (isLatestRequest()) {
           setSubmitting(false);
+          // 读不到这个会话（多半是没有 FlashAI 权限，或会话不属于自己）：
+          // 这个请求带着 silence，不报出来就是白屏转圈，所以在这里显式交给整页错误
+          if ((error as { status?: number })?.status === 403) {
+            reportPageError(
+              normalizeError({
+                status: 403,
+                message: (error as { message?: string })?.message || '',
+                data: (error as { data?: any })?.data,
+                action: 'ai_chat.load_messages',
+              }),
+            );
+            return;
+          }
           handleError(error instanceof Error ? error : new Error('load messages failed'));
         }
       } finally {

@@ -22,6 +22,7 @@ const ja_JP = {
     more_actions: '会話のその他の操作',
   },
   nightingale: {
+    share_fallback_notice: '元のページへのアクセス権限がないため、ここでは会話のみを表示しています',
     title: 'Nightingale AI',
     new_chat: '新規会話',
     sessions: '会話',
