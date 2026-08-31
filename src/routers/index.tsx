@@ -24,7 +24,7 @@ import { IS_ENT } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
 import i18next from 'i18next';
 import { normalizeError } from '@/utils/appError';
-import { clearPageError, reportPageError, usePageError } from '@/utils/pageError';
+import { clearPageError, markInAppNavigation, reportPageError, usePageError } from '@/utils/pageError';
 import { useAiChatShareFallback } from '@/components/AiChatNG/useShareFallback';
 // 路由页面统一懒加载：避免任意一个页面（如登录页）就把整棵页面依赖图 eager 拉起
 const Page403 = React.lazy(() => import('@/pages/notFound/Page403'));
@@ -137,6 +137,7 @@ export default function Content() {
 
   // 换页面等于用户已经离开了出错的那一屏，错误跟着作废
   useEffect(() => {
+    markInAppNavigation();
     clearPageError();
   }, [location.pathname]);
 
