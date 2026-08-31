@@ -86,11 +86,9 @@ export default function index(props: SelectProps & Props) {
               filter: [item.plugin_type, displayLabel, item.name].join(' '),
               originLabel: item.name,
               optionLabel: (
-                <div>
-                  <Space>
-                    <img src={datasourceCate?.logo} alt={displayLabel} height={16} />
-                    {item.name}
-                  </Space>
+                <div className='flex items-center gap-2 overflow-hidden'>
+                  <img src={datasourceCate?.logo} alt={displayLabel} height={16} className='shrink-0' />
+                  <span className='truncate'>{item.name}</span>
                 </div>
               ),
               label: (
