@@ -68,6 +68,12 @@ const zh_CN = {
     unit_year: '年',
     fetch_failed: '获取分享链接列表失败',
     generate_failed: '生成分享链接失败',
+    expire_out_of_range: '有效期超出可显示范围（等同于永不过期），建议注销后重新生成',
+    set_public_confirm_title: '同时把该仪表盘设为「公开-匿名访问」？',
+    set_public_confirm_content:
+      '分享链接一经生成即可免登录打开该仪表盘，其有效性与公开设置无关。若不同步公开设置，列表页的「公开」列不会显示为匿名访问，管理员将无从察觉该仪表盘已有对外链接。确认后会先把公开设置保存为「公开-匿名访问」，再生成链接。',
+    set_public_confirm_ok: '设为匿名访问并生成',
+    set_public_failed: '保存公开设置失败，未生成分享链接',
     revoke_failed: '注销分享链接失败',
     config_load_failed: '仪表盘配置读取失败，暂时无法设置匿名访问，请关闭后重试',
     revoke_all_confirm_title: '注销全部匿名分享链接？',
