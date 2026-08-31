@@ -12,7 +12,7 @@ export function getOptionsFromLocalstorage(logsOptionsCacheKey: string, options?
 
   if (optionsLocalStorage) {
     try {
-      return JSON.parse(optionsLocalStorage);
+      return { ...defaultOptions, ...JSON.parse(optionsLocalStorage) };
     } catch (e) {
       return defaultOptions;
     }
