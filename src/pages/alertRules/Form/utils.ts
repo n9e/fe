@@ -97,6 +97,7 @@ export function processFormValues(values) {
   }
   if (values?.rule_config?.queries) {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
+      const isESDSLQuery = ['elasticsearch', 'opensearch'].includes(values.cate) && item.syntax !== 'sql';
       let parsedRange;
       if (item.range) {
         parsedRange = mapOptionToRelativeTimeRange(item.range);
@@ -110,8 +111,15 @@ export function processFormValues(values) {
       if (_.isArray(item?.keys?.metricKey)) {
         item.keys.metricKey = _.join(item.keys.metricKey, ' ');
       }
+      // 提交前剥离表单态字段：
+      // - interval_unit/range 换算成引擎消费的秒数和 from/to；
+      // - builderConfig 是 Builder 的草稿配置，SQL 才是编译产物，不落库；
+      // - editMode 记录 SQL 的 Builder/Code 视图状态，需随规则配置保存，再次编辑时才能还原；
+      //   查询接口（数据预览、模拟触发等）不消费它，由查询侧自行构造 payload。
+      // ES/OpenSearch 的 DSL 查询（syntax !== 'sql'）还会清除 SQL 模式遗留的 sql/keys，
+      // 避免两套语义并存。
       return {
-        ..._.omit(item, ['interval_unit', 'range']),
+        ..._.omit(item, ['interval_unit', 'range', 'builderConfig', ...(isESDSLQuery ? ['sql', 'keys'] : [])]),
         interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
         from: parsedRange?.start,
         to: parsedRange?.end,

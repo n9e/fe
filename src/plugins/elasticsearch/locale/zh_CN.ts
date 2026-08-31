@@ -1,5 +1,7 @@
 const zh_CN = {
   query: {
+    range: '查询区间',
+    sql_required: 'SQL 不能为空',
     mode: '检索方式',
     mode_indices: 'Indices',
     mode_index_patterns: 'Index patterns',
@@ -37,6 +39,12 @@ const zh_CN = {
       table: '表格',
       timeseries: '时序图',
     },
+    dashboard: {
+      mode: {
+        timeSeries: '时序数据',
+        table: '非时序数据',
+      },
+    },
     add_to: {
       btn: '添加到',
       recording_rule: '录制规则',
@@ -44,6 +52,11 @@ const zh_CN = {
     },
   },
   builder: {
+    title: '构建器',
+    code: '代码',
+    open_builder: '打开构建器',
+    switch_to_builder_confirm_title: '切换至构建器',
+    switch_to_builder_confirm_content: '切换后将清空当前 SQL 及构建器配置。',
     to_pinned_btn: '固定',
     to_unpinned_btn: '取消固定',
     filters: {

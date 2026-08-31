@@ -127,10 +127,20 @@ const hasQueryText = (target: ITarget, key: 'query' | 'sql' = 'query') => {
   return typeof value === 'string' && value.trim().length > 0;
 };
 
+const hasESValueKey = (keys: unknown) => {
+  if (!keys || typeof keys !== 'object' || Array.isArray(keys) || !('valueKey' in keys)) return false;
+  const valueKey = keys.valueKey;
+  return Array.isArray(valueKey) ? valueKey.length > 0 : typeof valueKey === 'string' && valueKey.trim().length > 0;
+};
+
 // 沿用旧版各数据源查询函数的静默短路条件：未就绪的 target 不进入 query-batch，且不触发表单校验提示。
 const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number], (target: ITarget) => boolean>> = {
   elasticsearch: (target) => {
     const query = target.query ?? {};
+    if (query.syntax === 'sql') {
+      if (query.mode === 'raw') return Boolean(typeof query.sql === 'string' && query.sql.trim());
+      return Boolean(typeof query.sql === 'string' && query.sql.trim() && hasESValueKey(query.keys));
+    }
     return query.index_type === 'index_pattern' ? Boolean(query.index_pattern) : Boolean(query.index && query.date_field);
   },
   opensearch: (target) => {
@@ -164,9 +174,14 @@ const serializeTarget = (target: ITarget, cate: string) => {
   if (target.queries) {
     payload.queries = _.cloneDeep(target.queries);
   }
+  // Builder configuration is editor state used to reopen the builder. The
+  // datasource query APIs only need the generated query fields.
+  delete payload.builderConfig;
   if (_.includes(['elasticsearch', 'opensearch'], cate)) {
-    payload.filter_language = payload.filter_language ?? (payload.syntax === 'kuery' || payload.syntax === 'kql' ? 'kql' : 'lucene');
-    delete payload.syntax;
+    if (payload.syntax !== 'sql') {
+      payload.filter_language = payload.filter_language ?? (payload.syntax === 'kuery' || payload.syntax === 'kql' ? 'kql' : 'lucene');
+      delete payload.syntax;
+    }
   }
   return payload;
 };
