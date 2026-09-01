@@ -68,6 +68,12 @@ const en_US = {
     unit_year: 'Year(s)',
     fetch_failed: 'Failed to load sharing links',
     generate_failed: 'Failed to generate sharing link',
+    expire_out_of_range: 'Expiration is beyond the displayable range (effectively never expires); revoke it and generate a new one',
+    set_public_confirm_title: 'Also set this dashboard to "Public - Anonymous access"?',
+    set_public_confirm_content:
+      'A sharing link opens this dashboard without login as soon as it is generated, and stays valid regardless of the public setting. If the public setting is not updated, the "Public" column in the list will not show anonymous access, leaving administrators unaware that the dashboard is exposed. Confirming saves the public setting as "Public - Anonymous access" first, then generates the link.',
+    set_public_confirm_ok: 'Set anonymous and generate',
+    set_public_failed: 'Failed to save the public setting; no sharing link was generated',
     revoke_failed: 'Failed to revoke sharing link',
     config_load_failed: 'Could not read the dashboard config, so anonymous access cannot be set up right now. Please close and retry',
     revoke_all_confirm_title: 'Revoke all sharing links?',

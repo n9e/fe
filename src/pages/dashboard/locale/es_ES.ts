@@ -68,6 +68,12 @@ const es_ES = {
     "unit_year": "Años",
     "fetch_failed": "Error al cargar la lista de enlaces para compartir",
     "generate_failed": "Error al generar el enlace para compartir",
+    "expire_out_of_range": "La caducidad supera el rango que puede mostrarse (equivale a no caducar nunca); revócalo y genera uno nuevo",
+    "set_public_confirm_title": "¿Establecer también este panel como «Público - Acceso anónimo»?",
+    "set_public_confirm_content":
+      "Un enlace de uso compartido abre este panel sin iniciar sesión en cuanto se genera y sigue siendo válido con independencia del ajuste de publicación. Si no se actualiza ese ajuste, la columna «Público» de la lista no mostrará acceso anónimo y los administradores no sabrán que el panel está expuesto. Al confirmar se guarda primero el ajuste como «Público - Acceso anónimo» y después se genera el enlace.",
+    "set_public_confirm_ok": "Activar acceso anónimo y generar",
+    "set_public_failed": "No se pudo guardar el ajuste de publicación; no se generó ningún enlace",
     "revoke_failed": "Error al revocar el enlace para compartir",
     "config_load_failed": "Error al leer la configuración del dashboard; por ahora no se puede establecer el acceso anónimo. Ciérralo e inténtalo de nuevo",
     "revoke_all_confirm_title": "¿Revocar todos los enlaces anónimos para compartir?",

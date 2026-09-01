@@ -68,6 +68,12 @@ const fr_FR = {
     "unit_year": "ans",
     "fetch_failed": "Impossible de récupérer la liste des liens de partage",
     "generate_failed": "Impossible de créer le lien de partage",
+    "expire_out_of_range": "La date d'expiration dépasse la plage affichable (équivaut à sans expiration) ; révoquez le lien et régénérez-le",
+    "set_public_confirm_title": "Définir aussi ce tableau de bord sur « Public - Accès anonyme » ?",
+    "set_public_confirm_content":
+      "Un lien de partage ouvre ce tableau de bord sans connexion dès qu'il est généré et reste valide indépendamment du réglage de publication. Si ce réglage n'est pas mis à jour, la colonne « Public » de la liste n'affichera pas l'accès anonyme et les administrateurs ignoreront que le tableau de bord est exposé. En confirmant, le réglage est d'abord enregistré sur « Public - Accès anonyme », puis le lien est généré.",
+    "set_public_confirm_ok": "Activer l'accès anonyme et générer",
+    "set_public_failed": "Échec de l'enregistrement du réglage de publication ; aucun lien de partage n'a été généré",
     "revoke_failed": "Impossible de révoquer le lien de partage",
     "config_load_failed": "La configuration du tableau de bord n'a pas pu être lue ; l'accès anonyme ne peut pas être défini. Fermez et réessayez",
     "revoke_all_confirm_title": "Révoquer tous les liens de partage anonymes ?",
