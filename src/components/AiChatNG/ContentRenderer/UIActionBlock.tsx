@@ -50,7 +50,10 @@ export default function UIActionBlock({ segment }: { segment: UIActionCallSegmen
         <div className='text-sm text-hint'>{t('ui_action.generating')}</div>
       ) : !call ? (
         <>
-          <div className='text-sm text-error'>{t('ui_action.invalid_json')}</div>
+          <div className='text-sm text-error'>
+            {t('ui_action.invalid_json')}
+            {segment.error ? `：${segment.error}` : ''}
+          </div>
           <RawBlock content={segment.raw} />
         </>
       ) : (

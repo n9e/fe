@@ -49,7 +49,8 @@ describe('UIActionBlock', () => {
   it('shows the raw text when the block is closed but unparseable', () => {
     render(<UIActionBlock segment={segment({ call: null, raw: '{"action":', error: 'bad json' })} />);
 
-    expect(screen.getByText('ui_action.invalid_json')).toBeInTheDocument();
+    expect(screen.getByText(/ui_action\.invalid_json/)).toBeInTheDocument();
+    expect(screen.getByText(/bad json/)).toBeInTheDocument();
     expect(screen.getByText('{"action":')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
