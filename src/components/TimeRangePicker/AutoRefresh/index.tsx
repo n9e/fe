@@ -35,7 +35,7 @@ interface IProps {
 
 function Refresh(props: IProps, ref) {
   const intervalSecondsCache = props.localKey ? _.toNumber(window.localStorage.getItem(props.localKey)) : 0;
-  const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds || intervalSecondsCache);
+  const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds ?? intervalSecondsCache);
   const [visible, setVisible] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | undefined>();
   const removeRef = useRef(false);
@@ -86,7 +86,7 @@ function Refresh(props: IProps, ref) {
   }, []);
 
   useEffect(() => {
-    setIntervalSeconds(props.intervalSeconds || intervalSecondsCache);
+    setIntervalSeconds(props.intervalSeconds ?? intervalSecondsCache);
   }, [props.intervalSeconds]);
 
   useImperativeHandle(ref, () => ({
