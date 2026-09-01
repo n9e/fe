@@ -60,6 +60,17 @@ const fr_FR = {
     "execute": "Exécuter la requête",
     "execute_disabled": "Aucun callback d'exécution n'a été fourni : seule la copie est possible"
   },
+  "ui_action": {
+    "title": "Action de page",
+    "generating": "Génération de l’action de page…",
+    "invalid_json": "Cette action n’est pas un JSON valide et ne peut pas être exécutée",
+    "unsupported": "La page actuelle ne propose pas l’action « {{name}} »",
+    "args": "Paramètres",
+    "execute": "Exécuter",
+    "executing": "Exécution",
+    "succeeded": "Exécutée",
+    "failed": "Échec de l’exécution"
+  },
   "action": {
     "query_generator": "Générer la requête"
   },

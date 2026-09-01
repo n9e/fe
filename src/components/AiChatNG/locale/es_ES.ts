@@ -60,6 +60,17 @@ const es_ES = {
     "execute": "Ejecutar consulta",
     "execute_disabled": "No se proporcionó un callback de ejecución; solo se podrá copiar"
   },
+  "ui_action": {
+    "title": "Acción de página",
+    "generating": "Generando la acción de página…",
+    "invalid_json": "Esta acción no es un JSON válido y no se puede ejecutar",
+    "unsupported": "La página actual no ofrece la acción \"{{name}}\"",
+    "args": "Parámetros",
+    "execute": "Ejecutar",
+    "executing": "Ejecutando",
+    "succeeded": "Ejecutada",
+    "failed": "Error al ejecutar"
+  },
   "action": {
     "query_generator": "Generar consulta"
   },

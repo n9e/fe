@@ -60,6 +60,17 @@ const id_ID = {
     "execute": "Jalankan kueri",
     "execute_disabled": "Tidak ada callback eksekusi yang diberikan, jadi hanya penyalinan yang tersedia"
   },
+  "ui_action": {
+    "title": "Aksi halaman",
+    "generating": "Membuat aksi halaman…",
+    "invalid_json": "Aksi ini bukan JSON yang valid dan tidak dapat dijalankan",
+    "unsupported": "Halaman saat ini tidak menyediakan aksi \"{{name}}\"",
+    "args": "Parameter",
+    "execute": "Jalankan",
+    "executing": "Menjalankan",
+    "succeeded": "Berhasil dijalankan",
+    "failed": "Gagal dijalankan"
+  },
   "action": {
     "query_generator": "Buat kueri"
   },

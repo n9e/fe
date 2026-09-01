@@ -60,6 +60,17 @@ const zh_CN = {
     execute: '执行查询',
     execute_disabled: '未传入执行回调，将仅支持复制',
   },
+  ui_action: {
+    title: '页面操作',
+    generating: '正在生成页面操作…',
+    invalid_json: '这段页面操作不是合法的 JSON，无法执行',
+    unsupported: '当前页面没有提供「{{name}}」这个操作',
+    args: '参数',
+    execute: '执行',
+    executing: '执行中',
+    succeeded: '已执行',
+    failed: '执行失败'
+  },
   action: {
     query_generator: '生成查询语句',
   },

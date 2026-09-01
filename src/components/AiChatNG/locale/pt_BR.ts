@@ -60,6 +60,17 @@ const pt_BR = {
     "execute": "Executar consulta",
     "execute_disabled": "Nenhum callback de execução foi fornecido; apenas a cópia estará disponível"
   },
+  "ui_action": {
+    "title": "Ação na página",
+    "generating": "Gerando a ação da página…",
+    "invalid_json": "Esta ação não é um JSON válido e não pode ser executada",
+    "unsupported": "A página atual não oferece a ação \"{{name}}\"",
+    "args": "Parâmetros",
+    "execute": "Executar",
+    "executing": "Executando",
+    "succeeded": "Executada",
+    "failed": "Falha na execução"
+  },
   "action": {
     "query_generator": "Gerar consulta"
   },

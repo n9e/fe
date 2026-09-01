@@ -41,6 +41,7 @@
     "@fc-components/monaco-editor": "^0.5.12",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
     "@fc-plot/ts-graph": "^0.27.2",
+    "@flashcatcloud/ai-kit": "^0.1.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@turf/bbox": "^6.5.0",

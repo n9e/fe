@@ -60,6 +60,17 @@ const ja_JP = {
     execute: 'クエリを実行',
     execute_disabled: '実行コールバックが未設定のため、コピーのみ可能です',
   },
+  ui_action: {
+    title: 'ページ操作',
+    generating: 'ページ操作を生成しています…',
+    invalid_json: 'このページ操作は有効な JSON ではないため実行できません',
+    unsupported: '現在のページには「{{name}}」という操作がありません',
+    args: 'パラメータ',
+    execute: '実行',
+    executing: '実行中',
+    succeeded: '実行しました',
+    failed: '実行に失敗しました'
+  },
   action: {
     query_generator: 'クエリを生成',
   },

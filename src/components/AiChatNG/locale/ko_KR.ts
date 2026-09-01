@@ -60,6 +60,17 @@ const ko_KR = {
     "execute": "쿼리 실행",
     "execute_disabled": "실행 콜백이 전달되지 않아 복사만 지원합니다"
   },
+  "ui_action": {
+    "title": "페이지 작업",
+    "generating": "페이지 작업을 생성하는 중…",
+    "invalid_json": "이 페이지 작업은 올바른 JSON이 아니므로 실행할 수 없습니다",
+    "unsupported": "현재 페이지에는 \"{{name}}\" 작업이 없습니다",
+    "args": "매개변수",
+    "execute": "실행",
+    "executing": "실행 중",
+    "succeeded": "실행됨",
+    "failed": "실행 실패"
+  },
   "action": {
     "query_generator": "쿼리문 생성"
   },

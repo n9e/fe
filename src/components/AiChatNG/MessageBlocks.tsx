@@ -11,8 +11,10 @@ import QueryContentBlock from './ContentRenderer/QueryContentBlock';
 import FormSelectContentBlock from './ContentRenderer/FormSelectContentBlock';
 import AlertRuleContentBlock from './ContentRenderer/AlertRuleContentBlock';
 import DashboardContentBlock from './ContentRenderer/DashboardContentBlock';
+import UIActionBlock from './ContentRenderer/UIActionBlock';
 import { NAME_SPACE } from './constants';
 import StreamingMarkdown from './StreamingMarkdown';
+import { splitUIActionSegments } from './uiActionMessage';
 
 function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
   const fullText = `${prefix}${brand}`;
@@ -127,9 +129,32 @@ interface IMarkdownBlockProps {
 }
 
 function MarkdownBlockComponent({ response, isStreaming }: IMarkdownBlockProps) {
+  const content = response.content || '';
+  const streaming = !!isStreaming && !response.is_finish;
+  // A reply may propose a page action inside its prose. The prose still renders
+  // as markdown; the action becomes a card the user can run.
+  const segments = React.useMemo(() => splitUIActionSegments(content), [content]);
+
+  if (segments.length <= 1 && segments[0]?.kind !== 'action') {
+    return (
+      <div className='rounded-lg border border-transparent bg-transparent text-main'>
+        <StreamingMarkdown content={content} isStreaming={streaming} />
+      </div>
+    );
+  }
+
   return (
-    <div className='rounded-lg border border-transparent bg-transparent text-main'>
-      <StreamingMarkdown content={response.content || ''} isStreaming={!!isStreaming && !response.is_finish} />
+    <div className='space-y-2.5'>
+      {segments.map((segment, index) =>
+        segment.kind === 'action' ? (
+          <UIActionBlock key={index} segment={segment} />
+        ) : (
+          <div key={index} className='rounded-lg border border-transparent bg-transparent text-main'>
+            {/* Only the last segment can still be growing; the ones a fence has already closed are final. */}
+            <StreamingMarkdown content={segment.content} isStreaming={streaming && index === segments.length - 1} />
+          </div>
+        ),
+      )}
     </div>
   );
 }

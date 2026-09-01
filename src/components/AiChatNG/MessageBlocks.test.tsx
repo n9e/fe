@@ -24,6 +24,7 @@ jest.mock('./ContentRenderer/QueryContentBlock', () => () => null);
 jest.mock('./ContentRenderer/FormSelectContentBlock', () => () => null);
 jest.mock('./ContentRenderer/AlertRuleContentBlock', () => () => null);
 jest.mock('./ContentRenderer/DashboardContentBlock', () => () => null);
+jest.mock('./ContentRenderer/UIActionBlock', () => () => null);
 
 const responseBlocksProps = {
   isStreaming: false,

@@ -60,6 +60,17 @@ const zh_HK = {
     execute: '執行查詢',
     execute_disabled: '未傳入執行回調，僅支持複製',
   },
+  ui_action: {
+    title: '頁面操作',
+    generating: '正在產生頁面操作…',
+    invalid_json: '這段頁面操作不是合法的 JSON，無法執行',
+    unsupported: '目前頁面沒有提供「{{name}}」這個操作',
+    args: '參數',
+    execute: '執行',
+    executing: '執行中',
+    succeeded: '已執行',
+    failed: '執行失敗'
+  },
   action: {
     query_generator: '生成查詢語句',
   },

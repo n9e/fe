@@ -60,6 +60,17 @@ const en_US = {
     execute: 'Run query',
     execute_disabled: 'Execution callback is not provided. Copy only.',
   },
+  ui_action: {
+    title: 'Page action',
+    generating: 'Writing the page action…',
+    invalid_json: 'This page action is not valid JSON and cannot be run',
+    unsupported: 'The current page does not provide the action "{{name}}"',
+    args: 'Arguments',
+    execute: 'Run',
+    executing: 'Running',
+    succeeded: 'Done',
+    failed: 'Failed'
+  },
   action: {
     query_generator: 'Generate query',
   },
