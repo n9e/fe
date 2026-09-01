@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Result, Typography } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { CommonStateContext } from '@/App';
 import { AppError, AppErrorOwner } from '@/utils/appError';
 import { copy2ClipBoard } from '@/utils';
 import { canGoBackInApp } from '@/utils/pageError';
@@ -31,6 +30,12 @@ function toResultStatus(status: number) {
   return 'error' as const;
 }
 
+/** 「找谁要权限」最多列这么多人：真实环境里管理员可能有几十个，全列出来既没法用，也等于把用户名单摊在错误页上 */
+const MAX_SHOWN_OWNERS = 3;
+
+/** 回首页统一交给根路由：首页地址由 siteInfo 决定，那套判断只该有一处 */
+const HOME_PATH = '/';
+
 function formatOwner(owner: AppErrorOwner) {
   return owner.nickname ? `${owner.nickname}(${owner.username})` : owner.username;
 }
@@ -40,7 +45,6 @@ export default function PageError(props: IProps) {
   const status = error?.status ?? props.status ?? 404;
   const { t } = useTranslation('PageError');
   const history = useHistory();
-  const { siteInfo } = useContext(CommonStateContext);
   const [collapsed, setCollapsed] = useState(true);
   const [adminNames, setAdminNames] = useState<string[]>();
 
@@ -75,13 +79,19 @@ export default function PageError(props: IProps) {
     return resourceName ? t('403.desc_with_resource', { resource: resourceName }) : t('403.desc');
   }, [status, isServerError, error?.resource?.name, t]);
 
+  const ownersText = useMemo(() => {
+    const shown = _.take(ownerNames, MAX_SHOWN_OWNERS);
+    const rest = (ownerNames?.length ?? 0) - shown.length;
+    return rest > 0 ? `${shown.join('、')}${t('403.owners_more', { count: rest })}` : shown.join('、');
+  }, [ownerNames, t]);
+
   const handleGoBack = () => {
     // 不能无脑 goBack：用户可能是直接粘贴链接进来的（没有上一页），
     // 也可能上一页就是同一个没权限的地址，退回去还会再错一次。
     if (canGoBackInApp()) {
       history.goBack();
     } else {
-      history.replace(siteInfo?.home_page_url || '/');
+      history.replace(HOME_PATH);
     }
   };
 
@@ -110,7 +120,7 @@ export default function PageError(props: IProps) {
         {t('action.retry')}
       </Button>
     ) : null,
-    <Button key='home' onClick={() => history.replace(siteInfo?.home_page_url || '/')}>
+    <Button key='home' onClick={() => history.replace(HOME_PATH)}>
       {t('action.home')}
     </Button>,
   ]);
@@ -123,7 +133,7 @@ export default function PageError(props: IProps) {
         subTitle={
           <div style={{ maxWidth: 560, margin: '0 auto' }}>
             <div>{subTitle}</div>
-            {isForbidden && <div style={{ marginTop: 8 }}>{_.isEmpty(ownerNames) ? t('403.contact_admin') : t('403.contact_owners', { owners: ownerNames!.join('、') })}</div>}
+            {isForbidden && <div style={{ marginTop: 8 }}>{_.isEmpty(ownerNames) ? t('403.contact_admin') : t('403.contact_owners', { owners: ownersText })}</div>}
             {!_.isEmpty(diagnosis) && (
               <div style={{ marginTop: 16, textAlign: 'left', color: 'var(--fc-text-4)' }}>
                 <Typography.Link onClick={() => setCollapsed(!collapsed)}>

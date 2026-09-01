@@ -5,6 +5,7 @@ const ja_JP = {
     desc_with_resource: '「{{resource}}」にアクセスする権限がありません',
     contact_admin: '管理者に権限の付与を依頼してください',
     contact_owners: '{{owners}} に権限の付与を依頼してください',
+    owners_more: ' ほか{{count}}名',
   },
   '404': { title: 'ページが見つかりません', desc: 'このページは存在しません。削除されたかURLが誤っている可能性があります' },
   '500': { title: 'サービスに問題が発生しました', desc: 'しばらくしてから再度お試しください' },

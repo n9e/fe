@@ -26,7 +26,6 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('@/App', () => ({ CommonStateContext: jest.requireActual('react').createContext({}) }));
 jest.mock('@/utils', () => ({ copy2ClipBoard: jest.fn() }));
 jest.mock('@/utils/pageError', () => ({ canGoBackInApp: () => canGoBack }));
 jest.mock('./services', () => ({ getAdminList: (...args: unknown[]) => getAdminList(...args) }));
@@ -77,6 +76,17 @@ describe('PageError', () => {
     render(<PageError error={normalizeError({ status: 403, message: 'denied' })} />);
 
     await waitFor(() => expect(screen.getByText('403.contact_owners:Root')).toBeTruthy());
+  });
+
+  it('caps a long administrator list instead of dumping the whole roster', async () => {
+    // 真实环境里管理员可能几十个：全列出来既没法用，也等于把用户名单摊在错误页上
+    getAdminList.mockResolvedValue(['a', 'b', 'c', 'd', 'e']);
+
+    render(<PageError error={normalizeError({ status: 403, message: 'denied' })} />);
+
+    await waitFor(() => expect(screen.getByText(/403.contact_owners:a、b、c/)).toBeTruthy());
+    expect(screen.queryByText(/、d/)).toBeNull();
+    expect(screen.getByText(/403.owners_more/)).toBeTruthy();
   });
 
   it('degrades to generic copy when the administrator lookup fails', async () => {
