@@ -23,6 +23,7 @@ export default function index() {
         try {
           const result = JSON.parse(res);
           if (_.isPlainObject(result)) {
+            form.resetFields();
             form.setFieldsValue(result);
           }
         } catch (e) {
@@ -54,11 +55,11 @@ export default function index() {
               <Form.Item label={t('alert_severity_names')}>
                 <Tabs>
                   {languages.map((language) => (
-                    <Tabs.TabPane tab={languageLabels[language]} key={language}>
+                    <Tabs.TabPane tab={languageLabels[language]} key={language} forceRender>
                       <Row gutter={16}>
                         {[1, 2, 3].map((severity) => (
                           <Col span={8} key={severity}>
-                            <Form.Item name={['alert_severity_names', language, severity]} label={`S${severity}`}>
+                            <Form.Item name={['alert_severity_names', language, String(severity)]} label={`S${severity}`}>
                               <Input placeholder={getDefaultAlertSeverityName(severity, language)} />
                             </Form.Item>
                           </Col>
