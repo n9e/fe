@@ -31,7 +31,8 @@ const id_ID = {
   "explorer_timeseries_legend_columns_placeholder": "Nilai bawaannya Last",
   "print_access_log": "Aktifkan access log",
   "print_body_paths": "Jalur yang body permintaannya dicatat",
-  "font_family": "Huruf"
+  "font_family": "Huruf",
+  "alert_severity_names": "Nama tingkat keparahan alert kustom"
 };
 
 export default id_ID;
