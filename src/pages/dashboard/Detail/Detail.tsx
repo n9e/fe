@@ -63,6 +63,8 @@ interface IProps {
   isBuiltin?: boolean;
   gobackPath?: string;
   builtinParams?: number;
+  /** 在详情页右上角操作区最左侧插入调用方专属操作。 */
+  headerLeadingActions?: React.ReactNode;
   onLoaded?: (dashboard: Dashboard['configs']) => boolean;
   hideGoBack?: boolean;
   hideGoList?: boolean;
@@ -125,7 +127,7 @@ const replaceTargetQueryVariables = (value: JsonValue, range: IRawTimeRange, sco
 };
 
 export default function DetailV2(props: IProps) {
-  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, hideGoBack, hideGoList } = props;
+  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, headerLeadingActions, hideGoBack, hideGoList } = props;
   const { t } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
@@ -390,6 +392,7 @@ export default function DetailV2(props: IProps) {
               <Title
                 isPreview={isPreview}
                 isBuiltin={isBuiltin}
+                headerLeadingActions={headerLeadingActions}
                 isAuthorized={isAuthorized}
                 editable={editable}
                 updateAtRef={updateAtRef}

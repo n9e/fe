@@ -68,6 +68,12 @@ const id_ID = {
     "unit_year": "Tahun",
     "fetch_failed": "Gagal mengambil daftar tautan berbagi",
     "generate_failed": "Gagal membuat tautan berbagi",
+    "expire_out_of_range": "Masa berlaku melampaui rentang yang dapat ditampilkan (setara tidak pernah kedaluwarsa); cabut lalu buat ulang",
+    "set_public_confirm_title": "Sekaligus atur dasbor ini menjadi \"Publik - Akses anonim\"?",
+    "set_public_confirm_content":
+      "Tautan berbagi langsung dapat membuka dasbor ini tanpa login begitu dibuat, dan tetap berlaku terlepas dari pengaturan publik. Jika pengaturan publik tidak ikut diperbarui, kolom \"Publik\" pada daftar tidak akan menampilkan akses anonim sehingga administrator tidak menyadari dasbor ini sudah terekspos. Setelah dikonfirmasi, pengaturan publik disimpan sebagai \"Publik - Akses anonim\" terlebih dahulu, baru tautan dibuat.",
+    "set_public_confirm_ok": "Atur akses anonim dan buat",
+    "set_public_failed": "Gagal menyimpan pengaturan publik; tautan berbagi tidak dibuat",
     "revoke_failed": "Gagal mencabut tautan berbagi",
     "config_load_failed": "Gagal membaca konfigurasi dasbor, sehingga akses anonim belum bisa diatur. Tutup dan coba lagi",
     "revoke_all_confirm_title": "Cabut semua tautan berbagi anonim?",

@@ -68,6 +68,12 @@ const pt_BR = {
     "unit_year": "Anos",
     "fetch_failed": "Falha ao carregar a lista de links de compartilhamento",
     "generate_failed": "Falha ao gerar o link de compartilhamento",
+    "expire_out_of_range": "A validade excede o intervalo exibível (equivale a nunca expirar); revogue e gere novamente",
+    "set_public_confirm_title": "Também definir este painel como \"Público - Acesso anônimo\"?",
+    "set_public_confirm_content":
+      "Um link de compartilhamento abre este painel sem login assim que é gerado e continua válido independentemente da configuração de publicação. Se essa configuração não for atualizada, a coluna \"Público\" da lista não mostrará acesso anônimo e os administradores não saberão que o painel está exposto. Ao confirmar, a configuração é salva primeiro como \"Público - Acesso anônimo\" e então o link é gerado.",
+    "set_public_confirm_ok": "Definir acesso anônimo e gerar",
+    "set_public_failed": "Falha ao salvar a configuração de publicação; nenhum link foi gerado",
     "revoke_failed": "Falha ao revogar o link de compartilhamento",
     "config_load_failed": "Falha ao ler a configuração do dashboard; não é possível definir o acesso anônimo agora. Feche e tente novamente",
     "revoke_all_confirm_title": "Revogar todos os links anônimos de compartilhamento?",

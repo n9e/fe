@@ -58,6 +58,8 @@ interface IProps {
   onImportPanel: (panel: IPanel) => void;
   isPreview: boolean;
   isBuiltin: boolean;
+  /** 供特定入口在右侧操作区最左侧扩展操作，通用详情不承载其业务逻辑。 */
+  headerLeadingActions?: React.ReactNode;
   isAuthorized: boolean;
   gobackPath?: string;
   editable: boolean;
@@ -90,6 +92,7 @@ export default function Title(props: IProps) {
     onImportPanel,
     isPreview,
     isBuiltin,
+    headerLeadingActions,
     isAuthorized,
     editable,
     updateAtRef,
@@ -280,6 +283,7 @@ export default function Title(props: IProps) {
 
         <div className='dashboard-detail-header-right'>
           <Space>
+            {headerLeadingActions}
             {isAuthorized && dashboardSaveMode === 'manual' && hasUnsavedChanges && (
               <Button
                 type={allowedLeave ? 'default' : 'primary'}
