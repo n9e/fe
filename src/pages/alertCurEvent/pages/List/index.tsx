@@ -388,17 +388,17 @@ const AlertCurEvent: React.FC = () => {
                           >
                             <Checkbox className='py-1' value={1}>
                               <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle red' />
-                              S1（Critical）
+                              {getAlertSeverityName(1)}
                             </Checkbox>
                             <br />
                             <Checkbox className='py-1' value={2}>
                               <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle orange' />
-                              S2（Warning）
+                              {getAlertSeverityName(2)}
                             </Checkbox>
                             <br />
                             <Checkbox className='py-1' value={3}>
                               <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle yellow' />
-                              S3（Info）
+                              {getAlertSeverityName(3)}
                             </Checkbox>
                             <br />
                           </Checkbox.Group>
