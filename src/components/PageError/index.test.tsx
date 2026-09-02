@@ -89,6 +89,27 @@ describe('PageError', () => {
     expect(screen.getByText(/403.owners_more/)).toBeTruthy();
   });
 
+  it('reveals the rest of the list on demand, so a truncated name is never a dead end', async () => {
+    getAdminList.mockResolvedValue(['a', 'b', 'c', 'd', 'e']);
+
+    render(<PageError error={normalizeError({ status: 403, message: 'denied' })} />);
+    await waitFor(() => expect(screen.getByText(/403.owners_more/)).toBeTruthy());
+
+    await userEvent.click(screen.getByText(/403.owners_more/));
+
+    expect(screen.getByText(/403.contact_owners:a、b、c、d、e/)).toBeTruthy();
+    expect(screen.getByText('403.owners_collapse')).toBeTruthy();
+  });
+
+  it('does not offer to expand when everyone already fits', async () => {
+    getAdminList.mockResolvedValue(['a', 'b']);
+
+    render(<PageError error={normalizeError({ status: 403, message: 'denied' })} />);
+
+    await waitFor(() => expect(screen.getByText(/403.contact_owners:a、b/)).toBeTruthy());
+    expect(screen.queryByText(/403.owners_more/)).toBeNull();
+  });
+
   it('degrades to generic copy when the administrator lookup fails', async () => {
     getAdminList.mockRejectedValue(new Error('no such api'));
 

@@ -47,6 +47,7 @@ export default function PageError(props: IProps) {
   const history = useHistory();
   const [collapsed, setCollapsed] = useState(true);
   const [adminNames, setAdminNames] = useState<string[]>();
+  const [ownersExpanded, setOwnersExpanded] = useState(false);
 
   const isForbidden = status === 403;
   const isServerError = status >= 500 && status < 600;
@@ -79,11 +80,11 @@ export default function PageError(props: IProps) {
     return resourceName ? t('403.desc_with_resource', { resource: resourceName }) : t('403.desc');
   }, [status, isServerError, error?.resource?.name, t]);
 
+  const hiddenOwnerCount = Math.max((ownerNames?.length ?? 0) - MAX_SHOWN_OWNERS, 0);
   const ownersText = useMemo(() => {
-    const shown = _.take(ownerNames, MAX_SHOWN_OWNERS);
-    const rest = (ownerNames?.length ?? 0) - shown.length;
-    return rest > 0 ? `${shown.join('、')}${t('403.owners_more', { count: rest })}` : shown.join('、');
-  }, [ownerNames, t]);
+    if (ownersExpanded) return (ownerNames ?? []).join('、');
+    return _.take(ownerNames, MAX_SHOWN_OWNERS).join('、');
+  }, [ownerNames, ownersExpanded]);
 
   const handleGoBack = () => {
     // 不能无脑 goBack：用户可能是直接粘贴链接进来的（没有上一页），
@@ -133,7 +134,25 @@ export default function PageError(props: IProps) {
         subTitle={
           <div style={{ maxWidth: 560, margin: '0 auto' }}>
             <div>{subTitle}</div>
-            {isForbidden && <div style={{ marginTop: 8 }}>{_.isEmpty(ownerNames) ? t('403.contact_admin') : t('403.contact_owners', { owners: ownersText })}</div>}
+            {isForbidden && (
+              <div style={{ marginTop: 8 }}>
+                {_.isEmpty(ownerNames) ? (
+                  t('403.contact_admin')
+                ) : (
+                  <>
+                    {t('403.contact_owners', { owners: ownersText })}
+                    {hiddenOwnerCount > 0 && (
+                      <>
+                        {' '}
+                        <Typography.Link onClick={() => setOwnersExpanded(!ownersExpanded)}>
+                          {ownersExpanded ? t('403.owners_collapse') : t('403.owners_more', { count: hiddenOwnerCount })}
+                        </Typography.Link>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
             {!_.isEmpty(diagnosis) && (
               <div style={{ marginTop: 16, textAlign: 'left', color: 'var(--fc-text-4)' }}>
                 <Typography.Link onClick={() => setCollapsed(!collapsed)}>
