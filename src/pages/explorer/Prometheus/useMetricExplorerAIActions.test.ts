@@ -121,17 +121,23 @@ describe('useMetricExplorerAIActions', () => {
     expect(result.datasource_id).toBe(2);
   });
 
-  it('moves the time range only when both ends are given', async () => {
+  it('moves the time range when one is asked for', async () => {
     const setTimeRange = jest.fn();
     renderHook(() => useMetricExplorerAIActions(options({ setTimeRange })));
 
     await run({ promql: 'up', time_range: { start: 'now-6h', end: 'now' } });
-    expect(setTimeRange).toHaveBeenCalledWith({ start: 'now-6h', end: 'now' });
 
-    setTimeRange.mockClear();
-    // A half-specified window is not a window; moving one end alone would
-    // silently reframe the chart around a range nobody asked for.
-    await run({ promql: 'up', time_range: { start: 'now-6h' } });
+    expect(setTimeRange).toHaveBeenCalledWith({ start: 'now-6h', end: 'now' });
+  });
+
+  it('treats an explicit null window as no window', async () => {
+    const setTimeRange = jest.fn();
+    renderHook(() => useMetricExplorerAIActions(options({ setTimeRange })));
+
+    // The runtime's validator lets null through where it would reject a
+    // half-filled object, so this is the one malformed window run() still sees.
+    await run({ promql: 'up', time_range: null });
+
     expect(setTimeRange).not.toHaveBeenCalled();
   });
 

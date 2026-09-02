@@ -40,7 +40,9 @@ export interface MetricExplorerAIActionsOptions {
 
 interface SetMetricQueryArgs {
   promql: string;
-  time_range?: { start?: string; end?: string };
+  /** Both ends, or nothing: the schema's nested `required` is enforced. Null
+   *  still gets through, which is the one case `run()` has to handle. */
+  time_range?: { start: string; end: string } | null;
 }
 
 export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptions): void {
@@ -89,7 +91,8 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
         policy: 'auto',
         run: async (args, ctx) => {
           const promql = args.promql?.trim();
-          // The schema guarantees a string; "not empty" is the part it cannot say.
+          // The runtime already rejects a missing or empty string. Whitespace
+          // that only looks like a query is the part it cannot catch.
           if (!promql) throw new Error('No expression was supplied.');
 
           const { datasourceValue, setPromql, setTimeRange, getQueryInput } = latest.current;
@@ -97,8 +100,10 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
           await ctx.feedback.moveCursor(anchor);
           ctx.feedback.highlight(anchor);
 
-          const range = args.time_range;
-          const movedRange = range?.start && range?.end ? { start: range.start, end: range.end } : undefined;
+          // Half a window would silently reframe the chart around a range nobody
+          // asked for, but the schema already rules that out — only an explicit
+          // null still reaches here, and it means "no window", same as absent.
+          const movedRange = args.time_range ?? undefined;
           if (movedRange) {
             setTimeRange(movedRange);
           }
