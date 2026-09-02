@@ -19,20 +19,23 @@ import type { IRawTimeRange } from '@/components/TimeRangePicker';
  * click of 历史记录 away.
  */
 
-/** One panel's PromQL input, used only to point the cursor at what changed. */
-const QUERY_INPUT_SELECTOR = '.prom-graph-expression-input-ng';
-
 export interface MetricExplorerAIActionsOptions {
   /** Whether this panel owns the open conversation. See the note in the hook. */
   enabled: boolean;
-  /** Which panel this is, top to bottom — panels render in array order. */
-  panelIdx: number;
   /** The data source the panel is pointed at, echoed back for the card. */
   datasourceValue: number;
   /** Writes the expression into the panel, which re-runs the query. */
   setPromql: (promql: string) => void;
   /** Moves the panel's time range. Only used when the model asks for one. */
   setTimeRange: (range: IRawTimeRange) => void;
+  /**
+   * This panel's own PromQL box, used only to point the cursor at what changed.
+   *
+   * Resolved by the caller rather than looked up here: panels on this page can
+   * each be on a different data source and only some of them render a PromQL
+   * box, so no page-wide position or selector reliably means "this panel".
+   */
+  getQueryInput: () => Element | null;
 }
 
 interface SetMetricQueryArgs {
@@ -89,8 +92,8 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
           // The schema guarantees a string; "not empty" is the part it cannot say.
           if (!promql) throw new Error('No expression was supplied.');
 
-          const { panelIdx, datasourceValue, setPromql, setTimeRange } = latest.current;
-          const anchor = document.querySelectorAll(QUERY_INPUT_SELECTOR)[panelIdx] ?? null;
+          const { datasourceValue, setPromql, setTimeRange, getQueryInput } = latest.current;
+          const anchor = getQueryInput();
           await ctx.feedback.moveCursor(anchor);
           ctx.feedback.highlight(anchor);
 

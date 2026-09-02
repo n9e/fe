@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
@@ -76,6 +76,11 @@ export default function Prometheus(props: IProps) {
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
   const { queryPageFrom } = useAiChatContext();
+  // Scopes the lookup below to this panel. Panels on this page can each be on a
+  // different data source, and only some of them render a PromQL box at all, so
+  // there is no position in a page-wide query that reliably means "this one".
+  // `display: contents` keeps the wrapper out of the layout entirely.
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useMetricExplorerAIActions({
     // The chat is a single panel at the app root, so at most one explorer panel
@@ -83,10 +88,10 @@ export default function Prometheus(props: IProps) {
     // put its own key on page_from; that is the one whose query box may be
     // written to.
     enabled: Boolean(panelKey) && (queryPageFrom?.param?.panelKey as string | undefined) === panelKey,
-    panelIdx,
     datasourceValue,
     setPromql,
     setTimeRange: setDefaultTimeState,
+    getQueryInput: () => panelRef.current?.querySelector('.prom-graph-expression-input-ng') ?? null,
   });
 
   useEffect(() => {
@@ -119,7 +124,7 @@ export default function Prometheus(props: IProps) {
   }, []);
 
   return (
-    <>
+    <div ref={panelRef} style={{ display: 'contents' }}>
       <PromGraph
         // key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
         type={query.mode as IMode}
@@ -213,6 +218,6 @@ export default function Prometheus(props: IProps) {
         }
         showExportButton
       />
-    </>
+    </div>
   );
 }

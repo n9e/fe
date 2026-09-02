@@ -28,10 +28,10 @@ const ACTION = 'set_metric_query';
 function options(overrides: Partial<MetricExplorerAIActionsOptions> = {}): MetricExplorerAIActionsOptions {
   return {
     enabled: true,
-    panelIdx: 0,
     datasourceValue: 18001,
     setPromql: jest.fn(),
     setTimeRange: jest.fn(),
+    getQueryInput: () => null,
     ...overrides,
   };
 }
@@ -133,6 +133,18 @@ describe('useMetricExplorerAIActions', () => {
     // silently reframe the chart around a range nobody asked for.
     await run({ promql: 'up', time_range: { start: 'now-6h' } });
     expect(setTimeRange).not.toHaveBeenCalled();
+  });
+
+  it('points the cursor at the panel that owns the action, not a page-wide guess', async () => {
+    const input = document.createElement('div');
+    const context = runContext();
+    renderHook(() => useMetricExplorerAIActions(options({ getQueryInput: () => input })));
+
+    const action = registered.get(ACTION)!;
+    await action.run({ promql: 'up' } as never, context);
+
+    expect(context.feedback.moveCursor).toHaveBeenCalledWith(input);
+    expect(context.feedback.highlight).toHaveBeenCalledWith(input);
   });
 
   it('refuses a blank expression instead of clearing the box', async () => {
