@@ -27,6 +27,7 @@ import _ from 'lodash';
 import { strategyItem, strategyStatus } from '@/store/warningInterface';
 import { getStrategyGroupSubList, updateAlertRules } from '@/services/warning';
 import { priorityColor } from '@/utils/constant';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import { getBusinessTeamList } from '@/services/manage';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
@@ -151,7 +152,7 @@ const ruleModal: React.FC<props> = (props) => {
         return _.map(data, (severity) => {
           return (
             <Tag key={severity} color={priorityColor[severity - 1]}>
-              S{severity}
+              {getAlertSeverityName(severity)}
             </Tag>
           );
         });

@@ -31,7 +31,8 @@ const pt_BR = {
   "explorer_timeseries_legend_columns_placeholder": "O padrão é Last",
   "print_access_log": "Ativar o log de acesso",
   "print_body_paths": "Caminhos cujo corpo da requisição é registrado",
-  "font_family": "Fonte"
+  "font_family": "Fonte",
+  "alert_severity_names": "Nomes personalizados de severidade de alerta"
 };
 
 export default pt_BR;

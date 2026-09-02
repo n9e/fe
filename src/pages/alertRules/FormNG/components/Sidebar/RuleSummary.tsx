@@ -11,6 +11,7 @@ import moment from 'moment-timezone';
 
 import { CommonStateContext } from '@/App';
 import { cn } from '@/utils';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import { getTargetList } from '@/services/targets';
 import PromQLInputNG from '@/components/PromQLInputNG';
 
@@ -274,11 +275,14 @@ const severityTagColors: Record<number, { bg: string; text: string }> = {
 
 function SeverityTag(props: { severity: number }) {
   const colors = severityTagColors[props.severity];
-  if (!colors) return <span className='text-[11px]'>S{props.severity}</span>;
+  const title = getAlertSeverityName(props.severity) || `S${props.severity}`;
+  if (!colors) return <span className='text-[11px]'>{`S${props.severity}`}</span>;
   return (
-    <span className='inline-flex items-center rounded px-1 py-0 text-[11px] font-medium leading-tight' style={{ backgroundColor: colors.bg, color: colors.text }}>
-      S{props.severity}
-    </span>
+    <Tooltip title={title}>
+      <span className='inline-flex items-center rounded px-1 py-0 text-[11px] font-medium leading-tight' style={{ backgroundColor: colors.bg, color: colors.text }}>
+        {`S${props.severity}`}
+      </span>
+    </Tooltip>
   );
 }
 

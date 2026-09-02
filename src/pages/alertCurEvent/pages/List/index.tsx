@@ -17,6 +17,7 @@ import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getAlertCards } from '@/services/warning';
 import { getDefaultValue, parseRange } from '@/components/TimeRangePicker';
 import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 
 // @ts-ignore
 import { getBrainLicense } from 'plus:/components/License/services';
