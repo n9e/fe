@@ -14,10 +14,12 @@ import { getHistoryEventsById } from '@/services/warning';
 
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
+import { useAiChatContext } from '@/components/AiChatNG';
 
 import { queryStringOptions } from '../constants';
 import ProbeBanner from '../components/ProbeBanner';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
+import { useMetricExplorerAIActions } from './useMetricExplorerAIActions';
 
 const LOCAL_KEY = 'n9e-query-promql-history';
 
@@ -73,6 +75,19 @@ export default function Prometheus(props: IProps) {
   const [promql, setPromql] = useState<string>(defaultPromQL);
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
+  const { queryPageFrom } = useAiChatContext();
+
+  useMetricExplorerAIActions({
+    // The chat is a single panel at the app root, so at most one explorer panel
+    // is ever the one being talked about. Whichever panel's AI button opened it
+    // put its own key on page_from; that is the one whose query box may be
+    // written to.
+    enabled: Boolean(panelKey) && (queryPageFrom?.param?.panelKey as string | undefined) === panelKey,
+    panelIdx,
+    datasourceValue,
+    setPromql,
+    setTimeRange: setDefaultTimeState,
+  });
 
   useEffect(() => {
     if (query.__event_id) {
@@ -175,6 +190,10 @@ export default function Prometheus(props: IProps) {
                 param: {
                   datasource_type: 'prometheus',
                   datasource_id: datasourceValue,
+                  // Says which panel the conversation belongs to. Metric.tsx
+                  // closes the chat when that panel is removed, and the panel
+                  // registers its page action only while it is the owner.
+                  panelKey,
                 },
               })}
               queryAction={{
