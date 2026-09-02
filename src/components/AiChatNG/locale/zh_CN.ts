@@ -22,6 +22,7 @@ const zh_CN = {
     more_actions: '更多会话操作',
   },
   nightingale: {
+    share_fallback_notice: '你没有原页面的访问权限，这里只展示对话内容',
     title: 'Nightingale AI',
     new_chat: '新建会话',
     sessions: '会话',

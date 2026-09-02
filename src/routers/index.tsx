@@ -22,10 +22,15 @@ import _ from 'lodash';
 import { getMenuPerm } from '@/services/common';
 import { IS_ENT } from '@/utils/constant';
 import { CommonStateContext } from '@/App';
+import i18next from 'i18next';
+import { normalizeError } from '@/utils/appError';
+import { clearPageError, markInAppNavigation, reportPageError, usePageError } from '@/utils/pageError';
+import { useAiChatShareFallback } from '@/components/AiChatNG/useShareFallback';
 // 路由页面统一懒加载：避免任意一个页面（如登录页）就把整棵页面依赖图 eager 拉起
 const Page403 = React.lazy(() => import('@/pages/notFound/Page403'));
 const OutOfService = React.lazy(() => import('@/pages/notFound/OutOfService'));
 const NotFound = React.lazy(() => import('@/pages/notFound'));
+const PageError = React.lazy(() => import('@/components/PageError'));
 const Login = React.lazy(() => import('@/pages/login'));
 const Overview = React.lazy(() => import('@/pages/login/overview'));
 const LoginCallback = React.lazy(() => import('@/pages/loginCallback'));
@@ -126,6 +131,15 @@ export default function Content() {
   const history = useHistory();
   const isPlus = useIsPlus();
   const { profile, siteInfo, perms } = useContext(CommonStateContext);
+  const pageError = usePageError();
+  // 分享链接落到没权限的原页面时，先降级到 FlashAI 会话，不直接画错误页
+  const fallingBackToAiChat = useAiChatShareFallback(pageError);
+
+  // 换页面等于用户已经离开了出错的那一屏，错误跟着作废
+  useEffect(() => {
+    markInAppNavigation();
+    clearPageError();
+  }, [location.pathname]);
 
   useEffect(() => {
     /**
@@ -149,7 +163,15 @@ export default function Content() {
             return location.pathname.indexOf(item) === -1;
           })
         ) {
-          history.push('/403');
+          // 就地渲染无权限，不再 push('/403')：跳走会丢掉当前 URL，
+          // 用户既说不清要哪个页面的权限，后退也会被再次弹回来
+          reportPageError(
+            normalizeError({
+              status: 403,
+              message: i18next.t('common:auth.403'),
+              action: 'route.guard',
+            }),
+          );
         }
       }
     }
@@ -163,6 +185,17 @@ export default function Content() {
       }
     }
   }, [location.pathname]);
+
+  // 出错时整个内容区就是错误页：不换路由，URL 原样留着
+  if (pageError && !fallingBackToAiChat) {
+    return (
+      <div className='content'>
+        <React.Suspense fallback={null}>
+          <PageError error={pageError} />
+        </React.Suspense>
+      </div>
+    );
+  }
 
   return (
     <div className='content'>
