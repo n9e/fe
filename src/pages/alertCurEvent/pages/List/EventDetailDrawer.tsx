@@ -41,6 +41,7 @@ export default function EventDetailDrawer(props: Props) {
         },
         onRefresh,
       })}
+      className='n9e-antd-drawer'
     >
       {data && <DetailNG data={data} showGraph />}
     </Drawer>

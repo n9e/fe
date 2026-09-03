@@ -402,6 +402,7 @@ export default function List({ embedded = false }: ListProps) {
         // 点一下遮罩就丢掉整张表单的代价太大，只保留 × 与「取消」两个明确入口
         maskClosable={false}
         destroyOnClose
+        className='n9e-antd-drawer'
       >
         {eventPipelineDrawerState.action === 'add' && (
           <Add

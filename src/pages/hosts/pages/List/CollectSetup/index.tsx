@@ -318,6 +318,7 @@ export default function CollectSetup(props: Props) {
           </Space>
         </div>
       }
+      className='n9e-antd-drawer'
     >
       <Steps size='small' current={step} className='mb-4'>
         <Steps.Step title={t('collect.steps.pick')} />
@@ -552,9 +553,7 @@ export default function CollectSetup(props: Props) {
                     <>
                       {/* 部分到达时把还差哪几台如实列出来：成功提示之后 partial 那行不再渲染，
                           不写在这里用户就拿不到任何「还差谁」的信号 */}
-                      {arrival.missingIdents.length > 0 && (
-                        <div className='mb-1'>{t('collect.verify.missing_note', { idents: _.join(arrival.missingIdents, ', ') })}</div>
-                      )}
+                      {arrival.missingIdents.length > 0 && <div className='mb-1'>{t('collect.verify.missing_note', { idents: _.join(arrival.missingIdents, ', ') })}</div>}
                       {/* 精确哨兵连查不到、按前缀匹配成功的，如实标注——此时区分不了存量机器 */}
                       {arrival.fallbackToPrefix && <div className='mb-1'>{t('collect.verify.fallback_note', { prefix: `${metricPrefix}_` })}</div>}
                       {arrival.preexistingIdents.length > 0 && (

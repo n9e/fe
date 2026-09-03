@@ -161,6 +161,7 @@ export default function index(props: Props) {
         visible={visible}
         width='90%'
         closable={false}
+        className='n9e-antd-drawer'
       >
         <Card className='mb-4' size='small' title={<Space>{t('detail.event_notify_records.alert_rule_notify_records')}</Space>}>
           <Table size='small' tableLayout='auto' scroll={{ x: 'max-content' }} columns={columns} dataSource={data?.alertRulesRecords} />
