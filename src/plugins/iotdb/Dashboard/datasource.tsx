@@ -5,7 +5,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { getDsQuery } from '../services';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 import replaceExpressionBracket from '@/pages/dashboard/Renderer/utils/replaceExpressionBracket';
-import { getSerieName } from '../utils';
+import { getSerieName, getValueKey } from '../utils';
 import { N9E_PATHNAME } from '@/utils/constant';
 
 interface IOptions {
@@ -52,7 +52,7 @@ export default async function iotdbQuery(options: IOptions): Promise<Result> {
           database: query.database,
           query: queryText,
           keys: {
-            valueKey: _.join(query.keys?.valueKey || query.keys?.metricKey, ' '),
+            valueKey: getValueKey(query.keys),
             labelKey: _.join(query.keys?.labelKey, ' '),
             timeKey: query.keys?.timeKey,
             timeFormat: query.keys?.timeFormat,

@@ -52,12 +52,28 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
         </Row>
         <Row gutter={16}>
           <Col flex='1'>
-            <Form.Item label='RPC connection timeout (ms)' name={['settings', 'iotdb.dial_timeout']} initialValue={10000} rules={[{ type: 'number', min: 1 }]}>
+            <Form.Item
+              label='RPC connection timeout (ms)'
+              name={['settings', 'iotdb.dial_timeout']}
+              initialValue={10000}
+              rules={[
+                { required: true, message: 'Please enter the RPC connection timeout' },
+                { type: 'number', min: 1, message: 'RPC connection timeout must be at least 1 ms' },
+              ]}
+            >
               <InputNumber style={{ width: '100%' }} controls={false} />
             </Form.Item>
           </Col>
           <Col flex='1'>
-            <Form.Item label='RPC query timeout (ms)' name={['settings', 'iotdb.timeout']} initialValue={30000} rules={[{ type: 'number', min: 1 }]}>
+            <Form.Item
+              label='RPC query timeout (ms)'
+              name={['settings', 'iotdb.timeout']}
+              initialValue={30000}
+              rules={[
+                { required: true, message: 'Please enter the RPC query timeout' },
+                { type: 'number', min: 1, message: 'RPC query timeout must be at least 1 ms' },
+              ]}
+            >
               <InputNumber style={{ width: '100%' }} controls={false} />
             </Form.Item>
           </Col>

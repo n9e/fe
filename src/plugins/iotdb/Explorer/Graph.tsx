@@ -9,7 +9,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import LineGraphStandardOptions from '@/components/PromGraphCpt/components/GraphStandardOptions';
 import AdvancedSettings from '../components/AdvancedSettings';
-import { getSerieName } from '../utils';
+import { getSerieName, getValueKey } from '../utils';
 import { getDsQuery } from '../services';
 import { cacheDefaultValues } from './index';
 
@@ -72,7 +72,7 @@ export default function Graph(props: Props) {
             to: end,
             database,
             keys: {
-              valueKey: _.join(keys?.valueKey || keys?.metricKey, ' '),
+              valueKey: getValueKey(keys),
               labelKey: _.join(keys?.labelKey, ' '),
               timeKey: keys?.timeKey,
               timeFormat: keys?.timeFormat,

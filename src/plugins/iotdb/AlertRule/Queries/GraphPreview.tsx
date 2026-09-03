@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getDsQuery } from '../../services';
-import { getSerieName } from '../../utils';
+import { getSerieName, getValueKey } from '../../utils';
 
 export default function GraphPreview({ cate, datasourceValue, query }) {
   const { t } = useTranslation('db_iotdb');
@@ -51,9 +51,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
             query: q.query,
             database: q.database,
             keys: {
-              valueKey: _.isArray(q.keys?.valueKey)
-                ? _.join(q.keys?.valueKey, ' ')
-                : q.keys?.valueKey || (_.isArray(q.keys?.metricKey) ? _.join(q.keys?.metricKey, ' ') : q.keys?.metricKey),
+              valueKey: getValueKey(q.keys),
               labelKey: _.isArray(q.keys?.labelKey) ? _.join(q.keys?.labelKey, ' ') : q.keys?.labelKey,
               timeKey: q.keys?.timeKey,
               timeFormat: q.keys?.timeFormat,
@@ -137,7 +135,6 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
           ghost
           onClick={() => {
             if (!visible) {
-              fetchData();
               setVisible(true);
             }
           }}
