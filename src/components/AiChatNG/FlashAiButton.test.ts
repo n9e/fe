@@ -1,6 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 
+/**
+ * Asserted against the source text rather than by rendering.
+ *
+ * The ENT branch is chosen by `IS_ENT`, which reads `import.meta.env` — not
+ * something this project's jest transform can evaluate — so rendering the
+ * button here would only ever exercise the CE path. What is worth guarding is
+ * the shape handed to the chat, and that is legible in the source.
+ */
 const source = fs.readFileSync(path.join(__dirname, 'FlashAiButton.tsx'), 'utf8');
 
 function extractUseAiEntClickHandler(code: string): string {
@@ -22,17 +30,32 @@ function extractUseAiEntClickHandler(code: string): string {
 
 describe('useAiEntClickHandler', () => {
   const handler = extractUseAiEntClickHandler(source);
+  const customBlock = handler.slice(handler.indexOf('custom:'));
 
   it('forces a drawer overlay so ConfigHost pages on /flashai* can still open chat', () => {
     expect(handler).toMatch(/forceDrawer:\s*true/);
   });
 
-  it('keeps forceDrawer after queryAction spread so call sites cannot wipe it', () => {
-    const customStart = handler.indexOf('custom:');
-    const customBlock = handler.slice(customStart);
-    const spreadAt = customBlock.indexOf('...queryAction');
+  it('spreads the page params themselves, not the wrapper around them', () => {
+    // The chat sends whatever is left in `custom` as page_from.param, a flat bag
+    // beside workspace_id and the firemap keys. Spreading `queryPageFrom` whole
+    // buried the page's own params one level deeper, where nothing reads them —
+    // which is how the metric explorer's data source stopped reaching the model.
+    expect(customBlock).toMatch(/\.\.\.\(queryPageFrom\?\.param \?\? \{\}\)/);
+    expect(customBlock).not.toMatch(/\.\.\.queryPageFrom\s*,/);
+  });
+
+  it('puts the action in the field the chat reads', () => {
+    // Spread flat it arrived as a stray `key`, and its `param` overwrote the
+    // page's own params.
+    expect(customBlock).toMatch(/\.\.\.\(queryAction \? \{ action: queryAction \} : \{\}\)/);
+    expect(customBlock).not.toMatch(/\.\.\.queryAction\s*,/);
+  });
+
+  it('keeps forceDrawer after the spreads so call sites cannot wipe it', () => {
+    const lastSpreadAt = customBlock.lastIndexOf('...(');
     const forceAt = customBlock.search(/forceDrawer:\s*true/);
-    expect(spreadAt).toBeGreaterThanOrEqual(0);
-    expect(forceAt).toBeGreaterThan(spreadAt);
+    expect(lastSpreadAt).toBeGreaterThanOrEqual(0);
+    expect(forceAt).toBeGreaterThan(lastSpreadAt);
   });
 });

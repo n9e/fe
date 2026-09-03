@@ -175,6 +175,10 @@ export default function Prometheus(props: IProps) {
                 param: {
                   datasource_type: 'prometheus',
                   datasource_id: datasourceValue,
+                  // Says which panel the conversation belongs to. Metric.tsx
+                  // already closes the chat when that panel is removed, but
+                  // nothing ever wrote the key it compares against.
+                  panelKey,
                 },
               })}
               queryAction={{
