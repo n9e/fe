@@ -57,7 +57,7 @@ export default function index(props: SelectProps & Props) {
   } = props;
   const { i18n } = useTranslation();
   const { datasourceList: contextDatasourceList = [], datasourceCateOptions = [], isPlus } = useContext(CommonStateContext);
-  const resolvedDatasourceList = providedDatasourceList ?? contextDatasourceList;
+  const resolvedDatasourceList: DatasourceItem[] = providedDatasourceList ?? contextDatasourceList;
   const resolvedDatasourceCateList = datasourceCateList ?? datasourceCateOptions;
   const currentDatasourceList = (ajustDatasourceList ? ajustDatasourceList(resolvedDatasourceList) : resolvedDatasourceList).filter((item) => {
     if (!filterKey) {
