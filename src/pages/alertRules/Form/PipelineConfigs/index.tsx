@@ -203,7 +203,7 @@ export default function index() {
         }}
         width='80%'
       >
-        {eventPipelineDrawerState.type === 'list' && <EventPipelineList />}
+        {eventPipelineDrawerState.type === 'list' && <EventPipelineList embedded />}
         {eventPipelineDrawerState.type === 'edit' && eventPipelineDrawerState.id && (
           <EventPipelineEdit
             id={eventPipelineDrawerState.id}
