@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Input, Button, message, Row, Col, Space, Select, Switch, Tabs } from 'antd';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
+import { IS_ENT } from '@/utils/constant';
 import { getN9eConfig, putN9eConfig } from './services';
 import './locale';
 import { languages, languageLabels } from '@/i18n';
@@ -34,7 +35,14 @@ export default function index() {
   }, []);
 
   return (
-    <PageLayout title={<Space>{t('title')}</Space>} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/site-settings/'>
+    <PageLayout
+      title={<Space>{t('title')}</Space>}
+      doc={
+        IS_ENT
+          ? '/docs/content/flashcat/system/what-is-each-item-in-site-settings/'
+          : 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/site-settings/'
+      }
+    >
       <div className='srm'>
         <div>
           <Card>
