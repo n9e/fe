@@ -16,7 +16,6 @@
  */
 import React, { useState, useRef, useContext } from 'react';
 import _ from 'lodash';
-import semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 import { message, Modal, Input } from 'antd';
 import RGL, { WidthProvider, type Layout } from 'react-grid-layout';
@@ -269,84 +268,32 @@ function index(props: IProps) {
           return (
             <div key={item.layout.i} data-id={item.layout.i}>
               {item.type !== 'row' ? (
-                semver.valid(item.version) ? (
-                  <Panel>
-                    <Renderer
-                      isPreview={isPreview}
-                      isAuthorized={isAuthorized}
-                      themeMode={themeMode as 'dark'}
-                      id={item.id}
-                      time={range}
-                      setRange={props.setRange}
-                      timezone={timezone}
-                      setTimezone={setTimezone}
-                      values={item}
-                      annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
-                      onOverridesChange={
-                        isAuthorized && editable
-                          ? (overrides) => {
-                              const sourcePanelId = item.repeatPanelId || item.id;
-                              setPanels((currentPanels) => {
-                                const newPanels = _.map(currentPanels, (panel) => {
-                                  if (panel.id === sourcePanelId || panel.repeatPanelId === sourcePanelId) {
-                                    return {
-                                      ...panel,
-                                      overrides,
-                                    };
-                                  }
-                                  return panel;
-                                });
-                                updateDashboardConfigs(dashboard.id, {
-                                  configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                                })
-                                  .then((res) => {
-                                    onUpdated(res);
-                                  })
-                                  .catch(() => {
-                                    // 手动保存模式下配置已进入 dashboard 草稿；接口失败沿用现有静默处理。
-                                  });
-                                return newPanels;
+                <Panel>
+                  <Renderer
+                    isPreview={isPreview}
+                    isAuthorized={isAuthorized}
+                    themeMode={themeMode as 'dark'}
+                    id={item.id}
+                    time={range}
+                    setRange={props.setRange}
+                    timezone={timezone}
+                    setTimezone={setTimezone}
+                    values={item}
+                    annotations={_.filter(annotations, (annotation) => annotation.panel_id === item.id)}
+                    onOverridesChange={
+                      isAuthorized && editable
+                        ? (overrides) => {
+                            const sourcePanelId = item.repeatPanelId || item.id;
+                            setPanels((currentPanels) => {
+                              const newPanels = _.map(currentPanels, (panel) => {
+                                if (panel.id === sourcePanelId || panel.repeatPanelId === sourcePanelId) {
+                                  return {
+                                    ...panel,
+                                    overrides,
+                                  };
+                                }
+                                return panel;
                               });
-                            }
-                          : undefined
-                      }
-                      onCloneClick={() => {
-                        setPanels((panels) => {
-                          return updatePanelsInsertNewPanel(panels, {
-                            ...item,
-                            id: uuidv4(),
-                            layout: {
-                              ...item.layout,
-                              i: uuidv4(),
-                            },
-                          });
-                        });
-
-                        // 克隆面板必然会触发 layoutChange，更新 dashboard 放到 onLayoutChange 里面处理
-                        allowUpdateDashboardConfigs.current = true;
-                      }}
-                      onShareClick={() => {
-                        onShareClick(item);
-                      }}
-                      onEditClick={(panelWidth) => {
-                        editorRef.current?.setEditorData({
-                          mode: 'edit',
-                          visible: true,
-                          id: item.id,
-                          initialValues: {
-                            ...item,
-                            id: item.id,
-                          },
-                          panelWidth,
-                        });
-                      }}
-                      onDeleteClick={() => {
-                        Modal.confirm({
-                          title: t('detail.deletePanel_confirm', { name: item.name }),
-                          onOk: async () => {
-                            setPanels((panels) => {
-                              const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
-                              allowUpdateDashboardConfigs.current = true;
                               updateDashboardConfigs(dashboard.id, {
                                 configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                               })
@@ -354,44 +301,70 @@ function index(props: IProps) {
                                   onUpdated(res);
                                 })
                                 .catch(() => {
-                                  // 手动保存模式或权限不足时的静默处理
+                                  // 手动保存模式下配置已进入 dashboard 草稿；接口失败沿用现有静默处理。
                                 });
                               return newPanels;
                             });
+                          }
+                        : undefined
+                    }
+                    onCloneClick={() => {
+                      setPanels((panels) => {
+                        return updatePanelsInsertNewPanel(panels, {
+                          ...item,
+                          id: uuidv4(),
+                          layout: {
+                            ...item.layout,
+                            i: uuidv4(),
                           },
                         });
-                      }}
-                      onCopyClick={() => {
-                        void handleCopyPanel(item);
-                      }}
-                      setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
-                    />
-                  </Panel>
-                ) : (
-                  <div className='dashboards-panels-item-invalid'>
-                    <div>
-                      <div>{t('detail.invalidPanelConfig')}</div>
-                      <a
-                        onClick={() => {
-                          const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
-                          allowUpdateDashboardConfigs.current = true;
-                          setPanels(newPanels);
-                          updateDashboardConfigs(dashboard.id, {
-                            configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                          })
-                            .then((res) => {
-                              onUpdated(res);
+                      });
+
+                      // 克隆面板必然会触发 layoutChange，更新 dashboard 放到 onLayoutChange 里面处理
+                      allowUpdateDashboardConfigs.current = true;
+                    }}
+                    onShareClick={() => {
+                      onShareClick(item);
+                    }}
+                    onEditClick={(panelWidth) => {
+                      editorRef.current?.setEditorData({
+                        mode: 'edit',
+                        visible: true,
+                        id: item.id,
+                        initialValues: {
+                          ...item,
+                          id: item.id,
+                        },
+                        panelWidth,
+                      });
+                    }}
+                    onDeleteClick={() => {
+                      Modal.confirm({
+                        title: t('detail.deletePanel_confirm', { name: item.name }),
+                        onOk: async () => {
+                          setPanels((panels) => {
+                            const newPanels = _.filter(panels, (panel) => panel.id !== item.id);
+                            allowUpdateDashboardConfigs.current = true;
+                            updateDashboardConfigs(dashboard.id, {
+                              configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                             })
-                            .catch(() => {
-                              // 手动保存模式或权限不足时的静默处理
-                            });
-                        }}
-                      >
-                        {t('common:btn.delete')}
-                      </a>
-                    </div>
-                  </div>
-                )
+                              .then((res) => {
+                                onUpdated(res);
+                              })
+                              .catch(() => {
+                                // 手动保存模式或权限不足时的静默处理
+                              });
+                            return newPanels;
+                          });
+                        },
+                      });
+                    }}
+                    onCopyClick={() => {
+                      void handleCopyPanel(item);
+                    }}
+                    setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
+                  />
+                </Panel>
               ) : (
                 <Row
                   isAuthorized={isAuthorized}
@@ -441,10 +414,10 @@ function index(props: IProps) {
                   onDeleteClick={(mode: 'self' | 'withPanels') => {
                     let newPanels: IPanel[] = _.cloneDeep(panels);
                     if (mode === 'self') {
-                      newPanels = getRowCollapsedPanels(newPanels, item);
+                      newPanels = getRowUnCollapsedPanels(newPanels, item);
                       newPanels = _.filter(newPanels, (panel) => panel.id !== item.id);
                     } else {
-                      newPanels = getRowUnCollapsedPanels(newPanels, item);
+                      newPanels = getRowCollapsedPanels(newPanels, item);
                       newPanels = _.filter(newPanels, (panel) => panel.id !== item.id);
                     }
                     allowUpdateDashboardConfigs.current = true;

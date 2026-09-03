@@ -424,7 +424,7 @@ export default function DetailV2(props: IProps) {
                         type: 'row',
                         id: uuidv4(),
                         name: t('visualizations.row'),
-                        collapsed: true,
+                        collapsed: false,
                       } as IPanel,
                       'row',
                     );

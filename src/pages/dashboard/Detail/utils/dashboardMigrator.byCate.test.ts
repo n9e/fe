@@ -33,10 +33,10 @@ describe('dashboardMigrator legacy cate coverage', () => {
   it.each(catesUnderTest)('migrates a legacy %s panel to v4 keeping the panel-level datasource', (cate) => {
     const spec = legacyPanelSpecByCate[cate];
     const migrated = dashboardMigrator(buildLegacyDashboard(spec));
-    expect(migrated.version).toBe('4.0.0');
+    expect(migrated.version).toBe('4.1.0');
 
     const panel = migrated.panels[0] as LegacyPanel;
-    expect(panel.version).toBe('4.0.0');
+    expect(panel).not.toHaveProperty('version');
     // 旧面板迁移后数据源仍挂在 panel 级，target 上不出现 datasource
     expect(panel.datasourceCate).toBe(cate);
     expect(panel.datasourceValue).toBe(spec.datasourceValue);

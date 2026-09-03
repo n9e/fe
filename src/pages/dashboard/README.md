@@ -1,6 +1,6 @@
 # 仪表盘（Dashboard）
 
-仪表盘模块：负责仪表盘的列表、详情、编辑、面板渲染与查询，以及数据转换（transformations）。当前配置版本 `4.0.0`（多数据源查询）。
+仪表盘模块：负责仪表盘的列表、详情、编辑、面板渲染与查询，以及数据转换（transformations）。当前配置版本 `4.1.0`（多数据源查询）。
 
 ## 目录结构
 
@@ -18,7 +18,7 @@ src/pages/dashboard/
 ├── DashboardLinks/                  # 仪表盘链接
 ├── Detail/                          # 仪表盘详情页
 │   └── utils/
-│       ├── dashboardMigrator.ts     # 老版本(3.x)配置迁移到 v4.0.0
+│       ├── dashboardMigrator.ts     # 旧版配置迁移到当前版本
 │       └── index.ts                 # 详情页工具（getDatasourceValue 等）
 ├── Editor/                          # 仪表盘编辑器
 │   ├── QueryEditor/                 # 查询编辑器（按数据源 cate 分发 QueryBuilder）
@@ -50,6 +50,10 @@ src/pages/dashboard/
 ├── transformations/                 # 数据转换器（Organize / Merge / GroupBy / Reduce 等 20+ 个）
 └── utils/                           # 工具函数（upgradeTableToNG、json、validateDashboardConfig 等）
 ```
+
+## 版本约定
+
+`dashboard.version` 是唯一的持久化 schema 版本。仪表盘及其全部面板结构迁移均由该版本驱动，面板不单独保存版本字段。
 
 ## 测试
 

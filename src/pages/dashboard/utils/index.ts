@@ -418,11 +418,10 @@ function convertPanlesGrafanaToN9E(panels: any, vars: any) {
       const uid = uuidv4();
       if (item.type === 'row') {
         return {
-          version: DASHBOARD_VERSION,
           id: uid,
           type: 'row',
           name: item.title,
-          collapsed: !item.collapsed,
+          collapsed: item.collapsed ?? false,
           layout: {
             ...item.gridPos,
             i: uid,
@@ -431,7 +430,6 @@ function convertPanlesGrafanaToN9E(panels: any, vars: any) {
         };
       }
       return {
-        version: DASHBOARD_VERSION,
         id: uid,
         type: chartsMap[item.type] ? chartsMap[item.type].type : 'unknown',
         name: item.title,

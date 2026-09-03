@@ -57,6 +57,7 @@ export type LegacyPanel = JsonObject & {
   id?: string;
   version?: string;
   type?: string;
+  collapsed?: boolean;
   datasourceCate?: string;
   datasourceValue?: string | number;
   targets?: LegacyTarget[];
@@ -208,6 +209,15 @@ const migratePanelToV33 = (panel: LegacyPanel) => {
   panel.version = '3.3.0';
 };
 
+const removePanelVersions = (panel: LegacyPanel): LegacyPanel => {
+  const panelCopy = _.cloneDeep(panel);
+  delete panelCopy.version;
+  if (Array.isArray(panelCopy.panels)) {
+    panelCopy.panels = panelCopy.panels.map(removePanelVersions);
+  }
+  return panelCopy;
+};
+
 export default function dashboardMigrator(data: unknown): LegacyDashboard {
   // 内嵌 Grafana 链接大盘没有 panels，且不参与数据源迁移；保留其完整配置。
   if (isJsonObject(data) && data.mode === 'iframe') {
@@ -217,35 +227,40 @@ export default function dashboardMigrator(data: unknown): LegacyDashboard {
   if (!dashboard) {
     return { panels: [] };
   }
-  const panels = dashboard.panels.map((panel) => {
-    const panelCopy = _.cloneDeep(panel);
-    if (panel.version === '3.0.0' && panel.type === 'barGauge') {
-      const custom = panelCopy.custom;
-      const options = panelCopy.options;
-      if (custom?.maxValue !== undefined && options) {
-        options.standardOptions = { ...options.standardOptions, max: custom.maxValue };
-        delete custom.maxValue;
-      }
-      if (custom?.baseColor !== undefined && options && !options.thresholds) {
-        options.thresholds = { mode: 'absolute', steps: [{ color: custom.baseColor, type: 'base', value: null }] };
-        delete custom.baseColor;
-      }
-    }
-    if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.2.0')) {
-      migratePanelToV32(panelCopy);
-    }
-    if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.3.0')) {
-      migratePanelToV33(panelCopy);
-    }
-    if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.4.0')) {
-      panelCopy.panels?.forEach((subPanel) => {
-        migratePanelToV32(subPanel);
-        migratePanelToV33(subPanel);
-        subPanel.version = '3.4.0';
-      });
-      panelCopy.version = '3.4.0';
-    }
-    return migratePanelToV4(panelCopy);
-  });
-  return { ...dashboard, version: '4.0.0', panels };
+  const dashboardVersion = semver.coerce(dashboard.version) || '0.0.0';
+  const panels = semver.lt(dashboardVersion, '4.1.0')
+    ? dashboard.panels.map((panel) => {
+        const panelCopy = _.cloneDeep(panel);
+        if (panel.version === '3.0.0' && panel.type === 'barGauge') {
+          const custom = panelCopy.custom;
+          const options = panelCopy.options;
+          if (custom?.maxValue !== undefined && options) {
+            options.standardOptions = { ...options.standardOptions, max: custom.maxValue };
+            delete custom.maxValue;
+          }
+          if (custom?.baseColor !== undefined && options && !options.thresholds) {
+            options.thresholds = { mode: 'absolute', steps: [{ color: custom.baseColor, type: 'base', value: null }] };
+            delete custom.baseColor;
+          }
+        }
+        if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.2.0')) {
+          migratePanelToV32(panelCopy);
+        }
+        if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.3.0')) {
+          migratePanelToV33(panelCopy);
+        }
+        if (semver.lt(semver.coerce(panelCopy.version) || '0.0.0', '3.4.0')) {
+          panelCopy.panels?.forEach((subPanel) => {
+            migratePanelToV32(subPanel);
+            migratePanelToV33(subPanel);
+            subPanel.version = '3.4.0';
+          });
+          panelCopy.version = '3.4.0';
+        }
+        const migratedPanel = migratePanelToV4(panelCopy);
+        // Row 采用 Grafana 式顶层分段，不支持嵌套；仅修正顶层 row 的折叠状态。
+        return migratedPanel.type === 'row' ? { ...migratedPanel, collapsed: !migratedPanel.collapsed } : migratedPanel;
+      })
+    : dashboard.panels;
+  return { ...dashboard, version: '4.1.0', panels: panels.map(removePanelVersions) };
 }

@@ -75,9 +75,6 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
       <Form.Item name='layout' hidden>
         <div />
       </Form.Item>
-      <Form.Item name='version' hidden>
-        <div />
-      </Form.Item>
       <div
         style={{
           height: 'calc(100vh - 150px)',
