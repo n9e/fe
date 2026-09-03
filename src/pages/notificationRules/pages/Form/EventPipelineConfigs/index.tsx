@@ -205,7 +205,7 @@ export default function index(props: Props) {
         }}
         width='80%'
       >
-        {eventPipelineDrawerState.type === 'list' && <EventPipelineList />}
+        {eventPipelineDrawerState.type === 'list' && <EventPipelineList embedded />}
         {eventPipelineDrawerState.type === 'edit' && eventPipelineDrawerState.id && (
           <EventPipelineEdit
             id={eventPipelineDrawerState.id}
