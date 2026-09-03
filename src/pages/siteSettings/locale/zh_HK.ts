@@ -32,6 +32,7 @@ const zh_HK = {
   print_access_log: '開啟 Access Log',
   print_body_paths: '打印請求 Body 路徑',
   font_family: '字體',
+  alert_severity_names: '自訂告警等級命名',
 };
 
 export default zh_HK;

@@ -10,6 +10,7 @@ import { getESIndexPatternsWithParmas } from '@/pages/log/IndexPatterns/services
 import { DatasourceCateEnum, IS_ENT } from '@/utils/constant';
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { getAlertEventDetailPrompts } from '@/components/AiChatNG/recommend';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 
 import EventNotifyRecords from '../EventNotifyRecords';
 import TaskTpls from '../TaskTpls';
@@ -193,24 +194,11 @@ export default function DetailNG(props: Props) {
       key: 'severity',
       render: (severity) => {
         const severityMap = {
-          1: {
-            color: '#cc0204',
-            text: '（Critical）',
-          },
-          2: {
-            color: '#fd6e00',
-            text: '（Warning）',
-          },
-          3: {
-            color: '#f2d204',
-            text: '（Info）',
-          },
+          1: { color: '#cc0204' },
+          2: { color: '#fd6e00' },
+          3: { color: '#f2d204' },
         };
-        return (
-          <Tag color={severityMap[severity].color}>
-            S{severity} {severityMap[severity].text}
-          </Tag>
-        );
+        return <Tag color={severityMap[severity].color}>{getAlertSeverityName(severity)}</Tag>;
       },
     },
     {

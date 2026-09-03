@@ -32,5 +32,6 @@ const zh_CN = {
   print_access_log: '开启 Access Log',
   print_body_paths: '打印请求 Body 路径',
   font_family: '字体',
+  alert_severity_names: '自定义告警等级命名',
 };
 export default zh_CN;

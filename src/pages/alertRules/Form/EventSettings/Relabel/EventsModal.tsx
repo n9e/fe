@@ -11,6 +11,7 @@ import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRan
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getEvents } from '@/pages/historyEvents/services';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 
 interface Props {
   onOk: (tags: string[]) => void;
@@ -140,9 +141,9 @@ export default function EventsModal(props: Props) {
                 });
               }}
             >
-              <Select.Option value={1}>S1（Critical）</Select.Option>
-              <Select.Option value={2}>S2（Warning）</Select.Option>
-              <Select.Option value={3}>S3（Info）</Select.Option>
+              <Select.Option value={1}>{getAlertSeverityName(1)}</Select.Option>
+              <Select.Option value={2}>{getAlertSeverityName(2)}</Select.Option>
+              <Select.Option value={3}>{getAlertSeverityName(3)}</Select.Option>
             </Select>
             <Select
               style={{ minWidth: 60 }}
