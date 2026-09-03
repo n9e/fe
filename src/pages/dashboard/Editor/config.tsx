@@ -127,7 +127,6 @@ export const defaultOptionsValues = {
 };
 
 export const defaultValues = {
-  version: '1.0.0',
   type: 'timeseries',
   options: defaultOptionsValues,
   custom: {},
