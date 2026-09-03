@@ -202,6 +202,7 @@ function EditField(props: Props & ModalWrapProps) {
           <Button onClick={() => destroy()}>{t('common:btn.cancel')}</Button>
         </Space>
       }
+      className='n9e-antd-drawer'
     >
       <div style={{ padding: '8px 12px', background: 'var(--fc-fill-3)', borderRadius: 4 }}>
         <div>

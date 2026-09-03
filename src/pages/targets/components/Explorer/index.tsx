@@ -35,6 +35,7 @@ export default function index(props: Props) {
           setExplorerDrawerData(undefined);
         }}
         destroyOnClose
+        className='n9e-antd-drawer'
       >
         <div className='n9e-hosts-explorer-metrics-container'>
           <div className='n9e-hosts-explorer-metrics-list'>

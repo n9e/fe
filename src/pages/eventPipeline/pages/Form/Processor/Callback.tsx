@@ -32,7 +32,7 @@ export default function Callback(props: Props) {
 
         <div
           className={classnames({
-            'p-4 border-t border-solid border-[var(--fc-border-color)]': true,
+            'p-4 fc-border rounded-lg': true,
             hidden: !isAdvancedVisible,
           })}
         >

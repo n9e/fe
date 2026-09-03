@@ -204,6 +204,7 @@ export default function index(props: Props) {
           fetchData();
         }}
         width='80%'
+        className='n9e-antd-drawer'
       >
         {eventPipelineDrawerState.type === 'list' && <EventPipelineList embedded />}
         {eventPipelineDrawerState.type === 'edit' && eventPipelineDrawerState.id && (
