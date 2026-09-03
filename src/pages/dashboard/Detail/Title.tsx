@@ -26,6 +26,7 @@ import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined, Sh
 import { useKeyPress } from 'ahooks';
 
 import { TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
+import { GRAFANA_REFRESH_OPTIONS } from '@/components/TimeRangePicker/AutoRefresh';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
 import { updateDashboard, updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dashboardV2';
@@ -142,6 +143,42 @@ export default function Title(props: IProps) {
       document.title = siteInfo?.page_title || cachePageTitle;
     };
   }, [dashboard.name]);
+
+  const timeRangePicker = (
+    <TimeRangePickerWithRefresh
+      localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
+      dateFormat='YYYY-MM-DD HH:mm:ss'
+      value={range}
+      onChange={(val) => {
+        // 更改时间范围后同步到 URL
+        history.replace({
+          pathname: location.pathname,
+          search: querystring.stringify({
+            ...querystring.parse(window.location.search),
+            __from: moment.isMoment(val.start) ? val.start.valueOf() : val.start,
+            __to: moment.isMoment(val.end) ? val.end.valueOf() : val.end,
+          }),
+        });
+        setRange(val);
+      }}
+      intervalSeconds={intervalSeconds}
+      intervalOptions={dashboard.configs?.mode === 'iframe' ? GRAFANA_REFRESH_OPTIONS : undefined}
+      onIntervalSecondsChange={(val) => {
+        const value = val > 0 ? val : undefined;
+        history.replace({
+          pathname: location.pathname,
+          search: querystring.stringify({
+            ...querystring.parse(window.location.search),
+            __refresh: value,
+          }),
+        });
+        setIntervalSeconds(value);
+      }}
+      showTimezone
+      timezone={timezone}
+      onTimezoneChange={setTimezone}
+    />
+  );
 
   useKeyPress('esc', () => {
     if (query.viewMode === 'fullscreen') {
@@ -348,38 +385,7 @@ export default function Title(props: IProps) {
                     </Button>
                   </Dropdown>
                 )}
-                <TimeRangePickerWithRefresh
-                  localKey={`${dashboardTimeCacheKey}_${dashboard.id}`}
-                  dateFormat='YYYY-MM-DD HH:mm:ss'
-                  value={range}
-                  onChange={(val) => {
-                    // 更改时间范围后同步到 URL
-                    history.replace({
-                      pathname: location.pathname,
-                      search: querystring.stringify({
-                        ...querystring.parse(window.location.search),
-                        __from: moment.isMoment(val.start) ? val.start.valueOf() : val.start,
-                        __to: moment.isMoment(val.end) ? val.end.valueOf() : val.end,
-                      }),
-                    });
-                    setRange(val);
-                  }}
-                  intervalSeconds={intervalSeconds}
-                  onIntervalSecondsChange={(val) => {
-                    const value = val > 0 ? val : undefined;
-                    history.replace({
-                      pathname: location.pathname,
-                      search: querystring.stringify({
-                        ...querystring.parse(window.location.search),
-                        __refresh: value,
-                      }),
-                    });
-                    setIntervalSeconds(value);
-                  }}
-                  showTimezone
-                  timezone={timezone}
-                  onTimezoneChange={setTimezone}
-                />
+                {timeRangePicker}
 
                 {isAuthorized && (
                   <Button
@@ -425,6 +431,7 @@ export default function Title(props: IProps) {
               </>
             ) : (
               <>
+                {timeRangePicker}
                 {isAuthorized && (
                   <Button
                     icon={<SettingOutlined />}

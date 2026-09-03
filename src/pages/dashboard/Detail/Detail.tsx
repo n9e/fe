@@ -49,7 +49,7 @@ import Editor from '../Editor';
 import { validateDashboardConfig } from '../utils/validateDashboardConfig';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
 import { useGlobalState, DashboardMeta } from '../globalState';
-import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
+import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimeCacheKey, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
 import './style.less';
@@ -481,7 +481,16 @@ export default function DetailV2(props: IProps) {
               />
             </>
           ) : (
-            <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
+            <iframe
+              className='embedded-dashboards-iframe'
+              src={adjustURL(dashboard.configs?.iframe_url!, darkMode, {
+                range,
+                refreshIntervalSeconds: intervalSeconds,
+                refreshLocalKey: `${dashboardTimeCacheKey}_${dashboard.id}_refresh`,
+              })}
+              width='100%'
+              height='100%'
+            />
           )}
         </div>
       </div>
