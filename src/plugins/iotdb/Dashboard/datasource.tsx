@@ -3,6 +3,7 @@ import moment from 'moment';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { getDsQuery } from '../services';
+import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 import replaceExpressionBracket from '@/pages/dashboard/Renderer/utils/replaceExpressionBracket';
 import { getSerieName } from '../utils';
 import { N9E_PATHNAME } from '@/utils/constant';
@@ -24,7 +25,7 @@ interface Result {
 }
 
 export default async function iotdbQuery(options: IOptions): Promise<Result> {
-  const { time, targets, datasourceValue, queryOptionsTime } = options;
+  const { time, targets, datasourceValue, queryOptionsTime, scopedVars } = options;
   if (!time.start) return Promise.resolve({ series: [] });
   const parsedRange = parseRange(time);
   const series: any[] = [];
@@ -41,12 +42,17 @@ export default async function iotdbQuery(options: IOptions): Promise<Result> {
       datasource_id: datasourceValue,
       query: _.map(targets, (target) => {
         const query: any = target.query || {};
+        const queryText = replaceTemplateVariables(query.query, {
+          range: queryOptionsTime ?? time,
+          scopedVars,
+        });
         return {
           from: start,
           to: end,
-          query: query.query,
+          database: query.database,
+          query: queryText,
           keys: {
-            metricKey: _.join(query.keys?.metricKey, ' '),
+            valueKey: _.join(query.keys?.valueKey || query.keys?.metricKey, ' '),
             labelKey: _.join(query.keys?.labelKey, ' '),
             timeKey: query.keys?.timeKey,
             timeFormat: query.keys?.timeFormat,

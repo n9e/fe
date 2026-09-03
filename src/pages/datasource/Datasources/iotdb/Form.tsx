@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Form, Card } from 'antd';
+import { Form, Card, Input, InputNumber, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { scrollToFirstError } from '@/utils';
 import Name from '../../components/items/Name';
@@ -37,6 +37,31 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       <Card title={t(`${action}_title`)}>
         <Name />
         <HTTP placeholder='http://localhost:18080' />
+        <div className='page-title'>RPC / Table Model</div>
+        <Row gutter={16}>
+          <Col flex='1'>
+            <Form.Item label='RPC address' name={['settings', 'iotdb.rpc_addr']}>
+              <Input placeholder='127.0.0.1:6667' />
+            </Form.Item>
+          </Col>
+          <Col flex='1'>
+            <Form.Item label='Default database' name={['settings', 'iotdb.database']}>
+              <Input placeholder='database_name' />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col flex='1'>
+            <Form.Item label='RPC connection timeout (ms)' name={['settings', 'iotdb.dial_timeout']} initialValue={10000} rules={[{ type: 'number', min: 1 }]}>
+              <InputNumber style={{ width: '100%' }} controls={false} />
+            </Form.Item>
+          </Col>
+          <Col flex='1'>
+            <Form.Item label='RPC query timeout (ms)' name={['settings', 'iotdb.timeout']} initialValue={30000} rules={[{ type: 'number', min: 1 }]}>
+              <InputNumber style={{ width: '100%' }} controls={false} />
+            </Form.Item>
+          </Col>
+        </Row>
         <BasicAuth />
         <SkipTLSVerify />
         <Headers />

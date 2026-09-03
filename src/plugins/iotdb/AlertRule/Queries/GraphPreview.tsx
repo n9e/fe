@@ -49,8 +49,11 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         query: _.map([query], (q) => {
           return {
             query: q.query,
+            database: q.database,
             keys: {
-              metricKey: _.isArray(q.keys?.metricKey) ? _.join(q.keys?.metricKey, ' ') : q.keys?.metricKey,
+              valueKey: _.isArray(q.keys?.valueKey)
+                ? _.join(q.keys?.valueKey, ' ')
+                : q.keys?.valueKey || (_.isArray(q.keys?.metricKey) ? _.join(q.keys?.metricKey, ' ') : q.keys?.metricKey),
               labelKey: _.isArray(q.keys?.labelKey) ? _.join(q.keys?.labelKey, ' ') : q.keys?.labelKey,
               timeKey: q.keys?.timeKey,
               timeFormat: q.keys?.timeFormat,
@@ -85,7 +88,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
     if (visible) {
       fetchData();
     }
-  }, [JSON.stringify(range)]);
+  }, [visible, datasourceValue, cate, query, JSON.stringify(range)]);
 
   return (
     <div ref={divRef}>

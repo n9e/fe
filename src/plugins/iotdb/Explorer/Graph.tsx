@@ -28,6 +28,7 @@ export default function Graph(props: Props) {
   const range = Form.useWatch(['query', 'range'], form);
   const keys = Form.useWatch(['query', 'keys'], form);
   const query = Form.useWatch(['query', 'query'], form);
+  const database = Form.useWatch(['query', 'database'], form);
   const [highLevelConfig, setHighLevelConfig] = useState({
     shared: true,
     sharedSortDirection: 'desc',
@@ -69,8 +70,9 @@ export default function Graph(props: Props) {
             query,
             from: start,
             to: end,
+            database,
             keys: {
-              metricKey: _.join(keys?.metricKey, ' '),
+              valueKey: _.join(keys?.valueKey || keys?.metricKey, ' '),
               labelKey: _.join(keys?.labelKey, ' '),
               timeKey: keys?.timeKey,
               timeFormat: keys?.timeFormat,
@@ -99,7 +101,7 @@ export default function Graph(props: Props) {
           setRefreshFlag();
         });
     }
-  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
+  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, database, refreshFlag]);
 
   return (
     <div className='explorer-graph-container'>
