@@ -29,7 +29,6 @@ npm run dev
 
 The back-end api proxy config is https://github.com/n9e/fe/blob/main/vite.config.ts#L41
 
-Trouble shooting: https://answer.flashcat.cloud/questions/10010000000003759
 
 > **💡 Dev locale switching**  
 > To speed up the dev server, only **English (en_US)** locale files are loaded by default in development mode; other languages are replaced with empty objects to reduce unnecessary module requests.  
