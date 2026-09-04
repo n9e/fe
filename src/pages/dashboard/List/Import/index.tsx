@@ -14,16 +14,20 @@
  * limitations under the License.
  *
  */
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Space } from 'antd';
 import Icon from '@ant-design/icons';
+import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
 import { createDashboard } from '@/services/dashboardV2';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
-import { getValidImportData, convertDashboardGrafanaToN9E, JSONParse, checkGrafanaDashboardVersion } from '../utils';
+import type { ConvertResult } from '@/pages/dashboard/utils/grafanaImport';
+import { convertDashboardGrafanaToN9EWithReport } from '@/pages/dashboard/utils/grafanaImport';
+import { getValidImportData, JSONParse } from '../utils';
 import ImportBuiltinContent from './ImportBuiltinContent';
+import ImportGrafanaReport from './ImportGrafanaReport';
 
 export type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin' | 'ImportGrafanaURL';
 interface IProps {
@@ -59,23 +63,63 @@ const BetaIcon = (props: React.ComponentProps<typeof Icon>) => <Icon component={
 export default function Import(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { visible, onOk, busiId, type } = props;
+  const { groupedDatasourceList } = useContext(CommonStateContext);
   const [modalType, setModalType] = useState(type);
-  const [checkedVerisonResult, setCheckedVerisonResult] = useState<undefined | 0 | 1 | 2>();
   const [form] = Form.useForm();
   const [importLoading, setImportLoading] = useState(false);
-  const importGrafanaFunc = (json: unknown) => {
-    const data = convertDashboardGrafanaToN9E(json);
+  // Grafana 导入两步式：先转换并展示报告，确认后才保存
+  const [grafanaReport, setGrafanaReport] = useState<ConvertResult>();
+  const [grafanaError, setGrafanaError] = useState<string>();
+  const [saveError, setSaveError] = useState<string>();
+
+  // 关闭弹窗时清理 Grafana 导入状态（对齐仓库弹窗清理约定）
+  useEffect(() => {
+    if (!visible) {
+      setGrafanaReport(undefined);
+      setGrafanaError(undefined);
+      setSaveError(undefined);
+      form.resetFields();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
+
+  // 切换离开 ImportGrafana tab 时清理
+  useEffect(() => {
+    if (modalType !== 'ImportGrafana') {
+      setGrafanaReport(undefined);
+      setGrafanaError(undefined);
+      setSaveError(undefined);
+    }
+  }, [modalType]);
+
+  const doConvert = (vals: { import: string }) => {
+    setGrafanaError(undefined);
+    setSaveError(undefined);
+    const json = JSONParse(vals.import);
+    try {
+      const result = convertDashboardGrafanaToN9EWithReport(json, { datasourceList: groupedDatasourceList });
+      setGrafanaReport(result);
+    } catch (e) {
+      setGrafanaError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const doSave = (dashboard: ConvertResult['dashboard']) => {
+    setSaveError(undefined);
+    setImportLoading(true);
     createDashboard(busiId, {
-      ...data,
-      tags: '',
-      configs: JSON.stringify(data.configs),
+      ...dashboard,
+      configs: JSON.stringify(dashboard.configs),
     })
       .then(() => {
         message.success(t('common:success.import'));
         onOk();
       })
+      .catch((e) => {
+        setSaveError(e instanceof Error ? e.message : t('batch.import_grafana_report.save_error'));
+      })
       .finally(() => {
-        setCheckedVerisonResult(undefined);
+        setImportLoading(false);
       });
   };
 
@@ -164,57 +208,56 @@ export default function Import(props: IProps) {
         />
       ) : null}
       {modalType === 'ImportGrafana' ? (
-        <Form
-          layout='vertical'
-          form={form}
-          onFinish={(vals) => {
-            const json = JSONParse(vals.import);
-            const checkedVerisonResult = checkGrafanaDashboardVersion(json);
-            setCheckedVerisonResult(checkedVerisonResult);
-            if (checkedVerisonResult === 2) {
-              importGrafanaFunc(json);
-            }
-          }}
-        >
-          <div style={{ marginBottom: 10 }}>
-            <Alert
-              message={<Trans ns='dashboard' i18nKey='batch.import_grafana_tip' components={{ a: <a href='https://github.com/n9e/fe/issues/48' target='_blank' /> }} />}
-              type='info'
-            />
-          </div>
-          <Form.Item
-            label={t('batch.label')}
-            name='import'
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Input.TextArea className='code-area' rows={16} />
-          </Form.Item>
-          {checkedVerisonResult === 0 && <Alert message={t('batch.import_grafana_tip_version_error')} type='error' style={{ margin: '10px 0' }} />}
-          {checkedVerisonResult === 1 && <Alert message={t('batch.import_grafana_tip_version_warning')} type='warning' style={{ margin: '10px 0' }} />}
-          <Form.Item>
-            {checkedVerisonResult === undefined && (
+        grafanaReport ? (
+          <ImportGrafanaReport
+            result={grafanaReport}
+            error={saveError}
+            saving={importLoading}
+            onConfirm={() => doSave(grafanaReport.dashboard)}
+            onBack={() => {
+              setGrafanaReport(undefined);
+              setSaveError(undefined);
+            }}
+          />
+        ) : (
+          <Form layout='vertical' form={form} onFinish={doConvert}>
+            <div style={{ marginBottom: 10 }}>
+              <Alert
+                message={<Trans ns='dashboard' i18nKey='batch.import_grafana_tip' components={{ a: <a href='https://github.com/n9e/fe/issues/48' target='_blank' /> }} />}
+                type='info'
+              />
+            </div>
+            <Form.Item
+              label={t('batch.label')}
+              name='import'
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input.TextArea className='code-area' rows={16} />
+            </Form.Item>
+            {grafanaError && (
+              <Alert
+                type='error'
+                showIcon
+                message={t('batch.import_grafana_report.convert_error')}
+                description={
+                  <pre className='mb-0' style={{ whiteSpace: 'pre-wrap' }}>
+                    {grafanaError}
+                  </pre>
+                }
+                style={{ margin: '10px 0' }}
+              />
+            )}
+            <Form.Item>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.import')}
               </Button>
-            )}
-            {checkedVerisonResult === 1 && (
-              <Button
-                type='primary'
-                onClick={() => {
-                  form.validateFields().then((vals) => {
-                    importGrafanaFunc(JSONParse(vals.import));
-                  });
-                }}
-              >
-                {t('batch.continueToImport')}
-              </Button>
-            )}
-          </Form.Item>
-        </Form>
+            </Form.Item>
+          </Form>
+        )
       ) : null}
       {modalType === 'ImportGrafanaURL' ? (
         <Form

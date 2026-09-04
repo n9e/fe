@@ -23,6 +23,20 @@ const refreshMap = {
   600: '10m',
 };
 
+export const GRAFANA_REFRESH_OPTIONS = {
+  0: 'Off',
+  5: '5s',
+  10: '10s',
+  30: '30s',
+  60: '1m',
+  300: '5m',
+  900: '15m',
+  1800: '30m',
+  3600: '1h',
+  7200: '2h',
+  86400: '1d',
+};
+
 interface IProps {
   disabled?: boolean;
   tooltip?: React.ReactNode;
@@ -30,10 +44,12 @@ interface IProps {
   onRefresh: () => void;
   localKey?: string;
   intervalSeconds?: number;
+  intervalOptions?: Record<number, string>;
   onIntervalSecondsChange?: (intervalSeconds: number) => void;
 }
 
 function Refresh(props: IProps, ref) {
+  const intervalOptions = props.intervalOptions || refreshMap;
   const intervalSecondsCache = props.localKey ? _.toNumber(window.localStorage.getItem(props.localKey)) : 0;
   const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds || intervalSecondsCache);
   const [visible, setVisible] = useState(false);
@@ -124,7 +140,7 @@ function Refresh(props: IProps, ref) {
                   setVisible(false);
                 }}
               >
-                {_.map(refreshMap, (text, value) => {
+                {_.map(intervalOptions, (text, value) => {
                   return <Menu.Item key={value}>{text}</Menu.Item>;
                 })}
               </Menu>
@@ -139,7 +155,7 @@ function Refresh(props: IProps, ref) {
                 alignItems: 'center',
               }}
             >
-              {refreshMap[intervalSeconds]} {visible ? <UpOutlined /> : <DownOutlined style={{ fontSize: 12 }} />}
+              {intervalOptions[intervalSeconds]} {visible ? <UpOutlined /> : <DownOutlined style={{ fontSize: 12 }} />}
             </Button>
           </Dropdown>
         </span>

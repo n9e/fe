@@ -5,11 +5,13 @@ const ts = require('typescript');
 const configPath = path.resolve(__dirname, 'tsconfig.json');
 const config = ts.readConfigFile(configPath, ts.sys.readFile);
 if (config.error) {
-  console.error(ts.formatDiagnostic(config.error, {
-    getCanonicalFileName: (fileName) => fileName,
-    getCurrentDirectory: ts.sys.getCurrentDirectory,
-    getNewLine: () => '\n',
-  }));
+  console.error(
+    ts.formatDiagnostic(config.error, {
+      getCanonicalFileName: (fileName) => fileName,
+      getCurrentDirectory: ts.sys.getCurrentDirectory,
+      getNewLine: () => '\n',
+    }),
+  );
   process.exit(1);
 }
 
@@ -18,7 +20,7 @@ const program = ts.createProgram(parsed.fileNames, parsed.options);
 const dashboardRoot = path.resolve(__dirname, '../../src/pages/dashboard') + path.sep;
 const excludedPathSegments = [
   `${path.sep}VariableConfig${path.sep}`,
-  `${path.sep}updateSchema.ts`,
+  `${path.sep}grafanaImport${path.sep}`,
   `${path.sep}transformations${path.sep}AddFieldFromCalculationTransformation${path.sep}`,
   `${path.sep}transformations${path.sep}ConcatenateFieldsTransformation${path.sep}`,
   `${path.sep}transformations${path.sep}ConfigFromQueryResultsTransformation${path.sep}`,
@@ -68,10 +70,7 @@ const diagnostics = ts
   .getPreEmitDiagnostics(program)
   .filter(
     (diagnostic) =>
-      diagnostic.file &&
-      isActiveDashboardFile(diagnostic.file.fileName) &&
-      implicitAnyCodes.has(diagnostic.code) &&
-      !isIgnoredPosition(diagnostic.file, diagnostic.start ?? 0),
+      diagnostic.file && isActiveDashboardFile(diagnostic.file.fileName) && implicitAnyCodes.has(diagnostic.code) && !isIgnoredPosition(diagnostic.file, diagnostic.start ?? 0),
   );
 
 const anyDiagnostics = [];
@@ -92,11 +91,13 @@ for (const sourceFile of program.getSourceFiles()) {
 }
 
 if (diagnostics.length) {
-  console.error(ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-    getCanonicalFileName: (fileName) => fileName,
-    getCurrentDirectory: ts.sys.getCurrentDirectory,
-    getNewLine: () => '\n',
-  }));
+  console.error(
+    ts.formatDiagnosticsWithColorAndContext(diagnostics, {
+      getCanonicalFileName: (fileName) => fileName,
+      getCurrentDirectory: ts.sys.getCurrentDirectory,
+      getNewLine: () => '\n',
+    }),
+  );
   process.exitCode = 1;
 }
 

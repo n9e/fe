@@ -52,11 +52,14 @@ let language = detectBrowserLanguage();
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
   language = localStorageLanguage;
 }
-// 开发环境仅加载单一语言（见 plugins/vite-plugin-dev-locale），此处需与之对齐，
-// 否则运行时语言与已加载语言不一致会显示成翻译 key。可用 VITE_DEV_LOCALE 指定，默认 zh_CN。
+// 开发环境默认仅加载单一语言（见 plugins/vite-plugin-dev-locale），此处需与之对齐，
+// 否则运行时语言与已加载语言不一致会显示成翻译 key。可用 VITE_DEV_LOCALE 指定，默认 en_US；
+// 设为 all 时全部语言真实加载，沿用浏览器/localStorage 的语言，不再强制覆盖。
 if (import.meta.env.DEV) {
   const devLocale = import.meta.env.VITE_DEV_LOCALE as string | undefined;
-  language = devLocale && _.includes(languages, devLocale) ? devLocale : 'zh_CN';
+  if (devLocale !== 'all') {
+    language = devLocale && _.includes(languages, devLocale) ? devLocale : 'en_US';
+  }
 }
 
 function getI18nextTranslations() {
