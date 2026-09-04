@@ -78,11 +78,9 @@ export default function Prometheus(props: IProps) {
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
   // What the box held before the assistant wrote into it, so Undo has something
-  // to put back — and what the assistant last wrote, so we can tell the two
-  // apart. A follow-up overwrites our own previous answer, not the user's text,
-  // so only a value we did not write is worth remembering as the way back.
+  // to put back. The panel itself knows which value it wrote — it can see the
+  // current one — so the page only has to remember the way back.
   const promqlBeforeAi = useRef<string>('');
-  const promqlWrittenByAi = useRef<string>();
 
   useEffect(() => {
     if (query.__event_id) {
@@ -163,17 +161,19 @@ export default function Prometheus(props: IProps) {
                   },
                 })}
                 contextLabel={_.find(datasourceList, { id: datasourceValue })?.name}
+                value={promql}
+                examplePrompt={t('panel.example_fallback')}
                 onAdopt={(next) => {
-                  if (promql !== promqlWrittenByAi.current) {
+                  // Only text the user is responsible for is worth restoring:
+                  // a follow-up replaces our own answer, not their writing.
+                  if (promql !== next) {
                     promqlBeforeAi.current = promql;
                   }
-                  promqlWrittenByAi.current = next;
                   setProbeBannerVisible(false);
                   setPromql(next);
                 }}
                 onUndo={() => {
                   setPromql(promqlBeforeAi.current);
-                  promqlWrittenByAi.current = undefined;
                 }}
                 onClose={() => {
                   setAiPanelOpen(false);

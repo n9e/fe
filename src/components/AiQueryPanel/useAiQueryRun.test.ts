@@ -10,11 +10,13 @@ import { useAiQueryRun } from './useAiQueryRun';
 const createChat = jest.fn();
 const sendMessage = jest.fn();
 const getMessageDetail = jest.fn();
+const cancelMessage = jest.fn();
 
 jest.mock('@/components/AiChatNG/services', () => ({
   createChat: (...args: unknown[]) => createChat(...args),
   sendMessage: (...args: unknown[]) => sendMessage(...args),
   getMessageDetail: (...args: unknown[]) => getMessageDetail(...args),
+  cancelMessage: (...args: unknown[]) => cancelMessage(...args),
 }));
 
 // Echo the count back so the tests can see it reached the copy.
@@ -28,6 +30,7 @@ function message(overrides: Partial<IAiChatMessage> = {}): IAiChatMessage {
 function setup() {
   createChat.mockResolvedValue({ chat_id: 'c1' });
   sendMessage.mockResolvedValue({ chat_id: 'c1', seq_id: 1 });
+  cancelMessage.mockResolvedValue(undefined);
   return renderHook(() => useAiQueryRun({ pageFrom, t }));
 }
 
@@ -81,7 +84,7 @@ describe('useAiQueryRun', () => {
     });
     await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 5000 });
 
-    expect(result.current.run.steps).toEqual([{ label: 'panel.step.command:3panel.step.separatorpanel.step.read_file:1', done: true }]);
+    expect(result.current.run.steps).toEqual([{ label: 'panel.step.command:3panel.step.separatorpanel.step.read_file:1' }]);
   });
 
   it('skips a group that counted nothing rather than showing an empty step', async () => {
@@ -154,17 +157,39 @@ describe('useAiQueryRun', () => {
     expect(result.current.run.explanation).toBe('正在检查指标');
   });
 
-  it('shows the step in flight while the turn is still running', async () => {
+  it('carries the assistant own words about what it is doing right now', async () => {
+    // cur_step is the one sentence worth reading while a turn is in flight, so
+    // it is kept apart from the tallies rather than tacked on as another row.
     getMessageDetail.mockResolvedValue(message({ is_finish: false, cur_step: '正在执行脚本', response: [] }));
     const { result } = setup();
 
     await act(async () => {
       result.current.ask('查主机 CPU');
     });
-    await waitFor(() => expect(result.current.run.steps).toHaveLength(1), { timeout: 5000 });
+    await waitFor(() => expect(result.current.run.activity).toBe('正在执行脚本'), { timeout: 5000 });
 
-    expect(result.current.run.steps[0]).toEqual({ label: '正在执行脚本', done: false });
+    expect(result.current.run.steps).toHaveLength(0);
     expect(result.current.run.phase).toBe('running');
+  });
+
+  it('stops a run that is still going, and ignores the poll that lands after', async () => {
+    getMessageDetail.mockResolvedValue(message({ is_finish: false, cur_step: '正在执行脚本', response: [] }));
+    const { result } = setup();
+
+    await act(async () => {
+      result.current.ask('查主机 CPU');
+    });
+    await waitFor(() => expect(result.current.run.phase).toBe('running'), { timeout: 5000 });
+    act(() => {
+      result.current.stop();
+    });
+
+    expect(result.current.run.phase).toBe('stopped');
+    // The backend is told too, so a retry does not race the abandoned run.
+    expect(cancelMessage).toHaveBeenCalledWith({ chat_id: 'c1', seq_id: 1 });
+    const settled = result.current.run;
+    await new Promise((resolve) => setTimeout(resolve, 1600));
+    expect(result.current.run).toBe(settled);
   });
 
   it('keeps one chat across follow-ups so context carries', async () => {
