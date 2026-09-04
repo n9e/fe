@@ -61,7 +61,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                 { type: 'number', min: 1, message: 'RPC connection timeout must be at least 1 ms' },
               ]}
             >
-              <InputNumber style={{ width: '100%' }} controls={false} />
+              <InputNumber className='w-full' controls={false} />
             </Form.Item>
           </Col>
           <Col flex='1'>
@@ -74,7 +74,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                 { type: 'number', min: 1, message: 'RPC query timeout must be at least 1 ms' },
               ]}
             >
-              <InputNumber style={{ width: '100%' }} controls={false} />
+              <InputNumber className='w-full' controls={false} />
             </Form.Item>
           </Col>
         </Row>
