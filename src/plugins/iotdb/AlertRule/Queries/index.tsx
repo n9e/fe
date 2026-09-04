@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Form, Space, Row, Col, InputNumber, Select, Tooltip, Button } from 'antd';
+import { Form, Space, Row, Col, Input, InputNumber, Select, Tooltip, Button } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { WandSparkles } from 'lucide-react';
 import _ from 'lodash';
@@ -100,6 +100,13 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                               );
                             }}
                           />
+                        </Form.Item>
+                      </InputGroupWithFormItem>
+                    </Col>
+                    <Col flex='180px'>
+                      <InputGroupWithFormItem label='Database'>
+                        <Form.Item {...field} name={[field.name, 'database']}>
+                          <Input placeholder='Optional' disabled={disabled} />
                         </Form.Item>
                       </InputGroupWithFormItem>
                     </Col>
