@@ -32,7 +32,7 @@ interface DatasourceOption {
   id: number | string;
   name: string;
   plugin_type: string;
-  is_default: boolean;
+  is_default?: boolean;
 }
 
 export default function Query(props: Props) {
