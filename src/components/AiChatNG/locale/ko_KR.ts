@@ -134,9 +134,10 @@ const ko_KR = {
     failed: '결과 없음',
     close: '닫기',
     step: {
-      command: '명령 실행',
-      read_file: '파일 읽기',
-      edit_file: '파일 쓰기',
+      command: '명령 {{count}}회 실행',
+      read_file: '파일 {{count}}개 읽음',
+      edit_file: '파일 {{count}}개 씀',
+      separator: ' · ',
     },
     written_back: '위 입력란에 반영하고 실행했습니다',
     undo: '실행 취소',

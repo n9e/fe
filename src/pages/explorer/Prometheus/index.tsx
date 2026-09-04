@@ -160,7 +160,6 @@ export default function Prometheus(props: IProps) {
                   param: {
                     datasource_type: 'prometheus',
                     datasource_id: datasourceValue,
-                    panelKey,
                   },
                 })}
                 contextLabel={_.find(datasourceList, { id: datasourceValue })?.name}

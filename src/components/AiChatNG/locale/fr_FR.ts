@@ -134,9 +134,10 @@ const fr_FR = {
     failed: 'Aucun résultat',
     close: 'Fermer',
     step: {
-      command: 'Commande exécutée',
-      read_file: 'Fichier lu',
-      edit_file: 'Fichier écrit',
+      command: '{{count}} commande(s) exécutée(s)',
+      read_file: '{{count}} fichier(s) lu(s)',
+      edit_file: '{{count}} fichier(s) écrit(s)',
+      separator: ' · ',
     },
     written_back: 'Inséré dans le champ ci-dessus et exécuté',
     undo: 'Annuler',

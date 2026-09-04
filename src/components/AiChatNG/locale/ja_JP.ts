@@ -134,9 +134,10 @@ const ja_JP = {
     failed: '結果なし',
     close: '閉じる',
     step: {
-      command: 'コマンドを実行',
-      read_file: 'ファイルを読み取り',
-      edit_file: 'ファイルを書き込み',
+      command: 'コマンドを {{count}} 回実行',
+      read_file: 'ファイルを {{count}} 件読み取り',
+      edit_file: 'ファイルを {{count}} 件書き込み',
+      separator: ' · ',
     },
     written_back: '上の入力欄に書き戻し、実行しました',
     undo: '元に戻す',

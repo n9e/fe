@@ -134,9 +134,10 @@ const zh_CN = {
     failed: '未能给出',
     close: '关闭',
     step: {
-      command: '运行命令',
-      read_file: '读取文件',
-      edit_file: '写入文件',
+      command: '执行了 {{count}} 次命令',
+      read_file: '读取了 {{count}} 个文件',
+      edit_file: '写入了 {{count}} 个文件',
+      separator: ' · ',
     },
     written_back: '已回写到上方输入框，并已执行',
     undo: '撤销',

@@ -17,7 +17,8 @@ jest.mock('@/components/AiChatNG/services', () => ({
   getMessageDetail: (...args: unknown[]) => getMessageDetail(...args),
 }));
 
-const t = ((key: string) => key) as never;
+// Echo the count back so the tests can see it reached the copy.
+const t = ((key: string, options?: { count?: number }) => (options?.count === undefined ? key : `${key}:${options.count}`)) as never;
 const pageFrom = { url: '/metric/explorer', param: { datasource_id: 849 } } as const;
 
 function message(overrides: Partial<IAiChatMessage> = {}): IAiChatMessage {
@@ -39,7 +40,7 @@ describe('useAiQueryRun', () => {
     getMessageDetail.mockResolvedValue(
       message({
         response: [
-          { content_type: 'tool', content: 'shell', is_finish: true },
+          { content_type: 'tool_group', content: '', is_finish: true, param: { command_count: 1, read_file_count: 0, edit_file_count: 0, items: [] } },
           { content_type: 'query', content: '  cpu_usage_active{cpu="cpu-total"}  ' },
           { content_type: 'markdown', content: '按 ident 区分主机。' },
         ],
@@ -58,14 +59,18 @@ describe('useAiQueryRun', () => {
     expect(result.current.run.steps).toHaveLength(1);
   });
 
-  it('names each step by the kind of tool that ran', async () => {
-    // The kind is what a reader can act on; the tool's own name is not shown.
+  it('reads a run of tool calls off the group the backend already merged', async () => {
+    // message/detail never returns bare `tool` segments: the server folds each
+    // run of them into one `tool_group` carrying the counts.
     getMessageDetail.mockResolvedValue(
       message({
         response: [
-          { content_type: 'tool', content: 'x', is_finish: true, tool_call_statistic_type: 'read_file' },
-          { content_type: 'tool', content: 'y', is_finish: true, tool_call_statistic_type: 'edit_file' },
-          { content_type: 'tool', content: 'z', is_finish: true },
+          {
+            content_type: 'tool_group',
+            content: '',
+            is_finish: true,
+            param: { command_count: 3, read_file_count: 1, edit_file_count: 0, items: [] },
+          },
         ],
       }),
     );
@@ -76,7 +81,23 @@ describe('useAiQueryRun', () => {
     });
     await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 5000 });
 
-    expect(result.current.run.steps.map((step) => step.label)).toEqual(['panel.step.read_file', 'panel.step.edit_file', 'panel.step.command']);
+    expect(result.current.run.steps).toEqual([{ label: 'panel.step.command:3panel.step.separatorpanel.step.read_file:1', done: true }]);
+  });
+
+  it('skips a group that counted nothing rather than showing an empty step', async () => {
+    getMessageDetail.mockResolvedValue(
+      message({
+        response: [{ content_type: 'tool_group', content: '', is_finish: true, param: { command_count: 0, read_file_count: 0, edit_file_count: 0, items: [] } }],
+      }),
+    );
+    const { result } = setup();
+
+    await act(async () => {
+      result.current.ask('查主机 CPU');
+    });
+    await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 5000 });
+
+    expect(result.current.run.steps).toEqual([]);
   });
 
   it('finishes without a value when the assistant delivered none', async () => {

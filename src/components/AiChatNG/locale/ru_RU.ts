@@ -134,9 +134,10 @@ const ru_RU = {
     failed: 'Нет результата',
     close: 'Закрыть',
     step: {
-      command: 'Команда выполнена',
-      read_file: 'Файл прочитан',
-      edit_file: 'Файл записан',
+      command: 'Выполнено команд: {{count}}',
+      read_file: 'Прочитано файлов: {{count}}',
+      edit_file: 'Записано файлов: {{count}}',
+      separator: ' · ',
     },
     written_back: 'Записано в поле выше и выполнено',
     undo: 'Отменить',

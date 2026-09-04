@@ -134,9 +134,10 @@ const es_ES = {
     failed: 'Sin resultado',
     close: 'Cerrar',
     step: {
-      command: 'Comando ejecutado',
-      read_file: 'Archivo leído',
-      edit_file: 'Archivo escrito',
+      command: '{{count}} comando(s) ejecutado(s)',
+      read_file: '{{count}} archivo(s) leído(s)',
+      edit_file: '{{count}} archivo(s) escrito(s)',
+      separator: ' · ',
     },
     written_back: 'Escrito en el campo de arriba y ejecutado',
     undo: 'Deshacer',

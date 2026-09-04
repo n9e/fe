@@ -134,9 +134,10 @@ const en_US = {
     failed: 'No result',
     close: 'Close',
     step: {
-      command: 'Ran a command',
-      read_file: 'Read a file',
-      edit_file: 'Wrote a file',
+      command: 'Ran {{count}} command',
+      read_file: 'Read {{count}} file',
+      edit_file: 'Wrote {{count}} file',
+      separator: ' · ',
     },
     written_back: 'Written into the field above and run',
     undo: 'Undo',

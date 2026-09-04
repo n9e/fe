@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TFunction } from 'i18next';
 
 import { createChat, getMessageDetail, sendMessage } from '@/components/AiChatNG/services';
-import { EAiChatContentType, IAiChatMessage, IAiChatMessageResponse, IAiChatPageInfo } from '@/components/AiChatNG/types';
+import { EAiChatContentType, IAiChatMessage, IAiChatPageInfo, IAiChatToolCallGroup } from '@/components/AiChatNG/types';
 
 /**
  * One assistant turn, reduced to what a field-filling panel needs.
@@ -44,12 +44,20 @@ export interface AiQueryRun {
 
 const EMPTY_RUN: AiQueryRun = { phase: 'idle', steps: [] };
 
-/** Tool segments carry a coarse kind alongside the tool name; the kind is what
- *  a reader can act on ("it ran something", "it read a file"). */
-function stepLabel(response: IAiChatMessageResponse, t: TFunction): string {
-  if (response.tool_call_statistic_type === 'read_file') return t('panel.step.read_file');
-  if (response.tool_call_statistic_type === 'edit_file') return t('panel.step.edit_file');
-  return t('panel.step.command');
+/**
+ * What a run of tool calls amounts to, in the user's words.
+ *
+ * The backend merges consecutive tool calls into one group and hands over the
+ * counts, so this is one line per group rather than one per call — which is
+ * also the more readable of the two: eight rows all reading "ran a command"
+ * say less than "ran 8 commands".
+ */
+function stepLabel(group: IAiChatToolCallGroup, t: TFunction): string {
+  const parts: string[] = [];
+  if (group.command_count) parts.push(t('panel.step.command', { count: group.command_count }));
+  if (group.read_file_count) parts.push(t('panel.step.read_file', { count: group.read_file_count }));
+  if (group.edit_file_count) parts.push(t('panel.step.edit_file', { count: group.edit_file_count }));
+  return parts.join(t('panel.step.separator'));
 }
 
 function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
@@ -68,8 +76,11 @@ function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
         break;
       // Tool calls are the only other segment worth surfacing: they are the
       // evidence that the answer was checked rather than recalled.
-      case EAiChatContentType.Tool:
-        steps.push({ label: stepLabel(response, t), done: response.is_finish !== false });
+      case EAiChatContentType.ToolGroup:
+        if (response.param) {
+          const label = stepLabel(response.param, t);
+          if (label) steps.push({ label, done: response.is_finish !== false });
+        }
         break;
       default:
         break;

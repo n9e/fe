@@ -134,9 +134,10 @@ const id_ID = {
     failed: 'Tidak ada hasil',
     close: 'Tutup',
     step: {
-      command: 'Menjalankan perintah',
-      read_file: 'Membaca berkas',
-      edit_file: 'Menulis berkas',
+      command: 'Menjalankan {{count}} perintah',
+      read_file: 'Membaca {{count}} berkas',
+      edit_file: 'Menulis {{count}} berkas',
+      separator: ' · ',
     },
     written_back: 'Ditulis ke kolom di atas dan dijalankan',
     undo: 'Urungkan',

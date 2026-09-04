@@ -134,9 +134,10 @@ const zh_HK = {
     failed: '未能給出',
     close: '關閉',
     step: {
-      command: '執行命令',
-      read_file: '讀取檔案',
-      edit_file: '寫入檔案',
+      command: '執行了 {{count}} 次命令',
+      read_file: '讀取了 {{count}} 個檔案',
+      edit_file: '寫入了 {{count}} 個檔案',
+      separator: ' · ',
     },
     written_back: '已回寫到上方輸入框，並已執行',
     undo: '復原',

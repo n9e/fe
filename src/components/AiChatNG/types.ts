@@ -43,9 +43,10 @@ export enum EAiChatContentType {
   Markdown = 'markdown',
   Hint = 'hint',
   Query = 'query',
-  /** A tool the assistant ran. Carries `tool_call_statistic_type` (command /
-   *  read_file / edit_file) rather than content worth rendering as prose. */
-  Tool = 'tool',
+  /** A run of consecutive tool calls, already merged by the backend. The detail
+   *  it carries is counts, in `param`; the individual calls never arrive on
+   *  their own from message/detail. */
+  ToolGroup = 'tool_group',
   FormSelect = 'form_select',
   AlertRule = 'alert_rule',
   Dashboard = 'dashboard',
@@ -64,8 +65,15 @@ export interface IAiChatMessageResponse {
   is_finish?: boolean;
   is_from_ai?: boolean;
   hint_text?: string;
-  /** Set on `tool` segments: which kind of tool ran. */
-  tool_call_statistic_type?: 'command' | 'read_file' | 'edit_file';
+  /** Set on `tool_group` segments: how many of each kind of tool ran. */
+  param?: IAiChatToolCallGroup;
+}
+
+/** The `param` of a `tool_group` segment. */
+export interface IAiChatToolCallGroup {
+  command_count: number;
+  read_file_count: number;
+  edit_file_count: number;
 }
 
 export interface IAiChatMessage {

@@ -134,9 +134,10 @@ const pt_BR = {
     failed: 'Sem resultado',
     close: 'Fechar',
     step: {
-      command: 'Comando executado',
-      read_file: 'Arquivo lido',
-      edit_file: 'Arquivo gravado',
+      command: '{{count}} comando(s) executado(s)',
+      read_file: '{{count}} arquivo(s) lido(s)',
+      edit_file: '{{count}} arquivo(s) escrito(s)',
+      separator: ' · ',
     },
     written_back: 'Escrito no campo acima e executado',
     undo: 'Desfazer',
