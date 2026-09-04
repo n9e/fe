@@ -31,7 +31,7 @@ import { getBusiGroupsAlertMutes, deleteShields, updateShields } from '@/service
 import { shieldItem, strategyStatus } from '@/store/warningInterface';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import RefreshIcon from '@/components/RefreshIcon';
-import { DatasourceSelect } from '@/components/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
@@ -62,7 +62,7 @@ const Shield: React.FC = () => {
   const { t, i18n } = useTranslation('alertMutes');
   const history = useHistory();
   const location = useLocation();
-  const { datasourceList, groupedDatasourceList, businessGroup, busiGroups, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, datasourceCateOptions, businessGroup, busiGroups, darkMode } = useContext(CommonStateContext);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   let defaultFilter = {} as Filter;
   try {
@@ -364,14 +364,24 @@ const Shield: React.FC = () => {
                   refreshList();
                 }}
               />
-              <DatasourceSelect
+              <DatasourceSelectV3
                 style={{ width: 100 }}
                 filterKey='alertRule'
+                mode='multiple'
+                maxTagCount='responsive'
+                placeholder={t('common:datasource.name')}
+                datasourceCateList={datasourceCateOptions}
                 value={datasourceIds}
                 onChange={(val) => {
                   setDatasourceIds(val);
                   setCurrent(1);
                   saveState({ datasourceIds: val });
+                  history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
+                }}
+                onClear={() => {
+                  setDatasourceIds(undefined);
+                  setCurrent(1);
+                  saveState({ datasourceIds: undefined });
                   history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
                 }}
               />

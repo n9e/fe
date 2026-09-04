@@ -12,7 +12,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
-import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
 import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import getTextWidth from '@/utils/getTextWidth';
@@ -59,7 +59,7 @@ interface Props {
 const Event = (props: Props) => {
   const { t } = useTranslation('AlertHisEvents');
   const history = useHistory();
-  const { feats, datasourceList, profile } = useContext(CommonStateContext);
+  const { feats, datasourceList, datasourceCateOptions, profile } = useContext(CommonStateContext);
   const {
     hideHeader = false,
     hideTimeRangePicker = false,
@@ -294,14 +294,24 @@ const Event = (props: Props) => {
                 );
               })}
             </Select>
-            <DatasourceSelect
+            <DatasourceSelectV3
               style={{ width: 100 }}
               filterKey='alertRule'
+              mode='multiple'
+              maxTagCount='responsive'
+              placeholder={t('common:datasource.name')}
+              datasourceCateList={datasourceCateOptions}
               value={filter.datasource_ids}
               onChange={(val: number[]) => {
                 setFilter({
                   ...filter,
                   datasource_ids: val,
+                });
+              }}
+              onClear={() => {
+                setFilter({
+                  ...filter,
+                  datasource_ids: undefined,
                 });
               }}
             />

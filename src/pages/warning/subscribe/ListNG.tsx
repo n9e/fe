@@ -11,7 +11,7 @@ import { subscribeItem } from '@/store/warningInterface/subscribe';
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
-import { DatasourceSelect } from '@/components/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
 import EmptyGuide from '@/components/EmptyGuide';
@@ -62,7 +62,7 @@ const Subscribe = (props: Props) => {
   const { t, i18n } = useTranslation('alertSubscribes');
   const history = useHistory();
   const location = useLocation();
-  const { datasourceList, busiGroups, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, datasourceCateOptions, busiGroups, darkMode } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, readonly, canCreate, headerExtra, data, loading, setRefreshFlag, linkTarget, gids, groupSwitchCount } = props;
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
@@ -361,14 +361,24 @@ const Subscribe = (props: Props) => {
               refreshList();
             }}
           />
-          <DatasourceSelect
+          <DatasourceSelectV3
             style={{ width: 100 }}
             filterKey='alertRule'
+            mode='multiple'
+            maxTagCount='responsive'
+            placeholder={t('common:datasource.name')}
+            datasourceCateList={datasourceCateOptions}
             value={datasourceIds}
             onChange={(val) => {
               setDatasourceIds(val);
               setCurrent(1);
               saveState({ datasourceIds: val });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
+            }}
+            onClear={() => {
+              setDatasourceIds(undefined);
+              setCurrent(1);
+              saveState({ datasourceIds: undefined });
               history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
           />

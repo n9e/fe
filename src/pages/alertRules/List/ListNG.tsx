@@ -12,7 +12,7 @@ import { CommonStateContext } from '@/App';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
-import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import TableColumnSelect, { getDefaultColumnsConfigs, setDefaultColumnsConfigs, buildColumnOptions } from '@/components/TableColumnSelect';
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
@@ -62,7 +62,7 @@ interface Props {
 
 export default function AlertRules(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
-  const { busiGroups, datasourceList, feats } = useContext(CommonStateContext);
+  const { busiGroups, datasourceList, datasourceCateOptions, feats } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide, gids, groupSwitchCount } = props;
   const history = useHistory();
   const location = useLocation();
@@ -406,11 +406,14 @@ export default function AlertRules(props: Props) {
               fetchData();
             }}
           />
-          <DatasourceSelect
-            style={{ minWidth: 100 }}
+          <DatasourceSelectV3
+            style={{ width: 100 }}
             filterKey='alertRule'
-            disableResponsive
             showHost
+            mode='multiple'
+            maxTagCount='responsive'
+            placeholder={t('common:datasource.name')}
+            datasourceCateList={datasourceCateOptions}
             value={filter.datasourceIds}
             onChange={(val) => {
               const newFilter = {
@@ -418,6 +421,12 @@ export default function AlertRules(props: Props) {
                 datasourceIds: val,
               };
               handleFilterChange(newFilter);
+            }}
+            onClear={() => {
+              handleFilterChange({
+                ...filter,
+                datasourceIds: undefined,
+              });
             }}
           />
           <Select
