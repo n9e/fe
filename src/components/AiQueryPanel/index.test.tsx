@@ -163,6 +163,49 @@ describe('AiQueryPanel', () => {
     expect(screen.getByText('查主机 CPU')).toBeTruthy();
   });
 
+  it('does not write a carried answer back when a follow-up only asks something', async () => {
+    const { rerender } = renderLive();
+    await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
+    run = { phase: 'done', tried: 0, value: 'up' };
+    await act(async () => {
+      rerender(<Host />);
+    });
+    await userEvent.click(screen.getByText('panel.undo'));
+    adopted.length = 0;
+
+    // A follow-up that ends on a question keeps the old card for context — but
+    // the value the user just undid must not be silently put back and re-run.
+    await userEvent.type(screen.getByPlaceholderText('panel.follow_up_placeholder'), '按 pod 分组{enter}');
+    run = { phase: 'done', tried: 0, carried: 'up', question: '要用哪个数据源？' };
+    await act(async () => {
+      rerender(<Host />);
+    });
+
+    expect(adopted).toEqual([]);
+    expect(screen.getByText('要用哪个数据源？')).toBeTruthy();
+  });
+
+  it('undoes back to the user own text, not to the previous answer', async () => {
+    const { rerender } = renderLive();
+    await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
+    run = { phase: 'done', tried: 0, value: 'up' };
+    await act(async () => {
+      rerender(<Host />);
+    });
+    await userEvent.type(screen.getByPlaceholderText('panel.follow_up_placeholder'), '按 pod 分组{enter}');
+    run = { phase: 'done', tried: 0, value: 'sum by (pod) (up)' };
+    await act(async () => {
+      rerender(<Host />);
+    });
+    adopted.length = 0;
+
+    await userEvent.click(screen.getByText('panel.undo'));
+
+    // Two refinements deep, undo still lands on what the user had, not on the
+    // assistant's own earlier answer.
+    expect(adopted).toEqual(['']);
+  });
+
   it('says nothing changed when the answer is what the field already held', async () => {
     const { props, rerender } = renderPanel({ value: 'up' });
     await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
@@ -208,7 +251,7 @@ describe('AiQueryPanel', () => {
     expect(stop).toHaveBeenCalledTimes(1);
   });
 
-  it('puts retry inside the failure, and the raw error out of the way', async () => {
+  it('hands the question back after a failure, so send is the retry', async () => {
     const { props, rerender } = renderPanel();
     await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
     run = { phase: 'failed', tried: 0, error: 'dial tcp 127.0.0.1:443: connection refused' };
@@ -223,7 +266,10 @@ describe('AiQueryPanel', () => {
     await userEvent.click(screen.getByText('panel.error_detail'));
     expect(screen.getByText(/dial tcp/)).toBeTruthy();
 
-    await userEvent.click(screen.getByText('panel.retry'));
+    // The question is back in the box, editable, and Send re-asks it.
+    const input = screen.getByPlaceholderText('panel.follow_up_placeholder') as HTMLInputElement;
+    expect(input.value).toBe('查主机 CPU');
+    await userEvent.click(screen.getByText('panel.send'));
     expect(ask).toHaveBeenCalledWith('查主机 CPU');
   });
 

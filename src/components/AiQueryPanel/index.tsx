@@ -73,8 +73,9 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   // does not trip the effect below into putting the value straight back.
   const filled = !!run.value && value === run.value;
   // The answer the user already had. Nothing was written, so there is nothing
-  // to undo and nothing to boast about.
-  const unchanged = !!run.value && run.value === baseline;
+  // to undo and nothing to boast about — but only while the field still holds
+  // it; a later hand edit is a change like any other.
+  const unchanged = filled && run.value === baseline;
 
   // Focus on open, and again when a turn ends — unless the user has moved on to
   // the query box themselves, in which case stealing focus is worse than none.
@@ -84,6 +85,16 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
     if (active && active !== document.body && !rootRef.current?.contains(active)) return;
     inputRef.current?.focus({ preventScroll: true });
   }, [running]);
+
+  // A turn that delivered nothing puts the question back in the box, so the
+  // send button is the retry — and the user can sharpen it first, which is what
+  // the timeout copy tells them to do anyway.
+  useEffect(() => {
+    if (run.phase === 'failed' || run.phase === 'stopped' || (run.phase === 'done' && !run.value && !run.question)) {
+      setQuestion((current) => current || lastSent);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [run.phase, run.value, run.question]);
 
   // Adopting is a side effect of an answer arriving, not of a render.
   useEffect(() => {
@@ -102,7 +113,9 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
     // raised is part of that task, not a new one.
     if (!task) setTask(next);
     setLastSent(next);
-    setBaseline(value ?? '');
+    // Only when the field is not already holding our own write: otherwise a
+    // third refinement would leave the user's own text unrecoverable.
+    if (!filled) setBaseline(value ?? '');
     // A fresh run may legitimately deliver the same answer again — after an
     // undo, that is precisely what the user is asking for.
     written.current = undefined;
@@ -115,12 +128,13 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   // This turn delivered something new; any value present on the other outcomes
   // was carried forward from an earlier turn and is no longer the headline.
   const cardLeads = run.phase === 'done' && !!run.value && !run.question;
+  const shown = run.value ?? run.carried;
   const placeholder = run.question ? t('panel.answer_placeholder') : task ? t('panel.follow_up_placeholder') : t('panel.first_placeholder', { example: examplePrompt });
 
   // The tally is only evidence when it says what it ran against.
   const tried = run.tried > 0 && contextLabel ? t('panel.tried', { count: run.tried, name: contextLabel }) : '';
 
-  const card = (lead: boolean) => (
+  const card = (shownValue: string, lead: boolean) => (
     <div className={`overflow-hidden rounded fc-border border-antd ${lead ? '' : 'opacity-60'}`}>
       {settled && (
         <div className='flex items-center gap-1 bg-primary/10 px-3 py-1.5 text-[12px]' role='status' aria-live='polite'>
@@ -130,7 +144,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
             <>
               <CheckCircleFilled className='text-[12px] text-primary' />
               <span className='mr-auto pl-1 text-primary'>{t('panel.written_back')}</span>
-              <Button type='text' size='small' icon={<UndoOutlined />} onClick={() => latestAdopt.current(baseline ?? '')}>
+              <Button type='text' size='small' icon={<UndoOutlined />} onClick={() => onAdopt(baseline ?? '')}>
                 {t('panel.undo')}
               </Button>
             </>
@@ -139,13 +153,13 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
               <span className='mr-auto text-main'>{value === baseline ? t('panel.restored') : t('panel.field_changed')}</span>
               {/* Re-filling is a local write, not another model run: asking
                   again could return a different query. */}
-              <Button type='text' size='small' onClick={() => latestAdopt.current(run.value as string)}>
+              <Button type='text' size='small' onClick={() => onAdopt(shownValue)}>
                 {t('panel.refill')}
               </Button>
             </>
           )}
           <Tooltip title={t('panel.copy')}>
-            <Button type='text' size='small' icon={<CopyOutlined />} aria-label={t('panel.copy')} onClick={() => copyToClipBoard(run.value as string)} />
+            <Button type='text' size='small' icon={<CopyOutlined />} aria-label={t('panel.copy')} onClick={() => copyToClipBoard(shownValue)} />
           </Tooltip>
           {/* Only when this card is the turn's own outcome: the blocks below
               carry their own re-run, and two of them 30px apart is a choice
@@ -160,7 +174,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
       {/* The query itself, only while the field does not hold it. When it does,
           it is already legible one row above — and repeating it costs the chart
           more height than it costs the reader effort to look up. */}
-      {!filled && !unchanged && <pre className='m-0 overflow-x-auto whitespace-pre-wrap break-words border-0 border-t border-solid border-antd bg-fc-100 px-3 py-2 font-mono text-[12px] text-title'>{run.value}</pre>}
+      {!filled && !unchanged && <pre className='m-0 overflow-x-auto whitespace-pre-wrap break-words border-0 border-t border-solid border-antd bg-fc-100 px-3 py-2 font-mono text-[12px] text-title'>{shownValue}</pre>}
       {run.explanation && (
         <Tooltip title={run.explanation}>
           <div className='line-clamp-2 border-0 border-t border-solid border-antd px-3 py-2 text-[12px] leading-relaxed text-main'>{run.explanation}</div>
@@ -181,34 +195,19 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
     if (run.phase === 'stopped') {
       return <div className='border-0 border-l-2 border-solid border-antd bg-fc-100 px-3 py-2 text-[12px] text-main'>{t('panel.stopped_hint')}</div>;
     }
-    if (run.phase === 'done' && !run.value) {
+    if (run.phase === 'done' && !run.value && !run.question) {
       return (
-        <div className='flex items-start gap-2 border-0 border-l-2 border-solid border-antd bg-fc-100 px-3 py-2'>
-          <div className='min-w-0 flex-1'>
-            <div className='text-[12px] font-medium text-title'>{t('panel.nothing_delivered')}</div>
-            {run.explanation && <div className='mt-1 whitespace-pre-wrap text-[12px] leading-relaxed text-main'>{run.explanation}</div>}
-          </div>
-          <Button size='small' icon={<RedoOutlined />} onClick={() => send(task)}>
-            {t('panel.regenerate')}
-          </Button>
+        <div className='border-0 border-l-2 border-solid border-antd bg-fc-100 px-3 py-2'>
+          <div className='text-[12px] font-medium text-title'>{t('panel.nothing_delivered')}</div>
+          {run.explanation && <div className='mt-1 whitespace-pre-wrap text-[12px] leading-relaxed text-main'>{run.explanation}</div>}
         </div>
       );
     }
     if (run.phase === 'failed') {
       return (
         <div className='border-0 border-l-2 border-solid border-error bg-fc-100 px-3 py-2' role='status' aria-live='polite'>
-          <div className='flex items-start gap-2'>
-            <div className='min-w-0 flex-1'>
-              <div className='text-[12px] font-medium text-title'>{run.errorTitle || t('panel.failed_title')}</div>
-              <div className='mt-1 whitespace-pre-wrap text-[12px] leading-relaxed text-main'>{run.needsModelConfig ? t('panel.no_model_hint') : run.explanation || t('panel.failed_hint')}</div>
-            </div>
-            {/* Retrying a missing model configuration just fails again. */}
-            {lastSent && !run.needsModelConfig && (
-              <Button size='small' icon={<RedoOutlined />} onClick={() => send(lastSent)}>
-                {t('panel.retry')}
-              </Button>
-            )}
-          </div>
+          <div className='text-[12px] font-medium text-title'>{run.errorTitle || t('panel.failed_title')}</div>
+          <div className='mt-1 whitespace-pre-wrap text-[12px] leading-relaxed text-main'>{run.needsModelConfig ? t('panel.no_model_hint') : t('panel.failed_hint')}</div>
           {/* The raw failure exists to be pasted into a ticket, not read:
               available on demand, never the first thing on screen. */}
           {run.error && (
@@ -285,9 +284,9 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
 
             {/* Whatever this turn produced leads. A card carried over from an
                 earlier turn follows it, dimmed — it is context now, not news. */}
-            {cardLeads && run.value && card(true)}
+            {cardLeads && run.value && card(run.value, true)}
             {turnBlock}
-            {!cardLeads && run.value && settled && card(false)}
+            {!cardLeads && shown && settled && card(shown, false)}
 
             {settled && cardLeads && tried && <div className='text-[11px] text-hint'>{tried}</div>}
           </div>

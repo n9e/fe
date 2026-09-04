@@ -139,7 +139,8 @@ describe('useAiQueryRun', () => {
     await waitFor(() => expect(result.current.run.phase).toBe('failed'), { timeout: 5000 });
 
     expect(result.current.run.error).toBe('model unavailable');
-    expect(result.current.run.explanation).toBe('正在检查指标');
+    // What it was saying when the request died is not why it died.
+    expect(result.current.run.explanation).toBeUndefined();
   });
 
   it('carries the assistant own words about what it is doing right now', async () => {
@@ -197,15 +198,29 @@ describe('useAiQueryRun', () => {
     // Asking again mid-run is normal; the older run must not write back over
     // the newer one when its poll finally lands.
     getMessageDetail.mockResolvedValue(message({ response: [{ content_type: 'query', content: 'first' }] }));
-    const { result, unmount } = setup();
+    const { result } = setup();
+    await act(async () => {
+      result.current.ask('查主机 CPU');
+    });
+
+    getMessageDetail.mockResolvedValue(message({ is_finish: false, cur_step: '第二轮', response: [] }));
+    await act(async () => {
+      result.current.ask('按 pod 分组');
+    });
+    await waitFor(() => expect(result.current.run.activity).toBe('第二轮'), { timeout: 5000 });
+
+    expect(result.current.run.value).toBeUndefined();
+  });
+
+  it('keeps waiting through a dropped poll rather than failing the run', async () => {
+    getMessageDetail.mockRejectedValueOnce(new Error('network blip')).mockResolvedValue(message({ response: [{ content_type: 'query', content: 'up' }] }));
+    const { result } = setup();
 
     await act(async () => {
       result.current.ask('查主机 CPU');
     });
-    unmount();
-    const settled = result.current.run;
+    await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 8000 });
 
-    await new Promise((resolve) => setTimeout(resolve, 60));
-    expect(result.current.run).toBe(settled);
+    expect(result.current.run.value).toBe('up');
   });
 });

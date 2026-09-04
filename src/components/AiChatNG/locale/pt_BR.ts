@@ -142,7 +142,6 @@ const pt_BR = {
     nothing_delivered: 'Nenhuma expressão utilizável',
     failed_title: "Generation failed",
     failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
-    retry: "Retry",
     stop: "Stop",
     refill: "Fill in again",
     restored: "Your original content is back",

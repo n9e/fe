@@ -142,7 +142,6 @@ const ru_RU = {
     nothing_delivered: 'Нет пригодного выражения',
     failed_title: "Generation failed",
     failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
-    retry: "Retry",
     stop: "Stop",
     refill: "Fill in again",
     restored: "Your original content is back",

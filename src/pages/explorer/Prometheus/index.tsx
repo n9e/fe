@@ -181,6 +181,10 @@ export default function Prometheus(props: IProps) {
           </>
         }
         onChange={(newPromQL) => {
+          // Keep our copy of the query in step with the box. The AI panel asks
+          // this page what the field holds so it can tell its own writes from
+          // the user's; a stale answer there means undo deletes their text.
+          setPromql(newPromQL ?? '');
           if (newPromQL && newPromQL !== defaultPromQL) {
             // 用户改了查询 = 已接管，体检横幅让位
             setProbeBannerVisible(false);

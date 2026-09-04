@@ -142,7 +142,6 @@ const ko_KR = {
     nothing_delivered: '사용할 수 있는 식이 없습니다',
     failed_title: "Generation failed",
     failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
-    retry: "Retry",
     stop: "Stop",
     refill: "Fill in again",
     restored: "Your original content is back",

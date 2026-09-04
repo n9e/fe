@@ -128,7 +128,7 @@ const en_US = {
   panel: {
     open: 'Generate a query with AI',
     untitled: "AI query",
-    intro: "Run against this data source first to confirm it returns data, then filled into the field above. Usually takes half a minute to a minute.",
+    intro: "Tries it against this data source first to confirm it returns data, then fills it into the field above. Usually takes half a minute to a minute.",
     based_on: "Data source: {{name}}",
     running: 'Working',
     close: 'Close',
@@ -141,8 +141,7 @@ const en_US = {
     error_detail: "Error detail",
     nothing_delivered: "No usable query found",
     failed_title: "Generation failed",
-    failed_hint: "Try again; if it keeps failing, send the error detail below to an administrator.",
-    retry: "Retry",
+    failed_hint: "Try again; if it keeps failing, contact an administrator.",
     stop: "Stop",
     refill: "Fill in again",
     restored: "Restored what was there before",

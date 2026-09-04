@@ -142,7 +142,6 @@ const ja_JP = {
     nothing_delivered: '使用できる式がありません',
     failed_title: "Generation failed",
     failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
-    retry: "Retry",
     stop: "Stop",
     refill: "Fill in again",
     restored: "Your original content is back",

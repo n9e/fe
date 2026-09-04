@@ -38,8 +38,13 @@ export interface AiQueryRun {
   tried: number;
   /** What the assistant is doing right now, in its own words. Only while running. */
   activity?: string;
-  /** The value to write into the field. Only set when the assistant delivered one. */
+  /** What this turn delivered. Only set when the assistant produced a value.
+   *  Never carried over: a caller that cannot tell this turn's answer from an
+   *  older one will write an old answer back into the field. */
   value?: string;
+  /** The last value an earlier turn delivered, kept so a follow-up that ends on
+   *  a question or an error does not take the standing answer off the screen. */
+  carried?: string;
   /** What the assistant said about it, or — when nothing was delivered — why. */
   explanation?: string;
   /** Set when the turn ended on a question instead of an answer. Answering is
@@ -93,11 +98,12 @@ function reduceMessage(message: IAiChatMessage): AiQueryRun {
     return {
       phase: 'failed',
       tried,
-      explanation: said.join('\n\n') || undefined,
+      // Deliberately no explanation: what the assistant was narrating when the
+      // request died is not why it died, and showing it there crowds out the
+      // one line that says what to do about it.
       // err_title is the sentence written for a person; err_msg is the detail.
-      // Reducing both to one string threw the readable half away.
       errorTitle: message.err_title || undefined,
-      error: message.err_msg || undefined,
+      error: message.err_msg || message.err_title || undefined,
       needsModelConfig: message.err_code === NO_MODEL_ERR_CODE,
     };
   }
@@ -141,7 +147,7 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
     // Keep the answer already on screen: a follow-up refines what is there, and
     // blanking the panel mid-refinement takes away the undo for a field that is
     // still holding the previous value.
-    setRun((previous) => ({ phase: 'running', tried: 0, value: previous.value }));
+    setRun((previous) => ({ phase: 'running', tried: 0, carried: previous.value ?? previous.carried }));
     sentRef.current = undefined;
 
     try {
@@ -193,8 +199,9 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
         consecutiveFailures = 0;
         const next = reduceMessage(detail);
         // A follow-up that ends on a question, a miss or an error still leaves
-        // the previous answer in the field, so it keeps its card and its undo.
-        setRun((previous) => ({ ...next, value: next.value ?? previous.value }));
+        // the previous answer in the field, so it keeps its card and its undo —
+        // under its own name, so it is never mistaken for this turn's answer.
+        setRun((previous) => ({ ...next, carried: previous.carried }));
         if (next.phase !== 'running') return;
       }
     } catch (error) {
