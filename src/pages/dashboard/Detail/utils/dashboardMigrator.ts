@@ -259,8 +259,12 @@ export default function dashboardMigrator(data: unknown): LegacyDashboard {
         }
         const migratedPanel = migratePanelToV4(panelCopy);
         // Row 采用 Grafana 式顶层分段，不支持嵌套；仅修正顶层 row 的折叠状态。
-        return migratedPanel.type === 'row' ? { ...migratedPanel, collapsed: !migratedPanel.collapsed } : migratedPanel;
+        return migratedPanel.type === 'row' ? { ...migratedPanel, collapsed: migratedPanel.collapsed === undefined ? false : !migratedPanel.collapsed } : migratedPanel;
       })
     : dashboard.panels;
-  return { ...dashboard, version: '4.1.0', panels: panels.map(removePanelVersions) };
+  return {
+    ...dashboard,
+    version: '4.1.0',
+    panels: panels.map(removePanelVersions).map((panel) => (panel.type === 'row' && panel.collapsed === undefined ? { ...panel, collapsed: false } : panel)),
+  };
 }
