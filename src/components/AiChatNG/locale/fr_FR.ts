@@ -143,8 +143,6 @@ const fr_FR = {
     written_back: 'Inséré dans le champ ci-dessus et exécuté',
     undo: 'Annuler',
     regenerate: 'Régénérer',
-    another_way: 'Autre formulation',
-    another_way_prompt: 'Écris-la autrement — une expression équivalente, formulée différemment',
     send: 'Envoyer',
     follow_up_placeholder: 'Continuez, par ex. « grouper par pod »',
     answer_below: 'Répondez ci-dessous pour continuer',
@@ -166,11 +164,13 @@ const fr_FR = {
     stopped_hint: "Stopped. The field above is unchanged.",
     copy: "Copy",
     field_changed: "The field has been edited",
-    timeout_title: "Five minutes with no result",
+    timeout_title: "{{minutes}} minutes with no result",
     unreachable_title: "Cannot reach the AI service",
     unreachable_hint: "Check the network and try again.",
     no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
     example_fallback: "CPU usage per host",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
 
   },
 };

@@ -71,7 +71,8 @@ function stepLabel(group: IAiChatToolCallGroup, t: TFunction): string {
   const parts: string[] = [];
   if (group.command_count) parts.push(t('panel.step.command', { count: group.command_count }));
   if (group.read_file_count) parts.push(t('panel.step.read_file', { count: group.read_file_count }));
-  if (group.edit_file_count) parts.push(t('panel.step.edit_file', { count: group.edit_file_count }));
+  // edit_file is the agent writing its own scratch files — not evidence about
+  // the query, and alarming to read on a page that touches production.
   return parts.join(t('panel.step.separator'));
 }
 
@@ -145,7 +146,14 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
   const latest = useRef({ pageFrom, t });
   latest.current = { pageFrom, t };
 
-  useEffect(() => () => { runIdRef.current += 1; }, []);
+  useEffect(
+    () => () => {
+      runIdRef.current += 1;
+      const sent = sentRef.current;
+      if (sent) cancelMessage(sent).catch(() => undefined);
+    },
+    [],
+  );
 
   const ask = useCallback(async (question: string) => {
     const asked = question.trim();
@@ -157,6 +165,7 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
     // blanking the panel mid-refinement takes away the undo for a field that is
     // still holding the previous value.
     setRun((previous) => ({ phase: 'running', steps: [], value: previous.value }));
+    sentRef.current = undefined;
 
     try {
       if (!chatIdRef.current) {
@@ -169,7 +178,11 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
         chat_id: chatIdRef.current,
         query: { content: asked, page_from: latest.current.pageFrom },
       });
-      if (!isCurrent()) return;
+      if (!isCurrent()) {
+        // Stopped while the message was in flight: it exists now, so cancel it.
+        cancelMessage(sent).catch(() => undefined);
+        return;
+      }
       sentRef.current = sent;
 
       const deadline = Date.now() + RUN_TIMEOUT_MS;
@@ -183,7 +196,7 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
             ...previous,
             phase: 'failed',
             activity: undefined,
-            errorTitle: latest.current.t('panel.timeout_title'),
+            errorTitle: latest.current.t('panel.timeout_title', { minutes: RUN_TIMEOUT_MS / 60000 }),
             explanation: latest.current.t('panel.timeout'),
           }));
           return;
@@ -201,7 +214,9 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
         if (!isCurrent()) return;
         consecutiveFailures = 0;
         const next = reduceMessage(detail, latest.current.t);
-        setRun(next);
+        // A follow-up that ends on a question, a miss or an error still leaves
+        // the previous answer in the field, so it keeps its card and its undo.
+        setRun((previous) => ({ ...next, value: next.value ?? previous.value }));
         if (next.phase !== 'running') return;
       }
     } catch (error) {

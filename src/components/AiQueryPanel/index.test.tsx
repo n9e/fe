@@ -140,23 +140,54 @@ describe('AiQueryPanel', () => {
     expect(props.onAdopt).not.toHaveBeenCalled();
   });
 
-  it('keeps the original question when asked for another way', async () => {
+  it('regenerates the task, not the last thing typed into the box', async () => {
     const { props, rerender } = renderPanel();
     await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
-    // There has to be a query before rewriting it means anything.
     run = { phase: 'done', steps: [], value: 'up' };
     await act(async () => {
-      rerender(<AiQueryPanel {...props} />);
+      rerender(<AiQueryPanel {...props} value='up' />);
     });
+    await userEvent.type(screen.getByPlaceholderText('panel.follow_up_placeholder'), '按 pod 分组{enter}');
     ask.mockClear();
 
-    await userEvent.click(screen.getByText('panel.another_way'));
-    expect(ask).toHaveBeenCalledWith('panel.another_way_prompt');
-    // The panel still belongs to the question the user asked...
+    await userEvent.click(screen.getByLabelText('panel.regenerate'));
+
+    // A follow-up refines the task; it does not become the task.
+    expect(ask).toHaveBeenCalledWith('查主机 CPU');
     expect(screen.getByText('查主机 CPU')).toBeTruthy();
-    // ...so that is what Regenerate resends.
-    await userEvent.click(screen.getByText('panel.regenerate'));
-    expect(ask).toHaveBeenLastCalledWith('查主机 CPU');
+  });
+
+  it('says nothing changed when the answer is what the field already held', async () => {
+    const { props, rerender } = renderPanel({ value: 'up' });
+    await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
+    run = { phase: 'done', steps: [], value: 'up' };
+    await act(async () => {
+      rerender(<AiQueryPanel {...props} value='up' />);
+    });
+
+    expect(screen.getByText('panel.unchanged')).toBeTruthy();
+    // Nothing was written, so there is nothing to undo — offering one would
+    // arm a button that wipes the user's own text.
+    expect(screen.queryByText('panel.undo')).toBeNull();
+    expect(props.onAdopt).not.toHaveBeenCalled();
+  });
+
+  it('aims undo at what the field held when the run started', async () => {
+    const { props, rerender } = renderPanel({ value: 'mine' });
+    await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
+    run = { phase: 'done', steps: [], value: 'up' };
+    await act(async () => {
+      rerender(<AiQueryPanel {...props} value='up' />);
+    });
+    expect(screen.getByText('panel.written_back')).toBeTruthy();
+
+    // The page restores the original; the panel should recognise it as such
+    // rather than reporting the user edited the field.
+    await act(async () => {
+      rerender(<AiQueryPanel {...props} value='mine' />);
+    });
+    expect(screen.getByText('panel.restored')).toBeTruthy();
+    expect(screen.queryByText('panel.field_changed')).toBeNull();
   });
 
   it('offers a way out of a run instead of locking the panel for five minutes', async () => {

@@ -143,8 +143,6 @@ const ko_KR = {
     written_back: '위 입력란에 반영하고 실행했습니다',
     undo: '실행 취소',
     regenerate: '다시 생성',
-    another_way: '다른 방식',
-    another_way_prompt: '동일하지만 다르게 표현한 식을 주세요',
     send: '보내기',
     follow_up_placeholder: '이어서 말하세요, 예: "pod별로 집계"',
     answer_below: '아래에 답하면 계속합니다',
@@ -166,11 +164,13 @@ const ko_KR = {
     stopped_hint: "Stopped. The field above is unchanged.",
     copy: "Copy",
     field_changed: "The field has been edited",
-    timeout_title: "Five minutes with no result",
+    timeout_title: "{{minutes}} minutes with no result",
     unreachable_title: "Cannot reach the AI service",
     unreachable_hint: "Check the network and try again.",
     no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
     example_fallback: "CPU usage per host",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
 
   },
 };

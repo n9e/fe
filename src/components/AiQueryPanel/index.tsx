@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Input, Spin, Tooltip } from 'antd';
 import type { InputRef } from 'antd';
-import { CheckCircleFilled, CloseOutlined, CopyOutlined, LoadingOutlined, RedoOutlined, SwapOutlined, UndoOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CloseOutlined, CopyOutlined, LoadingOutlined, RedoOutlined, UndoOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { copyToClipBoard } from '@/utils';
@@ -56,6 +56,9 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   // 那个" is what was last said, not what is being worked on.
   const [task, setTask] = useState('');
   const [lastSent, setLastSent] = useState('');
+  // What the field held when this run started. Undo aims here, and an answer
+  // equal to it is not a change worth announcing or offering to reverse.
+  const [baseline, setBaseline] = useState<string>();
   const [showError, setShowError] = useState(false);
   const written = useRef<string>();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -64,12 +67,14 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   latestAdopt.current = onAdopt;
 
   const running = run.phase === 'running';
-  const settled = run.phase === 'done' || run.phase === 'failed' || run.phase === 'stopped';
-  // Whether the field still holds what we produced — asked of the field itself,
-  // so a hand edit or an undo is noticed rather than assumed. `written` is a
-  // separate question: it is the write-once guard, so undoing does not trip the
-  // effect below into putting the value straight back.
+  const settled = run.phase !== 'idle' && !running;
+  // Asked of the field itself, so a hand edit or an undo is noticed rather than
+  // assumed. `written` is a separate question: the write-once guard, so undoing
+  // does not trip the effect below into putting the value straight back.
   const filled = !!run.value && value === run.value;
+  // The answer the user already had. Nothing was written, so there is nothing
+  // to undo and nothing to boast about.
+  const unchanged = !!run.value && run.value === baseline;
 
   // Focus on open, and again when a turn ends — unless the user has moved on to
   // the query box themselves, in which case stealing focus is worse than none.
@@ -85,12 +90,12 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   // Adopting is a side effect of an answer arriving, not of a render. A new run
   // forgets what was written, so asking again fills even an identical answer.
   useEffect(() => {
-    if (run.phase === 'running') return;
-    if (run.phase === 'done' && run.value && run.value !== written.current) {
-      written.current = run.value;
-      latestAdopt.current(run.value);
-    }
-  }, [run.phase, run.value]);
+    if (run.phase !== 'done' || !run.value || run.value === written.current) return;
+    written.current = run.value;
+    // Writing the value the field already holds would arm an undo that wipes
+    // the user's own text.
+    if (run.value !== baseline) latestAdopt.current(run.value);
+  }, [run.phase, run.value, baseline]);
 
   const send = (text: string) => {
     const next = text.trim();
@@ -99,6 +104,10 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
     // raised is part of that task, not a new one.
     if (!task) setTask(next);
     setLastSent(next);
+    setBaseline(value ?? '');
+    // A fresh run may legitimately deliver the same answer again — after an
+    // undo, that is precisely what the user is asking for.
+    written.current = undefined;
     setQuestion('');
     setShowError(false);
     ask(next);
@@ -107,7 +116,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   const header = task || t('panel.untitled');
   const awaitingAnswer = !!run.question;
   const evidence = run.steps.map((step) => step.label).join(t('panel.step.separator'));
-  const hasBody = running || settled;
+  const hasBody = run.phase !== 'idle';
   const placeholder = awaitingAnswer ? t('panel.answer_placeholder') : task ? t('panel.follow_up_placeholder') : t('panel.first_placeholder', { example: examplePrompt ?? t('panel.example_fallback') });
 
   const chip = (tone: string, label: string) => <span className={`shrink-0 rounded px-1.5 py-0.5 text-[11px] ${tone}`}>{label}</span>;
@@ -138,7 +147,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
       }}
     >
       <div className='flex items-center gap-2 border-0 border-b border-solid border-antd px-4 py-2'>
-        <Tooltip title={task || undefined}>
+        <Tooltip title={task}>
           <span className='min-w-0 flex-1 truncate text-[13px] font-medium text-title'>{header}</span>
         </Tooltip>
         {/* The data source decides whether the answer is right at all, so it is
@@ -150,12 +159,21 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
           </Tooltip>
         ) : null}
         {statusChip}
-        <Button type='text' size='small' icon={<CloseOutlined />} onClick={onClose} aria-label={t('panel.close')} />
+        <Button
+          type='text'
+          size='small'
+          icon={<CloseOutlined />}
+          aria-label={t('panel.close')}
+          onClick={() => {
+            if (running) stop();
+            onClose();
+          }}
+        />
       </div>
 
       {/* Before the first ask, say what this does rather than sit blank — one
           line, not a wall of canned questions: this is the slim surface. */}
-      {!hasBody && <div className='px-4 py-3 text-[12px] leading-relaxed text-hint'>{t('panel.intro')}</div>}
+      {!hasBody && <div className='px-4 py-3 text-[12px] leading-relaxed text-hint'>{contextLabel ? t('panel.intro') : t('panel.no_context')}</div>}
 
       {hasBody && (
         <div className='max-h-[280px] overflow-y-auto px-4 py-3'>
@@ -178,57 +196,45 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
                 screen, dimmed, while a follow-up refines it. */}
             {run.value && (
               <div className={`overflow-hidden rounded fc-border border-antd ${running ? 'opacity-60' : ''}`}>
-                <pre className='m-0 overflow-x-auto whitespace-pre-wrap break-words bg-fc-100 px-3 py-2 font-mono text-[12px] text-title'>{run.value}</pre>
-                {run.explanation && (
-                  <div className='border-0 border-t border-solid border-antd px-3 py-2 text-[12px] leading-relaxed text-main'>
-                    <div className='whitespace-pre-wrap'>{run.explanation}</div>
-                  </div>
-                )}
+                {/* The outcome leads the card. Put it at the foot and a long
+                    explanation pushes the one line they must not miss below the
+                    panel's own scroll. */}
                 {settled && (
-                  <div className='flex flex-wrap items-center gap-1 border-0 border-t border-solid border-antd bg-primary/10 px-3 py-1.5 text-[12px]' role='status' aria-live='polite'>
-                    {filled ? (
+                  <div className='flex items-center gap-1 border-0 border-b border-solid border-antd bg-primary/10 px-3 py-1.5 text-[12px]' role='status' aria-live='polite'>
+                    {unchanged ? (
+                      <span className='mr-auto text-main'>{t('panel.unchanged')}</span>
+                    ) : filled ? (
                       <>
                         <CheckCircleFilled className='text-[12px] text-primary' />
                         <span className='mr-auto pl-1 text-primary'>{t('panel.written_back')}</span>
-                        <Button
-                          type='text'
-                          size='small'
-                          icon={<UndoOutlined />}
-                          onClick={onUndo}
-                        >
+                        <Button type='text' size='small' icon={<UndoOutlined />} onClick={onUndo}>
                           {t('panel.undo')}
                         </Button>
                       </>
                     ) : (
                       <>
-                        <span className='mr-auto text-main'>{value ? t('panel.field_changed') : t('panel.restored')}</span>
+                        <span className='mr-auto text-main'>{value === baseline ? t('panel.restored') : t('panel.field_changed')}</span>
                         {/* Re-filling is a local write, not another model run:
                             asking again could return a different query. */}
-                        <Button
-                          type='text'
-                          size='small'
-                          onClick={() => latestAdopt.current(run.value as string)}
-                        >
+                        <Button type='text' size='small' onClick={() => latestAdopt.current(run.value as string)}>
                           {t('panel.refill')}
                         </Button>
                       </>
                     )}
-                    {/* The actions belong to the result, next to the undo that
-                        also acts on it — not stacked in front of the input. */}
-                    <Button
-                      type='text'
-                      size='small'
-                      icon={<CopyOutlined />}
-                      onClick={() => copyToClipBoard(run.value as string)}
-                    >
-                      {t('panel.copy')}
-                    </Button>
-                    <Button type='text' size='small' icon={<RedoOutlined />} onClick={() => ask(lastSent)}>
-                      {t('panel.regenerate')}
-                    </Button>
-                    <Button type='text' size='small' icon={<SwapOutlined />} onClick={() => ask(t('panel.another_way_prompt'))}>
-                      {t('panel.another_way')}
-                    </Button>
+                    {/* Secondary next to the trust control, so the row reads as
+                        one outcome and two conveniences rather than a toolbar. */}
+                    <Tooltip title={t('panel.copy')}>
+                      <Button type='text' size='small' icon={<CopyOutlined />} aria-label={t('panel.copy')} onClick={() => copyToClipBoard(run.value as string)} />
+                    </Tooltip>
+                    <Tooltip title={t('panel.regenerate')}>
+                      <Button type='text' size='small' icon={<RedoOutlined />} aria-label={t('panel.regenerate')} onClick={() => send(task)} />
+                    </Tooltip>
+                  </div>
+                )}
+                <pre className='m-0 overflow-x-auto whitespace-pre-wrap break-words bg-fc-100 px-3 py-2 font-mono text-[12px] text-title'>{run.value}</pre>
+                {run.explanation && (
+                  <div className='border-0 border-t border-solid border-antd px-3 py-2 text-[12px] leading-relaxed text-main'>
+                    <div className='whitespace-pre-wrap'>{run.explanation}</div>
                   </div>
                 )}
               </div>
@@ -255,7 +261,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
                     <div className='text-[12px] font-medium text-title'>{t('panel.nothing_delivered')}</div>
                     {run.explanation && <div className='mt-1 whitespace-pre-wrap text-[12px] leading-relaxed text-main'>{run.explanation}</div>}
                   </div>
-                  <Button size='small' icon={<RedoOutlined />} onClick={() => ask(lastSent)}>
+                  <Button size='small' icon={<RedoOutlined />} onClick={() => send(task)}>
                     {t('panel.regenerate')}
                   </Button>
                 </div>
@@ -293,7 +299,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
             )}
 
             {/* Settled: the tallies stop being progress and become a footnote. */}
-            {settled && !running && evidence && <div className='text-[11px] text-hint'>{t('panel.verified_by', { detail: evidence })}</div>}
+            {settled && evidence && <div className='text-[11px] text-hint'>{t('panel.verified_by', { detail: evidence })}</div>}
           </div>
         </div>
       )}
@@ -314,7 +320,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
             {t('panel.stop')}
           </Button>
         ) : (
-          <Button size='small' type='primary' disabled={!question.trim()} onClick={() => send(question)}>
+          <Button size='small' type='primary' disabled={!question.trim() || !contextLabel} onClick={() => send(question)}>
             {t('panel.send')}
           </Button>
         )}

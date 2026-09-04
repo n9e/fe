@@ -143,8 +143,6 @@ const id_ID = {
     written_back: 'Ditulis ke kolom di atas dan dijalankan',
     undo: 'Urungkan',
     regenerate: 'Buat ulang',
-    another_way: 'Cara lain',
-    another_way_prompt: 'Tulis dengan cara lain — ekspresi setara, dirumuskan berbeda',
     send: 'Kirim',
     follow_up_placeholder: 'Lanjutkan, mis. "kelompokkan per pod"',
     answer_below: 'Jawab di bawah untuk melanjutkan',
@@ -166,11 +164,13 @@ const id_ID = {
     stopped_hint: "Stopped. The field above is unchanged.",
     copy: "Copy",
     field_changed: "The field has been edited",
-    timeout_title: "Five minutes with no result",
+    timeout_title: "{{minutes}} minutes with no result",
     unreachable_title: "Cannot reach the AI service",
     unreachable_hint: "Check the network and try again.",
     no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
     example_fallback: "CPU usage per host",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
 
   },
 };

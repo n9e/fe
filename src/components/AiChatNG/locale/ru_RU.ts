@@ -143,8 +143,6 @@ const ru_RU = {
     written_back: 'Записано в поле выше и выполнено',
     undo: 'Отменить',
     regenerate: 'Сгенерировать снова',
-    another_way: 'Иначе',
-    another_way_prompt: 'Напиши иначе — эквивалентное выражение, сформулированное по-другому',
     send: 'Отправить',
     follow_up_placeholder: 'Продолжайте, например «сгруппировать по pod»',
     answer_below: 'Ответьте ниже, чтобы продолжить',
@@ -166,11 +164,13 @@ const ru_RU = {
     stopped_hint: "Stopped. The field above is unchanged.",
     copy: "Copy",
     field_changed: "The field has been edited",
-    timeout_title: "Five minutes with no result",
+    timeout_title: "{{minutes}} minutes with no result",
     unreachable_title: "Cannot reach the AI service",
     unreachable_hint: "Check the network and try again.",
     no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
     example_fallback: "CPU usage per host",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
 
   },
 };

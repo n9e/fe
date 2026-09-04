@@ -143,8 +143,6 @@ const ja_JP = {
     written_back: '上の入力欄に書き戻し、実行しました',
     undo: '元に戻す',
     regenerate: '再生成',
-    another_way: '別の書き方',
-    another_way_prompt: '別の書き方で、等価だが表現の異なる式をください',
     send: '送信',
     follow_up_placeholder: '続けてどうぞ（例：pod ごとに集計）',
     answer_below: '下で回答すると続行します',
@@ -166,11 +164,13 @@ const ja_JP = {
     stopped_hint: "Stopped. The field above is unchanged.",
     copy: "Copy",
     field_changed: "The field has been edited",
-    timeout_title: "Five minutes with no result",
+    timeout_title: "{{minutes}} minutes with no result",
     unreachable_title: "Cannot reach the AI service",
     unreachable_hint: "Check the network and try again.",
     no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
     example_fallback: "CPU usage per host",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
 
   },
 };
