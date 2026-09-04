@@ -12,6 +12,25 @@ interface Props {
   gradientMode?: 'none' | 'opacity';
   overrides?: any;
   spanGaps?: boolean;
+  barAlignment?: BarAlignment;
+  barWidthFactor?: number;
+}
+
+// Keep the same persisted values as Grafana's BarAlignment enum.
+export type BarAlignment = -1 | 0 | 1;
+
+// uPlot 的 BarsPathBuilderFacetUnit 是仅类型声明的 const enum，运行时需使用其 ScaleValue 值。
+const BAR_FACET_UNIT_SCALE_VALUE = 1;
+
+export function getBarStart(timestamp: number, width: number, alignment: BarAlignment) {
+  if (alignment === -1) return timestamp - width;
+  if (alignment === 1) return timestamp;
+  return timestamp - width / 2;
+}
+
+function normalizeBarAlignment(value: unknown): BarAlignment {
+  if (value === -1 || value === 0 || value === 1) return value;
+  return 0;
 }
 
 // TODO: 临时集中处理将 override 的属性转换为 uPlot 的 series 属性
@@ -53,6 +72,8 @@ export default function seriesBuider(props: Props) {
   const defaultFillOpacity = props.fillOpacity ?? 0.1;
   const defaultGradientMode = props.gradientMode ?? 'none';
   const defaultSpanGaps = props.spanGaps;
+  const defaultBarAlignment = normalizeBarAlignment(props.barAlignment);
+  const defaultBarWidthFactor = _.clamp(props.barWidthFactor ?? 0.6, 0.1, 1);
 
   const rightYAxisDisplay = _.get(overrides, [0, 'properties', 'rightYAxisDisplay']);
   const matchRefId = _.get(overrides, [0, 'matcher', 'value']);
@@ -108,7 +129,26 @@ export default function seriesBuider(props: Props) {
       if (currentPathsType === 'spline') {
         paths = uPlot.paths.spline && uPlot.paths.spline();
       } else if (currentPathsType === 'bars') {
-        paths = uPlot.paths.bars && uPlot.paths.bars();
+        const bucketInterval = _.get(item, ['n9e_internal', 'bucketInterval']);
+        if (_.isNumber(bucketInterval) && bucketInterval > 0) {
+          const barWidth = bucketInterval * defaultBarWidthFactor;
+          paths =
+            uPlot.paths.bars &&
+            uPlot.paths.bars({
+              disp: {
+                x0: {
+                  unit: BAR_FACET_UNIT_SCALE_VALUE,
+                  values: (u) => _.map(u.data[0], (timestamp) => getBarStart(timestamp as number, barWidth, defaultBarAlignment)),
+                },
+                size: {
+                  unit: BAR_FACET_UNIT_SCALE_VALUE,
+                  values: (u) => _.map(u.data[0], () => barWidth),
+                },
+              },
+            });
+        } else {
+          paths = uPlot.paths.bars && uPlot.paths.bars();
+        }
       }
 
       return {

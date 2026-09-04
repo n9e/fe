@@ -1,8 +1,15 @@
 import _ from 'lodash';
 import { getSerieName } from '@/pages/dashboard/Renderer/datasource/utils';
 
+function getBucketInterval(target: { interval?: string | number }) {
+  if (typeof target.interval === 'number') return target.interval;
+  const interval = Number.parseFloat(target.interval || '');
+  return Number.isFinite(interval) && interval > 0 ? interval : undefined;
+}
+
 function processAggregations(aggregations: any[], seriesList: any[], metric: { [index: string]: string }, target, queryCount: number) {
   const prefixName = queryCount > 1 ? `${target.index} ` : '';
+  const bucketInterval = getBucketInterval(target);
   let aggId;
   const metricObj = _.cloneDeep(metric);
   for (aggId in aggregations) {
@@ -16,6 +23,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
             __name__: `${prefixName}count`,
           },
           data: [],
+          bucketInterval,
         });
       }
       _.forEach(subAggs, (_subAgg, subAggId) => {
@@ -29,6 +37,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
                 __name__: `${prefixName}p${percentileKey} ${percentilesField}`,
               },
               data: [],
+              bucketInterval,
             });
           });
         } else {
@@ -38,6 +47,7 @@ function processAggregations(aggregations: any[], seriesList: any[], metric: { [
               __name__: `${prefixName}${subAggId}`,
             },
             data: [],
+            bucketInterval,
           });
         }
       });

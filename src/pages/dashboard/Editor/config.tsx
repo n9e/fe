@@ -147,6 +147,8 @@ export const defaultCustomValuesMap = {
     },
     showPoints: 'none',
     pointSize: 5,
+    barAlignment: 0,
+    barWidthFactor: 0.6,
   },
   stat: {
     textMode: 'valueAndName',
@@ -173,6 +175,13 @@ export const defaultCustomValuesMap = {
     displayMode: 'seriesToRows',
     tableLayout: 'auto',
     nowrap: true,
+  },
+  tableNG: {
+    showHeader: true,
+    filterable: false,
+    cellOptions: {
+      type: 'none',
+    },
   },
   hexbin: {
     textMode: 'valueAndName',
@@ -222,6 +231,7 @@ export const defaultOptionsValuesMap = {
   stat: defaultOptionsValues,
   pie: defaultOptionsValues,
   table: defaultOptionsValues,
+  tableNG: defaultOptionsValues,
   hexbin: defaultOptionsValues,
   barGauge: defaultOptionsValues,
   text: defaultOptionsValues,

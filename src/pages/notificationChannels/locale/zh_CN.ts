@@ -51,7 +51,8 @@ const zh_CN = {
     url_tip: '接收通知请求的目标地址',
     method: '请求方法',
     header: '请求头',
-    header_tip: '需要在请求中附带的自定义 HTTP Header，如 BasicAuth 认证信息等',
+    header_tip:
+      '需要在请求中附带的自定义 HTTP Header，如 BasicAuth 认证信息等。URL、请求头、参数值、请求体均可用 {{.变量名}} 引用「系统配置 - 变量配置」中的变量，Token 等凭证因此不必明文填在这里',
     header_key: '参数名',
     header_value: '参数值',
     timeout: '超时时间 (单位: 毫秒)',

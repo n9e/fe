@@ -49,7 +49,7 @@ import Editor from '../Editor';
 import { validateDashboardConfig } from '../utils/validateDashboardConfig';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
 import { useGlobalState, DashboardMeta } from '../globalState';
-import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
+import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimeCacheKey, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
 import './style.less';
@@ -63,6 +63,8 @@ interface IProps {
   isBuiltin?: boolean;
   gobackPath?: string;
   builtinParams?: number;
+  /** 在详情页右上角操作区最左侧插入调用方专属操作。 */
+  headerLeadingActions?: React.ReactNode;
   onLoaded?: (dashboard: Dashboard['configs']) => boolean;
   hideGoBack?: boolean;
   hideGoList?: boolean;
@@ -125,7 +127,7 @@ const replaceTargetQueryVariables = (value: JsonValue, range: IRawTimeRange, sco
 };
 
 export default function DetailV2(props: IProps) {
-  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, hideGoBack, hideGoList } = props;
+  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, headerLeadingActions, hideGoBack, hideGoList } = props;
   const { t } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
@@ -189,7 +191,7 @@ export default function DetailV2(props: IProps) {
         if (!validationResult.valid) {
           console.warn('Dashboard panels/variables config warnings:', validationResult.errors);
         }
-        if ((!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
+        if (configs.mode !== 'iframe' && (!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
           setMigrationVisible(true);
         }
         setDashboardMeta({
@@ -390,6 +392,7 @@ export default function DetailV2(props: IProps) {
               <Title
                 isPreview={isPreview}
                 isBuiltin={isBuiltin}
+                headerLeadingActions={headerLeadingActions}
                 isAuthorized={isAuthorized}
                 editable={editable}
                 updateAtRef={updateAtRef}
@@ -541,7 +544,16 @@ export default function DetailV2(props: IProps) {
               />
             </>
           ) : (
-            <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
+            <iframe
+              className='embedded-dashboards-iframe'
+              src={adjustURL(dashboard.configs?.iframe_url!, darkMode, {
+                range,
+                refreshIntervalSeconds: intervalSeconds,
+                refreshLocalKey: `${dashboardTimeCacheKey}_${dashboard.id}_refresh`,
+              })}
+              width='100%'
+              height='100%'
+            />
           )}
         </div>
       </div>

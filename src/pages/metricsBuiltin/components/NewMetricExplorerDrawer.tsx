@@ -33,7 +33,7 @@ export default function NewMetricExplorerDrawer(props: Props) {
   }, [props.datasourceValue]);
 
   return (
-    <Drawer title={t('laset_over_time')} placement='right' width='80%' onClose={onClose} visible={visible}>
+    <Drawer title={t('laset_over_time')} placement='right' width='80%' onClose={onClose} visible={visible} className='n9e-antd-drawer'>
       <div className='h-full overflow-hidden children:h-full'>
         <Form form={form}>
           <div className='flex flex-col h-full'>

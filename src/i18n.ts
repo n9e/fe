@@ -20,7 +20,7 @@ import _ from 'lodash';
 
 import { syncMomentLocale } from './utils/momentLocale';
 
-const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP'];
+const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP', 'pt_BR', 'es_ES', 'id_ID', 'ko_KR', 'fr_FR'];
 
 // 缺失 key 时的回退链：繁体优先回退简体；其他语言（ja/ru 等）优先回退英文，最终兜底 zh_CN
 const fallbackLng = {
@@ -37,6 +37,11 @@ function detectBrowserLanguage() {
     }
     if (_.startsWith(lang, 'ja')) return 'ja_JP';
     if (_.startsWith(lang, 'ru')) return 'ru_RU';
+    if (_.startsWith(lang, 'fr')) return 'fr_FR';
+    if (_.startsWith(lang, 'ko')) return 'ko_KR';
+    if (_.startsWith(lang, 'id')) return 'id_ID';
+    if (_.startsWith(lang, 'es')) return 'es_ES';
+    if (_.startsWith(lang, 'pt')) return 'pt_BR';
     if (_.startsWith(lang, 'en')) return 'en_US';
   }
   return 'en_US';
@@ -47,11 +52,14 @@ let language = detectBrowserLanguage();
 if (localStorageLanguage && _.includes(languages, localStorageLanguage)) {
   language = localStorageLanguage;
 }
-// 开发环境仅加载单一语言（见 plugins/vite-plugin-dev-locale），此处需与之对齐，
-// 否则运行时语言与已加载语言不一致会显示成翻译 key。可用 VITE_DEV_LOCALE 指定，默认 zh_CN。
+// 开发环境默认仅加载单一语言（见 plugins/vite-plugin-dev-locale），此处需与之对齐，
+// 否则运行时语言与已加载语言不一致会显示成翻译 key。可用 VITE_DEV_LOCALE 指定，默认 en_US；
+// 设为 all 时全部语言真实加载，沿用浏览器/localStorage 的语言，不再强制覆盖。
 if (import.meta.env.DEV) {
   const devLocale = import.meta.env.VITE_DEV_LOCALE as string | undefined;
-  language = devLocale && _.includes(languages, devLocale) ? devLocale : 'zh_CN';
+  if (devLocale !== 'all') {
+    language = devLocale && _.includes(languages, devLocale) ? devLocale : 'en_US';
+  }
 }
 
 function getI18nextTranslations() {

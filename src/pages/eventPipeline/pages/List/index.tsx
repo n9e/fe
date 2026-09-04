@@ -23,10 +23,16 @@ import ScenarioList from '../../components/ScenarioList';
 import Add from '../Add';
 import Edit from '../Edit';
 import MoreOperations from './MoreOperations';
+import './style.less';
 
 interface Filter {
   search?: string;
   disabled?: boolean;
+}
+
+interface ListProps {
+  // 规则表单会在侧拉板中复用列表；仅在该窄容器下修正分页控件的内部换行。
+  embedded?: boolean;
 }
 
 const readFilter = (): Filter => {
@@ -40,7 +46,7 @@ const readFilter = (): Filter => {
 // 单条工作流的处理器类型列表，兼容后端 typ 与旧类型 type
 const getProcessorTypes = (item: Item): string[] => _.compact(_.map(item.processors, (p: any) => p?.typ ?? p?.type));
 
-export default function List() {
+export default function List({ embedded = false }: ListProps) {
   const { t, i18n } = useTranslation(NS);
   const history = useHistory();
   const { darkMode } = useContext(CommonStateContext);
@@ -224,6 +230,7 @@ export default function List() {
         </Space>
       </div>
       <EnhancedTable
+        className={embedded ? 'event-pipeline-list--embedded' : undefined}
         size='small'
         rowKey='id'
         scroll={{ x: 'max-content' }}
@@ -395,6 +402,7 @@ export default function List() {
         // 点一下遮罩就丢掉整张表单的代价太大，只保留 × 与「取消」两个明确入口
         maskClosable={false}
         destroyOnClose
+        className='n9e-antd-drawer'
       >
         {eventPipelineDrawerState.action === 'add' && (
           <Add

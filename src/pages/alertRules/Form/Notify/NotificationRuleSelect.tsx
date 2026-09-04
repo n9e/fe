@@ -111,6 +111,7 @@ export default function NotificationRuleSelect(props: Props) {
           setDrawerData(undefined);
         }}
         visible={drawerVisible}
+        className='n9e-antd-drawer'
       >
         <div className={`n9e ${notificationRulesCN}`}>
           {drawerData ? (

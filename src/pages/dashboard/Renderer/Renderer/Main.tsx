@@ -441,6 +441,7 @@ function index(
           setInspect(false);
         }}
         visible={inspect}
+        className='n9e-antd-drawer'
       >
         <Inspect query={query} values={values} />
       </Drawer>

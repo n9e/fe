@@ -209,6 +209,10 @@ const migratePanelToV33 = (panel: LegacyPanel) => {
 };
 
 export default function dashboardMigrator(data: unknown): LegacyDashboard {
+  // 内嵌 Grafana 链接大盘没有 panels，且不参与数据源迁移；保留其完整配置。
+  if (isJsonObject(data) && data.mode === 'iframe') {
+    return _.cloneDeep(data) as LegacyDashboard;
+  }
   const dashboard = decodeLegacyDashboard(data);
   if (!dashboard) {
     return { panels: [] };

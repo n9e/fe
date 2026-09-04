@@ -222,7 +222,7 @@ export default function index(props: Props) {
   }
 
   return (
-    <Drawer title={title} placement='right' onClose={onClose} visible={visible} width='80%'>
+    <Drawer title={title} placement='right' onClose={onClose} visible={visible} width='80%' className='n9e-antd-drawer'>
       <Row justify='space-between' style={{ width: '100%' }}>
         <Space>
           <TimeRangePicker

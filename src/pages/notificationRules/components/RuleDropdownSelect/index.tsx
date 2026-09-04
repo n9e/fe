@@ -351,6 +351,7 @@ function Content(props: ContentProps) {
         afterVisibleChange={handleDrawerAfterVisibleChange}
         onClose={handleCloseViewDrawer}
         visible={viewDrawerVisible}
+        className='n9e-antd-drawer'
       >
         <div className={`n9e ${CN}`}>
           {viewDrawerData ? (
@@ -378,6 +379,7 @@ function Content(props: ContentProps) {
         afterVisibleChange={handleDrawerAfterVisibleChange}
         onClose={handleCloseCreateDrawer}
         visible={createDrawerVisible}
+        className='n9e-antd-drawer'
       >
         <div className={`n9e ${CN}`}>
           <NotificationRuleForm

@@ -17,7 +17,7 @@ export default function ItemDetaildrawer(props: Props) {
   const { id, visible, onClose } = props;
 
   return (
-    <Drawer width='80%' title={<Space>{t('executions.detail_title')}</Space>} placement='right' onClose={onClose} visible={visible}>
+    <Drawer width='80%' title={<Space>{t('executions.detail_title')}</Space>} placement='right' onClose={onClose} visible={visible} className='n9e-antd-drawer'>
       {id && <Detail id={id} />}
     </Drawer>
   );

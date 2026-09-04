@@ -64,6 +64,7 @@ export default function ResultDrawer(props: Props) {
           onChange={(value) => setSize(value as SizeType)}
         />
       }
+      className='n9e-antd-drawer'
     >
       {visible && (
         <ResultContent

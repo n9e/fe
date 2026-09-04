@@ -68,6 +68,7 @@ export default function LogExplore({
           }}
           footer={null}
           width={'80%'}
+          className='n9e-antd-drawer'
         >
           <iframe
             src={url}

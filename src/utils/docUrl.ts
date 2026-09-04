@@ -5,6 +5,11 @@ export const DOC_URL_LANG_SUFFIX: { [key: string]: string } = {
   en_US: '_en',
   ja_JP: '_en',
   ru_RU: '_en',
+  fr_FR: '_en',
+  ko_KR: '_en',
+  id_ID: '_en',
+  es_ES: '_en',
+  pt_BR: '_en',
 };
 
 // 在文档 URL 的末段追加语言后缀，保留 query/hash，例如

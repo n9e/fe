@@ -79,6 +79,7 @@ export interface DashboardTimeSeries {
   mode: 'timeSeries';
   target?: ITarget;
   isExp: boolean;
+  bucketInterval?: number;
 }
 
 export interface DashboardLogSeries {

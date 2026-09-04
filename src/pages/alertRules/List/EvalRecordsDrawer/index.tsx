@@ -206,9 +206,7 @@ function RecordDetail({ record, t }: { record: EvalRecord; t: TFunction }) {
                 title: t('eval_records.stage'),
                 dataIndex: 'stage',
                 width: 120,
-                render: (stage: string) => (
-                  <Tag color={STAGE_COLOR[stage]}>{t(`eval_records.stage_${stage}`, { defaultValue: stage })}</Tag>
-                ),
+                render: (stage: string) => <Tag color={STAGE_COLOR[stage]}>{t(`eval_records.stage_${stage}`, { defaultValue: stage })}</Tag>,
               },
               {
                 title: t('eval_records.stage_detail'),
@@ -324,7 +322,9 @@ export default function EvalRecordsDrawer(props: Props) {
               if (q.error) {
                 return (
                   <Tooltip key={i} title={q.error}>
-                    <Tag color='red'>{q.ref || i}: {t('eval_records.query_error')}</Tag>
+                    <Tag color='red'>
+                      {q.ref || i}: {t('eval_records.query_error')}
+                    </Tag>
                   </Tooltip>
                 );
               }
@@ -396,6 +396,7 @@ export default function EvalRecordsDrawer(props: Props) {
       visible={visible}
       onClose={onClose}
       destroyOnClose
+      className='n9e-antd-drawer'
     >
       <div className='mb-2 flex justify-between'>
         <Space>
