@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { WarningOutlined } from '@ant-design/icons';
 import { Select, Space, Tag } from 'antd';
 import { SelectProps } from 'antd/lib/select';
 import classNames from 'classnames';
@@ -38,6 +39,12 @@ interface Props {
   showEmptyDatasourcePopover?: boolean;
 }
 
+type DatasourceValue = string | number;
+
+function getRawValue(value: DatasourceValue | { value: DatasourceValue }): DatasourceValue {
+  return typeof value === 'object' ? value.value : value;
+}
+
 export default function index(props: SelectProps & Props) {
   const {
     type,
@@ -55,7 +62,7 @@ export default function index(props: SelectProps & Props) {
     showEmptyDatasourcePopover = true,
     className,
   } = props;
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('datasourceSelect');
   const { datasourceList: contextDatasourceList = [], datasourceCateOptions = [], isPlus } = useContext(CommonStateContext);
   const resolvedDatasourceList: DatasourceItem[] = providedDatasourceList ?? contextDatasourceList;
   const resolvedDatasourceCateList = datasourceCateList ?? datasourceCateOptions;
@@ -68,6 +75,34 @@ export default function index(props: SelectProps & Props) {
     return isPlus ? supported : supported && !datasourceCate?.alertPro;
   });
   const orderedDatasourceList = providedDatasourceList ? currentDatasourceList : _.orderBy(currentDatasourceList, ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']);
+  const additionalOptionValues = (additionalOptions ?? [])
+    .map((option) => option?.value)
+    .filter((value): value is DatasourceValue => typeof value === 'string' || typeof value === 'number');
+  // additionalOptions 中的伪值（如 mixed）并非数据源，回填时保留其原有展示。
+  const preservedOptionValues = new Set<DatasourceValue>([...additionalOptionValues, ...(showHost ? [-999] : [])]);
+  const normalizeSelectedValue = (value: SelectProps['value']) => {
+    if (value == null) return undefined;
+
+    const normalizeValue = (item: DatasourceValue | { value: DatasourceValue }) => {
+      const rawValue = getRawValue(item);
+      // 业务过滤仅影响下拉可选项，不能将原始数据源列表中仍存在的数据源标记为已删除。
+      const exists = _.some(resolvedDatasourceList, { id: rawValue }) || preservedOptionValues.has(rawValue);
+
+      return exists
+        ? { value: rawValue }
+        : {
+            value: rawValue,
+            label: (
+              <span className='n9e-datasource-select-v3-deleted-value'>
+                <WarningOutlined />
+                id: {rawValue} {t('deleted')}
+              </span>
+            ),
+          };
+    };
+
+    return Array.isArray(value) ? value.map(normalizeValue) : normalizeValue(value);
+  };
 
   const select = (
     <Select
@@ -86,9 +121,15 @@ export default function index(props: SelectProps & Props) {
         'renderOptionExtra',
         'showEmptyDatasourcePopover',
         'className',
+        'value',
+        'defaultValue',
+        'labelInValue',
       ])}
       showSearch
+      labelInValue
       optionLabelProp='optionLabel'
+      value={normalizeSelectedValue(props.value)}
+      defaultValue={normalizeSelectedValue(props.defaultValue)}
       filterOption={(inputValue, option) => {
         // 根据空格分词进行过滤，取交集
         const keywords = _.filter(_.split(inputValue, ' '), (kw) => kw) as string[];
@@ -155,9 +196,10 @@ export default function index(props: SelectProps & Props) {
       ]}
       onChange={(value) => {
         if (onChange) {
-          const curValue = Array.isArray(value) ? _.last(value) : value;
+          const selectedValue = Array.isArray(value) ? value.map(getRawValue) : getRawValue(value);
+          const curValue = Array.isArray(selectedValue) ? _.last(selectedValue) : selectedValue;
           const curCate = _.find(currentDatasourceList, { id: curValue })?.plugin_type;
-          onChange(value, curCate ?? (value === 'mixed' ? 'mixed' : ''));
+          onChange(selectedValue, curCate ?? (selectedValue === 'mixed' ? 'mixed' : ''));
         }
       }}
       onClear={onClear}
