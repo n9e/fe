@@ -51,7 +51,9 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   latestAdopt.current = onAdopt;
 
   useEffect(() => {
-    inputRef.current?.focus();
+    // preventScroll: the panel clips its own overflow, so a focus that scrolls
+    // the input into view drags the header out of sight instead.
+    inputRef.current?.focus({ preventScroll: true });
   }, []);
 
   // Adopting is a side effect of an answer arriving, not of a render. A new run
@@ -83,7 +85,10 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   const header = asked || t('panel.untitled');
 
   return (
-    <div className='mb-3 overflow-hidden rounded-md fc-border border-primary bg-fc-100 shadow-mf'>
+    // shrink-0 because the slot this sits in is a flex column: without it the
+    // panel is squeezed below its own content and the rounded clip eats the
+    // header.
+    <div className='mb-3 shrink-0 overflow-hidden rounded-md fc-border border-primary bg-fc-100 shadow-mf'>
       <div className='flex items-center gap-2 border-0 border-b border-solid border-antd bg-primary-pale px-3 py-2'>
         <span className='min-w-0 flex-1 truncate font-medium'>
           {header}
