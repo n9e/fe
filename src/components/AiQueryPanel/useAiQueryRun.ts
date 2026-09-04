@@ -150,11 +150,5 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
     }
   }, []);
 
-  const reset = useCallback(() => {
-    runIdRef.current += 1;
-    chatIdRef.current = undefined;
-    setRun(EMPTY_RUN);
-  }, []);
-
-  return { run, ask, reset };
+  return { run, ask };
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Input, Spin, Tag, Tooltip } from 'antd';
+import type { InputRef } from 'antd';
 import { CheckCircleFilled, CloseOutlined, LoadingOutlined, RedoOutlined, SwapOutlined, UndoOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +27,6 @@ export interface AiQueryPanelProps {
   pageFrom: IAiChatPageInfo;
   /** Named in the header so it is clear what the answer was checked against. */
   contextLabel?: string;
-  placeholder?: string;
   /** Writes the value into the field. Called on arrival, and again on redo. */
   onAdopt: (value: string) => void;
   /** Puts back whatever the field held before this panel touched it. */
@@ -36,7 +36,7 @@ export interface AiQueryPanelProps {
 
 export default function AiQueryPanel(props: AiQueryPanelProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { pageFrom, contextLabel, placeholder, onAdopt, onUndo, onClose } = props;
+  const { pageFrom, contextLabel, onAdopt, onUndo, onClose } = props;
   const { run, ask } = useAiQueryRun({ pageFrom, t });
 
   const [question, setQuestion] = useState('');
@@ -46,12 +46,12 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   // undoing does not immediately trip the effect below into writing it again.
   const [adopted, setAdopted] = useState<string>();
   const written = useRef<string>();
-  const inputRef = useRef<any>();
+  const inputRef = useRef<InputRef>(null);
   const latestAdopt = useRef(onAdopt);
   latestAdopt.current = onAdopt;
 
   useEffect(() => {
-    inputRef.current?.focus?.();
+    inputRef.current?.focus();
   }, []);
 
   // Adopting is a side effect of an answer arriving, not of a render. A new run
@@ -165,7 +165,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
           size='small'
           value={question}
           disabled={running}
-          placeholder={placeholder ?? t('panel.follow_up_placeholder')}
+          placeholder={t('panel.follow_up_placeholder')}
           onChange={(event) => setQuestion(event.target.value)}
           onPressEnter={() => askNew(question)}
         />

@@ -16,7 +16,7 @@ const ask = jest.fn();
 let run: AiQueryRun = { phase: 'idle', steps: [] };
 
 jest.mock('./useAiQueryRun', () => ({
-  useAiQueryRun: () => ({ run, ask, reset: jest.fn() }),
+  useAiQueryRun: () => ({ run, ask }),
 }));
 
 const pageFrom = { url: '/metric/explorer', param: { datasource_id: 849 } } as const;
