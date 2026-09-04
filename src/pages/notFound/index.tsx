@@ -14,27 +14,10 @@
  * limitations under the License.
  *
  */
-import { Button, Result } from 'antd';
 import React from 'react';
-import { useHistory } from 'react-router';
-import { useTranslation } from 'react-i18next';
 
-const NotFound: React.FC = () => {
-  const { t } = useTranslation();
-  const history = useHistory();
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-      <Result
-        title='404'
-        subTitle={t('common:auth.404')}
-        extra={
-          <Button type='primary' onClick={() => history.replace('/')}>
-            {t('common:auth.404_btn')}
-          </Button>
-        }
-      />
-    </div>
-  );
-};
+import PageError from '@/components/PageError';
 
-export default NotFound;
+export default function NotFound() {
+  return <PageError status={404} />;
+}
