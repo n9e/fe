@@ -149,6 +149,7 @@ const zh_HK = {
     follow_up_placeholder: '繼續說，例如「按 pod 分組」',
     answer_below: '在下方回答即可繼續',
     needs_answer: '待你回答',
+    error_detail: '查看錯誤詳情',
     nothing_delivered: '沒有給出可用的語句',
     timeout: '生成逾時，請重試',
   },

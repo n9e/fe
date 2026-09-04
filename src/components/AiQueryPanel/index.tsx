@@ -83,17 +83,18 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
 
   const running = run.phase === 'running';
   const header = asked || t('panel.untitled');
+  // Before the first answer there is nothing to show, and an empty body reads
+  // as a broken panel rather than a waiting one.
+  const hasBody = run.steps.length > 0 || !!run.value || !!run.question || !!run.explanation || !!run.error || !!adopted;
 
   return (
     // shrink-0 because the slot this sits in is a flex column: without it the
     // panel is squeezed below its own content and the rounded clip eats the
     // header.
-    <div className='mb-3 shrink-0 overflow-hidden rounded-md fc-border border-primary bg-fc-100 shadow-mf'>
-      <div className='flex items-center gap-2 border-0 border-b border-solid border-antd bg-primary-pale px-3 py-2'>
-        <span className='min-w-0 flex-1 truncate font-medium'>
-          {header}
-          {contextLabel ? <span className='ml-2 text-[11px] font-normal text-hint'>· {t('panel.based_on', { name: contextLabel })}</span> : null}
-        </span>
+    <div className='mb-3 shrink-0 overflow-hidden rounded-md fc-border border-antd bg-fc-50 shadow-mf'>
+      <div className='flex items-center gap-2 border-0 border-b border-solid border-antd px-4 py-2'>
+        <span className='min-w-0 flex-1 truncate text-[13px] font-medium text-title'>{header}</span>
+        {contextLabel ? <span className='shrink-0 text-[11px] text-hint'>{t('panel.based_on', { name: contextLabel })}</span> : null}
         {running ? <Tag color='processing'>{t('panel.running')}</Tag> : null}
         {run.phase === 'done' && adopted ? <Tag color='success'>{t('panel.adopted')}</Tag> : null}
         {run.phase === 'done' && !run.value && run.question ? <Tag color='warning'>{t('panel.needs_answer')}</Tag> : null}
@@ -102,80 +103,99 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
       </div>
 
       {/* Only this scrolls. The actions below stay reachable however long the
-          assistant's explanation runs. */}
-      <div className='max-h-[240px] overflow-y-auto px-3 py-2'>
-        {run.steps.length > 0 && (
-          <ul className='m-0 flex list-none flex-col gap-1 p-0'>
-            {run.steps.map((step, index) => (
-              <li key={`${step.label}-${index}`} className='flex items-start gap-2'>
-                {step.done ? <CheckCircleFilled className='mt-1 text-success' /> : <Spin indicator={<LoadingOutlined spin />} size='small' className='mt-1' />}
-                <span className={step.done ? '' : 'text-hint'}>{step.label}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+          assistant's explanation runs. Text is capped well short of the panel's
+          full width: this sits across a monitor, and prose that runs the whole
+          way is no longer readable as prose. */}
+      {hasBody && (
+        <div className='max-h-[240px] overflow-y-auto px-4 py-3'>
+          <div className='flex flex-col gap-2'>
+            {run.steps.length > 0 && (
+              <ul className='m-0 flex list-none flex-col gap-1 p-0 text-[12px]'>
+                {run.steps.map((step, index) => (
+                  <li key={`${step.label}-${index}`} className='flex items-center gap-2'>
+                    {step.done ? (
+                      <CheckCircleFilled className='text-[12px] text-success' />
+                    ) : (
+                      <Spin indicator={<LoadingOutlined spin className='text-[12px]' />} size='small' />
+                    )}
+                    <span className={step.done ? 'text-main' : 'text-hint'}>{step.label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
 
-        {run.value && (
-          <div className='mt-2 overflow-hidden rounded fc-border border-antd'>
-            <div className='overflow-x-auto whitespace-pre bg-fc-200 px-3 py-2 font-mono text-[12px]'>{run.value}</div>
-            {run.explanation && <div className='border-0 border-t border-solid border-antd px-3 py-2 text-main'>{run.explanation}</div>}
-          </div>
-        )}
+            {run.value && (
+              <div className='overflow-hidden rounded fc-border border-antd'>
+                <div className='overflow-x-auto whitespace-pre bg-fc-100 px-3 py-2 font-mono text-[12px] text-title'>{run.value}</div>
+                {run.explanation && <div className='border-0 border-t border-solid border-antd px-3 py-2 text-[12px] leading-relaxed text-main'><div className='max-w-[76ch]'>{run.explanation}</div></div>}
+              </div>
+            )}
 
-        {/* Nothing delivered: say what was looked at and what came back, rather
-            than offering an expression nobody ran. */}
-        {run.phase === 'failed' && (
-          <div className='mt-2 rounded fc-border border-error px-3 py-2'>
-            <div className='font-medium'>{t('panel.nothing_delivered')}</div>
-            {run.explanation && <div className='mt-1 text-main'>{run.explanation}</div>}
-            {run.error && <div className='mt-1 text-hint'>{run.error}</div>}
-          </div>
-        )}
-        {/* A question is not a failure. Show it as one, and the user is left
-            wondering what went wrong instead of just answering. */}
-        {run.phase === 'done' && !run.value && run.question && (
-          <div className='mt-2 rounded fc-border border-primary bg-primary-pale px-3 py-2'>
-            <div className='font-medium text-title'>{run.question}</div>
-            <div className='mt-1 text-hint'>{t('panel.answer_below')}</div>
-          </div>
-        )}
-        {run.phase === 'done' && !run.value && !run.question && (
-          <div className='mt-2 rounded fc-border border-antd px-3 py-2 text-main'>
-            <div className='font-medium text-title'>{t('panel.nothing_delivered')}</div>
-            {run.explanation && <div className='mt-1'>{run.explanation}</div>}
-          </div>
-        )}
+            {/* An accent rule rather than a box: the tag in the header already
+                says this failed, and two red outlines say it twice. */}
+            {run.phase === 'failed' && (
+              <div className='border-0 border-l-2 border-solid border-error bg-fc-100 px-3 py-2'>
+                <div className='text-[12px] font-medium text-title'>{t('panel.nothing_delivered')}</div>
+                {run.explanation && <div className='mt-1 max-w-[76ch] text-[12px] leading-relaxed text-main'>{run.explanation}</div>}
+                {/* The raw failure is worth keeping and not worth reading first:
+                    it is a stack address, not a sentence. */}
+                {run.error && (
+                  <div className='mt-2'>
+                    <div className='text-[11px] text-soft'>{t('panel.error_detail')}</div>
+                    <div className='mt-0.5 max-w-[900px] break-all font-mono text-[11px] leading-relaxed text-hint'>{run.error}</div>
+                  </div>
+                )}
+              </div>
+            )}
 
-        {adopted && (
-          <div className='mt-2 flex items-center gap-2 rounded bg-primary-pale px-3 py-2 text-primary'>
-            <span className='flex-1'>{t('panel.written_back')}</span>
-            <Button
-              type='text'
-              size='small'
-              icon={<UndoOutlined />}
-              onClick={() => {
-                onUndo();
-                setAdopted(undefined);
-              }}
-            >
-              {t('panel.undo')}
-            </Button>
-          </div>
-        )}
-      </div>
+            {/* A question is not a failure. Show it as one, and the user is left
+                wondering what went wrong instead of just answering. */}
+            {run.phase === 'done' && !run.value && run.question && (
+              <div className='border-0 border-l-2 border-solid border-primary bg-primary-pale px-3 py-2'>
+                <div className='max-w-[76ch] text-[13px] leading-relaxed text-title'>{run.question}</div>
+                <div className='mt-1 text-[11px] text-hint'>{t('panel.answer_below')}</div>
+              </div>
+            )}
+            {run.phase === 'done' && !run.value && !run.question && (
+              <div className='border-0 border-l-2 border-solid border-antd bg-fc-100 px-3 py-2'>
+                <div className='text-[12px] font-medium text-title'>{t('panel.nothing_delivered')}</div>
+                {run.explanation && <div className='mt-1 max-w-[76ch] text-[12px] leading-relaxed text-main'>{run.explanation}</div>}
+              </div>
+            )}
 
-      <div className='flex flex-wrap items-center gap-2 border-0 border-t border-solid border-antd bg-fc-100 px-3 py-2'>
+            {adopted && (
+              <div className='flex items-center gap-2 text-[12px] text-primary'>
+                <CheckCircleFilled className='text-[12px]' />
+                <span className='flex-1'>{t('panel.written_back')}</span>
+                <Button
+                  type='text'
+                  size='small'
+                  icon={<UndoOutlined />}
+                  onClick={() => {
+                    onUndo();
+                    setAdopted(undefined);
+                  }}
+                >
+                  {t('panel.undo')}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className='flex flex-wrap items-center gap-2 px-4 py-2'>
         <Tooltip title={!asked ? t('panel.ask_first') : undefined}>
-          <Button size='small' icon={<RedoOutlined />} disabled={!asked || running} onClick={() => ask(asked)}>
+          <Button size='small' type='text' icon={<RedoOutlined />} disabled={!asked || running} onClick={() => ask(asked)}>
             {t('panel.regenerate')}
           </Button>
         </Tooltip>
-        <Button size='small' icon={<SwapOutlined />} disabled={!asked || running} onClick={() => ask(t('panel.another_way_prompt'))}>
+        <Button size='small' type='text' icon={<SwapOutlined />} disabled={!asked || running} onClick={() => ask(t('panel.another_way_prompt'))}>
           {t('panel.another_way')}
         </Button>
         <Input
           ref={inputRef}
-          className='min-w-[180px] flex-1'
+          className='min-w-[180px] max-w-[560px] flex-1'
           size='small'
           value={question}
           disabled={running}

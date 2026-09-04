@@ -149,6 +149,7 @@ const id_ID = {
     follow_up_placeholder: 'Lanjutkan, mis. "kelompokkan per pod"',
     answer_below: 'Jawab di bawah untuk melanjutkan',
     needs_answer: 'Butuh jawaban',
+    error_detail: 'Detail galat',
     nothing_delivered: 'Tidak ada ekspresi yang bisa dipakai',
     timeout: 'Waktu habis, coba lagi',
   },

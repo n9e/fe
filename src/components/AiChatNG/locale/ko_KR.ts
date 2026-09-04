@@ -149,6 +149,7 @@ const ko_KR = {
     follow_up_placeholder: '이어서 말하세요, 예: "pod별로 집계"',
     answer_below: '아래에 답하면 계속합니다',
     needs_answer: '답변 필요',
+    error_detail: '오류 세부 정보',
     nothing_delivered: '사용할 수 있는 식이 없습니다',
     timeout: '시간이 초과되었습니다. 다시 시도하세요',
   },

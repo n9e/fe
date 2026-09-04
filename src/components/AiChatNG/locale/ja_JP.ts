@@ -149,6 +149,7 @@ const ja_JP = {
     follow_up_placeholder: '続けてどうぞ（例：pod ごとに集計）',
     answer_below: '下で回答すると続行します',
     needs_answer: '回答待ち',
+    error_detail: 'エラーの詳細',
     nothing_delivered: '使用できる式がありません',
     timeout: 'タイムアウトしました。再試行してください',
   },

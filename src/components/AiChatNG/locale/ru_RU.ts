@@ -149,6 +149,7 @@ const ru_RU = {
     follow_up_placeholder: 'Продолжайте, например «сгруппировать по pod»',
     answer_below: 'Ответьте ниже, чтобы продолжить',
     needs_answer: 'Нужен ответ',
+    error_detail: 'Подробности ошибки',
     nothing_delivered: 'Нет пригодного выражения',
     timeout: 'Превышено время ожидания, повторите',
   },

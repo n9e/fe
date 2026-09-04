@@ -149,6 +149,7 @@ const en_US = {
     follow_up_placeholder: 'Keep going, e.g. "group by pod"',
     answer_below: 'Answer below to continue',
     needs_answer: 'Needs an answer',
+    error_detail: 'Error detail',
     nothing_delivered: 'No usable expression',
     timeout: 'Timed out, please retry',
   },

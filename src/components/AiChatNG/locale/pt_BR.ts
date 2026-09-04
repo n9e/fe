@@ -149,6 +149,7 @@ const pt_BR = {
     follow_up_placeholder: 'Continue, ex.: "agrupar por pod"',
     answer_below: 'Responda abaixo para continuar',
     needs_answer: 'Aguarda resposta',
+    error_detail: 'Detalhe do erro',
     nothing_delivered: 'Nenhuma expressão utilizável',
     timeout: 'Tempo esgotado, tente de novo',
   },
