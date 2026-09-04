@@ -91,6 +91,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
         </span>
         {running ? <Tag color='processing'>{t('panel.running')}</Tag> : null}
         {run.phase === 'done' && adopted ? <Tag color='success'>{t('panel.adopted')}</Tag> : null}
+        {run.phase === 'done' && !run.value && run.question ? <Tag color='warning'>{t('panel.needs_answer')}</Tag> : null}
         {run.phase === 'failed' ? <Tag color='error'>{t('panel.failed')}</Tag> : null}
         <Button type='text' size='small' icon={<CloseOutlined />} onClick={onClose} aria-label={t('panel.close')} />
       </div>
@@ -125,7 +126,15 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
             {run.error && <div className='mt-1 text-hint'>{run.error}</div>}
           </div>
         )}
-        {run.phase === 'done' && !run.value && (
+        {/* A question is not a failure. Show it as one, and the user is left
+            wondering what went wrong instead of just answering. */}
+        {run.phase === 'done' && !run.value && run.question && (
+          <div className='mt-2 rounded fc-border border-primary bg-primary-pale px-3 py-2'>
+            <div className='font-medium text-title'>{run.question}</div>
+            <div className='mt-1 text-hint'>{t('panel.answer_below')}</div>
+          </div>
+        )}
+        {run.phase === 'done' && !run.value && !run.question && (
           <div className='mt-2 rounded fc-border border-antd px-3 py-2 text-main'>
             <div className='font-medium text-title'>{t('panel.nothing_delivered')}</div>
             {run.explanation && <div className='mt-1'>{run.explanation}</div>}

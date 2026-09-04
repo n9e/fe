@@ -147,6 +147,8 @@ const zh_CN = {
     ask_first: '先问一个问题',
     send: '发送',
     follow_up_placeholder: '继续说，比如「按 pod 分组」',
+    answer_below: '在下方回答即可继续',
+    needs_answer: '待你回答',
     nothing_delivered: '没有给出可用的语句',
     timeout: '生成超时，请重试',
   },

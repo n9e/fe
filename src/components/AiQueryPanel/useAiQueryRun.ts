@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TFunction } from 'i18next';
 
 import { createChat, getMessageDetail, sendMessage } from '@/components/AiChatNG/services';
-import { EAiChatContentType, IAiChatMessage, IAiChatPageInfo, IAiChatToolCallGroup } from '@/components/AiChatNG/types';
+import { EAiChatContentType, IAiChatInputRequest, IAiChatMessage, IAiChatPageInfo, IAiChatToolCallGroup } from '@/components/AiChatNG/types';
 
 /**
  * One assistant turn, reduced to what a field-filling panel needs.
@@ -39,6 +39,9 @@ export interface AiQueryRun {
   value?: string;
   /** What the assistant said about it, or — when nothing was delivered — why. */
   explanation?: string;
+  /** Set when the turn ended on a question instead of an answer. Answering is
+   *  just the next message, which the follow-up box already sends. */
+  question?: string;
   error?: string;
 }
 
@@ -65,6 +68,7 @@ function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
   const steps: AiQueryStep[] = [];
   const said: string[] = [];
   let value: string | undefined;
+  let question: string | undefined;
 
   for (const response of responses) {
     switch (response.content_type as EAiChatContentType) {
@@ -78,9 +82,15 @@ function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
       // evidence that the answer was checked rather than recalled.
       case EAiChatContentType.ToolGroup:
         if (response.param) {
-          const label = stepLabel(response.param, t);
+          const label = stepLabel(response.param as IAiChatToolCallGroup, t);
           if (label) steps.push({ label, done: response.is_finish !== false });
         }
+        break;
+      // A turn can end on a question rather than an answer — an ambiguous data
+      // source, say. Saying "nothing was delivered" would be true but useless:
+      // what the user needs is the question.
+      case EAiChatContentType.InputRequest:
+        question = (response.param as IAiChatInputRequest | undefined)?.question?.trim() || undefined;
         break;
       default:
         break;
@@ -99,7 +109,7 @@ function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
   if (!message.is_finish) {
     return { phase: 'running', steps };
   }
-  return { phase: 'done', steps, value, explanation: said.join('\n\n') || undefined };
+  return { phase: 'done', steps, value, question, explanation: said.join('\n\n') || undefined };
 }
 
 export interface UseAiQueryRunOptions {

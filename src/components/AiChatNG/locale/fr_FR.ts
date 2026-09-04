@@ -147,6 +147,8 @@ const fr_FR = {
     ask_first: 'Posez d’abord une question',
     send: 'Envoyer',
     follow_up_placeholder: 'Continuez, par ex. « grouper par pod »',
+    answer_below: 'Répondez ci-dessous pour continuer',
+    needs_answer: 'Réponse attendue',
     nothing_delivered: 'Aucune expression utilisable',
     timeout: 'Délai dépassé, réessayez',
   },

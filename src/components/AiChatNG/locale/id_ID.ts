@@ -147,6 +147,8 @@ const id_ID = {
     ask_first: 'Ajukan pertanyaan dulu',
     send: 'Kirim',
     follow_up_placeholder: 'Lanjutkan, mis. "kelompokkan per pod"',
+    answer_below: 'Jawab di bawah untuk melanjutkan',
+    needs_answer: 'Butuh jawaban',
     nothing_delivered: 'Tidak ada ekspresi yang bisa dipakai',
     timeout: 'Waktu habis, coba lagi',
   },

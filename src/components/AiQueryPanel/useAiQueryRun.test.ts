@@ -117,6 +117,28 @@ describe('useAiQueryRun', () => {
     expect(result.current.run.explanation).toContain('没有 CPU 相关指标');
   });
 
+  it('carries back a question the assistant ended its turn on', async () => {
+    // Real turns do this when the page context is ambiguous. It finishes clean
+    // — no error, no value — so only the question distinguishes it from a miss.
+    getMessageDetail.mockResolvedValue(
+      message({
+        response: [
+          { content_type: 'markdown', content: '这个数据源 ID 查不到。' },
+          { content_type: 'input_request', content: '', is_finish: true, param: { question: '  要用哪个数据源？  ', mode: 'single' } },
+        ],
+      }),
+    );
+    const { result } = setup();
+
+    await act(async () => {
+      result.current.ask('查主机 CPU');
+    });
+    await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 5000 });
+
+    expect(result.current.run.question).toBe('要用哪个数据源？');
+    expect(result.current.run.value).toBeUndefined();
+  });
+
   it('reports a backend error as a failure, keeping what it managed to say', async () => {
     getMessageDetail.mockResolvedValue(
       message({ err_code: 500, err_msg: 'model unavailable', response: [{ content_type: 'markdown', content: '正在检查指标' }] }),

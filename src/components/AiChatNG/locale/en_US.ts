@@ -147,6 +147,8 @@ const en_US = {
     ask_first: 'Ask something first',
     send: 'Send',
     follow_up_placeholder: 'Keep going, e.g. "group by pod"',
+    answer_below: 'Answer below to continue',
+    needs_answer: 'Needs an answer',
     nothing_delivered: 'No usable expression',
     timeout: 'Timed out, please retry',
   },

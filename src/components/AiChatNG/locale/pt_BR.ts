@@ -147,6 +147,8 @@ const pt_BR = {
     ask_first: 'Pergunte algo primeiro',
     send: 'Enviar',
     follow_up_placeholder: 'Continue, ex.: "agrupar por pod"',
+    answer_below: 'Responda abaixo para continuar',
+    needs_answer: 'Aguarda resposta',
     nothing_delivered: 'Nenhuma expressão utilizável',
     timeout: 'Tempo esgotado, tente de novo',
   },
