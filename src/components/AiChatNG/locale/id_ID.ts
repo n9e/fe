@@ -124,7 +124,31 @@ const id_ID = {
   },
   "empty": {
     "greeting_prefix": "Halo, saya"
-  }
+  },
+  panel: {
+    open: 'Buat kueri dengan AI',
+    untitled: 'Dibuat AI',
+    based_on: 'berdasarkan {{name}}',
+    running: 'Memproses',
+    adopted: 'Dipakai',
+    failed: 'Tidak ada hasil',
+    close: 'Tutup',
+    step: {
+      command: 'Menjalankan perintah',
+      read_file: 'Membaca berkas',
+      edit_file: 'Menulis berkas',
+    },
+    written_back: 'Ditulis ke kolom di atas dan dijalankan',
+    undo: 'Urungkan',
+    regenerate: 'Buat ulang',
+    another_way: 'Cara lain',
+    another_way_prompt: 'Tulis dengan cara lain — ekspresi setara, dirumuskan berbeda',
+    ask_first: 'Ajukan pertanyaan dulu',
+    send: 'Kirim',
+    follow_up_placeholder: 'Lanjutkan, mis. "kelompokkan per pod"',
+    nothing_delivered: 'Tidak ada ekspresi yang bisa dipakai',
+    timeout: 'Waktu habis, coba lagi',
+  },
 };
 
 export default id_ID;

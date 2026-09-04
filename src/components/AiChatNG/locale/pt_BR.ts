@@ -124,7 +124,31 @@ const pt_BR = {
   },
   "empty": {
     "greeting_prefix": "Olá, eu sou"
-  }
+  },
+  panel: {
+    open: 'Gerar consulta com IA',
+    untitled: 'Gerado por IA',
+    based_on: 'com base em {{name}}',
+    running: 'Gerando',
+    adopted: 'Adotado',
+    failed: 'Sem resultado',
+    close: 'Fechar',
+    step: {
+      command: 'Comando executado',
+      read_file: 'Arquivo lido',
+      edit_file: 'Arquivo gravado',
+    },
+    written_back: 'Escrito no campo acima e executado',
+    undo: 'Desfazer',
+    regenerate: 'Gerar de novo',
+    another_way: 'Outra forma',
+    another_way_prompt: 'Escreva de outra forma — uma expressão equivalente, redigida diferente',
+    ask_first: 'Pergunte algo primeiro',
+    send: 'Enviar',
+    follow_up_placeholder: 'Continue, ex.: "agrupar por pod"',
+    nothing_delivered: 'Nenhuma expressão utilizável',
+    timeout: 'Tempo esgotado, tente de novo',
+  },
 };
 
 export default pt_BR;

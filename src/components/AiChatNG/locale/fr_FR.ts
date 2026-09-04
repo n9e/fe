@@ -124,7 +124,31 @@ const fr_FR = {
   },
   "empty": {
     "greeting_prefix": "Bonjour, je suis"
-  }
+  },
+  panel: {
+    open: 'Générer une requête avec l’IA',
+    untitled: 'Généré par IA',
+    based_on: 'basé sur {{name}}',
+    running: 'En cours',
+    adopted: 'Adopté',
+    failed: 'Aucun résultat',
+    close: 'Fermer',
+    step: {
+      command: 'Commande exécutée',
+      read_file: 'Fichier lu',
+      edit_file: 'Fichier écrit',
+    },
+    written_back: 'Inséré dans le champ ci-dessus et exécuté',
+    undo: 'Annuler',
+    regenerate: 'Régénérer',
+    another_way: 'Autre formulation',
+    another_way_prompt: 'Écris-la autrement — une expression équivalente, formulée différemment',
+    ask_first: 'Posez d’abord une question',
+    send: 'Envoyer',
+    follow_up_placeholder: 'Continuez, par ex. « grouper par pod »',
+    nothing_delivered: 'Aucune expression utilisable',
+    timeout: 'Délai dépassé, réessayez',
+  },
 };
 
 export default fr_FR;

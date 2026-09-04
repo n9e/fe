@@ -125,6 +125,30 @@ const ja_JP = {
   empty: {
     greeting_prefix: 'こんにちは、私は',
   },
+  panel: {
+    open: 'AI でクエリを生成',
+    untitled: 'AI 生成',
+    based_on: '{{name}} に基づく',
+    running: '生成中',
+    adopted: '採用済み',
+    failed: '結果なし',
+    close: '閉じる',
+    step: {
+      command: 'コマンドを実行',
+      read_file: 'ファイルを読み取り',
+      edit_file: 'ファイルを書き込み',
+    },
+    written_back: '上の入力欄に書き戻し、実行しました',
+    undo: '元に戻す',
+    regenerate: '再生成',
+    another_way: '別の書き方',
+    another_way_prompt: '別の書き方で、等価だが表現の異なる式をください',
+    ask_first: 'まず質問してください',
+    send: '送信',
+    follow_up_placeholder: '続けてどうぞ（例：pod ごとに集計）',
+    nothing_delivered: '使用できる式がありません',
+    timeout: 'タイムアウトしました。再試行してください',
+  },
 };
 
 export default ja_JP;

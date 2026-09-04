@@ -125,6 +125,30 @@ const en_US = {
   empty: {
     greeting_prefix: 'Hello, I am',
   },
+  panel: {
+    open: 'Generate a query with AI',
+    untitled: 'AI generated',
+    based_on: 'based on {{name}}',
+    running: 'Working',
+    adopted: 'Adopted',
+    failed: 'No result',
+    close: 'Close',
+    step: {
+      command: 'Ran a command',
+      read_file: 'Read a file',
+      edit_file: 'Wrote a file',
+    },
+    written_back: 'Written into the field above and run',
+    undo: 'Undo',
+    regenerate: 'Regenerate',
+    another_way: 'Another way',
+    another_way_prompt: 'Write it another way — an equivalent expression, phrased differently',
+    ask_first: 'Ask something first',
+    send: 'Send',
+    follow_up_placeholder: 'Keep going, e.g. "group by pod"',
+    nothing_delivered: 'No usable expression',
+    timeout: 'Timed out, please retry',
+  },
 };
 
 export default en_US;

@@ -124,7 +124,31 @@ const es_ES = {
   },
   "empty": {
     "greeting_prefix": "Hola, soy"
-  }
+  },
+  panel: {
+    open: 'Generar consulta con IA',
+    untitled: 'Generado por IA',
+    based_on: 'basado en {{name}}',
+    running: 'Generando',
+    adopted: 'Adoptado',
+    failed: 'Sin resultado',
+    close: 'Cerrar',
+    step: {
+      command: 'Comando ejecutado',
+      read_file: 'Archivo leído',
+      edit_file: 'Archivo escrito',
+    },
+    written_back: 'Escrito en el campo de arriba y ejecutado',
+    undo: 'Deshacer',
+    regenerate: 'Regenerar',
+    another_way: 'Otra forma',
+    another_way_prompt: 'Escríbela de otra forma: una expresión equivalente, redactada distinto',
+    ask_first: 'Pregunta algo primero',
+    send: 'Enviar',
+    follow_up_placeholder: 'Sigue, p. ej. «agrupar por pod»',
+    nothing_delivered: 'Ninguna expresión utilizable',
+    timeout: 'Tiempo agotado, inténtalo de nuevo',
+  },
 };
 
 export default es_ES;

@@ -125,6 +125,30 @@ const zh_CN = {
   empty: {
     greeting_prefix: '你好,我是',
   },
+  panel: {
+    open: '用 AI 生成查询',
+    untitled: 'AI 生成',
+    based_on: '基于 {{name}}',
+    running: '生成中',
+    adopted: '已采用',
+    failed: '未能给出',
+    close: '关闭',
+    step: {
+      command: '运行命令',
+      read_file: '读取文件',
+      edit_file: '写入文件',
+    },
+    written_back: '已回写到上方输入框，并已执行',
+    undo: '撤销',
+    regenerate: '重新生成',
+    another_way: '换一种写法',
+    another_way_prompt: '换一种写法，给我一条等价但表达不同的语句',
+    ask_first: '先问一个问题',
+    send: '发送',
+    follow_up_placeholder: '继续说，比如「按 pod 分组」',
+    nothing_delivered: '没有给出可用的语句',
+    timeout: '生成超时，请重试',
+  },
 };
 
 export default zh_CN;

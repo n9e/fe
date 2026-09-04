@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
-import { Space } from 'antd';
+import { Button, Space, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { useTranslation } from 'react-i18next';
 
@@ -12,8 +12,10 @@ import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
 
-import { AiButton } from '@/components/AiChatNG/FlashAiButton';
-import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
+import { buildPageFrom } from '@/components/AiChatNG/recommend';
+import AiQueryPanel from '@/components/AiQueryPanel';
+import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
+import { CommonStateContext } from '@/App';
 
 import { queryStringOptions } from '../constants';
 import ProbeBanner from '../components/ProbeBanner';
@@ -64,7 +66,8 @@ export default function Prometheus(props: IProps) {
     defaultTime,
     onDefaultTimeChange,
   } = props;
-  const { i18n } = useTranslation();
+  const { t } = useTranslation(AI_CHAT_NS);
+  const { datasourceList } = useContext(CommonStateContext);
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -73,6 +76,13 @@ export default function Prometheus(props: IProps) {
   const [promql, setPromql] = useState<string>(defaultPromQL);
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
+  const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  // What the box held before the assistant wrote into it, so Undo has something
+  // to put back — and what the assistant last wrote, so we can tell the two
+  // apart. A follow-up overwrites our own previous answer, not the user's text,
+  // so only a value we did not write is worth remembering as the way back.
+  const promqlBeforeAi = useRef<string>('');
+  const promqlWrittenByAi = useRef<string>();
 
   useEffect(() => {
     if (query.__event_id) {
@@ -143,14 +153,43 @@ export default function Prometheus(props: IProps) {
         showGlobalMetrics={showGlobalMetrics}
         showBuilder={showBuilder}
         noticeBanner={
-          probeBannerVisible ? (
-            <ProbeBanner
-              datasourceId={datasourceValue}
-              onClose={() => {
-                setProbeBannerVisible(false);
-              }}
-            />
-          ) : undefined
+          <>
+            {aiPanelOpen && (
+              <AiQueryPanel
+                pageFrom={buildPageFrom({
+                  param: {
+                    datasource_type: 'prometheus',
+                    datasource_id: datasourceValue,
+                    panelKey,
+                  },
+                })}
+                contextLabel={_.find(datasourceList, { id: datasourceValue })?.name}
+                onAdopt={(next) => {
+                  if (promql !== promqlWrittenByAi.current) {
+                    promqlBeforeAi.current = promql;
+                  }
+                  promqlWrittenByAi.current = next;
+                  setProbeBannerVisible(false);
+                  setPromql(next);
+                }}
+                onUndo={() => {
+                  setPromql(promqlBeforeAi.current);
+                  promqlWrittenByAi.current = undefined;
+                }}
+                onClose={() => {
+                  setAiPanelOpen(false);
+                }}
+              />
+            )}
+            {probeBannerVisible ? (
+              <ProbeBanner
+                datasourceId={datasourceValue}
+                onClose={() => {
+                  setProbeBannerVisible(false);
+                }}
+              />
+            ) : undefined}
+          </>
         }
         onChange={(newPromQL) => {
           if (newPromQL && newPromQL !== defaultPromQL) {
@@ -170,32 +209,17 @@ export default function Prometheus(props: IProps) {
         }}
         extra={
           <Space size={SIZE}>
-            <AiButton
-              queryPageFrom={buildPageFrom({
-                param: {
-                  datasource_type: 'prometheus',
-                  datasource_id: datasourceValue,
-                  // Says which panel the conversation belongs to, so Metric.tsx
-                  // can close the chat when that panel is removed — it has
-                  // always compared this key, but nothing ever wrote it. Only
-                  // reaches that comparison in the open-source build: the
-                  // commercial one replaces App.tsx and never mounts the
-                  // provider the comparison reads from.
-                  panelKey,
-                },
-              })}
-              queryAction={{
-                key: 'query_generator',
-                param: {
-                  datasource_type: 'prometheus',
-                  datasource_id: datasourceValue,
-                },
-              }}
-              promptList={getExplorerPrompts(i18n.language)}
-              onExecuteQueryForQueryContent={(nextPromql) => {
-                setPromql(nextPromql);
-              }}
-            />
+            <Tooltip title={t('panel.open')}>
+              <Button
+                icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mb-1' alt='' />}
+                onClick={() => {
+                  // Opening the assistant is taking over, same as editing the
+                  // query by hand — the onboarding banner steps aside.
+                  setProbeBannerVisible(false);
+                  setAiPanelOpen((previous) => !previous);
+                }}
+              />
+            </Tooltip>
             <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} onChange={setPromql} />
           </Space>
         }

@@ -43,6 +43,9 @@ export enum EAiChatContentType {
   Markdown = 'markdown',
   Hint = 'hint',
   Query = 'query',
+  /** A tool the assistant ran. Carries `tool_call_statistic_type` (command /
+   *  read_file / edit_file) rather than content worth rendering as prose. */
+  Tool = 'tool',
   FormSelect = 'form_select',
   AlertRule = 'alert_rule',
   Dashboard = 'dashboard',
@@ -61,6 +64,8 @@ export interface IAiChatMessageResponse {
   is_finish?: boolean;
   is_from_ai?: boolean;
   hint_text?: string;
+  /** Set on `tool` segments: which kind of tool ran. */
+  tool_call_statistic_type?: 'command' | 'read_file' | 'edit_file';
 }
 
 export interface IAiChatMessage {

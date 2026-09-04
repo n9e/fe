@@ -125,6 +125,30 @@ const zh_HK = {
   empty: {
     greeting_prefix: '你好,我是',
   },
+  panel: {
+    open: '用 AI 生成查詢',
+    untitled: 'AI 生成',
+    based_on: '基於 {{name}}',
+    running: '生成中',
+    adopted: '已採用',
+    failed: '未能給出',
+    close: '關閉',
+    step: {
+      command: '執行命令',
+      read_file: '讀取檔案',
+      edit_file: '寫入檔案',
+    },
+    written_back: '已回寫到上方輸入框，並已執行',
+    undo: '復原',
+    regenerate: '重新生成',
+    another_way: '換一種寫法',
+    another_way_prompt: '換一種寫法，給我一條等價但表達不同的語句',
+    ask_first: '先問一個問題',
+    send: '傳送',
+    follow_up_placeholder: '繼續說，例如「按 pod 分組」',
+    nothing_delivered: '沒有給出可用的語句',
+    timeout: '生成逾時，請重試',
+  },
 };
 
 export default zh_HK;

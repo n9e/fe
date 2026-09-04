@@ -124,7 +124,31 @@ const ko_KR = {
   },
   "empty": {
     "greeting_prefix": "안녕하세요, 저는"
-  }
+  },
+  panel: {
+    open: 'AI로 쿼리 생성',
+    untitled: 'AI 생성',
+    based_on: '{{name}} 기준',
+    running: '생성 중',
+    adopted: '적용됨',
+    failed: '결과 없음',
+    close: '닫기',
+    step: {
+      command: '명령 실행',
+      read_file: '파일 읽기',
+      edit_file: '파일 쓰기',
+    },
+    written_back: '위 입력란에 반영하고 실행했습니다',
+    undo: '실행 취소',
+    regenerate: '다시 생성',
+    another_way: '다른 방식',
+    another_way_prompt: '동일하지만 다르게 표현한 식을 주세요',
+    ask_first: '먼저 질문하세요',
+    send: '보내기',
+    follow_up_placeholder: '이어서 말하세요, 예: "pod별로 집계"',
+    nothing_delivered: '사용할 수 있는 식이 없습니다',
+    timeout: '시간이 초과되었습니다. 다시 시도하세요',
+  },
 };
 
 export default ko_KR;

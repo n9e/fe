@@ -125,6 +125,30 @@ const ru_RU = {
   empty: {
     greeting_prefix: 'Здравствуйте, я',
   },
+  panel: {
+    open: 'Сгенерировать запрос с ИИ',
+    untitled: 'Сгенерировано ИИ',
+    based_on: 'на основе {{name}}',
+    running: 'Генерация',
+    adopted: 'Принято',
+    failed: 'Нет результата',
+    close: 'Закрыть',
+    step: {
+      command: 'Команда выполнена',
+      read_file: 'Файл прочитан',
+      edit_file: 'Файл записан',
+    },
+    written_back: 'Записано в поле выше и выполнено',
+    undo: 'Отменить',
+    regenerate: 'Сгенерировать снова',
+    another_way: 'Иначе',
+    another_way_prompt: 'Напиши иначе — эквивалентное выражение, сформулированное по-другому',
+    ask_first: 'Сначала задайте вопрос',
+    send: 'Отправить',
+    follow_up_placeholder: 'Продолжайте, например «сгруппировать по pod»',
+    nothing_delivered: 'Нет пригодного выражения',
+    timeout: 'Превышено время ожидания, повторите',
+  },
 };
 
 export default ru_RU;
