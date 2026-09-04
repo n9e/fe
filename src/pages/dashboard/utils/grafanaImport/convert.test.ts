@@ -3,6 +3,13 @@ import { formatDatasource } from '../../Variables/utils/formatString';
 import { validateDashboardConfig } from '../validateDashboardConfig';
 import dashboardMigrator from '../../Detail/utils/dashboardMigrator';
 
+jest.mock('@/components/QueryName/utils', () => ({
+  generateQueryNameByIndex: (index: number) => {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return index < alphabet.length ? alphabet[index] : `${alphabet[Math.floor(index / alphabet.length) - 1]}${alphabet[index % alphabet.length]}`;
+  },
+}));
+
 // plus: 在 jest 下是存根，这里虚拟 mock addPrefixToTableNames 验证 postgres 接线
 jest.mock(
   'plus:/utils/convertDashboardGrafanaToN9E/addPrefixToTableNames',
@@ -97,6 +104,16 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
     expect(target.legend).toBe('{{job}}');
     expect(target.kind).toBe('query');
     expect(target.resultType).toBe('time_series');
+  });
+
+  it('normalizes target refIds to the supported alphabetic sequence', () => {
+    const targets = Array.from({ length: 28 }, (_, index) => ({ refId: `custom-${index}`, expr: `up{index=\"${index}\"}` }));
+    const { dashboard } = convertDashboardGrafanaToN9EWithReport({
+      schemaVersion: 42,
+      panels: [{ id: 20, type: 'timeseries', gridPos: { h: 6, w: 12, x: 0, y: 0 }, datasource: null, targets }],
+    });
+
+    expect(dashboard.configs.panels[0].targets.map((target: { refId: string }) => target.refId)).toEqual([...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'AA', 'AB']);
   });
 
   it('keeps unsupported panel types as unknown (renderer shows placeholder) and reports downgrade', () => {

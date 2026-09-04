@@ -4,6 +4,8 @@
  */
 import _ from 'lodash';
 
+import { generateQueryNameByIndex } from '@/components/QueryName/utils';
+
 import { normalizeCalc } from './units';
 import { buildSharedOptions, convertLinksGrafanaToN9E, convertOverridesGrafanaToN9E, type ReportFn } from './options';
 import { resolveDatasourceRef, type ResolveContext } from './datasource';
@@ -42,7 +44,9 @@ function convertTarget(target: any, panel: GrafanaPanel, ctx: ResolveContext, re
     report({ scope: 'target', action: 'dropped', path: `${path}.targets[${index}]`, reason: 'target 非对象，已丢弃' });
     return null;
   }
-  const refId = typeof target.refId === 'string' && target.refId ? target.refId : String.fromCharCode(65 + index);
+  // 后端仅接受字母序列的 refId，导入时不能沿用 Grafana 的自定义 refId。
+  // generateQueryNameByIndex 会按 A-Z、AA-ZZ 的顺序生成。
+  const refId = generateQueryNameByIndex(index);
   const ds = resolveDatasourceRef(target.datasource ?? panel.datasource, ctx);
   if (!ds.supported) {
     report({ scope: 'target', action: 'dropped', path: `${path}.targets[${index}]`, reason: `target ${refId} 数据源 ${ds.cate} 不支持，已丢弃` });
