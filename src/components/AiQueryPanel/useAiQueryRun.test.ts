@@ -59,12 +59,13 @@ describe('useAiQueryRun', () => {
     // Trimmed: this string goes straight into the field.
     expect(result.current.run.value).toBe('cpu_usage_active{cpu="cpu-total"}');
     expect(result.current.run.explanation).toBe('按 ident 区分主机。');
-    expect(result.current.run.steps).toHaveLength(1);
+    expect(result.current.run.tried).toBe(1);
   });
 
-  it('reads a run of tool calls off the group the backend already merged', async () => {
+  it('counts only what was run against the data source', async () => {
     // message/detail never returns bare `tool` segments: the server folds each
-    // run of them into one `tool_group` carrying the counts.
+    // run of them into one `tool_group` carrying the counts. Only the command
+    // count is evidence — the rest counts the agent's own scratch files.
     getMessageDetail.mockResolvedValue(
       message({
         response: [
@@ -84,23 +85,7 @@ describe('useAiQueryRun', () => {
     });
     await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 5000 });
 
-    expect(result.current.run.steps).toEqual([{ label: 'panel.step.command:3panel.step.separatorpanel.step.read_file:1' }]);
-  });
-
-  it('skips a group that counted nothing rather than showing an empty step', async () => {
-    getMessageDetail.mockResolvedValue(
-      message({
-        response: [{ content_type: 'tool_group', content: '', is_finish: true, param: { command_count: 0, read_file_count: 0, edit_file_count: 0, items: [] } }],
-      }),
-    );
-    const { result } = setup();
-
-    await act(async () => {
-      result.current.ask('查主机 CPU');
-    });
-    await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 5000 });
-
-    expect(result.current.run.steps).toEqual([]);
+    expect(result.current.run.tried).toBe(3);
   });
 
   it('finishes without a value when the assistant delivered none', async () => {
@@ -168,7 +153,7 @@ describe('useAiQueryRun', () => {
     });
     await waitFor(() => expect(result.current.run.activity).toBe('正在执行脚本'), { timeout: 5000 });
 
-    expect(result.current.run.steps).toHaveLength(0);
+    expect(result.current.run.tried).toBe(0);
     expect(result.current.run.phase).toBe('running');
   });
 

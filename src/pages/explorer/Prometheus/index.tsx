@@ -77,10 +77,6 @@ export default function Prometheus(props: IProps) {
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
-  // What the box held before the assistant wrote into it, so Undo has something
-  // to put back. The panel itself knows which value it wrote — it can see the
-  // current one — so the page only has to remember the way back.
-  const promqlBeforeAi = useRef<string>('');
 
   useEffect(() => {
     if (query.__event_id) {
@@ -162,18 +158,12 @@ export default function Prometheus(props: IProps) {
                 })}
                 contextLabel={_.find(datasourceList, { id: datasourceValue })?.name}
                 value={promql}
-                examplePrompt={t('panel.example_fallback')}
+                examplePrompt={t('panel.example')}
                 onAdopt={(next) => {
-                  // Only text the user is responsible for is worth restoring:
-                  // a follow-up replaces our own answer, not their writing.
-                  if (promql !== next) {
-                    promqlBeforeAi.current = promql;
-                  }
+                  // One write path: the assistant's answer and, on undo, what
+                  // the box held before it. The panel decides which.
                   setProbeBannerVisible(false);
                   setPromql(next);
-                }}
-                onUndo={() => {
-                  setPromql(promqlBeforeAi.current);
                 }}
                 onClose={() => {
                   setAiPanelOpen(false);

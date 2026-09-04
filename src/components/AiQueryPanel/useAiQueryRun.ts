@@ -8,14 +8,14 @@ import { EAiChatContentType, IAiChatInputRequest, IAiChatMessage, IAiChatPageInf
  * One assistant turn, reduced to what a field-filling panel needs.
  *
  * The chat panel renders the whole transcript; this renders a task. So the
- * message is read for three things only: what the assistant did (steps), the
- * value it produced, and what it said about that value. Everything else in the
- * transcript — reasoning, tool payloads — is detail this surface does not owe
- * the user.
+ * message is read for three things only: whether the assistant actually ran
+ * anything against the data source, the value it produced, and what it said
+ * about that value. Everything else in the transcript — reasoning, tool
+ * payloads — is detail this surface does not owe the user.
  *
  * Progress is polled rather than streamed. `message/detail` is the durable
  * source of truth the chat itself falls back on, and a panel that shows a
- * handful of steps does not need token-level updates; skipping the stream also
+ * line of progress does not need token-level updates; skipping the stream also
  * skips its separate endpoint and its reconnect handling.
  */
 
@@ -31,14 +31,11 @@ const RUN_TIMEOUT_MS = 5 * 60 * 1000;
 
 export type AiQueryPhase = 'idle' | 'running' | 'done' | 'stopped' | 'failed';
 
-export interface AiQueryStep {
-  /** What the assistant did, in the user's words. */
-  label: string;
-}
-
 export interface AiQueryRun {
   phase: AiQueryPhase;
-  steps: AiQueryStep[];
+  /** How many times the assistant ran something against the data source. The
+   *  only tally that is evidence: the rest counted its own scratch files. */
+  tried: number;
   /** What the assistant is doing right now, in its own words. Only while running. */
   activity?: string;
   /** The value to write into the field. Only set when the assistant delivered one. */
@@ -57,28 +54,11 @@ export interface AiQueryRun {
   needsModelConfig?: boolean;
 }
 
-const EMPTY_RUN: AiQueryRun = { phase: 'idle', steps: [] };
+const EMPTY_RUN: AiQueryRun = { phase: 'idle', tried: 0 };
 
-/**
- * What a run of tool calls amounts to, in the user's words.
- *
- * The backend merges consecutive tool calls into one group and hands over the
- * counts, so this is one line per group rather than one per call — which is
- * also the more readable of the two: eight rows all reading "ran a command"
- * say less than "ran 8 commands".
- */
-function stepLabel(group: IAiChatToolCallGroup, t: TFunction): string {
-  const parts: string[] = [];
-  if (group.command_count) parts.push(t('panel.step.command', { count: group.command_count }));
-  if (group.read_file_count) parts.push(t('panel.step.read_file', { count: group.read_file_count }));
-  // edit_file is the agent writing its own scratch files — not evidence about
-  // the query, and alarming to read on a page that touches production.
-  return parts.join(t('panel.step.separator'));
-}
-
-function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
+function reduceMessage(message: IAiChatMessage): AiQueryRun {
   const responses = message.response ?? [];
-  const steps: AiQueryStep[] = [];
+  let tried = 0;
   const said: string[] = [];
   let value: string | undefined;
   let question: string | undefined;
@@ -94,10 +74,7 @@ function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
       // Tool calls are the only other segment worth surfacing: they are the
       // evidence that the answer was checked rather than recalled.
       case EAiChatContentType.ToolGroup:
-        if (response.param) {
-          const label = stepLabel(response.param as IAiChatToolCallGroup, t);
-          if (label) steps.push({ label });
-        }
+        tried += (response.param as IAiChatToolCallGroup | undefined)?.command_count ?? 0;
         break;
       // A turn can end on a question rather than an answer — an ambiguous data
       // source, say. Saying "nothing was delivered" would be true but useless:
@@ -115,7 +92,7 @@ function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
   if (message.err_code) {
     return {
       phase: 'failed',
-      steps,
+      tried,
       explanation: said.join('\n\n') || undefined,
       // err_title is the sentence written for a person; err_msg is the detail.
       // Reducing both to one string threw the readable half away.
@@ -125,9 +102,9 @@ function reduceMessage(message: IAiChatMessage, t: TFunction): AiQueryRun {
     };
   }
   if (!message.is_finish) {
-    return { phase: 'running', steps, activity };
+    return { phase: 'running', tried, activity };
   }
-  return { phase: 'done', steps, value, question, explanation: said.join('\n\n') || undefined };
+  return { phase: 'done', tried, value, question, explanation: said.join('\n\n') || undefined };
 }
 
 export interface UseAiQueryRunOptions {
@@ -164,7 +141,7 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
     // Keep the answer already on screen: a follow-up refines what is there, and
     // blanking the panel mid-refinement takes away the undo for a field that is
     // still holding the previous value.
-    setRun((previous) => ({ phase: 'running', steps: [], value: previous.value }));
+    setRun((previous) => ({ phase: 'running', tried: 0, value: previous.value }));
     sentRef.current = undefined;
 
     try {
@@ -192,6 +169,7 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
         await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
         if (!isCurrent()) return;
         if (Date.now() > deadline) {
+          cancelMessage(sent).catch(() => undefined);
           setRun((previous) => ({
             ...previous,
             phase: 'failed',
@@ -213,7 +191,7 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
         }
         if (!isCurrent()) return;
         consecutiveFailures = 0;
-        const next = reduceMessage(detail, latest.current.t);
+        const next = reduceMessage(detail);
         // A follow-up that ends on a question, a miss or an error still leaves
         // the previous answer in the field, so it keeps its card and its undo.
         setRun((previous) => ({ ...next, value: next.value ?? previous.value }));
@@ -221,6 +199,8 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
       }
     } catch (error) {
       if (!isCurrent()) return;
+      const sent = sentRef.current;
+      if (sent) cancelMessage(sent).catch(() => undefined);
       // Nothing reached the assistant, so saying it failed to find a query
       // would send the user off rewriting a question that was never asked.
       setRun((previous) => ({

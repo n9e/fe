@@ -18,38 +18,38 @@ jest.mock('@/utils', () => ({ copyToClipBoard: (...args: unknown[]) => copyToCli
 
 const ask = jest.fn();
 const stop = jest.fn();
-let run: AiQueryRun = { phase: 'idle', steps: [] };
+let run: AiQueryRun = { phase: 'idle', tried: 0 };
 
 jest.mock('./useAiQueryRun', () => ({
   useAiQueryRun: () => ({ run, ask, stop }),
 }));
 
 const pageFrom = { url: '/metric/explorer', param: { datasource_id: 849 } } as const;
-
 /** Mirrors the host page: whatever the panel adopts becomes the field's value,
- *  which is how the panel tells "I wrote this" from "the user edited it". */
+ *  which is how the panel tells "I wrote this" from "the user edited it".
+ *  Undo is not a separate callback — it is another adopt, of the old value. */
+const adopted: string[] = [];
+
+function Host() {
+  const [value, setValue] = React.useState<string | undefined>(undefined);
+  return (
+    <AiQueryPanel
+      pageFrom={pageFrom}
+      contextLabel='dev-prometheus'
+      examplePrompt='每台主机的 CPU 使用率'
+      value={value}
+      onAdopt={(next) => {
+        adopted.push(next);
+        setValue(next);
+      }}
+      onClose={jest.fn()}
+    />
+  );
+}
+
 function renderLive() {
-  const onUndo = jest.fn();
-  function Host() {
-    const [value, setValue] = React.useState<string | undefined>(undefined);
-    const before = React.useRef<string | undefined>(undefined);
-    return (
-      <AiQueryPanel
-        pageFrom={pageFrom}
-        value={value}
-        onAdopt={(next) => {
-          if (value !== next) before.current = value;
-          setValue(next);
-        }}
-        onUndo={() => {
-          onUndo();
-          setValue(before.current);
-        }}
-        onClose={jest.fn()}
-      />
-    );
-  }
-  return { onUndo, ...render(<Host />) };
+  adopted.length = 0;
+  return render(<Host />);
 }
 
 function renderPanel(overrides: Partial<React.ComponentProps<typeof AiQueryPanel>> = {}) {
@@ -58,8 +58,8 @@ function renderPanel(overrides: Partial<React.ComponentProps<typeof AiQueryPanel
     contextLabel: 'dev-prometheus',
     // The field mirrors whatever the panel writes, as the real page does.
     value: undefined as string | undefined,
+    examplePrompt: '每台主机的 CPU 使用率',
     onAdopt: jest.fn(),
-    onUndo: jest.fn(),
     onClose: jest.fn(),
     ...overrides,
   };
@@ -68,7 +68,7 @@ function renderPanel(overrides: Partial<React.ComponentProps<typeof AiQueryPanel
 
 beforeEach(() => {
   jest.clearAllMocks();
-  run = { phase: 'idle', steps: [] };
+  run = { phase: 'idle', tried: 0 };
 });
 
 describe('AiQueryPanel', () => {
@@ -97,7 +97,7 @@ describe('AiQueryPanel', () => {
     const { props, rerender } = renderPanel();
     run = {
       phase: 'done',
-      steps: [{ label: 'panel.step.command' }],
+      tried: 1,
       value: 'cpu_usage_active{cpu="cpu-total"}',
       explanation: '按 ident 区分主机。',
     };
@@ -105,7 +105,7 @@ describe('AiQueryPanel', () => {
       rerender(<AiQueryPanel {...props} />);
     });
 
-    expect(screen.getByText('panel.verified_by')).toBeTruthy();
+    expect(screen.getByText('panel.tried')).toBeTruthy();
     expect(screen.getByText('cpu_usage_active{cpu="cpu-total"}')).toBeTruthy();
     expect(screen.getByText('按 ident 区分主机。')).toBeTruthy();
     await waitFor(() => expect(props.onAdopt).toHaveBeenCalledWith('cpu_usage_active{cpu="cpu-total"}'));
@@ -117,20 +117,26 @@ describe('AiQueryPanel', () => {
   });
 
   it('offers to put the field back after it has written to it', async () => {
-    run = { phase: 'done', steps: [], value: 'up' };
-    const { onUndo } = renderLive();
+    const { rerender } = renderLive();
+    // Go through a real ask, so the panel knows what the field held first.
+    await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
+    run = { phase: 'done', tried: 0, value: 'up' };
+    await act(async () => {
+      rerender(<Host />);
+    });
 
     await waitFor(() => expect(screen.getByText('panel.written_back')).toBeTruthy());
     await userEvent.click(screen.getByText('panel.undo'));
 
-    expect(onUndo).toHaveBeenCalledTimes(1);
+    // Undo is a write like any other: the field goes back to what it held.
+    expect(adopted).toEqual(['up', '']);
     expect(screen.queryByText('panel.written_back')).toBeNull();
     expect(screen.getByText('panel.restored')).toBeTruthy();
   });
 
   it('says plainly when nothing was delivered, and writes nothing', async () => {
     const { props, rerender } = renderPanel();
-    run = { phase: 'done', steps: [], explanation: '该数据源没有 CPU 相关指标。' };
+    run = { phase: 'done', tried: 0, explanation: '该数据源没有 CPU 相关指标。' };
     await act(async () => {
       rerender(<AiQueryPanel {...props} />);
     });
@@ -143,7 +149,7 @@ describe('AiQueryPanel', () => {
   it('regenerates the task, not the last thing typed into the box', async () => {
     const { props, rerender } = renderPanel();
     await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
-    run = { phase: 'done', steps: [], value: 'up' };
+    run = { phase: 'done', tried: 0, value: 'up' };
     await act(async () => {
       rerender(<AiQueryPanel {...props} value='up' />);
     });
@@ -160,7 +166,7 @@ describe('AiQueryPanel', () => {
   it('says nothing changed when the answer is what the field already held', async () => {
     const { props, rerender } = renderPanel({ value: 'up' });
     await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
-    run = { phase: 'done', steps: [], value: 'up' };
+    run = { phase: 'done', tried: 0, value: 'up' };
     await act(async () => {
       rerender(<AiQueryPanel {...props} value='up' />);
     });
@@ -175,7 +181,7 @@ describe('AiQueryPanel', () => {
   it('aims undo at what the field held when the run started', async () => {
     const { props, rerender } = renderPanel({ value: 'mine' });
     await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
-    run = { phase: 'done', steps: [], value: 'up' };
+    run = { phase: 'done', tried: 0, value: 'up' };
     await act(async () => {
       rerender(<AiQueryPanel {...props} value='up' />);
     });
@@ -192,7 +198,7 @@ describe('AiQueryPanel', () => {
 
   it('offers a way out of a run instead of locking the panel for five minutes', async () => {
     const { props, rerender } = renderPanel();
-    run = { phase: 'running', steps: [], activity: '正在验证查询' };
+    run = { phase: 'running', tried: 0, activity: '正在验证查询' };
     await act(async () => {
       rerender(<AiQueryPanel {...props} />);
     });
@@ -205,7 +211,7 @@ describe('AiQueryPanel', () => {
   it('puts retry inside the failure, and the raw error out of the way', async () => {
     const { props, rerender } = renderPanel();
     await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
-    run = { phase: 'failed', steps: [], error: 'dial tcp 127.0.0.1:443: connection refused' };
+    run = { phase: 'failed', tried: 0, error: 'dial tcp 127.0.0.1:443: connection refused' };
     await act(async () => {
       rerender(<AiQueryPanel {...props} />);
     });
@@ -222,10 +228,15 @@ describe('AiQueryPanel', () => {
   });
 
   it('refills without another model run after an undo', async () => {
-    run = { phase: 'done', steps: [], value: 'up' };
-    renderLive();
+    const { rerender } = renderLive();
+    await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
+    run = { phase: 'done', tried: 0, value: 'up' };
+    await act(async () => {
+      rerender(<Host />);
+    });
 
     await waitFor(() => expect(screen.getByText('panel.undo')).toBeTruthy());
+    ask.mockClear();
     await userEvent.click(screen.getByText('panel.undo'));
     await userEvent.click(screen.getByText('panel.refill'));
 
@@ -235,7 +246,7 @@ describe('AiQueryPanel', () => {
   });
 
   it('notices the user editing the field by hand and stops claiming it', async () => {
-    run = { phase: 'done', steps: [], value: 'up' };
+    run = { phase: 'done', tried: 0, value: 'up' };
     const { props, rerender } = renderPanel({ value: 'up' });
     await waitFor(() => expect(screen.getByText('panel.written_back')).toBeTruthy());
 
