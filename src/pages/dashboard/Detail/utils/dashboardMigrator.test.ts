@@ -304,6 +304,7 @@ describe('dashboard v4 migration', () => {
       panels: [
         { id: 'row-collapsed', type: 'row', version: '4.0.0', collapsed: true },
         { id: 'chart', type: 'timeseries', version: '4.0.0', targets: [], custom: {}, options: {} },
+        { id: 'row-missing', type: 'row', version: '4.0.0' },
         {
           id: 'row-expanded',
           type: 'row',
@@ -319,12 +320,13 @@ describe('dashboard v4 migration', () => {
       panels: [
         { id: 'row-collapsed', collapsed: false },
         { id: 'chart', type: 'timeseries' },
+        { id: 'row-missing', collapsed: false },
         { id: 'row-expanded', collapsed: true, panels: [{ id: 'nested-chart' }] },
       ],
     });
     expect(migrated.panels[0]).not.toHaveProperty('version');
     expect(migrated.panels[1]).not.toHaveProperty('version');
-    expect(migrated.panels[2].panels?.[0]).not.toHaveProperty('version');
+    expect(migrated.panels[3].panels?.[0]).not.toHaveProperty('version');
     expect(dashboardMigrator(migrated)).toEqual(migrated);
   });
 
@@ -333,6 +335,7 @@ describe('dashboard v4 migration', () => {
       version: '4.1.0',
       panels: [
         { id: 'row-current', type: 'row', version: '4.0.0', collapsed: true },
+        { id: 'row-missing', type: 'row', version: '4.0.0' },
         { id: 'chart-legacy', type: 'timeseries', version: '3.4.0', targets: [{ expr: 'up' }], custom: {}, options: {} },
       ],
     });
@@ -341,6 +344,7 @@ describe('dashboard v4 migration', () => {
       version: '4.1.0',
       panels: [
         { id: 'row-current', collapsed: true },
+        { id: 'row-missing', collapsed: false },
         { id: 'chart-legacy', targets: [{ expr: 'up' }] },
       ],
     });

@@ -312,7 +312,7 @@ const Resource: React.FC = () => {
                         const params = [
                           {
                             user_group_id: record['user_group'].id,
-                            busi_group_id: teamId,
+                            busi_group_id: _.toNumber(teamId),
                           },
                         ];
                         confirm({
