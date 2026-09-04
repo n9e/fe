@@ -7,6 +7,7 @@ import { Alert, Button, Collapse, Descriptions, Space, Table, Tag, message } fro
 import { useTranslation } from 'react-i18next';
 
 import type { ConvertResult } from '@/pages/dashboard/utils/grafanaImport';
+import { copy2ClipBoard } from '@/utils';
 
 interface Props {
   result: ConvertResult;
@@ -59,8 +60,14 @@ export default function ImportGrafanaReport(props: Props) {
   const hasUnsupported = report.unsupportedItems.length > 0;
 
   const handleCopy = async () => {
+    const text = buildMarkdownReport(result);
     try {
-      await navigator.clipboard?.writeText(buildMarkdownReport(result));
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else if (!copy2ClipBoard(text)) {
+        message.error(t('batch.import_grafana_report.copy'));
+        return;
+      }
       message.success(t('batch.import_grafana_report.copied'));
     } catch (e) {
       message.error(t('batch.import_grafana_report.copy'));

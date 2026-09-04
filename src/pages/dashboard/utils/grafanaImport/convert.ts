@@ -33,9 +33,12 @@ function validateDashboard(source: unknown): asserts source is Record<string, an
 
 /** 转换并返回报告（含迁移台账与不支持项） */
 export function convertDashboardGrafanaToN9EWithReport(source: unknown, options?: ConvertOptions): ConvertResult {
-  validateDashboard(source);
-  // grafana 导出常为 { dashboard: {...} } 包裹，解包后处理
-  const root: Record<string, any> = 'dashboard' in (source as any) && _.isPlainObject((source as any).dashboard) ? (source as any).dashboard : (source as Record<string, any>);
+  // grafana 导出常为 { dashboard: {...} } 包裹，先解包再校验：校验外层会因缺少 panels 误拒包装格式
+  const root: Record<string, any> =
+    typeof source === 'object' && source !== null && 'dashboard' in (source as any) && _.isPlainObject((source as any).dashboard)
+      ? (source as any).dashboard
+      : (source as Record<string, any>);
+  validateDashboard(root);
 
   const unsupportedItems: UnsupportedItem[] = [];
   const report: ReportFn = (item) => {

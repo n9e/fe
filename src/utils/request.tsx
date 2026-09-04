@@ -27,7 +27,7 @@ const errorHandler = (error: ResponseError<any>): Response => {
   // 忽略掉 setting getter-only property "data" 的错误
   // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
   if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"' && !Request.isCancel(error)) {
-    if (error.request?.options?.sourcePathname && error.request.options.sourcePathname !== location.pathname) {
+    if (error.request?.options?.sourcePathname && error.request.options.sourcePathname !== location.pathname + location.search) {
       throw error;
     }
     // @ts-ignore
@@ -82,7 +82,7 @@ const reportForbidden = (data: any, options: any) => {
   // 请求发出后用户可能已经翻到别的页面了。这种迟到的 403 属于上一页，不能拿来
   // 顶掉当前这一屏 —— errorHandler 里对通知也是同一套判断。
   const sourcePathname = options?.sourcePathname;
-  if (sourcePathname && sourcePathname !== location.pathname) return;
+  if (sourcePathname && sourcePathname !== location.pathname + location.search) return;
   reportPageError(
     normalizeError({
       status: 403,
@@ -146,7 +146,7 @@ request.interceptors.request.use((url, options) => {
   }
   return {
     url: basePrefix + newUrl,
-    options: { ...options, headers, sourcePathname: location.pathname },
+    options: { ...options, headers, sourcePathname: location.pathname + location.search },
   };
 });
 

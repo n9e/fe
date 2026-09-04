@@ -139,7 +139,7 @@ export default function Content() {
   useEffect(() => {
     markInAppNavigation();
     clearPageError();
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     /**
