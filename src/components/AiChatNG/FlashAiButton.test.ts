@@ -27,6 +27,18 @@ describe('useAiEntClickHandler', () => {
     expect(handler).toMatch(/forceDrawer:\s*true/);
   });
 
+  it('hands initialMessage to the commercial chat as its prefill content', () => {
+    // The open-source drawer received initialMessage; this path used to drop it,
+    // so a page that opened the chat with a first message got an empty box.
+    expect(source).toMatch(/function useAiEntClickHandler\(options\?: \{[^}]*\binitialMessage\?: string;/s);
+    const customBlock = handler.slice(handler.indexOf('custom:'));
+    expect(customBlock).toMatch(/\bcontent:\s*initialMessage\b/);
+    // Both entry points thread it — AiButton and the wrapping variant.
+    const callSites = source.match(/useAiEntClickHandler\(\{[^}]*\}\)/g) ?? [];
+    expect(callSites.length).toBe(2);
+    for (const call of callSites) expect(call).toMatch(/\binitialMessage\b/);
+  });
+
   it('keeps forceDrawer after queryAction spread so call sites cannot wipe it', () => {
     const customStart = handler.indexOf('custom:');
     const customBlock = handler.slice(customStart);

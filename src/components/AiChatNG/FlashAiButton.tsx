@@ -34,13 +34,14 @@ function useAiEntClickHandler(options?: {
   promptList?: string[];
   queryPageFrom?: IAiChatPageInfo;
   queryAction?: IAiChatAction;
+  initialMessage?: string;
 }) {
   const [, setAiChatVisible] = useAiChatVisible();
   const [, setAiHandleEvent] = useAiHandleEvent();
   const [, setAiExternalConfig] = useAiExternalConfig();
   const [, setParamsAiAction] = useParamsAiAction();
 
-  const { onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction } = options ?? {};
+  const { onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction, initialMessage } = options ?? {};
 
   return React.useCallback(() => {
     setAiChatVisible(true);
@@ -49,7 +50,11 @@ function useAiEntClickHandler(options?: {
     setParamsAiAction({
       page: EPageType.Custom,
       custom: {
-        // content: ' ', // 预填充一个空格，表示新建会话，不然 FlashAI Chat 会报错导致页面崩溃
+        // The commercial chat reads `content` as the text to put in its input
+        // box; with prefillOnly it stays there for the user to send. This is
+        // the same message the open-source drawer receives as initialMessage —
+        // the two paths used to differ only in that this one dropped it.
+        content: initialMessage,
         prefillOnly: true, // 禁止自动发送消息
         createNew: true,
         ...queryPageFrom,
@@ -59,7 +64,7 @@ function useAiEntClickHandler(options?: {
         forceDrawer: true,
       } as any,
     });
-  }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);
+  }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction, initialMessage]);
 }
 
 function FlashAiButtonContent() {
@@ -130,7 +135,7 @@ export function AiButton(props: {
 }) {
   const { size, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, children } = props;
 
-  const handleEntClick = useAiEntClickHandler({ onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction });
+  const handleEntClick = useAiEntClickHandler({ onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction, initialMessage });
 
   if (IS_ENT) {
     return (
@@ -148,12 +153,13 @@ export function CustomAiButtonWrap({
   queryAction,
   queryPageFrom,
   promptList,
+  initialMessage,
   onExecuteQueryForQueryContent,
   ...rest
 }: // 这里 any 是因为作为 Wrap 会接受很多未知的 props，暂时不想一个个列举
 { children: React.ReactElement } & Record<string, any>) {
   if (IS_ENT) {
-    const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList, onExecuteQueryForQueryContent });
+    const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList, initialMessage, onExecuteQueryForQueryContent });
 
     return <span {...rest}>{React.cloneElement(children, { onClick: handleEntClick } as any)}</span>;
   }
