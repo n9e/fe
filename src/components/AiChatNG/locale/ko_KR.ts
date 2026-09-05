@@ -124,7 +124,45 @@ const ko_KR = {
   },
   "empty": {
     "greeting_prefix": "안녕하세요, 저는"
-  }
+  },
+  panel: {
+    open: 'AI로 쿼리 생성',
+    untitled: 'AI 생성',
+    intro: '보고 싶은 것을 편하게 적어 주세요. 이 데이터 소스에서 확인한 뒤 위 입력창에 넣어 실행합니다。',
+    based_on: '{{name}} 기준',
+    running: '생성 중',
+    close: '닫기',
+    written_back: '위 입력란에 반영하고 실행했습니다',
+    undo: '실행 취소',
+    regenerate: '다시 생성',
+    send: '보내기',
+    follow_up_placeholder: '이어서 말하세요, 예: "pod별로 집계"',
+    answer_below: '아래에 답하면 계속합니다',
+    error_detail: '오류 세부 정보',
+    nothing_delivered: '사용할 수 있는 식이 없습니다',
+    failed_title: "Generation failed",
+    failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
+    stop: "Stop",
+    refill: "Fill in again",
+    restored: "Your original content is back",
+    understanding: "Reading your question…",
+    first_placeholder: "What do you want to see?",
+    answer_placeholder: "Answer the question above…",
+    timeout: '시간이 초과되었습니다. 다시 시도하세요',
+    stopped_hint: "Stopped. The field above is unchanged.",
+    copy: "Copy",
+    field_changed: "The field has been edited",
+    timeout_title: "{{minutes}} minutes with no result",
+    unreachable_title: "Cannot reach the AI service",
+    unreachable_hint: "Check the network and try again.",
+    no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
+    tried_one: "Tried it once against {{name}}",
+    tried_other: "Tried it {{count}} times against {{name}}",
+    example: "호스트별 CPU 사용률",
+
+  },
 };
 
 export default ko_KR;

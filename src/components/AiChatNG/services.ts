@@ -54,9 +54,12 @@ export const sendMessage = (data: IAiChatSendMessageRequest): Promise<IAiChatSen
   }).then((res) => res?.[dataPathName]);
 };
 
+// Polling: a caller that retries deliberately should not have each blip
+// announced as a red toast over whatever the user is reading.
 export const getMessageDetail = (data: IAiChatMessageLocator): Promise<IAiChatMessage> => {
   return request(`${apiPrefix}/message/detail`, {
     method: RequestMethod.Post,
+    silence: true,
     data,
   }).then((res) => res?.[dataPathName]);
 };
@@ -69,9 +72,12 @@ export const getMessageHistory = (data: IAiChatMessageHistoryRequest): Promise<I
   }).then((res) => res?.[dataPathName] || []);
 };
 
+// Cleanup, often fired as the surface unmounts: a toast for a failed cancel
+// lands on a page that has already moved on.
 export const cancelMessage = (data: IAiChatMessageLocator): Promise<void> => {
   return request(`${apiPrefix}/message/cancel`, {
     method: RequestMethod.Post,
+    silence: true,
     data,
   }).then(() => undefined);
 };

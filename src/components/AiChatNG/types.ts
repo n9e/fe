@@ -43,6 +43,13 @@ export enum EAiChatContentType {
   Markdown = 'markdown',
   Hint = 'hint',
   Query = 'query',
+  /** A run of consecutive tool calls, already merged by the backend. The detail
+   *  it carries is counts, in `param`; the individual calls never arrive on
+   *  their own from message/detail. */
+  ToolGroup = 'tool_group',
+  /** The assistant ended its turn asking the user something. The question is in
+   *  `param`; answering is just the next message on the same chat. */
+  InputRequest = 'input_request',
   FormSelect = 'form_select',
   AlertRule = 'alert_rule',
   Dashboard = 'dashboard',
@@ -61,6 +68,22 @@ export interface IAiChatMessageResponse {
   is_finish?: boolean;
   is_from_ai?: boolean;
   hint_text?: string;
+  /** Shape depends on `content_type`: counts for `tool_group`, the question for
+   *  `input_request`. */
+  param?: IAiChatToolCallGroup | IAiChatInputRequest;
+}
+
+/** The `param` of a `tool_group` segment. */
+export interface IAiChatToolCallGroup {
+  command_count: number;
+  read_file_count: number;
+  edit_file_count: number;
+}
+
+/** The `param` of an `input_request` segment. */
+export interface IAiChatInputRequest {
+  question: string;
+  mode?: string;
 }
 
 export interface IAiChatMessage {

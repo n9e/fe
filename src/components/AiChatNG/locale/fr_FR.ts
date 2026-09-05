@@ -124,7 +124,45 @@ const fr_FR = {
   },
   "empty": {
     "greeting_prefix": "Bonjour, je suis"
-  }
+  },
+  panel: {
+    open: 'Générer une requête avec l’IA',
+    untitled: 'Généré par IA',
+    intro: "Décrivez ce que vous voulez voir, en langage courant. Je vérifie la réponse sur cette source de données avant de la placer dans le champ ci-dessus et de l'exécuter.",
+    based_on: 'basé sur {{name}}',
+    running: 'En cours',
+    close: 'Fermer',
+    written_back: 'Inséré dans le champ ci-dessus et exécuté',
+    undo: 'Annuler',
+    regenerate: 'Régénérer',
+    send: 'Envoyer',
+    follow_up_placeholder: 'Continuez, par ex. « grouper par pod »',
+    answer_below: 'Répondez ci-dessous pour continuer',
+    error_detail: "Détail de l'erreur",
+    nothing_delivered: 'Aucune expression utilisable',
+    failed_title: "Generation failed",
+    failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
+    stop: "Stop",
+    refill: "Fill in again",
+    restored: "Your original content is back",
+    understanding: "Reading your question…",
+    first_placeholder: "What do you want to see?",
+    answer_placeholder: "Answer the question above…",
+    timeout: 'Délai dépassé, réessayez',
+    stopped_hint: "Stopped. The field above is unchanged.",
+    copy: "Copy",
+    field_changed: "The field has been edited",
+    timeout_title: "{{minutes}} minutes with no result",
+    unreachable_title: "Cannot reach the AI service",
+    unreachable_hint: "Check the network and try again.",
+    no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
+    tried_one: "Tried it once against {{name}}",
+    tried_other: "Tried it {{count}} times against {{name}}",
+    example: "utilisation CPU par hôte",
+
+  },
 };
 
 export default fr_FR;

@@ -124,7 +124,45 @@ const es_ES = {
   },
   "empty": {
     "greeting_prefix": "Hola, soy"
-  }
+  },
+  panel: {
+    open: 'Generar consulta con IA',
+    untitled: 'Generado por IA',
+    intro: 'Describe lo que quieres ver con palabras normales. Verifico la respuesta en esta fuente de datos antes de ponerla en el campo de arriba y ejecutarla.',
+    based_on: 'basado en {{name}}',
+    running: 'Generando',
+    close: 'Cerrar',
+    written_back: 'Escrito en el campo de arriba y ejecutado',
+    undo: 'Deshacer',
+    regenerate: 'Regenerar',
+    send: 'Enviar',
+    follow_up_placeholder: 'Sigue, p. ej. «agrupar por pod»',
+    answer_below: 'Responde abajo para continuar',
+    error_detail: 'Detalle del error',
+    nothing_delivered: 'Ninguna expresión utilizable',
+    failed_title: "Generation failed",
+    failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
+    stop: "Stop",
+    refill: "Fill in again",
+    restored: "Your original content is back",
+    understanding: "Reading your question…",
+    first_placeholder: "What do you want to see?",
+    answer_placeholder: "Answer the question above…",
+    timeout: 'Tiempo agotado, inténtalo de nuevo',
+    stopped_hint: "Stopped. The field above is unchanged.",
+    copy: "Copy",
+    field_changed: "The field has been edited",
+    timeout_title: "{{minutes}} minutes with no result",
+    unreachable_title: "Cannot reach the AI service",
+    unreachable_hint: "Check the network and try again.",
+    no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
+    tried_one: "Tried it once against {{name}}",
+    tried_other: "Tried it {{count}} times against {{name}}",
+    example: "uso de CPU por host",
+
+  },
 };
 
 export default es_ES;

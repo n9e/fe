@@ -124,7 +124,45 @@ const id_ID = {
   },
   "empty": {
     "greeting_prefix": "Halo, saya"
-  }
+  },
+  panel: {
+    open: 'Buat kueri dengan AI',
+    untitled: 'Dibuat AI',
+    intro: 'Sebutkan apa yang ingin Anda lihat dengan bahasa biasa. Saya memverifikasinya pada sumber data ini sebelum mengisikannya ke kotak di atas dan menjalankannya.',
+    based_on: 'berdasarkan {{name}}',
+    running: 'Memproses',
+    close: 'Tutup',
+    written_back: 'Ditulis ke kolom di atas dan dijalankan',
+    undo: 'Urungkan',
+    regenerate: 'Buat ulang',
+    send: 'Kirim',
+    follow_up_placeholder: 'Lanjutkan, mis. "kelompokkan per pod"',
+    answer_below: 'Jawab di bawah untuk melanjutkan',
+    error_detail: 'Detail galat',
+    nothing_delivered: 'Tidak ada ekspresi yang bisa dipakai',
+    failed_title: "Generation failed",
+    failed_hint: "Try again; if it keeps failing, check the AI model configuration.",
+    stop: "Stop",
+    refill: "Fill in again",
+    restored: "Your original content is back",
+    understanding: "Reading your question…",
+    first_placeholder: "What do you want to see?",
+    answer_placeholder: "Answer the question above…",
+    timeout: 'Waktu habis, coba lagi',
+    stopped_hint: "Stopped. The field above is unchanged.",
+    copy: "Copy",
+    field_changed: "The field has been edited",
+    timeout_title: "{{minutes}} minutes with no result",
+    unreachable_title: "Cannot reach the AI service",
+    unreachable_hint: "Check the network and try again.",
+    no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
+    unchanged: "Same as what the field already held — nothing changed",
+    no_context: "Select a data source first",
+    tried_one: "Tried it once against {{name}}",
+    tried_other: "Tried it {{count}} times against {{name}}",
+    example: "penggunaan CPU per host",
+
+  },
 };
 
 export default id_ID;
