@@ -1,4 +1,4 @@
-import { createActionRuntime, createDomFeedback } from '@flashcatcloud/ai-kit/actions';
+import { createDomFeedback, getSharedActionRuntime } from '@flashcatcloud/ai-kit/actions';
 
 /**
  * The one UI-action registry this app has.
@@ -15,8 +15,15 @@ import { createActionRuntime, createDomFeedback } from '@flashcatcloud/ai-kit/ac
  * navigated away mid-conversation" answers itself: the call finds nothing
  * registered and comes back as `unsupported` instead of writing into a form
  * that is no longer on screen.
+ *
+ * Shared across bundles, not just across this one. The commercial build merges
+ * this application with another that carries its own copy of this file and its
+ * own chat surface; a module singleton per copy meant the page that registered
+ * an action and the surface that executed it held two registries that never
+ * met, and every call came back `unsupported`. The shared runtime is pinned to
+ * the page, so both copies resolve to one registry.
  */
-export const uiActionRuntime = createActionRuntime({
+export const uiActionRuntime = getSharedActionRuntime({
   // Ring the target and glide a cursor onto it. Writing a form field takes a
   // millisecond, so without this an action is indistinguishable from the page
   // glitching.
