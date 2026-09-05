@@ -65,7 +65,10 @@ interface IProps {
   extra?: React.ReactElement;
   showExportButton?: boolean; // 是否显示导出按钮
   refetchOnZoom?: boolean;
-  noticeBanner?: React.ReactNode; // 查询框与结果区之间的提示横幅（如数据源体检结论），由调用方控制显隐
+  // 查询框与结果区之间的提示横幅（如数据源体检结论），由调用方控制显隐。
+  // 传函数时可以拿到查询框当前的内容，并把内容填进去——只填不执行：
+  // 别人替用户写进去的语句，由用户自己按「查询」，和他自己敲的不一样。
+  noticeBanner?: React.ReactNode | ((api: { value?: string; fill: (next: string) => void }) => React.ReactNode);
 }
 
 const TabPane = Tabs.TabPane;
@@ -104,6 +107,9 @@ export default function index(props: IProps) {
     noticeBanner,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
+  // 结果区查的是「已提交」的语句，不是输入框里的每一次改动。两者分开，
+  // 才可能做到「填进去但先不跑」。
+  const [submitted, setSubmitted] = useState<string | undefined>(promQL);
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
   const [errorContent, setErrorContent] = useState('');
   const [tabActiveKey, setTabActiveKey] = useState(type || defaultType || 'table');
@@ -153,7 +159,9 @@ export default function index(props: IProps) {
   }, [type]);
 
   useEffect(() => {
+    // 调用方给的语句既是要显示的也是要查的（URL 深链、从告警事件跳转）。
     setValue(promQL);
+    setSubmitted(promQL);
   }, [promQL]);
 
   return (
@@ -208,7 +216,9 @@ export default function index(props: IProps) {
                 onChangeTrigger={['onBlur', 'onEnter']}
                 value={value}
                 onChange={(newVal) => {
+                  // 用户自己敲完（失焦/回车）即提交，保持原有手感。
                   setValue(newVal);
+                  setSubmitted(newVal);
                   onChange && onChange(newVal);
                 }}
               />
@@ -220,6 +230,7 @@ export default function index(props: IProps) {
                 onChange: (newValue?: string) => {
                   if (typeof newValue === 'string') {
                     setValue(newValue);
+                    setSubmitted(newValue);
                   }
                 },
               })}
@@ -230,6 +241,7 @@ export default function index(props: IProps) {
             type='primary'
             loading={loading}
             onClick={() => {
+              setSubmitted(value);
               setRefreshFlag(_.uniqueId('refreshFlag_'));
               executeQuery && executeQuery(value);
             }}
@@ -249,7 +261,7 @@ export default function index(props: IProps) {
           type='info'
         />
       )}
-      {noticeBanner}
+      {typeof noticeBanner === 'function' ? noticeBanner({ value, fill: setValue }) : noticeBanner}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
         <Tabs
@@ -273,7 +285,7 @@ export default function index(props: IProps) {
               url={url}
               contentMaxHeight={contentMaxHeight}
               datasourceValue={datasourceValue}
-              promql={value}
+              promql={submitted}
               setQueryStats={setQueryStats}
               setErrorContent={setErrorContent}
               timestamp={timestamp}
@@ -294,7 +306,7 @@ export default function index(props: IProps) {
                 url={url}
                 contentMaxHeight={contentMaxHeight}
                 datasourceValue={datasourceValue}
-                promql={value}
+                promql={submitted}
                 setQueryStats={setQueryStats}
                 setErrorContent={setErrorContent}
                 range={range}

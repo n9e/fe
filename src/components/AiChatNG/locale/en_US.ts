@@ -132,7 +132,7 @@ const en_US = {
     based_on: "Data source: {{name}}",
     running: 'Working',
     close: 'Close',
-    written_back: "Filled into the field above",
+    written_back: "Filled into the field above — press Query to run it",
     undo: 'Undo',
     regenerate: 'Regenerate',
     send: 'Send',

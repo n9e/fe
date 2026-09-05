@@ -132,7 +132,7 @@ const zh_CN = {
     based_on: "数据源：{{name}}",
     running: '生成中',
     close: '关闭',
-    written_back: "已填入上方输入框",
+    written_back: "已填入上方输入框，点「查询」运行",
     undo: '撤销',
     regenerate: '重新生成',
     send: '发送',

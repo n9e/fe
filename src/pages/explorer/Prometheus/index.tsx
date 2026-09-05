@@ -146,7 +146,7 @@ export default function Prometheus(props: IProps) {
         defaultUnit={defaultUnit}
         showGlobalMetrics={showGlobalMetrics}
         showBuilder={showBuilder}
-        noticeBanner={
+        noticeBanner={({ value: liveQuery, fill }) => (
           <>
             {aiPanelOpen && (
               <AiQueryPanel
@@ -157,13 +157,13 @@ export default function Prometheus(props: IProps) {
                   },
                 })}
                 contextLabel={_.find(datasourceList, { id: datasourceValue })?.name}
-                value={promql}
+                value={liveQuery}
                 examplePrompt={t('panel.example')}
                 onAdopt={(next) => {
-                  // One write path: the assistant's answer and, on undo, what
-                  // the box held before it. The panel decides which.
+                  // Fill, do not run. A query someone else wrote gets a beat for
+                  // the user to read it and press 查询 themselves.
                   setProbeBannerVisible(false);
-                  setPromql(next);
+                  fill(next);
                 }}
                 onClose={() => {
                   setAiPanelOpen(false);
@@ -179,12 +179,8 @@ export default function Prometheus(props: IProps) {
               />
             ) : undefined}
           </>
-        }
+        )}
         onChange={(newPromQL) => {
-          // Keep our copy of the query in step with the box. The AI panel asks
-          // this page what the field holds so it can tell its own writes from
-          // the user's; a stale answer there means undo deletes their text.
-          setPromql(newPromQL ?? '');
           if (newPromQL && newPromQL !== defaultPromQL) {
             // 用户改了查询 = 已接管，体检横幅让位
             setProbeBannerVisible(false);

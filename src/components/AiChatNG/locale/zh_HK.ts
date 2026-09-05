@@ -132,7 +132,7 @@ const zh_HK = {
     based_on: "資料來源：{{name}}",
     running: '生成中',
     close: '關閉',
-    written_back: "已填入上方輸入框",
+    written_back: "已填入上方輸入框，點「查詢」執行",
     undo: '復原',
     regenerate: '重新生成',
     send: '傳送',
