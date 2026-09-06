@@ -298,6 +298,7 @@ export interface IDashboardConfig {
   graphZoom: 'default' | 'updateTimeRange';
   mode?: 'iframe';
   iframe_url?: string;
+  showTimePicker?: boolean;
 }
 
 export interface IDashboard {

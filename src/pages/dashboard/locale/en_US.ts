@@ -61,7 +61,8 @@ const en_US = {
     revoke_confirm: 'The link stops working immediately after revoking. Continue?',
     revoked: 'Revoked',
     anonymous_tip: 'Anyone with the link can view this dashboard and query its referenced datasources until the link expires. Share with care',
-    recommend_tip: 'Anonymous access works through the link below: anyone with it can view this dashboard without logging in until it expires. For long-term exposure, set the expiration in years',
+    recommend_tip:
+      'Anonymous access works through the link below: anyone with it can view this dashboard without logging in until it expires. For long-term exposure, set the expiration in years',
     unit_hour: 'Hour(s)',
     unit_day: 'Day(s)',
     unit_month: 'Month(s)',
@@ -99,6 +100,8 @@ const en_US = {
     import_grafana_tip_version_warning: 'The imported dashboard config is older than v8; some panels may not display properly. Continue importing?',
     import_grafana_url: 'Import Grafana dashboard URL',
     import_grafana_url_label: 'Grafana dashboard URL',
+    show_time_picker: 'Show time picker',
+    show_time_picker_tip: 'Some Grafana versions hide the time picker in kiosk mode. Enable this option to use the time picker in this system.',
     continueToImport: 'Continue to import',
     noSelected: 'Please select at least one dashboard',
     import_builtin: 'Import built-in dashboard',

@@ -98,6 +98,8 @@ const zh_CN = {
     import_grafana_tip_version_warning: '导入小于 v8 版本的仪表盘配置，可能会有部分图表不支持，以及图表无法正常渲染问题',
     import_grafana_url: 'Grafana 仪表盘链接（推荐）',
     import_grafana_url_label: 'Grafana 仪表盘链接',
+    show_time_picker: '是否展示时间选择器',
+    show_time_picker_tip: '部分 Grafana 版本在开启大屏模式后不会显示时间选择器，可打开此选项，使用本系统的时间选择器。',
     continueToImport: '继续导入',
     noSelected: '请选择仪表盘',
     import_builtin: '导入内置仪表盘',

@@ -100,6 +100,8 @@ const ja_JP = {
       'v8未満のバージョンのダッシュボード設定をインポートする場合、部分のグラフがサポートされていない、またはグラフが正常にレンダリングされない問題が発生する可能性があります',
     import_grafana_url: 'Grafana ダッシュボードリンク（推奨）',
     import_grafana_url_label: 'Grafana ダッシュボードリンク',
+    show_time_picker: '時間選択を表示',
+    show_time_picker_tip: 'Grafana の一部のバージョンでは、キオスクモードで時間選択が表示されません。このオプションをオンにすると、本システムの時間選択を使用できます。',
     continueToImport: 'インポートを続行',
     noSelected: 'ダッシュボードを選択してください',
     import_builtin: '内蔵ダッシュボードをインポート',
