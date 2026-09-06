@@ -102,6 +102,8 @@ const zh_HK = {
     import_grafana_tip: '只支援導入 Prometheus 類型資料來源的儀表盤，以及夜鶯支援的圖表類型和功能 <a>問題反饋</a>',
     import_grafana_url: 'Grafana 儀表盤地址（建議）',
     import_grafana_url_label: 'Grafana 儀表盤地址',
+    show_time_picker: '是否顯示時間選擇器',
+    show_time_picker_tip: '部分 Grafana 版本在開啟大屏模式後不會顯示時間選擇器，可開啟此選項，使用本系統的時間選擇器。',
     noSelected: '請選擇儀表盤',
     import_grafana_report: {
       title: '轉換報告',

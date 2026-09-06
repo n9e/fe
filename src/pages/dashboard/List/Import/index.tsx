@@ -17,7 +17,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
-import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Space } from 'antd';
+import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Space, Switch } from 'antd';
 import Icon from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
@@ -271,6 +271,7 @@ export default function Import(props: IProps) {
               configs: JSON.stringify({
                 mode: 'iframe',
                 iframe_url: vals.iframe_url,
+                showTimePicker: vals.showTimePicker,
                 version: DASHBOARD_VERSION,
               }),
             }).then(() => {
@@ -323,6 +324,9 @@ export default function Import(props: IProps) {
             ]}
           >
             <Input.TextArea autoSize={{ minRows: 2 }} />
+          </Form.Item>
+          <Form.Item label={t('batch.show_time_picker')} name='showTimePicker' initialValue={false} valuePropName='checked' extra={t('batch.show_time_picker_tip')}>
+            <Switch />
           </Form.Item>
           <Form.Item>
             <Button type='primary' htmlType='submit'>

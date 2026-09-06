@@ -102,6 +102,8 @@ const ru_RU = {
     import_grafana_tip: 'Поддерживается импорт панелей только из Prometheus типа источников данных, а также диаграммы и функции, поддерживаемые Nightingale <a>Отзывы</a>',
     import_grafana_url: 'Ссылка на панель Grafana (рекомендуется)',
     import_grafana_url_label: 'Ссылка на панель Grafana',
+    show_time_picker: 'Показывать выбор времени',
+    show_time_picker_tip: 'В некоторых версиях Grafana выбор времени скрыт в режиме киоска. Включите эту опцию, чтобы использовать выбор времени в этой системе.',
     noSelected: 'Пожалуйста, выберите панель',
     import_grafana_report: {
       title: 'Отчет о преобразовании',

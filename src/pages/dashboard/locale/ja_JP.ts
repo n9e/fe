@@ -103,6 +103,8 @@ const ja_JP = {
       'Prometheus タイプのデータ ソースをインポートするダッシュボードだけがサポートされており、ナイチンゲールでサポートされているチャート タイプと関数もサポートされています <a>問題フィードバック</a>',
     import_grafana_url: 'Grafana ダッシュボードリンク（推奨）',
     import_grafana_url_label: 'Grafana ダッシュボードリンク',
+    show_time_picker: '時間選択を表示',
+    show_time_picker_tip: 'Grafana の一部のバージョンでは、キオスクモードで時間選択が表示されません。このオプションをオンにすると、本システムの時間選択を使用できます。',
     noSelected: 'ダッシュボードを選択してください',
     import_grafana_report: {
       title: '変換レポート',

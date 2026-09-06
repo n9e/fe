@@ -104,6 +104,8 @@ const en_US = {
     import_grafana_tip: 'Only dashboards using Prometheus data sources, and the chart types and features supported by Nightingale, can be imported <a>feedback</a>',
     import_grafana_url: 'Import Grafana dashboard URL',
     import_grafana_url_label: 'Grafana dashboard URL',
+    show_time_picker: 'Show time picker',
+    show_time_picker_tip: 'Some Grafana versions hide the time picker in kiosk mode. Enable this option to use the time picker in this system.',
     noSelected: 'Please select at least one dashboard',
     import_grafana_report: {
       title: 'Conversion report',

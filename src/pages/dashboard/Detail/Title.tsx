@@ -348,7 +348,7 @@ export default function Title(props: IProps) {
                 {t('settings.save')}
               </Button>
             )}
-            {dashboard.configs?.mode !== 'iframe' ? (
+            {!dashboard.configs ? null : dashboard.configs.mode !== 'iframe' ? (
               <>
                 {isAuthorized && (
                   <Dropdown
@@ -429,7 +429,7 @@ export default function Title(props: IProps) {
               </>
             ) : (
               <>
-                {timeRangePicker}
+                {dashboard.configs?.showTimePicker === true && timeRangePicker}
                 {isAuthorized && (
                   <Button
                     icon={<SettingOutlined />}
