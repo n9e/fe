@@ -42,8 +42,17 @@ export default function Query(props: Props) {
   const sql = query?.sql;
   const database = query?.database;
 
-  // 新增/查看规则时隐藏数据库字段；编辑/克隆规则时仅当已有数据库配置时才显示, 且仅在代码模式下显示
-  const showDatabase = editMode === 'code' && (type === 1 || type === 2) ? !!database : false;
+  const isExistingRule = type === 1 || type === 2 || type === 3;
+  const [hasDatabaseConfig, setHasDatabaseConfig] = useState(() => !!form.getFieldValue(['rule_config', 'queries', field.name, 'database']));
+
+  // 兼容表单异步回填；当前查询一旦已有数据库配置，清空值后仍保留选择器。
+  useEffect(() => {
+    if (isExistingRule && database) {
+      setHasDatabaseConfig(true);
+    }
+  }, [isExistingRule, database]);
+
+  const showDatabase = editMode === 'code' && isExistingRule && (hasDatabaseConfig || !!database);
 
   useEffect(() => {
     if (!sql) {
