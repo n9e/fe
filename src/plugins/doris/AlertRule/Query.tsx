@@ -11,7 +11,7 @@ import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import { normalizeTime } from '@/pages/alertRules/Form/utils';
-import { FormStateContext } from '@/pages/alertRules/Form';
+import { FormStateContext } from '@/pages/alertRules/FormNG';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../constants';
@@ -123,7 +123,7 @@ export default function Query(props: Props) {
           {showDatabase && (
             <InputGroupWithFormItem label={t('query.database')}>
               <Form.Item {...field} name={[field.name, 'database']}>
-                <Select style={{ width: 200 }} disabled={disabled}>
+                <Select style={{ width: 200 }} disabled={disabled} allowClear>
                   {dbList.map((db) => (
                     <Select.Option key={db} value={db}>
                       {db}
