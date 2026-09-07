@@ -129,7 +129,13 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   // was carried forward from an earlier turn and is no longer the headline.
   const cardLeads = run.phase === 'done' && !!run.value && !run.question;
   const shown = run.value ?? run.carried;
-  const placeholder = run.question ? t('panel.answer_placeholder') : task ? t('panel.follow_up_placeholder') : t('panel.first_placeholder', { example: examplePrompt });
+  const placeholder = run.question
+    ? t('panel.answer_placeholder')
+    : !task
+    ? t('panel.first_placeholder', { example: examplePrompt })
+    : run.suggestion
+    ? t('panel.follow_up_suggested', { example: run.suggestion })
+    : t('panel.follow_up_placeholder');
 
   // The tally is only evidence when it says what it ran against.
   const tried = run.tried > 0 && contextLabel ? t('panel.tried', { count: run.tried, name: contextLabel }) : '';

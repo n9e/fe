@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TFunction } from 'i18next';
 
 import { cancelMessage, createChat, getMessageDetail, sendMessage } from '@/components/AiChatNG/services';
-import { EAiChatContentType, IAiChatInputRequest, IAiChatMessage, IAiChatPageInfo, IAiChatToolCallGroup } from '@/components/AiChatNG/types';
+import { EAiChatContentType, IAiChatInputRequest, IAiChatMessage, IAiChatPageInfo, IAiChatQueryParam, IAiChatToolCallGroup } from '@/components/AiChatNG/types';
 
 /**
  * One assistant turn, reduced to what a field-filling panel needs.
@@ -47,6 +47,9 @@ export interface AiQueryRun {
   carried?: string;
   /** What the assistant said about it, or — when nothing was delivered — why. */
   explanation?: string;
+  /** The assistant's guess at the next refinement, worded for the follow-up
+   *  box's hint. Belongs to `value`: a turn without one has no hint either. */
+  suggestion?: string;
   /** Set when the turn ended on a question instead of an answer. Answering is
    *  just the next message, which the follow-up box already sends. */
   question?: string;
@@ -66,12 +69,14 @@ function reduceMessage(message: IAiChatMessage): AiQueryRun {
   let tried = 0;
   const said: string[] = [];
   let value: string | undefined;
+  let suggestion: string | undefined;
   let question: string | undefined;
 
   for (const response of responses) {
     switch (response.content_type as EAiChatContentType) {
       case EAiChatContentType.Query:
         value = response.content?.trim() || undefined;
+        suggestion = (response.param as IAiChatQueryParam | undefined)?.follow_up?.trim() || undefined;
         break;
       case EAiChatContentType.Markdown:
         if (response.content?.trim()) said.push(response.content.trim());
@@ -110,7 +115,7 @@ function reduceMessage(message: IAiChatMessage): AiQueryRun {
   if (!message.is_finish) {
     return { phase: 'running', tried, activity };
   }
-  return { phase: 'done', tried, value, question, explanation: said.join('\n\n') || undefined };
+  return { phase: 'done', tried, value, suggestion, question, explanation: said.join('\n\n') || undefined };
 }
 
 export interface UseAiQueryRunOptions {

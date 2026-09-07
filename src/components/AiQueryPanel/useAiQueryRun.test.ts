@@ -44,7 +44,7 @@ describe('useAiQueryRun', () => {
       message({
         response: [
           { content_type: 'tool_group', content: '', is_finish: true, param: { command_count: 1, read_file_count: 0, edit_file_count: 0, items: [] } },
-          { content_type: 'query', content: '  cpu_usage_active{cpu="cpu-total"}  ' },
+          { content_type: 'query', content: '  cpu_usage_active{cpu="cpu-total"}  ', param: { follow_up: ' 按 env 分组 ' } },
           { content_type: 'markdown', content: '按 ident 区分主机。' },
         ],
       }),
@@ -58,6 +58,8 @@ describe('useAiQueryRun', () => {
 
     // Trimmed: this string goes straight into the field.
     expect(result.current.run.value).toBe('cpu_usage_active{cpu="cpu-total"}');
+    // The hint for the follow-up box travels with the value, trimmed the same way.
+    expect(result.current.run.suggestion).toBe('按 env 分组');
     expect(result.current.run.explanation).toBe('按 ident 区分主机。');
     expect(result.current.run.tried).toBe(1);
   });

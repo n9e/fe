@@ -70,7 +70,7 @@ export interface IAiChatMessageResponse {
   hint_text?: string;
   /** Shape depends on `content_type`: counts for `tool_group`, the question for
    *  `input_request`. */
-  param?: IAiChatToolCallGroup | IAiChatInputRequest;
+  param?: IAiChatToolCallGroup | IAiChatInputRequest | IAiChatQueryParam;
 }
 
 /** The `param` of a `tool_group` segment. */
@@ -81,6 +81,12 @@ export interface IAiChatToolCallGroup {
 }
 
 /** The `param` of an `input_request` segment. */
+/** Rides along with a `query` segment. `follow_up` is the assistant's guess at
+ *  what the user will want to change next — shown as a hint, never run. */
+export interface IAiChatQueryParam {
+  follow_up?: string;
+}
+
 export interface IAiChatInputRequest {
   question: string;
   mode?: string;

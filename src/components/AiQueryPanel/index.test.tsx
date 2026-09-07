@@ -93,6 +93,15 @@ describe('AiQueryPanel', () => {
     expect(screen.getByPlaceholderText('panel.follow_up_placeholder')).toBeTruthy();
   });
 
+  it('lets the assistant word the follow-up hint', async () => {
+    run = { phase: 'done', tried: 1, value: 'up', suggestion: '按 env 分组' };
+    renderPanel({ value: 'up' });
+    await userEvent.type(screen.getByPlaceholderText('panel.first_placeholder'), '查主机 CPU{enter}');
+
+    // The fixed hint (covered above) yields to the one the assistant wrote for this query.
+    expect(screen.getByPlaceholderText('panel.follow_up_suggested')).toBeTruthy();
+  });
+
   it('shows the steps it took and writes the answer into the field on arrival', async () => {
     const { props, rerender } = renderPanel();
     run = {
