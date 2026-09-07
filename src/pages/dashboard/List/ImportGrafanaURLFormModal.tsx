@@ -15,10 +15,11 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, Switch, message } from 'antd';
+import { Modal, Form, Input, Select, Space, Switch, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import { HelpLink } from '@/components/pageLayout';
 import { updateDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
 import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
@@ -138,7 +139,12 @@ function index(props: Props & ModalWrapProps) {
           <Input.TextArea autoSize={{ minRows: 1 }} />
         </Form.Item>
         <Form.Item
-          label={t('batch.import_grafana_url_label')}
+          label={
+            <Space>
+              {t('batch.import_grafana_url_label')}
+              <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/dashboard/integrated-dashboard/' />
+            </Space>
+          }
           name='iframe_url'
           rules={[
             {
