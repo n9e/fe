@@ -484,7 +484,6 @@ const SideMenu = (props: SideMenuProps) => {
                 selectedKeys={selectedKeys}
                 sideMenuBgColor={sideMenuBgColor}
                 isCustomBg={isCustomBg}
-                isDarkMode={Boolean(darkMode && !isGoldTheme)}
                 quickMenuRef={quickMenuRef}
                 topExtra={topExtra}
                 onClick={onMenuClick}
