@@ -27,7 +27,6 @@ interface IMenuProps {
   onClick?: (key: any) => void;
   sideMenuBgColor: string;
   isCustomBg: boolean;
-  isDarkMode?: boolean;
   quickMenuRef: React.MutableRefObject<{ open: () => void }>;
   isGoldTheme?: boolean;
   /** 浅色默认侧栏（非自定义底、非蓝主题、非金主题） */
@@ -59,11 +58,10 @@ export function getSideMenuIconColorClass(opts: {
   isBlueTheme: boolean;
   isCustomBg: boolean;
   isBgBlack: boolean;
-  isDarkMode?: boolean;
   /** 浮层内无侧栏 row 的 group-hover */
   forHoverPanel?: boolean;
 }): string {
-  const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, isDarkMode, forHoverPanel } = opts;
+  const { isLight, isActive, isBlueTheme, isCustomBg, isBgBlack, forHoverPanel } = opts;
 
   if (forHoverPanel === true) {
     return '';
@@ -73,9 +71,6 @@ export function getSideMenuIconColorClass(opts: {
 
   if (isLight) {
     return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
-  }
-  if (isDarkMode) {
-    return isActive ? 'text-[#fff]' : 'text-link';
   }
   if (isActive) {
     if (isBlueTheme) {
@@ -176,7 +171,6 @@ export function MenuGroup(props: { item: IMenuItem } & IMenuProps) {
     isBlueTheme,
     isCustomBg: props.isCustomBg,
     isBgBlack,
-    isDarkMode: props.isDarkMode,
     forHoverPanel: false,
   });
 
@@ -319,7 +313,6 @@ export function MenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?: 
     isBlueTheme,
     isCustomBg,
     isBgBlack: Boolean(isBgBlack),
-    isDarkMode: props.isDarkMode,
   });
 
   const activeBg = isSubTreeLayout
@@ -472,7 +465,6 @@ function AbsoluteMenuItem(props: { item: IMenuItem; isSub?: boolean; isBgBlack?:
     isBlueTheme,
     isCustomBg,
     isBgBlack: Boolean(props.isBgBlack),
-    isDarkMode: props.isDarkMode,
   });
 
   const rowClass = isSubTreeLayout
@@ -553,7 +545,6 @@ export default function MenuList(
     isBlueTheme,
     isCustomBg: props.isCustomBg,
     isBgBlack: props.sideMenuBgColor === 'rgb(24,27,31)',
-    isDarkMode: props.isDarkMode,
   });
   const searchIconColor = getSideMenuIconColorClass({
     isLight,
@@ -561,7 +552,6 @@ export default function MenuList(
     isBlueTheme,
     isCustomBg: props.isCustomBg,
     isBgBlack: props.sideMenuBgColor === 'rgb(24,27,31)',
-    isDarkMode: props.isDarkMode,
   });
 
   const chunks = useMemo(() => chunkMenusBySection(list), [list]);
@@ -702,7 +692,6 @@ export default function MenuList(
                     isBlueTheme,
                     isCustomBg: props.isCustomBg,
                     isBgBlack: props.sideMenuBgColor === 'rgb(24,27,31)',
-                    isDarkMode: props.isDarkMode,
                     forHoverPanel: true,
                   });
 

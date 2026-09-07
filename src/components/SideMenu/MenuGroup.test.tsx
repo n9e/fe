@@ -130,9 +130,9 @@ describe('side menu icon colors', () => {
     isBgBlack: false,
   };
 
-  it('uses the theme link color for inactive dark-mode icons and white for active icons', () => {
-    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true })).toBe('text-link');
-    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true, isActive: true })).toBe('text-[#fff]');
+  it('lets inactive dark-mode icons inherit the row color instead of the highlight color', () => {
+    expect(getSideMenuIconColorClass(baseColorOptions)).toBe('');
+    expect(getSideMenuIconColorClass({ ...baseColorOptions, isActive: true })).toBe('text-[#fff]');
   });
 
   it('preserves the existing colors for light, blue, and custom side menu themes', () => {
@@ -141,7 +141,7 @@ describe('side menu icon colors', () => {
     expect(getSideMenuIconColorClass(baseColorOptions)).toBe('');
   });
 
-  it.each([true, false])('applies the dark-mode rule to collapsed=%s top-level icon variants', (collapsed) => {
+  it.each([true, false])('keeps collapsed=%s top-level icons free of the highlight color', (collapsed) => {
     localStorage.removeItem('n9e-dark-mode');
     const list: IMenuItem[] = [
       {
@@ -165,14 +165,15 @@ describe('side menu icon colors', () => {
           selectedKeys={[]}
           sideMenuBgColor='var(--fc-menu-dark-bg)'
           isCustomBg
-          isDarkMode
           quickMenuRef={{ current: { open: () => {} } }}
         />
       </MemoryRouter>,
     );
 
     for (const type of ['house', 'icon-ic_search_light', 'flashai', 'dashboard-group']) {
-      expect(container.querySelector(`[data-icon-type='${type}']`)?.parentElement).toHaveClass('text-link');
+      const iconWrapper = container.querySelector(`[data-icon-type='${type}']`)?.parentElement;
+      expect(iconWrapper).not.toHaveClass('text-link');
+      expect(iconWrapper?.className).not.toMatch(/text-\[/);
     }
   });
 
@@ -204,7 +205,6 @@ describe('side menu icon colors', () => {
           selectedKeys={[selectedKey]}
           sideMenuBgColor='var(--fc-menu-dark-bg)'
           isCustomBg
-          isDarkMode
           quickMenuRef={{ current: { open: () => {} } }}
         />
       </MemoryRouter>,
