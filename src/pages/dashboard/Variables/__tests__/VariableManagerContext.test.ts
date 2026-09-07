@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 
-import { extractDependencies, getQueryVariableExecutionOrderForRangeChange } from '../VariableManagerContext';
+import { buildDependencyGraph, collectVariableDependencies, extractDependencies, getQueryVariableExecutionOrderForRangeChange } from '../VariableManagerContext';
 import { IVariable, VariableExecutionMeta, DependencyGraph } from '../types';
 
 describe('extractDependencies', () => {
@@ -43,6 +43,127 @@ describe('extractDependencies', () => {
 
   test('should extract dependencies with trailing text', () => {
     expect(extractDependencies('${region}-suffix')).toEqual(['region']);
+  });
+});
+
+describe('collectVariableDependencies', () => {
+  test('should ignore non-query variables even when they reference other variables', () => {
+    const variable = {
+      name: 'db',
+      type: 'datasource',
+      definition: 'gcm',
+      regex: '/$env/',
+      datasource: { cate: 'gcm' },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['db', 'env']))).toEqual([]);
+  });
+
+  test('should not treat a self reference as a dependency', () => {
+    const variable = {
+      name: 'a',
+      type: 'query',
+      definition: 'label_values(up{a="$a"}, a)',
+      datasource: { cate: 'prometheus' },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['a']))).toEqual([]);
+  });
+
+  test('should collect from definition and datasource.value together', () => {
+    const variable = {
+      name: 'metric',
+      type: 'query',
+      definition: 'label_values(up{region="$region"}, metric)',
+      datasource: { cate: 'prometheus', value: '${db}' },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['metric', 'region', 'db']))).toEqual(['region', 'db']);
+  });
+
+  test('should collect references from nested query filters and arrays', () => {
+    const variable = {
+      name: 'metric',
+      type: 'query',
+      definition: '',
+      datasource: { cate: 'gcm' },
+      query: {
+        filters: [{ key: 'zone', value: '${zone}' }],
+        group_bys: ['[[project]]', 'literal'],
+      },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['metric', 'project', 'zone']))).toEqual(['zone', 'project']);
+  });
+});
+
+describe('buildDependencyGraph', () => {
+  test('should link a query variable to the datasource variable used by datasource.value', () => {
+    const variables = [
+      {
+        name: 'db',
+        type: 'datasource',
+        definition: 'gcm',
+        datasource: { cate: 'gcm' },
+      },
+      {
+        name: 'project',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: { db: ['project'] },
+      dependenciesByName: { db: [], project: ['db'] },
+    });
+  });
+
+  test('should collect dependencies from query sub-fields', () => {
+    const variables = [
+      {
+        name: 'region',
+        type: 'query',
+        definition: 'regions',
+        datasource: { cate: 'cloudwatch' },
+        query: { type: 'regions' },
+      },
+      {
+        name: 'namespace',
+        type: 'query',
+        definition: 'namespaces',
+        datasource: { cate: 'cloudwatch' },
+      },
+      {
+        name: 'metric',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'cloudwatch' },
+        query: { region: '${region}', namespace: '[[namespace]]' },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: { region: ['metric'], namespace: ['metric'] },
+      dependenciesByName: { region: [], namespace: [], metric: ['region', 'namespace'] },
+    });
+  });
+
+  test('should drop references to variables that do not exist', () => {
+    const variables = [
+      {
+        name: 'instance',
+        type: 'query',
+        definition: 'label_values(up{region="$region"}, instance)',
+        datasource: { cate: 'prometheus' },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: {},
+      dependenciesByName: { instance: [] },
+    });
   });
 });
 

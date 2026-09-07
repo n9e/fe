@@ -16,6 +16,7 @@ import adjustData from '../../utils/ajustData';
 import isPlaceholderQuoted from '../../utils/isPlaceholderQuoted';
 import { formatString, formatDatasource } from '../../utils/formatString';
 import processQueryOptions from '../../utils/processQueryOptions';
+import { getDashboardVariablePlugin } from '../../plugins';
 import { getBuiltInVariables } from '../../utils/replaceTemplateVariables';
 import Querybuilder from '../Querybuilder';
 import datasource from '../../datasource';
@@ -45,6 +46,7 @@ export default function Query(props: Props) {
   const form = Form.useFormInstance();
   const item = Form.useWatch<IVariable>([]);
   const datasourceCate = Form.useWatch(['datasource', 'cate']);
+  const capabilities = getDashboardVariablePlugin(datasourceCate)?.capabilities(item?.query);
 
   const service = () => {
     if (item) {
@@ -73,6 +75,7 @@ export default function Query(props: Props) {
         datasourceCate,
         datasourceValue,
         datasourceList,
+        variableContext: { variables: variablesWithOptions, query: { ...item.query, range } },
         query: {
           ...(item.query || {}),
           query: formatedDefinition || formatedQuery, // query 是标准写法
@@ -138,7 +141,7 @@ export default function Query(props: Props) {
           }}
         />
       </Form.Item>
-      <Querybuilder />
+      <Querybuilder variables={variablesWithOptions} />
       <Form.Item
         label={t('var.reg')}
         name='reg'
@@ -181,24 +184,25 @@ export default function Query(props: Props) {
       <Form.Item label={t('var.width')} name='width' tooltip={t('var.width_tip')}>
         <InputNumber min={120} placeholder='180' style={{ width: '100%' }} />
       </Form.Item>
-      {_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql], datasourceCate) && (
+      {(capabilities?.multi ??
+        _.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql], datasourceCate)) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
               <Switch />
             </Form.Item>
           </Col>
-          {item?.multi ? (
+          {item?.multi && capabilities?.all !== false ? (
             <Col flex='120px'>
               <Form.Item label={t('var.allOption')} name='allOption' valuePropName='checked'>
                 <Switch />
               </Form.Item>
             </Col>
           ) : null}
-          {item?.multi && item?.allOption ? (
+          {item?.multi && item?.allOption && capabilities?.all !== false ? (
             <Col flex='auto'>
               <Form.Item label={t('var.allValue')} name='allValue'>
-                <Input placeholder={datasourceCate === DatasourceCateEnum.mysql ? '' : '.*'} />
+                <Input placeholder={capabilities?.allValuePlaceholder ?? (datasourceCate === DatasourceCateEnum.mysql ? '' : '.*')} />
               </Form.Item>
             </Col>
           ) : null}

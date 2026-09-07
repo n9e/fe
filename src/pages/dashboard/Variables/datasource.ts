@@ -20,6 +20,10 @@ export interface Props<QueryType = VariableDatasourceQuery> {
   datasourceValue: number;
   datasourceList: import('../types').DashboardDatasource[];
   query: QueryType;
+  variableContext?: {
+    variables: import('./types').IVariable[];
+    query: VariableDatasourceQuery;
+  };
 }
 
 export default async function datasource(props: Props): Promise<QueryOptionInput[]> {

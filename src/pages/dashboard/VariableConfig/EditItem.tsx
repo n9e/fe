@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import { getDashboardVariablePlugin } from '../Variables/plugins';
 import React, { useContext } from 'react';
 import { Form, Input, Row, Col, Select, Switch, Button, Space, Alert } from 'antd';
 import _ from 'lodash';
@@ -24,6 +25,7 @@ import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { Dashboard } from '@/store/dashboardInterface';
+import type { JsonObject } from '@/pages/dashboard/types';
 
 import { IVariable } from './definition';
 import { stringToRegex } from './constant';
@@ -82,6 +84,8 @@ function EditItem(props: IProps) {
   const otherVars = _.filter(vars, (item) => item.name !== data.name);
   const varType = Form.useWatch(['type'], form);
   const datesourceCate = Form.useWatch(['datasource', 'cate'], form);
+  const variableQuery = Form.useWatch<JsonObject | undefined>('query', form);
+  const capabilities = varType === 'query' ? getDashboardVariablePlugin(datesourceCate)?.capabilities(variableQuery) : undefined;
 
   return (
     <Form layout='vertical' autoComplete='off' preserve={false} form={form} initialValues={data}>
@@ -364,7 +368,7 @@ function EditItem(props: IProps) {
         </>
       )}
       {(_.includes(['custom', 'hostIdent'], varType) ||
-        _.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql], datesourceCate)) && (
+        (capabilities?.multi ?? _.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql], datesourceCate))) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
@@ -375,7 +379,7 @@ function EditItem(props: IProps) {
             <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.multi !== curValues.multi} noStyle>
               {({ getFieldValue }) => {
                 const multi = getFieldValue('multi');
-                if (multi) {
+                if (multi && capabilities?.all !== false) {
                   return (
                     <Form.Item label={t('var.allOption')} name='allOption' valuePropName='checked'>
                       <Switch />
@@ -392,10 +396,10 @@ function EditItem(props: IProps) {
                 {({ getFieldValue }) => {
                   const multi = getFieldValue('multi');
                   const allOption = getFieldValue('allOption');
-                  if (multi && allOption) {
+                  if (multi && allOption && capabilities?.all !== false) {
                     return (
                       <Form.Item label={t('var.allValue')} name='allValue'>
-                        <Input placeholder='.*' />
+                        <Input placeholder={capabilities?.allValuePlaceholder ?? '.*'} />
                       </Form.Item>
                     );
                   }

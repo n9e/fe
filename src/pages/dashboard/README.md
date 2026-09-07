@@ -8,6 +8,7 @@
 src/pages/dashboard/
 ├── CHANGELOG.md                     # 版本变更记录（含各版本无法兼容的更新说明）
 ├── LLMs.txt
+├── VARIABLES.md                     # 变量子系统架构（含架构图与关键约束）
 ├── config.tsx                       # 仪表盘模块配置
 ├── external-modules.d.ts
 ├── globalState.ts                   # 仪表盘全局状态
@@ -40,7 +41,7 @@ src/pages/dashboard/
 │   └── utils/                       # 渲染工具（valueFormatter 等）
 ├── Share/                           # 分享
 ├── VariableConfig/                  # 变量配置（v3.2 起废弃，由 Variables 取代）
-├── Variables/                       # 变量（v3.2 重构）
+├── Variables/                       # 变量（v3.2 重构），架构见 VARIABLES.md
 ├── hooks/                           # 模块内 Hook
 ├── locale/                          # 国际化资源
 ├── test/fixtures/                   # 仪表盘专属测试数据
