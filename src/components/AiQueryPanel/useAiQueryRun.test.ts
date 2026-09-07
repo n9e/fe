@@ -44,6 +44,7 @@ describe('useAiQueryRun', () => {
       message({
         response: [
           { content_type: 'tool_group', content: '', is_finish: true, param: { command_count: 1, read_file_count: 0, edit_file_count: 0, items: [] } },
+          { content_type: 'markdown', content: '我先确认数据源里有哪些 CPU 指标。' },
           { content_type: 'query', content: '  cpu_usage_active{cpu="cpu-total"}  ', param: { follow_up: ' 按 env 分组 ' } },
           { content_type: 'markdown', content: '按 ident 区分主机。' },
         ],
@@ -60,14 +61,14 @@ describe('useAiQueryRun', () => {
     expect(result.current.run.value).toBe('cpu_usage_active{cpu="cpu-total"}');
     // The hint for the follow-up box travels with the value, trimmed the same way.
     expect(result.current.run.suggestion).toBe('按 env 分组');
+    // Only what was said about the delivered value; the narration before it was the search.
     expect(result.current.run.explanation).toBe('按 ident 区分主机。');
-    expect(result.current.run.tried).toBe(1);
+    expect(result.current.run.checked).toBe(true);
   });
 
-  it('counts only what was run against the data source', async () => {
+  it('treats only commands as evidence of checking, not the agent reading its own files', async () => {
     // message/detail never returns bare `tool` segments: the server folds each
-    // run of them into one `tool_group` carrying the counts. Only the command
-    // count is evidence — the rest counts the agent's own scratch files.
+    // run of them into one `tool_group` carrying the counts.
     getMessageDetail.mockResolvedValue(
       message({
         response: [
@@ -75,7 +76,7 @@ describe('useAiQueryRun', () => {
             content_type: 'tool_group',
             content: '',
             is_finish: true,
-            param: { command_count: 3, read_file_count: 1, edit_file_count: 0, items: [] },
+            param: { command_count: 0, read_file_count: 2, edit_file_count: 0, items: [] },
           },
         ],
       }),
@@ -87,7 +88,29 @@ describe('useAiQueryRun', () => {
     });
     await waitFor(() => expect(result.current.run.phase).toBe('done'), { timeout: 5000 });
 
-    expect(result.current.run.tried).toBe(3);
+    expect(result.current.run.checked).toBe(false);
+  });
+
+  it('names the step in progress from the latest call when the assistant says nothing itself', async () => {
+    getMessageDetail.mockResolvedValue(
+      message({
+        is_finish: false,
+        response: [
+          {
+            content_type: 'tool_group',
+            content: '',
+            is_finish: true,
+            param: { command_count: 2, read_file_count: 0, edit_file_count: 0, items: [{ content: '检索指标名' }, { content: ' 查询指标序列 ' }] },
+          },
+        ],
+      }),
+    );
+    const { result } = setup();
+
+    await act(async () => {
+      result.current.ask('查主机 CPU');
+    });
+    await waitFor(() => expect(result.current.run.activity).toBe('查询指标序列'), { timeout: 5000 });
   });
 
   it('finishes without a value when the assistant delivered none', async () => {
@@ -156,7 +179,7 @@ describe('useAiQueryRun', () => {
     });
     await waitFor(() => expect(result.current.run.activity).toBe('正在执行脚本'), { timeout: 5000 });
 
-    expect(result.current.run.tried).toBe(0);
+    expect(result.current.run.checked).toBe(false);
     expect(result.current.run.phase).toBe('running');
   });
 

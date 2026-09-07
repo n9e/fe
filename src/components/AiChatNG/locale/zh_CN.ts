@@ -159,7 +159,7 @@ const zh_CN = {
     no_model_hint: "当前没有可用的 AI 模型，请联系管理员在「AI 配置」里添加或启用一个。",
     unchanged: "与输入框内容相同，未改动",
     no_context: "请先选择数据源",
-    tried: "在 {{name}} 上试跑了 {{count}} 次",
+    verified_on: "已在 {{name}} 上验证",
     example: "每台主机的 CPU 使用率",
 
   },

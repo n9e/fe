@@ -78,6 +78,9 @@ export interface IAiChatToolCallGroup {
   command_count: number;
   read_file_count: number;
   edit_file_count: number;
+  /** The calls in the group, each already named for a reader by the backend
+   *  ("检索指标名"), in the order they ran. */
+  items?: { content?: string }[];
 }
 
 /** The `param` of an `input_request` segment. */

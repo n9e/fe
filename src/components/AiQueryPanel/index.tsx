@@ -129,16 +129,19 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
   // was carried forward from an earlier turn and is no longer the headline.
   const cardLeads = run.phase === 'done' && !!run.value && !run.question;
   const shown = run.value ?? run.carried;
+  // The assistant's own idea of the next refinement, offered as the hint and
+  // accepted with Tab — filled in, not sent, so it can still be edited.
+  const suggested = task && !run.question ? run.suggestion : undefined;
   const placeholder = run.question
     ? t('panel.answer_placeholder')
     : !task
     ? t('panel.first_placeholder', { example: examplePrompt })
-    : run.suggestion
-    ? t('panel.follow_up_suggested', { example: run.suggestion })
+    : suggested
+    ? t('panel.follow_up_suggested', { example: suggested })
     : t('panel.follow_up_placeholder');
 
-  // The tally is only evidence when it says what it ran against.
-  const tried = run.tried > 0 && contextLabel ? t('panel.tried', { count: run.tried, name: contextLabel }) : '';
+  // Only evidence when it can say what the answer was checked against.
+  const checked = run.checked && contextLabel ? t('panel.verified_on', { name: contextLabel }) : '';
 
   const card = (shownValue: string, lead: boolean) => (
     <div className={`overflow-hidden rounded fc-border border-antd ${lead ? '' : 'opacity-60'}`}>
@@ -281,10 +284,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
             {running && (
               <div className='flex items-start gap-2' role='status' aria-live='polite'>
                 <Spin indicator={<LoadingOutlined spin className='text-[12px]' />} size='small' className='mt-0.5' aria-label={t('panel.running')} />
-                <div className='min-w-0'>
-                  <div className='text-[12px] font-medium text-main'>{run.activity || t('panel.understanding')}</div>
-                  {tried && <div className='mt-0.5 text-[11px] text-hint'>{tried}</div>}
-                </div>
+                <div className='min-w-0 text-[12px] font-medium text-main'>{run.activity ? `${run.activity}…` : t('panel.understanding')}</div>
               </div>
             )}
 
@@ -294,7 +294,7 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
             {turnBlock}
             {!cardLeads && shown && settled && card(shown, false)}
 
-            {settled && cardLeads && tried && <div className='text-[11px] text-hint'>{tried}</div>}
+            {settled && cardLeads && checked && <div className='text-[11px] text-hint'>{checked}</div>}
           </div>
         </div>
       )}
@@ -308,6 +308,11 @@ export default function AiQueryPanel(props: AiQueryPanelProps) {
           disabled={running}
           placeholder={placeholder}
           onChange={(event) => setQuestion(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key !== 'Tab' || question || !suggested) return;
+            event.preventDefault();
+            setQuestion(suggested);
+          }}
           onPressEnter={() => send(question)}
         />
         {running ? (

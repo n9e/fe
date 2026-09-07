@@ -33,10 +33,11 @@ export type AiQueryPhase = 'idle' | 'running' | 'done' | 'stopped' | 'failed';
 
 export interface AiQueryRun {
   phase: AiQueryPhase;
-  /** How many times the assistant ran something against the data source. The
-   *  only tally that is evidence: the rest counted its own scratch files. */
-  tried: number;
-  /** What the assistant is doing right now, in its own words. Only while running. */
+  /** Whether the assistant ran anything against the data source. Set from the
+   *  command count only: the rest of the tally counts its own scratch files. */
+  checked: boolean;
+  /** What the assistant is doing right now: its own sentence when it gives
+   *  one, else the name of the step it is on. Only while running. */
   activity?: string;
   /** What this turn delivered. Only set when the assistant produced a value.
    *  Never carried over: a caller that cannot tell this turn's answer from an
@@ -62,11 +63,12 @@ export interface AiQueryRun {
   needsModelConfig?: boolean;
 }
 
-const EMPTY_RUN: AiQueryRun = { phase: 'idle', tried: 0 };
+const EMPTY_RUN: AiQueryRun = { phase: 'idle', checked: false };
 
 function reduceMessage(message: IAiChatMessage): AiQueryRun {
   const responses = message.response ?? [];
-  let tried = 0;
+  let checked = false;
+  let step: string | undefined;
   const said: string[] = [];
   let value: string | undefined;
   let suggestion: string | undefined;
@@ -77,15 +79,22 @@ function reduceMessage(message: IAiChatMessage): AiQueryRun {
       case EAiChatContentType.Query:
         value = response.content?.trim() || undefined;
         suggestion = (response.param as IAiChatQueryParam | undefined)?.follow_up?.trim() || undefined;
+        // What came before was the assistant narrating its search; the
+        // explanation is what it says about the value it delivered.
+        said.length = 0;
         break;
       case EAiChatContentType.Markdown:
         if (response.content?.trim()) said.push(response.content.trim());
         break;
       // Tool calls are the only other segment worth surfacing: they are the
       // evidence that the answer was checked rather than recalled.
-      case EAiChatContentType.ToolGroup:
-        tried += (response.param as IAiChatToolCallGroup | undefined)?.command_count ?? 0;
+      case EAiChatContentType.ToolGroup: {
+        const group = response.param as IAiChatToolCallGroup | undefined;
+        if (group?.command_count) checked = true;
+        // The latest call names the step in progress — "querying series", say.
+        step = group?.items?.[group.items.length - 1]?.content?.trim() || step;
         break;
+      }
       // A turn can end on a question rather than an answer — an ambiguous data
       // source, say. Saying "nothing was delivered" would be true but useless:
       // what the user needs is the question.
@@ -97,12 +106,12 @@ function reduceMessage(message: IAiChatMessage): AiQueryRun {
     }
   }
 
-  const activity = message.is_finish ? undefined : message.cur_step?.trim() || undefined;
+  const activity = message.is_finish ? undefined : message.cur_step?.trim() || step;
 
   if (message.err_code) {
     return {
       phase: 'failed',
-      tried,
+      checked,
       // Deliberately no explanation: what the assistant was narrating when the
       // request died is not why it died, and showing it there crowds out the
       // one line that says what to do about it.
@@ -113,9 +122,9 @@ function reduceMessage(message: IAiChatMessage): AiQueryRun {
     };
   }
   if (!message.is_finish) {
-    return { phase: 'running', tried, activity };
+    return { phase: 'running', checked, activity };
   }
-  return { phase: 'done', tried, value, suggestion, question, explanation: said.join('\n\n') || undefined };
+  return { phase: 'done', checked, value, suggestion, question, explanation: said.join('\n\n') || undefined };
 }
 
 export interface UseAiQueryRunOptions {
@@ -152,7 +161,7 @@ export function useAiQueryRun({ pageFrom, t }: UseAiQueryRunOptions) {
     // Keep the answer already on screen: a follow-up refines what is there, and
     // blanking the panel mid-refinement takes away the undo for a field that is
     // still holding the previous value.
-    setRun((previous) => ({ phase: 'running', tried: 0, carried: previous.value ?? previous.carried }));
+    setRun((previous) => ({ phase: 'running', checked: false, carried: previous.value ?? previous.carried }));
     sentRef.current = undefined;
 
     try {

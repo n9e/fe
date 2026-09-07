@@ -159,8 +159,7 @@ const ko_KR = {
     no_model_hint: "No AI model is available. Ask an administrator to add or enable one.",
     unchanged: "Same as what the field already held — nothing changed",
     no_context: "Select a data source first",
-    tried_one: "Tried it once against {{name}}",
-    tried_other: "Tried it {{count}} times against {{name}}",
+    verified_on: '{{name}}에서 검증됨',
     example: "호스트별 CPU 사용률",
 
   },

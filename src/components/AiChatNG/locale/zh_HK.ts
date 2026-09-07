@@ -159,7 +159,7 @@ const zh_HK = {
     no_model_hint: "目前沒有可用的 AI 模型，請聯絡管理員在「AI 設定」裡新增或啟用一個。",
     unchanged: "與輸入框內容相同，未改動",
     no_context: "請先選擇資料來源",
-    tried: "在 {{name}} 上試跑了 {{count}} 次",
+    verified_on: "已在 {{name}} 上驗證",
     example: "每台主機的 CPU 使用率",
 
   },
