@@ -2,6 +2,7 @@
  * 各数据源的查询方法
  */
 
+import type { QueryOptionInput } from '@/pages/dashboard/Variables/types';
 import { DatasourceCateEnum } from '@/utils/constant';
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
 import type { JsonValue } from '@/pages/dashboard/types';
@@ -12,10 +13,7 @@ import clickHouse from '@/plugins/clickHouse/Dashboard/VariableDatasource';
 // @ts-ignore
 import variableDatasourcePro from 'plus:/parcels/Dashboard/variableDatasource';
 
-export type VariableDatasourceQuery = Record<
-  string,
-  JsonValue | IRawTimeRange | { index: string; date_field: string } | undefined
->;
+export type VariableDatasourceQuery = Record<string, JsonValue | IRawTimeRange | { index: string; date_field: string } | undefined>;
 
 export interface Props<QueryType = VariableDatasourceQuery> {
   datasourceCate: string;
@@ -24,7 +22,7 @@ export interface Props<QueryType = VariableDatasourceQuery> {
   query: QueryType;
 }
 
-export default async function datasource(props: Props) {
+export default async function datasource(props: Props): Promise<QueryOptionInput[]> {
   const { datasourceCate } = props;
   if (datasourceCate === DatasourceCateEnum.prometheus) {
     return prometheus(props);

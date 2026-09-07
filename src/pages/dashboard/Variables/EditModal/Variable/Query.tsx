@@ -11,11 +11,11 @@ import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
-import { IVariable } from '../../types';
+import { IVariable, QueryOption } from '../../types';
 import adjustData from '../../utils/ajustData';
 import isPlaceholderQuoted from '../../utils/isPlaceholderQuoted';
 import { formatString, formatDatasource } from '../../utils/formatString';
-import filterOptionsByReg from '../../utils/filterOptionsByReg';
+import processQueryOptions from '../../utils/processQueryOptions';
 import { getBuiltInVariables } from '../../utils/replaceTemplateVariables';
 import Querybuilder from '../Querybuilder';
 import datasource from '../../datasource';
@@ -41,12 +41,7 @@ export default function Query(props: Props) {
   const { datasourceCateOptions, datasourceList, darkMode } = useContext(CommonStateContext);
   const { formatedReg, datasourceVars, variablesWithOptions } = props;
   const [errorMsg, setErrorMsg] = useState<string>('');
-  const [options, setOptions] = useState<
-    {
-      label: string;
-      value: string;
-    }[]
-  >([]);
+  const [options, setOptions] = useState<QueryOption[]>([]);
   const form = Form.useFormInstance();
   const item = Form.useWatch<IVariable>([]);
   const datasourceCate = Form.useWatch(['datasource', 'cate']);
@@ -86,7 +81,7 @@ export default function Query(props: Props) {
         },
       })
         .then((options) => {
-          const itemOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+          const itemOptions = processQueryOptions(options, formatedReg);
           setOptions(itemOptions);
           setErrorMsg('');
         })
@@ -176,6 +171,7 @@ export default function Query(props: Props) {
                 }}
               />
             </div>
+            <div>{t('var.reg_object_tip')}</div>
           </>
         }
         rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}

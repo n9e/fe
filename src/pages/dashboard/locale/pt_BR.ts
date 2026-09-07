@@ -158,6 +158,8 @@ const pt_BR = {
     reg: 'Expressão regular',
     reg_tip: 'Opcional: filtra as opções por expressão regular. Informe um <a>literal de expressão regular</a>, ou seja, um padrão entre barras',
     reg_tip2: 'Para extrair apenas parte de uma opção, <a>use grupos de captura nomeados para separar o texto exibido do valor</a>',
+    reg_object_tip:
+      'Para opções com nome de exibição separado, a expressão regular verifica o valor. Correspondências comuns preservam ambos os campos; grupos text/value substituem apenas o campo correspondente.',
     multi: 'Seleção múltipla',
     allOption: 'Incluir a opção "todos"',
     allValue: 'Valor personalizado para "todos"',

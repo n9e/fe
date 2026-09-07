@@ -205,11 +205,14 @@ function EditItem(props: IProps) {
             label={t('var.reg')}
             name='reg'
             tooltip={
-              <Trans
-                ns='dashboard'
-                i18nKey='var.reg_tip'
-                components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
-              />
+              <>
+                <Trans
+                  ns='dashboard'
+                  i18nKey='var.reg_tip'
+                  components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
+                />
+                <div>{t('var.reg_object_tip')}</div>
+              </>
             }
             rules={[{ pattern: new RegExp('^/(.*?)/(g?i?m?y?)$'), message: 'invalid regex' }]}
           >

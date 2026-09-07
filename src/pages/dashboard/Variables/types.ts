@@ -45,3 +45,12 @@ export interface VariableExecutionMeta {
 export interface DependencyGraph {
   [key: string]: string[]; // key: 变量名, value: 依赖它的变量列表
 }
+
+/** 查询插件返回的选项；业务对象须由插件转换为 label/value。 */
+export type QueryOptionInput = string | number | boolean | { label: string; value: string | number };
+
+/** 查询变量的实际值统一为字符串，不影响其他变量类型的数字值。 */
+export interface QueryOption {
+  label: string;
+  value: string;
+}
