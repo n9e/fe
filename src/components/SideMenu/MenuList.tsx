@@ -75,7 +75,7 @@ export function getSideMenuIconColorClass(opts: {
     return isActive ? 'text-[var(--fc-sidemenu-item-active-text)]' : lightInactive;
   }
   if (isDarkMode) {
-    return isActive ? 'text-[#fff]' : 'text-link';
+    return isActive ? 'text-link' : 'text-[#fff]';
   }
   if (isActive) {
     if (isBlueTheme) {

@@ -130,9 +130,9 @@ describe('side menu icon colors', () => {
     isBgBlack: false,
   };
 
-  it('uses the theme link color for inactive dark-mode icons and white for active icons', () => {
-    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true })).toBe('text-link');
-    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true, isActive: true })).toBe('text-[#fff]');
+  it('uses white for inactive dark-mode icons and the theme link color for active icons', () => {
+    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true })).toBe('text-[#fff]');
+    expect(getSideMenuIconColorClass({ ...baseColorOptions, isDarkMode: true, isActive: true })).toBe('text-link');
   });
 
   it('preserves the existing colors for light, blue, and custom side menu themes', () => {
@@ -172,7 +172,7 @@ describe('side menu icon colors', () => {
     );
 
     for (const type of ['house', 'icon-ic_search_light', 'flashai', 'dashboard-group']) {
-      expect(container.querySelector(`[data-icon-type='${type}']`)?.parentElement).toHaveClass('text-link');
+      expect(container.querySelector(`[data-icon-type='${type}']`)?.parentElement).toHaveClass('text-[#fff]');
     }
   });
 
@@ -180,7 +180,7 @@ describe('side menu icon colors', () => {
     ['/landing', 'house'],
     ['/flashai', 'flashai'],
     ['/dashboards', 'dashboard-group'],
-  ])('uses white for the active %s icon', (selectedKey, iconType) => {
+  ])('uses the theme link color for the active %s icon', (selectedKey, iconType) => {
     localStorage.removeItem('n9e-dark-mode');
     const list: IMenuItem[] = [
       {
@@ -210,6 +210,6 @@ describe('side menu icon colors', () => {
       </MemoryRouter>,
     );
 
-    expect(container.querySelector(`[data-icon-type='${iconType}']`)?.parentElement).toHaveClass('text-[#fff]');
+    expect(container.querySelector(`[data-icon-type='${iconType}']`)?.parentElement).toHaveClass('text-link');
   });
 });
