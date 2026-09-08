@@ -38,6 +38,12 @@ export default function index() {
 
   const businessGroupRef = React.useRef<{ getCollapse: () => boolean; setCollapse: (collapse: boolean) => void }>(null);
 
+  // 拓扑图的筛选条件。必须 memo：它进了 GlobalGraph 的 effect 依赖，
+  // 写成内联字面量的话每次父组件 render 都是新对象，折叠统计栏这种
+  // 跟图毫无关系的状态变化也会触发一次重新取图。
+  const selectedIdentsKey = _.join(_.map(selectedRows, 'ident'), ',');
+  const hostFilter = React.useMemo(() => ({ idents: selectedIdentsKey ? _.split(selectedIdentsKey, ',') : [] }), [selectedIdentsKey]);
+
   useEffect(() => {
     // 如果 businessGroup 和 stats 都是折叠的则 allCollapsed 也设置成折叠
     if (businessGroupRef.current?.getCollapse() && statsCollapsed) {
@@ -83,7 +89,7 @@ export default function index() {
             )}
             {viewMode === 'topology' && IS_PLUS ? (
               <div className='flex-1 min-h-0'>
-                <HostTopoGlobalGraph gids={gids} hostFilter={{ idents: _.map(selectedRows, 'ident') }} />
+                <HostTopoGlobalGraph gids={gids} hostFilter={hostFilter} />
               </div>
             ) : (
             <List
