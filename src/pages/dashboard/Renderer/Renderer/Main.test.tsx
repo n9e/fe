@@ -53,9 +53,13 @@ test('text panel renders its body before the query state is loaded', () => {
           id: 'text-panel',
           type: 'text',
           name: 'Panel Title',
+          description: '',
+          layout: { h: 4, w: 12, x: 0, y: 0, i: 'text-panel' },
           targets: [{ refId: 'A' }],
           custom: { content: '$project' },
-        } as IPanel
+          options: {},
+          overrides: [],
+        } satisfies IPanel
       }
       annotations={[]}
       controllersVisible={false}
