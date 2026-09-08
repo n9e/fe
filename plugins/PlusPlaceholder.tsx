@@ -50,6 +50,12 @@ const getDefaultValuesByCate = () => {};
 const autoDatasourcetype = [];
 const AuthList = [];
 const extraColumns = () => {};
+// 主机拓扑（plus 功能）。命名导入必须在这里有对应物，否则开源构建缺符号。
+// 调用点都由 IS_PLUS 守着，开源构建下这几个不会被真正用到。
+const HostTopoViewSwitch = PlusePlaceholder;
+const HostTopoGlobalGraph = PlusePlaceholder;
+const HostTopoDrawerTab = PlusePlaceholder;
+const readHostTopoViewMode = () => 'list';
 const getNetworkDevices = () => {};
 const getNetworkDevicesList = () => {};
 const getNetworkDevicesTags = () => {};
@@ -101,6 +107,10 @@ export {
   autoDatasourcetype,
   AuthList,
   extraColumns,
+  HostTopoViewSwitch,
+  HostTopoGlobalGraph,
+  HostTopoDrawerTab,
+  readHostTopoViewMode,
   getNetworkDevices,
   getNetworkDevicesList,
   getNetworkDevicesTags,

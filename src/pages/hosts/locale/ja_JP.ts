@@ -17,6 +17,7 @@ const ja_JP = {
   cores: 'Cores',
   tags_popover_title: '{{count}} 個',
   view_collects: '関連する収集設定を表示',
+  host_topology: 'トポロジー',
   host_no_heartbeat_tip: 'ホストはハートビートなし',
   expand_busi_and_overview: '業務グループと概要を展開',
   collapse_busi_and_overview: '業務グループと概要を折りたたむ',

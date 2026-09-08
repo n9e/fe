@@ -7,10 +7,13 @@ import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import { getTargetsCompatibleGids } from '@/components/BusinessGroup/presetFilters';
-import { IS_ENT } from '@/utils/constant';
+import { IS_ENT, IS_PLUS } from '@/utils/constant';
 
 // @ts-ignore — ObsLoop HostEntry（srm-fe parcel；开源/plus 源仓不挂此依赖）
 import ObsLoopHostEntry from 'plus:/parcels/ObsLoop/HostEntry';
+
+// @ts-ignore — 主机拓扑（plus parcel；开源构建下解析成空组件）
+import { HostTopoViewSwitch, HostTopoGlobalGraph, readHostTopoViewMode } from 'plus:/parcels/Targets';
 
 import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
@@ -28,6 +31,8 @@ export default function index() {
   const [selectedRows, setSelectedRows] = useState<Item[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>();
 
+  // 列表 / 拓扑两种视图。开源构建下 readHostTopoViewMode 解析成空，恒为 list
+  const [viewMode, setViewMode] = useState<'list' | 'topology'>(() => (IS_PLUS ? readHostTopoViewMode() : 'list'));
   const [statsCollapsed, setStatsCollapsed] = useState(window.localStorage.getItem(STATS_COLLAPSED_KEY) === 'true');
   const [allCollapsed, setAllCollapsed] = useState(false);
 
@@ -71,6 +76,16 @@ export default function index() {
           />
           <div className='w-full min-w-0 flex flex-col'>
             <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
+            {IS_PLUS && (
+              <div className='mb-2'>
+                <HostTopoViewSwitch value={viewMode} onChange={setViewMode} />
+              </div>
+            )}
+            {viewMode === 'topology' && IS_PLUS ? (
+              <div className='flex-1 min-h-0'>
+                <HostTopoGlobalGraph gids={gids} hostFilter={{ idents: _.map(selectedRows, 'ident') }} />
+              </div>
+            ) : (
             <List
               allCollapseNode={
                 <Tooltip title={allCollapsed ? t('expand_busi_and_overview') : t('collapse_busi_and_overview')}>
@@ -93,6 +108,7 @@ export default function index() {
               setRefreshFlag={setRefreshFlag}
               setOperateType={setOperateType}
             />
+            )}
           </div>
         </div>
       </div>

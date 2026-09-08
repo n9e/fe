@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
-import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined, AppstoreAddOutlined, ShareAltOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import semver from 'semver';
 import { useAntdTable } from 'ahooks';
@@ -26,6 +26,8 @@ import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
+// @ts-ignore — 主机拓扑页签（plus parcel；开源构建下解析成空组件）
+import { HostTopoDrawerTab } from 'plus:/parcels/Targets';
 // @ts-ignore
 import UpgradeAgent from 'plus:/parcels/Targets/UpgradeAgent';
 // @ts-ignore
@@ -601,6 +603,22 @@ export default function List(props: Props) {
                               />
                             </Tooltip>
                           )}
+                          {IS_PLUS && (
+                            // 与采集配置那个按钮并排：两个都是「从这台机器出发」的入口。
+                            // 点它直接把元信息抽屉打开并落在拓扑页签上
+                            <Tooltip title={t('host_topology')}>
+                              <Button
+                                className='ml-2'
+                                size='small'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMetaDrawerIdent(ident);
+                                  setMetaDrawerOpen(true);
+                                }}
+                                icon={<ShareAltOutlined />}
+                              />
+                            </Tooltip>
+                          )}
                         </div>
                         <Space size={4} className='flex flex-wrap items-center'>
                           {record.host_ip ? (
@@ -1037,6 +1055,19 @@ export default function List(props: Props) {
           setMetaDrawerOpen(open);
           if (!open) setMetaDrawerIdent('');
         }}
+        extraTabs={
+          // 「这台机器在跟谁说话」——元信息抽屉里最缺的那一半。
+          // 开源构建下 HostTopoDrawerTab 解析成空，这里给空数组，抽屉不套 Tabs
+          IS_PLUS && metaDrawerIdent
+            ? [
+                {
+                  key: 'topology',
+                  label: t('host_topology'),
+                  children: <HostTopoDrawerTab ident={metaDrawerIdent} height='calc(100vh - 220px)' />,
+                },
+              ]
+            : []
+        }
         extraActions={
           IS_PLUS && metaDrawerIdent ? (
             // 元信息抽屉本身是个死胡同，至少让「这台机器配了什么采集 / 要不要配一个」有条出路

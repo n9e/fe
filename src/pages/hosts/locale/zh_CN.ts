@@ -18,6 +18,7 @@ const zh_CN = {
   cores: 'Cores',
   tags_popover_title: '{{count}} 个',
   view_collects: '查看关联采集配置',
+  host_topology: '拓扑',
   host_no_heartbeat_tip: '机器无心跳',
   expand_busi_and_overview: '展开业务组和概览',
   collapse_busi_and_overview: '收起业务组和概览',

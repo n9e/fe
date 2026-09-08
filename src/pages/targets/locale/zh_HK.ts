@@ -89,6 +89,7 @@ const zh_HK = {
   },
   meta_tip: '查看元信息',
   meta_title: '元信息',
+  meta_tab_overview: '概覽',
   meta_desc_key: '元信息名稱',
   meta_desc_value: '元信息值',
   meta_value_click_to_copy: '點擊複製',

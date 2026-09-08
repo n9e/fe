@@ -18,6 +18,7 @@ const zh_HK = {
   cores: 'Cores',
   tags_popover_title: '{{count}} 個',
   view_collects: '查看關聯採集配置',
+  host_topology: '拓撲',
   host_no_heartbeat_tip: '機器無心跳',
   expand_busi_and_overview: '展開業務組和概覽',
   collapse_busi_and_overview: '收起業務組和概覽',
