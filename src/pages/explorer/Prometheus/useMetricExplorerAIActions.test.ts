@@ -1,185 +1,227 @@
 /** @jest-environment jsdom */
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import type { ActionRunContext, UIAction } from '@flashcatcloud/ai-kit/actions';
-
 import { useMetricExplorerAIActions, MetricExplorerAIActionsOptions } from './useMetricExplorerAIActions';
 
-/**
- * The registry is faked rather than imported, because ai-kit ships ESM that
- * this project's jest transform does not cover. Its schema validation and its
- * unsupported/timeout handling are the package's own contract and are tested
- * there; what is worth pinning here is only what this hook decides — when it
- * registers at all, and what it does to the page when the action runs.
- */
 const registered = new Map<string, UIAction<any>>();
-const register = jest.fn((actions: UIAction<any>[]) => {
-  actions.forEach((action) => registered.set(action.name, action));
-  return () => actions.forEach((action) => registered.delete(action.name));
-});
-
+let feedback: ActionRunContext['feedback'];
+let runtimeAbort: AbortController;
+let runtimeFailureStatus = 'failed';
 jest.mock('@/components/AiChatNG/uiActionRuntime', () => ({
   uiActionRuntime: {
-    register: (actions: UIAction<any>[], page: unknown) => register(actions, page),
+    register: (actions: UIAction<any>[]) => {
+      actions.forEach((action) => registered.set(action.name, action));
+      return () =>
+        actions.forEach((action) => {
+          if (registered.get(action.name) === action) registered.delete(action.name);
+        });
+    },
+    execute: async (call) => {
+      try {
+        const result = await registered.get(call.name)!.run(call.args, { callId: call.callId, signal: runtimeAbort.signal, feedback });
+        return { ok: true, status: 'ok', action: call.name, result };
+      } catch (error) {
+        return { ok: false, status: runtimeFailureStatus, action: call.name, message: String(error) };
+      }
+    },
   },
 }));
-
-const ACTION = 'set_metric_query';
-
-function control() {
-  return {
+const request = { call_id: 'call-1', name: 'set_metric_query', description: 'Fill and run the query', args: { promql: 'up' } };
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (error: Error) => void;
+  const promise = new Promise<T>((yes, no) => {
+    resolve = yes;
+    reject = no;
+  });
+  return { promise, resolve, reject };
+}
+function setup() {
+  let revision = 0;
+  const snapshot = { promql: 'draft', submitted: 'previous', range: { start: 'now-1h', end: 'now' }, timestamp: 123 };
+  const box = {
+    snapshot: () => snapshot,
+    revision: () => revision,
     fill: jest.fn(),
-    run: jest.fn(),
+    run: jest.fn().mockResolvedValue({ empty: false }),
+    restore: jest.fn(),
     queryInput: () => document.createElement('div'),
     queryButton: () => document.createElement('button'),
   };
-}
-
-function options(overrides: Partial<MetricExplorerAIActionsOptions> = {}): MetricExplorerAIActionsOptions {
-  const box = control();
+  const props = { enabled: true, datasourceValue: 1, getControl: () => box };
+  const view = renderHook((p: MetricExplorerAIActionsOptions) => useMetricExplorerAIActions(p), { initialProps: props });
+  let scope!: ReturnType<typeof view.result.current.prepareTurn>;
+  act(() => {
+    scope = view.result.current.prepareTurn();
+  });
   return {
-    enabled: true,
-    datasourceValue: 18001,
-    setTimeRange: jest.fn(),
-    getControl: () => box,
-    ...overrides,
-  };
-}
-
-function runContext(): ActionRunContext {
-  return {
-    callId: 'call-1',
-    signal: new AbortController().signal,
-    feedback: {
-      reveal: jest.fn().mockResolvedValue(undefined),
-      highlight: jest.fn(),
-      moveCursor: jest.fn().mockResolvedValue(undefined),
-      click: jest.fn().mockResolvedValue(undefined),
-      setControlledRegion: jest.fn(),
-      clear: jest.fn(),
+    ...view,
+    props,
+    box,
+    snapshot,
+    scope,
+    edit: () => {
+      revision++;
     },
   };
 }
-
-function run(args: Record<string, unknown>) {
-  const action = registered.get(ACTION);
-  if (!action) throw new Error(`${ACTION} is not registered`);
-  return action.run(args as never, runContext());
-}
-
 beforeEach(() => {
   registered.clear();
-  register.mockClear();
+  runtimeFailureStatus = 'failed';
+  runtimeAbort = new AbortController();
+  feedback = {
+    reveal: jest.fn().mockResolvedValue(undefined),
+    highlight: jest.fn(),
+    moveCursor: jest.fn().mockResolvedValue(undefined),
+    click: jest.fn().mockResolvedValue(undefined),
+    setControlledRegion: jest.fn(),
+    clear: jest.fn(),
+  };
 });
 
-describe('useMetricExplorerAIActions', () => {
-  it('registers while the panel owns the conversation and drops it on unmount', () => {
-    const { unmount } = renderHook(() => useMetricExplorerAIActions(options()));
-    expect(registered.has(ACTION)).toBe(true);
-    unmount();
-    expect(registered.has(ACTION)).toBe(false);
+it('waits for the actual query result before reporting completion', async () => {
+  const { result, scope, box } = setup();
+  const pending = deferred<{ empty: boolean }>();
+  box.run.mockReturnValue(pending.promise);
+  let execution!: ReturnType<typeof scope.executePageAction>;
+  await act(async () => {
+    execution = scope.executePageAction(request);
   });
-
-  it('registers nothing for a panel that does not own the conversation', () => {
-    renderHook(() => useMetricExplorerAIActions(options({ enabled: false })));
-    expect(register).not.toHaveBeenCalled();
-    expect(registered.has(ACTION)).toBe(false);
+  expect(result.current.progress.phase).toBe('querying');
+  await act(async () => {
+    pending.resolve({ empty: false });
+    await execution;
   });
-
-  it('follows the conversation when it moves to this panel', () => {
-    const { rerender, unmount } = renderHook((props: MetricExplorerAIActionsOptions) => useMetricExplorerAIActions(props), {
-      initialProps: options({ enabled: false }),
-    });
-    expect(registered.has(ACTION)).toBe(false);
-    rerender(options({ enabled: true }));
-    expect(registered.has(ACTION)).toBe(true);
-    unmount();
+  expect(result.current.progress.phase).toBe('success');
+  expect(box.fill).toHaveBeenCalledWith('up', undefined);
+});
+it('distinguishes empty results and query errors from success', async () => {
+  const { result, scope, box } = setup();
+  box.run.mockResolvedValue({ empty: true });
+  await act(async () => {
+    await scope.executePageAction(request);
   });
-
-  it('does not re-register when only the query or the data source changes', () => {
-    const { rerender, unmount } = renderHook((props: MetricExplorerAIActionsOptions) => useMetricExplorerAIActions(props), {
-      initialProps: options(),
-    });
-    expect(register).toHaveBeenCalledTimes(1);
-    rerender(options({ datasourceValue: 999 }));
-    expect(register).toHaveBeenCalledTimes(1);
-    unmount();
+  expect(result.current.progress.phase).toBe('empty');
+  let next!: typeof scope;
+  act(() => {
+    next = result.current.prepareTurn();
   });
-
-  it('writes the expression into the box, then presses 查询, and leaves the time range alone', async () => {
-    const box = control();
-    const setTimeRange = jest.fn();
-    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => box, setTimeRange })));
-
-    const result = (await run({ promql: '  cpu_usage_active  ' })) as { promql: string };
-
-    // Trimmed: a leading space in the box is something the user has to clean up.
-    expect(box.fill).toHaveBeenCalledWith('cpu_usage_active');
-    expect(box.run).toHaveBeenCalledTimes(1);
-    expect(box.fill.mock.invocationCallOrder[0]).toBeLessThan(box.run.mock.invocationCallOrder[0]);
-    expect(result.promql).toBe('cpu_usage_active');
-    // Not asked for, so the panel keeps the window the user was reading.
-    expect(setTimeRange).not.toHaveBeenCalled();
+  box.run.mockRejectedValue(new Error('query unavailable'));
+  await act(async () => {
+    await next.executePageAction({ ...request, call_id: 'call-2' });
   });
-
-  it('reads the live data source rather than the one captured at registration', async () => {
-    const { rerender } = renderHook((props: MetricExplorerAIActionsOptions) => useMetricExplorerAIActions(props), {
-      initialProps: options({ datasourceValue: 1 }),
-    });
-    rerender(options({ datasourceValue: 2 }));
-
-    const result = (await run({ promql: 'up' })) as { datasource_id: number };
-
-    expect(result.datasource_id).toBe(2);
+  expect(result.current.progress.phase).toBe('failed');
+  expect(result.current.progress.message).toContain('query unavailable');
+});
+it('preserves a late answer as unapplied when the user edits the draft', async () => {
+  const { result, scope, box, edit } = setup();
+  edit();
+  await act(async () => {
+    await scope.executePageAction(request);
   });
-
-  it('moves the time range when one is asked for', async () => {
-    const setTimeRange = jest.fn();
-    renderHook(() => useMetricExplorerAIActions(options({ setTimeRange })));
-
-    await run({ promql: 'up', time_range: { start: 'now-6h', end: 'now' } });
-
-    expect(setTimeRange).toHaveBeenCalledWith({ start: 'now-6h', end: 'now' });
+  expect(box.fill).not.toHaveBeenCalled();
+  expect(result.current.progress.phase).toBe('changed');
+});
+it('does not apply an old answer to a newly selected data source', async () => {
+  const { scope, box, rerender, props, result } = setup();
+  rerender({ ...props, datasourceValue: 2 });
+  await act(async () => {
+    await scope.executePageAction(request);
   });
-
-  it('treats an explicit null window as no window', async () => {
-    const setTimeRange = jest.fn();
-    renderHook(() => useMetricExplorerAIActions(options({ setTimeRange })));
-
-    // The runtime's validator lets null through where it would reject a
-    // half-filled object, so this is the one malformed window run() still sees.
-    await run({ promql: 'up', time_range: null });
-
-    expect(setTimeRange).not.toHaveBeenCalled();
+  expect(box.fill).not.toHaveBeenCalled();
+  expect(result.current.progress.phase).toBe('changed');
+});
+it('checks context again after the cursor moves', async () => {
+  const { scope, box, edit, result } = setup();
+  (feedback.moveCursor as jest.Mock).mockImplementation(async () => {
+    edit();
   });
-
-  it('shows the two gestures on the panel that owns the action: light the box, press its button', async () => {
-    const input = document.createElement('div');
-    const button = document.createElement('button');
-    const box = { ...control(), queryInput: () => input, queryButton: () => button };
-    const context = runContext();
-    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => box })));
-
-    const action = registered.get(ACTION)!;
-    await action.run({ promql: 'up' } as never, context);
-
-    expect(context.feedback.moveCursor).toHaveBeenCalledWith(input);
-    expect(context.feedback.highlight).toHaveBeenCalledWith(input);
-    expect(context.feedback.click).toHaveBeenCalledWith(button);
-    // The press is shown before the query runs, never after.
-    expect((context.feedback.click as jest.Mock).mock.invocationCallOrder[0]).toBeLessThan(box.run.mock.invocationCallOrder[0]);
+  await act(async () => {
+    await scope.executePageAction(request);
   });
-
-  it('refuses to act when the query box is not on screen', async () => {
-    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => null })));
-    await expect(run({ promql: 'up' })).rejects.toThrow(/not on screen/);
+  expect(box.fill).not.toHaveBeenCalled();
+  expect(result.current.progress.phase).toBe('changed');
+});
+it('stopping before fill prevents every mutation', async () => {
+  const { scope, box, result } = setup();
+  (feedback.moveCursor as jest.Mock).mockImplementation(async () => {
+    runtimeAbort.abort();
   });
-
-  it('refuses a blank expression instead of clearing the box', async () => {
-    const box = control();
-    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => box })));
-
-    await expect(run({ promql: '   ' })).rejects.toThrow();
-    expect(box.fill).not.toHaveBeenCalled();
-    expect(box.run).not.toHaveBeenCalled();
+  await act(async () => {
+    await scope.executePageAction(request);
   });
+  expect(box.fill).not.toHaveBeenCalled();
+  expect(box.run).not.toHaveBeenCalled();
+  expect(result.current.progress).toMatchObject({ phase: 'stopped', stage: 'unchanged' });
+});
+it('stopping after fill prevents the query and keeps undo available', async () => {
+  const { scope, box, result, snapshot } = setup();
+  (feedback.click as jest.Mock).mockImplementation(async () => {
+    scope.cancel();
+  });
+  await act(async () => {
+    await scope.executePageAction(request);
+  });
+  expect(box.fill).toHaveBeenCalled();
+  expect(box.run).not.toHaveBeenCalled();
+  expect(result.current.progress).toMatchObject({ phase: 'stopped', stage: 'filled' });
+  act(() => result.current.undo());
+  expect(box.restore).toHaveBeenCalledWith(snapshot);
+});
+it('restores the expression and time snapshot from immediately before the latest action', async () => {
+  const { scope, result, box, snapshot } = setup();
+  await act(async () => {
+    await scope.executePageAction({ ...request, args: { promql: 'up', time_range: { start: 'now-6h', end: 'now' } } });
+  });
+  expect(box.fill).toHaveBeenCalledWith('up', { start: 'now-6h', end: 'now' });
+  expect(result.current.canUndo).toBe(true);
+  act(() => result.current.undo());
+  expect(box.restore).toHaveBeenCalledWith(snapshot);
+  expect(result.current.canUndo).toBe(false);
+  expect(result.current.progress.phase).toBe('undone');
+});
+it('closing or unmounting cancels an in-flight action before it can fill', async () => {
+  const { scope, box, rerender, props } = setup();
+  const move = deferred<void>();
+  (feedback.moveCursor as jest.Mock).mockReturnValue(move.promise);
+  let execution!: ReturnType<typeof scope.executePageAction>;
+  await act(async () => {
+    execution = scope.executePageAction(request);
+  });
+  rerender({ ...props, enabled: false });
+  await act(async () => {
+    move.resolve();
+    await execution;
+  });
+  expect(box.fill).not.toHaveBeenCalled();
+});
+it('refuses blank expressions without losing the original draft', async () => {
+  const { scope, box } = setup();
+  await act(async () => {
+    await scope.executePageAction({ ...request, args: { promql: '  ' } });
+  });
+  expect(box.fill).not.toHaveBeenCalled();
+});
+
+it('reports a runtime timeout as a query failure rather than a user stop', async () => {
+  const { scope, result } = setup();
+  runtimeFailureStatus = 'timeout';
+  (feedback.moveCursor as jest.Mock).mockImplementation(async () => {
+    runtimeAbort.abort();
+  });
+  let outcome;
+  await act(async () => {
+    outcome = await scope.executePageAction(request);
+  });
+  expect(outcome.status).toBe('timeout');
+  expect(result.current.progress).toMatchObject({ phase: 'failed', message: 'dock.timeout' });
+});
+it('removes undo when the user changes query context', async () => {
+  const { scope, result } = setup();
+  await act(async () => {
+    await scope.executePageAction(request);
+  });
+  expect(result.current.canUndo).toBe(true);
+  act(() => result.current.invalidateUndo());
+  expect(result.current.canUndo).toBe(false);
 });

@@ -18,6 +18,7 @@ import {
   IAiChatPageActionRequest,
   IAiChatProps,
   IAiChatStreamSegment,
+  IAiChatTurnScope,
 } from './types';
 import { uiActionRuntime } from './uiActionRuntime';
 import { applyStreamChunk, buildStreamingMessage, cn, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
@@ -25,6 +26,8 @@ import { useAiChatStream } from './useStream';
 import { useAiChatContext } from './context';
 import { normalizeError } from '@/utils/appError';
 import { reportPageError } from '@/utils/pageError';
+
+import './query-dock.less';
 
 const POLLING_INTERVAL = 3000;
 const STREAM_RENDER_INTERVAL = 50;
@@ -48,6 +51,9 @@ export default function ChatPanel(props: IAiChatProps) {
     inputPrefix,
     inputSuffix,
     onTurn,
+    prepareTurn,
+    onConversationInteract,
+    active = true,
   } = props;
   const slim = variant === 'slim';
   const { shareReadonly } = useAiChatContext();
@@ -57,6 +63,13 @@ export default function ChatPanel(props: IAiChatProps) {
   queryPageFromRef.current = queryPageFrom;
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  const turnGenerationRef = useRef(0);
+  const pendingTurnRef = useRef<{ scope?: IAiChatTurnScope; locator?: IAiChatMessageLocator; content: string }>();
+  const finishingTurnsRef = useRef(new Set<string>());
   const [inputValue, setInputValue] = useState('');
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -90,8 +103,12 @@ export default function ChatPanel(props: IAiChatProps) {
     const request = last.param as IAiChatPageActionRequest | undefined;
     if (!request?.call_id || !request.name || executedCallsRef.current.has(request.call_id)) return;
     executedCallsRef.current.add(request.call_id);
-    const outcome = await uiActionRuntime.execute({ callId: request.call_id, name: request.name, args: request.args ?? {} });
+    if (!activeRef.current) return;
+    const outcome = pendingTurnRef.current?.scope
+      ? await pendingTurnRef.current.scope.executePageAction(request)
+      : await uiActionRuntime.execute({ callId: request.call_id, name: request.name, args: request.args ?? {} });
     setPageActionOutcomes((previous) => ({ ...previous, [request.call_id]: outcome }));
+    return outcome;
   }, []);
 
   // 在会话切换提交后、异步回调执行前同步更新 ref，避免旧会话回包写回当前界面。
@@ -164,10 +181,26 @@ export default function ChatPanel(props: IAiChatProps) {
 
   const syncMessageDetail = useCallback(
     async (locator: IAiChatMessageLocator, options?: { startStream?: boolean }) => {
-      if (!isCurrentChat(locator.chat_id)) return false;
-
-      const detail = await getMessageDetail(locator);
-      if (!isCurrentChat(locator.chat_id)) return false;
+      const generation = turnGenerationRef.current;
+      const key = `${locator.chat_id}:${locator.seq_id}`;
+      const isCurrentTurn = () => {
+        const pending = pendingTurnRef.current?.locator;
+        return (
+          activeRef.current &&
+          generation === turnGenerationRef.current &&
+          isCurrentChat(locator.chat_id) &&
+          (!pending || (pending.chat_id === locator.chat_id && pending.seq_id === locator.seq_id))
+        );
+      };
+      if (!isCurrentTurn() || finishingTurnsRef.current.has(key)) return false;
+      let detail: IAiChatMessage;
+      try {
+        detail = await getMessageDetail(locator);
+      } catch (error) {
+        if (!isCurrentTurn()) return false;
+        throw error;
+      }
+      if (!isCurrentTurn() || finishingTurnsRef.current.has(key)) return false;
 
       const streamingState = streamBufferRef.current;
       const shouldOverlayStream =
@@ -191,15 +224,21 @@ export default function ChatPanel(props: IAiChatProps) {
       }
 
       if (detail.is_finish) {
-        setSubmitting(false);
+        // Polling and stream completion can return the same turn together.
+        // Only this owner may announce completion after the page action settles.
+        finishingTurnsRef.current.add(key);
         cleanupPolling();
         setStreamingLocator(undefined);
         streamBufferRef.current = {
           locator: undefined,
           segments: [],
         };
-        await runPageAction(detail);
-        onTurnRef.current?.({ phase: 'done', message: detail, reason: detail.err_code === -2 ? 'stopped' : detail.err_code ? 'error' : undefined });
+        const actionOutcome = detail.err_code ? undefined : await runPageAction(detail);
+        if (!isCurrentTurn()) return false;
+        setSubmitting(false);
+        pendingTurnRef.current?.scope?.finish?.();
+        pendingTurnRef.current = undefined;
+        onTurnRef.current?.({ phase: 'done', message: detail, actionOutcome, reason: detail.err_code === -2 ? 'stopped' : detail.err_code ? 'error' : undefined });
       }
 
       return !detail.is_finish;
@@ -337,6 +376,10 @@ export default function ChatPanel(props: IAiChatProps) {
     if (chatId && chatId === ownChatIdRef.current && activeChatRef.current?.chat_id === chatId) {
       return;
     }
+    turnGenerationRef.current += 1;
+    pendingTurnRef.current?.scope?.cancel();
+    pendingTurnRef.current = undefined;
+    liveTurnsRef.current.clear();
     cancelScheduledStreamRender();
     cleanupPolling();
     stopStream();
@@ -373,6 +416,12 @@ export default function ChatPanel(props: IAiChatProps) {
 
   useEffect(() => {
     return () => {
+      turnGenerationRef.current += 1;
+      const pending = pendingTurnRef.current;
+      pending?.scope?.cancel();
+      pendingTurnRef.current = undefined;
+      liveTurnsRef.current.clear();
+      if (pending?.locator) void cancelMessage(pending.locator).catch(() => {});
       cancelScheduledStreamRender();
       cleanupPolling();
       stopStream();
@@ -381,31 +430,41 @@ export default function ChatPanel(props: IAiChatProps) {
 
   const initialMessageSentRef = useRef(false);
 
-  const createNewChat = useCallback(async () => {
-    try {
-      const chat = await createChat(queryPageFromRef.current);
-      ownChatIdRef.current = chat.chat_id;
-      activeChatRef.current = chat;
-      setActiveChat(chat);
-      setMessages([]);
-      return chat;
-    } catch (error) {
-      handleError(error instanceof Error ? error : new Error('create chat failed'));
-      return undefined;
-    }
-  }, [handleError]);
+  const createNewChat = useCallback(
+    async (generation: number) => {
+      try {
+        const chat = await createChat(queryPageFromRef.current);
+        if (generation !== turnGenerationRef.current || !activeRef.current) return;
+        ownChatIdRef.current = chat.chat_id;
+        activeChatRef.current = chat;
+        setActiveChat(chat);
+        setMessages([]);
+        return chat;
+      } catch (error) {
+        handleError(error instanceof Error ? error : new Error('create chat failed'));
+        return undefined;
+      }
+    },
+    [handleError],
+  );
 
   const sendUserMessage = useCallback(
     async (action?: IAiChatAction, overrideContent?: string) => {
-      if (submitting || shareReadonly) return;
+      if (submitting || pendingTurnRef.current || shareReadonly || !activeRef.current) return;
       const content = (overrideContent ?? inputValue).trim();
       if (!content) return;
 
+      const generation = ++turnGenerationRef.current;
+      const pending = { scope: prepareTurn?.(), content, locator: undefined as IAiChatMessageLocator | undefined };
+      pendingTurnRef.current = pending;
+      const pageFrom = queryPageFromRef.current;
       setSubmitting(true);
       try {
         const currentChat = chatId && activeChat?.chat_id !== chatId ? undefined : activeChat;
-        const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current } : await createNewChat());
+        const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current } : await createNewChat(generation));
+        if (generation !== turnGenerationRef.current || !activeRef.current) return;
         if (!chat) {
+          pendingTurnRef.current = undefined;
           setSubmitting(false);
           return;
         }
@@ -413,7 +472,7 @@ export default function ChatPanel(props: IAiChatProps) {
         const query = {
           content,
           action: action || queryAction,
-          page_from: queryPageFromRef.current || chat.page_from,
+          page_from: pageFrom || chat.page_from,
         };
 
         // What the page can do right now. Read at send time: registrations
@@ -425,6 +484,11 @@ export default function ChatPanel(props: IAiChatProps) {
           query,
           manifest: manifest.length ? manifest : undefined,
         });
+        if (generation !== turnGenerationRef.current || !activeRef.current) {
+          void cancelMessage({ chat_id: result.chat_id, seq_id: result.seq_id }).catch(handleError);
+          return;
+        }
+        pending.locator = { chat_id: result.chat_id, seq_id: result.seq_id };
         liveTurnsRef.current.add(`${result.chat_id}:${result.seq_id}`);
 
         const optimisticMessage: IAiChatMessage = {
@@ -458,6 +522,9 @@ export default function ChatPanel(props: IAiChatProps) {
           startPolling(locator);
         }
       } catch (error) {
+        if (generation !== turnGenerationRef.current || !activeRef.current) return;
+        pendingTurnRef.current?.scope?.finish?.();
+        pendingTurnRef.current = undefined;
         setSubmitting(false);
         const nextError = error instanceof Error ? error : new Error('send message failed');
         handleError(nextError);
@@ -472,6 +539,7 @@ export default function ChatPanel(props: IAiChatProps) {
       mergeMessage,
       onChatChange,
       queryAction,
+      prepareTurn,
       scrollToBottom,
       shareReadonly,
       startPolling,
@@ -488,26 +556,35 @@ export default function ChatPanel(props: IAiChatProps) {
     }
   }, [initialMessage, sendUserMessage]);
 
-  const handleStop = useCallback(async () => {
-    if (!streamingLocator) return;
-    try {
-      cancelScheduledStreamRender();
-      stopStream();
-      cleanupPolling();
-      await cancelMessage(streamingLocator);
-      const nextMessage = await getMessageDetail(streamingLocator);
-      mergeMessage(nextMessage);
-      onTurnRef.current?.({ phase: 'done', message: nextMessage, reason: 'stopped' });
-      setStreamingLocator(undefined);
-      streamBufferRef.current = {
-        locator: undefined,
-        segments: [],
-      };
-      setSubmitting(false);
-    } catch (error) {
-      handleError(error instanceof Error ? error : new Error('cancel message failed'));
+  const handleStop = useCallback(() => {
+    const pending = pendingTurnRef.current;
+    const locator = pending?.locator ?? streamBufferRef.current.locator;
+    // Revoke execution before any network cancellation: late responses must
+    // never regain the right to write into the page or finish another turn.
+    turnGenerationRef.current += 1;
+    pending?.scope?.cancel();
+    pendingTurnRef.current = undefined;
+    liveTurnsRef.current.clear();
+    cancelScheduledStreamRender();
+    stopStream();
+    cleanupPolling();
+    setSubmitting(false);
+    setStreamingLocator(undefined);
+    streamBufferRef.current = { locator: undefined, segments: [] };
+    const message = locator && messagesRef.current.find((item) => item.chat_id === locator.chat_id && item.seq_id === locator.seq_id);
+    if (message) {
+      const stopped = { ...message, is_finish: true, err_code: -2 };
+      mergeMessage(stopped);
+      onTurnRef.current?.({ phase: 'done', message: stopped, reason: 'stopped' });
     }
-  }, [cancelScheduledStreamRender, cleanupPolling, handleError, mergeMessage, stopStream, streamingLocator]);
+    if (locator) void cancelMessage(locator).catch((error) => handleError(error instanceof Error ? error : new Error('cancel message failed')));
+  }, [cancelScheduledStreamRender, cleanupPolling, handleError, mergeMessage, stopStream]);
+
+  const stopRef = useRef(handleStop);
+  stopRef.current = handleStop;
+  useEffect(() => {
+    if (!active) stopRef.current();
+  }, [active]);
 
   const messageItems = useMemo(() => {
     return messages.map((messageItem) => (
@@ -544,34 +621,37 @@ export default function ChatPanel(props: IAiChatProps) {
     />
   );
 
-  // Slim has no room for the greeting: the suggestions become chips.
+  // Slim has no room for the greeting: suggestions stay as quiet text links —
+  // not filled chips (those read as a second card under the dock).
   const promptChips =
     slim && promptList?.length ? (
-      <div className='flex flex-wrap gap-1.5'>
+      <div className='ai-query-dock-prompts flex flex-wrap items-center gap-x-3 gap-y-1'>
         {promptList.map((prompt) => (
-          <button
-            key={prompt}
-            type='button'
-            className='cursor-pointer rounded-full fc-border bg-transparent px-2.5 py-0.5 text-xs text-main hover:border-primary hover:text-primary'
-            onClick={() => setInputValue(prompt)}
-          >
+          <button key={prompt} type='button' className='ai-query-dock-prompt' onClick={() => setInputValue(prompt)}>
             {prompt}
           </button>
         ))}
       </div>
     ) : null;
-  // A floating box with nothing in it is noise, so slim keeps it closed until there is something to show.
-  const listHidden = slim && (collapsed || (!messagesLoading && !messageItems.length && !welcomeContent && !promptChips));
+
+  const hasConversation = messagesLoading || messageItems.length > 0 || !!welcomeContent;
+  // Empty slim: prompts sit under the input in the flow. The floating sheet is
+  // only for an actual conversation.
+  const listHidden = slim && (collapsed || !hasConversation);
+  const chipsUnderInput = slim && !collapsed && !hasConversation && promptChips;
 
   return (
-    <div className={cn('flex w-full min-h-0', slim ? 'relative' : 'h-full')}>
+    <div className={cn('flex w-full min-h-0', slim ? 'relative' : 'h-full')} {...(slim ? { 'data-ai-surface': 'query-dock' } : {})}>
       <div className='flex w-full min-w-0 flex-1 flex-col'>
         <div
           ref={chatBodyRef}
+          onPointerDown={onConversationInteract}
+          onWheel={onConversationInteract}
+          onFocusCapture={onConversationInteract}
           className={cn(
             'min-h-0 w-full best-looking-scroll',
             slim
-              ? 'absolute left-0 right-0 top-[calc(100%+6px)] z-20 max-h-[52vh] overflow-y-auto overscroll-contain rounded-lg fc-border bg-fc-100 p-3 shadow-md'
+              ? 'absolute left-0 right-0 top-[calc(100%+4px)] z-20 max-h-[52vh] overflow-y-auto overscroll-contain rounded-lg border border-fc-200 bg-fc-100 p-3'
               : 'h-full flex-1',
             listHidden && 'hidden',
           )}
@@ -582,21 +662,19 @@ export default function ChatPanel(props: IAiChatProps) {
                 <Spin indicator={<LoadingOutlined />} />
               </div>
             ) : (
-              <div className={cn('flex-1 flex flex-col', slim ? 'gap-4' : 'gap-8')}>
-                {messageItems.length ? (
-                  messageItems
-                ) : welcomeContent ? (
-                  welcomeContent
-                ) : slim ? (
-                  promptChips
-                ) : (
-                  <EmptyConversation
-                    prompts={promptList}
-                    onPromptClick={(prompt) => {
-                      setInputValue(prompt);
-                    }}
-                  />
-                )}
+              <div className={cn('flex-1 flex flex-col', slim ? 'gap-3' : 'gap-8')}>
+                {messageItems.length
+                  ? messageItems
+                  : welcomeContent
+                  ? welcomeContent
+                  : !slim && (
+                      <EmptyConversation
+                        prompts={promptList}
+                        onPromptClick={(prompt) => {
+                          setInputValue(prompt);
+                        }}
+                      />
+                    )}
               </div>
             )}
           </div>
@@ -604,11 +682,14 @@ export default function ChatPanel(props: IAiChatProps) {
 
         <div
           className={cn(
-            slim ? 'flex w-full items-center gap-2 rounded-md fc-border bg-fc-100 px-2 py-1' : 'mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md',
+            slim
+              ? 'ai-query-dock-input flex w-full items-center gap-2 rounded-md border border-fc-200 bg-transparent px-2 py-1'
+              : 'mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md',
             inputContainerClassName,
           )}
         >
           {slim && inputPrefix}
+          {slim && inputPrefix ? <span className='ai-query-dock-split' aria-hidden='true' /> : null}
           <Input.TextArea
             autoSize={slim ? { minRows: 1, maxRows: 4 } : { minRows: 3, maxRows: 8 }}
             bordered={false}
@@ -643,6 +724,7 @@ export default function ChatPanel(props: IAiChatProps) {
             </div>
           )}
         </div>
+        {chipsUnderInput && <div className='mt-2 px-1'>{chipsUnderInput}</div>}
       </div>
     </div>
   );

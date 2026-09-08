@@ -33,7 +33,7 @@ export default function PageActionBlock({ request, outcome }: { request?: IAiCha
   return (
     <ContentCard icon={<ThunderboltOutlined />} title={t('page_action.title')} bodyClassName='p-3'>
       {/* The description was written for the model; the user reads the arguments. */}
-      <div className='font-mono text-xs text-hint'>{request.name}</div>
+      <div className='ai-chat-page-action-name font-mono text-xs text-hint'>{request.name}</div>
       <Args args={request.args} />
       <div className='mt-2 text-sm'>
         {outcome ? (
@@ -72,6 +72,9 @@ function Outcome({ outcome }: { outcome: ActionResponse }) {
         {t('page_action.done')}
       </span>
     );
+  }
+  if (outcome.status === 'declined') {
+    return <span className='text-warning'>{outcome.message || t('page_action.declined')}</span>;
   }
   return (
     <span className='text-error'>

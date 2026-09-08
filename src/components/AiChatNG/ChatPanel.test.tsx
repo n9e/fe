@@ -183,3 +183,104 @@ describe('ChatPanel 流式刷新（jsdom 集成）', () => {
     expect(screen.getByTestId('message')).toHaveTextContent('第一段第二段末尾');
   });
 });
+
+describe('ChatPanel turn cancellation and completion', () => {
+  function pending<T>() {
+    let resolve!: (value: T) => void;
+    const promise = new Promise<T>((done) => {
+      resolve = done;
+    });
+    return { promise, resolve };
+  }
+  beforeEach(() => {
+    const services = jest.requireMock('./services');
+    services.createChat.mockResolvedValue({ chat_id: 'chat-1', title: '', last_update: 0 });
+    services.sendMessage.mockResolvedValue({ chat_id: 'chat-1', seq_id: 2 });
+    services.cancelMessage.mockReset();
+    services.cancelMessage.mockResolvedValue(undefined);
+    getMessageDetail.mockReset();
+    getMessageDetail.mockResolvedValue(pageActionDone);
+    execute.mockReset();
+    execute.mockResolvedValue({ ok: true, status: 'ok', action: 'set_metric_query' });
+    streamCallbacks = {};
+  });
+  function send() {
+    const box = screen.getByPlaceholderText('input.placeholder');
+    fireEvent.change(box, { target: { value: 'CPU per host' } });
+    fireEvent.keyDown(box, { key: 'Enter' });
+  }
+  it('captures the page before chat creation and cancels a send that returns after close', async () => {
+    const services = jest.requireMock('./services');
+    const sent = pending<{ chat_id: string; seq_id: number }>();
+    services.sendMessage.mockReturnValueOnce(sent.promise);
+    const scope = { executePageAction: jest.fn(), cancel: jest.fn() };
+    const prepareTurn = jest.fn(() => scope);
+    const { rerender } = render(<ChatPanel active queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={prepareTurn} />);
+    send();
+    expect(prepareTurn).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalled());
+    rerender(<ChatPanel active={false} queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={prepareTurn} />);
+    expect(scope.cancel).toHaveBeenCalled();
+    await act(async () => {
+      sent.resolve({ chat_id: 'chat-1', seq_id: 2 });
+    });
+    expect(scope.executePageAction).not.toHaveBeenCalled();
+    expect(execute).not.toHaveBeenCalled();
+    expect(services.cancelMessage).toHaveBeenCalledWith({ chat_id: 'chat-1', seq_id: 2 });
+  });
+  it('keeps stop available until the page action has completed', async () => {
+    const action = pending<any>();
+    const onTurn = jest.fn();
+    const scope = { executePageAction: jest.fn(() => action.promise), cancel: jest.fn() };
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={() => scope} onTurn={onTurn} />);
+    send();
+    await waitFor(() => expect(scope.executePageAction).toHaveBeenCalledTimes(1));
+    expect(screen.getByRole('button', { name: 'input.stop' })).toBeTruthy();
+    expect(onTurn.mock.calls.some(([turn]) => turn.phase === 'done')).toBe(false);
+    await act(async () => {
+      action.resolve({ ok: true, status: 'ok', action: 'set_metric_query', result: { empty: false } });
+    });
+    expect(onTurn.mock.calls.filter(([turn]) => turn.phase === 'done')).toHaveLength(1);
+  });
+  it('stops immediately and ignores late completion from the stopped action', async () => {
+    const action = pending<any>();
+    const onTurn = jest.fn();
+    const scope = { executePageAction: jest.fn(() => action.promise), cancel: jest.fn() };
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={() => scope} onTurn={onTurn} />);
+    send();
+    await waitFor(() => expect(scope.executePageAction).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('button', { name: 'input.stop' }));
+    expect(scope.cancel).toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'input.send' })).toBeTruthy();
+    await act(async () => {
+      action.resolve({ ok: true, status: 'ok', action: 'set_metric_query' });
+    });
+    expect(onTurn.mock.calls.filter(([turn]) => turn.phase === 'done').every(([turn]) => turn.reason === 'stopped')).toBe(true);
+  });
+  it('waits once for concurrent polling and stream completion of the same action', async () => {
+    const action = pending<any>();
+    const first = pending<IAiChatMessage>();
+    const second = pending<IAiChatMessage>();
+    const scope = { executePageAction: jest.fn(() => action.promise), cancel: jest.fn() };
+    const onTurn = jest.fn();
+    getMessageDetail.mockResolvedValueOnce({ ...pageActionDone, is_finish: false, response: [{ content_type: 'markdown', content: '', stream_id: 'stream-2' }] });
+    getMessageDetail.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={() => scope} onTurn={onTurn} />);
+    send();
+    await waitFor(() => expect(startStream).toHaveBeenCalledWith('stream-2'));
+    await act(async () => {
+      streamCallbacks.onFinish?.();
+      streamCallbacks.onFinish?.();
+    });
+    await act(async () => {
+      first.resolve(pageActionDone);
+      second.resolve(pageActionDone);
+    });
+    expect(scope.executePageAction).toHaveBeenCalledTimes(1);
+    expect(onTurn.mock.calls.some(([turn]) => turn.phase === 'done')).toBe(false);
+    await act(async () => {
+      action.resolve({ ok: true, status: 'ok', action: 'set_metric_query' });
+    });
+    expect(onTurn.mock.calls.filter(([turn]) => turn.phase === 'done')).toHaveLength(1);
+  });
+});

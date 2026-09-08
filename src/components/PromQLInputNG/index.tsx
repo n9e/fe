@@ -35,6 +35,7 @@ interface MonacoEditorPromQLProps {
   onChangeTrigger?: string[]; // 触发 onChange 的事件
   interpolateString?: (query: string) => string;
   onChange?: (value?: string) => void;
+  onDraftChange?: (value?: string) => void;
   onEnter?: (value?: string) => void;
   onBlur?: (value?: string) => void;
   onEditorDidMount?: (editor: MonacoEditor) => void;
@@ -62,6 +63,7 @@ export default function index(props: MonacoEditorPromQLProps) {
     onChangeTrigger,
     interpolateString,
     onChange,
+    onDraftChange,
     onEnter,
     onBlur,
     onEditorDidMount,
@@ -130,6 +132,7 @@ export default function index(props: MonacoEditorPromQLProps) {
             interpolateString={interpolateString}
             onChange={(newValue) => {
               setValue(newValue);
+              if (newValue !== props.value) onDraftChange?.(newValue);
               // 如果 onChangeTrigger 没有设置或为空，则直接触发 onChange
               if (!onChangeTrigger || onChangeTrigger?.length === 0) {
                 onChange?.(newValue);

@@ -1,0 +1,55 @@
+/**
+ * Styles scoped to ChatPanel variant="slim" (the metric-explorer query dock).
+ * Marked with data-ai-surface="query-dock" on the panel root — full AiChat
+ * drawer and other ContentCard call sites keep their default elevation.
+ */
+[data-ai-surface='query-dock'] {
+  .ai-chat-content-card {
+    box-shadow: none;
+    border-radius: 8px;
+    /* Same fill as the sheet would double-up; border alone is enough here. */
+    background-color: transparent;
+  }
+
+  .ai-chat-message-item {
+    box-shadow: none;
+  }
+
+  /* Action id is for the model; the dock user already sees the query land. */
+  .ai-chat-page-action-name {
+    display: none;
+  }
+
+  .ai-query-dock-input {
+    box-shadow: none;
+  }
+
+  .ai-query-dock-split {
+    align-self: stretch;
+    width: 1px;
+    margin: 6px 0;
+    flex-shrink: 0;
+    background: var(--fc-border-color, #e5e5e5);
+  }
+
+  /* Suggestion row: plain text, no chip chrome / no second card layer. */
+  .ai-query-dock-prompt {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--fc-text-4, #8c8c8c);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .ai-query-dock-prompt:hover,
+  .ai-query-dock-prompt:focus-visible {
+    color: var(--fc-fill-primary, #6c53b1);
+    outline: none;
+  }
+}

@@ -179,6 +179,20 @@ export interface IAiChatTurn {
   message: IAiChatMessage;
   /** Why a done turn ended, when not by finishing on its own. */
   reason?: 'stopped' | 'error';
+  actionOutcome?: ActionResponse;
+}
+
+/** A page captures the target before a turn sends any asynchronous request. */
+export interface IAiChatTurnScope {
+  executePageAction(request: IAiChatPageActionRequest): Promise<ActionResponse>;
+  cancel(): void;
+  finish?(): void;
+}
+
+export interface IAiQueryProgress {
+  phase: 'idle' | 'applying' | 'querying' | 'success' | 'empty' | 'failed' | 'changed' | 'stopped' | 'undone';
+  stage?: 'unchanged' | 'filled' | 'queried';
+  message?: string;
 }
 
 /** Outcome of the page actions this panel ran, keyed by call id. */
@@ -203,6 +217,10 @@ export interface IAiChatProps {
   inputSuffix?: React.ReactNode;
   /** Fires as a turn starts, progresses and ends. */
   onTurn?: (turn: IAiChatTurn) => void;
+  prepareTurn?: () => IAiChatTurnScope | undefined;
+  onConversationInteract?: () => void;
+  /** Closing an embedded surface stops its active turn but preserves history. */
+  active?: boolean;
   queryPageFrom: IAiChatPageInfo;
   queryAction?: IAiChatAction;
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);

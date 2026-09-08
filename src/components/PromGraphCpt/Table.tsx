@@ -12,7 +12,7 @@ import { instantInterpolateString } from '@/components/PromQLInputNG';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { downloadFile } from '@/pages/alertRules/List/utils';
 
-import { getPromData } from './services';
+import { getPromData, QueryRequest } from './services';
 import { QueryStats } from './components/QueryStatsView';
 import { formatPrometheusValue } from './value';
 
@@ -35,6 +35,9 @@ interface IProps {
   seriesFilterText?: string;
   onSeriesFilterTextChange?: (value: string) => void;
   onQueryRequest?: () => void;
+  queryRequest?: QueryRequest;
+  queryPaused?: boolean;
+  onQueryContextChange?: () => void;
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
 
@@ -130,6 +133,9 @@ export default function Table(props: IProps) {
     seriesFilterText: controlledSeriesFilterText,
     onSeriesFilterTextChange,
     onQueryRequest,
+    queryRequest,
+    queryPaused,
+    onQueryContextChange,
   } = props;
   const [data, setData] = useState<{
     resultType: ResultType;
@@ -195,20 +201,40 @@ export default function Table(props: IProps) {
   );
 
   useEffect(() => {
+    if (queryPaused || queryRequest?.signal.aborted) return;
+    if (!promql) {
+      setData({ resultType: 'matrix', result: [] });
+      setLoading(false);
+      return;
+    }
     if (datasourceValue && promql) {
+      const controller = new AbortController();
+      let settled = false;
+      const abort = () => {
+        controller.abort();
+        setLoading(false);
+        if (!settled) queryRequest?.complete(new DOMException('Query stopped', 'AbortError'));
+      };
+      queryRequest?.signal.addEventListener('abort', abort, { once: true });
       onQueryRequest?.();
       const queryStart = Date.now();
       setLoading(true);
-      getPromData(`${url}/${datasourceValue}/api/v1/query`, {
-        time: timestamp || moment().unix(),
-        query: instantInterpolateString({
-          query: promql,
-          time: timestamp ? moment.unix(timestamp) : undefined,
-        }),
-      })
+      getPromData(
+        `${url}/${datasourceValue}/api/v1/query`,
+        {
+          time: timestamp || moment().unix(),
+          query: instantInterpolateString({
+            query: promql,
+            time: timestamp ? moment.unix(timestamp) : undefined,
+          }),
+        },
+        controller.signal,
+      )
         .then((res) => {
+          if (controller.signal.aborted) return;
           const { resultType } = res;
           let { result } = res;
+          const empty = !result || result.length === 0;
           // 保存全量原始数据用于 CSV 导出
           rawResultRef.current = result;
           let tooLong = false;
@@ -244,16 +270,26 @@ export default function Table(props: IProps) {
               loadTime: Date.now() - queryStart,
               resultSeries: result.length,
             });
+          settled = true;
+          queryRequest?.complete({ empty });
         })
         .catch((err) => {
+          if (controller.signal.aborted) return;
           const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
+          settled = true;
+          queryRequest?.complete(err instanceof Error ? err : new Error(String(msg || err)));
         })
         .finally(() => {
+          if (controller.signal.aborted) return;
           setLoading(false);
         });
+      return () => {
+        queryRequest?.signal.removeEventListener('abort', abort);
+        abort();
+      };
     }
-  }, [timestamp, datasourceValue, promql, refreshFlag, onQueryRequest]);
+  }, [timestamp, datasourceValue, promql, refreshFlag, onQueryRequest, url, queryRequest, queryPaused]);
 
   useEffect(() => {
     if (defaultUnit) {

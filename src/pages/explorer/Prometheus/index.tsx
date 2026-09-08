@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Space, Tooltip } from 'antd';
+import { Space, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +15,6 @@ import { getHistoryEventsById } from '@/services/warning';
 import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 import AiQueryDock from '@/components/AiQueryDock';
-import { CommonStateContext } from '@/App';
 
 import { queryStringOptions } from '../constants';
 import ProbeBanner from '../components/ProbeBanner';
@@ -69,7 +68,6 @@ export default function Prometheus(props: IProps) {
   } = props;
   const { i18n } = useTranslation();
   const { t: tAi } = useTranslation(AI_CHAT_NS);
-  const { datasourceList } = useContext(CommonStateContext);
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -86,11 +84,10 @@ export default function Prometheus(props: IProps) {
   // data source, so the assistant is handed the box, not a page-wide lookup.
   const graphControl = useRef<PromGraphControl | null>(null);
 
-  useMetricExplorerAIActions({
+  const aiActions = useMetricExplorerAIActions({
     // Only the panel whose dock is open may be written to by the assistant.
     enabled: aiOpen,
     datasourceValue,
-    setTimeRange: setDefaultTimeState,
     getControl: () => graphControl.current,
   });
 
@@ -127,6 +124,7 @@ export default function Prometheus(props: IProps) {
     <>
       <PromGraph
         controlRef={graphControl}
+        onUserContextChange={aiActions.invalidateUndo}
         // key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
         type={query.mode as IMode}
         defaultType={defaultType}
@@ -168,9 +166,13 @@ export default function Prometheus(props: IProps) {
             <AiQueryDock
               open={aiOpen}
               pageFrom={aiPageFrom}
-              contextLabel={_.find(datasourceList, { id: datasourceValue })?.name}
+              progress={aiActions.progress}
+              prepareTurn={aiActions.prepareTurn}
+              canUndo={aiActions.canUndo}
+              onUndo={aiActions.undo}
               promptList={aiPromptList}
               onClose={() => {
+                aiActions.cancel();
                 setAiOpen(false);
               }}
             />
@@ -200,20 +202,29 @@ export default function Prometheus(props: IProps) {
             onDefaultTypeChange(newType);
           }
         }}
+        leadingExtra={
+          <Tooltip title={tAi('dock.open')}>
+            <button
+              type='button'
+              aria-label={tAi('dock.open')}
+              aria-pressed={aiOpen}
+              className={`inline-flex h-8 w-8 items-center justify-center rounded-full border-0 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
+                aiOpen ? 'bg-fc-200/80' : 'bg-transparent hover:bg-fc-200/80'
+              }`}
+              onClick={() => {
+                // Opening the assistant is taking over, same as editing the
+                // query by hand: the onboarding banner steps aside.
+                setProbeBannerVisible(false);
+                if (aiOpen) aiActions.cancel();
+                setAiOpen((previous) => !previous);
+              }}
+            >
+              <img src='/image/ai-chat/ai.gif' className='h-5 w-5' alt='' />
+            </button>
+          </Tooltip>
+        }
         extra={
           <Space size={SIZE}>
-            <Tooltip title={tAi('dock.open')}>
-              <Button
-                aria-label={tAi('dock.open')}
-                icon={<img src='/image/ai-chat/ai.gif' className='w-[14px] h-[14px] mb-1' alt='' />}
-                onClick={() => {
-                  // Opening the assistant is taking over, same as editing the
-                  // query by hand: the onboarding banner steps aside.
-                  setProbeBannerVisible(false);
-                  setAiOpen((previous) => !previous);
-                }}
-              />
-            </Tooltip>
             <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} onChange={setPromql} />
           </Space>
         }

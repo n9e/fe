@@ -1,69 +1,108 @@
-import { useEffect, useRef } from 'react';
-
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { ActionResponse, UIAction } from '@flashcatcloud/ai-kit/actions';
+import type { PromGraphControl, PromGraphSnapshot } from '@/components/PromGraphCpt';
+import type { IAiChatTurnScope, IAiQueryProgress } from '@/components/AiChatNG/types';
+import { NAME_SPACE } from '@/components/AiChatNG/constants';
 import { uiActionRuntime } from '@/components/AiChatNG/uiActionRuntime';
-import type { UIAction } from '@flashcatcloud/ai-kit/actions';
-import type { IRawTimeRange } from '@/components/TimeRangePicker';
-import type { PromGraphControl } from '@/components/PromGraphCpt';
-
-/**
- * The ad-hoc metric query page, described to the assistant.
- *
- * The assistant could already write PromQL into a reply, but the user then had
- * to select it, copy it and paste it into the box — and a query the assistant
- * cannot run is a query it never sees the result of. This action closes that
- * gap: the expression lands in the same input the user types into, and the
- * page's own effects re-run the query from there, exactly as they do after a
- * keystroke.
- *
- * It sets the query and nothing else. There is no "save" on this page, so
- * there is nothing here to undo — the previous expression is one Ctrl+Z or one
- * click of 历史记录 away.
- */
 
 export interface MetricExplorerAIActionsOptions {
-  /** Whether this panel owns the open conversation. See the note in the hook. */
   enabled: boolean;
-  /** The data source the panel is pointed at, echoed back for the card. */
   datasourceValue: number;
-  /**
-   * The panel's own query box, as something that can be written into and run.
-   *
-   * Resolved by the caller rather than looked up here: panels on this page can
-   * each be on a different data source and only some of them render a PromQL
-   * box, so no page-wide position or selector reliably means "this panel".
-   */
   getControl: () => PromGraphControl | null;
-  /** Moves the panel's time range. Only used when the model asks for one. */
-  setTimeRange: (range: IRawTimeRange) => void;
 }
-
 interface SetMetricQueryArgs {
   promql: string;
-  /** Both ends, or nothing: the schema's nested `required` is enforced. Null
-   *  still gets through, which is the one case `run()` has to handle. */
   time_range?: { start: string; end: string } | null;
 }
+interface QueryTurn {
+  controller: AbortController;
+  datasource: number;
+  revision: number;
+  control: PromGraphControl | null;
+  stage: 'unchanged' | 'filled' | 'queried';
+  changed: boolean;
+  finished?: boolean;
+  callId?: string;
+}
 
-export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptions): void {
+export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptions) {
+  const { t: translate } = useTranslation(NAME_SPACE);
+  const translationRef = useRef(translate);
+  translationRef.current = translate;
+  const t = (key: string) => translationRef.current(key);
   const latest = useRef(options);
   latest.current = options;
+  const turnRef = useRef<QueryTurn>();
+  const undoRef = useRef<{ snapshot: PromGraphSnapshot; datasource: number; revision: number }>();
+  const [canUndo, setCanUndo] = useState(false);
+  const [progress, setProgress] = useState<IAiQueryProgress>({ phase: 'idle' });
+  const report = (turn: QueryTurn, next: IAiQueryProgress) => {
+    if (turnRef.current === turn) setProgress(next);
+  };
+  const changed = (turn: QueryTurn) =>
+    !latest.current.enabled || latest.current.datasourceValue !== turn.datasource || !turn.control || latest.current.getControl()?.revision() !== turn.revision;
+  const cancel = useCallback(() => {
+    const turn = turnRef.current;
+    if (!turn || turn.finished || turn.controller.signal.aborted) return;
+    turn.controller.abort();
+    setProgress({ phase: 'stopped', stage: turn.stage });
+  }, []);
+
+  const prepareTurn = useCallback((): IAiChatTurnScope => {
+    turnRef.current?.controller.abort();
+    const control = latest.current.getControl();
+    const turn: QueryTurn = {
+      controller: new AbortController(),
+      datasource: latest.current.datasourceValue,
+      revision: control?.revision() ?? -1,
+      control,
+      stage: 'unchanged',
+      changed: false,
+    };
+    turnRef.current = turn;
+    setProgress({ phase: 'idle' });
+    return {
+      finish: () => {
+        turn.finished = true;
+      },
+      cancel: () => {
+        if (turnRef.current === turn) cancel();
+        else turn.controller.abort();
+      },
+      executePageAction: async (request): Promise<ActionResponse> => {
+        const decline = (phase: 'changed' | 'stopped'): ActionResponse => {
+          report(turn, { phase, stage: turn.stage });
+          return { ok: false, status: 'declined', action: request.name, message: t(`dock.${phase}`) };
+        };
+        // Check before consulting the shared registry: another panel may own it now.
+        if (turn.controller.signal.aborted || turnRef.current !== turn) return decline('stopped');
+        if (changed(turn)) return decline('changed');
+        turn.callId = request.call_id;
+        const outcome = await uiActionRuntime.execute({ callId: request.call_id, name: request.name, args: request.args ?? {} });
+        if (outcome.status === 'timeout') {
+          const message = t('dock.timeout');
+          report(turn, { phase: 'failed', stage: turn.stage, message });
+          return { ...outcome, message };
+        }
+        if (turn.changed || (!turn.controller.signal.aborted && changed(turn))) return decline('changed');
+        if (turn.controller.signal.aborted) return decline('stopped');
+        if (!outcome.ok) report(turn, { phase: 'failed', stage: turn.stage, message: outcome.message });
+        return outcome;
+      },
+    };
+  }, [cancel]);
 
   useEffect(() => {
-    // Every panel on this page is the same component, so without this guard a
-    // second panel would register the same action name and quietly take over
-    // the first one's — ai-kit lets the later registration win. Registering
-    // only from the panel whose AI button opened the conversation keeps
-    // "which panel does this write to" answerable rather than incidental.
-    if (!options.enabled) return;
-
+    if (!options.enabled) {
+      cancel();
+      return;
+    }
     const actions: UIAction<SetMetricQueryArgs>[] = [
       {
         name: 'set_metric_query',
         description:
-          'Put a PromQL expression into the ad-hoc metric query page and run it. ' +
-          'Use this instead of only printing the expression in the reply: it fills the same input the user types into, so the chart and the series table refresh immediately. ' +
-          'Send the expression you have already verified against this data source — this action runs it, it does not check it. ' +
-          'It changes nothing else: no dashboard, no alert rule, nothing is saved.',
+          'Fill and run a PromQL expression in the current query panel. Send an expression verified against the selected data source. The page reports its actual query result. Nothing is saved.',
         schema: {
           type: 'object',
           properties: {
@@ -85,55 +124,87 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
           },
           required: ['promql'],
         },
-        // Nothing is persisted, and the user already clicked the card to get
-        // here. A second confirmation would be a dialog in front of a dialog.
         policy: 'auto',
         run: async (args, ctx) => {
-          const promql = args.promql?.trim();
-          // The runtime already rejects a missing or empty string. Whitespace
-          // that only looks like a query is the part it cannot catch.
-          if (!promql) throw new Error('No expression was supplied.');
-
-          const { datasourceValue, setTimeRange, getControl } = latest.current;
-          const control = getControl();
-          if (!control) throw new Error('The query box is not on screen.');
-
-          // The same two gestures a person makes: write into the box, press 查询.
-          const input = control.queryInput();
-          await ctx.feedback.moveCursor(input);
-          ctx.feedback.highlight(input);
-          control.fill(promql);
-
-          // Half a window would silently reframe the chart around a range nobody
-          // asked for, but the schema already rules that out — only an explicit
-          // null still reaches here, and it means "no window", same as absent.
-          const movedRange = args.time_range ?? undefined;
-          if (movedRange) {
-            setTimeRange(movedRange);
-          }
-          await ctx.feedback.click(control.queryButton());
-          control.run();
-
-          return {
-            promql,
-            datasource_id: datasourceValue,
-            time_range: movedRange,
-            // Said plainly because the card shows this to the user, who can see
-            // the page for themselves and would notice a grander claim.
-            note: 'Written into the query box and run. Nothing was saved.',
+          const turn = turnRef.current;
+          if (!turn || turn.callId !== ctx.callId) throw new Error(t('dock.changed'));
+          const abort = () => turn.controller.abort();
+          ctx.signal.addEventListener('abort', abort, { once: true });
+          if (ctx.signal.aborted) abort();
+          const guard = () => {
+            if (turn.controller.signal.aborted || turnRef.current !== turn) throw new Error(t('dock.stopped'));
+            if (changed(turn)) {
+              turn.changed = true;
+              throw new Error(t('dock.changed'));
+            }
           };
+          try {
+            guard();
+            const control = latest.current.getControl()!;
+            const promql = args.promql?.trim();
+            if (!promql) throw new Error(t('page_action.malformed'));
+            report(turn, { phase: 'applying', stage: 'unchanged' });
+            await ctx.feedback.moveCursor(control.queryInput());
+            guard();
+            undoRef.current = { snapshot: control.snapshot(), datasource: turn.datasource, revision: turn.revision };
+            ctx.feedback.highlight(control.queryInput());
+            control.fill(promql, args.time_range ?? undefined);
+            turn.stage = 'filled';
+            setCanUndo(true);
+            await ctx.feedback.click(control.queryButton());
+            guard();
+            turn.stage = 'queried';
+            report(turn, { phase: 'querying', stage: turn.stage });
+            const result = await control.run({ signal: turn.controller.signal });
+            guard();
+            report(turn, { phase: result.empty ? 'empty' : 'success', stage: turn.stage });
+            return { promql: latest.current.getControl()!.snapshot().promql, datasource_id: turn.datasource, empty: result.empty };
+          } catch (error) {
+            // Context changes and cancellation must never leave a success banner.
+            if (turn.changed || (!turn.controller.signal.aborted && changed(turn))) {
+              turn.changed = true;
+              report(turn, { phase: 'changed', stage: turn.stage });
+            } else if (turn.controller.signal.aborted) report(turn, { phase: 'stopped', stage: turn.stage });
+            else report(turn, { phase: 'failed', stage: turn.stage, message: error instanceof Error ? error.message : String(error) });
+            ctx.feedback.clear();
+            throw error;
+          } finally {
+            ctx.signal.removeEventListener('abort', abort);
+          }
         },
       },
     ];
-
-    return uiActionRuntime.register(actions, {
-      route: `${window.location.pathname}${window.location.search}`,
-      title: '指标分析 · 即时查询',
-      summary:
-        'The user is on the ad-hoc metric query page, running PromQL against one data source and reading the result as a chart or a series table. ' +
-        'Nothing on this page is saved, so a query can be replaced freely.',
+    const dispose = uiActionRuntime.register(actions, {
+      route: window.location.pathname,
+      title: 'Metric explorer',
+      summary: 'The user writes PromQL and reads its results in a single query panel.',
     });
-    // Live values are read through a ref so that typing in the box, or moving
-    // the time range, does not churn the registration.
-  }, [options.enabled]);
+    return () => {
+      turnRef.current?.controller.abort();
+      dispose();
+    };
+  }, [options.enabled, cancel]);
+
+  const undo = useCallback(() => {
+    const previous = undoRef.current;
+    const control = latest.current.getControl();
+    if (!previous || !control) return;
+    if (previous.datasource !== latest.current.datasourceValue || previous.revision !== control.revision()) {
+      undoRef.current = undefined;
+      setCanUndo(false);
+      setProgress({ phase: 'changed' });
+      return;
+    }
+    turnRef.current?.controller.abort();
+    control.restore(previous.snapshot);
+    undoRef.current = undefined;
+    setCanUndo(false);
+    setProgress({ phase: 'undone' });
+  }, []);
+
+  const invalidateUndo = useCallback(() => {
+    undoRef.current = undefined;
+    setCanUndo(false);
+  }, []);
+  return { prepareTurn, progress, canUndo, undo, cancel, invalidateUndo };
 }

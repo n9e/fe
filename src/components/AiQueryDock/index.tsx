@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from 'antd';
+import type { IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
 import { CloseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -19,13 +20,16 @@ import { cn } from '@/components/AiChatNG/utils';
  *
  * Opening and closing does not change the conversation: one dock, one
  * conversation, until the page goes away. So the dock stays mounted while
- * closed; `open` only decides whether it is on screen.
+ * closed; `open` only decides whether it is on screen. Delivery folds the
+ * message list; the user unfolds it — running turns never yank it open again.
  */
 export interface AiQueryDockProps {
   open: boolean;
   pageFrom: IAiChatPageInfo;
-  /** What the answer was checked against, for the status line — a data source name. */
-  contextLabel?: string;
+  progress?: IAiQueryProgress;
+  prepareTurn?: IAiChatProps['prepareTurn'];
+  canUndo?: boolean;
+  onUndo?: () => void;
   promptList?: string[];
   onClose: () => void;
   className?: string;
@@ -85,48 +89,30 @@ function delivered(message: IAiChatMessage): boolean {
   return lastResponseType(message) === EAiChatContentType.PageAction;
 }
 
-/** Name of the step in progress: the backend's sentence when it gives one, else the latest tool it named. */
-function currentStep(message: IAiChatMessage): string | undefined {
-  const curStep = message.cur_step?.trim();
-  if (curStep) return curStep;
-  for (const response of [...(message.response ?? [])].reverse()) {
-    if (response.content_type !== 'tool_group') continue;
-    const items = (response.param as { items?: { content?: string }[] } | undefined)?.items ?? [];
-    const name = items[items.length - 1]?.content?.trim();
-    if (name) return name;
-  }
-  return undefined;
-}
-
-function stepCount(message: IAiChatMessage): number {
-  return (message.response ?? []).reduce((count, response) => {
-    if (response.content_type !== 'tool_group') return count;
-    return count + ((response.param as { items?: unknown[] } | undefined)?.items?.length ?? 0);
-  }, 0);
-}
-
 export default function AiQueryDock(props: AiQueryDockProps) {
-  const { open, pageFrom, contextLabel, promptList, onClose, className } = props;
+  const { open, pageFrom, promptList, onClose, className, progress, prepareTurn, canUndo, onUndo } = props;
   const { t } = useTranslation(NAME_SPACE);
   const rootRef = useRef<HTMLDivElement>(null);
   const [chatId, setChatId] = useState<string>();
   const [turn, setTurn] = useState<IAiChatTurn>();
   const [expanded, setExpanded] = useState(true);
+  const readingRef = useRef(false);
+  const [sendError, setSendError] = useState<string>();
+  const handleError = useCallback((error: Error) => setSendError(error.message), []);
   const [startedAt, setStartedAt] = useState<number>();
 
-  // The conversation opens while the assistant works, so the steps are in
-  // view, and closes once it has delivered, so the result is. A turn that
-  // ends any other way — a question back, nothing found, an error — is
-  // something to read, so it stays open.
+  // Delivery folds the list so the chart is free; everything else leaves
+  // expansion alone. New steps must not yank the list open again — the user
+  // chose to collapse, and only their click (or Esc's inverse) opens it.
   const handleTurn = useCallback((next: IAiChatTurn) => {
     setTurn(next);
+    setSendError(undefined);
     if (next.phase === 'running') {
       setStartedAt((previous) => previous ?? Date.now());
-      setExpanded(true);
       return;
     }
     setStartedAt(undefined);
-    setExpanded(!delivered(next.message));
+    if (delivered(next.message) && next.actionOutcome?.ok && !readingRef.current) setExpanded(false);
   }, []);
 
   useSoleOpenDock(open, onClose);
@@ -136,7 +122,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     rootRef.current?.querySelector('textarea')?.focus();
   }, [open]);
 
-  const running = turn?.phase === 'running';
+  const running = progress?.phase === 'applying' || progress?.phase === 'querying' || (turn?.phase === 'running' && (!progress || progress.phase === 'idle'));
   const message = turn?.message;
   let tone: 'idle' | 'running' | 'ok' | 'warn' | 'error' = 'idle';
   let status: React.ReactNode = t('dock.idle');
@@ -145,7 +131,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       tone = 'running';
       status = (
         <>
-          {currentStep(message) ?? t('dock.understanding')}…{startedAt && <Elapsed since={startedAt} />}
+          {message.cur_step?.trim() || t('dock.understanding')}…{startedAt && <Elapsed since={startedAt} />}
         </>
       );
     } else if (turn.reason === 'stopped') {
@@ -153,21 +139,56 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       status = t('dock.stopped');
     } else if (turn.reason === 'error' || message.err_code) {
       tone = 'error';
-      status = t('dock.failed');
-    } else if (delivered(message)) {
-      tone = 'ok';
-      const steps = stepCount(message);
       status = (
         <>
-          {contextLabel ? t('dock.verified_on', { name: contextLabel }) : t('dock.delivered')}
-          {steps > 0 && <span className='ml-1 text-hint'>· {t('dock.steps', { count: steps })}</span>}
+          {t('dock.turn_failed')}
+          {message.err_msg || message.err_title ? ` · ${message.err_msg || message.err_title}` : ''}
         </>
       );
+    } else if (delivered(message)) {
+      if (turn.actionOutcome?.ok) {
+        tone = 'ok';
+        const result = turn.actionOutcome.result as { empty?: boolean } | undefined;
+        status = t(result?.empty ? 'dock.empty' : 'dock.success');
+      } else if (turn.actionOutcome) {
+        tone = turn.actionOutcome.status === 'declined' ? 'warn' : 'error';
+        status = turn.actionOutcome.message || t('dock.failed');
+      } else {
+        tone = 'running';
+        status = t('dock.applying');
+      }
     } else if (lastResponseType(message) === 'input_request') {
-      status = t('dock.asked');
+      const response = message.response?.[message.response.length - 1];
+      const question = (response?.param as IAiChatInputRequest | undefined)?.question?.trim() || response?.content?.trim();
+      status = (
+        <>
+          <span>{t('dock.asked')}</span>
+          {question ? ` · ${question}` : ''}
+        </>
+      );
     } else {
       status = t('dock.replied');
     }
+  }
+
+  if (progress && progress.phase !== 'idle') {
+    const phase = progress.phase;
+    tone = phase === 'success' || phase === 'empty' || phase === 'undone' ? 'ok' : phase === 'failed' ? 'error' : phase === 'applying' || phase === 'querying' ? 'running' : 'warn';
+    const key = phase === 'stopped' && progress.stage ? `stopped_${progress.stage}` : phase;
+    status = (
+      <>
+        <span>{t(`dock.${key}`)}</span>
+        {progress.message ? ` · ${progress.message}` : ''}
+      </>
+    );
+  }
+  if (sendError) {
+    tone = 'error';
+    status = (
+      <>
+        {t('dock.turn_failed')} · {sendError}
+      </>
+    );
   }
 
   const asked = !running && !!message && lastResponseType(message) === 'input_request';
@@ -185,6 +206,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
         event.stopPropagation();
         // Two levels: an open conversation closes first, the dock second.
         if (expanded && turn) {
+          readingRef.current = false;
           setExpanded(false);
           return;
         }
@@ -193,6 +215,15 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     >
       <ChatPanel
         variant='slim'
+        active={open}
+        prepareTurn={() => {
+          setSendError(undefined);
+          return prepareTurn?.();
+        }}
+        onConversationInteract={() => {
+          if (expanded) readingRef.current = true;
+        }}
+        onError={handleError}
         collapsed={!expanded}
         chatId={chatId}
         queryPageFrom={pageFrom}
@@ -201,7 +232,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
         onChatChange={(chat) => setChatId(chat?.chat_id)}
         onTurn={handleTurn}
         inputPrefix={
-          <div className='flex min-w-[200px] shrink-0 items-center gap-1.5 text-xs text-main' role='status' aria-live='polite'>
+          <div className='flex min-w-0 max-w-[42%] shrink items-center gap-1.5 text-xs text-main' role='status' aria-live='polite'>
             <span
               aria-hidden='true'
               className={cn(
@@ -215,13 +246,30 @@ export default function AiQueryDock(props: AiQueryDockProps) {
             />
             <span className='truncate'>{status}</span>
             {turn && (
-              <Button type='link' size='small' className='px-1' onClick={() => setExpanded((previous) => !previous)}>
+              <Button
+                type='link'
+                size='small'
+                className='shrink-0 px-1'
+                onClick={() => {
+                  readingRef.current = !expanded;
+                  setExpanded(!expanded);
+                }}
+              >
                 {expanded ? t('dock.collapse') : t('dock.expand')}
               </Button>
             )}
           </div>
         }
-        inputSuffix={<Button type='text' size='small' icon={<CloseOutlined />} aria-label={t('dock.close')} onClick={onClose} />}
+        inputSuffix={
+          <>
+            {canUndo && (
+              <Button type='link' size='small' className='shrink-0 px-1' disabled={running} onClick={onUndo}>
+                {t('dock.undo')}
+              </Button>
+            )}
+            <Button type='text' size='small' icon={<CloseOutlined />} aria-label={t('dock.close')} onClick={onClose} />
+          </>
+        }
       />
     </div>
   );

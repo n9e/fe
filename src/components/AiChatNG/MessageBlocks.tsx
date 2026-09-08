@@ -393,7 +393,7 @@ function MessageItemComponent({
   const showBottomRunningStatus = shouldShowRunningStatusAtMessageBottom(message.is_finish, message.response);
 
   return (
-    <div className='w-full space-y-3 shadow-sm'>
+    <div className='ai-chat-message-item w-full space-y-3 shadow-sm'>
       <div className='flex justify-end'>
         <div className='max-w-[85%] rounded-lg bg-primary/10 px-2 py-1 text-sm'>
           <div className='whitespace-pre-wrap break-words'>{message.query.content}</div>

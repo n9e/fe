@@ -28,6 +28,7 @@ jest.mock('@/components/AiChatNG', () => {
 
 const turn = (over: Partial<IAiChatTurn['message']>, extra?: Partial<IAiChatTurn>): IAiChatTurn => ({
   phase: 'done',
+  actionOutcome: over.response?.some((item) => item.content_type === 'page_action') ? { ok: true, status: 'ok', action: 'set_metric_query', result: { empty: false } } : undefined,
   message: { chat_id: 'c', seq_id: 1, query: { content: 'q', page_from: { url: '/x' } }, is_finish: true, response: [], ...over },
   ...extra,
 });
@@ -36,7 +37,7 @@ const pageAction = { content_type: 'page_action', content: 'fill', param: { call
 
 function renderDock(open = true) {
   const onClose = jest.fn();
-  const view = render(<AiQueryDock open={open} pageFrom={{ url: '/metric/explorer' }} contextLabel='ds-1' onClose={onClose} />);
+  const view = render(<AiQueryDock open={open} pageFrom={{ url: '/metric/explorer' }} onClose={onClose} />);
   return { onClose, view };
 }
 
@@ -52,19 +53,21 @@ describe('AiQueryDock', () => {
     expect(screen.getByTestId('list').hidden).toBe(false);
   });
 
-  it('opens while the assistant works and names the step it is on', () => {
+  it('names the step while the assistant works, without forcing the list open', () => {
     renderDock();
+    act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+    expect(screen.getByTestId('list').hidden).toBe(true);
     act(() => panelProps!.onTurn!(turn({ is_finish: false, cur_step: '查询指标序列' }, { phase: 'running' })));
     expect(screen.getByText(/查询指标序列/)).toBeTruthy();
-    expect(screen.getByTestId('list').hidden).toBe(false);
+    expect(screen.getByTestId('list').hidden).toBe(true);
   });
 
-  it('closes the conversation once the page has something to run, and says what it was checked against', () => {
+  it('closes the conversation only after the page query succeeds', () => {
     renderDock();
     act(() => panelProps!.onTurn!(turn({ is_finish: false }, { phase: 'running' })));
     act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'tool_group', content: '', param: { items: [{ content: 'a' }, { content: 'b' }] } }, pageAction] })));
     expect(screen.getByTestId('list').hidden).toBe(true);
-    expect(screen.getByText('dock.verified_on')).toBeTruthy();
+    expect(screen.getByText('dock.success')).toBeTruthy();
     expect(screen.getByPlaceholderText('dock.placeholder_follow_up')).toBeTruthy();
   });
 
@@ -74,6 +77,16 @@ describe('AiQueryDock', () => {
     expect(screen.getByTestId('list').hidden).toBe(false);
     expect(screen.getByText('dock.asked')).toBeTruthy();
     expect(screen.getByPlaceholderText('dock.placeholder_answer')).toBeTruthy();
+  });
+
+  it('does not reopen a manually collapsed list when the assistant asks back', () => {
+    renderDock();
+    act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'markdown', content: '找不到' }] })));
+    fireEvent.click(screen.getByText('dock.collapse'));
+    expect(screen.getByTestId('list').hidden).toBe(true);
+    act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'input_request', content: '哪个数据源？' }] })));
+    expect(screen.getByTestId('list').hidden).toBe(true);
+    expect(screen.getByText('dock.asked')).toBeTruthy();
   });
 
   it('reports a stopped turn without pretending it delivered', () => {
@@ -110,9 +123,9 @@ describe('AiQueryDock', () => {
   it('keeps the conversation while closed and brings it back on reopen', () => {
     const { onClose, view } = renderDock();
     act(() => panelProps!.onChatChange!({ chat_id: 'chat-9', title: '', last_update: 0 }));
-    view.rerender(<AiQueryDock open={false} pageFrom={{ url: '/metric/explorer' }} contextLabel='ds-1' onClose={onClose} />);
+    view.rerender(<AiQueryDock open={false} pageFrom={{ url: '/metric/explorer' }} onClose={onClose} />);
     expect(screen.getByTestId('list').closest('[tabindex]')!.hasAttribute('hidden')).toBe(true);
-    view.rerender(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} contextLabel='ds-1' onClose={onClose} />);
+    view.rerender(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={onClose} />);
     expect(panelProps!.chatId).toBe('chat-9');
   });
 
@@ -135,4 +148,57 @@ describe('AiQueryDock', () => {
     expect(closeFirst).toHaveBeenCalledTimes(1);
     expect(closeSecond).not.toHaveBeenCalled();
   });
+});
+
+it('keeps the list open when a delivered action has not completed', () => {
+  renderDock();
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] }, { actionOutcome: undefined })));
+  expect(screen.getByTestId('list').hidden).toBe(false);
+  expect(screen.queryByText('dock.success')).toBeNull();
+});
+it('shows the actual question while preserving a collapsed list', () => {
+  renderDock();
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+  act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'input_request', content: '', param: { question: 'Group by host or service?' } }] })));
+  expect(screen.getByText(/Group by host or service/)).toBeTruthy();
+  expect(screen.getByTestId('list').hidden).toBe(true);
+});
+it('does not collapse a conversation the user opened to read while working', () => {
+  renderDock();
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+  act(() => panelProps!.onTurn!(turn({ is_finish: false }, { phase: 'running' })));
+  fireEvent.click(screen.getByText('dock.expand'));
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+  expect(screen.getByTestId('list').hidden).toBe(false);
+});
+it('shows query failure details without collapsing', () => {
+  render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'failed', message: 'Backend unavailable' }} />);
+  expect(screen.getByText(/Backend unavailable/)).toBeTruthy();
+  expect(screen.getByTestId('list').hidden).toBe(false);
+});
+it('offers undo after a partial write and explains that no query ran', () => {
+  const undo = jest.fn();
+  render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'stopped', stage: 'filled' }} canUndo onUndo={undo} />);
+  expect(screen.getByText('dock.stopped_filled')).toBeTruthy();
+  fireEvent.click(screen.getByText('dock.undo'));
+  expect(undo).toHaveBeenCalled();
+});
+
+it('preserves an explicitly expanded conversation across a follow-up send', () => {
+  renderDock();
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+  fireEvent.click(screen.getByText('dock.expand'));
+  act(() => {
+    panelProps!.prepareTurn?.();
+  });
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+  expect(screen.getByTestId('list').hidden).toBe(false);
+});
+it('clears a recoverable transport error when the turn subsequently succeeds', () => {
+  renderDock();
+  act(() => panelProps!.onError!(new Error('Connection interrupted')));
+  expect(screen.getByText(/Connection interrupted/)).toBeTruthy();
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+  expect(screen.queryByText(/Connection interrupted/)).toBeNull();
+  expect(screen.getByText('dock.success')).toBeTruthy();
 });
