@@ -219,12 +219,13 @@ export interface IAiChatProps {
   onTurn?: (turn: IAiChatTurn) => void;
   prepareTurn?: () => IAiChatTurnScope | undefined;
   onConversationInteract?: () => void;
+  onBusyChange?: (busy: boolean) => void;
   /** Closing an embedded surface stops its active turn but preserves history. */
   active?: boolean;
   queryPageFrom: IAiChatPageInfo;
   queryAction?: IAiChatAction;
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);
-  promptList?: string[];
+  promptList?: Array<string | { label: string; value: string }>;
   initialMessage?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;

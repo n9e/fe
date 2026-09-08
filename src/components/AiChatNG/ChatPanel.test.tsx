@@ -283,4 +283,63 @@ describe('ChatPanel turn cancellation and completion', () => {
     });
     expect(onTurn.mock.calls.filter(([turn]) => turn.phase === 'done')).toHaveLength(1);
   });
+  it('preserves a draft typed during send and explains Enter while busy', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    const sent = pending<{ chat_id: string; seq_id: number }>();
+    services.sendMessage.mockReturnValueOnce(sent.promise);
+    const onBusyChange = jest.fn();
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} onBusyChange={onBusyChange} />);
+    send();
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+    const box = screen.getByRole('textbox') as HTMLTextAreaElement;
+    expect(box.value).toBe('');
+    expect(box.placeholder).toBe('dock.placeholder_draft');
+    fireEvent.change(box, { target: { value: 'Group by service instead' } });
+    fireEvent.keyDown(box, { key: 'Enter' });
+    expect(screen.getByText('dock.wait_to_send')).toBeTruthy();
+    expect(services.sendMessage).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      sent.resolve({ chat_id: 'chat-1', seq_id: 2 });
+    });
+    await waitFor(() => expect(screen.getByRole('button', { name: 'input.send' })).toBeTruthy());
+    expect(box.value).toBe('Group by service instead');
+    expect(onBusyChange.mock.calls.some(([busy]) => busy)).toBe(true);
+    expect(onBusyChange.mock.calls.at(-1)).toEqual([false]);
+  });
+  it('keeps a replacement turn cancellable when a stopped send returns late', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    const oldSend = pending<{ chat_id: string; seq_id: number }>();
+    const newSend = pending<{ chat_id: string; seq_id: number }>();
+    services.sendMessage.mockReturnValueOnce(oldSend.promise).mockReturnValueOnce(newSend.promise);
+    const firstScope = { executePageAction: jest.fn(), cancel: jest.fn() };
+    const nextScope = { executePageAction: jest.fn(), cancel: jest.fn() };
+    const prepareTurn = jest.fn().mockReturnValueOnce(firstScope).mockReturnValueOnce(nextScope);
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={prepareTurn} />);
+    send();
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+    const box = screen.getByRole('textbox') as HTMLTextAreaElement;
+    fireEvent.change(box, { target: { value: 'Use memory instead' } });
+    fireEvent.click(screen.getByRole('button', { name: 'input.stop' }));
+    expect(box.value).toBe('Use memory instead');
+    fireEvent.keyDown(box, { key: 'Enter' });
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(2));
+    await act(async () => {
+      oldSend.resolve({ chat_id: 'chat-1', seq_id: 2 });
+    });
+    expect(nextScope.cancel).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'input.stop' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'input.stop' }));
+    expect(nextScope.cancel).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      newSend.resolve({ chat_id: 'chat-1', seq_id: 3 });
+    });
+    expect(nextScope.executePageAction).not.toHaveBeenCalled();
+  });
+  it('inserts the full query when a compact suggestion is selected', () => {
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} promptList={[{ label: 'Host CPU', value: 'Generate a query for host CPU usage' }]} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Host CPU' }));
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('Generate a query for host CPU usage');
+  });
 });

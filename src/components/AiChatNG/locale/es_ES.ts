@@ -128,6 +128,7 @@ const es_ES = {
     title: 'It needs to check something first',
   },
   action_frame: {
+    updating_query: 'La IA está actualizando la consulta actual',
     acting: 'The assistant is working on this page',
     done: 'Done',
     stop: 'Stop',
@@ -142,6 +143,15 @@ const es_ES = {
     declined: 'Sin aplicar',
   },
   dock: {
+    placeholder_draft: 'Escribe el siguiente mensaje y envíalo al terminar',
+    wait_to_send: 'Sigue en ejecución. El borrador se conserva; envíalo al terminar.',
+    close_and_stop: 'Cerrar y detener',
+    prompt_cpu: 'CPU del host',
+    prompt_cpu_query: 'Genera una consulta del uso de CPU del host',
+    prompt_memory: 'Memoria del host',
+    prompt_memory_query: 'Genera una consulta del uso de memoria del host',
+    prompt_disk: 'Disco del host',
+    prompt_disk_query: 'Genera una consulta del uso de disco del host',
     open: 'Ask AI for a query',
     close: 'Close',
     expand: 'Show',

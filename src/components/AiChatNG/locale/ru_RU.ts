@@ -129,6 +129,7 @@ const ru_RU = {
     title: 'It needs to check something first',
   },
   action_frame: {
+    updating_query: 'AI обновляет текущий запрос',
     acting: 'The assistant is working on this page',
     done: 'Done',
     stop: 'Stop',
@@ -143,6 +144,15 @@ const ru_RU = {
     declined: 'Не применено',
   },
   dock: {
+    placeholder_draft: 'Напишите следующий запрос и отправьте после завершения',
+    wait_to_send: 'Выполнение продолжается. Черновик сохранён; отправьте его после завершения.',
+    close_and_stop: 'Закрыть и остановить',
+    prompt_cpu: 'Загрузка CPU хоста',
+    prompt_cpu_query: 'Создай запрос для загрузки CPU хоста',
+    prompt_memory: 'Память хоста',
+    prompt_memory_query: 'Создай запрос для использования памяти хоста',
+    prompt_disk: 'Диск хоста',
+    prompt_disk_query: 'Создай запрос для использования диска хоста',
     open: 'Ask AI for a query',
     close: 'Close',
     expand: 'Show',

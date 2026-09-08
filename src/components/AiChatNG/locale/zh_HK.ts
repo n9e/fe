@@ -129,6 +129,7 @@ const zh_HK = {
     title: '它想先確認一下',
   },
   action_frame: {
+    updating_query: 'AI 正在更新目前查詢',
     acting: 'AI 正在操作頁面',
     done: '操作完成',
     stop: '停止',
@@ -143,6 +144,15 @@ const zh_HK = {
     declined: '未套用',
   },
   dock: {
+    placeholder_draft: '可先寫下一條，完成後傳送',
+    wait_to_send: '目前仍在執行，草稿已保留，完成後再傳送',
+    close_and_stop: '關閉並停止',
+    prompt_cpu: '主機 CPU 使用率',
+    prompt_cpu_query: '幫我產生查詢主機 CPU 使用率的語句',
+    prompt_memory: '主機記憶體使用率',
+    prompt_memory_query: '幫我產生查詢主機記憶體使用率的語句',
+    prompt_disk: '主機磁碟使用率',
+    prompt_disk_query: '幫我產生查詢主機磁碟使用率的語句',
     open: '用 AI 生成查詢',
     close: '關閉',
     expand: '展開',

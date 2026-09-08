@@ -129,6 +129,7 @@ const en_US = {
     title: 'It needs to check something first',
   },
   action_frame: {
+    updating_query: 'AI is updating the current query',
     acting: 'The assistant is working on this page',
     done: 'Done',
     stop: 'Stop',
@@ -143,6 +144,15 @@ const en_US = {
     declined: 'Not applied',
   },
   dock: {
+    placeholder_draft: 'Draft the next message; send when this finishes',
+    wait_to_send: 'Still running. Your draft is saved; send it when this finishes.',
+    close_and_stop: 'Close and stop',
+    prompt_cpu: 'Host CPU usage',
+    prompt_cpu_query: 'Generate a query for host CPU usage',
+    prompt_memory: 'Host memory usage',
+    prompt_memory_query: 'Generate a query for host memory usage',
+    prompt_disk: 'Host disk usage',
+    prompt_disk_query: 'Generate a query for host disk usage',
     open: 'Ask AI for a query',
     close: 'Close',
     expand: 'Show',

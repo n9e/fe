@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import type { IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
 import { CloseOutlined } from '@ant-design/icons';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatPanel, EAiChatContentType, IAiChatMessage, IAiChatPageInfo, IAiChatTurn } from '@/components/AiChatNG';
@@ -30,7 +31,7 @@ export interface AiQueryDockProps {
   prepareTurn?: IAiChatProps['prepareTurn'];
   canUndo?: boolean;
   onUndo?: () => void;
-  promptList?: string[];
+  promptList?: IAiChatProps['promptList'];
   onClose: () => void;
   className?: string;
 }
@@ -98,6 +99,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   const [expanded, setExpanded] = useState(true);
   const readingRef = useRef(false);
   const [sendError, setSendError] = useState<string>();
+  const [busy, setBusy] = useState(false);
   const handleError = useCallback((error: Error) => setSendError(error.message), []);
   const [startedAt, setStartedAt] = useState<number>();
 
@@ -192,6 +194,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   }
 
   const asked = !running && !!message && lastResponseType(message) === 'input_request';
+  const closeLabel = t(busy || running ? 'dock.close_and_stop' : 'dock.close');
   const placeholder = !turn ? t('dock.placeholder_first') : asked ? t('dock.placeholder_answer') : t('dock.placeholder_follow_up');
 
   return (
@@ -216,6 +219,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       <ChatPanel
         variant='slim'
         active={open}
+        onBusyChange={setBusy}
         prepareTurn={() => {
           setSendError(undefined);
           return prepareTurn?.();
@@ -232,7 +236,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
         onChatChange={(chat) => setChatId(chat?.chat_id)}
         onTurn={handleTurn}
         inputPrefix={
-          <div className='flex min-w-0 max-w-[42%] shrink items-center gap-1.5 text-xs text-main' role='status' aria-live='polite'>
+          <div className='ai-query-dock-status flex min-w-0 items-center gap-1.5 text-xs text-main'>
             <span
               aria-hidden='true'
               className={cn(
@@ -244,31 +248,41 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                 tone === 'idle' && 'bg-fc-300',
               )}
             />
-            <span className='truncate'>{status}</span>
+            <span className={cn('ai-query-dock-status-copy', (asked || tone === 'error') && 'ai-query-dock-status-detail')} role='status' aria-live='polite'>
+              {status}
+            </span>
+            {canUndo && (
+              <Button type='link' size='small' className='shrink-0 px-1' disabled={busy || running} onClick={onUndo}>
+                {t('dock.undo')}
+              </Button>
+            )}
             {turn && (
               <Button
-                type='link'
+                type='text'
                 size='small'
-                className='shrink-0 px-1'
+                className='shrink-0 px-0.5 text-hint hover:text-main'
+                aria-label={expanded ? t('dock.collapse') : t('dock.expand')}
+                aria-expanded={expanded}
                 onClick={() => {
                   readingRef.current = !expanded;
                   setExpanded(!expanded);
                 }}
-              >
-                {expanded ? t('dock.collapse') : t('dock.expand')}
-              </Button>
+                icon={expanded ? <ChevronUp size={14} strokeWidth={1.75} /> : <ChevronDown size={14} strokeWidth={1.75} />}
+              />
             )}
           </div>
         }
         inputSuffix={
-          <>
-            {canUndo && (
-              <Button type='link' size='small' className='shrink-0 px-1' disabled={running} onClick={onUndo}>
-                {t('dock.undo')}
-              </Button>
-            )}
-            <Button type='text' size='small' icon={<CloseOutlined />} aria-label={t('dock.close')} onClick={onClose} />
-          </>
+          <Tooltip title={closeLabel}>
+            <Button
+              type='text'
+              size='small'
+              className='text-hint opacity-70 hover:opacity-100 hover:text-main'
+              icon={<CloseOutlined />}
+              aria-label={closeLabel}
+              onClick={onClose}
+            />
+          </Tooltip>
         }
       />
     </div>

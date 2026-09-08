@@ -129,6 +129,7 @@ const ja_JP = {
     title: 'It needs to check something first',
   },
   action_frame: {
+    updating_query: 'AI が現在のクエリを更新中',
     acting: 'The assistant is working on this page',
     done: 'Done',
     stop: 'Stop',
@@ -143,6 +144,15 @@ const ja_JP = {
     declined: '未適用',
   },
   dock: {
+    placeholder_draft: '次のメッセージを入力し、完了後に送信',
+    wait_to_send: '実行中です。下書きは保持されています。完了後に送信してください。',
+    close_and_stop: '停止して閉じる',
+    prompt_cpu: 'ホストの CPU 使用率',
+    prompt_cpu_query: 'ホストの CPU 使用率を調べるクエリを生成してください',
+    prompt_memory: 'ホストのメモリ使用率',
+    prompt_memory_query: 'ホストのメモリ使用率を調べるクエリを生成してください',
+    prompt_disk: 'ホストのディスク使用率',
+    prompt_disk_query: 'ホストのディスク使用率を調べるクエリを生成してください',
     open: 'Ask AI for a query',
     close: 'Close',
     expand: 'Show',

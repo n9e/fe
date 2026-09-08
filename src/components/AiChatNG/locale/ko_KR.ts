@@ -128,6 +128,7 @@ const ko_KR = {
     title: 'It needs to check something first',
   },
   action_frame: {
+    updating_query: 'AI가 현재 쿼리를 업데이트하고 있습니다',
     acting: 'The assistant is working on this page',
     done: 'Done',
     stop: 'Stop',
@@ -142,6 +143,15 @@ const ko_KR = {
     declined: '적용되지 않음',
   },
   dock: {
+    placeholder_draft: '다음 메시지를 작성하고 완료 후 전송하세요',
+    wait_to_send: '아직 실행 중입니다. 초안은 유지되며 완료 후 전송할 수 있습니다.',
+    close_and_stop: '중지하고 닫기',
+    prompt_cpu: '호스트 CPU 사용률',
+    prompt_cpu_query: '호스트 CPU 사용률을 조회하는 쿼리를 생성해 주세요',
+    prompt_memory: '호스트 메모리 사용률',
+    prompt_memory_query: '호스트 메모리 사용률을 조회하는 쿼리를 생성해 주세요',
+    prompt_disk: '호스트 디스크 사용률',
+    prompt_disk_query: '호스트 디스크 사용률을 조회하는 쿼리를 생성해 주세요',
     open: 'Ask AI for a query',
     close: 'Close',
     expand: 'Show',

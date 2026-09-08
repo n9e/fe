@@ -128,6 +128,7 @@ const id_ID = {
     title: 'It needs to check something first',
   },
   action_frame: {
+    updating_query: 'AI sedang memperbarui kueri saat ini',
     acting: 'The assistant is working on this page',
     done: 'Done',
     stop: 'Stop',
@@ -142,6 +143,15 @@ const id_ID = {
     declined: 'Belum diterapkan',
   },
   dock: {
+    placeholder_draft: 'Tulis pesan berikutnya, kirim setelah selesai',
+    wait_to_send: 'Masih berjalan. Draf tersimpan; kirim setelah selesai.',
+    close_and_stop: 'Tutup dan hentikan',
+    prompt_cpu: 'CPU host',
+    prompt_cpu_query: 'Buat kueri untuk penggunaan CPU host',
+    prompt_memory: 'Memori host',
+    prompt_memory_query: 'Buat kueri untuk penggunaan memori host',
+    prompt_disk: 'Disk host',
+    prompt_disk_query: 'Buat kueri untuk penggunaan disk host',
     open: 'Ask AI for a query',
     close: 'Close',
     expand: 'Show',

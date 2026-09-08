@@ -128,6 +128,7 @@ const fr_FR = {
     title: 'It needs to check something first',
   },
   action_frame: {
+    updating_query: 'L’IA met à jour la requête actuelle',
     acting: 'The assistant is working on this page',
     done: 'Done',
     stop: 'Stop',
@@ -142,6 +143,15 @@ const fr_FR = {
     declined: 'Non appliqué',
   },
   dock: {
+    placeholder_draft: 'Rédigez le prochain message, puis envoyez-le une fois terminé',
+    wait_to_send: 'Traitement en cours. Le brouillon est conservé ; envoyez-le une fois terminé.',
+    close_and_stop: 'Fermer et arrêter',
+    prompt_cpu: 'CPU de l’hôte',
+    prompt_cpu_query: 'Génère une requête sur l’utilisation du CPU de l’hôte',
+    prompt_memory: 'Mémoire de l’hôte',
+    prompt_memory_query: 'Génère une requête sur l’utilisation de la mémoire de l’hôte',
+    prompt_disk: 'Disque de l’hôte',
+    prompt_disk_query: 'Génère une requête sur l’utilisation du disque de l’hôte',
     open: 'Ask AI for a query',
     close: 'Close',
     expand: 'Show',

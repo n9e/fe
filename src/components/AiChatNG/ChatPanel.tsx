@@ -53,6 +53,7 @@ export default function ChatPanel(props: IAiChatProps) {
     onTurn,
     prepareTurn,
     onConversationInteract,
+    onBusyChange,
     active = true,
   } = props;
   const slim = variant === 'slim';
@@ -73,6 +74,11 @@ export default function ChatPanel(props: IAiChatProps) {
   const [inputValue, setInputValue] = useState('');
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [draftHint, setDraftHint] = useState(false);
+  useEffect(() => {
+    onBusyChange?.(submitting);
+    if (!submitting) setDraftHint(false);
+  }, [submitting, onBusyChange]);
   const [isComposing, setIsComposing] = useState(false);
   const [streamingLocator, setStreamingLocator] = useState<IAiChatMessageLocator>();
   const chatBodyRef = useRef<HTMLDivElement>(null);
@@ -447,6 +453,7 @@ export default function ChatPanel(props: IAiChatProps) {
         setMessages([]);
         return chat;
       } catch (error) {
+        if (generation !== turnGenerationRef.current || !activeRef.current) return;
         handleError(error instanceof Error ? error : new Error('create chat failed'));
         return undefined;
       }
@@ -465,16 +472,16 @@ export default function ChatPanel(props: IAiChatProps) {
       pendingTurnRef.current = pending;
       const pageFrom = queryPageFromRef.current;
       setSubmitting(true);
+      setInputValue('');
+      setDraftHint(false);
       try {
         const currentChat = chatId && activeChat?.chat_id !== chatId ? undefined : activeChat;
         const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current } : await createNewChat(generation));
         if (generation !== turnGenerationRef.current || !activeRef.current) {
-          pendingTurnRef.current?.scope?.cancel();
-          pendingTurnRef.current = undefined;
-          setSubmitting(false);
           return;
         }
         if (!chat) {
+          setInputValue((draft) => draft || content);
           pendingTurnRef.current = undefined;
           setSubmitting(false);
           return;
@@ -502,9 +509,6 @@ export default function ChatPanel(props: IAiChatProps) {
         });
         if (generation !== turnGenerationRef.current || !activeRef.current) {
           void cancelMessage({ chat_id: result.chat_id, seq_id: result.seq_id }).catch(handleError);
-          pendingTurnRef.current?.scope?.cancel();
-          pendingTurnRef.current = undefined;
-          setSubmitting(false);
           return;
         }
         pending.locator = { chat_id: result.chat_id, seq_id: result.seq_id };
@@ -524,7 +528,6 @@ export default function ChatPanel(props: IAiChatProps) {
         mergeMessage(optimisticMessage);
         onTurnRef.current?.({ phase: 'running', message: optimisticMessage });
         scrollToBottom('smooth');
-        setInputValue('');
         onChatChange?.({
           ...chat,
           title: chat.title || content.slice(0, 50),
@@ -542,14 +545,12 @@ export default function ChatPanel(props: IAiChatProps) {
         }
       } catch (error) {
         if (generation !== turnGenerationRef.current || !activeRef.current) {
-          pendingTurnRef.current?.scope?.cancel();
-          pendingTurnRef.current = undefined;
-          setSubmitting(false);
           return;
         }
         pendingTurnRef.current?.scope?.finish?.();
         pendingTurnRef.current = undefined;
         setSubmitting(false);
+        if (!pending.locator) setInputValue((draft) => draft || content);
         const nextError = error instanceof Error ? error : new Error('send message failed');
         handleError(nextError);
       }
@@ -630,11 +631,11 @@ export default function ChatPanel(props: IAiChatProps) {
   const sendButton = (
     <Button
       type='primary'
-      shape='circle'
+      shape={slim && submitting ? 'default' : 'circle'}
       size={slim ? 'small' : undefined}
       disabled={shareReadonly}
       aria-label={submitting ? t('input.stop') : t('input.send')}
-      icon={submitting ? <PauseCircleOutlined /> : <IconFont type='icon-ic_send' style={{ color: '#fff', fontSize: 14 }} />}
+      icon={submitting ? slim ? undefined : <PauseCircleOutlined /> : <IconFont type='icon-ic_send' style={{ color: '#fff', fontSize: 14 }} />}
       onClick={() => {
         if (submitting) {
           handleStop();
@@ -642,7 +643,9 @@ export default function ChatPanel(props: IAiChatProps) {
           sendUserMessage();
         }
       }}
-    />
+    >
+      {slim && submitting ? t('input.stop') : null}
+    </Button>
   );
 
   // Slim has no room for the greeting: suggestions stay as quiet text links —
@@ -650,11 +653,15 @@ export default function ChatPanel(props: IAiChatProps) {
   const promptChips =
     slim && promptList?.length ? (
       <div className='ai-query-dock-prompts flex flex-wrap items-center gap-x-3 gap-y-1'>
-        {promptList.map((prompt) => (
-          <button key={prompt} type='button' className='ai-query-dock-prompt' onClick={() => setInputValue(prompt)}>
-            {prompt}
-          </button>
-        ))}
+        {promptList.map((prompt) => {
+          const value = typeof prompt === 'string' ? prompt : prompt.value;
+          const label = typeof prompt === 'string' ? prompt : prompt.label;
+          return (
+            <button key={value} type='button' className='ai-query-dock-prompt' onClick={() => setInputValue(value)}>
+              {label}
+            </button>
+          );
+        })}
       </div>
     ) : null;
 
@@ -677,7 +684,7 @@ export default function ChatPanel(props: IAiChatProps) {
             'min-h-0 w-full best-looking-scroll',
             slim
               ? cn(
-                  'ai-query-dock-sheet absolute left-0 right-0 top-full z-20 max-h-[52vh] overflow-y-auto overscroll-contain border border-fc-200 border-t-0 p-3',
+                  'ai-query-dock-sheet absolute left-0 right-0 top-full z-20 max-h-[52vh] overflow-y-auto overscroll-contain border border-fc-200 p-3',
                   'rounded-b-lg rounded-t-none',
                 )
               : 'h-full flex-1',
@@ -697,7 +704,7 @@ export default function ChatPanel(props: IAiChatProps) {
                   ? welcomeContent
                   : !slim && (
                       <EmptyConversation
-                        prompts={promptList}
+                        prompts={promptList?.map((prompt) => (typeof prompt === 'string' ? prompt : prompt.value))}
                         onPromptClick={(prompt) => {
                           setInputValue(prompt);
                         }}
@@ -720,41 +727,54 @@ export default function ChatPanel(props: IAiChatProps) {
           )}
         >
           {slim && inputPrefix}
-          {slim && inputPrefix ? <span className='ai-query-dock-split' aria-hidden='true' /> : null}
-          <Input.TextArea
-            autoSize={slim ? { minRows: 1, maxRows: 4 } : { minRows: 3, maxRows: 8 }}
-            bordered={false}
-            value={inputValue}
-            placeholder={shareReadonly ? t('input.share_readonly_placeholder') : placeholder ?? t('input.placeholder')}
-            disabled={shareReadonly}
-            onChange={(event) => setInputValue(event.target.value)}
-            onCompositionStart={() => setIsComposing(true)}
-            onCompositionEnd={() => setIsComposing(false)}
-            onKeyDown={(event) => {
-              if (event.key !== 'Enter') return;
-              if (event.shiftKey) return;
-              if (isComposing) return;
-              event.preventDefault();
-              sendUserMessage();
-            }}
-            className={
-              slim
-                ? 'min-w-0 flex-1 bg-transparent px-2 py-1 text-sm text-main placeholder:text-[13px] placeholder:text-placeholder'
-                : 'bg-transparent px-5 py-3.5 text-base text-main placeholder:text-[14px] placeholder:text-placeholder'
-            }
-          />
-          {slim ? (
-            <>
-              {sendButton}
-              {inputSuffix}
-            </>
-          ) : (
-            <div className='mt-3 flex items-center justify-between gap-2 px-2 pb-2'>
-              <div />
-              <div className='flex items-center gap-2'>{sendButton}</div>
-            </div>
-          )}
+          <div className={slim ? 'ai-query-dock-composer' : 'contents'}>
+            <Input.TextArea
+              autoSize={slim ? { minRows: 1, maxRows: 4 } : { minRows: 3, maxRows: 8 }}
+              bordered={false}
+              value={inputValue}
+              placeholder={shareReadonly ? t('input.share_readonly_placeholder') : slim && submitting ? t('dock.placeholder_draft') : placeholder ?? t('input.placeholder')}
+              disabled={shareReadonly}
+              onChange={(event) => {
+                setInputValue(event.target.value);
+                setDraftHint(false);
+              }}
+              onCompositionStart={() => setIsComposing(true)}
+              onCompositionEnd={() => setIsComposing(false)}
+              onKeyDown={(event) => {
+                if (event.key !== 'Enter') return;
+                if (event.shiftKey) return;
+                if (isComposing) return;
+                event.preventDefault();
+                if (slim && (submitting || pendingTurnRef.current)) {
+                  setDraftHint(true);
+                  return;
+                }
+                sendUserMessage();
+              }}
+              className={
+                slim
+                  ? 'min-w-0 flex-1 bg-transparent px-2 py-1 text-sm text-main placeholder:text-[13px] placeholder:text-placeholder'
+                  : 'bg-transparent px-5 py-3.5 text-base text-main placeholder:text-[14px] placeholder:text-placeholder'
+              }
+            />
+            {slim ? (
+              <>
+                {sendButton}
+                {inputSuffix}
+              </>
+            ) : (
+              <div className='mt-3 flex items-center justify-between gap-2 px-2 pb-2'>
+                <div />
+                <div className='flex items-center gap-2'>{sendButton}</div>
+              </div>
+            )}
+          </div>
         </div>
+        {slim && draftHint && (
+          <div className='ai-query-dock-draft-hint' role='status'>
+            {t('dock.wait_to_send')}
+          </div>
+        )}
         {chipsUnderInput && <div className='mt-2 px-1'>{chipsUnderInput}</div>}
       </div>
     </div>

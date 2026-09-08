@@ -12,7 +12,7 @@ import PromGraph, { PromGraphControl } from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
 
-import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
+import { buildPageFrom } from '@/components/AiChatNG/recommend';
 import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 import AiQueryDock from '@/components/AiQueryDock';
 
@@ -66,7 +66,6 @@ export default function Prometheus(props: IProps) {
     defaultTime,
     onDefaultTimeChange,
   } = props;
-  const { i18n } = useTranslation();
   const { t: tAi } = useTranslation(AI_CHAT_NS);
   const history = useHistory();
   const { search } = useLocation();
@@ -79,7 +78,7 @@ export default function Prometheus(props: IProps) {
   const [aiOpen, setAiOpen] = useState(false);
   // Stable per data source: the chat treats a new page-info object as a new conversation.
   const aiPageFrom = useMemo(() => buildPageFrom({ param: { datasource_type: 'prometheus', datasource_id: datasourceValue } }), [datasourceValue]);
-  const aiPromptList = useMemo(() => getExplorerPrompts(i18n.language), [i18n.language]);
+  const aiPromptList = useMemo(() => ['cpu', 'memory', 'disk'].map((metric) => ({ label: tAi(`dock.prompt_${metric}`), value: tAi(`dock.prompt_${metric}_query`) })), [tAi]);
   // This panel's own query box; panels on this page can each be on a different
   // data source, so the assistant is handed the box, not a page-wide lookup.
   const graphControl = useRef<PromGraphControl | null>(null);

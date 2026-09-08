@@ -10,7 +10,8 @@
   .ai-query-dock-sheet {
     /* Outer card: flush under the input bar (shared edge, one surface). */
     background-color: var(--fc-fill-1, #fff);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    /* Downward only — reads as growing from the bar, not floating. */
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.06);
   }
 
   .ai-query-dock-input {
@@ -50,25 +51,17 @@
     display: none;
   }
 
-  .ai-query-dock-split {
-    align-self: stretch;
-    width: 1px;
-    margin: 6px 0;
-    flex-shrink: 0;
-    background: var(--fc-border-color, #e5e5e5);
-  }
-
   /* Suggestion row: plain text, no chip chrome / no second card layer. */
   .ai-query-dock-prompt {
     margin: 0;
-    padding: 0;
+    padding: 4px 8px;
     border: 0;
-    border-radius: 0;
+    border-radius: 4px;
     background: transparent;
     box-shadow: none;
     font-size: 12px;
     line-height: 1.4;
-    color: var(--fc-text-4, #8c8c8c);
+    color: var(--fc-text-2);
     cursor: pointer;
     text-align: left;
   }
@@ -76,6 +69,79 @@
   .ai-query-dock-prompt:hover,
   .ai-query-dock-prompt:focus-visible {
     color: var(--fc-fill-primary, #6c53b1);
-    outline: none;
+    background: var(--fc-fill-2);
+  }
+}
+
+[data-ai-surface='query-dock'] {
+  container-name: ai-query-dock;
+  container-type: inline-size;
+
+  .ai-query-dock-status {
+    flex: 0 1 auto;
+    max-width: 42%;
+  }
+
+  .ai-query-dock-status-copy {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-query-dock-status-detail {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .ai-query-dock-composer {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    padding-left: 8px;
+    border-left: 1px solid var(--fc-border-color);
+
+    > button,
+    > .ant-tooltip-open {
+      flex-shrink: 0;
+    }
+  }
+
+  .ai-query-dock-draft-hint {
+    padding: 4px 8px;
+    color: var(--fc-text-2);
+    font-size: 12px;
+  }
+
+  .ai-query-dock-prompt:focus-visible {
+    outline: 2px solid var(--fc-fill-primary);
+    outline-offset: 1px;
+  }
+}
+
+@container ai-query-dock (max-width: 640px) {
+  [data-ai-surface='query-dock'] {
+    .ai-query-dock-input {
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .ai-query-dock-status {
+      flex: 1 0 100%;
+      max-width: 100%;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--fc-border-color);
+    }
+
+    .ai-query-dock-composer {
+      flex-basis: 100%;
+      padding-left: 0;
+      border-left: 0;
+    }
   }
 }

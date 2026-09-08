@@ -202,3 +202,11 @@ it('clears a recoverable transport error when the turn subsequently succeeds', (
   expect(screen.queryByText(/Connection interrupted/)).toBeNull();
   expect(screen.getByText('dock.success')).toBeTruthy();
 });
+
+it('names close as stop before the first message has arrived', () => {
+  renderDock();
+  act(() => panelProps!.onBusyChange!(true));
+  expect(screen.getByRole('button', { name: 'dock.close_and_stop' })).toBeTruthy();
+  act(() => panelProps!.onBusyChange!(false));
+  expect(screen.getByRole('button', { name: 'dock.close' })).toBeTruthy();
+});

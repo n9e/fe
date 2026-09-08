@@ -43,7 +43,7 @@ export const uiActionRuntime = getSharedActionRuntime({
     accent,
     // Read at draw time, so a language switch is honoured.
     banner: () => ({
-      acting: i18next.t('action_frame.acting', { ns: NAME_SPACE }),
+      acting: i18next.t(uiActionRuntime.pageContext()?.title === 'Metric explorer' ? 'action_frame.updating_query' : 'action_frame.acting', { ns: NAME_SPACE }),
       done: i18next.t('action_frame.done', { ns: NAME_SPACE }),
       cancel: i18next.t('action_frame.stop', { ns: NAME_SPACE }),
     }),
