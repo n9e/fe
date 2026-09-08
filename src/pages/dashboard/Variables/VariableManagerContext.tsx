@@ -53,7 +53,7 @@ function getVariableSignature(variable: Variable): string {
 
 // 递归扫描 query 树收集变量引用。
 // variable.query 来源于可序列化的表单配置，不含循环引用，故不设 visited 防护。
-function collectDependenciesFromValue(value: unknown, validVarNames: Set<string>, dependencySet: Set<string>) {
+function collectDependenciesFromValue(value: unknown, validVarNames: Set<string> | undefined, dependencySet: Set<string>) {
   if (typeof value === 'string') {
     extractDependencies(value, validVarNames).forEach((dep) => dependencySet.add(dep));
   } else if (Array.isArray(value)) {
@@ -64,7 +64,7 @@ function collectDependenciesFromValue(value: unknown, validVarNames: Set<string>
 }
 
 // 分析单个变量引用了哪些其他变量，只有 query 类型的变量需要参与依赖求值
-export function collectVariableDependencies(variable: Variable, validVarNames: Set<string>): string[] {
+export function collectVariableDependencies(variable: Variable, validVarNames?: Set<string>): string[] {
   if (variable.type !== 'query') {
     return [];
   }
