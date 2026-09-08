@@ -50,6 +50,7 @@ export default function useQuery(props: IProps) {
   const { time, targets, inViewPort, datasourceCate, datasourceValue, maxDataPoints, queryOptionsTime } = props;
   const { datasourceList } = React.useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
+  const [variableExecution] = useGlobalState('variableExecution');
   const [state, setState] = useState<DashboardQueryState>({
     query: [],
     series: [],
@@ -177,6 +178,14 @@ export default function useQuery(props: IProps) {
   );
 
   useDeepCompareEffect(() => {
+    if (variableExecution.isExecuting) {
+      hasRequestedRef.current = false;
+      requestSequenceRef.current.invalidate();
+      cancelDebounce();
+      controllerRef.current?.abort();
+      return;
+    }
+
     if (!targets?.length) {
       hasRequestedRef.current = false;
       loadedKeyRef.current = undefined;
@@ -220,6 +229,7 @@ export default function useQuery(props: IProps) {
     targets,
     time,
     variablesWithOptions,
+    variableExecution,
     datasourceList,
     datasourceCate,
     datasourceValue,
@@ -233,11 +243,11 @@ export default function useQuery(props: IProps) {
   ]);
 
   useEffect(() => {
-    if (inViewPort && !hasRequestedRef.current && loadedKeyRef.current !== getQueryKey()) {
+    if (!variableExecution.isExecuting && inViewPort && !hasRequestedRef.current && loadedKeyRef.current !== getQueryKey()) {
       hasRequestedRef.current = true;
       fetchData();
     }
-  }, [inViewPort, fetchData]);
+  }, [inViewPort, variableExecution, fetchData]);
 
   useEffect(
     () => () => {

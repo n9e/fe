@@ -20,7 +20,7 @@ export default function getValueByOptions({
   // 设置变量为空时的默认值
   // 同初始化 (initializeVariablesValue) 的区别是，这里从可选项或是变量设置的 defaultValue 等中选取
   // 如果 __variable_value_fixed 存在，则表示变量值是固定的，不需要再设置默认值
-  if (variableValueFixed === undefined) {
+  if (!variableValueFixed) {
     // 变量值为空，或者不在可选项中 时，设置默认值
     const shouldValidateOptions = variable.type !== 'textbox';
     if (value === undefined || (value && shouldValidateOptions && !includes(itemOptions, value))) {

@@ -101,6 +101,7 @@ beforeEach(() => {
   queryMock.mockReset();
   localStorage.clear();
   setGlobalState('variablesWithOptions', []);
+  setGlobalState('variableExecution', { sessionId: 0, isExecuting: false, revision: 0 });
   setGlobalState('dashboardMeta', { ...getGlobalState('dashboardMeta'), dashboardId: '42' });
   setGlobalState('range', { start: 'now-1h', end: 'now' });
 });
@@ -178,6 +179,18 @@ test('fixed URL values survive an absent option', async () => {
   await waitFor(() => expect(state().options).toEqual(projects));
   expect(state().value).toBe('project-outside');
   expect(replaceTemplateVariables('${project}')).toBe('project-outside');
+});
+
+test('non-fixed stale cache value falls back to the first available option', async () => {
+  localStorage.setItem('dashboard_v6_42_project', 'project-removed');
+  queryMock.mockResolvedValue(projects);
+  const initialized = initializeVariablesValue([projectVariable()], {}, { dashboardId: 42 }) as IVariable[];
+
+  mountRuntime(initialized);
+
+  await waitFor(() => expect(state().options).toEqual(projects));
+  expect(state().value).toBe('project-1');
+  expect(screen.getByText('Production')).toBeInTheDocument();
 });
 
 test('query failure then recovery clears stale options and restores display labels', async () => {
