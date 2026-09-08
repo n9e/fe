@@ -11,6 +11,7 @@ import stringToRegex from '../utils/stringToRegex';
 import { buildVariableInterpolations } from '../utils/ajustData';
 import { formatString } from '../utils/formatString';
 import { useVariableManager } from '../VariableManagerContext';
+import { hasDatasourceIdentifier } from '../utils/datasourceIdentifier';
 import { Props } from './types';
 
 export default function DatasourceIdentifier(props: Props) {
@@ -44,14 +45,14 @@ export default function DatasourceIdentifier(props: Props) {
       range: currentRange,
     });
 
-    let currentDatasourceList = currentVariable.definition ? (groupedDatasourceList[currentVariable.definition] ?? []).filter((item) => item.identifier !== undefined) : [];
+    let currentDatasourceList = currentVariable.definition ? (groupedDatasourceList[currentVariable.definition] ?? []).filter(hasDatasourceIdentifier) : [];
     const formatedRegex = currentVariable.regex ? formatString(currentVariable.regex, variableInterpolations) : '';
     const regex = stringToRegex(formatedRegex);
     if (regex) {
-      currentDatasourceList = currentDatasourceList.filter((option) => option.identifier !== undefined && regex.test(option.identifier));
+      currentDatasourceList = currentDatasourceList.filter((option) => regex.test(option.identifier));
     }
     const itemOptions = _.map(currentDatasourceList, (ds) => {
-      return { label: ds.identifier ?? ds.name, value: ds.identifier ?? '' };
+      return { label: ds.identifier, value: ds.identifier };
     });
 
     updateVariable(name, {

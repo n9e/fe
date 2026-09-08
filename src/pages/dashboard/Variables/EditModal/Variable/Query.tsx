@@ -34,6 +34,7 @@ interface DatasourceOption {
   name: string;
   plugin_type: string;
   is_default: boolean;
+  isVariable?: boolean;
 }
 
 export default function Query(props: Props) {
@@ -104,6 +105,7 @@ export default function Query(props: Props) {
     name: `\${${variable.name}}`,
     plugin_type: variable.definition,
     is_default: false,
+    isVariable: true,
   }));
   const selectableDatasourceList: DatasourceOption[] = datasourceList;
 

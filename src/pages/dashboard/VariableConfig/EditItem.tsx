@@ -242,7 +242,7 @@ function EditItem(props: IProps) {
       {varType === 'datasource' && (
         <>
           <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
-            <Select disabled={editMode === 0}>
+            <Select disabled={editMode === 0} showSearch optionFilterProp='children'>
               {_.map(datasourceCateOptions, (item) => (
                 <Select.Option key={item.value} value={item.value}>
                   {item.label}
@@ -295,7 +295,7 @@ function EditItem(props: IProps) {
       {varType === 'datasourceIdentifier' && (
         <>
           <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
-            <Select disabled={editMode === 0}>
+            <Select disabled={editMode === 0} showSearch optionFilterProp='children'>
               {_.map(datasourceCateOptions, (item) => (
                 <Select.Option key={item.value} value={item.value}>
                   {item.label}
