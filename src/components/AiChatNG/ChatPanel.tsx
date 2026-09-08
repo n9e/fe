@@ -77,6 +77,9 @@ export default function ChatPanel(props: IAiChatProps) {
   // be on screen, and a reload must not replay a write.
   const liveTurnsRef = useRef(new Set<string>());
   const executedCallsRef = useRef(new Set<string>());
+  // The chat this panel created itself. A parent that hands it back as
+  // `chatId` is confirming, not switching: nothing to stop, nothing to load.
+  const ownChatIdRef = useRef<string>();
   const onTurnRef = useRef(onTurn);
   onTurnRef.current = onTurn;
 
@@ -331,6 +334,9 @@ export default function ChatPanel(props: IAiChatProps) {
   }, [cleanupPolling, stopStream]);
 
   useEffect(() => {
+    if (chatId && chatId === ownChatIdRef.current && activeChatRef.current?.chat_id === chatId) {
+      return;
+    }
     cancelScheduledStreamRender();
     cleanupPolling();
     stopStream();
@@ -378,6 +384,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const createNewChat = useCallback(async () => {
     try {
       const chat = await createChat(queryPageFromRef.current);
+      ownChatIdRef.current = chat.chat_id;
       activeChatRef.current = chat;
       setActiveChat(chat);
       setMessages([]);

@@ -35,6 +35,22 @@ export interface AiQueryDockProps {
 const SHOW_ELAPSED_AFTER_MS = 15_000;
 
 /**
+ * Seconds since `since`, shown once a step has been going a while. Ticks on
+ * its own so the dock — and the chat under it — does not re-render every
+ * second just to move a number.
+ */
+function Elapsed({ since }: { since: number }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const elapsed = now - since;
+  if (elapsed < SHOW_ELAPSED_AFTER_MS) return null;
+  return <span className='ml-1 tabular-nums'>{Math.round(elapsed / 1000)}s</span>;
+}
+
+/**
  * Close callbacks of the docks currently open on the page.
  *
  * Every dock's page registers the same action name with the one runtime, and
@@ -97,7 +113,6 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   const [turn, setTurn] = useState<IAiChatTurn>();
   const [expanded, setExpanded] = useState(true);
   const [startedAt, setStartedAt] = useState<number>();
-  const [now, setNow] = useState(() => Date.now());
 
   // The conversation opens while the assistant works, so the steps are in
   // view, and closes once it has delivered, so the result is. A turn that
@@ -121,12 +136,6 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     rootRef.current?.querySelector('textarea')?.focus();
   }, [open]);
 
-  useEffect(() => {
-    if (!startedAt) return;
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(timer);
-  }, [startedAt]);
-
   const running = turn?.phase === 'running';
   const message = turn?.message;
   let tone: 'idle' | 'running' | 'ok' | 'warn' | 'error' = 'idle';
@@ -134,10 +143,9 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   if (turn && message) {
     if (running) {
       tone = 'running';
-      const elapsed = startedAt ? now - startedAt : 0;
       status = (
         <>
-          {currentStep(message) ?? t('dock.understanding')}…{elapsed >= SHOW_ELAPSED_AFTER_MS && <span className='ml-1 tabular-nums'>{Math.round(elapsed / 1000)}s</span>}
+          {currentStep(message) ?? t('dock.understanding')}…{startedAt && <Elapsed since={startedAt} />}
         </>
       );
     } else if (turn.reason === 'stopped') {
