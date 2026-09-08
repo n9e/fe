@@ -19,6 +19,7 @@ import { useDebounceFn, useDeepCompareEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import { getErrorMessage } from '@/pages/dashboard/utils/json';
 import { N9E_PATHNAME } from '@/utils/constant';
 
 import type { ITarget } from '../../types';
@@ -44,16 +45,6 @@ interface IProps {
   maxDataPoints?: number;
   queryOptionsTime?: IRawTimeRange;
 }
-
-const getErrorMessage = (error: unknown) => {
-  if (error instanceof Error) return error.message;
-  if (error && typeof error === 'object') {
-    const value = error as { message?: unknown; name?: unknown };
-    if (typeof value.message === 'string') return value.message;
-    if (typeof value.name === 'string') return value.name;
-  }
-  return String(error);
-};
 
 export default function useQuery(props: IProps) {
   const { time, targets, inViewPort, datasourceCate, datasourceValue, maxDataPoints, queryOptionsTime } = props;
