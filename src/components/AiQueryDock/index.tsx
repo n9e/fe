@@ -199,7 +199,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       ref={rootRef}
       tabIndex={-1}
       hidden={!open}
-      className={cn('mb-3 outline-none', className)}
+      className={cn('mb-1 outline-none', className)}
       onKeyDown={(event) => {
         if (event.key !== 'Escape') return;
         // Scoped, not global: Esc belongs to whatever is open inside the page.

@@ -159,3 +159,21 @@
     background-color: var(--fc-fill-3);
   }
 }
+
+/* AI dock: vertical spine under the orb, tying the trigger to the dock below. */
+.ai-query-dock-rail {
+  position: relative;
+}
+
+.ai-query-dock-spine {
+  width: 2px;
+  flex: 1 1 auto;
+  min-height: 8px;
+  margin-top: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--fc-fill-primary, #6c53b1) 45%, transparent);
+}
+
+.ai-query-dock-slot {
+  min-width: 0;
+}

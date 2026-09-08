@@ -2,13 +2,43 @@
  * Styles scoped to ChatPanel variant="slim" (the metric-explorer query dock).
  * Marked with data-ai-surface="query-dock" on the panel root — full AiChat
  * drawer and other ContentCard call sites keep their default elevation.
+ *
+ * Hierarchy: the conversation sheet is the only elevated surface; blocks
+ * inside it (page action, etc.) stay flat so they do not read as nested cards.
  */
 [data-ai-surface='query-dock'] {
-  .ai-chat-content-card {
+  .ai-query-dock-sheet {
+    /* Outer card: flush under the input bar (shared edge, one surface). */
+    background-color: var(--fc-fill-1, #fff);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .ai-query-dock-input {
     box-shadow: none;
-    border-radius: 8px;
-    /* Same fill as the sheet would double-up; border alone is enough here. */
-    background-color: transparent;
+    background-color: var(--fc-fill-1, #fff);
+  }
+
+  .ai-chat-content-card {
+    /* Flat block inside the sheet: hairline only — no fill / shadow card. */
+    background-color: transparent !important;
+    border: 1px solid var(--fc-border-color, #e5e5e5) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .ai-chat-content-card > div:first-child {
+    border-bottom: 1px solid var(--fc-border-color, #e5e5e5) !important;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .ai-chat-content-card > div:last-child {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
   .ai-chat-message-item {
@@ -18,10 +48,6 @@
   /* Action id is for the model; the dock user already sees the query land. */
   .ai-chat-page-action-name {
     display: none;
-  }
-
-  .ai-query-dock-input {
-    box-shadow: none;
   }
 
   .ai-query-dock-split {

@@ -376,6 +376,12 @@ export default function ChatPanel(props: IAiChatProps) {
     if (chatId && chatId === ownChatIdRef.current && activeChatRef.current?.chat_id === chatId) {
       return;
     }
+    // First send creates the chat locally before the parent lifts `chatId`.
+    // loadMessages (and friends) changing identity must not tear that down or
+    // the turn is cancelled with "已停止，尚未修改" and the send looks dead.
+    if (!chatId && (ownChatIdRef.current || pendingTurnRef.current)) {
+      return;
+    }
     turnGenerationRef.current += 1;
     pendingTurnRef.current?.scope?.cancel();
     pendingTurnRef.current = undefined;
@@ -462,11 +468,21 @@ export default function ChatPanel(props: IAiChatProps) {
       try {
         const currentChat = chatId && activeChat?.chat_id !== chatId ? undefined : activeChat;
         const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current } : await createNewChat(generation));
-        if (generation !== turnGenerationRef.current || !activeRef.current) return;
+        if (generation !== turnGenerationRef.current || !activeRef.current) {
+          pendingTurnRef.current?.scope?.cancel();
+          pendingTurnRef.current = undefined;
+          setSubmitting(false);
+          return;
+        }
         if (!chat) {
           pendingTurnRef.current = undefined;
           setSubmitting(false);
           return;
+        }
+        // Lift the id before message/new so the chatId effect sees a stable
+        // owned conversation instead of re-entering the !chatId reset path.
+        if (!chatId) {
+          onChatChange?.(chat);
         }
 
         const query = {
@@ -486,6 +502,9 @@ export default function ChatPanel(props: IAiChatProps) {
         });
         if (generation !== turnGenerationRef.current || !activeRef.current) {
           void cancelMessage({ chat_id: result.chat_id, seq_id: result.seq_id }).catch(handleError);
+          pendingTurnRef.current?.scope?.cancel();
+          pendingTurnRef.current = undefined;
+          setSubmitting(false);
           return;
         }
         pending.locator = { chat_id: result.chat_id, seq_id: result.seq_id };
@@ -522,7 +541,12 @@ export default function ChatPanel(props: IAiChatProps) {
           startPolling(locator);
         }
       } catch (error) {
-        if (generation !== turnGenerationRef.current || !activeRef.current) return;
+        if (generation !== turnGenerationRef.current || !activeRef.current) {
+          pendingTurnRef.current?.scope?.cancel();
+          pendingTurnRef.current = undefined;
+          setSubmitting(false);
+          return;
+        }
         pendingTurnRef.current?.scope?.finish?.();
         pendingTurnRef.current = undefined;
         setSubmitting(false);
@@ -635,10 +659,11 @@ export default function ChatPanel(props: IAiChatProps) {
     ) : null;
 
   const hasConversation = messagesLoading || messageItems.length > 0 || !!welcomeContent;
-  // Empty slim: prompts sit under the input in the flow. The floating sheet is
-  // only for an actual conversation.
+  // Empty slim: prompts sit under the input in the flow. Hide them the moment a
+  // send starts — otherwise a cancelled first turn flashes the suggestions back
+  // under a "stopped" status and looks like the send did nothing useful.
   const listHidden = slim && (collapsed || !hasConversation);
-  const chipsUnderInput = slim && !collapsed && !hasConversation && promptChips;
+  const chipsUnderInput = slim && !collapsed && !hasConversation && !submitting && promptChips;
 
   return (
     <div className={cn('flex w-full min-h-0', slim ? 'relative' : 'h-full')} {...(slim ? { 'data-ai-surface': 'query-dock' } : {})}>
@@ -651,7 +676,10 @@ export default function ChatPanel(props: IAiChatProps) {
           className={cn(
             'min-h-0 w-full best-looking-scroll',
             slim
-              ? 'absolute left-0 right-0 top-[calc(100%+4px)] z-20 max-h-[52vh] overflow-y-auto overscroll-contain rounded-lg border border-fc-200 bg-fc-100 p-3'
+              ? cn(
+                  'ai-query-dock-sheet absolute left-0 right-0 top-full z-20 max-h-[52vh] overflow-y-auto overscroll-contain border border-fc-200 border-t-0 p-3',
+                  'rounded-b-lg rounded-t-none',
+                )
               : 'h-full flex-1',
             listHidden && 'hidden',
           )}
@@ -683,7 +711,10 @@ export default function ChatPanel(props: IAiChatProps) {
         <div
           className={cn(
             slim
-              ? 'ai-query-dock-input flex w-full items-center gap-2 rounded-md border border-fc-200 bg-transparent px-2 py-1'
+              ? cn(
+                  'ai-query-dock-input flex w-full items-center gap-2 border border-fc-200 bg-transparent px-2 py-1',
+                  listHidden ? 'rounded-md' : 'rounded-t-md rounded-b-none border-b-0',
+                )
               : 'mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md',
             inputContainerClassName,
           )}

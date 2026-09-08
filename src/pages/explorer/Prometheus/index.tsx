@@ -223,6 +223,7 @@ export default function Prometheus(props: IProps) {
             </button>
           </Tooltip>
         }
+        leadingExtraActive={aiOpen}
         extra={
           <Space size={SIZE}>
             <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} onChange={setPromql} />

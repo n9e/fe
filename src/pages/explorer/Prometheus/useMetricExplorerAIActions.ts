@@ -46,7 +46,11 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
     const turn = turnRef.current;
     if (!turn || turn.finished || turn.controller.signal.aborted) return;
     turn.controller.abort();
-    setProgress({ phase: 'stopped', stage: turn.stage });
+    // Abort before any page write is just "the chat turn ended" — do not paint
+    // "已停止，尚未修改", which reads as if the user stopped a fill that never
+    // started. Only report stopped once the page has been touched.
+    if (turn.stage === 'unchanged') setProgress({ phase: 'idle' });
+    else setProgress({ phase: 'stopped', stage: turn.stage });
   }, []);
 
   const prepareTurn = useCallback((): IAiChatTurnScope => {
