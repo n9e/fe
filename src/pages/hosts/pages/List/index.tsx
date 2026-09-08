@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Button, Tooltip } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
@@ -69,6 +70,24 @@ export default function index() {
     setGids(getTargetsCompatibleGids(businessGroup.ids));
   }, [businessGroup.ids]);
 
+  // 折叠与刷新两个视图都要：折叠是给主区域腾地方——图比表格更吃空间，
+  // 拓扑视图下反而更需要；刷新对一张实时的图更是必需（服务端还有 30 秒缓存，
+  // 所以刷新会带一个随机串把那层缓存也绕过去，见 hostTopoGraph 的缓存键）。
+  const allCollapseNode = (
+    <Tooltip title={allCollapsed ? t('expand_busi_and_overview') : t('collapse_busi_and_overview')}>
+      <Button
+        icon={allCollapsed ? <PanelRightCloseIcon /> : <PanelLeftCloseIcon />}
+        onClick={() => {
+          const newCollapsed = !allCollapsed;
+          setAllCollapsed(newCollapsed);
+          businessGroupRef.current?.setCollapse(newCollapsed);
+          setStatsCollapsed(newCollapsed);
+          window.localStorage.setItem(STATS_COLLAPSED_KEY, newCollapsed.toString());
+        }}
+      />
+    </Tooltip>
+  );
+
   return (
     <PageLayout
       title={t('title')}
@@ -101,32 +120,21 @@ export default function index() {
             )}
             {viewMode === 'topology' && IS_PLUS ? (
               <div className='flex-1 min-h-0 flex flex-col gap-2'>
-                {/* 拓扑视图下 <List/> 整个不渲染，筛选条也跟着没了。
+                {/* 拓扑视图下 <List/> 整个不渲染，它那条工具栏也跟着没了。
                     这里挂同一个 HostFilters、共用同一份状态，切视图筛选不丢。
-                    刷新/折叠/批量操作那几个不搬过来：它们是表格专属动作。 */}
+                    批量操作不搬过来：那是选中表格行之后的动作，图上没有对应语义。 */}
                 <div className='fc-border rounded-lg p-2 flex flex-wrap items-center gap-2'>
+                  {allCollapseNode}
+                  <Button icon={<ReloadOutlined />} onClick={() => setRefreshFlag(_.uniqueId('refreshFlag_'))} />
                   <HostFilters value={hostFilters} onChange={setHostFilters} />
                 </div>
                 <div className='flex-1 min-h-0'>
-                  <HostTopoGlobalGraph gids={gids} hostFilter={hostFilter} />
+                  <HostTopoGlobalGraph gids={gids} hostFilter={hostFilter} refreshFlag={refreshFlag} />
                 </div>
               </div>
             ) : (
             <List
-              allCollapseNode={
-                <Tooltip title={allCollapsed ? t('expand_busi_and_overview') : t('collapse_busi_and_overview')}>
-                  <Button
-                    icon={allCollapsed ? <PanelRightCloseIcon /> : <PanelLeftCloseIcon />}
-                    onClick={() => {
-                      const newCollapsed = !allCollapsed;
-                      setAllCollapsed(newCollapsed);
-                      businessGroupRef.current?.setCollapse(newCollapsed);
-                      setStatsCollapsed(newCollapsed);
-                      window.localStorage.setItem(STATS_COLLAPSED_KEY, newCollapsed.toString());
-                    }}
-                  />
-                </Tooltip>
-              }
+              allCollapseNode={allCollapseNode}
               gids={gids}
               filters={hostFilters}
               setFilters={setHostFilters}
