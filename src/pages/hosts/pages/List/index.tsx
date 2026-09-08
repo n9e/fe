@@ -19,6 +19,7 @@ import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
 import { PanelLeftCloseIcon, PanelRightCloseIcon } from './panelCloseIcon';
 import StatsCards from './StatsCards';
+import HostFilters, { HostFilterValues } from './HostFilters';
 import OperationModal from './OperationModal';
 import List from './List';
 
@@ -30,6 +31,8 @@ export default function index() {
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRows, setSelectedRows] = useState<Item[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>();
+  // 筛选条件提到这一层：列表和拓扑是同一批机器的两种看法，切视图时筛选不该丢
+  const [hostFilters, setHostFilters] = useState<HostFilterValues>({});
 
   // 列表 / 拓扑两种视图。开源构建下 readHostTopoViewMode 解析成空，恒为 list
   const [viewMode, setViewMode] = useState<'list' | 'topology'>(() => (IS_PLUS ? readHostTopoViewMode() : 'list'));
@@ -42,7 +45,16 @@ export default function index() {
   // 写成内联字面量的话每次父组件 render 都是新对象，折叠统计栏这种
   // 跟图毫无关系的状态变化也会触发一次重新取图。
   const selectedIdentsKey = _.join(_.map(selectedRows, 'ident'), ',');
-  const hostFilter = React.useMemo(() => ({ idents: selectedIdentsKey ? _.split(selectedIdentsKey, ',') : [] }), [selectedIdentsKey]);
+  const hostFilter = React.useMemo(
+    () => ({
+      idents: selectedIdentsKey ? _.split(selectedIdentsKey, ',') : [],
+      query: hostFilters.query,
+      hosts: hostFilters.hosts,
+      downtime: hostFilters.downtime,
+      agent_versions: hostFilters.agent_versions,
+    }),
+    [selectedIdentsKey, hostFilters.query, hostFilters.hosts, hostFilters.downtime, hostFilters.agent_versions],
+  );
 
   useEffect(() => {
     // 如果 businessGroup 和 stats 都是折叠的则 allCollapsed 也设置成折叠
@@ -88,8 +100,16 @@ export default function index() {
               </div>
             )}
             {viewMode === 'topology' && IS_PLUS ? (
-              <div className='flex-1 min-h-0'>
-                <HostTopoGlobalGraph gids={gids} hostFilter={hostFilter} />
+              <div className='flex-1 min-h-0 flex flex-col gap-2'>
+                {/* 拓扑视图下 <List/> 整个不渲染，筛选条也跟着没了。
+                    这里挂同一个 HostFilters、共用同一份状态，切视图筛选不丢。
+                    刷新/折叠/批量操作那几个不搬过来：它们是表格专属动作。 */}
+                <div className='fc-border rounded-lg p-2 flex flex-wrap items-center gap-2'>
+                  <HostFilters value={hostFilters} onChange={setHostFilters} />
+                </div>
+                <div className='flex-1 min-h-0'>
+                  <HostTopoGlobalGraph gids={gids} hostFilter={hostFilter} />
+                </div>
               </div>
             ) : (
             <List
@@ -108,6 +128,8 @@ export default function index() {
                 </Tooltip>
               }
               gids={gids}
+              filters={hostFilters}
+              setFilters={setHostFilters}
               selectedRows={selectedRows}
               setSelectedRows={setSelectedRows}
               refreshFlag={refreshFlag}

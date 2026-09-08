@@ -26,6 +26,7 @@ import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 
 // @ts-ignore
 import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
+import HostFilters from './HostFilters';
 // @ts-ignore — 主机拓扑页签（plus parcel；开源构建下解析成空组件）
 import { HostTopoDrawerTab } from 'plus:/parcels/Targets';
 // @ts-ignore
@@ -117,6 +118,9 @@ interface Props {
   editable?: boolean;
   explorable?: boolean;
   gids?: string;
+  /** 筛选条件由外层持有（与拓扑视图共用）。不传则组件自己管。 */
+  filters?: Record<string, any>;
+  setFilters?: (next: Record<string, any>) => void;
   selectedRows: Item[];
   setSelectedRows: (selectedRowKeys: Item[]) => void;
   refreshFlag?: string;
@@ -154,8 +158,7 @@ export default function List(props: Props) {
   const [installVisible, setInstallVisible] = useState(false);
   const [collectVisible, setCollectVisible] = useState(false);
 
-  const [searchValue, setSearchValue] = useState('');
-  const [params, setParams] = useState<{
+  const [innerParams, setInnerParams] = useState<{
     limit: number;
     p: number;
     gids?: string;
@@ -168,6 +171,15 @@ export default function List(props: Props) {
     limit: pagination.pageSize,
     p: 1,
   });
+
+  // 筛选条件可以由外层持有：机器列表和拓扑视图是同一批机器的两种看法，
+  // 切换视图时筛选不该丢。外层不传就自己管，AI 任务页那类复用方不用改。
+  const params = props.filters ? { ...innerParams, ...props.filters } : innerParams;
+  const setParams = (updater: any) => {
+    const next = typeof updater === 'function' ? updater(params) : updater;
+    if (props.setFilters) props.setFilters(_.omit(next, ['limit', 'p']));
+    setInnerParams((prev) => ({ ...prev, ...next }));
+  };
 
   const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
     return getList({
@@ -298,84 +310,7 @@ export default function List(props: Props) {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
               }}
             />
-            <Input
-              // 唯一可伸缩的控件：宽屏顶到 300px，窄屏最多收到 140px，把余量让给筛选控件和右侧动作区
-              className='min-w-[140px] max-w-[300px] flex-1'
-              prefix={<SearchOutlined />}
-              placeholder={t('search_placeholder')}
-              allowClear
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onPressEnter={() => {
-                setParams((p) => ({ ...p, query: searchValue }));
-              }}
-              onBlur={() => {
-                setParams((p) => ({ ...p, query: searchValue }));
-              }}
-            />
-            {!aiTaskMode && (
-              <HostsSelect
-                value={params.hosts}
-                onChange={(newHosts) => {
-                  setParams((p) => ({ ...p, hosts: newHosts }));
-                }}
-              />
-            )}
-            <Select
-              allowClear
-              placeholder={t('filterDowntime')}
-              style={{ minWidth: 120 }}
-              dropdownMatchSelectWidth={false}
-              options={[
-                {
-                  label: t('filterDowntimeNegative'),
-                  options: _.map(downtimeOptions, (item) => {
-                    return {
-                      label: t('filterDowntimeNegativeMin', { count: item }),
-                      value: -(item * 60),
-                    };
-                  }),
-                },
-                {
-                  label: t('filterDowntimePositive'),
-                  options: _.map(downtimeOptions, (item) => {
-                    return {
-                      label: t('filterDowntimePositiveMin', { count: item }),
-                      value: item * 60,
-                    };
-                  }),
-                },
-              ]}
-              value={params.downtime}
-              onChange={(val) => {
-                setParams((p) => ({ ...p, downtime: val }));
-              }}
-            />
-            <VersionSelect
-              value={params.agent_versions}
-              onChange={(val) => {
-                setParams((p) => ({ ...p, agent_versions: val }));
-              }}
-            />
-            {aiTaskMode && (
-              <Select
-                style={{ minWidth: 120 }}
-                allowClear
-                showArrow
-                mode='multiple'
-                placeholder={t('auth_level')}
-                dropdownMatchSelectWidth={false}
-                options={[
-                  { label: t('auth_level_1'), value: 1 },
-                  { label: t('auth_level_2'), value: 2 },
-                  { label: t('auth_level_3'), value: 3 },
-                ]}
-                value={params.auth_level ? params.auth_level.split(',').map(Number) : undefined}
-                onChange={(val: number[]) => {
-                  setParams((p) => ({ ...p, auth_level: val.length > 0 ? val.join(',') : undefined }));
-                }}
-              />
-            )}
+            <HostFilters value={params} onChange={(next) => setParams((p) => ({ ...p, ...next }))} aiTaskMode={aiTaskMode} />
           </div>
           <Space wrap className='ml-auto'>
             {/* 接入类动作与「批量操作」同属操作区，放右侧，左侧留给筛选控件 */}
@@ -798,8 +733,8 @@ export default function List(props: Props) {
                           onTagClick={(tag) => {
                             if (!_.includes(params.query, tag)) {
                               const val = params.query ? `${params.query.trim()} ${tag}` : tag;
+                              // 只改 params：搜索框的显示值由 HostFilters 跟着 value.query 同步
                               setParams((p) => ({ ...p, query: val }));
-                              setSearchValue(val);
                             }
                           }}
                         />
@@ -831,8 +766,8 @@ export default function List(props: Props) {
                           onTagClick={(tag) => {
                             if (!_.includes(params.query, tag)) {
                               const val = params.query ? `${params.query.trim()} ${tag}` : tag;
+                              // 只改 params：搜索框的显示值由 HostFilters 跟着 value.query 同步
                               setParams((p) => ({ ...p, query: val }));
-                              setSearchValue(val);
                             }
                           }}
                         />
