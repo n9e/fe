@@ -58,6 +58,7 @@ flowchart TD
   Dispatch --> Builtin["src/plugins 下的 prometheus / elasticsearch / clickHouse"]
   Dispatch --> Plus["plus:/parcels/Dashboard/variableDatasource"]
   VarComp --> Store["globalState.variablesWithOptions"]
+  Provider --> Execution["globalState.variableExecution\n会话、执行中状态、稳定版本"]
   Edit --> Store
   Store --> Interp["replaceTemplateVariables 插值"]
   Interp --> Render["Panels / Renderer 面板查询"]
@@ -68,15 +69,15 @@ flowchart TD
 
 ### 变量类型
 
-| type | 值的来源 | 是否发起查询 | 是否参与依赖分析 |
-| --- | --- | --- | --- |
-| `query` | 数据源查询结果 | 是 | 是（唯一会声明依赖的类型） |
-| `datasource` | 按 `definition`（cate）筛选的数据源列表，值为数据源 ID | 否 | 否，但可被引用 |
-| `datasourceIdentifier` | 同上，值为 `identifier` 字符串 | 否 | 否，但可被引用 |
-| `custom` | `definition` 的逗号分隔值 | 否 | 否 |
-| `constant` | `definition` 直接作为值 | 否 | 否 |
-| `textbox` | 用户输入，回落到 `defaultValue` | 否 | 否 |
-| `hostIdent` | `getMonObjectList` 接口 | 是 | 否 |
+| type                   | 值的来源                                               | 是否发起查询 | 是否参与依赖分析           |
+| ---------------------- | ------------------------------------------------------ | ------------ | -------------------------- |
+| `query`                | 数据源查询结果                                         | 是           | 是（唯一会声明依赖的类型） |
+| `datasource`           | 按 `definition`（cate）筛选的数据源列表，值为数据源 ID | 否           | 否，但可被引用             |
+| `datasourceIdentifier` | 同上，值为 `identifier` 字符串                         | 否           | 否，但可被引用             |
+| `custom`               | `definition` 的逗号分隔值                              | 否           | 否                         |
+| `constant`             | `definition` 直接作为值                                | 否           | 否                         |
+| `textbox`              | 用户输入，回落到 `defaultValue`                        | 否           | 否                         |
+| `hostIdent`            | `getMonObjectList` 接口                                | 是           | 否                         |
 
 「参与依赖分析」指该变量是否会被解析出对其他变量的引用。只有 `query` 类型会：其他类型即使在 `regex` 等字段里写了 `$var`，也不会建立依赖边（插值仍会在执行时生效）。
 
@@ -182,6 +183,18 @@ sequenceDiagram
 
 执行链期间 `isExecutingChain` 为 true，此时链内的 `updateVariable` 不再通知订阅者，避免同一条链被重复触发。
 
+### 执行会话与卸载保护
+
+面板查询位于 `VariableManagerProvider` 外，需要订阅 `globalState.variableExecution` 才能在变量链执行期间暂停。该状态包含：
+
+- `sessionId`：每个 Provider 挂载时领取的递增会话 ID；
+- `isExecuting`：当前会话是否仍有变量执行链；
+- `revision`：当前会话从执行中变为稳定时递增，供面板以最终变量值触发一次查询。
+
+Provider 内部仍使用执行计数处理同一实例的重叠链：首条链开始时设为执行中，计数归零时才恢复稳定。Provider 卸载时，若自己仍是全局当前会话，会主动把状态复位为稳定；已经卸载的实例随后收到异步响应时，不会再写入全局执行状态。这样路由切换或配置更新留下的旧链，不能让新仪表盘长期暂停或提前恢复面板查询。
+
+这不是多仪表盘实例隔离：`globalState.ts` 还共享变量、时间范围、仪表盘元数据和 series 等状态，同一 React 树内当前只支持一个仪表盘运行时实例。完整限制见同级 [README.md](./README.md) 的“运行时状态与多实例限制”。
+
 ### 时间范围变化
 
 时间范围变化时，`refreshQueryVariablesForRangeChange` 会按拓扑序重跑全部已注册的 `query` 变量。
@@ -200,7 +213,7 @@ sequenceDiagram
 几个要点：
 
 - **三种语法**：`$var`、`${var}`、`[[var]]`。`$var` 会做最长前缀匹配，`$devicename` 在只存在 `device` 变量时会替换成 `${device}name`。
-- **多选拼接**：由数据源决定分隔符，见 `constant.ts` 的 `replaceAllSeparatorMap`（Prometheus 用 `|`，ES 用 ` OR `），多个值会被括号包裹；MySQL 走 Grafana sqlstring 风格，逐值加单引号。
+- **多选拼接**：由数据源决定分隔符，见 `constant.ts` 的 `replaceAllSeparatorMap`（Prometheus 用 `|`，ES 用两侧带空格的 `OR`），多个值会被括号包裹；MySQL 走 Grafana sqlstring 风格，逐值加单引号。
 - **All 选项**：值为 `['all']` 时，若配置了 `allValue` 就用它，否则展开为全部 options 的拼接。
 - **转义**：Prometheus 走 `escapePromQLString`，ES 视占位符是否已被引号包裹决定是否补引号并做 JSON 转义。
 - **数据源变量**：`formatDatasource` 会把插值结果转成数字 ID，供查询请求使用。
@@ -225,11 +238,11 @@ options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 
 
 ## 值的持久化与恢复
 
-| 载体 | 写入时机 | 用途 |
-| --- | --- | --- |
-| `dashboard.configs.var` | 编辑变量后保存仪表盘 | 变量定义，不含 `value` / `options` |
-| URL query | 变量值变化时 `history.replace` | 分享链接、跨页携带 |
-| localStorage | 变量值变化时，键为 `dashboard_v6_{dashboardId}_{name}` | 同一用户下次访问时恢复上次选择 |
+| 载体                    | 写入时机                                               | 用途                               |
+| ----------------------- | ------------------------------------------------------ | ---------------------------------- |
+| `dashboard.configs.var` | 编辑变量后保存仪表盘                                   | 变量定义，不含 `value` / `options` |
+| URL query               | 变量值变化时 `history.replace`                         | 分享链接、跨页携带                 |
+| localStorage            | 变量值变化时，键为 `dashboard_v6_{dashboardId}_{name}` | 同一用户下次访问时恢复上次选择     |
 
 `initializeVariablesValue` 在首次加载时按 URL 优先、localStorage 兜底的顺序恢复值，并做类型归一：datasource 变量转数字，多选转数组，单选取数组首项，空值统一为 `undefined`（textbox 例外，回落到 `defaultValue` 或空字符串）。URL 中带 `__variable_value_fixed` 时不读 localStorage，也不再自动补默认值。
 
@@ -247,7 +260,7 @@ options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 
 ## 测试
 
 - `__tests__/VariableManagerContext.test.ts`：依赖分析与拓扑排序的纯函数单测。
-- `__tests__/variableLifecycle.jsdom.test.tsx`：生命周期集成测试，覆盖新增 / 编辑 / 删除变量、依赖联动、时间范围与初始化的时序。
+- `__tests__/variableLifecycle.jsdom.test.tsx`：生命周期集成测试，覆盖新增 / 编辑 / 删除变量、依赖联动、时间范围与初始化时序，以及卸载复位、旧链迟到回调隔离、同实例重叠执行链。
 - `__tests__/queryOptions.jsdom.test.tsx`：查询选项集成测试，覆盖下拉交互、多选与 All、正则、过期响应、失败恢复，并对比编辑态预览与运行时的一致性。
 - `__tests__/plugins.test.ts`：插件注册表的合并与覆盖规则。
 - `utils/__tests__/`：插值、初始化、选项处理等工具函数单测。

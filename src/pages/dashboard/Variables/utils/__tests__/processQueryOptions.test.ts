@@ -97,7 +97,7 @@ test('selects and interpolates actual project IDs while retaining display names'
     { label: 'Development', value: 'project-2' },
   ]);
   const variable: IVariable = { name: 'project', definition: '', type: 'query', datasource: { cate: 'gcm' }, options };
-  const select = (value?: string) => getValueByOptions({ variableValueFixed: undefined!, variable: { ...variable, value }, itemOptions: options });
+  const select = (value?: string) => getValueByOptions({ variableValueFixed: false, variable: { ...variable, value }, itemOptions: options });
   expect(select()).toBe('project-1');
   expect(select('project-2')).toBe('project-2');
   expect(select('Development')).toBe('project-1');
@@ -195,10 +195,20 @@ test('a fixed value is preserved even when no options remain', () => {
   expect(getValueByOptions({ variableValueFixed: true, variable, itemOptions: [] })).toBe('project-outside');
 });
 
+test('an unfixed value falls back to the first option when it is absent', () => {
+  const itemOptions = processQueryOptions([
+    { label: 'Production', value: 'project-1' },
+    { label: 'Development', value: 'project-2' },
+  ]);
+  const variable: IVariable = { name: 'project', definition: '', type: 'query', datasource: { cate: 'gcm' }, value: 'project-outside' };
+
+  expect(getValueByOptions({ variableValueFixed: false, variable, itemOptions })).toBe('project-1');
+});
+
 test('string zero remains selectable as a numeric object option default', () => {
   const itemOptions = processQueryOptions([{ label: 'Zero', value: 0 }]);
   const variable: IVariable = { name: 'project', definition: '', type: 'query', datasource: { cate: 'gcm' }, multi: true };
-  expect(getValueByOptions({ variableValueFixed: undefined!, variable, itemOptions })).toEqual(['0']);
+  expect(getValueByOptions({ variableValueFixed: false, variable, itemOptions })).toEqual(['0']);
 });
 
 test.each([['project-1', 'project-2'], ['all'], ['__all__']])('interpolates values for a datasource without a custom separator: %j', (...value) => {

@@ -56,6 +56,12 @@ src/pages/dashboard/
 
 `dashboard.version` 是唯一的持久化 schema 版本。仪表盘及其全部面板结构迁移均由该版本驱动，面板不单独保存版本字段。
 
+## 运行时状态与多实例限制
+
+`globalState.ts` 基于 `react-hooks-global-state` 创建模块级单例。它保存的并不只是本次变量联动的 `variableExecution`，还包括 `dashboardMeta`、`variablesWithOptions`、`range`、`series`、表格字段和图例编辑状态等。因此，同一个 React 树内并存多个仪表盘运行时实例目前**不受支持**：后挂载实例会覆盖前一个实例的变量、时间范围、元数据和编辑辅助状态，面板查询也可能使用错误的变量值。
+
+当前路由使用方式是一页只挂载一个仪表盘实例。变量执行状态通过会话 ID 防止已卸载实例的异步链回调覆盖新页面的暂停/恢复状态，但这不是多实例隔离方案。若产品需要在同一 React 树内并列展示多个仪表盘，应将上述全局状态迁移为以仪表盘实例为边界的 `DashboardRuntimeContext`，并让变量、面板渲染与编辑器共享该 Context。
+
 ## 测试
 
 - **栈**：Jest + ts-jest；组件/集成用例用 `/** @jest-environment jsdom */` + @testing-library/react。

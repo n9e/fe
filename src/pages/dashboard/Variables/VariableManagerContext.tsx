@@ -6,6 +6,8 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { IVariable as Variable, VariableExecutionMeta, DependencyGraph } from './types';
 
+let nextVariableExecutionSessionId = 0;
+
 export function extractDependencies(str: string, validVars?: Set<string>): string[] {
   // 正则表达式匹配$变量名格式
   // 匹配规则：
@@ -218,6 +220,13 @@ export const VariableManagerProvider = ({
   // 注册的变量执行元数据
   const registeredVariables = useRef<Map<string, VariableExecutionMeta>>(new Map());
   const [range] = useGlobalState('range');
+  const [, setVariableExecution] = useGlobalState('variableExecution');
+  // 每次挂载都有独立会话；旧页面的异步链不能改写新页面的执行状态。
+  const variableExecutionSessionId = useRef(0);
+  if (variableExecutionSessionId.current === 0) {
+    variableExecutionSessionId.current = ++nextVariableExecutionSessionId;
+  }
+  const isMounted = useRef(true);
   // 变量值的同步副本，用于在依赖链执行中获取最新值
   const variablesRef = useRef<Variable[]>(variables);
   // Ensure ref is synced with props during render to be available for children's effects
@@ -247,15 +256,65 @@ export const VariableManagerProvider = ({
   const rangeSignature = `${rangeStart}\u0000${rangeEnd}\u0000${range.refreshFlag || ''}`;
   const previousRangeSignature = useRef<string>(rangeSignature);
 
+  useEffect(() => {
+    const sessionId = variableExecutionSessionId.current;
+    setVariableExecution((previous) => ({
+      sessionId,
+      isExecuting: false,
+      revision: previous.revision + 1,
+    }));
+
+    return () => {
+      isMounted.current = false;
+      setVariableExecution((previous) => {
+        if (previous.sessionId !== sessionId) {
+          return previous;
+        }
+        return {
+          ...previous,
+          isExecuting: false,
+          revision: previous.revision + 1,
+        };
+      });
+    };
+  }, [setVariableExecution]);
+
   const beginExecutionChain = useCallback(() => {
+    if (!isMounted.current) {
+      return;
+    }
     executingChainCount.current += 1;
     isExecutingChain.current = true;
-  }, []);
+    if (executingChainCount.current === 1) {
+      setVariableExecution((previous) => {
+        if (previous.sessionId !== variableExecutionSessionId.current) {
+          return previous;
+        }
+        return { ...previous, isExecuting: true };
+      });
+    }
+  }, [setVariableExecution]);
 
   const endExecutionChain = useCallback(() => {
+    if (!isMounted.current) {
+      return;
+    }
+    const wasExecuting = executingChainCount.current > 0;
     executingChainCount.current = Math.max(0, executingChainCount.current - 1);
     isExecutingChain.current = executingChainCount.current > 0;
-  }, []);
+    if (wasExecuting && !isExecutingChain.current) {
+      setVariableExecution((previous) => {
+        if (previous.sessionId !== variableExecutionSessionId.current) {
+          return previous;
+        }
+        return {
+          ...previous,
+          isExecuting: false,
+          revision: previous.revision + 1,
+        };
+      });
+    }
+  }, [setVariableExecution]);
 
   const getVariables = useCallback(() => {
     // 在依赖链执行期间，返回 ref 中的最新值

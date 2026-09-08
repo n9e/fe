@@ -6,6 +6,7 @@ import moment from 'moment';
 import { createCommonStateWrapper } from '@/test/renderWithProviders';
 import { resetDashboardGlobalState } from '@/test/resetGlobalState';
 import { createMockQueryResponse, createMockTarget, createMockTimeSeriesResult } from '@/pages/dashboard/test/fixtures/dashboardQuery';
+import { setGlobalState } from '@/pages/dashboard/globalState';
 
 import type { DashboardQueryResponse } from './types';
 import useQuery from './useQuery';
@@ -128,6 +129,98 @@ describe('dashboard useQuery', () => {
         await flushPromises();
       });
       expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('waits for a variable execution chain to settle before requesting once', async () => {
+    jest.useFakeTimers();
+    try {
+      fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
+      renderUseQuery({ targets: [createMockTarget()] });
+
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        setGlobalState('variableExecution', { sessionId: 0, isExecuting: true, revision: 0 });
+        setGlobalState('variablesWithOptions', [{ name: 'metric', value: 'metric-a' }] as any);
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+
+      await act(async () => {
+        setGlobalState('variablesWithOptions', [{ name: 'metric', value: 'metric-b' }] as any);
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        setGlobalState('variableExecution', { sessionId: 0, isExecuting: false, revision: 1 });
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('aborts an in-flight request when a variable execution chain starts', async () => {
+    jest.useFakeTimers();
+    try {
+      const resolvers: Array<(value: DashboardQueryResponse) => void> = [];
+      const signals: AbortSignal[] = [];
+      fetchDashboardQueryMock.mockImplementation((_request, signal: AbortSignal) => {
+        signals.push(signal);
+        return new Promise<DashboardQueryResponse>((resolve) => {
+          resolvers.push(resolve);
+        });
+      });
+      const { result } = renderUseQuery({ targets: [createMockTarget()] });
+
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(signals).toHaveLength(1);
+
+      await act(async () => {
+        setGlobalState('variableExecution', { sessionId: 0, isExecuting: true, revision: 0 });
+      });
+      expect(signals[0].aborted).toBe(true);
+
+      await act(async () => {
+        resolvers[0](createMockQueryResponse([createMockTimeSeriesResult({ series: [{ labels: { job: 'stale' }, samples: [[1, 1]] }] })]));
+        await flushPromises();
+      });
+      expect(result.current.series).toEqual([]);
+
+      await act(async () => {
+        setGlobalState('variableExecution', { sessionId: 0, isExecuting: false, revision: 1 });
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(signals).toHaveLength(2);
+
+      await act(async () => {
+        resolvers[1](createMockQueryResponse([createMockTimeSeriesResult({ series: [{ labels: { job: 'final' }, samples: [[1, 1]] }] })]));
+        await flushPromises();
+      });
+      expect(result.current.series[0].metric).toEqual({ job: 'final' });
     } finally {
       jest.useRealTimers();
     }

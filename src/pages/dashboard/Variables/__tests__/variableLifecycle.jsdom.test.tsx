@@ -74,7 +74,7 @@ function mountRuntime(variables: IVariable[]) {
   return render(
     <ConfigProvider virtual={false}>
       <Router history={history}>
-        <Main variableValueFixed={undefined!} loading={false} />
+        <Main variableValueFixed={false} loading={false} />
       </Router>
     </ConfigProvider>,
   );
@@ -104,6 +104,7 @@ beforeEach(() => {
   queryMock.mockReset();
   localStorage.clear();
   setGlobalState('variablesWithOptions', []);
+  setGlobalState('variableExecution', { sessionId: 0, isExecuting: false, revision: 0 });
   setGlobalState('dashboardMeta', { ...getGlobalState('dashboardMeta'), dashboardId: '42' });
   setGlobalState('range', { start: 'now-1h', end: 'now' });
 });
@@ -206,4 +207,128 @@ test('删除变量后其执行器不再被调度', async () => {
   });
 
   await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(1));
+});
+
+test('依赖链执行期间标记为进行中，并在所有下游变量稳定后只完成一次', async () => {
+  let resolveChangedService: ((value: { label: string; value: string }[]) => void) | undefined;
+  queryMock.mockImplementation(({ query }) => {
+    if (query.project_id === 'project-2' && !query.service) {
+      return new Promise((resolve) => {
+        resolveChangedService = resolve;
+      });
+    }
+    if (query.service) {
+      return Promise.resolve([{ label: `metric of ${query.service}`, value: `metric-${query.service}` }]);
+    }
+    if (query.project_id) {
+      return Promise.resolve([{ label: `service of ${query.project_id}`, value: `service-${query.project_id}` }]);
+    }
+    return Promise.resolve(projects);
+  });
+  mountRuntime([
+    queryVariable('project'),
+    queryVariable('service', { query: { project_id: '${project}' } }),
+    queryVariable('metric', { query: { project_id: '${project}', service: '${service}' } }),
+  ]);
+  await waitFor(() => expect(state('metric').value).toBe('metric-service-project-1'));
+  const initialRevision = getGlobalState('variableExecution').revision;
+
+  await selectOption('Development');
+
+  await waitFor(() => expect(resolveChangedService).toBeDefined());
+  expect(getGlobalState('variableExecution').isExecuting).toBe(true);
+
+  await act(async () => {
+    resolveChangedService!([{ label: 'service of project-2', value: 'service-project-2' }]);
+  });
+
+  await waitFor(() => expect(state('metric').value).toBe('metric-service-project-2'));
+  expect(getGlobalState('variableExecution')).toEqual({
+    sessionId: expect.any(Number),
+    isExecuting: false,
+    revision: initialRevision + 1,
+  });
+});
+
+test('变量链未完成时卸载会复位执行状态，后续无 query 变量的仪表盘不会继承暂停状态', async () => {
+  let resolveOptions: ((value: typeof projects) => void) | undefined;
+  queryMock.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveOptions = resolve;
+      }),
+  );
+  const firstRuntime = mountRuntime([queryVariable('project')]);
+
+  await waitFor(() => expect(getGlobalState('variableExecution').isExecuting).toBe(true));
+  const firstSessionId = getGlobalState('variableExecution').sessionId;
+  firstRuntime.unmount();
+
+  expect(getGlobalState('variableExecution')).toMatchObject({ sessionId: firstSessionId, isExecuting: false });
+
+  mountRuntime([]);
+  await waitFor(() => expect(getGlobalState('variableExecution').isExecuting).toBe(false));
+  expect(getGlobalState('variableExecution').sessionId).not.toBe(firstSessionId);
+
+  await act(async () => {
+    resolveOptions!(projects);
+  });
+  expect(getGlobalState('variableExecution').isExecuting).toBe(false);
+});
+
+test('旧 Provider 的迟到执行链不能覆盖新 Provider 的执行状态', async () => {
+  const resolvers: Array<(value: typeof projects) => void> = [];
+  queryMock.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolvers.push(resolve);
+      }),
+  );
+  const firstRuntime = mountRuntime([queryVariable('first')]);
+  await waitFor(() => expect(resolvers).toHaveLength(1));
+  firstRuntime.unmount();
+
+  mountRuntime([queryVariable('second')]);
+  await waitFor(() => expect(resolvers).toHaveLength(2));
+  const secondSessionId = getGlobalState('variableExecution').sessionId;
+  expect(getGlobalState('variableExecution').isExecuting).toBe(true);
+
+  await act(async () => {
+    resolvers[0](projects);
+  });
+
+  expect(getGlobalState('variableExecution')).toMatchObject({ sessionId: secondSessionId, isExecuting: true });
+
+  await act(async () => {
+    resolvers[1](projects);
+  });
+  await waitFor(() => expect(getGlobalState('variableExecution')).toMatchObject({ sessionId: secondSessionId, isExecuting: false }));
+});
+
+test('同一 Provider 的重叠执行链在全部完成前保持暂停状态', async () => {
+  const resolvers: Array<(value: typeof projects) => void> = [];
+  queryMock.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolvers.push(resolve);
+      }),
+  );
+  mountRuntime([queryVariable('project', { definition: 'v1' })]);
+  await waitFor(() => expect(resolvers).toHaveLength(1));
+  const initialRevision = getGlobalState('variableExecution').revision;
+
+  await saveVariables((prev) => prev.map((variable) => ({ ...variable, definition: 'v2' })));
+  await waitFor(() => expect(resolvers).toHaveLength(2));
+  expect(getGlobalState('variableExecution').isExecuting).toBe(true);
+
+  await act(async () => {
+    resolvers[0](projects);
+  });
+  expect(getGlobalState('variableExecution')).toMatchObject({ isExecuting: true, revision: initialRevision });
+
+  await act(async () => {
+    resolvers[1](projects);
+  });
+  await waitFor(() => expect(state('project').value).toBe('project-1'));
+  expect(getGlobalState('variableExecution')).toMatchObject({ isExecuting: false, revision: initialRevision + 1 });
 });

@@ -165,6 +165,65 @@ describe('buildDependencyGraph', () => {
       dependenciesByName: { instance: [] },
     });
   });
+
+  test('should build the complete GCM dependency chain from datasource and query fields', () => {
+    const variables = [
+      { name: 'db', type: 'datasource', definition: 'gcm', datasource: { cate: 'gcm' } },
+      { name: 'project', type: 'query', definition: '', datasource: { cate: 'gcm', value: '${db}' }, query: { query_type: 'projects' } },
+      {
+        name: 'service',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: { query_type: 'services', project_id: '${project}' },
+      },
+      {
+        name: 'metric',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: { query_type: 'metricTypes', project_id: '${project}', service: '${service}' },
+      },
+      {
+        name: 'label_key',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: { query_type: 'labelKeys', project_id: '${project}', service: '${service}', metric_type: '${metric}' },
+      },
+      {
+        name: 'label_values',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: {
+          query_type: 'labelValues',
+          project_id: '${project}',
+          service: '${service}',
+          metric_type: '${metric}',
+          label_key: '${label_key}',
+        },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: {
+        db: ['project', 'service', 'metric', 'label_key', 'label_values'],
+        project: ['service', 'metric', 'label_key', 'label_values'],
+        service: ['metric', 'label_key', 'label_values'],
+        metric: ['label_key', 'label_values'],
+        label_key: ['label_values'],
+      },
+      dependenciesByName: {
+        db: [],
+        project: ['db'],
+        service: ['db', 'project'],
+        metric: ['db', 'project', 'service'],
+        label_key: ['db', 'project', 'service', 'metric'],
+        label_values: ['db', 'project', 'service', 'metric', 'label_key'],
+      },
+    });
+  });
 });
 
 describe('getQueryVariableExecutionOrderForRangeChange', () => {
