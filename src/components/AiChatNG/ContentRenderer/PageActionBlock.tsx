@@ -32,7 +32,8 @@ export default function PageActionBlock({ request, outcome }: { request?: IAiCha
 
   return (
     <ContentCard icon={<ThunderboltOutlined />} title={t('page_action.title')} bodyClassName='p-3'>
-      <div className='text-sm text-main'>{request.description || request.name}</div>
+      {/* The description was written for the model; the user reads the arguments. */}
+      <div className='font-mono text-xs text-hint'>{request.name}</div>
       <Args args={request.args} />
       <div className='mt-2 text-sm'>
         {outcome ? (
@@ -53,7 +54,7 @@ function Args({ args }: { args?: Record<string, unknown> }) {
   return (
     <dl className='mt-2 space-y-1'>
       {entries.map(([key, value]) => (
-        <div key={key} className='flex gap-2 text-xs'>
+        <div key={key} className='flex gap-2 text-sm'>
           <dt className='shrink-0 text-hint'>{key}</dt>
           <dd className='m-0 min-w-0 break-all font-mono text-main'>{typeof value === 'string' ? value : JSON.stringify(value)}</dd>
         </div>

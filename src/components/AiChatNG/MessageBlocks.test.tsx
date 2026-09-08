@@ -69,4 +69,41 @@ describe('ResponseBlocks（jsdom 集成）', () => {
 
     expect(screen.getByTestId('streaming-markdown')).toHaveAttribute('data-streaming', 'false');
   });
+
+  it('lists the steps a tool group took, marking the last one as still running until the group finishes', () => {
+    const group = {
+      command_count: 2,
+      read_file_count: 0,
+      edit_file_count: 0,
+      items: [
+        { content_type: 'tool', content: '检索指标名' },
+        { content_type: 'tool', content: '查询指标序列' },
+      ],
+    };
+    render(<ResponseBlocks {...responseBlocksProps} message={message([{ content_type: EAiChatContentType.ToolGroup, content: '', is_finish: false, param: group }])} />);
+    expect(screen.getByText('检索指标名')).toBeTruthy();
+    expect(screen.getByText('查询指标序列')).toBeTruthy();
+    expect(screen.queryByText(/暂不支持|unsupported_type/)).toBeNull();
+  });
+
+  it('shows the question the assistant asked and sends a chosen option as the answer', () => {
+    const onOK = jest.fn();
+    const request = {
+      question: '要看哪个数据源？',
+      options: [
+        { id: '1', label: 'prod' },
+        { id: '2', label: 'staging' },
+      ],
+    };
+    render(
+      <ResponseBlocks
+        {...responseBlocksProps}
+        onOKForFormSelectContent={onOK}
+        message={message([{ content_type: EAiChatContentType.InputRequest, content: '', is_finish: true, param: request }], true)}
+      />,
+    );
+    expect(screen.getByText('要看哪个数据源？')).toBeTruthy();
+    screen.getByText('prod').click();
+    expect(onOK).toHaveBeenCalledWith({}, 'prod');
+  });
 });

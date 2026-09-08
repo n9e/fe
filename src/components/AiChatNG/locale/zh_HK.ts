@@ -125,6 +125,9 @@ const zh_HK = {
       tags: '標籤',
     },
   },
+  input_request: {
+    title: '它想先確認一下',
+  },
   page_action: {
     title: '頁面操作',
     malformed: '這條頁面操作缺少內容，無法執行',

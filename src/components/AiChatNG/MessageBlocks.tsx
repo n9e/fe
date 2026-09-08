@@ -10,9 +10,11 @@ import {
   AiChatPageActionOutcomes,
   EAiChatContentType,
   IAiChatAction,
+  IAiChatInputRequest,
   IAiChatMessage,
   IAiChatMessageResponse,
   IAiChatPageActionRequest,
+  IAiChatToolCallGroup,
 } from './types';
 import { cn } from './utils';
 import QueryContentBlock from './ContentRenderer/QueryContentBlock';
@@ -20,6 +22,8 @@ import FormSelectContentBlock from './ContentRenderer/FormSelectContentBlock';
 import AlertRuleContentBlock from './ContentRenderer/AlertRuleContentBlock';
 import DashboardContentBlock from './ContentRenderer/DashboardContentBlock';
 import PageActionBlock from './ContentRenderer/PageActionBlock';
+import ToolGroupBlock from './ContentRenderer/ToolGroupBlock';
+import InputRequestBlock from './ContentRenderer/InputRequestBlock';
 import { NAME_SPACE } from './constants';
 import StreamingMarkdown from './StreamingMarkdown';
 
@@ -286,6 +290,18 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
             return <AlertRuleContentBlock key={`${response.content_type}-${index}`} responseContent={response.content} />;
           case EAiChatContentType.Dashboard:
             return <DashboardContentBlock key={`${response.content_type}-${index}`} responseContent={response.content} />;
+          case EAiChatContentType.ToolGroup:
+            return <ToolGroupBlock key={`${response.content_type}-${index}`} group={response.param as IAiChatToolCallGroup | undefined} isFinish={response.is_finish} />;
+          case EAiChatContentType.InputRequest:
+            return (
+              <InputRequestBlock
+                key={`${response.content_type}-${index}`}
+                request={response.param as IAiChatInputRequest | undefined}
+                fallbackQuestion={response.content}
+                answered={index < (message.response?.length ?? 0) - 1}
+                onAnswer={(text) => onOKForFormSelectContent({}, text)}
+              />
+            );
           case EAiChatContentType.PageAction: {
             const request = response.param as IAiChatPageActionRequest | undefined;
             return <PageActionBlock key={`${response.content_type}-${index}`} request={request} outcome={request ? pageActionOutcomes?.[request.call_id] : undefined} />;

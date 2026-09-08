@@ -51,6 +51,10 @@ export default function ChatPanel(props: IAiChatProps) {
   } = props;
   const slim = variant === 'slim';
   const { shareReadonly } = useAiChatContext();
+  // Read through a ref: callers rebuild this object freely on render, and a
+  // new identity must not be mistaken for a new conversation.
+  const queryPageFromRef = useRef(queryPageFrom);
+  queryPageFromRef.current = queryPageFrom;
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -95,9 +99,9 @@ export default function ChatPanel(props: IAiChatProps) {
     if (!chatId) {
       activeChatRef.current = undefined;
     } else if (activeChatRef.current?.chat_id !== chatId) {
-      activeChatRef.current = { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFrom };
+      activeChatRef.current = { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current };
     }
-  }, [chatId, queryPageFrom]);
+  }, [chatId]);
 
   const isCurrentChat = useCallback((targetChatId: string) => {
     return visibleChatIdRef.current === targetChatId || (!visibleChatIdRef.current && activeChatRef.current?.chat_id === targetChatId);
@@ -274,7 +278,7 @@ export default function ChatPanel(props: IAiChatProps) {
                 chat_id: targetChatId,
                 title: previous?.title || '',
                 last_update: previous?.last_update || 0,
-                page_from: previous?.page_from || queryPageFrom,
+                page_from: previous?.page_from || queryPageFromRef.current,
               };
         activeChatRef.current = nextChat;
         setActiveChat(nextChat);
@@ -318,7 +322,7 @@ export default function ChatPanel(props: IAiChatProps) {
         }
       }
     },
-    [handleError, isCurrentChat, onChatChange, queryPageFrom, scrollToBottom, startPolling, syncMessageDetail],
+    [handleError, isCurrentChat, onChatChange, scrollToBottom, startPolling, syncMessageDetail],
   );
 
   useEffect(() => {
@@ -354,12 +358,12 @@ export default function ChatPanel(props: IAiChatProps) {
             chat_id: chatId,
             title: '',
             last_update: 0,
-            page_from: queryPageFrom,
+            page_from: queryPageFromRef.current,
           };
     activeChatRef.current = nextChat;
     setActiveChat(nextChat);
     loadMessages(chatId);
-  }, [cancelScheduledStreamRender, chatId, cleanupPolling, loadMessages, queryPageFrom, stopStream]);
+  }, [cancelScheduledStreamRender, chatId, cleanupPolling, loadMessages, stopStream]);
 
   useEffect(() => {
     return () => {
@@ -373,7 +377,7 @@ export default function ChatPanel(props: IAiChatProps) {
 
   const createNewChat = useCallback(async () => {
     try {
-      const chat = await createChat(queryPageFrom);
+      const chat = await createChat(queryPageFromRef.current);
       activeChatRef.current = chat;
       setActiveChat(chat);
       setMessages([]);
@@ -382,7 +386,7 @@ export default function ChatPanel(props: IAiChatProps) {
       handleError(error instanceof Error ? error : new Error('create chat failed'));
       return undefined;
     }
-  }, [handleError, queryPageFrom]);
+  }, [handleError]);
 
   const sendUserMessage = useCallback(
     async (action?: IAiChatAction, overrideContent?: string) => {
@@ -393,7 +397,7 @@ export default function ChatPanel(props: IAiChatProps) {
       setSubmitting(true);
       try {
         const currentChat = chatId && activeChat?.chat_id !== chatId ? undefined : activeChat;
-        const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFrom } : await createNewChat());
+        const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current } : await createNewChat());
         if (!chat) {
           setSubmitting(false);
           return;
@@ -402,7 +406,7 @@ export default function ChatPanel(props: IAiChatProps) {
         const query = {
           content,
           action: action || queryAction,
-          page_from: queryPageFrom || chat.page_from,
+          page_from: queryPageFromRef.current || chat.page_from,
         };
 
         // What the page can do right now. Read at send time: registrations
@@ -461,7 +465,6 @@ export default function ChatPanel(props: IAiChatProps) {
       mergeMessage,
       onChatChange,
       queryAction,
-      queryPageFrom,
       scrollToBottom,
       shareReadonly,
       startPolling,

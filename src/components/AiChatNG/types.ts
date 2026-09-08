@@ -50,6 +50,27 @@ export enum EAiChatContentType {
   /** The model asking the page to run one of the actions it declared. Always
    *  the last segment of a message: the turn ends on it. */
   PageAction = 'page_action',
+  /** A run of consecutive tool calls, already folded by the backend; the
+   *  calls are in `param.items`, each named for a reader. */
+  ToolGroup = 'tool_group',
+  /** The assistant ended its turn asking the user something. The question is
+   *  in `param`; answering is the next message on the same chat. */
+  InputRequest = 'input_request',
+}
+
+/** `param` of a `tool_group` segment. */
+export interface IAiChatToolCallGroup {
+  command_count: number;
+  read_file_count: number;
+  edit_file_count: number;
+  items?: IAiChatMessageResponse[];
+}
+
+/** `param` of an `input_request` segment. */
+export interface IAiChatInputRequest {
+  question: string;
+  options?: { id: string; label: string }[];
+  allow_custom?: boolean;
 }
 
 /** `param` of a `page_action` segment. Mirrors the backend's PageActionRequest. */

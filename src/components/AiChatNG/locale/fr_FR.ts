@@ -124,6 +124,9 @@ const fr_FR = {
       tags: 'Étiquettes',
     },
   },
+  input_request: {
+    title: 'It needs to check something first',
+  },
   page_action: {
     title: 'Page action',
     malformed: 'This page action has no content and cannot run',

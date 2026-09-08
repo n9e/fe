@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
@@ -79,6 +79,9 @@ export default function Prometheus(props: IProps) {
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
   const [aiOpen, setAiOpen] = useState(false);
+  // Stable per data source: the chat treats a new page-info object as a new conversation.
+  const aiPageFrom = useMemo(() => buildPageFrom({ param: { datasource_type: 'prometheus', datasource_id: datasourceValue } }), [datasourceValue]);
+  const aiPromptList = useMemo(() => getExplorerPrompts(i18n.language), [i18n.language]);
   // Scopes the query-box lookup to this panel: panels on this page can each be
   // on a different data source, so no page-wide selector means "this one".
   // `display: contents` keeps the wrapper out of the layout.
@@ -165,14 +168,9 @@ export default function Prometheus(props: IProps) {
           <>
             <AiQueryDock
               open={aiOpen}
-              pageFrom={buildPageFrom({
-                param: {
-                  datasource_type: 'prometheus',
-                  datasource_id: datasourceValue,
-                },
-              })}
+              pageFrom={aiPageFrom}
               contextLabel={_.find(datasourceList, { id: datasourceValue })?.name}
-              promptList={getExplorerPrompts(i18n.language)}
+              promptList={aiPromptList}
               onClose={() => {
                 setAiOpen(false);
               }}

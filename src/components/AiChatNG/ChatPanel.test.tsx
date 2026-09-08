@@ -112,6 +112,26 @@ describe('ChatPanel 页面动作', () => {
     expect(onTurn.mock.calls[0][0].phase).toBe('running');
   });
 
+  it('keeps the conversation running when the caller hands it an equal but new page-info object', async () => {
+    const services = jest.requireMock('./services');
+    services.getMessageHistory.mockClear();
+    getMessageDetail.mockResolvedValue(inProgress);
+    const { rerender } = render(<ChatPanel chatId='chat-1' queryPageFrom={{ url: '/metric/explorer' }} />);
+    await waitFor(() => expect(startStream).toHaveBeenCalledWith('stream-1'));
+    const historyLoads = services.getMessageHistory.mock.calls.length;
+    stopStream.mockClear();
+
+    // A parent re-rendering with a fresh object is routine; it is not a new conversation.
+    rerender(<ChatPanel chatId='chat-1' queryPageFrom={{ url: '/metric/explorer' }} />);
+    rerender(<ChatPanel chatId='chat-1' queryPageFrom={{ url: '/metric/explorer' }} />);
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(services.getMessageHistory.mock.calls.length).toBe(historyLoads);
+    expect(stopStream).not.toHaveBeenCalled();
+  });
+
   it('never replays an action from a message it only loaded', async () => {
     const services = jest.requireMock('./services');
     services.getMessageHistory.mockResolvedValueOnce([pageActionDone]);

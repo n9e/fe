@@ -125,6 +125,9 @@ const zh_CN = {
       tags: '标签',
     },
   },
+  input_request: {
+    title: '它想先确认一下',
+  },
   page_action: {
     title: '页面操作',
     malformed: '这条页面操作缺少内容，无法执行',
