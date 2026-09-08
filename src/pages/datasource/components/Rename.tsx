@@ -8,7 +8,7 @@ interface IProps {
   text: string;
   children: React.ReactNode;
   values: any;
-  callback: () => void;
+  callback: (newName: string) => void;
 }
 
 export default function Rename(props: IProps) {
@@ -39,7 +39,7 @@ export default function Rename(props: IProps) {
                     })
                       .then(() => {
                         message.success(t('common:success.modify'));
-                        callback();
+                        callback(value);
                       })
                       .finally(() => {
                         setVisible(false);
