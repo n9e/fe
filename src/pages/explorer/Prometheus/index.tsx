@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Space, Tooltip } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { useTranslation } from 'react-i18next';
+import { Sparkles } from 'lucide-react';
 
 import { SIZE } from '@/utils/constant';
 import PromGraph, { PromGraphControl } from '@/components/PromGraphCpt';
@@ -208,7 +209,7 @@ export default function Prometheus(props: IProps) {
               aria-label={tAi('dock.open')}
               aria-pressed={aiOpen}
               className={`inline-flex h-8 w-8 items-center justify-center rounded-full border-0 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                aiOpen ? 'bg-fc-200/80' : 'bg-transparent hover:bg-fc-200/80'
+                aiOpen ? 'bg-fc-200/80 text-primary' : 'bg-transparent text-primary/80 hover:bg-fc-200/80 hover:text-primary'
               }`}
               onClick={() => {
                 // Opening the assistant is taking over, same as editing the
@@ -218,7 +219,7 @@ export default function Prometheus(props: IProps) {
                 setAiOpen((previous) => !previous);
               }}
             >
-              <img src='/image/ai-chat/ai.gif' className='h-5 w-5' alt='' />
+              <Sparkles size={16} strokeWidth={1.75} aria-hidden='true' />
             </button>
           </Tooltip>
         }

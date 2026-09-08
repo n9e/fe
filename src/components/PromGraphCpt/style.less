@@ -160,20 +160,19 @@
   }
 }
 
-/* AI dock: vertical spine under the orb, tying the trigger to the dock below. */
-.ai-query-dock-rail {
-  position: relative;
-}
-
+/* AI dock: spine bridges the orb row into the dock row under the same rail. */
 .ai-query-dock-spine {
   width: 2px;
   flex: 1 1 auto;
-  min-height: 8px;
-  margin-top: 2px;
+  min-height: 12px;
+  /* Nudge up so the line reads continuous from the orb into the panel. */
+  margin-top: -2px;
   border-radius: 1px;
-  background: color-mix(in srgb, var(--fc-fill-primary, #6c53b1) 45%, transparent);
+  background: color-mix(in srgb, var(--fc-fill-primary, #6c53b1) 40%, transparent);
 }
 
 .ai-query-dock-slot {
   min-width: 0;
+  /* Sit flush against the rail so the spine meets the panel edge. */
+  margin-left: -2px;
 }

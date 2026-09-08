@@ -331,82 +331,86 @@ export default function index(props: IProps) {
       )}
 
       <div className={`prom-graph-expression-input-ng${leadingExtra ? ' ai-query-prom-with-dock' : ''}`} ref={inputWrapRef}>
-        <div className={`flex gap-[8px]${leadingExtra ? ' items-stretch' : ' items-center'}`}>
-          {leadingExtra && (
-            <div className='ai-query-dock-rail flex w-8 shrink-0 flex-col items-center'>
-              <div className='flex h-8 shrink-0 items-center justify-center'>{leadingExtra}</div>
-              {leadingExtraActive ? <div className='ai-query-dock-spine' aria-hidden='true' /> : null}
+        {/*
+          Two rows share a w-8 rail: orb on the PromQL row, spine bridging into
+          the dock row so the trigger and panel read as one control.
+        */}
+        <div className={`flex gap-[8px]${leadingExtra ? ' items-start' : ' items-center'}`}>
+          {leadingExtra && <div className='ai-query-dock-rail flex h-8 w-8 shrink-0 items-center justify-center'>{leadingExtra}</div>}
+          <div className='flex min-w-0 flex-1 items-center gap-[8px]'>
+            <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
+              <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
+                <PromQLInputNG
+                  maxHeight={200}
+                  enableAutocomplete={completeEnabled}
+                  datasourceValue={datasourceValue}
+                  showBuiltinMetrics={showBuiltinMetrics}
+                  interpolateString={(query) => {
+                    return interpolateString({
+                      query,
+                      range,
+                      minStep,
+                    });
+                  }}
+                  onMetricUnitChange={(newUnit) => {
+                    setDefaultUnit(newUnit);
+                  }}
+                  showGlobalMetrics={showGlobalMetrics}
+                  onChangeTrigger={['onBlur', 'onEnter']}
+                  value={value}
+                  onDraftChange={(next) => {
+                    if (next !== valueRef.current) {
+                      invalidate();
+                      setQueryPaused(true);
+                      change(next);
+                    }
+                  }}
+                  onChange={(newVal) => {
+                    // The user finished typing (blur or Enter): that both shows and runs it.
+                    if (newVal !== valueRef.current) invalidate();
+                    setQueryPaused(false);
+                    change(newVal);
+                    updateSubmitted(newVal);
+                    onChange && onChange(newVal);
+                  }}
+                />
+              </PromQLInputNGWithTooltipWrapper>
             </div>
-          )}
-          <div className='flex min-w-0 flex-1 flex-col'>
-            <div className='flex items-center gap-[8px]'>
-              <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
-                <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
-                  <PromQLInputNG
-                    maxHeight={200}
-                    enableAutocomplete={completeEnabled}
-                    datasourceValue={datasourceValue}
-                    showBuiltinMetrics={showBuiltinMetrics}
-                    interpolateString={(query) => {
-                      return interpolateString({
-                        query,
-                        range,
-                        minStep,
-                      });
-                    }}
-                    onMetricUnitChange={(newUnit) => {
-                      setDefaultUnit(newUnit);
-                    }}
-                    showGlobalMetrics={showGlobalMetrics}
-                    onChangeTrigger={['onBlur', 'onEnter']}
-                    value={value}
-                    onDraftChange={(next) => {
-                      if (next !== valueRef.current) {
-                        invalidate();
-                        setQueryPaused(true);
-                        change(next);
-                      }
-                    }}
-                    onChange={(newVal) => {
-                      // The user finished typing (blur or Enter): that both shows and runs it.
-                      if (newVal !== valueRef.current) invalidate();
-                      setQueryPaused(false);
-                      change(newVal);
-                      updateSubmitted(newVal);
-                      onChange && onChange(newVal);
-                    }}
-                  />
-                </PromQLInputNGWithTooltipWrapper>
+            {extra && (
+              <div className='flex-shrink-0'>
+                {React.cloneElement(extra as React.ReactElement, {
+                  onChange: (newValue?: string) => {
+                    if (typeof newValue === 'string') {
+                      invalidate();
+                      change(newValue);
+                      updateSubmitted(newValue);
+                    }
+                  },
+                })}
               </div>
-              {extra && (
-                <div className='flex-shrink-0'>
-                  {React.cloneElement(extra as React.ReactElement, {
-                    onChange: (newValue?: string) => {
-                      if (typeof newValue === 'string') {
-                        invalidate();
-                        change(newValue);
-                        updateSubmitted(newValue);
-                      }
-                    },
-                  })}
-                </div>
-              )}
-              <Button
-                ref={queryButtonRef}
-                className='flex-shrink-0'
-                type='primary'
-                loading={loading}
-                onClick={() => {
-                  invalidate();
-                  submit();
-                }}
-              >
-                {t('query_btn')}
-              </Button>
-            </div>
-            {noticeBanner && leadingExtra ? <div className='ai-query-dock-slot mt-1'>{noticeBanner}</div> : null}
+            )}
+            <Button
+              ref={queryButtonRef}
+              className='flex-shrink-0'
+              type='primary'
+              loading={loading}
+              onClick={() => {
+                invalidate();
+                submit();
+              }}
+            >
+              {t('query_btn')}
+            </Button>
           </div>
         </div>
+        {noticeBanner && leadingExtra ? (
+          <div className='mt-0 flex gap-[8px] items-stretch'>
+            <div className='ai-query-dock-rail flex w-8 shrink-0 flex-col items-center' aria-hidden='true'>
+              {leadingExtraActive ? <div className='ai-query-dock-spine' /> : null}
+            </div>
+            <div className='ai-query-dock-slot min-w-0 flex-1'>{noticeBanner}</div>
+          </div>
+        ) : null}
       </div>
       {tabActiveKey === 'table' && value && includesVariables(value) && (
         <Alert
