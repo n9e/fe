@@ -25,6 +25,7 @@ export default function Query(props: Props) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
   const variableRef = useRef(variable);
@@ -45,10 +46,16 @@ export default function Query(props: Props) {
     const currentVariable = variableRef.current;
     const currentRange = rangeRef.current;
     const requestId = ++requestIdRef.current;
+    const clearLoadingIfLatestRequest = () => {
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+      }
+    };
 
     if (!currentVariable.datasource) {
       const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
       setErrorMsg(errMsg);
+      clearLoadingIfLatestRequest();
       return Promise.reject(errMsg);
     }
 
@@ -69,10 +76,12 @@ export default function Query(props: Props) {
     if (!datasourceValue) {
       const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
       setErrorMsg(errMsg);
+      clearLoadingIfLatestRequest();
       return Promise.reject(errMsg);
     }
 
     setErrorMsg('');
+    setLoading(true);
     try {
       // 递归替换 query 树中的变量引用，覆盖 GCM filters、group_bys 等嵌套字段。
       // currentVariable.query 来源于可序列化的表单配置，不含循环引用，故不设 visited 防护。
@@ -122,6 +131,8 @@ export default function Query(props: Props) {
         options: [],
         // value: variableValueFixed ? value : undefined, // TODO 如果查询失败暂时不清除变量值
       });
+    } finally {
+      clearLoadingIfLatestRequest();
     }
   };
 
@@ -250,6 +261,7 @@ export default function Query(props: Props) {
             }
           }}
           dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
+          loading={loading}
           value={value}
           dropdownClassName='overflow-586'
           maxTagPlaceholder={(omittedValues) => {

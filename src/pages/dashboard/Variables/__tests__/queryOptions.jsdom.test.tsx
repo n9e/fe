@@ -131,6 +131,47 @@ test('query → real dropdown → selection → URL/cache → interpolation → 
   expect(state().value).toBe('project-2');
 });
 
+test('query variable stays loading until its datasource request completes', async () => {
+  let resolveOptions!: (value: typeof projects) => void;
+  queryMock.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveOptions = resolve;
+      }),
+  );
+
+  mountRuntime([projectVariable()]);
+
+  await waitFor(() => expect(document.querySelector('.ant-select-loading')).toBeInTheDocument());
+  await act(async () => {
+    resolveOptions(projects);
+  });
+  await waitFor(() => expect(state().options).toEqual(projects));
+  expect(document.querySelector('.ant-select-loading')).not.toBeInTheDocument();
+});
+
+test('a newer datasource validation failure clears loading left by an older request', async () => {
+  let resolveOldRequest!: (value: typeof projects) => void;
+  queryMock.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveOldRequest = resolve;
+      }),
+  );
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+
+  mountRuntime([projectVariable()]);
+  await waitFor(() => expect(document.querySelector('.ant-select-loading')).toBeInTheDocument());
+
+  act(() => setGlobalState('variablesWithOptions', [projectVariable({ datasource: undefined })]));
+  await waitFor(() => expect(document.querySelector('.ant-select-loading')).not.toBeInTheDocument());
+
+  await act(async () => {
+    resolveOldRequest(projects);
+  });
+  errorSpy.mockRestore();
+});
+
 test('real dependency chain receives the project value, not its display label', async () => {
   queryMock.mockImplementation(async ({ query }) => (query.project_id ? [{ label: `Metric for ${query.project_id}`, value: `metric/${query.project_id}` }] : projects));
   mountRuntime([projectVariable(), projectVariable({ name: 'metric', query: { project_id: '${project}' } })]);
