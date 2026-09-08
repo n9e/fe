@@ -1,130 +1,158 @@
 const id_ID = {
-  "toolbar": {
-    "current_chat": "Sesi saat ini",
-    "new_chat": "Sesi baru",
-    "history": "Riwayat sesi",
-    "share": "Bagikan",
-    "share_copied": "Tautan berbagi disalin",
-    "switch_to_drawer": "Beralih ke mode panel samping",
-    "switch_to_floating": "Beralih ke mode jendela mengambang"
+  toolbar: {
+    current_chat: 'Sesi saat ini',
+    new_chat: 'Sesi baru',
+    history: 'Riwayat sesi',
+    share: 'Bagikan',
+    share_copied: 'Tautan berbagi disalin',
+    switch_to_drawer: 'Beralih ke mode panel samping',
+    switch_to_floating: 'Beralih ke mode jendela mengambang',
   },
-  "history": {
-    "untitled": "Sesi baru",
-    "today": "Hari ini",
-    "yesterday": "Kemarin",
-    "earlier": "Lebih lama",
-    "unknown_time": "--:--",
-    "delete_confirm": "Hapus sesi ini?",
-    "empty": "Belum ada sesi dalam riwayat",
-    "search_placeholder": "Cari sesi",
-    "share": "Bagikan sesi",
-    "rename": "Ganti nama",
-    "more_actions": "Tindakan sesi lainnya"
+  history: {
+    untitled: 'Sesi baru',
+    today: 'Hari ini',
+    yesterday: 'Kemarin',
+    earlier: 'Lebih lama',
+    unknown_time: '--:--',
+    delete_confirm: 'Hapus sesi ini?',
+    empty: 'Belum ada sesi dalam riwayat',
+    search_placeholder: 'Cari sesi',
+    share: 'Bagikan sesi',
+    rename: 'Ganti nama',
+    more_actions: 'Tindakan sesi lainnya',
   },
-  "nightingale": {
-    "title": "Nightingale AI",
-    "new_chat": "Sesi baru",
-    "sessions": "Sesi",
-    "llm_configs": "Manajemen LLM",
-    "skills": "Manajemen skill",
-    "mcp_servers": "Manajemen MCP",
-    "ai_task": "Kanal tugas",
-    "collapse_sidebar": "Ciutkan panel AI",
-    "expand_sidebar": "Bentangkan panel AI",
-    "welcome_cards": {
-      "overview": {
-        "title": "Kenali Nightingale dengan cepat",
-        "description": "Pahami dalam satu menit apa yang bisa dilakukan produk ini dan asisten AI-nya",
-        "prompt": "Jelaskan dalam satu menit fitur utama Nightingale dan apa yang bisa kamu bantu"
+  nightingale: {
+    title: 'Nightingale AI',
+    new_chat: 'Sesi baru',
+    sessions: 'Sesi',
+    llm_configs: 'Manajemen LLM',
+    skills: 'Manajemen skill',
+    mcp_servers: 'Manajemen MCP',
+    ai_task: 'Kanal tugas',
+    collapse_sidebar: 'Ciutkan panel AI',
+    expand_sidebar: 'Bentangkan panel AI',
+    welcome_cards: {
+      overview: {
+        title: 'Kenali Nightingale dengan cepat',
+        description: 'Pahami dalam satu menit apa yang bisa dilakukan produk ini dan asisten AI-nya',
+        prompt: 'Jelaskan dalam satu menit fitur utama Nightingale dan apa yang bisa kamu bantu',
       },
-      "alerts": {
-        "title": "Tinjau alert saya",
-        "description": "Aturan mana yang paling sering berbunyi dan mana yang belum pernah terpicu",
-        "prompt": "Tinjau aturan alert saya: mana yang paling sering terpicu dalam 7 hari terakhir dan mana yang belum pernah terpicu sama sekali"
+      alerts: {
+        title: 'Tinjau alert saya',
+        description: 'Aturan mana yang paling sering berbunyi dan mana yang belum pernah terpicu',
+        prompt: 'Tinjau aturan alert saya: mana yang paling sering terpicu dalam 7 hari terakhir dan mana yang belum pernah terpicu sama sekali',
       },
-      "create_alert": {
-        "title": "Buat satu alert lewat satu kalimat",
-        "description": "Ceritakan skenarionya dan saya buatkan PromQL beserta ambang batasnya",
-        "prompt": "Buatkan aturan alert: berbunyi jika penggunaan CPU host di atas 80% selama 5 menit"
-      }
-    }
-  },
-  "input": {
-    "placeholder": "Ketik pertanyaan Anda. Enter untuk mengirim, Shift + Enter untuk baris baru",
-    "share_readonly_placeholder": "Mode berbagi hanya-baca"
-  },
-  "query": {
-    "title": "Kueri",
-    "copied": "Kueri disalin",
-    "copy": "Salin",
-    "execute": "Jalankan kueri",
-    "execute_disabled": "Tidak ada callback eksekusi yang diberikan, jadi hanya penyalinan yang tersedia"
-  },
-  "action": {
-    "query_generator": "Buat kueri"
-  },
-  "message": {
-    "generating": "Sedang berpikir...",
-    "processing": "Masih diproses",
-    "hint": "Petunjuk",
-    "no_llm_title": "Belum ada model bahasa yang dikonfigurasi di lingkungan ini",
-    "no_llm_content": "Buka halaman <a>Manajemen LLM</a> untuk menambahkan konfigurasi model",
-    "stopped": "Pembuatan dihentikan",
-    "request_failed": "Permintaan gagal",
-    "cancelled": "Balasan ini dibatalkan.",
-    "retry_later": "Coba lagi nanti.",
-    "empty_response": "Belum ada balasan",
-    "thinking": "Proses berpikir",
-    "unsupported_type": "Jenis konten belum didukung: {{type}}"
-  },
-  "form_select": {
-    "title": "Lengkapi data berikut untuk melanjutkan:",
-    "approval_title": "Konfirmasi apakah tindakan di atas akan dijalankan:",
-    "busi_group": "Grup bisnis",
-    "datasource": "Sumber data",
-    "team": "Tim",
-    "skill_scope": "Visibilitas",
-    "placeholder_select": "Pilih",
-    "confirm": "Konfirmasi"
-  },
-  "alert_rule": {
-    "title": "Aturan alert",
-    "copy": "Salin",
-    "copied": "ID aturan disalin",
-    "duration_seconds": "Selama {{seconds}} detik",
-    "field": {
-      "id": "ID aturan",
-      "name": "Nama aturan",
-      "group": "Grup bisnis",
-      "datasource": "Sumber data",
-      "cate": "Jenis sumber data",
-      "severity": "Tingkat keparahan alert",
-      "metric": "Metrik yang dipantau",
-      "condition": "Kondisi pemicu",
-      "note": "Isi alert"
+      create_alert: {
+        title: 'Buat satu alert lewat satu kalimat',
+        description: 'Ceritakan skenarionya dan saya buatkan PromQL beserta ambang batasnya',
+        prompt: 'Buatkan aturan alert: berbunyi jika penggunaan CPU host di atas 80% selama 5 menit',
+      },
     },
-    "severity": {
-      "critical": "Critical",
-      "warning": "Warning",
-      "info": "Info"
-    }
   },
-  "dashboard": {
-    "title": "Dasbor",
-    "copied": "ID dasbor disalin",
-    "field": {
-      "id": "ID dasbor",
-      "name": "Nama",
-      "group": "Grup bisnis",
-      "datasource": "Sumber data bawaan",
-      "panels_count": "Panel",
-      "variables_count": "Variabel",
-      "tags": "Label"
-    }
+  input: {
+    placeholder: 'Ketik pertanyaan Anda. Enter untuk mengirim, Shift + Enter untuk baris baru',
+    share_readonly_placeholder: 'Mode berbagi hanya-baca',
+    send: 'Send',
+    stop: 'Stop',
   },
-  "empty": {
-    "greeting_prefix": "Halo, saya"
-  }
+  query: {
+    title: 'Kueri',
+    copied: 'Kueri disalin',
+    copy: 'Salin',
+    execute: 'Jalankan kueri',
+    execute_disabled: 'Tidak ada callback eksekusi yang diberikan, jadi hanya penyalinan yang tersedia',
+  },
+  action: {
+    query_generator: 'Buat kueri',
+  },
+  message: {
+    generating: 'Sedang berpikir...',
+    processing: 'Masih diproses',
+    hint: 'Petunjuk',
+    no_llm_title: 'Belum ada model bahasa yang dikonfigurasi di lingkungan ini',
+    no_llm_content: 'Buka halaman <a>Manajemen LLM</a> untuk menambahkan konfigurasi model',
+    stopped: 'Pembuatan dihentikan',
+    request_failed: 'Permintaan gagal',
+    cancelled: 'Balasan ini dibatalkan.',
+    retry_later: 'Coba lagi nanti.',
+    empty_response: 'Belum ada balasan',
+    thinking: 'Proses berpikir',
+    unsupported_type: 'Jenis konten belum didukung: {{type}}',
+  },
+  form_select: {
+    title: 'Lengkapi data berikut untuk melanjutkan:',
+    approval_title: 'Konfirmasi apakah tindakan di atas akan dijalankan:',
+    busi_group: 'Grup bisnis',
+    datasource: 'Sumber data',
+    team: 'Tim',
+    skill_scope: 'Visibilitas',
+    placeholder_select: 'Pilih',
+    confirm: 'Konfirmasi',
+  },
+  alert_rule: {
+    title: 'Aturan alert',
+    copy: 'Salin',
+    copied: 'ID aturan disalin',
+    duration_seconds: 'Selama {{seconds}} detik',
+    field: {
+      id: 'ID aturan',
+      name: 'Nama aturan',
+      group: 'Grup bisnis',
+      datasource: 'Sumber data',
+      cate: 'Jenis sumber data',
+      severity: 'Tingkat keparahan alert',
+      metric: 'Metrik yang dipantau',
+      condition: 'Kondisi pemicu',
+      note: 'Isi alert',
+    },
+    severity: {
+      critical: 'Critical',
+      warning: 'Warning',
+      info: 'Info',
+    },
+  },
+  dashboard: {
+    title: 'Dasbor',
+    copied: 'ID dasbor disalin',
+    field: {
+      id: 'ID dasbor',
+      name: 'Nama',
+      group: 'Grup bisnis',
+      datasource: 'Sumber data bawaan',
+      panels_count: 'Panel',
+      variables_count: 'Variabel',
+      tags: 'Label',
+    },
+  },
+  page_action: {
+    title: 'Page action',
+    malformed: 'This page action has no content and cannot run',
+    not_run: 'Not run on this page',
+    unsupported: 'The current page does not provide the action "{{name}}"',
+    done: 'Done',
+    failed: 'Failed',
+  },
+  dock: {
+    open: 'Ask AI for a query',
+    close: 'Close',
+    expand: 'Show',
+    collapse: 'Hide',
+    idle: 'Nothing yet',
+    understanding: 'Reading your question',
+    stopped: 'Stopped',
+    failed: 'This turn failed',
+    asked: 'It has a question for you',
+    replied: 'Replied',
+    delivered: 'Written into the query box and run',
+    verified_on: 'Checked against {{name}}',
+    steps: '{{count}} steps',
+    placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_follow_up: 'Keep going…',
+    placeholder_answer: 'Answer it…',
+  },
+  empty: {
+    greeting_prefix: 'Halo, saya',
+  },
 };
 
 export default id_ID;

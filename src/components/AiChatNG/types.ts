@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ActionManifestEntry, ActionResponse } from '@flashcatcloud/ai-kit/actions';
 
 export type AiChatPageType = 'dashboards' | 'alert' | 'record' | 'explorer' | 'alert_rule' | 'alert_history' | 'active_alert' | 'notify_tpl' | 'datasource';
 
@@ -46,6 +47,18 @@ export enum EAiChatContentType {
   FormSelect = 'form_select',
   AlertRule = 'alert_rule',
   Dashboard = 'dashboard',
+  /** The model asking the page to run one of the actions it declared. Always
+   *  the last segment of a message: the turn ends on it. */
+  PageAction = 'page_action',
+}
+
+/** `param` of a `page_action` segment. Mirrors the backend's PageActionRequest. */
+export interface IAiChatPageActionRequest {
+  call_id: string;
+  name: string;
+  /** The page's own description of the action, so the card needs no lookup. */
+  description: string;
+  args: Record<string, unknown>;
 }
 
 export interface IAiChatStreamSegment {
@@ -61,6 +74,8 @@ export interface IAiChatMessageResponse {
   is_finish?: boolean;
   is_from_ai?: boolean;
   hint_text?: string;
+  /** Segment-specific payload; `page_action` carries an IAiChatPageActionRequest. */
+  param?: unknown;
 }
 
 export interface IAiChatMessage {
@@ -92,6 +107,9 @@ export interface IAiChatCreateChatRequest extends IAiChatPageInfo {}
 export interface IAiChatSendMessageRequest {
   chat_id: string;
   query: IAiChatMessageQuery;
+  /** What the page behind the chat can do right now; each entry becomes a
+   *  tool the model can call. Forwarded from the action runtime as is. */
+  manifest?: ActionManifestEntry[];
 }
 
 export interface IAiChatSendMessageResponse {
@@ -133,11 +151,37 @@ export interface IAiChatQueryContentContext {
 
 export type AiChatExecuteQueryForQueryContent = (query: string, context: IAiChatQueryContentContext) => void;
 
+/** One user turn as the panel sees it: running from the moment the message is
+ *  accepted, done once the backend marks it finished, stopped or failed. */
+export interface IAiChatTurn {
+  phase: 'running' | 'done';
+  message: IAiChatMessage;
+  /** Why a done turn ended, when not by finishing on its own. */
+  reason?: 'stopped' | 'error';
+}
+
+/** Outcome of the page actions this panel ran, keyed by call id. */
+export type AiChatPageActionOutcomes = Record<string, ActionResponse>;
+
 export interface IAiChatProps {
   className?: string;
   inputContainerClassName?: string;
   placeholder?: string;
   chatId?: string;
+  /**
+   * `slim` is the panel embedded under a page's own input: one-line input row
+   * with room for the host's status and controls, and a message list that
+   * floats below it instead of filling a column. Defaults to `full`.
+   */
+  variant?: 'full' | 'slim';
+  /** Slim only: hide the message list, keep the input row. */
+  collapsed?: boolean;
+  /** Slim only: rendered inside the input row, before the text box. */
+  inputPrefix?: React.ReactNode;
+  /** Slim only: rendered inside the input row, after the send button. */
+  inputSuffix?: React.ReactNode;
+  /** Fires as a turn starts, progresses and ends. */
+  onTurn?: (turn: IAiChatTurn) => void;
   queryPageFrom: IAiChatPageInfo;
   queryAction?: IAiChatAction;
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);

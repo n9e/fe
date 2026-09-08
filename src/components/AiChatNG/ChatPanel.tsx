@@ -8,7 +8,18 @@ import IconFont from '@/components/IconFont';
 import { cancelMessage, createChat, getMessageDetail, getMessageHistory, sendMessage } from './services';
 import { NAME_SPACE } from './constants';
 import { EmptyConversation, MessageItem } from './MessageBlocks';
-import { IAiChatAction, IAiChatHistoryItem, IAiChatMessage, IAiChatMessageLocator, IAiChatProps, IAiChatStreamSegment } from './types';
+import {
+  AiChatPageActionOutcomes,
+  EAiChatContentType,
+  IAiChatAction,
+  IAiChatHistoryItem,
+  IAiChatMessage,
+  IAiChatMessageLocator,
+  IAiChatPageActionRequest,
+  IAiChatProps,
+  IAiChatStreamSegment,
+} from './types';
+import { uiActionRuntime } from './uiActionRuntime';
 import { applyStreamChunk, buildStreamingMessage, cn, findStreamResponse, upsertMessage, useAutoScroll } from './utils';
 import { useAiChatStream } from './useStream';
 import { useAiChatContext } from './context';
@@ -32,7 +43,13 @@ export default function ChatPanel(props: IAiChatProps) {
     onError,
     welcomeSlot,
     inputContainerClassName,
+    variant = 'full',
+    collapsed = false,
+    inputPrefix,
+    inputSuffix,
+    onTurn,
   } = props;
+  const slim = variant === 'slim';
   const { shareReadonly } = useAiChatContext();
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
@@ -50,6 +67,25 @@ export default function ChatPanel(props: IAiChatProps) {
   const activeChatRef = useRef<IAiChatHistoryItem>();
   const visibleChatIdRef = useRef<string | undefined>(chatId);
   const messageLoadRequestRef = useRef(0);
+  const [pageActionOutcomes, setPageActionOutcomes] = useState<AiChatPageActionOutcomes>({});
+  // Turns this panel sent in this session. Only these may run a page action:
+  // a message loaded from history was written for a page that may no longer
+  // be on screen, and a reload must not replay a write.
+  const liveTurnsRef = useRef(new Set<string>());
+  const executedCallsRef = useRef(new Set<string>());
+  const onTurnRef = useRef(onTurn);
+  onTurnRef.current = onTurn;
+
+  const runPageAction = useCallback(async (message: IAiChatMessage) => {
+    if (!liveTurnsRef.current.has(`${message.chat_id}:${message.seq_id}`)) return;
+    const last = message.response?.[message.response.length - 1];
+    if (last?.content_type !== EAiChatContentType.PageAction) return;
+    const request = last.param as IAiChatPageActionRequest | undefined;
+    if (!request?.call_id || !request.name || executedCallsRef.current.has(request.call_id)) return;
+    executedCallsRef.current.add(request.call_id);
+    const outcome = await uiActionRuntime.execute({ callId: request.call_id, name: request.name, args: request.args ?? {} });
+    setPageActionOutcomes((previous) => ({ ...previous, [request.call_id]: outcome }));
+  }, []);
 
   // 在会话切换提交后、异步回调执行前同步更新 ref，避免旧会话回包写回当前界面。
   useLayoutEffect(() => {
@@ -130,9 +166,11 @@ export default function ChatPanel(props: IAiChatProps) {
       const shouldOverlayStream =
         streamingState.locator?.chat_id === locator.chat_id && streamingState.locator?.seq_id === locator.seq_id && streamingState.segments.length > 0 && !detail.is_finish;
 
-      mergeMessage(shouldOverlayStream ? buildStreamingMessage(detail, streamingState.segments) : detail);
+      const nextMessage = shouldOverlayStream ? buildStreamingMessage(detail, streamingState.segments) : detail;
+      mergeMessage(nextMessage);
 
       if (!detail.is_finish) {
+        onTurnRef.current?.({ phase: 'running', message: nextMessage });
         const streamResponse = findStreamResponse(detail);
         const isCurrentStream = streamingState.locator?.chat_id === locator.chat_id && streamingState.locator?.seq_id === locator.seq_id;
         if ((options?.startStream || !isCurrentStream) && streamResponse?.stream_id) {
@@ -153,11 +191,13 @@ export default function ChatPanel(props: IAiChatProps) {
           locator: undefined,
           segments: [],
         };
+        await runPageAction(detail);
+        onTurnRef.current?.({ phase: 'done', message: detail, reason: detail.err_code === -2 ? 'stopped' : detail.err_code ? 'error' : undefined });
       }
 
       return !detail.is_finish;
     },
-    [cleanupPolling, isCurrentChat, mergeMessage],
+    [cleanupPolling, isCurrentChat, mergeMessage, runPageAction],
   );
 
   const { start: startStream, stop: stopStream } = useAiChatStream({
@@ -365,10 +405,16 @@ export default function ChatPanel(props: IAiChatProps) {
           page_from: queryPageFrom || chat.page_from,
         };
 
+        // What the page can do right now. Read at send time: registrations
+        // come and go with the page, and this is also what closes a confirm
+        // scope of 'turn' in the runtime.
+        const manifest = uiActionRuntime.manifest();
         const result = await sendMessage({
           chat_id: chat.chat_id,
           query,
+          manifest: manifest.length ? manifest : undefined,
         });
+        liveTurnsRef.current.add(`${result.chat_id}:${result.seq_id}`);
 
         const optimisticMessage: IAiChatMessage = {
           chat_id: result.chat_id,
@@ -382,6 +428,7 @@ export default function ChatPanel(props: IAiChatProps) {
         };
 
         mergeMessage(optimisticMessage);
+        onTurnRef.current?.({ phase: 'running', message: optimisticMessage });
         scrollToBottom('smooth');
         setInputValue('');
         onChatChange?.({
@@ -440,6 +487,7 @@ export default function ChatPanel(props: IAiChatProps) {
       await cancelMessage(streamingLocator);
       const nextMessage = await getMessageDetail(streamingLocator);
       mergeMessage(nextMessage);
+      onTurnRef.current?.({ phase: 'done', message: nextMessage, reason: 'stopped' });
       setStreamingLocator(undefined);
       streamBufferRef.current = {
         locator: undefined,
@@ -461,27 +509,76 @@ export default function ChatPanel(props: IAiChatProps) {
         onActionClick={sendUserMessage}
         onOKForFormSelectContent={sendUserMessage}
         maybeScrollToBottom={maybeScrollToBottom}
+        pageActionOutcomes={pageActionOutcomes}
       />
     ));
-  }, [onExecuteQueryForQueryContent, maybeScrollToBottom, messages, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
+  }, [onExecuteQueryForQueryContent, maybeScrollToBottom, messages, pageActionOutcomes, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
 
   const welcomeContent = typeof welcomeSlot === 'function' ? welcomeSlot((prompt) => sendUserMessage(undefined, prompt)) : welcomeSlot;
 
+  const sendButton = (
+    <Button
+      type='primary'
+      shape='circle'
+      size={slim ? 'small' : undefined}
+      disabled={shareReadonly}
+      aria-label={submitting ? t('input.stop') : t('input.send')}
+      icon={submitting ? <PauseCircleOutlined /> : <IconFont type='icon-ic_send' style={{ color: '#fff', fontSize: 14 }} />}
+      onClick={() => {
+        if (submitting) {
+          handleStop();
+        } else {
+          sendUserMessage();
+        }
+      }}
+    />
+  );
+
+  // Slim has no room for the greeting: the suggestions become chips.
+  const promptChips =
+    slim && promptList?.length ? (
+      <div className='flex flex-wrap gap-1.5'>
+        {promptList.map((prompt) => (
+          <button
+            key={prompt}
+            type='button'
+            className='cursor-pointer rounded-full fc-border bg-transparent px-2.5 py-0.5 text-xs text-main hover:border-primary hover:text-primary'
+            onClick={() => setInputValue(prompt)}
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
+    ) : null;
+  // A floating box with nothing in it is noise, so slim keeps it closed until there is something to show.
+  const listHidden = slim && (collapsed || (!messagesLoading && !messageItems.length && !welcomeContent && !promptChips));
+
   return (
-    <div className='flex w-full h-full min-h-0'>
+    <div className={cn('flex w-full min-h-0', slim ? 'relative' : 'h-full')}>
       <div className='flex w-full min-w-0 flex-1 flex-col'>
-        <div ref={chatBodyRef} className='h-full min-h-0 w-full flex-1 best-looking-scroll'>
-          <div ref={chatContentRef} className='mx-auto flex min-h-full w-full max-w-[900px] flex-col'>
+        <div
+          ref={chatBodyRef}
+          className={cn(
+            'min-h-0 w-full best-looking-scroll',
+            slim
+              ? 'absolute left-0 right-0 top-[calc(100%+6px)] z-20 max-h-[52vh] overflow-y-auto overscroll-contain rounded-lg fc-border bg-fc-100 p-3 shadow-md'
+              : 'h-full flex-1',
+            listHidden && 'hidden',
+          )}
+        >
+          <div ref={chatContentRef} className={cn('mx-auto flex w-full flex-col', !slim && 'min-h-full max-w-[900px]')}>
             {messagesLoading ? (
               <div className='flex flex-1 items-center justify-center'>
                 <Spin indicator={<LoadingOutlined />} />
               </div>
             ) : (
-              <div className='flex-1 flex flex-col gap-8'>
+              <div className={cn('flex-1 flex flex-col', slim ? 'gap-4' : 'gap-8')}>
                 {messageItems.length ? (
                   messageItems
                 ) : welcomeContent ? (
                   welcomeContent
+                ) : slim ? (
+                  promptChips
                 ) : (
                   <EmptyConversation
                     prompts={promptList}
@@ -495,9 +592,15 @@ export default function ChatPanel(props: IAiChatProps) {
           </div>
         </div>
 
-        <div className={cn('mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md', inputContainerClassName)}>
+        <div
+          className={cn(
+            slim ? 'flex w-full items-center gap-2 rounded-md fc-border bg-fc-100 px-2 py-1' : 'mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md',
+            inputContainerClassName,
+          )}
+        >
+          {slim && inputPrefix}
           <Input.TextArea
-            autoSize={{ minRows: 3, maxRows: 8 }}
+            autoSize={slim ? { minRows: 1, maxRows: 4 } : { minRows: 3, maxRows: 8 }}
             bordered={false}
             value={inputValue}
             placeholder={shareReadonly ? t('input.share_readonly_placeholder') : placeholder ?? t('input.placeholder')}
@@ -512,26 +615,23 @@ export default function ChatPanel(props: IAiChatProps) {
               event.preventDefault();
               sendUserMessage();
             }}
-            className='bg-transparent px-5 py-3.5 text-base text-main placeholder:text-[14px] placeholder:text-placeholder'
+            className={
+              slim
+                ? 'min-w-0 flex-1 bg-transparent px-2 py-1 text-sm text-main placeholder:text-[13px] placeholder:text-placeholder'
+                : 'bg-transparent px-5 py-3.5 text-base text-main placeholder:text-[14px] placeholder:text-placeholder'
+            }
           />
-          <div className='mt-3 flex items-center justify-between gap-2 px-2 pb-2'>
-            <div />
-            <div className='flex items-center gap-2'>
-              <Button
-                type='primary'
-                shape='circle'
-                disabled={shareReadonly}
-                icon={submitting ? <PauseCircleOutlined /> : <IconFont type='icon-ic_send' style={{ color: '#fff', fontSize: 14 }} />}
-                onClick={() => {
-                  if (submitting) {
-                    handleStop();
-                  } else {
-                    sendUserMessage();
-                  }
-                }}
-              />
+          {slim ? (
+            <>
+              {sendButton}
+              {inputSuffix}
+            </>
+          ) : (
+            <div className='mt-3 flex items-center justify-between gap-2 px-2 pb-2'>
+              <div />
+              <div className='flex items-center gap-2'>{sendButton}</div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

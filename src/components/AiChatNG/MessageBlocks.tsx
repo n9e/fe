@@ -5,12 +5,21 @@ import { Trans, useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 
 import { IS_ENT } from '@/utils/constant';
-import { AiChatExecuteQueryForQueryContent, EAiChatContentType, IAiChatAction, IAiChatMessage, IAiChatMessageResponse } from './types';
+import {
+  AiChatExecuteQueryForQueryContent,
+  AiChatPageActionOutcomes,
+  EAiChatContentType,
+  IAiChatAction,
+  IAiChatMessage,
+  IAiChatMessageResponse,
+  IAiChatPageActionRequest,
+} from './types';
 import { cn } from './utils';
 import QueryContentBlock from './ContentRenderer/QueryContentBlock';
 import FormSelectContentBlock from './ContentRenderer/FormSelectContentBlock';
 import AlertRuleContentBlock from './ContentRenderer/AlertRuleContentBlock';
 import DashboardContentBlock from './ContentRenderer/DashboardContentBlock';
+import PageActionBlock from './ContentRenderer/PageActionBlock';
 import { NAME_SPACE } from './constants';
 import StreamingMarkdown from './StreamingMarkdown';
 
@@ -63,6 +72,8 @@ interface IAiChatResponseBlocksProps {
   onActionClick: (action: IAiChatAction) => void;
   onOKForFormSelectContent: (action: IAiChatAction, overrideContent: string) => void;
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
+  /** What happened to the page actions in this message, by call id. */
+  pageActionOutcomes?: AiChatPageActionOutcomes;
 }
 
 interface IThinkingBlockProps {
@@ -154,7 +165,7 @@ export function CurStepBlock({ curStep }: { curStep: string }) {
 
 export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom } = props;
+  const { message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom, pageActionOutcomes } = props;
   const curStep = message.cur_step?.trim() || t('message.generating');
   const shouldShowCurStep = !message.is_finish && !message.err_code;
 
@@ -275,6 +286,10 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
             return <AlertRuleContentBlock key={`${response.content_type}-${index}`} responseContent={response.content} />;
           case EAiChatContentType.Dashboard:
             return <DashboardContentBlock key={`${response.content_type}-${index}`} responseContent={response.content} />;
+          case EAiChatContentType.PageAction: {
+            const request = response.param as IAiChatPageActionRequest | undefined;
+            return <PageActionBlock key={`${response.content_type}-${index}`} request={request} outcome={request ? pageActionOutcomes?.[request.call_id] : undefined} />;
+          }
           default: {
             return (
               <div key={`${response.content_type}-${index}`} className='rounded-lg border border-dashed border-fc-200 px-4 py-3 text-sm text-hint'>
@@ -348,7 +363,15 @@ function shouldShowRunningStatusAtMessageBottom(isFinish?: boolean, responseList
   return bottomStatusContentTypes.includes(lastResponse.content_type as EAiChatContentType);
 }
 
-function MessageItemComponent({ message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom }: IAiChatResponseBlocksProps) {
+function MessageItemComponent({
+  message,
+  isStreaming,
+  onExecuteQueryForQueryContent,
+  onActionClick,
+  onOKForFormSelectContent,
+  maybeScrollToBottom,
+  pageActionOutcomes,
+}: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
   const showInitialRunningStatus = shouldShowInitialRunningStatus(message.is_finish, message.response);
   const showBottomRunningStatus = shouldShowRunningStatusAtMessageBottom(message.is_finish, message.response);
@@ -364,6 +387,7 @@ function MessageItemComponent({ message, isStreaming, onExecuteQueryForQueryCont
         <ResponseBlocks
           message={message}
           isStreaming={isStreaming}
+          pageActionOutcomes={pageActionOutcomes}
           onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
           onActionClick={onActionClick}
           onOKForFormSelectContent={onOKForFormSelectContent}
