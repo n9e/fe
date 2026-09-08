@@ -8,7 +8,7 @@ import { FormInstance } from 'antd/lib/form/Form';
 import { useTranslation } from 'react-i18next';
 
 import { SIZE } from '@/utils/constant';
-import PromGraph from '@/components/PromGraphCpt';
+import PromGraph, { PromGraphControl } from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
 
@@ -82,18 +82,16 @@ export default function Prometheus(props: IProps) {
   // Stable per data source: the chat treats a new page-info object as a new conversation.
   const aiPageFrom = useMemo(() => buildPageFrom({ param: { datasource_type: 'prometheus', datasource_id: datasourceValue } }), [datasourceValue]);
   const aiPromptList = useMemo(() => getExplorerPrompts(i18n.language), [i18n.language]);
-  // Scopes the query-box lookup to this panel: panels on this page can each be
-  // on a different data source, so no page-wide selector means "this one".
-  // `display: contents` keeps the wrapper out of the layout.
-  const panelRef = useRef<HTMLDivElement>(null);
+  // This panel's own query box; panels on this page can each be on a different
+  // data source, so the assistant is handed the box, not a page-wide lookup.
+  const graphControl = useRef<PromGraphControl | null>(null);
 
   useMetricExplorerAIActions({
     // Only the panel whose dock is open may be written to by the assistant.
     enabled: aiOpen,
     datasourceValue,
-    setPromql,
     setTimeRange: setDefaultTimeState,
-    getQueryInput: () => panelRef.current?.querySelector('.prom-graph-expression-input-ng') ?? null,
+    getControl: () => graphControl.current,
   });
 
   useEffect(() => {
@@ -126,8 +124,9 @@ export default function Prometheus(props: IProps) {
   }, []);
 
   return (
-    <div ref={panelRef} style={{ display: 'contents' }}>
+    <>
       <PromGraph
+        controlRef={graphControl}
         // key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
         type={query.mode as IMode}
         defaultType={defaultType}
@@ -220,6 +219,6 @@ export default function Prometheus(props: IProps) {
         }
         showExportButton
       />
-    </div>
+    </>
   );
 }

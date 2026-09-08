@@ -66,6 +66,21 @@ interface IProps {
   showExportButton?: boolean; // 是否显示导出按钮
   refetchOnZoom?: boolean;
   noticeBanner?: React.ReactNode; // 查询框与结果区之间的提示横幅（如数据源体检结论），由调用方控制显隐
+  /**
+   * Lets the page drive the query box the way a user would: write into it,
+   * then press 查询. Separate steps on purpose — the assistant's cursor moves
+   * between them, so what the user sees matches what happened.
+   */
+  controlRef?: React.MutableRefObject<PromGraphControl | null>;
+}
+
+export interface PromGraphControl {
+  /** Puts an expression into the box without running it. */
+  fill(next: string): void;
+  /** What the 查询 button does. */
+  run(): void;
+  queryInput(): Element | null;
+  queryButton(): Element | null;
 }
 
 const TabPane = Tabs.TabPane;
@@ -102,8 +117,15 @@ export default function index(props: IProps) {
     showExportButton,
     refetchOnZoom = false,
     noticeBanner,
+    controlRef,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
+  // What the results show. Kept apart from `value` so the box can hold an
+  // expression that has not been run yet, the way it does while a user types.
+  const [submitted, setSubmitted] = useState<string | undefined>(promQL);
+  const valueRef = useRef<string | undefined>(promQL);
+  const inputWrapRef = useRef<HTMLDivElement>(null);
+  const queryButtonRef = useRef<HTMLElement>(null);
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
   const [errorContent, setErrorContent] = useState('');
   const [tabActiveKey, setTabActiveKey] = useState(type || defaultType || 'table');
@@ -153,8 +175,34 @@ export default function index(props: IProps) {
   }, [type]);
 
   useEffect(() => {
+    // The caller's expression is both shown and queried: deep links, jumps from an event.
+    valueRef.current = promQL;
     setValue(promQL);
+    setSubmitted(promQL);
   }, [promQL]);
+
+  const change = (next?: string) => {
+    valueRef.current = next;
+    setValue(next);
+  };
+  const submit = () => {
+    setSubmitted(valueRef.current);
+    setRefreshFlag(_.uniqueId('refreshFlag_'));
+    executeQuery && executeQuery(valueRef.current);
+  };
+
+  useEffect(() => {
+    if (!controlRef) return;
+    controlRef.current = {
+      fill: (next) => change(next),
+      run: submit,
+      queryInput: () => inputWrapRef.current,
+      queryButton: () => queryButtonRef.current,
+    };
+    return () => {
+      controlRef.current = null;
+    };
+  });
 
   return (
     <div className='prom-graph-container'>
@@ -185,7 +233,7 @@ export default function index(props: IProps) {
         </div>
       )}
 
-      <div className='prom-graph-expression-input-ng'>
+      <div className='prom-graph-expression-input-ng' ref={inputWrapRef}>
         <div className='flex gap-[8px]'>
           <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
             <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
@@ -208,7 +256,9 @@ export default function index(props: IProps) {
                 onChangeTrigger={['onBlur', 'onEnter']}
                 value={value}
                 onChange={(newVal) => {
-                  setValue(newVal);
+                  // The user finished typing (blur or Enter): that both shows and runs it.
+                  change(newVal);
+                  setSubmitted(newVal);
                   onChange && onChange(newVal);
                 }}
               />
@@ -219,21 +269,14 @@ export default function index(props: IProps) {
               {React.cloneElement(extra as React.ReactElement, {
                 onChange: (newValue?: string) => {
                   if (typeof newValue === 'string') {
-                    setValue(newValue);
+                    change(newValue);
+                    setSubmitted(newValue);
                   }
                 },
               })}
             </div>
           )}
-          <Button
-            className='flex-shrink-0'
-            type='primary'
-            loading={loading}
-            onClick={() => {
-              setRefreshFlag(_.uniqueId('refreshFlag_'));
-              executeQuery && executeQuery(value);
-            }}
-          >
+          <Button ref={queryButtonRef} className='flex-shrink-0' type='primary' loading={loading} onClick={submit}>
             {t('query_btn')}
           </Button>
         </div>
@@ -273,7 +316,7 @@ export default function index(props: IProps) {
               url={url}
               contentMaxHeight={contentMaxHeight}
               datasourceValue={datasourceValue}
-              promql={value}
+              promql={submitted}
               setQueryStats={setQueryStats}
               setErrorContent={setErrorContent}
               timestamp={timestamp}
@@ -294,7 +337,7 @@ export default function index(props: IProps) {
                 url={url}
                 contentMaxHeight={contentMaxHeight}
                 datasourceValue={datasourceValue}
-                promql={value}
+                promql={submitted}
                 setQueryStats={setQueryStats}
                 setErrorContent={setErrorContent}
                 range={range}

@@ -25,13 +25,22 @@ jest.mock('@/components/AiChatNG/uiActionRuntime', () => ({
 
 const ACTION = 'set_metric_query';
 
+function control() {
+  return {
+    fill: jest.fn(),
+    run: jest.fn(),
+    queryInput: () => document.createElement('div'),
+    queryButton: () => document.createElement('button'),
+  };
+}
+
 function options(overrides: Partial<MetricExplorerAIActionsOptions> = {}): MetricExplorerAIActionsOptions {
+  const box = control();
   return {
     enabled: true,
     datasourceValue: 18001,
-    setPromql: jest.fn(),
     setTimeRange: jest.fn(),
-    getQueryInput: () => null,
+    getControl: () => box,
     ...overrides,
   };
 }
@@ -96,15 +105,17 @@ describe('useMetricExplorerAIActions', () => {
     unmount();
   });
 
-  it('writes the expression into the panel and leaves the time range alone', async () => {
-    const setPromql = jest.fn();
+  it('writes the expression into the box, then presses 查询, and leaves the time range alone', async () => {
+    const box = control();
     const setTimeRange = jest.fn();
-    renderHook(() => useMetricExplorerAIActions(options({ setPromql, setTimeRange })));
+    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => box, setTimeRange })));
 
     const result = (await run({ promql: '  cpu_usage_active  ' })) as { promql: string };
 
     // Trimmed: a leading space in the box is something the user has to clean up.
-    expect(setPromql).toHaveBeenCalledWith('cpu_usage_active');
+    expect(box.fill).toHaveBeenCalledWith('cpu_usage_active');
+    expect(box.run).toHaveBeenCalledTimes(1);
+    expect(box.fill.mock.invocationCallOrder[0]).toBeLessThan(box.run.mock.invocationCallOrder[0]);
     expect(result.promql).toBe('cpu_usage_active');
     // Not asked for, so the panel keeps the window the user was reading.
     expect(setTimeRange).not.toHaveBeenCalled();
@@ -141,23 +152,34 @@ describe('useMetricExplorerAIActions', () => {
     expect(setTimeRange).not.toHaveBeenCalled();
   });
 
-  it('points the cursor at the panel that owns the action, not a page-wide guess', async () => {
+  it('shows the two gestures on the panel that owns the action: light the box, press its button', async () => {
     const input = document.createElement('div');
+    const button = document.createElement('button');
+    const box = { ...control(), queryInput: () => input, queryButton: () => button };
     const context = runContext();
-    renderHook(() => useMetricExplorerAIActions(options({ getQueryInput: () => input })));
+    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => box })));
 
     const action = registered.get(ACTION)!;
     await action.run({ promql: 'up' } as never, context);
 
     expect(context.feedback.moveCursor).toHaveBeenCalledWith(input);
     expect(context.feedback.highlight).toHaveBeenCalledWith(input);
+    expect(context.feedback.click).toHaveBeenCalledWith(button);
+    // The press is shown before the query runs, never after.
+    expect((context.feedback.click as jest.Mock).mock.invocationCallOrder[0]).toBeLessThan(box.run.mock.invocationCallOrder[0]);
+  });
+
+  it('refuses to act when the query box is not on screen', async () => {
+    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => null })));
+    await expect(run({ promql: 'up' })).rejects.toThrow(/not on screen/);
   });
 
   it('refuses a blank expression instead of clearing the box', async () => {
-    const setPromql = jest.fn();
-    renderHook(() => useMetricExplorerAIActions(options({ setPromql })));
+    const box = control();
+    renderHook(() => useMetricExplorerAIActions(options({ getControl: () => box })));
 
     await expect(run({ promql: '   ' })).rejects.toThrow();
-    expect(setPromql).not.toHaveBeenCalled();
+    expect(box.fill).not.toHaveBeenCalled();
+    expect(box.run).not.toHaveBeenCalled();
   });
 });

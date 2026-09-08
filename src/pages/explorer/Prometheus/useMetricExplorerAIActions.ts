@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { uiActionRuntime } from '@/components/AiChatNG/uiActionRuntime';
 import type { UIAction } from '@flashcatcloud/ai-kit/actions';
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { PromGraphControl } from '@/components/PromGraphCpt';
 
 /**
  * The ad-hoc metric query page, described to the assistant.
@@ -24,18 +25,16 @@ export interface MetricExplorerAIActionsOptions {
   enabled: boolean;
   /** The data source the panel is pointed at, echoed back for the card. */
   datasourceValue: number;
-  /** Writes the expression into the panel, which re-runs the query. */
-  setPromql: (promql: string) => void;
-  /** Moves the panel's time range. Only used when the model asks for one. */
-  setTimeRange: (range: IRawTimeRange) => void;
   /**
-   * This panel's own PromQL box, used only to point the cursor at what changed.
+   * The panel's own query box, as something that can be written into and run.
    *
    * Resolved by the caller rather than looked up here: panels on this page can
    * each be on a different data source and only some of them render a PromQL
    * box, so no page-wide position or selector reliably means "this panel".
    */
-  getQueryInput: () => Element | null;
+  getControl: () => PromGraphControl | null;
+  /** Moves the panel's time range. Only used when the model asks for one. */
+  setTimeRange: (range: IRawTimeRange) => void;
 }
 
 interface SetMetricQueryArgs {
@@ -95,10 +94,15 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
           // that only looks like a query is the part it cannot catch.
           if (!promql) throw new Error('No expression was supplied.');
 
-          const { datasourceValue, setPromql, setTimeRange, getQueryInput } = latest.current;
-          const anchor = getQueryInput();
-          await ctx.feedback.moveCursor(anchor);
-          ctx.feedback.highlight(anchor);
+          const { datasourceValue, setTimeRange, getControl } = latest.current;
+          const control = getControl();
+          if (!control) throw new Error('The query box is not on screen.');
+
+          // The same two gestures a person makes: write into the box, press 查询.
+          const input = control.queryInput();
+          await ctx.feedback.moveCursor(input);
+          ctx.feedback.highlight(input);
+          control.fill(promql);
 
           // Half a window would silently reframe the chart around a range nobody
           // asked for, but the schema already rules that out — only an explicit
@@ -107,7 +111,8 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
           if (movedRange) {
             setTimeRange(movedRange);
           }
-          setPromql(promql);
+          await ctx.feedback.click(control.queryButton());
+          control.run();
 
           return {
             promql,
