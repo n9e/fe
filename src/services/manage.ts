@@ -121,8 +121,8 @@ export const changeUserPassword = function (id: string, data: object) {
     data,
   }).then((res) => res && res.dat);
 };
-export const disabledUser = function (id: string, data: object) {
-  return request(`/api/n9e/user/${id}/password`, {
+export const disabledUser = function (id: string, data: { disabled: number }) {
+  return request(`/api/n9e/user/${id}/disabled`, {
     method: RequestMethod.Put,
     data,
   }).then((res) => res && res.dat);

@@ -17,7 +17,7 @@
 import React, { useState, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import { Button, Input, message, Row, Modal, Space } from 'antd';
+import { Button, Input, message, Row, Modal, Select, Space, Tag } from 'antd';
 import { SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/lib/table';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
 import Tags from '@/components/TableTags/Tags';
 import UserInfoModal from './component/createModal';
-import { getUserInfoList, deleteUser } from '@/services/manage';
+import { getUserInfoList, deleteUser, disabledUser } from '@/services/manage';
 import { User, UserType, ActionType } from '@/store/manageInterface';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
@@ -46,6 +46,7 @@ const Resource: React.FC = () => {
   const [memberId, setMemberId] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [range, setRange] = useState<IRawTimeRange>();
+  const [disabledFilter, setDisabledFilter] = useState<number>();
   const { perms } = useContext(CommonStateContext);
   const pagination = usePagination({ PAGESIZE_KEY: 'users' });
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
@@ -124,6 +125,14 @@ const Resource: React.FC = () => {
       },
     },
     {
+      title: t('user.status'),
+      dataIndex: 'disabled',
+      width: 100,
+      render: (val) => {
+        return val ? <Tag color='error'>{t('user.status_disabled')}</Tag> : <Tag color='success'>{t('user.status_normal')}</Tag>;
+      },
+    },
+    {
       title: t('common:table.create_at'),
       dataIndex: 'create_at',
       width: 170,
@@ -189,6 +198,9 @@ const Resource: React.FC = () => {
       params.stime = moment(parsedRange.start).unix();
       params.etime = moment(parsedRange.end).unix();
     }
+    if (disabledFilter !== undefined) {
+      params.disabled = disabledFilter;
+    }
 
     return getUserInfoList({
       ...params,
@@ -202,7 +214,7 @@ const Resource: React.FC = () => {
   };
   const { tableProps } = useAntdTable(getTableData, {
     defaultPageSize: pagination.pageSize,
-    refreshDeps: [query, refreshFlag, range],
+    refreshDeps: [query, refreshFlag, range, disabledFilter],
   });
 
   return (
@@ -226,6 +238,19 @@ const Resource: React.FC = () => {
                 onClear={() => {
                   setRange(undefined);
                 }}
+              />
+              <Select
+                allowClear
+                style={{ width: 120 }}
+                placeholder={t('user.status')}
+                value={disabledFilter}
+                onChange={(val) => {
+                  setDisabledFilter(val);
+                }}
+                options={[
+                  { value: 0, label: t('user.status_normal') },
+                  { value: 1, label: t('user.status_disabled') },
+                ]}
               />
             </Space>
           </div>
@@ -271,6 +296,26 @@ const Resource: React.FC = () => {
                     _.includes(perms, '/users/put')
                       ? { key: 'reset', icon: 'settings', text: t('account:password.reset'), onClick: () => handleClick(ActionType.Reset, record.id) }
                       : undefined,
+                    _.includes(perms, '/users/put')
+                      ? {
+                          key: 'disabled',
+                          icon: record.disabled ? 'claim' : 'unclaim',
+                          text: record.disabled ? t('user.enable_action') : t('user.disable_action'),
+                          onClick: () => {
+                            const nextDisabled = record.disabled ? 0 : 1;
+                            confirm({
+                              title: nextDisabled ? t('user.disable_confirm', { username: record.username }) : t('user.enable_confirm', { username: record.username }),
+                              onOk: () => {
+                                return disabledUser(record.id, { disabled: nextDisabled }).then(() => {
+                                  message.success(nextDisabled ? t('user.disable_success') : t('user.enable_success'));
+                                  handleClose();
+                                });
+                              },
+                              onCancel: () => {},
+                            });
+                          },
+                        }
+                      : undefined,
                     _.includes(perms, '/users/del')
                       ? {
                           key: 'delete',
@@ -295,7 +340,7 @@ const Resource: React.FC = () => {
                 })
               : undefined
           }
-          actionColumn={{ title: t('common:table.operations'), width: 64 }}
+          actionColumn={{ title: t('common:table.operations'), width: 88 }}
           {...tableProps}
           pagination={{
             ...tableProps.pagination,
