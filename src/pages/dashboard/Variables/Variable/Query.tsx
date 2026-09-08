@@ -8,8 +8,9 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { buildVariableInterpolations } from '../utils/ajustData';
-import { useVariableManager } from '../VariableManagerContext';
+import { collectVariableDependencies, useVariableManager } from '../VariableManagerContext';
 import { formatString, formatDatasource } from '../utils/formatString';
+import { getBuiltInVariables } from '../utils/replaceTemplateVariables';
 import processQueryOptions from '../utils/processQueryOptions';
 import getValueByOptions from '../utils/getValueByOptions';
 import datasource, { VariableDatasourceQuery } from '../datasource';
@@ -54,6 +55,15 @@ export default function Query(props: Props) {
 
     if (!currentVariable.datasource) {
       const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
+      setErrorMsg(errMsg);
+      clearLoadingIfLatestRequest();
+      return Promise.reject(errMsg);
+    }
+
+    const availableVariableNames = new Set([...getVariables().map((item) => item.name), ...getBuiltInVariables(currentRange).map((item) => item.name)]);
+    const missingDependencies = collectVariableDependencies(currentVariable).filter((dependencyName) => !availableVariableNames.has(dependencyName));
+    if (missingDependencies.length > 0) {
+      const errMsg = `Variable ${currentVariable.name} references missing variable(s): ${missingDependencies.join(', ')}`;
       setErrorMsg(errMsg);
       clearLoadingIfLatestRequest();
       return Promise.reject(errMsg);

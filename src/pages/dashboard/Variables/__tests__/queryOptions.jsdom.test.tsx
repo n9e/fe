@@ -172,6 +172,22 @@ test('a newer datasource validation failure clears loading left by an older requ
   errorSpy.mockRestore();
 });
 
+test('query variable reports a removed dependency and skips its datasource request', async () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation();
+  mountRuntime([projectVariable({ name: 'metric', query: { service: '${service}' } })]);
+
+  const warningIcon = await waitFor(() => {
+    const icon = document.querySelector('.anticon-warning');
+    expect(icon).toBeInTheDocument();
+    return icon!;
+  });
+  fireEvent.mouseEnter(warningIcon);
+
+  expect(await screen.findByText('Variable metric references missing variable(s): service')).toBeInTheDocument();
+  expect(queryMock).not.toHaveBeenCalled();
+  errorSpy.mockRestore();
+});
+
 test('real dependency chain receives the project value, not its display label', async () => {
   queryMock.mockImplementation(async ({ query }) => (query.project_id ? [{ label: `Metric for ${query.project_id}`, value: `metric/${query.project_id}` }] : projects));
   mountRuntime([projectVariable(), projectVariable({ name: 'metric', query: { project_id: '${project}' } })]);
