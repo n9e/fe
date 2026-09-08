@@ -45,6 +45,7 @@ const zh_HK = {
       custom: '自定義',
       custom_validated: '數量不能超過{{maxCount}}',
       all_quantity: '总数約',
+      organize_fields: '指定欄位',
       createSuccess: '任務創建成功',
     },
     log_export: {

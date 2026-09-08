@@ -45,6 +45,7 @@ const ru_RU = {
       custom: 'Пользовательский',
       custom_validated: 'Количество не может превышать {{maxCount}}',
       all_quantity: 'Общее количество',
+      organize_fields: 'Указанные поля',
       createSuccess: 'Задача создана успешно',
     },
     log_export: {

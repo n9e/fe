@@ -45,6 +45,7 @@ const ja_JP = {
       custom: 'カスタム',
       custom_validated: '数値を超過できません{{maxCount}}',
       all_quantity: '合計約',
+      organize_fields: '指定フィールド',
       createSuccess: 'タスク作成成功',
     },
     log_export: {

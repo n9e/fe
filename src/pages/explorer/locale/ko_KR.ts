@@ -45,6 +45,7 @@ const ko_KR = {
       "custom": "사용자 지정",
       "custom_validated": "개수는 {{maxCount}}을(를) 넘을 수 없습니다",
       "all_quantity": "총 개수 약",
+      "organize_fields": "지정 필드",
       "createSuccess": "작업을 만들었습니다"
     },
     "log_export": {

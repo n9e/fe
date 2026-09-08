@@ -45,6 +45,7 @@ const fr_FR = {
       "custom": "Personnalisé",
       "custom_validated": "Le nombre ne peut pas dépasser {{maxCount}}",
       "all_quantity": "Total approximatif",
+      "organize_fields": "Champs spécifiés",
       "createSuccess": "Tâche créée"
     },
     "log_export": {

@@ -45,6 +45,7 @@ const pt_BR = {
       "custom": "Personalizado",
       "custom_validated": "A quantidade não pode passar de {{maxCount}}",
       "all_quantity": "Total aproximado",
+      "organize_fields": "Campos especificados",
       "createSuccess": "Tarefa criada com sucesso"
     },
     "log_export": {

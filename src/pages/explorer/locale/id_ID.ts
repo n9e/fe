@@ -45,6 +45,7 @@ const id_ID = {
       "custom": "Khusus",
       "custom_validated": "Jumlahnya tidak boleh melebihi {{maxCount}}",
       "all_quantity": "Perkiraan total",
+      "organize_fields": "Field yang ditentukan",
       "createSuccess": "Tugas berhasil dibuat"
     },
     "log_export": {

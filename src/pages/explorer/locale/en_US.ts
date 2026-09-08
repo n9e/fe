@@ -45,6 +45,7 @@ const en_US = {
       custom: 'Custom',
       custom_validated: 'Count cannot exceed {{maxCount}}',
       all_quantity: 'Total approximately',
+      organize_fields: 'Specified fields',
       createSuccess: 'Task created successfully',
     },
     log_export: {

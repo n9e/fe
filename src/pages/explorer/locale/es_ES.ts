@@ -45,6 +45,7 @@ const es_ES = {
       "custom": "Personalizado",
       "custom_validated": "La cantidad no puede superar {{maxCount}}",
       "all_quantity": "Total aproximado",
+      "organize_fields": "Campos especificados",
       "createSuccess": "Tarea creada correctamente"
     },
     "log_export": {

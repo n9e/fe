@@ -45,6 +45,7 @@ const zh_CN = {
       custom: '自定义',
       custom_validated: '数量不能超过{{maxCount}}',
       all_quantity: '总数约',
+      organize_fields: '指定字段',
       createSuccess: '任务创建成功',
     },
     log_export: {
