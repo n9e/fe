@@ -178,6 +178,8 @@ const en_US = {
     reg: 'Regex',
     reg_tip: 'Optional, can filter options using a <a>regular expression literal</a>, which consists of a pattern enclosed between slashes',
     reg_tip2: 'If you want to extract a part of the options, <a>named capture groups can be used to separate display text and value</a>',
+    reg_object_tip:
+      'For options with a separate display name, the regex matches the value. Ordinary matches preserve both fields; named groups text/value override only the corresponding field.',
     multi: 'Multi select',
     allOption: 'Include all option',
     allValue: 'Custom all value',

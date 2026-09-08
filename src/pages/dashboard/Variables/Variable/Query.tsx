@@ -10,7 +10,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import { buildVariableInterpolations } from '../utils/ajustData';
 import { useVariableManager } from '../VariableManagerContext';
 import { formatString, formatDatasource } from '../utils/formatString';
-import filterOptionsByReg from '../utils/filterOptionsByReg';
+import processQueryOptions from '../utils/processQueryOptions';
 import getValueByOptions from '../utils/getValueByOptions';
 import datasource, { VariableDatasourceQuery } from '../datasource';
 import { Props } from './types';
@@ -74,14 +74,20 @@ export default function Query(props: Props) {
 
     setErrorMsg('');
     try {
-      // 对 query 对象中所有字符串字段执行变量替换，确保依赖链执行时使用最新变量值
-      // 部分数据源（如 CloudWatch query.region）的变量引用在此处提前解析
-      const interpolatedQuery: JsonObject = {};
-      if (currentVariable.query) {
-        Object.entries(currentVariable.query).forEach(([key, val]) => {
-          interpolatedQuery[key] = typeof val === 'string' ? formatString(val, variableInterpolations) : val;
-        });
-      }
+      // 递归替换 query 树中的变量引用，覆盖 GCM filters、group_bys 等嵌套字段。
+      // currentVariable.query 来源于可序列化的表单配置，不含循环引用，故不设 visited 防护。
+      const interpolateQueryValue = (value: unknown): unknown => {
+        if (typeof value === 'string') return formatString(value, variableInterpolations);
+        if (Array.isArray(value)) return value.map(interpolateQueryValue);
+        if (value && typeof value === 'object') {
+          return Object.entries(value).reduce<Record<string, unknown>>((result, [key, item]) => {
+            result[key] = interpolateQueryValue(item);
+            return result;
+          }, {});
+        }
+        return value;
+      };
+      const interpolatedQuery = (interpolateQueryValue(currentVariable.query) ?? {}) as JsonObject;
       const query: VariableDatasourceQuery = {
         ...interpolatedQuery,
         query: formatedDefinition || formatedQuery, // query 是标准写法
@@ -93,11 +99,12 @@ export default function Query(props: Props) {
         datasourceValue,
         datasourceList,
         query,
+        variableContext: { variables: getVariables(), query: { ...currentVariable.query, range: currentRange } },
       });
       if (requestId !== requestIdRef.current) {
         return;
       }
-      const filteredOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+      const filteredOptions = processQueryOptions(options, formatedReg);
       updateVariable(name, {
         options: filteredOptions,
         value: getValueByOptions({

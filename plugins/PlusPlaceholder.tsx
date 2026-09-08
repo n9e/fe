@@ -117,3 +117,6 @@ export {
   getProject,
   getTopic,
 };
+
+// 开源版没有 Plus 变量扩展，公共注册表仍然有效。
+export const dashboardVariablePlugins: Record<string, import('../src/pages/dashboard/Variables/pluginTypes').DashboardVariablePlugin> = {};
