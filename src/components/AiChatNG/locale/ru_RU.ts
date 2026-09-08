@@ -128,6 +128,11 @@ const ru_RU = {
   input_request: {
     title: 'It needs to check something first',
   },
+  action_frame: {
+    acting: 'The assistant is working on this page',
+    done: 'Done',
+    stop: 'Stop',
+  },
   page_action: {
     title: 'Page action',
     malformed: 'This page action has no content and cannot run',

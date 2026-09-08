@@ -1,4 +1,15 @@
+import i18next from 'i18next';
 import { createDomFeedback, getSharedActionRuntime } from '@flashcatcloud/ai-kit/actions';
+
+import { NAME_SPACE } from './constants';
+
+/** The product's own colour, so the overlays look like part of the page.
+ *  Read when the overlays are first drawn, once the theme stylesheet is in. */
+function accent(): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const value = getComputedStyle(document.documentElement).getPropertyValue('--fc-fill-primary-rgb').trim();
+  return value ? value.split(/\s+/).join(',') : undefined;
+}
 
 /**
  * The one UI-action registry this app has.
@@ -26,6 +37,19 @@ import { createDomFeedback, getSharedActionRuntime } from '@flashcatcloud/ai-kit
 export const uiActionRuntime = getSharedActionRuntime({
   // Ring the target and glide a cursor onto it. Writing a form field takes a
   // millisecond, so without this an action is indistinguishable from the page
-  // glitching.
-  feedback: createDomFeedback(),
+  // glitching. The banner and the frame say it out loud: the assistant is
+  // acting on this page, and here is how to stop it.
+  feedback: createDomFeedback({
+    accent,
+    // Read at draw time, so a language switch is honoured.
+    banner: () => ({
+      acting: i18next.t('action_frame.acting', { ns: NAME_SPACE }),
+      done: i18next.t('action_frame.done', { ns: NAME_SPACE }),
+      cancel: i18next.t('action_frame.stop', { ns: NAME_SPACE }),
+    }),
+  }),
+  controlledRegion: () => document.getElementById('root') ?? document.body,
+  // Writing a field takes milliseconds; two seconds is what it takes to read
+  // the banner and see the field lit.
+  feedbackHoldMs: 2000,
 });
