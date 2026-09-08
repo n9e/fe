@@ -64,7 +64,7 @@ export default function ImportGrafanaReport(props: Props) {
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
-      } else if (!copy2ClipBoard(text)) {
+      } else if (!copy2ClipBoard(text, true)) {
         message.error(t('batch.import_grafana_report.copy'));
         return;
       }
