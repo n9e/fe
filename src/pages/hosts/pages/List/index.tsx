@@ -15,7 +15,7 @@ import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import ObsLoopHostEntry from 'plus:/parcels/ObsLoop/HostEntry';
 
 // @ts-ignore — 主机拓扑（plus parcel；开源构建下解析成空组件）
-import { HostTopoViewSwitch, HostTopoGlobalGraph, HostTopoCenterSelect, HostTopoStats, readHostTopoViewMode } from 'plus:/parcels/Targets';
+import { HostTopoViewSwitch, HostTopoGlobalGraph, HostTopoCenterSelect, readHostTopoViewMode } from 'plus:/parcels/Targets';
 
 import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
@@ -149,11 +149,6 @@ export default function index() {
                       <HostFilters value={hostFilters} onChange={setHostFilters} />
                       {/* 中心主机紧跟在筛选控件后面：它和前面几项一样都在回答「画哪些机器」 */}
                       <HostTopoCenterSelect gids={gids} />
-                    </div>
-                    {/* 图的统计放筛选条右端：它回答的是「这些条件圈出了多少东西」。
-                        self-center 让它和 32px 高的控件垂直居中 */}
-                    <div className='self-center'>
-                      <HostTopoStats />
                     </div>
                   </div>
                 </div>
