@@ -158,6 +158,54 @@ describe('dashboard unified query contract', () => {
     expect(JSON.stringify(request)).not.toContain('"values"');
   });
 
+  it('builds Elasticsearch SQL requests for timeseries and raw data modes', () => {
+    const options = {
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      datasourceList: [],
+    };
+
+    const timeseriesRequest = buildDashboardQueryRequest({
+      ...options,
+      targets: [{
+        refId: 'A',
+        kind: 'query',
+        datasource: { cate: 'elasticsearch', id: 12 },
+        query: {
+          syntax: 'sql',
+          mode: 'timeSeries',
+          sql: 'SELECT time, value FROM logs',
+          keys: { valueKey: ['value'], timeKey: 'time' },
+          builderConfig: { index: 'logs', date_field: '@timestamp' },
+        },
+      }],
+    });
+    expect(timeseriesRequest.queries).toMatchObject([{
+      ref_id: 'A',
+      result_type: 'time_series',
+      query: { syntax: 'sql', sql: 'SELECT time, value FROM logs', keys: { valueKey: 'value', timeKey: 'time' } },
+    }]);
+    const timeseriesQuery = timeseriesRequest.queries[0]?.kind === 'query' ? timeseriesRequest.queries[0].query : {};
+    expect(timeseriesQuery).not.toHaveProperty('builderConfig');
+
+    const rawRequest = buildDashboardQueryRequest({
+      ...options,
+      targets: [{
+        refId: 'B',
+        kind: 'query',
+        datasource: { cate: 'elasticsearch', id: 12 },
+        query: { syntax: 'sql', mode: 'raw', sql: 'SELECT * FROM logs' },
+      }],
+    });
+    expect(rawRequest.queries).toMatchObject([{
+      ref_id: 'B',
+      result_type: 'logs',
+      query: { sql: 'SELECT * FROM logs' },
+    }]);
+  });
+
   it('normalizes Elasticsearch and OpenSearch interval values for query-batch v2', () => {
     const request = buildDashboardQueryRequest({
       time: {
