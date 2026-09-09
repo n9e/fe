@@ -1,4 +1,5 @@
 const en_US = {
+  live: 'LIVE',
   title: 'Active alerts',
   search_placeholder: 'Multiple keywords separated by spaces',
   hours: {

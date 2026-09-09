@@ -676,6 +676,7 @@ const en_US = {
     copy: 'Copy JSON content to clipboard',
   },
   query: {
+    variable_missing_dependency: 'Variable {{name}} references missing variable(s): {{dependencies}}',
     title: 'Query',
     add_query_btn: 'Add query',
     add_expression_btn: 'Add expression',

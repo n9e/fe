@@ -42,7 +42,7 @@ export default function FullscreenList({ title, children, range, onRangeChange, 
                 <span className='absolute h-2.5 w-2.5 rounded-full border border-green-900 motion-reduce:animate-none animate-[ping_2s_ease-out_infinite] [animation-delay:0.8s]' />
                 <span className='relative z-[1] h-2 w-2 rounded-full bg-green-900' />
               </span>
-              <span>LIVE</span>
+              <span>{t('live')}</span>
             </span>
           </div>
           <Space>

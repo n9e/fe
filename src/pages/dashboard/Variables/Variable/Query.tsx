@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { Select, Space, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { WarningOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
@@ -19,6 +20,7 @@ import { getErrorMessage } from '@/pages/dashboard/utils/json';
 import type { JsonObject } from '@/pages/dashboard/types';
 
 export default function Query(props: Props) {
+  const { t } = useTranslation('dashboard');
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
   const { hide, item: variable, variableValueFixed, value, setValue } = props;
@@ -63,7 +65,7 @@ export default function Query(props: Props) {
     const availableVariableNames = new Set([...getVariables().map((item) => item.name), ...getBuiltInVariables(currentRange).map((item) => item.name)]);
     const missingDependencies = collectVariableDependencies(currentVariable).filter((dependencyName) => !availableVariableNames.has(dependencyName));
     if (missingDependencies.length > 0) {
-      const errMsg = `Variable ${currentVariable.name} references missing variable(s): ${missingDependencies.join(', ')}`;
+      const errMsg = t('query.variable_missing_dependency', { name: currentVariable.name, dependencies: missingDependencies.join(', ') });
       setErrorMsg(errMsg);
       clearLoadingIfLatestRequest();
       return Promise.reject(errMsg);

@@ -1,4 +1,5 @@
 const zh_CN = {
+  live: '实时',
   title: '活跃告警',
   search_placeholder: '模糊搜索规则和标签(多个关键词请用空格分隔)',
   hours: {

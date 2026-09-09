@@ -679,6 +679,7 @@ const zh_CN = {
     copy: '复制 JSON 内容到剪贴板',
   },
   query: {
+    variable_missing_dependency: '变量 {{name}} 引用了不存在的变量：{{dependencies}}',
     title: '查询条件',
     add_query_btn: '添加查询条件',
     add_expression_btn: '添加表达式',

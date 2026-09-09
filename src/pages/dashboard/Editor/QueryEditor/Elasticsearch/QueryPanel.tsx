@@ -119,7 +119,7 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
               <Segmented
                 size='small'
                 value={editMode}
-                options={[{ label: 'Builder', value: 'builder' }, { label: 'Code', value: 'code' }]}
+                options={[{ label: tES('builder.title'), value: 'builder' }, { label: tES('builder.code'), value: 'code' }]}
                 onChange={(value) => {
                   // 从 Code 切到 Builder 且已有 SQL 时需确认丢弃：清空 sql 和 builderConfig，
                   // 强制用 Builder 重新生成，避免残留配置生成的 SQL 与当前手写 SQL 不一致。
@@ -193,7 +193,7 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
             </Col>
           </Row>
           {IS_PLUS && (
-            <Form.Item label='Legend' {...restField} name={[field.name, 'legend']}>
+            <Form.Item label={t('query.legend')} {...restField} name={[field.name, 'legend']}>
               <LegendInput />
             </Form.Item>
           )}
