@@ -85,6 +85,9 @@ export default function List() {
             data={data}
             loading={loading}
             setRefreshFlag={setRefreshFlag}
+            onStatusChange={(ids, disabled) => {
+              setData((rows) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)));
+            }}
           />
         </div>
       </div>

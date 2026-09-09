@@ -54,6 +54,7 @@ interface Props {
   data: AlertRuleType<any>[];
   loading: boolean;
   setRefreshFlag?: (flag: string) => void;
+  onStatusChange?: (ids: React.Key[], disabled: 0 | 1) => void;
   linkTarget?: string;
   emptyGuide?: React.ReactNode;
   gids?: string;
@@ -98,6 +99,10 @@ export default function AlertRules(props: Props) {
   const [queryValue, setQueryValue] = useState<string | undefined>(defaultFilter.search);
   const [selectRowKeys, setSelectRowKeys] = useState<React.Key[]>([]);
   const [selectedRows, setSelectedRows] = useState<AlertRuleType<any>[]>([]);
+  const updateStatus = (ids: React.Key[], disabled: 0 | 1) => {
+    props.onStatusChange?.(ids, disabled);
+    setSelectedRows((rows) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)));
+  };
   const clearSelection = () => {
     setSelectRowKeys([]);
     setSelectedRows([]);
@@ -338,7 +343,7 @@ export default function AlertRules(props: Props) {
                     },
                     record.group_id,
                   ).then(() => {
-                    fetchData();
+                    updateStatus([id], disabled ? 0 : 1);
                   });
                 }}
               />
@@ -494,6 +499,7 @@ export default function AlertRules(props: Props) {
               selectRowKeys,
               selectedRows,
               getList: fetchData,
+              onStatusChange: updateStatus,
               clearSelection,
             })}
           <TableColumnSelect
