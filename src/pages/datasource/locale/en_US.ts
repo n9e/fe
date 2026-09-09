@@ -241,6 +241,8 @@ const en_US = {
     no_busi_group: 'No business group yet — create one under Organization first',
     imported_dashboards: 'Imported {{count}} dashboard(s).',
     goto_dashboards: 'View them',
+    imported_alerts: 'Imported {{count}} alert rule(s).',
+    goto_alerts: 'View them',
     already_imported: '{{name}} (imported)',
     import_failed: 'Some dashboards failed to import',
     import_error: 'Import failed, please try again later',
@@ -249,7 +251,7 @@ const en_US = {
     pick_group: 'Rule category',
     group_option: '{{name}} ({{count}})',
     selected_count: '{{checked}} / {{total}} selected',
-    datasource_bound: 'The current datasource (ID: {{id}}) will be bound automatically on import',
+    datasource_bound: 'Datasource "{{name}}" will be bound automatically on import',
   },
 };
 export default en_US;

@@ -41,8 +41,11 @@
 }
 
 // inline action: icon button
-.fc-table-action-inline-btn.ant-btn {
+// Keep `.ant-btn-icon-only` in the selector so this fixed 24px box outranks the
+// dark theme's later-loaded 32px icon-button baseline.
+.fc-table-action-inline-btn.ant-btn.ant-btn-icon-only {
   display: inline-flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 24px;

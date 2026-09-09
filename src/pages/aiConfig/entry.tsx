@@ -11,13 +11,13 @@ const AgentList = React.lazy(() => import('./agents/pages/List'));
 const LLMConfigList = React.lazy(() => import('./llmConfigs/pages/List'));
 const SkillList = React.lazy(() => import('./skills/pages/List'));
 
-/** Soft-redirect legacy AI config list pages into FlashAI (ENT only). */
-function RedirectToFlashAiLlmConfigs() {
-  return <Redirect to='/flashai/llm-configs' />;
+/** Soft-redirect legacy AI config list pages into Nightingale AI (专业版). */
+function RedirectToNightingaleAiLlmConfigs() {
+  return <Redirect to='/nightingale-ai/llm-configs' />;
 }
 
-function RedirectToFlashAiSkills() {
-  return <Redirect to='/flashai/skills' />;
+function RedirectToNightingaleAiSkills() {
+  return <Redirect to='/nightingale-ai/skills' />;
 }
 
 export default {
@@ -29,13 +29,12 @@ export default {
     },
     {
       path: `${llmConfigPath}`,
-      // Open-source keeps standalone lists; ENT hosts them under /flashai/<item>.
-      component: IS_ENT ? RedirectToFlashAiLlmConfigs : LLMConfigList,
+      component: IS_ENT ? LLMConfigList : RedirectToNightingaleAiLlmConfigs,
       exact: true,
     },
     {
       path: `${skillPath}`,
-      component: IS_ENT ? RedirectToFlashAiSkills : SkillList,
+      component: IS_ENT ? SkillList : RedirectToNightingaleAiSkills,
       exact: true,
     },
   ],

@@ -24,6 +24,7 @@ import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
 import Edit from './Edit';
 import { ILink } from '../types';
+import useStableValue from '../hooks/useStableValue';
 import './style.less';
 
 interface IProps {
@@ -36,6 +37,7 @@ export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { editable = true, value } = props;
   const indexPatternsAuthorized = useIsAuthorized(['/dashboards/put']);
+  const stableValue = useStableValue(value);
   const links = useMemo(() => {
     const data: {
       id: string;
@@ -44,7 +46,7 @@ export default function index(props: IProps) {
       url: string;
       targetBlank?: boolean;
     }[] = [];
-    _.forEach(value, (item) => {
+    _.forEach(stableValue, (item) => {
       if (item.type === 'dashboards') {
         _.forEach(item.dashboards, (dashboard) => {
           data.push({
@@ -63,7 +65,7 @@ export default function index(props: IProps) {
       }
     });
     return data;
-  }, [JSON.stringify(value)]);
+  }, [stableValue]);
 
   // 如果没有编辑权限并且没有配置链接，则不渲染
   if (!indexPatternsAuthorized && _.isEmpty(value)) return null;
@@ -73,38 +75,42 @@ export default function index(props: IProps) {
       <Space align='baseline'>
         <Dropdown
           overlay={
-            <Menu>
-              {editable && (
-                <Menu.Item
-                  key='edit_links'
-                  onClick={() => {
-                    Edit({
-                      initialValues: value,
-                      onOk: (newValue) => {
-                        props.onChange(newValue);
+            <Menu
+              items={[
+                ...(editable
+                  ? [
+                      {
+                        key: 'edit_links',
+                        label: (
+                          <Space>
+                            <EditOutlined />
+                            {t('common:btn.edit')}
+                          </Space>
+                        ),
+                        onClick: () => {
+                          Edit({
+                            initialValues: value as ILink[],
+                            onOk: props.onChange as (value: unknown) => void,
+                            // 组件内部使用 destroy 关闭弹窗，onCancel 为类型所需
+                            onCancel: () => undefined,
+                          });
+                        },
                       },
-                    });
-                  }}
-                >
-                  <Space>
-                    <EditOutlined />
-                    {t('common:btn.edit')}
-                  </Space>
-                </Menu.Item>
-              )}
-              {_.map(links, (item) => {
-                return (
-                  <Menu.Item key={item.id}>
+                    ]
+                  : []),
+                ..._.map(links, (item) => ({
+                  key: item.id,
+                  label: (
                     <a href={item.url} target={item.targetBlank ? '_blank' : '_self'}>
                       <Space>
                         {item.type === 'dashboards' ? <DashboardOutlined /> : <LinkOutlined />}
                         {item.title}
                       </Space>
                     </a>
-                  </Menu.Item>
-                );
-              })}
-            </Menu>
+                  ),
+                })),
+              ]}
+            />
           }
         >
           <Button icon={<LinkOutlined />} />

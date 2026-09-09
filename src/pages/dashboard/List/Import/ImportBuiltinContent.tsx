@@ -10,7 +10,12 @@ import { createDashboard } from '@/services/dashboardV2';
 import EditItems from '@/pages/dashboard/VariableConfig/EditItems';
 import { IVariable } from '@/pages/dashboard/VariableConfig/definition';
 
-export default function ImportBuiltinContent({ busiId, onOk }) {
+interface ImportBuiltinContentProps {
+  busiId: number;
+  onOk: () => void;
+}
+
+export default function ImportBuiltinContent({ busiId, onOk }: ImportBuiltinContentProps) {
   const { t } = useTranslation('dashboard');
   const [filter, setFilter] = useState<{
     query?: string;
@@ -256,11 +261,7 @@ export default function ImportBuiltinContent({ busiId, onOk }) {
             end: 'now',
           }}
           id={_.toString(varsEditData.id)} // 适配 EditItem 组件的 id 类型
-          dashboard={
-            {
-              id: varsEditData.id,
-            } as any
-          }
+          dashboard={{ id: varsEditData.id ?? 0, public: 0, public_cate: 0 }}
           editMode={0}
         />
       )}

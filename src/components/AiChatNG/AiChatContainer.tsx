@@ -246,6 +246,7 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
         forceRender
         zIndex={1001}
         bodyStyle={{ padding: 16 }}
+        className='n9e-antd-drawer'
       >
         {drawerContent(<div ref={drawerSlotCallbackRef} className='h-full min-h-0' />)}
       </Drawer>

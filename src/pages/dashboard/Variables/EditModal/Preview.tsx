@@ -7,7 +7,7 @@ interface Props {
   errorMsg?: string;
   options?: {
     label: string;
-    value: string;
+    value: string | number;
   }[];
   run?: () => void;
   loading?: boolean;

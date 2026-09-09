@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Select, Button, InputNumber, AutoComplete } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { VerticalRightOutlined, VerticalLeftOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import _ from 'lodash';
 import { groupByCates } from './configs';
 
-export default function Terms({ prefixField, fieldsOptions, values }) {
+interface TermsProps {
+  prefixField: FormListFieldData;
+  fieldsOptions: Array<{ value: string }>;
+  values: Array<{ ref: string; func: string; field?: string }>;
+}
+
+export default function Terms({ prefixField, fieldsOptions, values }: TermsProps) {
   const { t } = useTranslation('alertRules');
   const [expanded, setExpanded] = useState(false);
   const [search, setSearch] = useState('');
+  const restPrefixField = _.omit(prefixField, 'key');
 
   return (
     <Row gutter={16}>
       <Col flex='auto'>
         <Row gutter={16}>
           <Col span={expanded ? 6 : 12}>
-            <Form.Item {...prefixField} name={[prefixField.name, 'cate']} noStyle>
+            <Form.Item {...restPrefixField} name={[prefixField.name, 'cate']} noStyle>
               <Select style={{ width: '100%' }}>
                 {groupByCates.map((func) => (
                   <Select.Option key={func} value={func}>
@@ -28,7 +36,7 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
           </Col>
           <Col span={expanded ? 6 : 12}>
             <InputGroupWithFormItem label='Field key' labelWidth={80}>
-              <Form.Item {...prefixField} name={[prefixField.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
+              <Form.Item {...restPrefixField} name={[prefixField.name, 'field']} rules={[{ required: true, message: t('dashboard:query.es.field_key_msg') }]}>
                 <AutoComplete
                   dropdownMatchSelectWidth={false}
                   options={_.filter(fieldsOptions, (item) => {
@@ -47,21 +55,21 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
             <>
               <Col span={6}>
                 <InputGroupWithFormItem label={t('datasource:es.terms.size')}>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'size']} noStyle>
+                  <Form.Item {...restPrefixField} name={[prefixField.name, 'size']} noStyle>
                     <InputNumber style={{ width: '100%' }} min={0} />
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>
               <Col span={6}>
                 <InputGroupWithFormItem label={t('datasource:es.terms.min_doc_count')}>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'min_doc_count']} noStyle>
+                  <Form.Item {...restPrefixField} name={[prefixField.name, 'min_doc_count']} noStyle>
                     <InputNumber style={{ width: '100%' }} />
                   </Form.Item>
                 </InputGroupWithFormItem>
               </Col>
               <Col span={6}>
                 <InputGroupWithFormItem label='Order'>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'order']}>
+                  <Form.Item {...restPrefixField} name={[prefixField.name, 'order']}>
                     <Select>
                       <Select.Option value='desc'>Descend</Select.Option>
                       <Select.Option value='asc'>Ascend</Select.Option>
@@ -71,7 +79,7 @@ export default function Terms({ prefixField, fieldsOptions, values }) {
               </Col>
               <Col span={6}>
                 <InputGroupWithFormItem label='OrderBy'>
-                  <Form.Item {...prefixField} name={[prefixField.name, 'order_by']}>
+                  <Form.Item {...restPrefixField} name={[prefixField.name, 'order_by']}>
                     <Select>
                       <Select.Option value='_key'>Term value</Select.Option>
                       <Select.Option value='_count'>Count</Select.Option>

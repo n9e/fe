@@ -74,6 +74,7 @@ export default function AddTo() {
             }}
           />
         }
+        className='n9e-antd-drawer'
       >
         {addToRecordingRuleModalState.visible && (
           <RecordingRuleForm

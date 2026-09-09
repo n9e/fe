@@ -17,7 +17,11 @@
 import _ from 'lodash';
 import { FONT_FAMILY } from '@/utils/constant';
 
-export function bestFitElemCountPerRow(bucketLen, width, height) {
+interface HexbinCalculatedValue {
+  stat: number;
+}
+
+export function bestFitElemCountPerRow(bucketLen: number, width: number, height: number) {
   let countPerRow = bucketLen;
   for (let r = 1, base = Infinity; r <= bucketLen; r += 1) {
     const w = Math.floor(width / r);
@@ -91,7 +95,7 @@ export function getCanvasFontSize(el = document.body) {
   return `${fontWeight} ${fontSize} ${fontFamily}`;
 }
 
-export function getColorScaleLinearDomain(calculatedValues: any[], colorDomainAuto: boolean, colorDomain: number[]) {
+export function getColorScaleLinearDomain(calculatedValues: HexbinCalculatedValue[], colorDomainAuto: boolean, colorDomain: number[]) {
   if (!colorDomainAuto && colorDomain?.length) {
     return [colorDomain[0], (colorDomain[0] + colorDomain[1]) / 2, colorDomain[1]];
   }

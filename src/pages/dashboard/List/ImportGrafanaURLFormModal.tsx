@@ -15,10 +15,11 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
+import { Modal, Form, Input, Select, Space, Switch, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import { HelpLink } from '@/components/pageLayout';
 import { updateDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
 import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
@@ -33,21 +34,34 @@ function index(props: Props & ModalWrapProps) {
   const { visible, destroy, initialValues, onOk } = props;
   const [form] = Form.useForm();
 
+  const handleClose = () => {
+    form.resetFields();
+    destroy();
+  };
+
   useEffect(() => {
+    let cancelled = false;
     if (initialValues?.id) {
       getDashboard(initialValues.id).then((res) => {
         let configs = {} as IDashboardConfig;
         try {
-          configs = JSONParse(res.configs);
+          configs = JSONParse(res.configs) as IDashboardConfig;
         } catch (e) {
           console.warn(e);
         }
+        if (cancelled) return;
+        form.resetFields();
         form.setFieldsValue({
+          iframe_url: configs.iframe_url,
+          showTimePicker: configs.showTimePicker ?? false,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
       });
     }
+    return () => {
+      cancelled = true;
+    };
   }, [initialValues?.id]);
 
   return (
@@ -55,7 +69,7 @@ function index(props: Props & ModalWrapProps) {
       destroyOnClose
       title={t('edit_title')}
       visible={visible}
-      onCancel={destroy}
+      onCancel={handleClose}
       onOk={() => {
         if (initialValues?.id) {
           form.validateFields().then(async (values) => {
@@ -67,18 +81,19 @@ function index(props: Props & ModalWrapProps) {
             });
             message.success(t('common:success.edit'));
             if (result) {
-              const configs = JSONParse(result.configs);
+              const configs = JSONParse(result.configs) as IDashboardConfig;
               await updateDashboardConfigs(result.id, {
                 configs: JSON.stringify({
                   ...configs,
                   iframe_url: values.iframe_url,
+                  showTimePicker: values.showTimePicker,
                 }),
               });
             }
             if (onOk) {
               onOk();
             }
-            destroy();
+            handleClose();
           });
         }
       }}
@@ -124,7 +139,12 @@ function index(props: Props & ModalWrapProps) {
           <Input.TextArea autoSize={{ minRows: 1 }} />
         </Form.Item>
         <Form.Item
-          label={t('batch.import_grafana_url_label')}
+          label={
+            <Space>
+              {t('batch.import_grafana_url_label')}
+              <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/dashboard/integrated-dashboard/' />
+            </Space>
+          }
           name='iframe_url'
           rules={[
             {
@@ -133,6 +153,9 @@ function index(props: Props & ModalWrapProps) {
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 2 }} />
+        </Form.Item>
+        <Form.Item label={t('batch.show_time_picker')} name='showTimePicker' initialValue={false} valuePropName='checked' extra={t('batch.show_time_picker_tip')}>
+          <Switch />
         </Form.Item>
       </Form>
     </Modal>

@@ -24,6 +24,7 @@ export default function index() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['options', 'legend'];
   const tableColumn = ['max', 'min', 'avg', 'sum', 'last', 'variance', 'stdDev'];
+  const defaultLegendColumns = ['max', 'min', 'avg', 'sum', 'last']; // table 模式未配置显示列时的默认值
   const displayMode = Form.useWatch([...namePrefix, 'displayMode']);
   const placement = Form.useWatch([...namePrefix, 'placement']);
   const legendSizeKey = placement === 'bottom' ? 'height' : 'width';
@@ -60,7 +61,7 @@ export default function index() {
         </Col>
         <Col span={24}>
           <Form.Item label={t('panel.options.legend.columns')} name={[...namePrefix, 'columns']} hidden={displayMode === 'hidden'}>
-            <Select mode='multiple'>
+            <Select mode='multiple' placeholder={displayMode === 'list' ? t('panel.options.legend.none') : _.map(defaultLegendColumns, (item) => t(`panel.options.legend.${item}`)).join(', ')}>
               {_.map(tableColumn, (item) => {
                 return (
                   <Select.Option key={item} value={item}>

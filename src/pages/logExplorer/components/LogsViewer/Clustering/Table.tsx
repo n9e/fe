@@ -1,5 +1,5 @@
 // 日志聚类，目前仅支持了doris和es
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Space, Tag, Select, Divider, Button, Tooltip } from 'antd';
 import IconFont from '@/components/IconFont';
 import DocumentDrawer from '@/components/DocumentDrawer';
@@ -135,7 +135,9 @@ export default function TableCpt(props: Props) {
     setPatternHistogramState({ visible: false });
   }, [logsHash]);
 
-  const getColumns = () => {
+  // P1-6: getColumns 改为 useMemo，避免每次渲染都对全量 data 做文本宽度扫描。
+  // 宽度相关输入为 data/groupByFields/options/scope；onValueFilter 语义稳定，不参与比较。
+  const columns = useMemo(() => {
     const TAG_PADDING = 14;
     const CELL_PADDING = 16;
     const MIN_COL_WIDTH = 200;
@@ -191,7 +193,7 @@ export default function TableCpt(props: Props) {
       );
     };
 
-    const columns: any[] = [
+    const cols: any[] = [
       {
         key: 'count',
         width: 40,
@@ -206,7 +208,7 @@ export default function TableCpt(props: Props) {
       })),
     ];
     if (options?.lines === 'true') {
-      columns.unshift({
+      cols.unshift({
         name: t('logs.settings.lines'),
         key: '___lines___',
         width: 40,
@@ -218,7 +220,7 @@ export default function TableCpt(props: Props) {
       });
     }
     if (scope === 'full') {
-      columns.unshift({
+      cols.unshift({
         name: '',
         key: 'chart',
         width: 40,
@@ -236,8 +238,8 @@ export default function TableCpt(props: Props) {
         },
       });
     }
-    return columns;
-  };
+    return cols;
+  }, [t, data, groupByFields, options, scope, setPatternHistogramState, cate, logsHash]);
 
   const clusteringPortal = (
     <Space>
@@ -398,7 +400,7 @@ export default function TableCpt(props: Props) {
           rowKeyGetter={(row) => {
             return row[id_key] || '';
           }}
-          columns={getColumns()}
+          columns={columns}
           rows={data}
         />
       )}

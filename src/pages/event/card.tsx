@@ -324,6 +324,7 @@ function Card(props: Props, ref) {
         onClose={onClose}
         visible={visible}
         width='80%'
+        className='n9e-antd-drawer'
       >
         <Table
           tableLayout='fixed'

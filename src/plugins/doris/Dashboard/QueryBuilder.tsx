@@ -9,6 +9,7 @@ import { CommonStateContext } from '@/App';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
+import { isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target';
 import AddQueryButtons from '@/pages/dashboard/Editor/Components/AddQueryButtons';
 import QueryExtraActions from '@/pages/dashboard/Components/QueryExtraActions';
 
@@ -39,14 +40,14 @@ export default function DorisQueryBuilder({ datasourceValue }) {
             <>
               <Collapse>
                 {_.map(fields, (field, index) => {
+                  const restField = _.omit(field, 'key');
                   const prefixName = ['targets', field.name];
                   const mode = _.get(targets, [field.name, 'query', 'mode']);
                   const queryStrategy = _.get(targets, [field.name, 'query', 'queryStrategy']);
                   const editMode = _.get(targets, [field.name, 'query', 'editMode'], 'code');
                   const sql = _.get(targets, [field.name, 'query', 'query']);
                   const builderConfig = _.get(targets, [field.name, 'query', 'builderConfig']);
-                  const { __mode__ } = targets?.[field.name] || {};
-                  if (__mode__ === '__expr__') {
+                  if (isExpressionTarget(targets?.[field.name])) {
                     return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
                   }
                   return (
@@ -72,12 +73,12 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                         </Space>
                       }
                     >
-                      <Form.Item noStyle {...field} name={[field.name, 'refId']}>
+                      <Form.Item noStyle {...restField} name={[field.name, 'refId']}>
                         <div />
                       </Form.Item>
                       <div className='mb-4 flex justify-between items-center'>
                         <Space>
-                          <Form.Item {...field} name={[field.name, 'query', 'queryStrategy']} initialValue='sql' noStyle>
+                          <Form.Item {...restField} name={[field.name, 'query', 'queryStrategy']} initialValue='sql' noStyle>
                             <Radio.Group
                               size='small'
                               options={[
@@ -188,7 +189,7 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                       {queryStrategy === 'sql' && (
                         <Form.Item
                           label='Legend'
-                          {...field}
+                          {...restField}
                           name={[field.name, 'legend']}
                           tooltip={{
                             getPopupContainer: () => document.body,

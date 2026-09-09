@@ -34,7 +34,6 @@ import { ApiOutlined } from '@ant-design/icons';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 import { CommonStateContext } from '@/App';
-import { N9E_PATHNAME } from '@/utils/constant';
 
 import { NAME_SPACE } from './constants';
 
@@ -103,7 +102,7 @@ export default function OAuthConsent() {
   const decide = (decision: 'allow' | 'deny') => {
     setSubmitting(decision);
     setError(null);
-    request(`/api/${N9E_PATHNAME}/mcp/oauth/authorize`, {
+    request('/api/n9e/mcp/oauth/authorize', {
       method: RequestMethod.Post,
       data: { req, decision },
     })

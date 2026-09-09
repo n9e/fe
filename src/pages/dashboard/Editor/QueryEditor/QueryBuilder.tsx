@@ -17,7 +17,7 @@ interface Props {
   range: IRawTimeRange;
   panelWidth?: number;
   cate: string;
-  datasourceValue: number;
+  datasourceValue?: number;
 }
 
 export default function QueryBuilder(props: Props) {

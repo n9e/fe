@@ -53,7 +53,8 @@ const en_US = {
     url_tip: 'The target address to receive notification requests',
     method: 'Method',
     header: 'Header',
-    header_tip: 'Custom HTTP headers to include in the request, such as BasicAuth credentials',
+    header_tip:
+      'Custom HTTP headers to include in the request, such as BasicAuth credentials. The URL, headers, parameter values and body can reference variables from System Settings - Variable Settings with {{.variable_name}}, so credentials need not be stored here in plaintext',
     header_key: 'Key',
     header_value: 'Value',
     timeout: 'Timeout (unit: ms)',

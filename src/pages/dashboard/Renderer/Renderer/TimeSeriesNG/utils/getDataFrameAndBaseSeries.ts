@@ -24,7 +24,10 @@ interface OldSeriesItem {
   data: [Ts: number, Value: number][]; // [unixTimestamp, value]
   name?: string;
   isExp?: boolean;
+  bucketInterval?: number;
 }
+
+export type { OldSeriesItem };
 
 export type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
 
@@ -44,7 +47,7 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
   // Extract all timestamps
   for (const item of result) {
     for (const data of item.data) {
-      const label = data.name === undefined ? getSerieName(data.metric, { legend: data.target?.legend, ref: data.isExp ? data.refId : undefined }) : data.name;
+      const label = data.name === undefined ? getSerieName(data.metric, { legend: data.target?.legend, ref: data.isExp ? data.refId : undefined }) : (data.name as string);
       baseSeries.push({ label });
       for (const [ts] of data.values) {
         // Add timestamp if not exists
@@ -79,7 +82,12 @@ export interface BaseSeriesItem {
   show: boolean;
   label: string;
   n9e_internal: {
-    [index: string]: any;
+    id: string;
+    refId: string;
+    bucketInterval?: number;
+    offset?: number;
+    metric: Record<string, string>;
+    values?: (number | null | undefined)[];
   };
 }
 
@@ -99,7 +107,7 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
   // Extract all timestamps
   for (const item of oldSeries) {
     // TODO: 如果没有在 datasource 环节里面设置 name，这里根据 metric、target、refId 生成一个 name
-    const label = item.name === undefined ? getSerieName(item.metric, { legend: item.target?.legend, ref: item.isExp ? item.refId : undefined }) : item.name;
+    const label = item.name === undefined ? getSerieName(item.metric, { legend: item.target?.legend, ref: item.isExp ? item.refId : undefined }) : (item.name as string);
     baseSeries.push({
       show: true,
       label,
@@ -107,6 +115,7 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
       n9e_internal: {
         id: item.id,
         refId: item.refId,
+        bucketInterval: item.bucketInterval,
         offset: item.offset,
         metric: item.metric,
       },

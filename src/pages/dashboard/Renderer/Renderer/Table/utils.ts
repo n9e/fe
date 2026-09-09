@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { useRef } from 'react';
+import type { IStandardOptions, IValueMapping } from '@/pages/dashboard/types';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
 import { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 
@@ -106,14 +107,14 @@ export function ajustFiledValue(
   if (match.type === 'byFrameRefID') {
     const overrideProps = getOverridePropertiesByName(overrides, 'byFrameRefID', match.value);
     if (!_.isEmpty(overrideProps)) {
-      textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions, overrideProps?.valueMappings);
+      textObj = getSerieTextObj(record?.stat, overrideProps?.standardOptions as IStandardOptions | undefined, overrideProps?.valueMappings as IValueMapping[] | undefined);
     }
     return textObj;
   }
   if (match.type === 'byName') {
     const overrideProps = getOverridePropertiesByName(overrides, 'byName', match.value);
     if (!_.isEmpty(overrideProps)) {
-      textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions, overrideProps?.valueMappings);
+      textObj = getSerieTextObj(textObj.text, overrideProps?.standardOptions as IStandardOptions | undefined, overrideProps?.valueMappings as IValueMapping[] | undefined);
     }
     return textObj;
   }

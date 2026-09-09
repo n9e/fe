@@ -5,33 +5,40 @@ import { Dashboard } from '@/store/dashboardInterface';
 import Editor from '../Editor';
 import { updatePanelsWithNewPanel, panelsMergeToConfigs, updatePanelsInsertNewPanelToRow, sortPanelsByGridLayout, ajustPanels, processRepeats } from './utils';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import type { IPanel } from '../types';
+
+export interface EditorModalData {
+  mode: 'add' | 'edit';
+  visible: boolean;
+  id: string;
+  initialValues: IPanel;
+  panelWidth?: number;
+}
+
+export interface EditorModalHandle {
+  setEditorData: React.Dispatch<React.SetStateAction<EditorModalData>>;
+}
 
 interface Props {
   range: IRawTimeRange;
   timezone: string;
   setTimezone: (timezone: string) => void;
   dashboard: Dashboard;
-  panels: any[];
-  setPanels: (panels: any[]) => void;
-  updateDashboardConfigs: (dashboardId: number, configs: { configs: string }, shouldMarkUnsaved?: boolean) => Promise<any>;
-  onUpdated: (res: any) => void;
+  panels: IPanel[];
+  setPanels: (panels: IPanel[]) => void;
+  updateDashboardConfigs: (dashboardId: number, configs: { configs: string }, shouldMarkUnsaved?: boolean) => Promise<unknown>;
+  onUpdated: (res: unknown) => void;
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
-function EditorModal(props: Props, ref) {
+function EditorModal(props: Props, ref: React.ForwardedRef<EditorModalHandle>) {
   const { range, timezone, setTimezone, dashboard, panels, setPanels, updateDashboardConfigs, onUpdated } = props;
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
-  const [editorData, setEditorData] = useState<{
-    mode: string;
-    visible: boolean;
-    id: string;
-    initialValues: any;
-    panelWidth?: number;
-  }>({
+  const [editorData, setEditorData] = useState<EditorModalData>({
     mode: 'add',
     visible: false,
     id: '',
-    initialValues: {} as any,
+    initialValues: {} as IPanel,
     panelWidth: undefined,
   });
 
@@ -75,4 +82,4 @@ function EditorModal(props: Props, ref) {
   );
 }
 
-export default forwardRef(EditorModal);
+export default forwardRef<EditorModalHandle, Props>(EditorModal);

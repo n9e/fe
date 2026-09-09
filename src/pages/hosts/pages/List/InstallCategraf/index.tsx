@@ -12,7 +12,7 @@ import { localizeDocUrl } from '@/utils/docUrl';
 import { CATEGRAF_TROUBLESHOOT_DOC, NS } from '../../../constants';
 import { CategrafInstallMeta } from '../../../services';
 import CommandBlock from '../components/CommandBlock';
-import { buildInstallCommand, buildManualCommand, isValidServerAddr, normalizeServerAddr } from './buildCommand';
+import { buildInstallCommand, buildManualCommand, isValidServerAddr, pickDefaultServerAddr } from './buildCommand';
 import useTargetArrival from './useTargetArrival';
 
 interface Props {
@@ -30,7 +30,7 @@ export default function InstallCategraf(props: Props) {
 
   // 输入框存原始字符串，只在拼命令与校验时 normalize，
   // 否则用户刚敲一个字符就被补成 http://x 很难继续输入
-  const [addr, setAddr] = useState<string>(() => meta.base_url || normalizeServerAddr(siteInfo?.site_url) || window.location.origin);
+  const [addr, setAddr] = useState<string>(() => pickDefaultServerAddr({ metaBaseURL: meta.base_url, siteURL: siteInfo?.site_url, origin: window.location.origin }));
   const [authUser, setAuthUser] = useState('');
   const [authPass, setAuthPass] = useState('');
 

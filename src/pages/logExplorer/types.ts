@@ -23,6 +23,8 @@ export interface LogExplorerTabItem {
   name?: string;
   isInited?: boolean;
   formValues?: any;
+  /** 新增页签标记：仅运行时存在（不持久化），激活时跳过自动查询 */
+  isNewTab?: boolean;
 }
 
 export interface DefaultFormValuesControl {
@@ -30,6 +32,10 @@ export interface DefaultFormValuesControl {
   setIsInited: () => void;
   defaultFormValues?: any;
   setDefaultFormValues?: (query: any) => void;
+  /** P2 方案A：页签切走时快照当前表单值（含未执行的修改），供 LRU 换出后恢复 */
+  onSnapshot?: (formValues: any) => void;
+  /** 新增页签激活时不自动查询（只恢复查询条件）；刷新/切回等其余恢复场景自动查询 */
+  isNewTab?: boolean;
 }
 
 export interface RenderCommonSettingsParams {

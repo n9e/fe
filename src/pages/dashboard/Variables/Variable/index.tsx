@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
+import { useDeepCompareEffect } from 'ahooks';
 
 import { IVariable } from '../types';
 
@@ -23,7 +24,7 @@ export default function index(props: Props) {
 
   const [value, setValue] = useState<IVariable['value']>(propValue);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     let curValue = propValue;
     if (type === 'query' || type === 'custom') {
       if (multi) {
@@ -35,7 +36,7 @@ export default function index(props: Props) {
       }
     }
     setValue(curValue);
-  }, [JSON.stringify(propValue)]);
+  }, [propValue]);
 
   // 兼容旧数据，constant 的 hide 默认为 true
   const hide = item.hide || (type === 'constant' && item.hide === undefined);

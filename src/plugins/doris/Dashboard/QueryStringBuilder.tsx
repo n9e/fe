@@ -25,6 +25,7 @@ export default function QueryStringBuilder(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
   const { field, datasourceValue } = props;
+  const restField = _.omit(field, 'key');
   const form = Form.useFormInstance();
   const queryValues = Form.useWatch(['targets', field.name, 'query']);
 
@@ -66,7 +67,7 @@ export default function QueryStringBuilder(props: Props) {
         <Col flex='auto'>
           <Row gutter={10} wrap className='min-w-[300px]'>
             <Col span={12}>
-              <Form.Item {...field} label={t('query.database')} name={[field.name, 'query', 'database']} rules={[{ required: true, message: t('query.database_msg') }]}>
+              <Form.Item {...restField} label={t('query.database')} name={[field.name, 'query', 'database']} rules={[{ required: true, message: t('query.database_msg') }]}>
                 <DatabaseSelect
                   datasourceValue={datasourceValue}
                   onChange={() => {
@@ -82,7 +83,7 @@ export default function QueryStringBuilder(props: Props) {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item {...field} label={t('query.table')} name={[field.name, 'query', 'table']} rules={[{ required: true, message: t('query.table_msg') }]}>
+              <Form.Item {...restField} label={t('query.table')} name={[field.name, 'query', 'table']} rules={[{ required: true, message: t('query.table_msg') }]}>
                 <TableSelect
                   datasourceValue={datasourceValue}
                   database={queryValues?.database}
@@ -100,7 +101,7 @@ export default function QueryStringBuilder(props: Props) {
           </Row>
         </Col>
         <Col flex='none'>
-          <Form.Item {...field} label={t('query.time_field')} name={[field.name, 'query', 'time_field']} rules={[{ required: true, message: t('query.time_field_msg') }]}>
+          <Form.Item {...restField} label={t('query.time_field')} name={[field.name, 'query', 'time_field']} rules={[{ required: true, message: t('query.time_field_msg') }]}>
             <DateFieldSelect
               dateFields={_.filter(indexData, (item) => {
                 return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
@@ -127,7 +128,7 @@ export default function QueryStringBuilder(props: Props) {
             />
           </Space>
         }
-        {...field}
+        {...restField}
         name={[field.name, 'query', 'query']}
       >
         <QueryInput />

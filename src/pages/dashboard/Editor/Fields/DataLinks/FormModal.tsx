@@ -24,12 +24,10 @@ export default function FormModal(props: Props) {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (modalState.visible) {
-      form.setFieldsValue(modalState.data);
-    } else {
-      form.resetFields();
-    }
-  }, [modalState.visible]);
+    if (!modalState.visible) return;
+    form.resetFields();
+    form.setFieldsValue(modalState.data);
+  }, [form, modalState.visible]);
 
   return (
     <Modal

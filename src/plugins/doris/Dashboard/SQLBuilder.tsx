@@ -21,6 +21,7 @@ export default function SQLBuilder(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
   const { field, datasourceValue, mode } = props;
+  const restField = _.omit(field, 'key');
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
   const queryValueRef = useRef<string>();
   const chartForm = Form.useFormInstance();
@@ -77,7 +78,7 @@ export default function SQLBuilder(props: Props) {
             </Tooltip>
           </Space>
         }
-        {...field}
+        {...restField}
         name={[field.name, 'query', 'query']}
         validateTrigger={['onBlur']}
         rules={[

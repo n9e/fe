@@ -20,6 +20,7 @@ interface IProps {
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation('db_tdengine');
   const { span = 6, prefixField = {}, prefixName = [], disabled, mode, expandTriggerVisible = true, showUnit } = props;
+  const restPrefixField = _.omit(prefixField, 'key');
   const [open, setOpen] = useState(!!props.expanded);
 
   return (
@@ -51,7 +52,7 @@ function AdvancedSettings(props: IProps) {
                     </span>
                   }
                 >
-                  <Form.Item {...prefixField} name={[...prefixName, 'keys', 'metricKey']} style={{ width: '100%' }}>
+                  <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'metricKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
                   </Form.Item>
                 </InputGroupWithFormItem>
@@ -67,7 +68,7 @@ function AdvancedSettings(props: IProps) {
                     </span>
                   }
                 >
-                  <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
+                  <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
                   </Form.Item>
                 </InputGroupWithFormItem>
@@ -75,7 +76,7 @@ function AdvancedSettings(props: IProps) {
               {showUnit && (
                 <Col span={span}>
                   <InputGroupWithFormItem label={t('common:unit')}>
-                    <Form.Item {...prefixField} name={[prefixField.name, 'unit']} initialValue='none' noStyle>
+                    <Form.Item {...restPrefixField} name={[prefixField.name, 'unit']} initialValue='none' noStyle>
                       <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
                     </Form.Item>
                   </InputGroupWithFormItem>
@@ -95,7 +96,7 @@ function AdvancedSettings(props: IProps) {
                   </span>
                 }
               >
-                <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='2006-01-02T15:04:05'>
+                <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='2006-01-02T15:04:05'>
                   <Input disabled={disabled} />
                 </Form.Item>
               </InputGroupWithFormItem>

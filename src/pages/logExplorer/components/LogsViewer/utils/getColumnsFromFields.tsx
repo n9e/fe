@@ -62,6 +62,19 @@ export default function getColumnsFromFields(params: {
     }
   }
 
+  // P0-6: 预构建 id → index 映射，避免每个单元格 formatter 里 O(n) 反查行号（整表 O(行²×列)）
+  const rowIndexMap = new Map<string | number, number>();
+  if (data) {
+    _.forEach(data, (row, idx) => {
+      rowIndexMap.set(row[id_key], idx);
+    });
+  }
+  const getRowIndex = (row: { [key: string]: any }) => {
+    if (!data) return -1;
+    const idx = rowIndexMap.get(row[id_key]);
+    return idx === undefined ? -1 : idx;
+  };
+
   const columns: any[] = _.map(fields, (item) => {
     const organizeFields = options?.organizeFields || [];
     const iconsWidth = _.includes(organizeFields, item) ? 0 : 20; // 预留图标宽度
@@ -96,7 +109,7 @@ export default function getColumnsFromFields(params: {
       ),
       formatter: (params) => {
         const record = params.row;
-        const idx = _.findIndex(data, { [id_key]: params.row[id_key] });
+        const idx = getRowIndex(params.row);
         const highlight = highlights?.[idx] || {};
         let fieldValue = record[item];
 
@@ -131,7 +144,7 @@ export default function getColumnsFromFields(params: {
       sortable: true,
       resizable: false,
       formatter: ({ row }) => {
-        const idx = _.findIndex(data, { [id_key]: row[id_key] });
+        const idx = getRowIndex(row);
         return (
           <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
             <div
@@ -154,7 +167,7 @@ export default function getColumnsFromFields(params: {
       width: 40,
       resizable: false,
       formatter: ({ row }) => {
-        const idx = _.findIndex(data, { [id_key]: row[id_key] });
+        const idx = getRowIndex(row);
         return (
           <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
             <div

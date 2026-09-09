@@ -28,7 +28,7 @@ export default class RenameByRegexTransformation implements Transformation {
 
     // 重命名数据点中的字段
     const newData = series.data.map((dataPoint) => {
-      const newDataPoint: Record<string, any> = {};
+      const newDataPoint: Record<string, DataPoint[string]> = {};
       Object.entries(dataPoint).forEach(([key, value]) => {
         const newKey = key.replace(regex, replacement);
         newDataPoint[newKey] = value;

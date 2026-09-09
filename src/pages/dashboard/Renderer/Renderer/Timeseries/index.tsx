@@ -33,11 +33,13 @@ import { CommonStateContext } from '@/App';
 import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel } from '../../../types';
+import type { IStandardOptions } from '@/pages/dashboard/types';
 import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
 import getSerieName from '../../utils/getSerieName';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 import './style.less';
 
 interface ColData {
@@ -72,6 +74,7 @@ interface IProps {
   isPreview?: boolean;
   colors?: string[];
   legendTableMaxHeight?: number | string;
+  dataRevision?: number;
   legendSeriesFilterText?: string;
   onLegendSeriesFilterTextChange?: (value: string) => void;
   legendFilteredText?: string;
@@ -160,10 +163,14 @@ export default function index(props: IProps) {
   const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true' || document.body.classList.contains('theme-dark');
   const { t } = useTranslation('dashboard');
   const { time, setRange, values, series, inDashboard = true, chartHeight = '200px', tableHeight = '200px', onClick, isPreview, colors, legendTableMaxHeight } = props;
+  const dataDependency = props.dataRevision ?? series;
   const themeMode = props.themeMode || (darkMode ? 'dark' : 'light');
   const history = useHistory();
   const location = useLocation();
   const { custom, options = {}, targets, overrides } = values;
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
+  const stableOverrides = useStableValue(overrides);
   const { lineWidth = 1, gradientMode = 'none', scaleDistribution, showPoints, pointSize } = custom;
   const [seriesData, setSeriesData] = useState<any[]>([]);
   const activeLegend = useRef<string>();
@@ -262,7 +269,7 @@ export default function index(props: IProps) {
         };
       }),
     );
-  }, [JSON.stringify(series)]);
+  }, [dataDependency]);
 
   useEffect(() => {
     let xAxisDamin = {};
@@ -308,19 +315,21 @@ export default function index(props: IProps) {
               name = options?.standardOptions?.displayName;
             }
             const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
-            if (override && override?.properties?.standardOptions?.displayName) {
-              name = override?.properties?.standardOptions?.displayName;
+            const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
+            if (override && overrideStandardOptions?.displayName) {
+              name = overrideStandardOptions?.displayName;
             }
             return getMappedTextObj(name, options?.valueMappings)?.text;
           },
           pointValueformatter: (val, nearestPoint) => {
             const override = _.find(overrides, (item) => item.matcher.value === nearestPoint?.serieOptions?.refId);
             if (override) {
+              const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
               return valueFormatter(
                 {
-                  unit: override?.properties?.standardOptions?.unit,
-                  decimals: override?.properties?.standardOptions?.decimals,
-                  dateFormat: override?.properties?.standardOptions?.dateFormat,
+                  unit: overrideStandardOptions?.unit,
+                  decimals: overrideStandardOptions?.decimals,
+                  dateFormat: overrideStandardOptions?.dateFormat,
                 },
                 val,
               ).text;
@@ -375,15 +384,16 @@ export default function index(props: IProps) {
           ...chartRef.current.options.yAxis,
           visible: overrides?.[0]?.properties?.rightYAxisDisplay === 'normal',
           matchRefId: overrides?.[0]?.matcher?.value,
-          min: overrides?.[0]?.properties?.standardOptions?.min,
-          max: overrides?.[0]?.properties?.standardOptions?.max,
+          min: (overrides?.[0]?.properties?.standardOptions as IStandardOptions | undefined)?.min,
+          max: (overrides?.[0]?.properties?.standardOptions as IStandardOptions | undefined)?.max,
           backgroundColor: themeMode === 'dark' ? '#2A2D3C' : '#fff',
           tickValueFormatter: (val) => {
+            const overrideStandardOptions = overrides?.[0]?.properties?.standardOptions as IStandardOptions | undefined;
             return valueFormatter(
               {
-                unit: overrides?.[0]?.properties?.standardOptions?.unit,
-                decimals: overrides?.[0]?.properties?.standardOptions?.decimals,
-                dateFormat: overrides?.[0]?.properties?.standardOptions?.dateFormat,
+                unit: overrideStandardOptions?.unit,
+                decimals: overrideStandardOptions?.decimals,
+                dateFormat: overrideStandardOptions?.dateFormat,
               },
               val,
             ).text;
@@ -421,21 +431,21 @@ export default function index(props: IProps) {
     } else {
       setLegendData([]);
     }
-  }, [JSON.stringify(seriesData), JSON.stringify(custom), JSON.stringify(options), themeMode, JSON.stringify(overrides)]);
+  }, [seriesData, stableCustom, stableOptions, themeMode, stableOverrides]);
 
   useEffect(() => {
     // 非受控场景下，promql 改变时清除筛选状态
     if (props.legendSeriesFilterText === undefined) {
       setInternalSeriesFilterText('');
     }
-  }, [JSON.stringify(series)]);
+  }, [dataDependency]);
 
   useEffect(() => {
     // TODO: 这里布局变化了，但是 fc-plot 没有自动 resize，所以这里需要手动 resize
     if (chartRef.current) {
       chartRef.current.handleResize();
     }
-  }, [placement, JSON.stringify(legendEleSize), heightInPercentage]);
+  }, [placement, legendEleSize?.width, legendEleSize?.height, heightInPercentage]);
 
   const filteredLegendData = useMemo(() => {
     if (!seriesFilterText) return legendData;

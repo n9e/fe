@@ -7,13 +7,14 @@ import { IVariable } from './types';
 import { useGlobalState } from '../globalState';
 import EditModal from './EditModal';
 import Main from './Main';
+import type { VariableQueryParam } from './utils/initializeVariablesValue';
 
 import './style.less';
 
 export type { IVariable } from './types';
 
 interface Props {
-  queryParams: Record<string, any>;
+  queryParams: Record<string, VariableQueryParam>;
   editable: boolean;
   onChange: (newVariables: IVariable[]) => void;
   onInitialized?: () => void;
@@ -88,7 +89,7 @@ export default function index(props: Props) {
 
   return (
     <div className='n9e-dashboard-variables-container'>
-      <Main variableValueFixed={queryParams.__variable_value_fixed} loading={false} renderBtns={renderBtns} />
+      <Main variableValueFixed={Boolean(queryParams.__variable_value_fixed)} loading={false} renderBtns={renderBtns} />
       <EditModal visible={editing} setVisible={setEditing} onChange={onChange} />
     </div>
   );

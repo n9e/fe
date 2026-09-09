@@ -24,7 +24,7 @@ const getSerieName = (
   }
 
   if (legend) {
-    let name = replaceExpressionBracket(legend, newMetric);
+    let name = replaceExpressionBracket(legend, newMetric as Record<string, string>);
     // 2024-07-23 注释以下逻辑， expression 也支持 legend，同时如果设置了 legend 则不再开头添加 ref
     // if (ref) {
     //   name = `${ref} ${name}`;
@@ -32,7 +32,7 @@ const getSerieName = (
     return name;
   }
 
-  let name = newMetric?.['__name__'] || '';
+  let name: string = newMetric?.['__name__'] ? String(newMetric['__name__']) : '';
   _.forEach(_.omit(newMetric, '__name__'), (value, key) => {
     name += ` ${key}: ${value}`;
   });

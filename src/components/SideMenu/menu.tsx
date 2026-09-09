@@ -2,6 +2,8 @@
  * 这是开源版的菜单配置，专业版和企业版的配置在其他对应的仓库文件里
  */
 import React from 'react';
+import { RobotOutlined } from '@ant-design/icons';
+import { Sparkles } from 'lucide-react';
 
 import IconFont from '@/components/IconFont';
 
@@ -10,6 +12,25 @@ import './locale';
 
 export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecatedMenus: boolean = false) => {
   const menu: MenuItem[] = [
+    {
+      key: '/nightingale-ai',
+      label: 'menu.nightingale_ai',
+      icon: <Sparkles className='-ml-0.5 h-4 w-4' strokeWidth={1.8} />,
+      children: [],
+    },
+    {
+      key: 'infrastructure',
+      label: 'menu.infrastructure',
+      icon: <IconFont type='icon-nav_devicelist_light' />,
+      children: [
+        {
+          key: 'devices',
+          label: 'menu.devices',
+          type: 'tabs',
+          children: [{ key: '/targets', label: 'menu.targets' }],
+        },
+      ],
+    },
     {
       key: 'explorer',
       label: 'menu.explorer',

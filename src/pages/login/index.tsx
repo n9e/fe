@@ -15,7 +15,7 @@
  *
  */
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Form, Input, Button, message, Space, Dropdown, Menu } from 'antd';
+import { Form, Input, Button, message, Space, Dropdown, Menu, Spin } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { PictureOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -51,6 +51,11 @@ const i18nMap = {
   en_US: 'En',
   ja_JP: '日本語',
   ru_RU: 'Русский',
+  id_ID: 'Bahasa Indonesia',
+  es_ES: 'Español',
+  pt_BR: 'Português',
+  ko_KR: '한국어',
+  fr_FR: 'Français',
 };
 
 export interface DisplayName {
@@ -62,12 +67,27 @@ export interface DisplayName {
   feishu?: string;
 }
 
+// /login?sso=oidc 支持的取值，用于免去手动点击第三方登录链接
+const SSO_REDIRECT_GETTERS: Record<string, (redirect: string) => Promise<any>> = {
+  oidc: getRedirectURL,
+  cas: getRedirectURLCAS,
+  oauth: getRedirectURLOAuth,
+  oauth2: getRedirectURLOAuth,
+  custom: getRedirectURLCustom,
+  dingtalk: getRedirectURLDingtalk,
+  feishu: getRedirectURLFeishu,
+};
+
 export default function Login() {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const [form] = Form.useForm();
   const location = useLocation();
   const { siteInfo } = useContext(CommonStateContext);
   const redirect = (location.search && new URLSearchParams(location.search).get('redirect')) || '';
+  const searchParams = new URLSearchParams(location.search);
+  // 带 ?admin 表示要用本地账号登录，此时不自动跳转，与 Plus 侧全局自动跳转的约定保持一致
+  const ssoWay = searchParams.has('admin') ? '' : (searchParams.get('sso') || '').toLowerCase();
+  const [ssoRedirecting, setSsoRedirecting] = useState(!!SSO_REDIRECT_GETTERS[ssoWay]);
   const [displayName, setDis] = useState<DisplayName>({
     oidc: 'OIDC',
     cas: 'CAS',
@@ -92,7 +112,32 @@ export default function Login() {
   };
   useSsoWay(redirect);
 
+  // /login?sso=oidc 直接跳转到指定的第三方登录，跳转成功后浏览器会离开当前页面，
+  // 只有拿不到登录地址或接口异常时才复位 loading，把登录表单还给用户
   useEffect(() => {
+    const getSSORedirectURL = SSO_REDIRECT_GETTERS[ssoWay];
+    if (!getSSORedirectURL) return;
+    getSSORedirectURL(redirect)
+      .then((res) => {
+        if (!res.dat) {
+          message.warning(t('sso_no_url', { name: ssoWay }));
+          setSsoRedirecting(false);
+        } else if (ssoWay === 'cas') {
+          localStorage.setItem('CAS_state', res.dat.state);
+          window.location.href = res.dat.redirect;
+        } else {
+          window.location.href = res.dat;
+        }
+      })
+      .catch(() => {
+        setSsoRedirecting(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    // 自动跳转期间登录表单未挂载，verifyimgRef 为空，此时拉验证码会误报「获取验证码失败」，
+    // 且跳转失败复位后验证码图没有 src。等 ssoRedirecting 复位、表单挂载后再拉
+    if (ssoRedirecting) return;
     getSsoConfig().then((res) => {
       if (res.dat) {
         setDis({
@@ -119,7 +164,7 @@ export default function Login() {
         });
       }
     });
-  }, []);
+  }, [ssoRedirecting]);
 
   const handleSubmit = () => {
     form.validateFields().then(() => {
@@ -150,6 +195,14 @@ export default function Login() {
         }
       });
   };
+
+  if (ssoRedirecting) {
+    return (
+      <div className='login-warp'>
+        <Spin size='large' />
+      </div>
+    );
+  }
 
   return (
     <div className='login-warp'>

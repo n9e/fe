@@ -8,7 +8,7 @@ jest.mock('lodash', () => {
   };
 });
 
-import { isValidPanelConfig, updatePanelsInsertNewPanelToRow, updatePanelsInsertNewPanelToGlobal } from './utils';
+import { handleRowToggle, isValidPanelConfig, updatePanelsInsertNewPanelToRow, updatePanelsInsertNewPanelToGlobal } from './utils';
 import { IPanel } from '../types';
 
 describe('isValidPanelConfig', () => {
@@ -119,6 +119,29 @@ describe('updatePanelsInsertNewPanelToRow', () => {
     const result = updatePanelsInsertNewPanelToRow(panels, 'row-1', pastedPanel, false);
     expect(result[0].layout.w).toBe(12);
     expect(result[0].layout.h).toBe(4);
+  });
+});
+
+describe('handleRowToggle', () => {
+  const row: IPanel = {
+    id: 'row-1',
+    type: 'row',
+    name: 'Group',
+    collapsed: false,
+    layout: { x: 0, y: 0, w: 24, h: 1, i: 'row-1' },
+  };
+  const chart: IPanel = {
+    id: 'chart-1',
+    type: 'timeseries',
+    layout: { x: 0, y: 1, w: 12, h: 4, i: 'chart-1' },
+  };
+
+  it('uses true for collapsed and false for expanded', () => {
+    const collapsed = handleRowToggle(true, [row, chart], row);
+    expect(collapsed).toEqual([expect.objectContaining({ id: 'row-1', collapsed: true, panels: [expect.objectContaining({ id: 'chart-1' })] })]);
+
+    const expanded = handleRowToggle(false, collapsed, collapsed[0]);
+    expect(expanded).toEqual(expect.arrayContaining([expect.objectContaining({ id: 'row-1', collapsed: false, panels: [] }), expect.objectContaining({ id: 'chart-1' })]));
   });
 });
 

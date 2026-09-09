@@ -6,7 +6,7 @@ import ExpressionPanel from '../../Components/ExpressionPanel';
 import AddQueryButtons from '../../Components/AddQueryButtons';
 import QueryPanel from './QueryPanel';
 
-export default function Elasticsearch({ datasourceValue }) {
+export default function Elasticsearch({ datasourceValue }: { datasourceValue: number }) {
   const targets = Form.useWatch('targets');
 
   return (

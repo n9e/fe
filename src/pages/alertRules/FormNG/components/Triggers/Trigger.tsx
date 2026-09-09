@@ -25,7 +25,8 @@ export default function Trigger(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { prefixField = {}, fullPrefixName = [], prefixName = [], queries, disabled, onClose } = props;
   const exp_trigger_disable = Form.useWatch(['rule_config', 'exp_trigger_disable']);
-  const validateDisabled = disabled || exp_trigger_disable !== false;
+  // exp_trigger_disable 缺省的旧规则仍启用阈值判断。
+  const validateDisabled = disabled || exp_trigger_disable === true;
   const [expanded, setExpanded] = React.useState(false);
 
   return (

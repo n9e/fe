@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { getLabelNames, getMetricSeries, getMetricSeriesV2, getLabelValues, getMetric, getQueryResult } from '@/services/dashboardV2';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { Props } from '@/pages/dashboard/Variables/datasource';
+import type { DashboardDatasource } from '@/pages/dashboard/types';
 
 export default async function variableDatasource(
   props: Props<{
@@ -29,8 +30,8 @@ export default async function variableDatasource(
         let metricsAndLabel = expression.substring('label_values('.length, expression.length - 1).split(',');
         const label = metricsAndLabel.pop();
         const metric = metricsAndLabel.join(', ');
-        const currentDatasource = _.find(datasourceList, { id: datasourceValue });
         // 如果查询时间小于一天并且开始时间在一天内并且是 VictoriaMetrics 类型的时序库，可能存在数据延迟，需要使用 last_over_time 查询
+        const currentDatasource = _.find(datasourceList, { id: datasourceValue }) as (DashboardDatasource & { settings?: Record<string, string | undefined> }) | undefined;
         if (
           end - start < 86400 &&
           end >= moment().subtract(1, 'day').unix() &&

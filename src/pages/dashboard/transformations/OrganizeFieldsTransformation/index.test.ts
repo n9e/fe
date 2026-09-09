@@ -459,4 +459,102 @@ describe('OrganizeFieldsTransformation', () => {
       expect(tableResult.fields[1].values).toEqual([1, 2]);
     });
   });
+
+  describe('TableData 与上游转换协作', () => {
+    it('字段带 displayName 时按展示名匹配（兼容 Merge/Join 等上游转换）', () => {
+      // 模拟上游转换：字段 name 为原始名，displayName 已改变（例如 rename/聚合）
+      const input: TableData = {
+        refId: 'A',
+        fields: [
+          {
+            name: 'cpu',
+            type: 'number',
+            values: [10, 20],
+            state: { displayName: 'CPU usage' },
+          },
+          {
+            name: 'mem',
+            type: 'number',
+            values: [30, 40],
+            state: { displayName: 'MEM usage' },
+          },
+        ],
+      };
+
+      // fields 来自 UI 的 columns，即 displayName || name
+      const transformation = new OrganizeFieldsTransformation({
+        fields: ['MEM usage', 'CPU usage'],
+        indexByName: { 'MEM usage': 0, 'CPU usage': 1 },
+      });
+
+      const result = transformation.apply([input]) as TableData[];
+
+      expect(result[0].fields.map((f) => f.state.displayName)).toEqual(['MEM usage', 'CPU usage']);
+      expect(result[0].fields[0].values).toEqual([30, 40]);
+      expect(result[0].fields[1].values).toEqual([10, 20]);
+    });
+
+    it('保留 TableData 上的附加字段（如 normalizeData 附加的 id）', () => {
+      const input = {
+        id: 'rawData',
+        refId: 'A',
+        fields: [
+          {
+            name: 'host',
+            type: 'string',
+            values: ['web-01'],
+            state: {},
+          },
+          {
+            name: 'level',
+            type: 'string',
+            values: ['info'],
+            state: {},
+          },
+        ],
+      } as TableData & { id: string };
+
+      const transformation = new OrganizeFieldsTransformation({
+        fields: ['host', 'level'],
+        excludeByName: { level: true },
+      });
+
+      const result = transformation.apply([input]) as (TableData & { id: string })[];
+
+      expect(result[0].id).toBe('rawData');
+      expect(result[0].fields.map((f) => f.name)).toEqual(['host']);
+    });
+
+    it('重命名后的字段再次参与匹配时仍可按展示名定位', () => {
+      const input: TableData = {
+        refId: 'A',
+        fields: [
+          {
+            name: 'host',
+            type: 'string',
+            values: ['web-01'],
+            state: {},
+          },
+        ],
+      };
+
+      const transformation = new OrganizeFieldsTransformation({
+        fields: ['host'],
+        renameByName: { host: 'hostname' },
+      });
+
+      const result = transformation.apply([input]) as TableData[];
+
+      // 重命名后 name 与 displayName 一致，再次以展示名匹配能命中
+      const renamed = result[0].fields[0];
+      expect(renamed.name).toBe('hostname');
+      expect(renamed.state.displayName).toBe('hostname');
+
+      const second = new OrganizeFieldsTransformation({
+        fields: ['hostname'],
+      }).apply(result) as TableData[];
+
+      expect(second[0].fields.map((f) => f.name)).toEqual(['hostname']);
+    });
+  });
 });

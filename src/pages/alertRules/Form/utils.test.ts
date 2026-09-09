@@ -174,6 +174,20 @@ describe('processInitialValues', () => {
     expect(result).toBeDefined();
   });
 
+  it('仅回填具有 exp 的阈值条件，不使用 expressions 回退渲染旧数据', () => {
+    const result = processInitialValues({
+      rule_config: {
+        triggers: [
+          { exp: '$A > 10', expressions: [{ ref: 'A', comparisonOperator: '>', value: 10 }] },
+          { expressions: [{ ref: 'B', comparisonOperator: '<', value: 0 }] },
+          { exp: '   ', expressions: [{ ref: 'C', comparisonOperator: '==', value: 1 }] },
+        ],
+      },
+    });
+
+    expect(result.rule_config.triggers).toEqual([{ exp: '$A > 10', expressions: [{ ref: 'A', comparisonOperator: '>', value: 10 }] }]);
+  });
+
   // ---------- 多查询测试 ----------
 
   it('应正确处理多个 queries', () => {

@@ -16,12 +16,12 @@
  */
 import React from 'react';
 import _ from 'lodash';
-import { Menu } from 'antd';
+import { Menu, MenuProps } from 'antd';
 import { colors } from './config';
 import './style.less';
 
 interface IProps {
-  onClick: (e: any) => void;
+  onClick: NonNullable<MenuProps['onClick']>;
   selectedKeys: string[];
 }
 

@@ -16,21 +16,26 @@ import _ from 'lodash';
  *  type: "delimiter"
  * }]
  */
-export function tokenizer(
-  value: string,
-  delimiters: string[],
-): {
+type TokenizeResult = {
   value: string;
   type: 'text' | 'delimiter';
   start: number;
   end: number;
-}[] {
-  const result: {
-    value: string;
-    type: 'text' | 'delimiter';
-    start: number;
-    end: number;
-  }[] = [];
+}[];
+
+// P0-5: 分词结果按 (value, delimiters) 记忆化。同一字段值在多次渲染间不需要重复分词。
+const tokenizerCache = new Map<string, TokenizeResult>();
+const TOKENIZER_CACHE_MAX = 2000;
+
+export function tokenizer(value: string, delimiters: string[]): TokenizeResult {
+  // 用 JSON.stringify(delimiters) 生成缓存键：delimiters.join('') 无分隔符，
+  // 例如 [' ', ','] 与 [' ,'] 会生成相同前缀导致缓存键碰撞、返回错误分词。
+  const cacheKey = `${JSON.stringify(delimiters)}\u0000${value}`;
+  const cached = tokenizerCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+  const result: TokenizeResult = [];
   let temp = '';
   let tokenStart = 0;
   for (let i = 0; i < value.length; i++) {
@@ -67,6 +72,14 @@ export function tokenizer(
       end: value.length,
     });
   }
+  if (tokenizerCache.size >= TOKENIZER_CACHE_MAX) {
+    // 简单 FIFO 淘汰：删除最早插入的一条，防止长会话内存无限增长
+    const firstKey = tokenizerCache.keys().next().value;
+    if (firstKey !== undefined) {
+      tokenizerCache.delete(firstKey);
+    }
+  }
+  tokenizerCache.set(cacheKey, result);
   return result;
 }
 

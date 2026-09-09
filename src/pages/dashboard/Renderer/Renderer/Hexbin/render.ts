@@ -23,8 +23,14 @@ import { basePrefix } from '@/App';
 
 const xmlns = 'http://www.w3.org/2000/svg';
 const minFont = 6;
+interface HexbinRecord {
+  name?: string;
+  value?: string | number;
+  metric?: Record<string, string | number | undefined>;
+}
+
 function getPlaceHolderElems(rows, columns, len, radius: number) {
-  let points: any[] = [];
+  const points: Array<[number, number]> = [];
   for (let i = 0, count = 0; i < rows; i++) {
     for (let j = 0; j < columns && count <= len - 1; j++, count++) {
       points.push([radius * j * 1.75, radius * i * 1.5]);
@@ -48,13 +54,13 @@ function getHexbinHeight(mapRows, hexRadius) {
   }
   return count * hexRadius;
 }
-function getName(record: any, valueField?: string) {
+function getName(record: HexbinRecord | undefined, valueField?: string) {
   if (valueField !== 'Value') {
     return valueField;
   }
   return record?.name;
 }
-function getValue(record: any, valueField?: string) {
+function getValue(record: HexbinRecord | undefined, valueField?: string) {
   return _.get(record, valueField !== 'Value' ? ['metric', valueField] : 'value');
 }
 

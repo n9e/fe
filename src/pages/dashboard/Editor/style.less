@@ -31,6 +31,42 @@
   }
 }
 
+// 单查询适配器复用各数据源现有 QueryBuilder；新增按钮由外层统一提供。
+.n9e-dashboard-single-target-query-editor {
+  & + & {
+    margin-top: 8px;
+  }
+
+  .n9e-dashboard-single-target-query-editor-content {
+    > .n9e-collapse {
+      border: 0;
+      background: transparent;
+
+      > .n9e-collapse-item {
+        border: 0;
+
+        > .n9e-collapse-header {
+          display: none;
+        }
+
+        > .n9e-collapse-content {
+          border: 0;
+          background: transparent;
+
+          > .n9e-collapse-content-box {
+            padding: 0;
+          }
+        }
+      }
+    }
+
+    > .ant-space:last-child,
+    > .ant-btn:last-child {
+      display: none;
+    }
+  }
+}
+
 .n9e-dashboard-editor-transformationNG-item {
   background-color: var(--fc-fill-3);
   padding: 16px;

@@ -6,7 +6,7 @@ import _ from 'lodash';
  * 颠倒——单层 `\.` 入串会被 Prometheus 按未知转义序列拒绝解析，含 `.` 的
  * FQDN 主机名会让查询每轮都失败。
  */
-function promRegex(value: string): string {
+export function promRegex(value: string): string {
   return _.escapeRegExp(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 

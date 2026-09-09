@@ -22,7 +22,7 @@ import './index.less';
 
 interface IMarkDownPros {
   content: string;
-  style?: any;
+  style?: React.CSSProperties;
 }
 
 // https://github.com/vitejs/vite/issues/3592 bug solve 记录

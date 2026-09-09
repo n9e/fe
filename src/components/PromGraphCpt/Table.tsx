@@ -8,13 +8,13 @@ import { useTranslation } from 'react-i18next';
 import { json2csv } from 'json-2-csv';
 
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
-import valueFormatter from '@/pages/dashboard/Renderer/utils/valueFormatter';
 import { instantInterpolateString } from '@/components/PromQLInputNG';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { downloadFile } from '@/pages/alertRules/List/utils';
 
 import { getPromData } from './services';
 import { QueryStats } from './components/QueryStatsView';
+import { formatPrometheusValue } from './value';
 
 interface IProps {
   url: string;
@@ -82,19 +82,12 @@ function toFixedNoRound(num1 = 0, num2 = 0) {
   return _.toNumber(num1Str) - _.toNumber(num2Str);
 }
 
-function formatValue(val, unit) {
-  const num = _.toNumber(val);
-  if (_.isNaN(num)) return '-';
-  const { text } = valueFormatter({ unit }, num);
-  return text;
-}
-
 function getListItemValue(resultType, record, unit) {
   if (resultType === 'scalar' || resultType === 'string') {
-    return formatValue(_.get(record, '[1]'), unit);
+    return formatPrometheusValue(_.get(record, '[1]'), unit);
   }
   if (resultType === 'vector') {
-    return formatValue(_.get(record, 'value[1]'), unit);
+    return formatPrometheusValue(_.get(record, 'value[1]'), unit);
   }
   if (resultType === 'matrix' || resultType === 'streams') {
     const values = _.get(record, 'values');
@@ -104,7 +97,7 @@ function getListItemValue(resultType, record, unit) {
           const timestamp = _.get(value, 0);
           return (
             <div key={i} style={{ display: 'table-row' }}>
-              <span style={{ display: 'table-cell', padding: '0 4px' }}>{formatValue(_.get(value, 1), unit)}</span>
+              <span style={{ display: 'table-cell', padding: '0 4px' }}>{formatPrometheusValue(_.get(value, 1), unit)}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>@{timestamp || '-'}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>{moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss')}</span>
               <span style={{ display: 'table-cell', padding: '0 4px' }}>{i > 0 ? `+${toFixedNoRound(timestamp, _.get(values[i - 1], 0))}` : ''}</span>

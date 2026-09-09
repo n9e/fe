@@ -4,7 +4,7 @@ import uplot from 'uplot';
 
 interface Props {
   showResetZoomBtn: boolean;
-  getUplot: () => uplot;
+  getUplot: () => uplot | undefined;
   xScaleInitMinMax?: [number, number];
   yScaleInitMinMax?: [number, number];
   onReset: () => void;

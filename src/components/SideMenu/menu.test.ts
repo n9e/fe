@@ -45,6 +45,39 @@ describe('SideMenu hover panel styles', () => {
     expect(menuListContent).toContain('const hoverChildren = visibleChildren;');
   });
 
+  it('never re-opens the collapsed rail from a menu click', () => {
+    const indexPath = path.join(__dirname, 'index.tsx');
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const indexContent = fs.readFileSync(indexPath, 'utf8');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    // The collapse toggle in the header is the only writer, so no click path needs to opt out of expanding.
+    expect(indexContent).not.toContain('keepCollapsed');
+    expect(menuListContent).not.toContain('keepCollapsed');
+    expect(indexContent.match(/localStorage\.setItem\('menuCollapsed'/g)).toHaveLength(1);
+    expect(indexContent).toMatch(/const toggleCollapsed = \(\) => \{[\s\S]*?localStorage\.setItem\('menuCollapsed'/);
+  });
+
+  it('labels collapsed leaf rows with a tooltip', () => {
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    // Leaf rows (e.g. FlashAI) render icon-only when collapsed, so the label has to come from a tooltip.
+    expect(menuListContent).toContain('function wrapCollapsedRowWithTooltip');
+    expect(menuListContent.match(/return wrapCollapsedRowWithTooltip\(row, \{ collapsed, isSub, title: t\(item\.label\) \}\);/g)).toHaveLength(2);
+  });
+
+  it('opens the first child when a collapsed group icon is clicked', () => {
+    const menuListPath = path.join(__dirname, 'MenuList.tsx');
+    const menuListContent = fs.readFileSync(menuListPath, 'utf8');
+
+    // Clicking the icon is the one-step way into a group; hovering stays the way to reach the other children.
+    expect(menuListContent).toContain('const collapsedTarget = collapsed ? visibleChildren[0] : undefined;');
+    expect(menuListContent).toContain('<Link to={getMenuItemPath(collapsedTarget)}');
+    // The hover panel must not stay open on top of the page we just navigated to.
+    expect(menuListContent).toMatch(/onClick=\{\(\) => \{[\s\S]{0,160}?if \(!hoverEnabled\) return;\s*closeHoverPanel\(\);/);
+  });
+
   it('clears profile submenus without changing their popup container', () => {
     const indexPath = path.join(__dirname, 'index.tsx');
     const indexContent = fs.readFileSync(indexPath, 'utf8');

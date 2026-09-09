@@ -4,10 +4,14 @@ import queryString from 'query-string';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import Detail from '@/pages/dashboard/Detail/Detail';
+import type { DashboardDatasource } from '@/pages/dashboard/types';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
-function searchV5toV6(search, datasourceVar: any, datasourceList?: any[]) {
+type DatasourceVariable = IVariable & { type: 'datasource' };
+
+function searchV5toV6(search: string, datasourceVar: DatasourceVariable, datasourceList: DashboardDatasource[] = []) {
   const params: {
-    [key: string]: string | null;
+    [key: string]: string | number | null;
   } = {};
   const queryParams = new URLSearchParams(search);
   queryParams.forEach((value, key) => {
@@ -15,13 +19,14 @@ function searchV5toV6(search, datasourceVar: any, datasourceList?: any[]) {
       params[key] = null;
     } else {
       try {
-        params[key] = JSON.parse(value);
+        const parsed: unknown = JSON.parse(value);
+        params[key] = typeof parsed === 'string' || typeof parsed === 'number' ? parsed : value;
       } catch (e) {
         if (key === '__cluster') {
           const finded = _.find(datasourceList, { name: value });
           if (finded) {
             params[datasourceVar.name] = finded.id;
-          } else {
+          } else if (datasourceVar.defaultValue !== undefined) {
             params[datasourceVar.name] = datasourceVar.defaultValue;
           }
         } else {
@@ -41,7 +46,7 @@ export default function index() {
     <Detail
       isPreview
       onLoaded={(configs) => {
-        const firstDatasourceVar = _.find(configs?.var, { type: 'datasource', definition: 'prometheus' });
+        const firstDatasourceVar = _.find(configs?.var, { type: 'datasource', definition: 'prometheus' }) as DatasourceVariable | undefined;
         /**
          * 兼容 v5 版本生成的 URL
          * 这里通过 search 中是否有双引号来判断是否是 v5 版本生成的 URL

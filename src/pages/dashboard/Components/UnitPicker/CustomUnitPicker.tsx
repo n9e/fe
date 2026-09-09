@@ -2,12 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import { SelectProps, AutoComplete } from 'antd';
 import { buildUnitOptions } from './utils';
+import type { UnitOption } from './utils';
 import './locale';
 
 interface Props {
   hideOptionLabel?: boolean;
   hideSIOption?: boolean;
-  ajustUnitOptions?: (units: any) => any;
+  ajustUnitOptions?: (units: UnitOption[]) => UnitOption[];
 }
 
 export default function index(props: SelectProps & Props) {

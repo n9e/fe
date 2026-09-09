@@ -51,7 +51,8 @@ const zh_HK = {
     url_tip: '接收通知請求的目標地址',
     method: '請求方法',
     header: '請求頭',
-    header_tip: '需要在請求中附帶的自定義 HTTP Header，如 BasicAuth 認證信息等',
+    header_tip:
+      '需要在請求中附帶的自定義 HTTP Header，如 BasicAuth 認證信息等。URL、請求頭、參數值、請求體均可用 {{.變量名}} 引用「系統配置 - 變量配置」中的變量，Token 等憑證因此不必明文填在這裡',
     header_key: '參數名',
     header_value: '參數值',
     timeout: '超時時間 (單位: 毫秒)',

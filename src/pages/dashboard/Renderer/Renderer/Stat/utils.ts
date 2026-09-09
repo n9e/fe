@@ -30,8 +30,8 @@ export const getMinFontSizeByList = (
   const { width, height, grid, orientation, textMode, valueField } = options;
   let xGrid = 0;
   let yGrid = 0;
-  let nameFontSize;
-  let valueFontSize;
+  let nameFontSize = 0;
+  let valueFontSize = 0;
   _.forEach(list, (item, index) => {
     let realWidth = width;
     let realHeight = height;

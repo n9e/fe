@@ -1,4 +1,4 @@
-import { Transformation, QueryResult, TableData } from '../types';
+import { Transformation, QueryResult, TableData, TableCellValue } from '../types';
 import { isTableData } from '../utils';
 
 export interface RowsToFieldsOptions {
@@ -41,7 +41,7 @@ export default class RowsToFieldsTransformation implements Transformation {
     const newFields: Array<{
       name: string;
       type: string;
-      values: (string | number | null)[];
+      values: TableCellValue[];
       state: any;
     }> = [];
 
@@ -56,7 +56,7 @@ export default class RowsToFieldsTransformation implements Transformation {
 
     // 为每个唯一字段名创建一个新字段
     uniqueFieldNames.forEach((name) => {
-      const values: (string | number | null)[] = [];
+      const values: TableCellValue[] = [];
 
       // 为每行数据生成对应的值
       for (let i = 0; i < fieldNameValues.length; i++) {

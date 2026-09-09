@@ -396,6 +396,7 @@ export default function FormNG(props: IProps) {
                     <Col xs={24} lg={8}>
                       <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true }]}>
                         <Select
+                          disabled
                           placeholder={t('group_id_placeholder')}
                           options={_.map(busiGroups, (item) => ({
                             label: item.name,

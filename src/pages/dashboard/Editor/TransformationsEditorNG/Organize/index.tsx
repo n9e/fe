@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Input, Row, Col, Button, Space, Form, Empty, Alert } from 'antd';
 import { MenuOutlined, EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined, BugOutlined, DeleteOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
@@ -6,6 +6,7 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useDeepCompareEffect } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
@@ -35,10 +36,10 @@ interface IProps {
   onChange?: (value: Value) => void;
 }
 
-const SortableBody = SortableContainer(({ children }) => {
+const SortableBody = SortableContainer(({ children }: { children: React.ReactNode }) => {
   return <div>{children}</div>;
 });
-const SortableItem = SortableElement(({ children }) => <div style={{ marginBottom: 8 }}>{children}</div>);
+const SortableItem = SortableElement(({ children }: { children: React.ReactNode }) => <div style={{ marginBottom: 8 }}>{children}</div>);
 const DragHandle = SortableHandle(() => <Button icon={<MenuOutlined />} />);
 
 export default function OrganizeFields(props: IProps) {
@@ -48,11 +49,18 @@ export default function OrganizeFields(props: IProps) {
   const { name, key, ...resetField } = field;
   const { columns, error } = useColumns({ fieldName: field.name });
 
-  useEffect(() => {
-    if (value) {
-      onChange && onChange({ ...value, fields: columns });
+  useDeepCompareEffect(() => {
+    // columns 来自当前数据的列，仅在字段列表为空或数据源新增字段时补齐，
+    // 保留用户已配置的字段顺序（拖动排序），避免每次挂载/数据刷新都覆盖用户的调整。
+    if (!value || !columns) {
+      return;
     }
-  }, [JSON.stringify(columns)]);
+    const existingFields = value.fields ?? [];
+    const nextFields = _.union(existingFields, columns);
+    if (!_.isEqual(existingFields, nextFields)) {
+      onChange && onChange({ ...value, fields: nextFields });
+    }
+  }, [columns]);
 
   return (
     <Collapse>

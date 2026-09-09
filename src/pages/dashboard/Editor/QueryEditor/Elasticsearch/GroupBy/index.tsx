@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Row, Col } from 'antd';
+import type { FormListFieldData } from 'antd/lib/form/FormList';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
@@ -8,19 +9,21 @@ import { getFields, getFullFields } from '@/pages/explorer/Elasticsearch/service
 import Filters from './Filters';
 import Terms from './Terms';
 import Histgram from './Histgram';
+import type { ElasticsearchSelectOption } from '../types';
 
 interface IProps {
   parentNames?: (string | number)[]; // 前缀字段名的父级路径
-  prefixField?: any;
+  prefixField?: FormListFieldData;
   prefixFieldNames?: (string | number)[]; // 前缀字段名路径
   datasourceValue: number;
   index: string; // ES 索引
   disabled?: boolean;
 }
 
-export default function index({ prefixField = {}, prefixFieldNames = [], parentNames = [], datasourceValue, index, disabled }: IProps) {
+export default function index({ prefixField = {} as FormListFieldData, prefixFieldNames = [], parentNames = [], datasourceValue, index, disabled }: IProps) {
   const { t } = useTranslation('alertRules');
-  const [fieldsOptions, setFieldsOptions] = useState<any[]>([]);
+  const [fieldsOptions, setFieldsOptions] = useState<ElasticsearchSelectOption[]>([]);
+  const restPrefixField = _.omit(prefixField, 'key');
   const { run } = useDebounceFn(
     () => {
       getFullFields(datasourceValue, index, {
@@ -47,7 +50,7 @@ export default function index({ prefixField = {}, prefixFieldNames = [], parentN
   }, [datasourceValue, index]);
 
   return (
-    <Form.List {...prefixField} name={[...prefixFieldNames, 'group_by']}>
+    <Form.List {...restPrefixField} name={[...prefixFieldNames, 'group_by']}>
       {(fields, { add, remove }) => (
         <div>
           <div style={{ marginBottom: 8 }}>

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-import { IOptions, IOverride, CellOptions } from '@/pages/dashboard/types';
+import { IOptions, IOverride, CellOptions, IStandardOptions, IValueMapping, IThresholds } from '@/pages/dashboard/types';
 import getOverridePropertiesByName from '@/pages/dashboard/Renderer/utils/getOverridePropertiesByName';
 
 import { TextObject } from './types';
@@ -27,13 +27,15 @@ export default function index(props: Props) {
   const { formattedData, formattedValue, field, panelParams, rangeMode, rowHeight } = props;
   const { cellOptions, options, overrides } = panelParams;
   const overrideProps = getOverridePropertiesByName(overrides, 'byName', field);
-  const currentCellOptions = _.isEmpty(overrideProps) || !overrideProps.cellOptions?.type ? cellOptions : overrideProps.cellOptions;
+  // override properties 为宽类型（JsonValue 联合），按实际使用的结构收窄
+  const overrideCellOptions = overrideProps.cellOptions as CellOptions | undefined;
+  const currentCellOptions = _.isEmpty(overrideProps) || !overrideCellOptions?.type ? cellOptions : overrideCellOptions;
   const currentOptions = _.isEmpty(overrideProps)
     ? options
     : {
-        standardOptions: overrideProps.standardOptions || options.standardOptions,
-        valueMappings: overrideProps.valueMappings || options.valueMappings,
-        thresholds: overrideProps.thresholds || options.thresholds,
+        standardOptions: (overrideProps.standardOptions as IStandardOptions | undefined) || options.standardOptions,
+        valueMappings: (overrideProps.valueMappings as IValueMapping[] | undefined) || options.valueMappings,
+        thresholds: (overrideProps.thresholds as IThresholds | undefined) || options.thresholds,
       };
 
   if (formattedValue.value === null) return null;

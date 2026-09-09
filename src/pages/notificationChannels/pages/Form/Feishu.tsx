@@ -11,7 +11,9 @@ interface Props {
 export default function Feishu(props: Props) {
   const { t } = useTranslation(NS);
   const { ident } = props;
-  const names = ['request_config', `${ident}_request_config`];
+  // 后端 RequestConfig 只有 feishu_request_config 这一个字段（feishucard/larkcard 的截图上传也读它），
+  // 按 ident 拼出来的 feishucard_/lark_/larkcard_request_config 后端不认识，提交上去会被直接丢掉。
+  const names = ['request_config', 'feishu_request_config'];
   let alert_shot_tip = t(`feishuapp_request_config.alert_shot_tip`);
 
   if (ident === 'lark' || ident === 'larkcard') {

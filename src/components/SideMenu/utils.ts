@@ -8,7 +8,7 @@ import { IS_PLUS } from '@/utils/constant';
 // @ts-ignore
 import getPlusMenuList from 'plus:/parcels/SideMenu/menu';
 
-import { MenuMatchResult } from './types';
+import { IMenuItem, MenuMatchResult } from './types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -71,4 +71,18 @@ export const getSavedPath = (pathname: string) => {
     const storageKey = getStorageKey(currentMenu.parentItem.key);
     return localStorage.getItem(storageKey);
   }
+};
+
+/*
+ * Resolve the route a menu item navigates to when clicked.
+ * A menu with page-level tabs lands on its first tab, or on the tab remembered in
+ * localStorage from an earlier visit.
+ * @param item the menu item
+ * @returns the path to navigate to. Absolute-path menus (pathType === 'absolute') do not
+ * go through here; they link to item.path directly.
+ */
+export const getMenuItemPath = (item: IMenuItem): string => {
+  const path = item.type === 'tabs' ? item.children?.[0]?.key || item.key : item.key;
+  const savedPath = item.children ? getSavedPath(path) : item.key;
+  return savedPath || path;
 };

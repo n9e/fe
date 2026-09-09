@@ -119,6 +119,20 @@ describe('getDataFrameAndBaseSeries', () => {
     expect(frames[1]).toEqual([]);
   });
 
+  it('preserves an ES bucket interval on the corresponding base series', () => {
+    const { baseSeries } = getDataFrameAndBaseSeries([
+      {
+        id: 'series-01',
+        refId: 'A',
+        metric: {},
+        data: [[1000, 10] as [number, number]],
+        bucketInterval: 300,
+      },
+    ]);
+
+    expect(baseSeries[0].n9e_internal.bucketInterval).toBe(300);
+  });
+
   it('should generate label from metric when name is not provided', () => {
     const oldSeries = [
       {

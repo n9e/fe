@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import _ from 'lodash';
 
-import { IS_PLUS } from '@/utils/constant';
+import { IS_ENT } from '@/utils/constant';
 import useOnboardingProgress from '@/components/OnboardingProgress/useOnboardingProgress';
 
 import { useOnboardingActions } from '../index';
@@ -92,7 +92,9 @@ export default function NextStepsCard({ variant = 'compact', onCollect, onBefore
   // 商业版走自己的接入体系；探测还没回来时先不闪一屏未完成；两种形态的收起规则见 visibility.ts。
   // inline 常驻条额外要求已有机器：一台都没有时该做的是先装采集器，由列表空态的部署引导承接，
   // 此时摆一张「配置采集 / 套用大盘」的清单只会让人无从下手
-  if (IS_PLUS || !enabled || !loaded || (variant === 'inline' && !doneMap.machine) || !hasActionableRows(variant, rows)) {
+  // 企业版走自己的接入体系；专业版与开源一样展示（决策：专业版解开引导门控）。
+  // 探测还没回来时先不闪一屏未完成；两种形态的收起规则见 visibility.ts
+  if (IS_ENT || !enabled || !loaded || (variant === 'inline' && !doneMap.machine) || !hasActionableRows(variant, rows)) {
     return null;
   }
 

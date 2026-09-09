@@ -1,4 +1,27 @@
 /* antd */
+.n9e-antd-drawer.ant-drawer {
+  .ant-drawer-header-title {
+    display: contents;
+  }
+
+  .ant-drawer-title {
+    order: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ant-drawer-extra {
+    order: 1;
+  }
+
+  .ant-drawer-close {
+    order: 2;
+    flex: 0 0 auto;
+    margin-right: 0;
+    margin-left: 12px;
+  }
+}
+
 .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
   background-color: fade(@primary-color, 10%);
 }
@@ -169,11 +192,7 @@ mark {
 }
 
 .best-looking-scroll {
-  --best-looking-scrollbar-thumb: color-mix(in srgb, var(--fc-text-1) 22%, transparent);
-
   overflow: auto; // 隐藏滚动条
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
 
   &::-webkit-scrollbar {
     width: 6px; // 竖向滚动条宽度
@@ -182,28 +201,23 @@ mark {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.1); // 增加透明度
     border-radius: 3px;
-    transition: background-color 0.2s ease;
     visibility: hidden;
   }
 
-  &::-webkit-scrollbar-track,
-  &::-webkit-scrollbar-corner {
-    background-color: transparent;
-  }
-
   &:hover {
-    scrollbar-color: var(--best-looking-scrollbar-thumb) transparent;
-
     &::-webkit-scrollbar {
       visibility: visible;
     }
 
     &::-webkit-scrollbar-thumb {
-      background-color: var(--best-looking-scrollbar-thumb);
       visibility: visible;
     }
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
   }
 }
 

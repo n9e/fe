@@ -29,10 +29,16 @@ import Gauge from './Gauge';
 import Iframe from './Iframe';
 import Heatmap from './Heatmap';
 import BarChart from './BarChart';
+import type { ITarget, IType } from '../../types';
 
-export default function index({ type, targets }) {
+interface OptionsProps {
+  type: IType;
+  targets: ITarget[];
+}
+
+export default function index({ type, targets }: OptionsProps) {
   const { t } = useTranslation('dashboard');
-  const OptionsCptMap = {
+  const OptionsCptMap: Partial<Record<IType, React.ReactNode>> = {
     timeseries: <Timeseries targets={targets} />,
     stat: <Stat targets={targets} />,
     table: <Table targets={targets} />,
@@ -46,5 +52,5 @@ export default function index({ type, targets }) {
     heatmap: <Heatmap />,
     barchart: <BarChart />,
   };
-  return OptionsCptMap[type] || `${t('detail.invalidPanelType')} ${type}`;
+  return (OptionsCptMap[type] ?? <div>{`${t('detail.invalidPanelType')} ${type}`}</div>) as React.ReactElement;
 }

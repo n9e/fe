@@ -23,6 +23,7 @@ interface IProps {
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { span = 6, prefixField = {}, prefixName = [], disabled, mode, expandTriggerVisible = true, onChange, options = [], showUnit } = props;
+  const restPrefixField = _.omit(prefixField, 'key');
   const [open, setOpen] = useState(!!props.expanded);
 
   return (
@@ -55,7 +56,7 @@ function AdvancedSettings(props: IProps) {
                   }
                 >
                   <Form.Item
-                    {...prefixField}
+                    {...restPrefixField}
                     name={[...prefixName, 'keys', 'valueKey']}
                     style={{ width: '100%' }}
                     rules={[
@@ -89,7 +90,7 @@ function AdvancedSettings(props: IProps) {
                     </Space>
                   }
                 >
-                  <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
+                  <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
                     <Select
                       mode='tags'
                       placeholder={t('query.advancedSettings.tags_placeholder')}
@@ -106,7 +107,7 @@ function AdvancedSettings(props: IProps) {
               {showUnit && (
                 <Col span={span}>
                   <InputGroupWithFormItem label={t('common:unit')}>
-                    <Form.Item {...prefixField} name={[prefixField.name, 'unit']} initialValue='none' noStyle>
+                    <Form.Item {...restPrefixField} name={[prefixField.name, 'unit']} initialValue='none' noStyle>
                       <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
                     </Form.Item>
                   </InputGroupWithFormItem>

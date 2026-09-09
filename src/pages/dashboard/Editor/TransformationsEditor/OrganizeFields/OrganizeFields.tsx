@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input, Row, Col, Button } from 'antd';
 import { MenuOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import { useDeepCompareEffect } from 'ahooks';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Collapse, { Panel } from '../../Components/Collapse';
 import { useGlobalState } from '../../../globalState';
@@ -27,10 +28,10 @@ interface IProps {
   onChange?: (value: Value) => void;
 }
 
-const SortableBody = SortableContainer(({ children }) => {
+const SortableBody = SortableContainer(({ children }: { children: React.ReactNode }) => {
   return <div>{children}</div>;
 });
-const SortableItem = SortableElement(({ children }) => <div style={{ marginBottom: 8 }}>{children}</div>);
+const SortableItem = SortableElement(({ children }: { children: React.ReactNode }) => <div style={{ marginBottom: 8 }}>{children}</div>);
 const DragHandle = SortableHandle(() => <Button icon={<MenuOutlined />} />);
 
 export default function OrganizeFields(props: IProps) {
@@ -39,9 +40,9 @@ export default function OrganizeFields(props: IProps) {
   const [displayedTableFields, setDisplayedTableFields] = useGlobalState('displayedTableFields');
   const [fields, setFields] = useState(_.flatten(displayedTableFields));
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     setFields(_.flatten(displayedTableFields));
-  }, [JSON.stringify(displayedTableFields)]);
+  }, [displayedTableFields]);
 
   return (
     <Collapse>

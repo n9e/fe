@@ -78,10 +78,36 @@ export function postSourceToken(data: {
   source_type: string;
   source_id: string;
   expire_at: number; // 过期时间戳
+  note?: string;
 }) {
   return request('/api/n9e/source-token', {
     method: RequestMethod.Post,
     data,
+  });
+}
+
+export interface SourceTokenItem {
+  id: number;
+  source_type: string;
+  source_id: string;
+  token: string;
+  note: string;
+  expire_at: number;
+  create_at: number;
+  create_by: string;
+}
+
+export function getSourceTokens(params: { source_type: string; source_id: string }): Promise<SourceTokenItem[]> {
+  return request('/api/n9e/source-tokens', {
+    method: RequestMethod.Get,
+    params,
+  }).then((res) => res.dat || []);
+}
+
+// 注销分享令牌，对应链接立即失效
+export function deleteSourceToken(id: number) {
+  return request(`/api/n9e/source-token/${id}`, {
+    method: RequestMethod.Delete,
   });
 }
 

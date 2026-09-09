@@ -45,7 +45,7 @@ export default function BasicBar(props: Props) {
               color: themeMode === 'dark' ? '#fff' : '#20222E',
               borderRight: `2px solid ${color}`,
               backgroundColor,
-              width: (item.stat !== undefined ? calculatePercentage(item.stat, minValue, maxValue) : 0) + '%',
+              width: (typeof item.stat === 'number' ? calculatePercentage(item.stat, minValue, maxValue) : 0) + '%',
             }}
           ></div>
         </div>

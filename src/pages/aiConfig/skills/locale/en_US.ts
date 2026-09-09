@@ -25,7 +25,7 @@ const en_US = {
   upload_modal_invalid_type: 'Only .zip and .tar.gz files are supported',
   upload_modal_file_required: 'Please upload a skill archive',
   edit_title: 'Edit skill',
-  toggle_needs_team: 'Set a managing team via Replace before enabling/disabling',
+  toggle_needs_team: 'Set a managing team via Modify before enabling/disabling',
   document_empty: 'No document content',
   search_placeholder: 'Search by keyword',
   builtin: 'Builtin',

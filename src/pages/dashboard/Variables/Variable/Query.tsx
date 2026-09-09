@@ -12,8 +12,10 @@ import { useVariableManager } from '../VariableManagerContext';
 import { formatString, formatDatasource } from '../utils/formatString';
 import filterOptionsByReg from '../utils/filterOptionsByReg';
 import getValueByOptions from '../utils/getValueByOptions';
-import datasource from '../datasource';
+import datasource, { VariableDatasourceQuery } from '../datasource';
 import { Props } from './types';
+import { getErrorMessage } from '@/pages/dashboard/utils/json';
+import type { JsonObject } from '@/pages/dashboard/types';
 
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
@@ -28,7 +30,7 @@ export default function Query(props: Props) {
   const variableRef = useRef(variable);
   const rangeRef = useRef(range);
   const requestIdRef = useRef(0);
-  const dropdownOpenValueRef = useRef<any>(null);
+  const dropdownOpenValueRef = useRef<Props['value']>(undefined);
 
   useEffect(() => {
     variableRef.current = variable;
@@ -59,9 +61,10 @@ export default function Query(props: Props) {
 
     const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
     const formatedDefinition = formatString(currentVariable.definition, variableInterpolations);
-    const formatedQuery = currentVariable.query?.query ? formatString(currentVariable.query.query, variableInterpolations) : undefined;
+    const queryText = currentVariable.query?.query;
+    const formatedQuery = typeof queryText === 'string' ? formatString(queryText, variableInterpolations) : undefined;
     const datasourceCate = currentVariable.datasource?.cate;
-    const datasourceValue = formatDatasource(currentVariable.datasource?.value as any, variableInterpolations);
+    const datasourceValue = formatDatasource(currentVariable.datasource?.value, variableInterpolations);
 
     if (!datasourceValue) {
       const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
@@ -73,22 +76,23 @@ export default function Query(props: Props) {
     try {
       // 对 query 对象中所有字符串字段执行变量替换，确保依赖链执行时使用最新变量值
       // 部分数据源（如 CloudWatch query.region）的变量引用在此处提前解析
-      const interpolatedQuery: any = {};
+      const interpolatedQuery: JsonObject = {};
       if (currentVariable.query) {
         Object.entries(currentVariable.query).forEach(([key, val]) => {
           interpolatedQuery[key] = typeof val === 'string' ? formatString(val, variableInterpolations) : val;
         });
       }
+      const query: VariableDatasourceQuery = {
+        ...interpolatedQuery,
+        query: formatedDefinition || formatedQuery, // query 是标准写法
+        range: currentRange,
+        config: currentVariable.config, // config 是 es 特有的写法
+      };
       const options = await datasource({
         datasourceCate,
         datasourceValue,
         datasourceList,
-        query: {
-          ...interpolatedQuery,
-          query: formatedDefinition || formatedQuery, // query 是标准写法
-          range: currentRange,
-          config: currentVariable.config, // config 是 es 特有的写法
-        },
+        query,
       });
       if (requestId !== requestIdRef.current) {
         return;
@@ -102,11 +106,11 @@ export default function Query(props: Props) {
           itemOptions: filteredOptions,
         }),
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (requestId !== requestIdRef.current) {
         return;
       }
-      setErrorMsg(error?.message || 'Error fetching variable options');
+      setErrorMsg(getErrorMessage(error) || 'Error fetching variable options');
       updateVariable(name, {
         options: [],
         // value: variableValueFixed ? value : undefined, // TODO 如果查询失败暂时不清除变量值

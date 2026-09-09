@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
 
@@ -8,11 +8,13 @@ import { hexPalette } from '@/pages/dashboard/config';
 
 import { IPanel } from '../../../types';
 
-import getDataFrameAndBaseSeries, { BaseSeriesItem } from './utils/getDataFrameAndBaseSeries';
+import getDataFrameAndBaseSeries, { BaseSeriesItem, OldSeriesItem } from './utils/getDataFrameAndBaseSeries';
 import getLegendData from './utils/getLegendData';
 import getChartContainerSize from './utils/getChartContainerSize';
 import { LegendList, LegendTable } from './components/Legend';
 import Main from './Main';
+import useStableValue from '../../../hooks/useStableValue';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import './style.less';
 
 export { getDataFrameAndBaseSeries };
@@ -21,8 +23,8 @@ export type { BaseSeriesItem };
 interface Props {
   id?: string;
   values: IPanel;
-  series: any[];
-  annotations: any[];
+  series: CalculatedSeries[];
+  annotations: import('@/pages/dashboard/types').DashboardAnnotation[];
   setAnnotationsRefreshFlag?: (flag: string) => void;
   colors?: string[];
   time?: IRawTimeRange;
@@ -34,8 +36,9 @@ interface Props {
   tableHeight?: string;
   themeMode?: 'dark';
   hideResetBtn?: boolean;
-  onClick?: (event: any, datetime: Date, value: number, points: any[]) => void;
+  onClick?: (event: Event, datetime: Date, value: number, points: unknown[]) => void;
   onZoomWithoutDefult?: (times: Date[]) => void;
+  dataRevision?: number;
 }
 
 const PADDING = 8;
@@ -66,6 +69,8 @@ export default function index(props: Props) {
     onZoomWithoutDefult: props.onZoomWithoutDefult,
   };
   const options = mainProps.panel.options;
+  const dataDependency = props.dataRevision ?? mainProps.series;
+  const stablePanel = useStableValue(mainProps.panel);
   const legend = options?.legend;
   const legendPlacement = legend?.placement || 'bottom'; // 适配旧版的默认值
   const legendDisplayMode = options.legend?.displayMode || 'table';
@@ -79,13 +84,13 @@ export default function index(props: Props) {
   const [activeLegend, setActiveLegend] = useState<string>(); // legendSelectMode === 'single'
   const [activeLegends, setActiveLegends] = useState<string[]>([]); // legendSelectMode === 'multiple'
   const { frames, baseSeries } = useMemo(() => {
+    return getDataFrameAndBaseSeries(mainProps.series as unknown as OldSeriesItem[]);
+  }, [dataDependency]);
+  useEffect(() => {
     setDataRefresh(_.uniqueId('dataRefresh_'));
-    // TODO: 数据刷新后 series.id 会变化，这里暂时重置 activeLegend 和 activeLegends
-    // 后续需要考虑通过 series.metric 生成 hash 值，来判断是否是同一个 series
     setActiveLegend(undefined);
     setActiveLegends([]);
-    return getDataFrameAndBaseSeries(mainProps.series as any);
-  }, [JSON.stringify(mainProps.series)]);
+  }, [dataDependency]);
   const seriesData = useMemo(() => {
     if (legendSelectMode === 'multiple') {
       return _.map(baseSeries, (subItem) => {
@@ -103,7 +108,7 @@ export default function index(props: Props) {
         show: activeLegend ? (legendBehaviour === 'hideItem' ? activeLegend !== id : activeLegend === id) : true,
       };
     });
-  }, [dataRefresh, activeLegend, JSON.stringify(activeLegends)]);
+  }, [dataRefresh, activeLegend, activeLegends, legendBehaviour, legendSelectMode, baseSeries]);
   const legendData = useMemo(() => {
     const { options, overrides } = mainProps.panel;
     if (legend?.displayMode !== 'hidden') {
@@ -118,7 +123,7 @@ export default function index(props: Props) {
       });
     }
     return [];
-  }, [dataRefresh, legend?.displayMode, JSON.stringify(mainProps.panel), JSON.stringify(seriesData)]);
+  }, [dataRefresh, legend?.displayMode, stablePanel, seriesData]);
 
   return (
     <div

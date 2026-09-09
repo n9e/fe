@@ -60,6 +60,7 @@ describe('createLogExplorerTabItem', () => {
       key: 'new',
       name: 'Query 2',
       isInited: false,
+      isNewTab: true,
       formValues: {
         datasourceCate: 'elasticsearch',
         datasourceValue: 1,
@@ -90,6 +91,7 @@ describe('createLogExplorerTabItem', () => {
       key: 'new',
       name: 'Query 2',
       isInited: false,
+      isNewTab: true,
       formValues: {
         datasourceCate: 'elasticsearch',
         datasourceValue: 2,
@@ -122,12 +124,45 @@ describe('createLogExplorerTabItem', () => {
       key: 'new',
       name: 'Query 2',
       isInited: false,
+      isNewTab: true,
       formValues: {
         datasourceCate: 'elasticsearch',
         datasourceValue: 2,
         query: {
           range: undefined,
         },
+      },
+    });
+  });
+
+  it('creates a new tab with only the active datasource', () => {
+    const createLogExplorerTabItem = loadCreateLogExplorerTabItem(false);
+
+    expect(
+      createLogExplorerTabItem({
+        mode: 'new',
+        activeItem: {
+          key: 'old',
+          formValues: {
+            datasourceCate: 'elasticsearch',
+            datasourceValue: 1,
+            query: { query: 'status:200' },
+            view: 2,
+          },
+        },
+        key: 'new',
+        name: 'Query 2',
+        defaultDatasourceCate: 'elasticsearch',
+        defaultDatasourceValue: 2,
+      }),
+    ).toEqual({
+      key: 'new',
+      name: 'Query 2',
+      isInited: false,
+      isNewTab: true,
+      formValues: {
+        datasourceCate: 'elasticsearch',
+        datasourceValue: 1,
       },
     });
   });

@@ -102,6 +102,17 @@ export function getCleanBusinessGroupIds(businessGroupIds?: string) {
   return _.replace(businessGroupIds, /group,/g, '');
 }
 
+/**
+ * 侧边栏的受控值使用纯业务组 ID，而树的父节点使用 `group,` 前缀区分范围。
+ * 两者表示同一组 ID 时，应保留全局状态中的树节点 key，否则会错误选中同 ID 的叶子节点。
+ */
+export function getSelectedBusinessGroupKey(selected?: string, businessGroupKey?: string) {
+  if (selected && businessGroupKey && getCleanBusinessGroupIds(businessGroupKey) === selected) {
+    return businessGroupKey;
+  }
+  return selected || businessGroupKey;
+}
+
 export function getDefaultBusinessGroupKey() {
   const { ids: defaultBusinessGroupIds, isLeaf: defaultBusinessGroupIsLeaf } = queryString.parse(window.location.search);
   const defaultBusinessGroupKey =

@@ -26,7 +26,7 @@ export default class GroupByTransformation implements Transformation {
     const { field, aggregation } = this.options;
 
     // 按字段值分组
-    const groups = new Map<any, DataPoint[]>();
+    const groups = new Map<DataPoint[string], DataPoint[]>();
     series.data.forEach((dataPoint) => {
       const key = dataPoint[field as keyof DataPoint];
       if (!groups.has(key)) {
@@ -38,22 +38,22 @@ export default class GroupByTransformation implements Transformation {
     // 对分组后的数据进行聚合
     const newData: DataPoint[] = [];
     groups.forEach((groupData, key) => {
-      let aggregatedValue: number;
+      let aggregatedValue: DataPoint[string];
       switch (aggregation) {
         case 'sum':
-          aggregatedValue = groupData.reduce((acc, dp) => acc + dp.value, 0);
+          aggregatedValue = groupData.reduce((acc, dp) => acc + (dp.value ?? 0), 0);
           break;
         case 'avg':
-          aggregatedValue = groupData.reduce((acc, dp) => acc + dp.value, 0) / groupData.length;
+          aggregatedValue = groupData.reduce((acc, dp) => acc + (dp.value ?? 0), 0) / groupData.length;
           break;
         case 'count':
           aggregatedValue = groupData.length;
           break;
         case 'max':
-          aggregatedValue = Math.max(...groupData.map((dp) => dp.value));
+          aggregatedValue = Math.max(...groupData.map((dp) => dp.value ?? 0));
           break;
         case 'min':
-          aggregatedValue = Math.min(...groupData.map((dp) => dp.value));
+          aggregatedValue = Math.min(...groupData.map((dp) => dp.value ?? 0));
           break;
         default:
           aggregatedValue = key; // 如果没有聚合操作，直接使用分组键
@@ -79,12 +79,13 @@ export default class GroupByTransformation implements Transformation {
     const fieldValues = table.fields[fieldIndex].values;
 
     // 按字段值分组
-    const groups = new Map<any, number[]>();
+    const groups = new Map<string | number | null, number[]>();
     fieldValues.forEach((value, index) => {
-      if (!groups.has(value)) {
-        groups.set(value, []);
+      const key = value as string | number | null;
+      if (!groups.has(key)) {
+        groups.set(key, []);
       }
-      groups.get(value)!.push(index);
+      groups.get(key)!.push(index);
     });
 
     // 创建新的字段数组
@@ -92,7 +93,7 @@ export default class GroupByTransformation implements Transformation {
       name: string;
       type: string;
       values: (string | number | null)[];
-      state: any;
+      state: TableData['fields'][number]['state'];
     }> = [];
 
     // 添加分组字段

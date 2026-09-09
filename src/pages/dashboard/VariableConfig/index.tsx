@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
@@ -22,6 +22,7 @@ import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
+import { useDeepCompareEffect } from 'ahooks';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -116,7 +117,7 @@ function index(props: IProps) {
     return null;
   };
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (value) {
       let result: IVariable[] = [];
       (async () => {
@@ -322,7 +323,7 @@ function index(props: IProps) {
         setLoading(false);
       })();
     }
-  }, [JSON.stringify(value), refreshFlag, JSON.stringify(range)]);
+  }, [value, refreshFlag, range]);
 
   return (
     <div className='tag-area'>

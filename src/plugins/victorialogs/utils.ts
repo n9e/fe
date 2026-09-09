@@ -30,11 +30,16 @@ export const getDataFrameAndBaseSeries = (hits: HitResult[]) => {
   const baseSeries: BaseSeriesItem[] = [];
   let total = 0;
 
-  for (const item of hits) {
+  for (const [index, item] of hits.entries()) {
     baseSeries.push({
       show: true,
       label: item.fields?._stream,
-      n9e_internal: {},
+      n9e_internal: {
+        // 单查询面板：refId 固定为 A；id 用流索引保证唯一（legend 高亮 / override 匹配需要）
+        id: `victorialogs_${index}`,
+        refId: 'A',
+        metric: item.fields,
+      },
     });
     total += item.total;
     for (const date of item.timestamps) {

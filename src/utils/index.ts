@@ -21,6 +21,16 @@ import i18next from 'i18next';
 import { JSEncrypt } from 'js-encrypt';
 import { IStore } from '@/store/common';
 export { getDefaultDatasourceValue, setDefaultDatasourceValue } from './datasource';
+export {
+  allDatasourceCategories,
+  baseDatasourceCategories,
+  getAuthorizedDatasourceCategories,
+  getDatasourceCategoryByValue,
+  getDatasourceCategoryDisplayLabel,
+  getDatasourceCategoryGraphPro,
+  getDatasourceCategoryPrimaryType,
+} from './datasourceRegistry';
+export type { DatasourceCategory } from './datasourceRegistry';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

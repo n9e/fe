@@ -25,7 +25,7 @@ const zh_HK = {
   upload_modal_invalid_type: '僅支援 .zip 和 .tar.gz 格式的檔案',
   upload_modal_file_required: '請上傳 Skill 壓縮檔',
   edit_title: '編輯 Skill',
-  toggle_needs_team: '請先透過「替換」為該 Skill 設定管理團隊，再啟用/停用',
+  toggle_needs_team: '請先透過「修改」為該 Skill 設定管理團隊，再啟用/停用',
   document_empty: '暫無文件內容',
   search_placeholder: '請輸入關鍵字搜尋',
   builtin: '內建',

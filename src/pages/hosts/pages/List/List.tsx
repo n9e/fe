@@ -585,9 +585,12 @@ export default function List(props: Props) {
                             </span>
                           </Tooltip>
                           {IS_PLUS && (
+                            // 常驻而不是 hover 才显形：这是「从机器出发看/配采集」的入口，
+                            // 藏在 hover 里新用户不可能找到。这一列已经在算 identIpWidth 排版，
+                            // 所以只放开可见性、不加文字，免得把这列撑变形
                             <Tooltip title={t('view_collects')}>
                               <Button
-                                className='ml-2 invisible group-hover:visible'
+                                className='ml-2'
                                 size='small'
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -1034,6 +1037,23 @@ export default function List(props: Props) {
           setMetaDrawerOpen(open);
           if (!open) setMetaDrawerIdent('');
         }}
+        extraActions={
+          IS_PLUS && metaDrawerIdent ? (
+            // 元信息抽屉本身是个死胡同，至少让「这台机器配了什么采集 / 要不要配一个」有条出路
+            <Button
+              size='small'
+              type='link'
+              className='p-0'
+              icon={<ApartmentOutlined />}
+              onClick={() => {
+                setCollectsDrawerVisible(true);
+                setCollectsDrawerIdent(metaDrawerIdent);
+              }}
+            >
+              {t('view_collects')}
+            </Button>
+          ) : undefined
+        }
       />
       <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
       {installVisible && installMeta && (

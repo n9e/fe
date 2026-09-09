@@ -6,23 +6,25 @@ import { json } from '@codemirror/lang-json';
 import { defaultHighlightStyle } from '@codemirror/highlight';
 import { EditorView } from '@codemirror/view';
 import CodeMirror from '@/components/CodeMirror';
+import type { IPanel, JsonValue } from '@/pages/dashboard/types';
+import type { DashboardInspectQuery } from '../datasource/types';
 import './style.less';
 
 interface Props {
-  query?: any[];
-  values: any;
+  query?: DashboardInspectQuery[];
+  values: IPanel | JsonValue;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('dashboard');
   const { query, values } = props;
   const multipleQuery = query && query?.length > 1;
-  const [queryType, setQueryType] = useState<any>(query?.[0]?.type);
+  const [queryType, setQueryType] = useState<string | undefined>(query?.[0]?.type);
   const queryByType = _.find(query, { type: queryType });
 
   useEffect(() => {
     setQueryType(query?.[0]?.type);
-  }, [JSON.stringify(query)]);
+  }, [query]);
 
   return (
     <Tabs className='dashboard-detail-inspect'>

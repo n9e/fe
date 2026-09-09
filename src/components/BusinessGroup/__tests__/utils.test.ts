@@ -44,7 +44,15 @@ Object.defineProperty(global, 'window', { value: mockWindow, writable: true });
 // utils.ts 中直接引用 window，需确保 window 在全局作用域可访问
 (globalThis as any).window = mockWindow;
 
-import { getCleanBusinessGroupIds, getDefaultBusinessGroupKey, getDefaultBusiness, getBusinessGroupsOptions, getCollapsedKeys, listToTree } from '../utils';
+import {
+  getCleanBusinessGroupIds,
+  getSelectedBusinessGroupKey,
+  getDefaultBusinessGroupKey,
+  getDefaultBusiness,
+  getBusinessGroupsOptions,
+  getCollapsedKeys,
+  listToTree,
+} from '../utils';
 
 // ---------- getCleanBusinessGroupIds ----------
 
@@ -84,6 +92,17 @@ describe('getCleanBusinessGroupIds', () => {
       const second = getCleanBusinessGroupIds(input);
       expect(first).toBe(second);
     });
+  });
+});
+
+describe('getSelectedBusinessGroupKey', () => {
+  it('受控值与父节点范围一致时保留父节点 key', () => {
+    expect(getSelectedBusinessGroupKey('3', 'group,3')).toBe('group,3');
+    expect(getSelectedBusinessGroupKey('3,4', 'group,3,4')).toBe('group,3,4');
+  });
+
+  it('受控值与全局选择不一致时仍以受控值为准', () => {
+    expect(getSelectedBusinessGroupKey('4', 'group,3')).toBe('4');
   });
 });
 

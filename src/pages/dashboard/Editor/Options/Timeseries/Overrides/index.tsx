@@ -22,8 +22,9 @@ import { useTranslation } from 'react-i18next';
 import { Panel } from '../../../Components/Collapse';
 import StandardOptions from '../../../Fields/StandardOptions';
 import { useGlobalState } from '../../../../globalState';
+import type { ITarget } from '../../../../types';
 
-export default function index({ targets }) {
+export default function index({ targets }: { targets: ITarget[] }) {
   const { t } = useTranslation('dashboard');
   const [tableFields] = useGlobalState('tableFields');
   const namePrefix = ['overrides'];

@@ -4,6 +4,8 @@ import Color from 'color';
 
 import { IThresholds, ThresholdsStyle } from '@/pages/dashboard/types';
 
+type NumericThresholdStep = IThresholds['steps'][number] & { value: number };
+
 interface Props {
   uplot: uPlot;
   thresholds: IThresholds;
@@ -35,7 +37,7 @@ export default function drawThresholds(props: Props) {
       return {
         ...step,
         // Thresholds mode Percentage means thresholds relative to min & max
-        value: scaleYMin + (scaleYMax - scaleYMin) * (step.value / 100),
+        value: scaleYMin + (scaleYMax - scaleYMin) * ((step.value ?? 0) / 100),
       };
     });
   }
@@ -46,8 +48,8 @@ export default function drawThresholds(props: Props) {
     const xMin = uplot.valToPos(scaleXMin, 'x', true);
     const xMax = uplot.valToPos(scaleXMax, 'x', true);
     _.forEach(
-      _.filter(thresholdsSteps, (item) => {
-        return item.type !== 'base' && item.value >= scaleYMin && item.value <= scaleYMax;
+      _.filter(thresholdsSteps, (item): item is NumericThresholdStep => {
+        return item.type !== 'base' && item.value !== null && item.value >= scaleYMin && item.value <= scaleYMax;
       }),
       (step) => {
         ctx.beginPath();
@@ -65,8 +67,9 @@ export default function drawThresholds(props: Props) {
     if (thresholdsStyle.mode === 'line+area' || thresholdsStyle.mode === 'dashed+area') {
       _.forEach(thresholdsSteps, (step, index) => {
         // Check if the current step is within the Y axis range
-        const currentStepInRange = step.value >= scaleYMin && step.value <= scaleYMax;
-        const nextStepInRange = index < thresholdsSteps.length - 1 && thresholdsSteps[index + 1].value >= scaleYMin && thresholdsSteps[index + 1].value <= scaleYMax;
+        const currentStepInRange = (step.value ?? 0) >= scaleYMin && (step.value ?? 0) <= scaleYMax;
+        const nextStepInRange =
+          index < thresholdsSteps.length - 1 && (thresholdsSteps[index + 1]?.value ?? 0) >= scaleYMin && (thresholdsSteps[index + 1]?.value ?? 0) <= scaleYMax;
 
         // Skip if both current and next steps are outside the range
         if (!currentStepInRange && !nextStepInRange) {
@@ -77,8 +80,8 @@ export default function drawThresholds(props: Props) {
         ctx.fillStyle = Color(step.color).alpha(0.14).rgb().string();
 
         // Clamp y0Value and y1Value to the Y axis range
-        let y0Value = index === 0 ? scaleYMin : step.value;
-        let y1Value = index === thresholdsSteps.length - 1 ? scaleYMax : thresholdsSteps[index + 1].value;
+        let y0Value = index === 0 ? scaleYMin : step.value ?? 0;
+        let y1Value = index === thresholdsSteps.length - 1 ? scaleYMax : thresholdsSteps[index + 1]?.value ?? 0;
 
         y0Value = Math.max(scaleYMin, Math.min(scaleYMax, y0Value));
         y1Value = Math.max(scaleYMin, Math.min(scaleYMax, y1Value));

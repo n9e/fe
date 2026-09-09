@@ -47,6 +47,10 @@ interface Props {
   options?: OptionsType;
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   filterFields?: (fieldKeys: string[]) => string[];
+  /** 组织字段。参与 memo 比较：内联 filterFields 引用变化不可靠，需用 organizeFields 驱动展示刷新 */
+  organizeFields?: string[];
+  /** 字段下钻、格式化相关配置（影响时间列/字段值展示，按引用参与 memo 比较） */
+  fieldConfig?: any;
   /** 过滤每行日志的字段，返回需要显示的字段数组 */
   onValueFilter?: (parmas: OnValueFilterParams) => void;
   /** 排序反转回调 */
@@ -87,6 +91,7 @@ function Table(props: Props) {
     tableColumnsWidthCacheKey,
     options,
     filterFields,
+    organizeFields,
     onValueFilter,
     onReverseChange,
     onOpenOrganizeFieldsModal,
@@ -262,6 +267,8 @@ function Table(props: Props) {
 }
 
 export default React.memo(Table, (prevProps, nextProps) => {
-  const pickKeys = ['logsHash', 'options', 'timeField', 'filterFields', 'customLogFieldRender'];
-  return _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
+  // P0-1: 只比较与渲染强相关的数据 prop，函数类 props 不参与比较（内联箭头函数引用每次变化会打穿 memo）。
+  // organizeFields 变化会影响字段过滤展示，必须参与比较；fieldConfig 异步加载后影响时间列格式化，按引用比较。
+  const pickKeys = ['logsHash', 'options', 'timeField', 'organizeFields'];
+  return prevProps.fieldConfig === nextProps.fieldConfig && _.isEqual(_.pick(prevProps, pickKeys), _.pick(nextProps, pickKeys));
 });

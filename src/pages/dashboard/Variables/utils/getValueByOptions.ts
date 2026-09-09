@@ -12,7 +12,7 @@ export default function getValueByOptions({
   variable: IVariable;
   itemOptions?: {
     label: string;
-    value: string;
+    value: string | number;
   }[];
 }) {
   let value = variable.value;

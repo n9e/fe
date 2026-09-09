@@ -2,10 +2,12 @@ import _ from 'lodash';
 import { IVariable } from '../../VariableConfig/definition';
 import { replaceExpressionVars } from '../../VariableConfig/constant';
 
-const replaceAllPolyfill = (str, substr, newSubstr): string => {
+type ScopedValues = Record<string, string | number>;
+
+const replaceAllPolyfill = (str: string, substr: string, newSubstr: string | number): string => {
   let result = str;
   while (result.includes(substr)) {
-    result = result.replace(substr, newSubstr);
+    result = result.replace(substr, String(newSubstr));
   }
   return result;
 };
@@ -13,7 +15,7 @@ const replaceAllPolyfill = (str, substr, newSubstr): string => {
 export const replaceExpressionVarsSpecifyRule = (
   params: {
     expression: string;
-    scopedVars: any;
+    scopedVars: ScopedValues;
   },
   rule: {
     regex: string;
@@ -31,7 +33,7 @@ export const replaceExpressionVarsSpecifyRule = (
   return newExpression;
 };
 
-export const replaceExpressionScopedVars = (expression: string, scopedVars: any) => {
+export const replaceExpressionScopedVars = (expression: string, scopedVars: ScopedValues) => {
   let newExpression = expression;
   newExpression = replaceExpressionVarsSpecifyRule(
     { expression: newExpression, scopedVars },
@@ -50,7 +52,7 @@ export const replaceExpressionScopedVars = (expression: string, scopedVars: any)
   return newExpression;
 };
 
-export default function replaceFieldWithVariable(dashboardId, value: string, variableConfig?: IVariable[], scopedVars?: any) {
+export default function replaceFieldWithVariable(dashboardId: string, value: string, variableConfig?: IVariable[], scopedVars?: ScopedValues) {
   if (!value) return value;
   if (scopedVars) {
     value = replaceExpressionScopedVars(value, scopedVars);

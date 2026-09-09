@@ -32,7 +32,7 @@ export default class OrganizeFieldsTransformation implements Transformation {
     }
 
     const newData = series.data.map((dataPoint) => {
-      const newDataPoint: Record<string, any> = {};
+      const newDataPoint: Record<string, DataPoint[string]> = {};
 
       // 获取所有字段并排除被标记为排除的字段
       const availableFields = fields.filter((field) => !excludeByName?.[field]);
@@ -79,8 +79,9 @@ export default class OrganizeFieldsTransformation implements Transformation {
     // 过滤并重命名字段
     const newFields = sortedFields
       .map((fieldName) => {
-        // 找到对应的字段
-        const field = table.fields.find((f) => f.name === fieldName);
+        // 优先按展示名匹配，兼容上游转换（Merge/Join 等）已设置 displayName 的场景；
+        // 兜底按原始字段名匹配。
+        const field = table.fields.find((f) => (f.state?.displayName || f.name) === fieldName) ?? table.fields.find((f) => f.name === fieldName);
         if (!field) return null;
 
         return {
@@ -95,6 +96,7 @@ export default class OrganizeFieldsTransformation implements Transformation {
       .filter((field) => field !== null);
 
     return {
+      ...table,
       refId: 'transformed',
       fields: newFields,
     } as TableData;

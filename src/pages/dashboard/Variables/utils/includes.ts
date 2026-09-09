@@ -4,12 +4,12 @@ export default function includes(
   source:
     | {
         label: string;
-        value: string;
+        value: string | number;
       }[]
     | undefined,
-  target,
+  target: string | number | Array<string | number> | undefined,
 ) {
-  if (_.isArray(target)) {
+  if (Array.isArray(target)) {
     // 不为空则有交集
     return !_.isEmpty(_.intersection(_.map(source, 'value'), target));
   }

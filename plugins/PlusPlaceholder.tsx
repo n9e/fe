@@ -34,6 +34,9 @@ function Jobs() {
   return null;
 }
 
+const MCPServerList = PlusePlaceholder;
+const AiTaskPage = PlusePlaceholder;
+
 const advancedCates = [];
 const envCateMap = {};
 enum AdvancedDatasourceCateEnum {}
@@ -87,6 +90,8 @@ export {
   EventPreview,
   Explorer,
   Jobs,
+  MCPServerList,
+  AiTaskPage,
   advancedCates,
   envCateMap,
   AdvancedDatasourceCateEnum,

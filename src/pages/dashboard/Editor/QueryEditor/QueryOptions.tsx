@@ -6,7 +6,7 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import TimeRangePicker, { isMathString } from '@/components/TimeRangePicker';
+import TimeRangePicker, { describeTimeRange, isMathString } from '@/components/TimeRangePicker';
 
 interface Props {
   panelWidth?: number;
@@ -14,6 +14,20 @@ interface Props {
 
 export default function QueryOptions({ panelWidth }: Props) {
   const { t } = useTranslation('dashboard');
+  const maxDataPoints = Form.useWatch('maxDataPoints');
+  const queryOptionsTime = Form.useWatch('queryOptionsTime');
+
+  // 仅展示已配置的选项，便于在不打开弹层时快速识别当前查询选项
+  const summaryParts: string[] = [];
+  if (maxDataPoints != null) {
+    summaryParts.push(`${t('query.options_max_data_points')}: ${maxDataPoints}`);
+  }
+  if (queryOptionsTime?.start && queryOptionsTime?.end) {
+    // describeTimeRange 会把 now-1h 等数学字符串转成更友好的展示文案
+    summaryParts.push(`${t('query.options_time')}: ${describeTimeRange(queryOptionsTime, 'YYYY-MM-DD HH:mm:ss')}`);
+  }
+  const summary = summaryParts.join(' · ');
+
   const content = (
     <div>
       <InputGroupWithFormItem
@@ -72,6 +86,7 @@ export default function QueryOptions({ panelWidth }: Props) {
       <Popover trigger='click' placement='bottom' title={t('query.options')} content={content}>
         <Button>{t('query.options')}</Button>
       </Popover>
+      {summary && <span className='text-soft pl-2'>{summary}</span>}
     </>
   );
 }

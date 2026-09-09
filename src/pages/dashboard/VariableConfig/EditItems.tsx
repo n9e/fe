@@ -33,7 +33,7 @@ interface IProps {
   value?: IVariable[];
   range: IRawTimeRange;
   onChange: (v?: IVariable[]) => void;
-  dashboard: Dashboard;
+  dashboard: Pick<Dashboard, 'id' | 'public' | 'public_cate'>;
   editMode?: number; // 0: 变量名、类型、数据源类型、数据源值无法修改
 }
 
@@ -129,7 +129,7 @@ export default function EditItems(props: IProps) {
                   {
                     title: t('common:table.operations'),
                     width: 150,
-                    render: (_text, record, idx) => {
+                    render: (_text: unknown, record: IVariable, idx: number) => {
                       return (
                         <Space>
                           <Button

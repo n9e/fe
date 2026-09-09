@@ -15,10 +15,11 @@
  *
  */
 import _ from 'lodash';
+import type { IOverride } from '../../types';
 
-const getOverridePropertiesByName = (overrides: any[], type: string, name?: string) => {
+const getOverridePropertiesByName = (overrides: IOverride[], type: 'byFrameRefID' | 'byName', name?: string): IOverride['properties'] => {
   if (!name) return {};
-  let properties: any = {};
+  let properties: IOverride['properties'] = {};
   _.forEach(overrides, (item) => {
     if (type === 'byFrameRefID' && item?.matcher?.value === name) {
       properties = item?.properties;

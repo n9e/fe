@@ -14,22 +14,26 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import _ from 'lodash';
 import { Tooltip } from 'antd';
 import { useSize } from 'ahooks';
 import { IPanel } from '../../../types';
+import type { IOptions } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
+import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
+import useStableValue from '../../../hooks/useStableValue';
 import Gauge from './Gauge';
 import { calculateGridDimensions } from '../../utils/squares';
 import './style.less';
 
 interface IProps {
   values: IPanel;
-  series: any[];
+  series: CalculatedSeries[];
   themeMode?: 'dark';
   isPreview?: boolean;
+  dataRevision?: number;
 }
 
 interface IGrid {
@@ -43,7 +47,28 @@ interface IGrid {
 const MIN_SIZE = 12;
 const ITEM_SPACIING = 8;
 
-function GaugeItemContent(props) {
+interface GaugeValue {
+  name?: string;
+  stat: number;
+  metric: Record<string, string | undefined>;
+  value?: string | number;
+  unit?: string;
+  color?: string;
+}
+interface GaugeItemProps {
+  item: GaugeValue;
+  options: IOptions;
+  themeMode?: 'dark';
+  textMode?: string;
+  style?: React.CSSProperties;
+  valueField?: string;
+}
+interface GaugeItemContentProps extends GaugeItemProps {
+  eleSize?: { width?: number; height?: number };
+  realHeaderFontSize: number;
+}
+
+function GaugeItemContent(props: GaugeItemContentProps) {
   const { eleSize, realHeaderFontSize, item, themeMode, options } = props;
   const height = eleSize?.height! - realHeaderFontSize;
   const width = eleSize?.width! > height ? height : eleSize?.width;
@@ -68,7 +93,7 @@ function GaugeItemContent(props) {
   );
 }
 
-function GaugeItemLabel(props) {
+function GaugeItemLabel(props: { eleSize?: { width?: number }; realHeaderFontSize: number; name?: string }) {
   const { eleSize, realHeaderFontSize, name } = props;
 
   if (!eleSize?.width) return null;
@@ -85,7 +110,7 @@ function GaugeItemLabel(props) {
   );
 }
 
-function GaugeItem(props) {
+function GaugeItem(props: GaugeItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
   const { textMode = 'valueAndName', style, options, valueField } = props;
@@ -94,7 +119,7 @@ function GaugeItem(props) {
   let item = props.item;
 
   if (valueField !== 'Value') {
-    const value = _.get(item, ['metric', valueField]);
+    const value = _.get(item, ['metric', valueField as string]);
     if (!_.isNaN(_.toNumber(value))) {
       const result = getSerieTextObj(
         value,
@@ -106,7 +131,7 @@ function GaugeItem(props) {
         options?.valueMappings,
         options?.thresholds,
       );
-      item.value = result?.value;
+      item.value = result?.value as string | number | undefined;
       item.unit = result?.unit;
       item.color = result?.color;
     } else {
@@ -126,7 +151,7 @@ function GaugeItem(props) {
   );
 }
 
-const getColumnsKeys = (data: any[]) => {
+const getColumnsKeys = (data: Array<{ metric: Record<string, string | undefined> }>) => {
   const keys = _.reduce(
     data,
     (result, item) => {
@@ -139,18 +164,34 @@ const getColumnsKeys = (data: any[]) => {
 
 export default function Index(props: IProps) {
   const { values, series, themeMode, isPreview } = props;
+  const dataDependency = props.dataRevision ?? series;
   const { custom, options } = values;
-  const { calc, textMode, valueField = 'Value' } = custom;
-  const calculatedValues = getCalculatedValuesBySeries(
-    series,
+  const stableCustom = useStableValue(custom);
+  const stableOptions = useStableValue(options);
+  // custom 为 JsonObject（宽类型），按仪表盘 gauge 面板实际使用的结构收窄
+  const {
     calc,
-    {
-      unit: options?.standardOptions?.unit,
-      decimals: options?.standardOptions?.decimals,
-      dateFormat: options?.standardOptions?.dateFormat,
-    },
-    options?.valueMappings,
-    options?.thresholds,
+    textMode,
+    valueField = 'Value',
+  } = custom as {
+    calc?: string;
+    textMode?: string;
+    valueField?: string;
+  };
+  const calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc as string,
+        {
+          unit: options?.standardOptions?.unit,
+          decimals: options?.standardOptions?.decimals,
+          dateFormat: options?.standardOptions?.dateFormat,
+        },
+        options?.valueMappings,
+        options?.thresholds,
+      ),
+    [dataDependency, stableCustom, stableOptions],
   );
   const [statFields, setStatFields] = useGlobalState('statFields');
   const ele = useRef(null);
@@ -167,7 +208,7 @@ export default function Index(props: IProps) {
       const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
       setGrid(grid);
     }
-  }, [isPreview, JSON.stringify(calculatedValues), eleSize?.width]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions, eleSize?.width]);
 
   return (
     <div className='renderer-gauge-container'>
@@ -188,8 +229,7 @@ export default function Index(props: IProps) {
               return (
                 <GaugeItem
                   key={item.id}
-                  item={item}
-                  idx={idx}
+                  item={item as unknown as GaugeValue}
                   textMode={textMode}
                   themeMode={themeMode}
                   options={options}

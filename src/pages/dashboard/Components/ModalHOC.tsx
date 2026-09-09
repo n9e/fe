@@ -19,17 +19,17 @@ import { createRoot, Root } from 'react-dom/client';
 import _ from 'lodash';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-export interface ModalWrapProps {
+export interface ModalWrapProps<TData = unknown> {
   title?: string | React.ReactNode;
   visible: boolean;
-  data?: any;
+  data?: TData;
   destroy: () => void;
-  onOk: (...args: any[]) => void;
+  onOk: (...args: unknown[]) => void;
   onCancel: () => void;
 }
 
-export default function ModalHOC(Component: any) {
-  return function ModalControl(config: any) {
+export default function ModalHOC<Props extends ModalWrapProps>(Component: React.ComponentType<Props>) {
+  return function ModalControl(config: Omit<Props, 'visible' | 'destroy'>) {
     const div = document.createElement('div');
     document.body.appendChild(div);
     const root: Root = createRoot(div);
@@ -41,7 +41,7 @@ export default function ModalHOC(Component: any) {
       }
     }
 
-    function render(props: any) {
+    function render(props: Props) {
       root.render(
         <Router>
           <Component {...props} />
@@ -49,7 +49,7 @@ export default function ModalHOC(Component: any) {
       );
     }
 
-    render({ ...config, visible: true, destroy });
+    render({ ...config, visible: true, destroy } as Props);
 
     return {
       destroy,

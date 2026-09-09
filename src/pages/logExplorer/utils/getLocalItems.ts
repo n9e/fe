@@ -106,7 +106,8 @@ export function setLocalItems(items: any) {
       LOCALE_KEY,
       JSON.stringify(
         _.map(items, (item) => {
-          return _.omit(item, ['isInited']);
+          // isNewTab 是新增页签的运行时标记，持久化会导致刷新后误判为新增而不自动查询
+          return _.omit(item, ['isInited', 'isNewTab']);
         }),
       ),
     );

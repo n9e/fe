@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Form, Input, Tooltip, Select } from 'antd';
 import { DownOutlined, RightOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import UnitPicker from '@/pages/dashboard/Components/UnitPicker';
@@ -21,6 +22,7 @@ interface IProps {
 function AdvancedSettings(props: IProps) {
   const { t } = useTranslation('db_iotdb');
   const { span = 6, prefixField = {}, prefixName = [], disabled, datasourceCate, mode, expandTriggerVisible = true, showUnit } = props;
+  const restPrefixField = _.omit(prefixField, 'key');
   const [open, setOpen] = useState(!!props.expanded);
   const isIotdb = datasourceCate === DatasourceCateEnum.iotdb;
 
@@ -53,7 +55,7 @@ function AdvancedSettings(props: IProps) {
                     </span>
                   }
                 >
-                  <Form.Item {...prefixField} name={[...prefixName, 'keys', 'metricKey']} style={{ width: '100%' }}>
+                  <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'metricKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
                   </Form.Item>
                 </InputGroupWithFormItem>
@@ -69,7 +71,7 @@ function AdvancedSettings(props: IProps) {
                     </span>
                   }
                 >
-                  <Form.Item {...prefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
+                  <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'labelKey']} style={{ width: '100%' }}>
                     <Select mode='tags' placeholder={t('query.advancedSettings.tags_placeholder')} disabled={disabled} open={false} />
                   </Form.Item>
                 </InputGroupWithFormItem>
@@ -87,7 +89,7 @@ function AdvancedSettings(props: IProps) {
                         </span>
                       }
                     >
-                      <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeKey']} style={{ width: '100%' }} initialValue='time'>
+                      <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'timeKey']} style={{ width: '100%' }} initialValue='time'>
                         <Input disabled={disabled} />
                       </Form.Item>
                     </InputGroupWithFormItem>
@@ -97,7 +99,7 @@ function AdvancedSettings(props: IProps) {
               {showUnit && (
                 <Col span={span}>
                   <InputGroupWithFormItem label={t('common:unit')}>
-                    <Form.Item {...prefixField} name={[...prefixName, 'unit']} initialValue='none' noStyle>
+                    <Form.Item {...restPrefixField} name={[...prefixName, 'unit']} initialValue='none' noStyle>
                       <UnitPicker optionLabelProp='cleanLabel' style={{ width: '100%' }} dropdownMatchSelectWidth={false} />
                     </Form.Item>
                   </InputGroupWithFormItem>
@@ -117,7 +119,7 @@ function AdvancedSettings(props: IProps) {
                   </span>
                 }
               >
-                <Form.Item {...prefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='2006-01-02T15:04:05'>
+                <Form.Item {...restPrefixField} name={[...prefixName, 'keys', 'timeFormat']} style={{ width: '100%' }} initialValue='2006-01-02T15:04:05'>
                   <Input disabled={disabled} />
                 </Form.Item>
               </InputGroupWithFormItem>

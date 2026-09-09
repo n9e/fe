@@ -98,18 +98,30 @@ function Explorer(props: Props) {
 
   useEffect(() => {
     if (active && defaultFormValuesControl?.defaultFormValues && defaultFormValuesControl?.isInited === false) {
-      const searchParams = new URLSearchParams(location.search);
       defaultFormValuesControl.setIsInited();
+      // 刷新页面 / 切换标签（含 LRU 换出切回）：自动查询。
+      // 仅新增页签（isNewTab）不自动查询，只恢复查询条件，等用户手动点查询；外部分享链接（__execute__）始终自动查询。
+      const searchParams = new URLSearchParams(location.search);
+      const shouldQuery = !defaultFormValuesControl.isNewTab || !!searchParams.get('__execute__');
       form.setFieldsValue({
         ...defaultFormValuesControl.defaultFormValues,
-        refreshFlag: defaultFormValuesControl.defaultFormValues?.refreshFlag
-          ? defaultFormValuesControl.defaultFormValues?.refreshFlag
-          : searchParams.get('__execute__')
-          ? _.uniqueId('refreshFlag_')
-          : undefined,
+        refreshFlag: shouldQuery ? _.uniqueId('refreshFlag_') : undefined,
       });
     }
   }, [active]);
+
+  // P2 方案A：从激活切到隐藏时快照当前表单值（含未执行但已修改的查询条件），
+  // 供 LRU 换出后基于 formValues 恢复并自动重查。
+  const defaultFormValuesControlRef = useRef(defaultFormValuesControl);
+  defaultFormValuesControlRef.current = defaultFormValuesControl;
+  const prevActiveRef = useRef(active);
+  useEffect(() => {
+    const wasActive = prevActiveRef.current;
+    prevActiveRef.current = active;
+    if (wasActive && !active) {
+      defaultFormValuesControlRef.current?.onSnapshot?.(form.getFieldsValue());
+    }
+  }, [active, form]);
 
   const renderCommonSettings = ({ getDefaultQueryValues, executeQuery, layout }: RenderCommonSettingsParams) => {
     executeQueryRef.current = executeQuery;

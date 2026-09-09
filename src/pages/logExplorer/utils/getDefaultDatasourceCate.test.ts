@@ -21,6 +21,7 @@ const allCates = [
   { value: 'elasticsearch', type: ['logging'], graphPro: false },
   { value: 'loki', type: ['logging'], graphPro: false },
   { value: 'victorialogs', type: ['logging'], graphPro: false },
+  { value: 'newLogging', type: ['logging'], graphPro: false },
   { value: 'prometheus', type: ['metric'], graphPro: false },
 ];
 
@@ -43,25 +44,31 @@ describe('getDefaultDatasourceCate', () => {
     jest.dontMock('@/components/AdvancedWrap/utils');
   });
 
-  it('returns undefined for open-source mode when only Doris exists', () => {
+  it('returns undefined for open-source mode when only a Pro datasource exists', () => {
     const getDefaultDatasourceCate = loadGetDefaultDatasourceCate(false);
 
-    expect(getDefaultDatasourceCate([{ plugin_type: 'doris' }], 'doris')).toBeUndefined();
+    expect(getDefaultDatasourceCate([{ plugin_type: 'ck' }], 'doris')).toBeUndefined();
   });
 
-  it('falls back to an existing open-source supported datasource', () => {
+  it('falls back to an existing open-source supported datasource when the default is Pro-only', () => {
     const getDefaultDatasourceCate = loadGetDefaultDatasourceCate(false);
 
-    expect(getDefaultDatasourceCate([{ plugin_type: 'doris' }, { plugin_type: 'elasticsearch' }], 'doris')).toBe('elasticsearch');
+    expect(getDefaultDatasourceCate([{ plugin_type: 'ck' }, { plugin_type: 'elasticsearch' }], 'ck')).toBe('elasticsearch');
   });
 
-  it('allows Doris in Plus mode', () => {
+  it('allows Pro datasource types in Plus mode', () => {
     const getDefaultDatasourceCate = loadGetDefaultDatasourceCate(true);
 
-    expect(getDefaultDatasourceCate([{ plugin_type: 'doris' }], 'doris')).toBe('doris');
+    expect(getDefaultDatasourceCate([{ plugin_type: 'ck' }], 'ck')).toBe('ck');
   });
 
-  it('ignores datasource types that are not enabled logging cates', () => {
+  it('allows a newly registered non-Pro logging datasource in open-source mode', () => {
+    const getDefaultDatasourceCate = loadGetDefaultDatasourceCate(false);
+
+    expect(getDefaultDatasourceCate([{ plugin_type: 'newLogging' }], 'newLogging')).toBe('newLogging');
+  });
+
+  it('ignores datasource types that are not logging cates', () => {
     const getDefaultDatasourceCate = loadGetDefaultDatasourceCate(false);
 
     expect(getDefaultDatasourceCate([{ plugin_type: 'prometheus' }, { plugin_type: 'unknown' }], 'doris')).toBeUndefined();

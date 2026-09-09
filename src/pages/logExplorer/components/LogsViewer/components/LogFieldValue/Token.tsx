@@ -1,11 +1,9 @@
 import React, { useState, useContext, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Popover, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
 import purify from 'dompurify';
 
 import { Link } from '@/pages/explorer/components/Links';
-import { parseRange } from '@/components/TimeRangePicker';
 import { getHighlightHtml, getTokenHighlights } from '@/pages/logExplorer/utils/highlight/highlight_html';
 import { LOG_FIELD_SELECT_POPOVER_CLASS, LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS } from '@/pages/logExplorer/components/LogsViewer/utils/clickAway';
 import { NAME_SPACE } from '@/pages/logExplorer/constants';
@@ -39,9 +37,12 @@ interface Props {
   interactionMode?: 'popoverClick' | 'textSelect';
 }
 
+/** 无 indexData 时的稳定空数组引用，避免每次渲染新建 [] 打穿 TokenWithContext 的 memo */
+const EMPTY_INDEX_DATA: Field[] = [];
+
 export default function Token(props: Props) {
   const { indexData } = useContext(LogsViewerStateContext);
-  return <TokenWithContext {...props} indexData={indexData || []} />;
+  return <TokenWithContext {...props} indexData={indexData || EMPTY_INDEX_DATA} />;
 }
 
 /** mousedown 的 target 可能是文本节点，需归一化后再调用 Element#closest */
@@ -51,9 +52,18 @@ function eventTargetToElement(target: EventTarget | null): Element | null {
   return node instanceof Element ? node : node.parentElement;
 }
 
-function TokenWithContext(props: Props & { indexData: Field[] }) {
+const TokenWithContext = React.memo(function TokenWithContext(props: Props & { indexData: Field[] }) {
   const { t } = useTranslation(NAME_SPACE);
-  const { raw_key, fieldConfig, range, getAddToQueryInfo, drilldownContext, openAddDrilldownLink: openAddDrilldownLinkFromContext } = useContext(LogsViewerStateContext);
+  const {
+    raw_key,
+    fieldConfig,
+    range,
+    rangeStart,
+    rangeEnd,
+    getAddToQueryInfo,
+    drilldownContext,
+    openAddDrilldownLink: openAddDrilldownLinkFromContext,
+  } = useContext(LogsViewerStateContext);
 
   const {
     segmented,
@@ -84,9 +94,10 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
 
   const relatedLinks = fieldConfig?.linkArr?.filter((item) => (parentKey ? item.field === parentKey : item.field === name));
 
-  const parsedRange = range ? parseRange(range) : null;
-  const start = parsedRange ? moment(parsedRange.start).unix() : 0;
-  const end = parsedRange ? moment(parsedRange.end).unix() : 0;
+  // P0-4: 时间范围已由 Provider 层解析好，这里直接用；indexInfo 依赖用引用相等代替 JSON.stringify（
+  // 整行日志序列化是重活，×行数×字段数×token 数，且父层数据变化时行引用本就会变）
+  const start = rangeStart ?? 0;
+  const end = rangeEnd ?? 0;
 
   const indexInfo = useMemo(() => {
     if (!getAddToQueryInfo) {
@@ -101,7 +112,7 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       logRowData: (rawValue || {}) as { [index: string]: unknown },
       indexData,
     });
-  }, [getAddToQueryInfo, name, parentKey, raw_key, JSON.stringify(rawValue?.[raw_key]), JSON.stringify(indexData)]);
+  }, [getAddToQueryInfo, name, parentKey, raw_key, rawValue?.[raw_key], indexData]);
 
   const displayValue = getTokenDisplayValue({
     value,
@@ -349,4 +360,4 @@ function TokenWithContext(props: Props & { indexData: Field[] }) {
       </Popover>
     </>
   );
-}
+});
