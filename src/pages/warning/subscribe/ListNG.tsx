@@ -54,6 +54,7 @@ interface Props {
   data: subscribeItem[];
   loading: boolean;
   setRefreshFlag: (flag: string) => void;
+  onStatusChange?: (ids: React.Key[], disabled: 0 | 1) => void;
   linkTarget?: string;
   gids?: string;
   groupSwitchCount?: number;
@@ -299,7 +300,7 @@ const Subscribe = (props: Props) => {
                     ],
                     record.group_id,
                   ).then(() => {
-                    refreshList();
+                    props.onStatusChange?.([record.id], disabled === 0 ? 1 : 0);
                   });
                 }}
               />

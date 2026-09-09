@@ -11,7 +11,8 @@ import { Item, deleteItems, putItemsDisabled } from '../../services';
 
 interface MoreOperationsProps {
   selectedRows: Item[];
-  /** 批量操作完成后刷新列表并清空选择 */
+  onStatusChange: (ids: number[], disabled: boolean) => void;
+  /** Refresh the list and clear selection after deletion. */
   onFinished?: () => void;
 }
 
@@ -52,7 +53,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
         putItemsDisabled(_.map(targets, 'id'), disabled)
           .then(() => {
             message.success(t('common:success.modify'));
-            onFinished?.();
+            props.onStatusChange(_.map(targets, 'id'), disabled);
           })
           .catch((err) => {
             console.error(err);

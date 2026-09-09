@@ -67,8 +67,8 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
   const defaultPage = getPageFromSearch(location.search);
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
-  const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
-  const [currentStrategyData, setCurrentStrategyData] = useState([]);
+  const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState<strategyItem[]>([]);
+  const [currentStrategyData, setCurrentStrategyData] = useState<strategyItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
@@ -140,6 +140,12 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
       resetPaging();
     }
   }, [groupSwitchCount]);
+
+  const updateStatus = (ids: React.Key[], disabled: 0 | 1) => {
+    const patch = (rows: strategyItem[]) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row));
+    setCurrentStrategyDataAll(patch);
+    setSelectedRows(patch);
+  };
 
   const columns: ColumnType<strategyItem>[] = _.concat([
     {
@@ -216,7 +222,7 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
               },
               record.group_id,
             ).then(() => {
-              refreshList();
+              updateStatus([id], disabled ? 0 : 1);
             });
           }}
         />
@@ -320,7 +326,11 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
       if (!res.err) {
         message.success(t('common:success.edit'));
         clearSelection();
-        refreshList();
+        if (Object.keys(fieldsData).length === 1 && (fieldsData.disabled === 0 || fieldsData.disabled === 1)) {
+          updateStatus(selectRowKeys, fieldsData.disabled);
+        } else {
+          refreshList();
+        }
         setisModalVisible(false);
       } else {
         message.error(res.err);
