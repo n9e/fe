@@ -32,7 +32,10 @@ export default function DatasourceIdentifier(props: Props) {
   useEffect(() => {
     let datasourceList = typeof definition === 'string' ? (groupedDatasourceList[definition] ?? []).filter(hasDatasourceIdentifier) : [];
     if (regex) {
-      datasourceList = datasourceList.filter((option) => regex.test(option.identifier));
+      datasourceList = datasourceList.filter((option) => {
+        regex.lastIndex = 0;
+        return regex.test(option.identifier);
+      });
     }
     const itemOptions = _.map(datasourceList, (ds) => {
       return { label: ds.identifier, value: ds.identifier };
@@ -71,6 +74,7 @@ export default function DatasourceIdentifier(props: Props) {
             _.filter(typeof definition === 'string' ? groupedDatasourceList[definition] ?? [] : [], (item) => {
               if (hasDatasourceIdentifier(item)) {
                 if (regex) {
+                  regex.lastIndex = 0;
                   return regex.test(item.identifier);
                 }
                 return true;
