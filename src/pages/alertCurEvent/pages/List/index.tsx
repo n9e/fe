@@ -1,6 +1,6 @@
 import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { Input, Checkbox, Collapse, Segmented, Button, Space } from 'antd';
-import { AlertOutlined, SearchOutlined } from '@ant-design/icons';
+import { Input, Checkbox, Collapse, Segmented, Button, Space, Tooltip } from 'antd';
+import { AlertOutlined, FullscreenOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -35,6 +35,7 @@ import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard, { isEqualEventIds } from './AlertCard';
 import AlertTable from './AlertTable';
+import FullscreenList from './FullscreenList';
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation(NS);
@@ -127,7 +128,27 @@ const AlertCurEvent: React.FC = () => {
   const [prodFilterExpanded, setProdFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('prod', true));
   const [severityFilterExpanded, setSeverityFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('severity', true));
   const [datasourceFilterExpanded, setDatasourceFilterExpanded] = useState(() => readAlertCurEventSidebarFilterExpanded('datasource', false));
+  const fullscreenRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const params = getRequestParamsByFilter(filter);
+
+  useEffect(() => {
+    const syncFullscreenState = () => setIsFullscreen(document.fullscreenElement === fullscreenRef.current);
+    document.addEventListener('fullscreenchange', syncFullscreenState);
+    return () => document.removeEventListener('fullscreenchange', syncFullscreenState);
+  }, []);
+
+  const toggleFullscreen = useCallback(async () => {
+    try {
+      if (document.fullscreenElement === fullscreenRef.current) {
+        await document.exitFullscreen();
+      } else {
+        await fullscreenRef.current?.requestFullscreen();
+      }
+    } catch {
+      // 浏览器可能因权限策略禁止全屏，保持当前页面状态即可。
+    }
+  }, []);
 
   useEffect(() => {
     if (!IS_PLUS || !getBrainLicense) return;
@@ -213,256 +234,279 @@ const AlertCurEvent: React.FC = () => {
 
   return (
     <PageLayout icon={<AlertOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/events/cur-events/'>
-      <div className={`n9e ${NS}`}>
-        <div className='bg-fc-100 fc-border rounded-lg h-full'>
-          <div className='p-4 h-full'>
-            <div className='flex flex-col h-full'>
-              <div className='flex justify-between items-center mb-2'>
-                <Space>
+      <div ref={fullscreenRef} className={`n9e ${NS} h-full`}>
+        {isFullscreen ? (
+          <FullscreenList
+            title={t('title')}
+            range={filter.range}
+            onRangeChange={(range) => setFilterPatch({ range })}
+            onRefresh={() => setRefreshFlag(_.uniqueId('refresh_'))}
+            onExit={toggleFullscreen}
+          >
+            <AlertTable
+              filter={filter}
+              setFilter={setFilterPatch}
+              refreshFlag={refreshFlag}
+              selectedRowKeys={selectedRowKeys}
+              setSelectedRowKeys={setSelectedRowKeys}
+              params={params}
+              setRefreshFlag={setRefreshFlag}
+              tagDisplayMode={tagDisplayMode}
+              alertEscalationEnable={alertEscalationEnable}
+              isFullscreen
+            />
+          </FullscreenList>
+        ) : (
+          <div className='fc-border h-full rounded-lg bg-fc-100'>
+            <div className='h-full p-4'>
+              <div className='flex flex-col h-full'>
+                <div className='mb-2 flex items-center justify-between'>
                   <Space>
-                    <Segmented
-                      shape='round'
-                      className='whitespace-nowrap min-w-[190px]'
-                      onChange={(value: 'true' | 'false') => {
-                        setFilterPatch({ my_groups: value });
-                        localStorage.setItem(MY_GRPUPS_CACHE_KEY, value);
+                    <Space>
+                      <Segmented
+                        shape='round'
+                        className='whitespace-nowrap min-w-[190px]'
+                        onChange={(value: 'true' | 'false') => {
+                          setFilterPatch({ my_groups: value });
+                          localStorage.setItem(MY_GRPUPS_CACHE_KEY, value);
+                        }}
+                        value={filter.my_groups}
+                        block
+                        options={[
+                          { label: t('my_groups'), value: 'true' },
+                          { label: t('all_groups'), value: 'false' },
+                        ]}
+                      />
+                      <BusinessGroupSelectWithAll
+                        value={filter.bgid}
+                        onChange={(val: number) => {
+                          setFilterPatch({ bgid: val });
+                        }}
+                      />
+                    </Space>
+                    <Input
+                      allowClear
+                      style={{ width: '320px' }}
+                      prefix={<SearchOutlined />}
+                      placeholder={t('search_placeholder')}
+                      value={draftQuery}
+                      onFocus={() => {
+                        queryFocusedRef.current = true;
                       }}
-                      value={filter.my_groups}
-                      block
-                      options={[
-                        { label: t('my_groups'), value: 'true' },
-                        { label: t('all_groups'), value: 'false' },
-                      ]}
-                    />
-                    <BusinessGroupSelectWithAll
-                      value={filter.bgid}
-                      onChange={(val: number) => {
-                        setFilterPatch({ bgid: val });
+                      onBlur={() => {
+                        queryFocusedRef.current = false;
+                        setDraftQuery(filter.query ?? '');
+                      }}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        setDraftQuery(next);
+                        commitQueryDebounced(next);
                       }}
                     />
                   </Space>
-                  <Input
-                    allowClear
-                    style={{ width: '320px' }}
-                    prefix={<SearchOutlined />}
-                    placeholder={t('search_placeholder')}
-                    value={draftQuery}
-                    onFocus={() => {
-                      queryFocusedRef.current = true;
-                    }}
-                    onBlur={() => {
-                      queryFocusedRef.current = false;
-                      setDraftQuery(filter.query ?? '');
-                    }}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setDraftQuery(next);
-                      commitQueryDebounced(next);
-                    }}
-                  />
-                </Space>
-                <Space>
-                  <span className='whitespace-nowrap'>{t('tag_display')}: </span>
-                  <Segmented
-                    value={tagDisplayMode}
-                    options={[
-                      { label: t('tag_display_all'), value: 'all' },
-                      { label: t('tag_display_compact'), value: 'compact' },
-                      { label: t('tag_display_off'), value: 'off' },
-                    ]}
-                    onChange={(value) => {
-                      const next = value as AlertEventTagsDisplayMode;
-                      setTagDisplayMode(next);
-                      writeAlertEventTagsDisplayMode(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
-                    }}
-                  />
-                  <TimeRangePickerWithRefresh
-                    allowClear={true}
-                    value={filter.range}
-                    onChange={(val) => {
-                      setFilterPatch({ range: val });
-                    }}
-                    onRefresh={() => {
-                      setRefreshFlag(_.uniqueId('refresh_'));
-                    }}
-                    localKey={TIME_RANGE_CACHE_KEY}
-                    dateFormat='YYYY-MM-DD HH:mm:ss'
-                  />
-                </Space>
-              </div>
-              <div className='h-full min-h-0 flex'>
-                {/* 左侧筛选区 */}
-                <div className='w-[190px] mr-[8px] overflow-hidden h-full shrink-0 flex flex-col gap-2 n9e-antd-collapse-height-full'>
-                  <div className='flex-shrink-0'>
-                    <Collapse
-                      className='w-full'
-                      bordered={false}
-                      expandIconPosition='start'
-                      activeKey={prodFilterExpanded ? ['prod'] : []}
-                      onChange={(keys) => {
-                        const expanded = (Array.isArray(keys) ? keys : [keys]).includes('prod');
-                        setProdFilterExpanded(expanded);
-                        writeAlertCurEventSidebarFilterExpanded('prod', expanded);
+                  <Space>
+                    <span className='whitespace-nowrap'>{t('tag_display')}: </span>
+                    <Segmented
+                      value={tagDisplayMode}
+                      options={[
+                        { label: t('tag_display_all'), value: 'all' },
+                        { label: t('tag_display_compact'), value: 'compact' },
+                        { label: t('tag_display_off'), value: 'off' },
+                      ]}
+                      onChange={(value) => {
+                        const next = value as AlertEventTagsDisplayMode;
+                        setTagDisplayMode(next);
+                        writeAlertEventTagsDisplayMode(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
                       }}
-                    >
-                      <Collapse.Panel header={t('prod')} key='prod'>
-                        <Checkbox.Group
-                          value={filter.rule_prods}
-                          onChange={(val: string[]) => {
-                            setFilterPatch({ rule_prods: val });
-                          }}
-                        >
-                          {_.map(getProdOptions(feats), (item) => (
-                            <div key={item.value}>
-                              <Checkbox className='py-1' value={item.value}>
-                                {item.label}
-                                <br />
-                              </Checkbox>
-                            </div>
-                          ))}
-                        </Checkbox.Group>
-                      </Collapse.Panel>
-                    </Collapse>
-                  </div>
-                  <div className='flex-shrink-0'>
-                    <Collapse
-                      className='w-full'
-                      bordered={false}
-                      expandIconPosition='start'
-                      activeKey={severityFilterExpanded ? ['severity'] : []}
-                      onChange={(keys) => {
-                        const expanded = (Array.isArray(keys) ? keys : [keys]).includes('severity');
-                        setSeverityFilterExpanded(expanded);
-                        writeAlertCurEventSidebarFilterExpanded('severity', expanded);
-                      }}
-                    >
-                      <Collapse.Panel header={t('severity')} key='severity'>
-                        <Checkbox.Group
-                          value={filter.severity}
-                          onChange={(val) => {
-                            setFilterPatch({ severity: _.map(val, _.toNumber) });
-                          }}
-                        >
-                          <Checkbox className='py-1' value={1}>
-                            <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle red' />
-                            S1（Critical）
-                          </Checkbox>
-                          <br />
-                          <Checkbox className='py-1' value={2}>
-                            <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle orange' />
-                            S2（Warning）
-                          </Checkbox>
-                          <br />
-                          <Checkbox className='py-1' value={3}>
-                            <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle yellow' />
-                            S3（Info）
-                          </Checkbox>
-                          <br />
-                        </Checkbox.Group>
-                      </Collapse.Panel>
-                    </Collapse>
-                  </div>
-                  <div className='flex-1 h-full min-h-0'>
-                    <Collapse
-                      className='w-full'
-                      bordered={false}
-                      expandIconPosition='start'
-                      activeKey={datasourceFilterExpanded ? ['datasource'] : []}
-                      onChange={(keys) => {
-                        const expanded = (Array.isArray(keys) ? keys : [keys]).includes('datasource');
-                        setDatasourceFilterExpanded(expanded);
-                        writeAlertCurEventSidebarFilterExpanded('datasource', expanded);
-                      }}
-                    >
-                      <Collapse.Panel header={t('datasources')} key='datasource'>
-                        <DatasourceCheckbox
-                          value={filter.datasource_ids}
-                          onChange={(val: number[]) => {
-                            setFilterPatch({ datasource_ids: val });
-                          }}
-                        />
-                      </Collapse.Panel>
-                    </Collapse>
-                  </div>
-                </div>
-                {/* 右侧内容区 */}
-                <div className='fc-border flex-1 min-w-0 flex flex-col gap-2'>
-                  <div
-                    className='cur-events'
-                    style={{
-                      borderBottom: '1px solid var(--fc-border-color)',
-                    }}
-                  >
-                    <div className='p-2'>
-                      <div className='alert-event-summary-toolbar'>
-                        <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
-                      </div>
-                      <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
-                    </div>
-                  </div>
-                  {selectedRowKeys.length > 0 && (
-                    <div className='flex-shrink-0 flex gap-2 justify-end mr-2'>
-                      <Button
-                        className='ant-dropdown-menu-item'
-                        onClick={() =>
-                          deleteAlertEventsModal(
-                            selectedRowKeys,
-                            () => {
-                              setSelectedRowKeys([]);
-                              setRefreshFlag(_.uniqueId('refresh_'));
-                            },
-                            t,
-                          )
-                        }
-                      >
-                        {t('common:btn.batch_delete')}
-                      </Button>
-                      {IS_PLUS && alertEscalationEnable && (
-                        <>
-                          <Button
-                            className='ant-dropdown-menu-item'
-                            onClick={() => {
-                              ackEvents(selectedRowKeys).then(() => {
-                                setSelectedRowKeys([]);
-                                setRefreshFlag(_.uniqueId('refresh_'));
-                              });
-                            }}
-                          >
-                            {t('batch_claim')}
-                          </Button>
-                          <Button
-                            className='ant-dropdown-menu-item'
-                            onClick={() => {
-                              ackEvents(selectedRowKeys, 'unack').then(() => {
-                                setSelectedRowKeys([]);
-                                setRefreshFlag(_.uniqueId('refresh_'));
-                              });
-                            }}
-                          >
-                            {t('batch_unclaim')}
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                  <div className='px-2 h-full min-h-0'>
-                    <AlertTable
-                      filter={filter}
-                      setFilter={setFilterPatch}
-                      refreshFlag={refreshFlag}
-                      selectedRowKeys={selectedRowKeys}
-                      setSelectedRowKeys={setSelectedRowKeys}
-                      params={params}
-                      setRefreshFlag={setRefreshFlag}
-                      tagDisplayMode={tagDisplayMode}
-                      alertEscalationEnable={alertEscalationEnable}
                     />
+                    <TimeRangePickerWithRefresh
+                      allowClear
+                      value={filter.range}
+                      onChange={(range) => setFilterPatch({ range })}
+                      onRefresh={() => setRefreshFlag(_.uniqueId('refresh_'))}
+                      localKey={TIME_RANGE_CACHE_KEY}
+                      dateFormat='YYYY-MM-DD HH:mm:ss'
+                    />
+                    <Tooltip title={t('dashboard:full_screen')}>
+                      <Button icon={<FullscreenOutlined />} onClick={toggleFullscreen} />
+                    </Tooltip>
+                  </Space>
+                </div>
+                <div className='flex flex-1 min-h-0'>
+                  {/* 左侧筛选区 */}
+                  <div className='mr-2 flex h-full w-[190px] shrink-0 flex-col gap-2 overflow-hidden n9e-antd-collapse-height-full'>
+                    <div className='flex-shrink-0'>
+                      <Collapse
+                        className='w-full'
+                        bordered={false}
+                        expandIconPosition='start'
+                        activeKey={prodFilterExpanded ? ['prod'] : []}
+                        onChange={(keys) => {
+                          const expanded = (Array.isArray(keys) ? keys : [keys]).includes('prod');
+                          setProdFilterExpanded(expanded);
+                          writeAlertCurEventSidebarFilterExpanded('prod', expanded);
+                        }}
+                      >
+                        <Collapse.Panel header={t('prod')} key='prod'>
+                          <Checkbox.Group
+                            value={filter.rule_prods}
+                            onChange={(val: string[]) => {
+                              setFilterPatch({ rule_prods: val });
+                            }}
+                          >
+                            {_.map(getProdOptions(feats), (item) => (
+                              <div key={item.value}>
+                                <Checkbox className='py-1' value={item.value}>
+                                  {item.label}
+                                  <br />
+                                </Checkbox>
+                              </div>
+                            ))}
+                          </Checkbox.Group>
+                        </Collapse.Panel>
+                      </Collapse>
+                    </div>
+                    <div className='flex-shrink-0'>
+                      <Collapse
+                        className='w-full'
+                        bordered={false}
+                        expandIconPosition='start'
+                        activeKey={severityFilterExpanded ? ['severity'] : []}
+                        onChange={(keys) => {
+                          const expanded = (Array.isArray(keys) ? keys : [keys]).includes('severity');
+                          setSeverityFilterExpanded(expanded);
+                          writeAlertCurEventSidebarFilterExpanded('severity', expanded);
+                        }}
+                      >
+                        <Collapse.Panel header={t('severity')} key='severity'>
+                          <Checkbox.Group
+                            value={filter.severity}
+                            onChange={(val) => {
+                              setFilterPatch({ severity: _.map(val, _.toNumber) });
+                            }}
+                          >
+                            <Checkbox className='py-1' value={1}>
+                              <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle red' />
+                              S1（Critical）
+                            </Checkbox>
+                            <br />
+                            <Checkbox className='py-1' value={2}>
+                              <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle orange' />
+                              S2（Warning）
+                            </Checkbox>
+                            <br />
+                            <Checkbox className='py-1' value={3}>
+                              <div className='inline-block mr-2 w-[4px] h-[12px] rounded-lg event-card-circle yellow' />
+                              S3（Info）
+                            </Checkbox>
+                            <br />
+                          </Checkbox.Group>
+                        </Collapse.Panel>
+                      </Collapse>
+                    </div>
+                    <div className='flex-1 h-full min-h-0'>
+                      <Collapse
+                        className='w-full'
+                        bordered={false}
+                        expandIconPosition='start'
+                        activeKey={datasourceFilterExpanded ? ['datasource'] : []}
+                        onChange={(keys) => {
+                          const expanded = (Array.isArray(keys) ? keys : [keys]).includes('datasource');
+                          setDatasourceFilterExpanded(expanded);
+                          writeAlertCurEventSidebarFilterExpanded('datasource', expanded);
+                        }}
+                      >
+                        <Collapse.Panel header={t('datasources')} key='datasource'>
+                          <DatasourceCheckbox
+                            value={filter.datasource_ids}
+                            onChange={(val: number[]) => {
+                              setFilterPatch({ datasource_ids: val });
+                            }}
+                          />
+                        </Collapse.Panel>
+                      </Collapse>
+                    </div>
+                  </div>
+                  {/* 右侧内容区 */}
+                  <div className='fc-border flex min-w-0 flex-1 flex-col gap-2'>
+                    <div
+                      className='cur-events'
+                      style={{
+                        borderBottom: '1px solid var(--fc-border-color)',
+                      }}
+                    >
+                      <div className='p-2'>
+                        <div className='alert-event-summary-toolbar'>
+                          <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
+                        </div>
+                        <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
+                      </div>
+                    </div>
+                    {selectedRowKeys.length > 0 && (
+                      <div className='mr-2 flex shrink-0 justify-end gap-2'>
+                        <Button
+                          className='ant-dropdown-menu-item'
+                          onClick={() =>
+                            deleteAlertEventsModal(
+                              selectedRowKeys,
+                              () => {
+                                setSelectedRowKeys([]);
+                                setRefreshFlag(_.uniqueId('refresh_'));
+                              },
+                              t,
+                            )
+                          }
+                        >
+                          {t('common:btn.batch_delete')}
+                        </Button>
+                        {IS_PLUS && alertEscalationEnable && (
+                          <>
+                            <Button
+                              className='ant-dropdown-menu-item'
+                              onClick={() => {
+                                ackEvents(selectedRowKeys).then(() => {
+                                  setSelectedRowKeys([]);
+                                  setRefreshFlag(_.uniqueId('refresh_'));
+                                });
+                              }}
+                            >
+                              {t('batch_claim')}
+                            </Button>
+                            <Button
+                              className='ant-dropdown-menu-item'
+                              onClick={() => {
+                                ackEvents(selectedRowKeys, 'unack').then(() => {
+                                  setSelectedRowKeys([]);
+                                  setRefreshFlag(_.uniqueId('refresh_'));
+                                });
+                              }}
+                            >
+                              {t('batch_unclaim')}
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                    <div className='h-full min-h-0 px-2'>
+                      <AlertTable
+                        filter={filter}
+                        setFilter={setFilterPatch}
+                        refreshFlag={refreshFlag}
+                        selectedRowKeys={selectedRowKeys}
+                        setSelectedRowKeys={setSelectedRowKeys}
+                        params={params}
+                        setRefreshFlag={setRefreshFlag}
+                        tagDisplayMode={tagDisplayMode}
+                        alertEscalationEnable={alertEscalationEnable}
+                        isFullscreen={false}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </PageLayout>
   );
