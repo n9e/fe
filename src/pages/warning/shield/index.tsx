@@ -269,7 +269,7 @@ const Shield: React.FC = () => {
               },
               group_id,
             ).then(() => {
-              refreshList();
+              setCurrentShieldDataAll((items) => items.map((item) => (item.id === id ? { ...item, disabled: !disabled ? 1 : 0 } : item)));
             });
           }}
         />

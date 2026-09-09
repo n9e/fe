@@ -99,7 +99,6 @@ export default function Index() {
                 try {
                   await putEmbeddedProductHide(String(record.id), { hide: nextHide });
                   message.success(t('common:success.save'));
-                  fetchData();
                   eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
                 } catch (e) {
                   setData((prev) => prev.map((item) => (item.id === record.id ? { ...item, hide: prevHide } : item)));

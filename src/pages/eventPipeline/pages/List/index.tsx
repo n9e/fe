@@ -156,14 +156,20 @@ export default function List({ embedded = false }: ListProps) {
   // 行内切换启用/停用：走只写 disabled 的窄接口，不再「先 GET 详情再整条 PUT 回去」。
   // 整条回写会用页面加载时的旧快照覆盖别人并发改过的 processors / 过滤条件；
   // 先 GET 只是把窗口缩小，并没有根治，窄接口才是。
+  const updateStatus = (ids: number[], disabled: boolean) => {
+    setData((prev) => ({
+      ...prev,
+      list: prev.list.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)),
+    }));
+  };
+
   const toggleDisabled = (record: Item, checked: boolean) => {
     if (_.includes(togglingIds, record.id)) return;
     setTogglingIds((prev) => [...prev, record.id]);
     putItemsDisabled([record.id], !checked)
       .then(() => {
         message.success(t('common:success.modify'));
-        // 重新拉列表而不是本地打补丁：还要刷新「更新时间 / 更新人」两列
-        featchData();
+        updateStatus([record.id], !checked);
       })
       .catch((err) => {
         console.error(err);
@@ -222,6 +228,10 @@ export default function List({ embedded = false }: ListProps) {
           </Button>
           <MoreOperations
             selectedRows={selectedRows}
+            onStatusChange={(ids, disabled) => {
+              updateStatus(ids, disabled);
+              setSelectedRowKeys([]);
+            }}
             onFinished={() => {
               setSelectedRowKeys([]);
               featchData();

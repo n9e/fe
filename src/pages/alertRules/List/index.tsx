@@ -24,6 +24,7 @@ function HeaderExtra(
     selectRowKeys?: React.Key[];
     selectedRows?: AlertRuleType<any>[];
     getList?: () => void;
+    onStatusChange?: (ids: React.Key[], disabled: 0 | 1) => void;
     clearSelection?: () => void;
   },
 ) {
@@ -69,6 +70,7 @@ function HeaderExtra(
           selectRowKeys={selectRowKeys}
           selectedRows={selectedRows}
           getAlertRules={getList}
+          onStatusChange={props.onStatusChange}
           clearSelection={clearSelection}
         />
       )}
@@ -116,6 +118,9 @@ export default function List(props: ListProps) {
         data={data}
         loading={loading}
         setRefreshFlag={setRefreshFlag}
+        onStatusChange={(ids, disabled) => {
+          setData((rows) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)));
+        }}
         emptyGuide={
           <EmptyGuide
             title={t('empty_guide.title')}
