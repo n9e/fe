@@ -49,7 +49,10 @@ export default function DatasourceIdentifier(props: Props) {
     const formatedRegex = currentVariable.regex ? formatString(currentVariable.regex, variableInterpolations) : '';
     const regex = stringToRegex(formatedRegex);
     if (regex) {
-      currentDatasourceList = currentDatasourceList.filter((option) => regex.test(option.identifier));
+      currentDatasourceList = currentDatasourceList.filter((option) => {
+        regex.lastIndex = 0;
+        return regex.test(option.identifier);
+      });
     }
     const itemOptions = _.map(currentDatasourceList, (ds) => {
       return { label: ds.identifier, value: ds.identifier };
