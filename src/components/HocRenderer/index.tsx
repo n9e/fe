@@ -15,7 +15,7 @@ export interface HocRendererHandle {
 
 export const hocRendererRef = React.createRef<HocRendererHandle>();
 
-/** 每叠加一层，下层向内平移的距离，与 antd Drawer push 的默认值保持一致 */
+/** 被覆盖的抽屉只平移一次，避免深层下钻时祖先抽屉持续移出屏幕 */
 const PUSH_DISTANCE = 180;
 const BASE_Z_INDEX = 1000;
 const Z_INDEX_STEP = 10;
@@ -31,7 +31,7 @@ export function useHocLayer(placement: 'left' | 'right' = 'right') {
   const { index, total } = useContext(LayerContext);
   return useMemo(() => {
     const covered = total - 1 - index;
-    const distance = covered * PUSH_DISTANCE;
+    const distance = covered > 0 ? PUSH_DISTANCE : 0;
     return {
       isBottom: index === 0,
       isTop: covered === 0,
