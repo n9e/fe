@@ -46,12 +46,14 @@ const id_ID = {
       "custom_validated": "Jumlahnya tidak boleh melebihi {{maxCount}}",
       "all_quantity": "Perkiraan total",
       "organize_fields": "Field yang ditentukan",
+      "organize_fields_placeholder": "Semua field secara default",
       "createSuccess": "Tugas berhasil dibuat"
     },
     "log_export": {
       "status_doing": "Mengekspor",
       "status_done": "Selesai",
       "status3": "Dibatalkan",
+      "status4": "Dibuat dengan peringatan",
       "datasource": "Sumber data",
       "current_datasource": "Sumber saat ini",
       "all_datasources": "Semua sumber data",

@@ -46,12 +46,14 @@ const es_ES = {
       "custom_validated": "La cantidad no puede superar {{maxCount}}",
       "all_quantity": "Total aproximado",
       "organize_fields": "Campos especificados",
+      "organize_fields_placeholder": "Todos los campos de forma predeterminada",
       "createSuccess": "Tarea creada correctamente"
     },
     "log_export": {
       "status_doing": "Exportando",
       "status_done": "Completado",
       "status3": "Cancelado",
+      "status4": "Generado con advertencias",
       "datasource": "Fuente de datos",
       "current_datasource": "Fuente actual",
       "all_datasources": "Todas las fuentes",

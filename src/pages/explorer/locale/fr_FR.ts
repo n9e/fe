@@ -46,12 +46,14 @@ const fr_FR = {
       "custom_validated": "Le nombre ne peut pas dépasser {{maxCount}}",
       "all_quantity": "Total approximatif",
       "organize_fields": "Champs spécifiés",
+      "organize_fields_placeholder": "Tous les champs par défaut",
       "createSuccess": "Tâche créée"
     },
     "log_export": {
       "status_doing": "Exportation en cours",
       "status_done": "Terminé",
       "status3": "Annulé",
+      "status4": "Généré avec des avertissements",
       "datasource": "Source de données",
       "current_datasource": "Source actuelle",
       "all_datasources": "Toutes les sources",
