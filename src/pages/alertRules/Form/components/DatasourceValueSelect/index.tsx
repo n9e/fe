@@ -16,7 +16,7 @@
  */
 import React, { useContext, useEffect, useState } from 'react';
 import { Form } from 'antd';
-import { WarningOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, WarningOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -149,9 +149,19 @@ export default function index({ setFieldsValue, cate, datasourceList, mode, requ
             cate === 'prometheus' || cate === 'loki'
               ? [
                   {
-                    filter: '$all',
-                    label: '$all',
-                    optionLabel: '$all',
+                    filter: t('all_datasources'),
+                    label: (
+                      <span className='flex items-center gap-2'>
+                        <DatabaseOutlined style={{ fontSize: 16 }} />
+                        {t('all_datasources')}
+                      </span>
+                    ),
+                    optionLabel: (
+                      <span className='flex items-center gap-2'>
+                        <DatabaseOutlined style={{ fontSize: 16 }} />
+                        {t('all_datasources')}
+                      </span>
+                    ),
                     value: DATASOURCE_ALL,
                   },
                 ]

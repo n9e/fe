@@ -3,5 +3,6 @@ const ja_JP = {
   id: 'データソースID',
   allCates: 'すべてのタイプ',
   deleted: '削除済み',
+  default: 'デフォルト',
 };
 export default ja_JP;

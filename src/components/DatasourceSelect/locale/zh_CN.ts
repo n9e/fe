@@ -3,5 +3,6 @@ const zh_CN = {
   id: '关联数据源',
   allCates: '全部类型',
   deleted: '已删除',
+  default: '默认',
 };
 export default zh_CN;
