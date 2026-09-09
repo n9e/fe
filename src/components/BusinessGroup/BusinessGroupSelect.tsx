@@ -14,6 +14,10 @@ interface Props {
 export default function BusinessGroupSelect(props: Props) {
   return (
     <Select
+      showSearch
+      optionFilterProp='label'
+      dropdownMatchSelectWidth={false}
+      dropdownClassName='n9e-busi-group-select-dropdown'
       options={_.map(props.data, (item) => {
         return {
           label: item.name,
