@@ -2,6 +2,7 @@ const es_ES = {
   "title": "Alertas históricas",
   "event_name": "Evento",
   "search_placeholder": "Búsqueda aproximada en reglas y etiquetas (separa las palabras clave con espacios)",
+  "hash_placeholder": "Búsqueda exacta por hash del evento",
   "first_trigger_time": "Primer disparo",
   "trigger_time": "Hora del disparo",
   "last_eval_time": "Momento de la comprobación",

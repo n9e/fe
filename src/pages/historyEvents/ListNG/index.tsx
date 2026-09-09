@@ -54,6 +54,8 @@ interface Props {
   filterAreaRight?: React.ReactNode;
   refreshFlag?: string;
   rowSelection?: any;
+  // 按事件 hash 精确筛选，仅历史告警页开启：复用本组件的其他页面走各自的接口，后端没接 hash
+  showHashFilter?: boolean;
 }
 
 const Event = (props: Props) => {
@@ -72,8 +74,11 @@ const Event = (props: Props) => {
     filterAreaRight,
     rowSelection,
     showClaimant = false,
+    showHashFilter = false,
   } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  // hash 是精确匹配，输入过程中的半截值查出来必然为空，所以用本地 state 暂存、回车才提交
+  const [hashInput, setHashInput] = useState<string>(filter.hash ?? '');
   const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
@@ -97,6 +102,11 @@ const Event = (props: Props) => {
       });
     }
   }, [location.search]);
+
+  // filter.hash 来自 URL，直达链接和浏览器前进后退都要回填到输入框
+  useEffect(() => {
+    setHashInput(filter.hash ?? '');
+  }, [filter.hash]);
 
   let columns = [
     {
@@ -231,6 +241,7 @@ const Event = (props: Props) => {
     filter.datasource_ids?.length ? { datasource_ids: _.join(filter.datasource_ids, ',') } : {},
     filter.severity !== undefined ? { severity: filter.severity } : {},
     filter.query ? { query: filter.query } : {},
+    filter.hash ? { hash: filter.hash } : {},
     filter.is_recovered !== undefined ? { is_recovered: filter.is_recovered } : {},
     { bgid: filter.bgid },
     filter.rule_prods?.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
@@ -361,6 +372,30 @@ const Event = (props: Props) => {
                 setRefreshFlag(_.uniqueId('refresh_'));
               }}
             />
+            {showHashFilter && (
+              <Input
+                className='min-w-[220px]'
+                allowClear
+                placeholder={t('hash_placeholder')}
+                value={hashInput}
+                onChange={(e) => {
+                  setHashInput(e.target.value);
+                  // allowClear 的清空按钮只触发 onChange，不触发 onPressEnter，这里直接提交
+                  if (!e.target.value) {
+                    setFilter({
+                      ...filter,
+                      hash: undefined,
+                    });
+                  }
+                }}
+                onPressEnter={() => {
+                  setFilter({
+                    ...filter,
+                    hash: hashInput.trim() || undefined,
+                  });
+                }}
+              />
+            )}
             {!hideExportButton && (
               <Button
                 loading={exportBtnLoadding}

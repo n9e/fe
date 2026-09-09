@@ -2,6 +2,7 @@ const id_ID = {
   "title": "Riwayat alert",
   "event_name": "Event",
   "search_placeholder": "Cari aturan dan label secara longgar (pisahkan beberapa kata kunci dengan spasi)",
+  "hash_placeholder": "Pencarian tepat berdasarkan hash peristiwa",
   "first_trigger_time": "Pertama kali terpicu",
   "trigger_time": "Waktu terpicu",
   "last_eval_time": "Waktu pemeriksaan",

@@ -2,6 +2,7 @@ const zh_HK = {
   title: '歷史告警',
   event_name: '事件',
   search_placeholder: '模糊搜尋規則和標籤 (多個關鍵詞請用空格分隔)',
+  hash_placeholder: '按事件 Hash 精確查詢',
   first_trigger_time: '首次觸發時間',
   trigger_time: '觸發時間',
   last_eval_time: '檢測時間',

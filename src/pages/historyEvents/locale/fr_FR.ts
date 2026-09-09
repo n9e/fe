@@ -2,6 +2,7 @@ const fr_FR = {
   "title": "Alertes passées",
   "event_name": "Événement",
   "search_placeholder": "Recherche approchée sur les règles et les étiquettes (séparez les mots-clés par des espaces)",
+  "hash_placeholder": "Recherche exacte par hash d'événement",
   "first_trigger_time": "Premier déclenchement",
   "trigger_time": "Déclenché le",
   "last_eval_time": "Heure de vérification",
