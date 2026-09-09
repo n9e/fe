@@ -90,14 +90,14 @@ export default function index() {
     setsearchVal('');
     setCurrent(1);
     sessionStorage.removeItem(SEARCH_SESSION_STORAGE_KEY);
-    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search, PAGE_SEARCH_KEY) });
+    history.replace({ pathname: history.location.pathname, search: removePageFromSearch(history.location.search, PAGE_SEARCH_KEY) });
   }, [businessGroup.ids]);
-  // 侧边栏切换业务组只更新本地 gids（不更新全局 businessGroup.ids），这里在业务组选择源头重置页码到第一页
+  // 侧边栏会先写入 ids/isLeaf；这里基于路由当前参数清理页码，避免覆盖业务组筛选条件
   const handleSelectGids = (ids: string) => {
     setGids(ids);
     setCurrent(1);
     setSelectRowKeys([]);
-    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search, PAGE_SEARCH_KEY) });
+    history.replace({ pathname: history.location.pathname, search: removePageFromSearch(history.location.search, PAGE_SEARCH_KEY) });
   };
 
   useEffect(() => {
