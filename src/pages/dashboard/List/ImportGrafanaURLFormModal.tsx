@@ -33,7 +33,6 @@ function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
   const { visible, destroy, initialValues, onOk } = props;
   const [form] = Form.useForm();
-
   const handleClose = () => {
     form.resetFields();
     destroy();
@@ -54,6 +53,7 @@ function index(props: Props & ModalWrapProps) {
         form.setFieldsValue({
           iframe_url: configs.iframe_url,
           showTimePicker: configs.showTimePicker ?? false,
+          hideHeader: configs.hideHeader ?? false,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
@@ -86,6 +86,7 @@ function index(props: Props & ModalWrapProps) {
                 configs: JSON.stringify({
                   ...configs,
                   iframe_url: values.iframe_url,
+                  hideHeader: values.hideHeader,
                   showTimePicker: values.showTimePicker,
                 }),
               });
@@ -107,6 +108,8 @@ function index(props: Props & ModalWrapProps) {
           tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
           note: initialValues?.note,
           iframe_url: initialValues?.configs?.iframe_url,
+          hideHeader: initialValues?.configs?.hideHeader ?? false,
+          showTimePicker: initialValues?.configs?.showTimePicker ?? false,
         }}
       >
         <Form.Item
@@ -154,7 +157,10 @@ function index(props: Props & ModalWrapProps) {
         >
           <Input.TextArea autoSize={{ minRows: 2 }} />
         </Form.Item>
-        <Form.Item label={t('batch.show_time_picker')} name='showTimePicker' initialValue={false} valuePropName='checked' extra={t('batch.show_time_picker_tip')}>
+        <Form.Item label={t('settings.hideHeader.label')} name='hideHeader' valuePropName='checked' tooltip={t('settings.hideHeader.tip')}>
+          <Switch />
+        </Form.Item>
+        <Form.Item label={t('batch.show_time_picker')} name='showTimePicker' initialValue={false} valuePropName='checked' tooltip={t('batch.show_time_picker_tip')}>
           <Switch />
         </Form.Item>
       </Form>

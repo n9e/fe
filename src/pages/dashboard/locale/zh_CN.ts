@@ -102,7 +102,7 @@ const zh_CN = {
     import_grafana_tip: '只支持导入 Prometheus 类型数据源的仪表盘，以及夜莺支持的图表类型和功能 <a>问题反馈</a>',
     import_grafana_url: 'Grafana 仪表盘链接（推荐）',
     import_grafana_url_label: 'Grafana 仪表盘链接',
-    show_time_picker: '是否展示时间选择器',
+    show_time_picker: '展示时间选择器',
     show_time_picker_tip: '部分 Grafana 版本在开启大屏模式后不会显示时间选择器，可打开此选项，使用本系统的时间选择器。',
     noSelected: '请选择仪表盘',
     import_grafana_report: {
@@ -770,6 +770,10 @@ const zh_CN = {
       tip: '控制所有图表的缩放行为',
       default: '默认',
       updateTimeRange: '更新时间范围',
+    },
+    hideHeader: {
+      label: '隐藏仪表盘标题栏',
+      tip: '开启后，隐藏仪表盘详情页顶部的标题和操作栏。',
     },
     save: '保存仪表盘',
   },

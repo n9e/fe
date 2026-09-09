@@ -768,6 +768,10 @@ const en_US = {
       default: 'Default',
       updateTimeRange: 'Update time range',
     },
+    hideHeader: {
+      label: 'Hide dashboard header',
+      tip: 'Hide the title and action bar at the top of the dashboard detail page.',
+    },
     save: 'Save dashboard',
   },
   visualizations: {
