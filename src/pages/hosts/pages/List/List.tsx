@@ -25,7 +25,7 @@ import TargetMetaDrawer from '@/pages/targets/TargetMetaDrawer';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 
 // @ts-ignore
-import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
+import CollectsPanel from 'plus:/pages/collects/CollectsPanel';
 import HostFilters from './HostFilters';
 // @ts-ignore — 主机拓扑页签（plus parcel；开源构建下解析成空组件）
 import { HostTopoDrawerTab } from 'plus:/parcels/Targets';
@@ -148,10 +148,10 @@ export default function List(props: Props) {
   const { allCollapseNode, editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType, aiTaskMode = false } = props;
   const selectedIdents = _.map(selectedRows, 'ident');
 
-  const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
-  const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [metaDrawerOpen, setMetaDrawerOpen] = useState(false);
   const [metaDrawerIdent, setMetaDrawerIdent] = useState('');
+  // 从哪个入口进来就落在哪个页签：整行点击看概览，两个图标各自直达拓扑 / 采集配置
+  const [metaDrawerTab, setMetaDrawerTab] = useState('meta');
   const [upgradeTargetIdent, setUpgradeTargetIdent] = useState<string | null>(null);
   // null 表示后端不支持一键安装（老版本 / 企业版），此时不展示入口，避免死按钮
   const [installMeta, setInstallMeta] = useState<CategrafInstallMeta | null>(null);
@@ -411,6 +411,7 @@ export default function List(props: Props) {
                 return;
               }
               setMetaDrawerIdent(record.ident);
+              setMetaDrawerTab('meta');
               setMetaDrawerOpen(true);
             },
           })}
@@ -531,8 +532,9 @@ export default function List(props: Props) {
                                 size='small'
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setCollectsDrawerVisible(true);
-                                  setCollectsDrawerIdent(ident);
+                                  setMetaDrawerIdent(ident);
+                                  setMetaDrawerTab('collects');
+                                  setMetaDrawerOpen(true);
                                 }}
                                 icon={<ApartmentOutlined />}
                               />
@@ -548,6 +550,7 @@ export default function List(props: Props) {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setMetaDrawerIdent(ident);
+                                  setMetaDrawerTab('topology');
                                   setMetaDrawerOpen(true);
                                 }}
                                 icon={<ShareAltOutlined />}
@@ -986,13 +989,16 @@ export default function List(props: Props) {
         ident={metaDrawerIdent}
         drawerOnly
         drawerOpen={metaDrawerOpen}
+        defaultActiveTab={metaDrawerTab}
         onDrawerOpenChange={(open) => {
           setMetaDrawerOpen(open);
           if (!open) setMetaDrawerIdent('');
         }}
         extraTabs={
-          // 「这台机器在跟谁说话」——元信息抽屉里最缺的那一半。
-          // 开源构建下 HostTopoDrawerTab 解析成空，这里给空数组，抽屉不套 Tabs
+          // 概览 / 拓扑 / 采集配置：一台机器的三件事各占一个页签。
+          // 「在跟谁说话」和「配了什么采集」过去一个在别的抽屉里、一个是死胡同里的链接，
+          // 现在收在同一个抽屉里，切页签就能来回看。
+          // 开源构建下这两个组件都解析成空，所以那边给空数组，抽屉照旧不套 Tabs
           IS_PLUS && metaDrawerIdent
             ? [
                 {
@@ -1000,28 +1006,15 @@ export default function List(props: Props) {
                   label: t('host_topology'),
                   children: <HostTopoDrawerTab ident={metaDrawerIdent} height='calc(100vh - 220px)' />,
                 },
+                {
+                  key: 'collects',
+                  label: t('collects_tab'),
+                  children: <CollectsPanel ident={metaDrawerIdent} />,
+                },
               ]
             : []
         }
-        extraActions={
-          IS_PLUS && metaDrawerIdent ? (
-            // 元信息抽屉本身是个死胡同，至少让「这台机器配了什么采集 / 要不要配一个」有条出路
-            <Button
-              size='small'
-              type='link'
-              className='p-0'
-              icon={<ApartmentOutlined />}
-              onClick={() => {
-                setCollectsDrawerVisible(true);
-                setCollectsDrawerIdent(metaDrawerIdent);
-              }}
-            >
-              {t('view_collects')}
-            </Button>
-          ) : undefined
-        }
       />
-      <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
       {installVisible && installMeta && (
         <InstallCategraf
           meta={installMeta}

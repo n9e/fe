@@ -15,7 +15,7 @@ import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import ObsLoopHostEntry from 'plus:/parcels/ObsLoop/HostEntry';
 
 // @ts-ignore — 主机拓扑（plus parcel；开源构建下解析成空组件）
-import { HostTopoViewSwitch, HostTopoGlobalGraph, HostTopoCenterSelect, readHostTopoViewMode } from 'plus:/parcels/Targets';
+import { HostTopoViewSwitch, HostTopoGlobalGraph, HostTopoCenterSelect, HostTopoCollectSetup, readHostTopoViewMode } from 'plus:/parcels/Targets';
 
 import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
@@ -149,6 +149,11 @@ export default function index() {
                       <HostFilters value={hostFilters} onChange={setHostFilters} />
                       {/* 中心主机紧跟在筛选控件后面：它和前面几项一样都在回答「画哪些机器」 */}
                       <HostTopoCenterSelect gids={gids} />
+                    </div>
+                    {/* 「配置采集」摆在筛选条右端：它不是筛选，是这张图空着时唯一该做的动作。
+                        图上没有连线，最常见的原因就是这批机器还没配 servicemap 采集规则 */}
+                    <div className='self-center'>
+                      <HostTopoCollectSetup gids={gids} />
                     </div>
                   </div>
                 </div>

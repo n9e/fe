@@ -56,6 +56,7 @@ const HostTopoViewSwitch = PlusePlaceholder;
 const HostTopoGlobalGraph = PlusePlaceholder;
 const HostTopoDrawerTab = PlusePlaceholder;
 const HostTopoCenterSelect = PlusePlaceholder;
+const HostTopoCollectSetup = PlusePlaceholder;
 const readHostTopoViewMode = () => 'list';
 const getNetworkDevices = () => {};
 const getNetworkDevicesList = () => {};
@@ -112,6 +113,7 @@ export {
   HostTopoGlobalGraph,
   HostTopoDrawerTab,
   HostTopoCenterSelect,
+  HostTopoCollectSetup,
   readHostTopoViewMode,
   getNetworkDevices,
   getNetworkDevicesList,

@@ -18,6 +18,7 @@ const en_US = {
   tags_popover_title: '{{count}} items',
   view_collects: 'View related collection configurations',
   host_topology: 'Topology',
+  collects_tab: 'Collection',
   host_no_heartbeat_tip: 'No heartbeat from host',
   expand_busi_and_overview: 'Expand business group and overview',
   collapse_busi_and_overview: 'Collapse business group and overview',
