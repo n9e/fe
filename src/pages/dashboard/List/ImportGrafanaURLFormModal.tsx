@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Modal, Form, Input, Select, Switch, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
@@ -32,6 +32,7 @@ function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
   const { visible, destroy, initialValues, onOk } = props;
   const [form] = Form.useForm();
+  const [dashboardConfigs, setDashboardConfigs] = useState<IDashboardConfig>();
 
   useEffect(() => {
     if (initialValues?.id) {
@@ -42,9 +43,10 @@ function index(props: Props & ModalWrapProps) {
         } catch (e) {
           console.warn(e);
         }
+        setDashboardConfigs(configs);
         form.setFieldsValue({
-          graphTooltip: configs.graphTooltip,
-          graphZoom: configs.graphZoom,
+          iframe_url: configs.iframe_url,
+          hideHeader: configs.hideHeader ?? false,
         });
       });
     }
@@ -67,11 +69,12 @@ function index(props: Props & ModalWrapProps) {
             });
             message.success(t('common:success.edit'));
             if (result) {
-              const configs = JSONParse(result.configs);
+              const configs = dashboardConfigs || JSONParse(result.configs);
               await updateDashboardConfigs(result.id, {
                 configs: JSON.stringify({
                   ...configs,
                   iframe_url: values.iframe_url,
+                  hideHeader: values.hideHeader,
                 }),
               });
             }
@@ -92,6 +95,7 @@ function index(props: Props & ModalWrapProps) {
           tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
           note: initialValues?.note,
           iframe_url: initialValues?.configs?.iframe_url,
+          hideHeader: initialValues?.configs?.hideHeader ?? false,
         }}
       >
         <Form.Item
@@ -133,6 +137,9 @@ function index(props: Props & ModalWrapProps) {
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 2 }} />
+        </Form.Item>
+        <Form.Item label={t('settings.hideHeader.label')} name='hideHeader' valuePropName='checked' tooltip={t('settings.hideHeader.tip')}>
+          <Switch />
         </Form.Item>
       </Form>
     </Modal>

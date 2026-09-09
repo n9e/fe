@@ -649,6 +649,10 @@ const zh_HK = {
       default: '默认',
       updateTimeRange: '更新時間範圍',
     },
+    hideHeader: {
+      label: '隱藏儀表盤標題列',
+      tip: '開啟後，隱藏儀表盤詳情頁頂部的標題和操作列。',
+    },
     save: '儲存儀表盤',
   },
   visualizations: {

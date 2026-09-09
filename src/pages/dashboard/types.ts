@@ -290,6 +290,7 @@ export interface IDashboardConfig {
   graphZoom: 'default' | 'updateTimeRange';
   mode?: 'iframe';
   iframe_url?: string;
+  hideHeader?: boolean;
 }
 
 export interface IDashboard {

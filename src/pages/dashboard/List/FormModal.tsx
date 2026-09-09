@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, Radio, message } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Modal, Form, Input, Select, Radio, Switch, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
@@ -36,16 +36,32 @@ function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
   const { visible, destroy, busiId, action, initialValues, dashboardSaveMode, onOk } = props;
   const [form] = Form.useForm();
+  const [dashboardConfigs, setDashboardConfigs] = useState<IDashboardConfig>();
+  const [isConfigLoading, setIsConfigLoading] = useState(action === 'edit');
+  const isIframeDashboard = dashboardConfigs?.mode === 'iframe';
 
   useEffect(() => {
-    if (initialValues?.id) {
-      getDashboard(initialValues.id).then((res) => {
+    if (!initialValues?.id) {
+      setDashboardConfigs(undefined);
+      setIsConfigLoading(false);
+      return;
+    }
+
+    let isUnmounted = false;
+    setDashboardConfigs(undefined);
+    setIsConfigLoading(true);
+    getDashboard(initialValues.id)
+      .then((res) => {
         let configs = {} as IDashboardConfig;
         try {
           configs = JSONParse(res.configs);
         } catch (e) {
           console.warn(e);
         }
+
+        if (isUnmounted) return;
+
+        setDashboardConfigs(configs);
         form.setFieldsValue({
           name: initialValues?.name,
           ident: initialValues?.ident,
@@ -53,9 +69,20 @@ function index(props: Props & ModalWrapProps) {
           note: initialValues?.note,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
+          iframe_url: configs.iframe_url,
+          hideHeader: configs.hideHeader ?? false,
         });
+      })
+      .catch((e) => {
+        console.warn(e);
+      })
+      .finally(() => {
+        if (!isUnmounted) setIsConfigLoading(false);
       });
-    }
+
+    return () => {
+      isUnmounted = true;
+    };
   }, [JSON.stringify(initialValues)]);
 
   return (
@@ -64,7 +91,10 @@ function index(props: Props & ModalWrapProps) {
       title={t(`${action}_title`)}
       visible={visible}
       onCancel={destroy}
+      okButtonProps={{ disabled: action === 'edit' && isConfigLoading }}
       onOk={() => {
+        if (action === 'edit' && isConfigLoading) return;
+
         form.validateFields().then(async (values) => {
           if (dashboardSaveMode === 'manual') {
             if (onOk) {
@@ -96,12 +126,19 @@ function index(props: Props & ModalWrapProps) {
               message.success(t('common:success.create'));
             }
             if (result) {
-              const configs = JSONParse(result.configs);
+              const configs = dashboardConfigs || JSONParse(result.configs);
               await updateDashboardConfigs(result.id, {
                 configs: JSON.stringify({
                   ...configs,
-                  graphTooltip: values.graphTooltip,
-                  graphZoom: values.graphZoom,
+                  ...(isIframeDashboard
+                    ? {
+                        iframe_url: values.iframe_url,
+                        hideHeader: values.hideHeader,
+                      }
+                    : {
+                        graphTooltip: values.graphTooltip,
+                        graphZoom: values.graphZoom,
+                      }),
                 }),
               });
             }
@@ -143,40 +180,62 @@ function index(props: Props & ModalWrapProps) {
         <Form.Item label={t('common:table.note')} name='note'>
           <Input.TextArea autoSize={{ minRows: 1 }} />
         </Form.Item>
-        <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' tooltip={t('settings.graphTooltip.tip')}>
-          <Radio.Group
-            optionType='button'
-            options={[
-              {
-                label: t('settings.graphTooltip.default'),
-                value: 'default',
-              },
-              {
-                label: t('settings.graphTooltip.sharedCrosshair'),
-                value: 'sharedCrosshair',
-              },
-              {
-                label: t('settings.graphTooltip.sharedTooltip'),
-                value: 'sharedTooltip',
-              },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item label={t('settings.graphZoom.label')} name='graphZoom' tooltip={t('settings.graphZoom.tip')}>
-          <Radio.Group
-            optionType='button'
-            options={[
-              {
-                label: t('settings.graphZoom.default'),
-                value: 'default',
-              },
-              {
-                label: t('settings.graphZoom.updateTimeRange'),
-                value: 'updateTimeRange',
-              },
-            ]}
-          />
-        </Form.Item>
+        {!isConfigLoading &&
+          (isIframeDashboard ? (
+            <>
+              <Form.Item
+                label={t('batch.import_grafana_url_label')}
+                name='iframe_url'
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Input.TextArea autoSize={{ minRows: 2 }} />
+              </Form.Item>
+              <Form.Item label={t('settings.hideHeader.label')} name='hideHeader' valuePropName='checked' tooltip={t('settings.hideHeader.tip')}>
+                <Switch />
+              </Form.Item>
+            </>
+          ) : (
+            <>
+              <Form.Item label={t('settings.graphTooltip.label')} name='graphTooltip' tooltip={t('settings.graphTooltip.tip')}>
+                <Radio.Group
+                  optionType='button'
+                  options={[
+                    {
+                      label: t('settings.graphTooltip.default'),
+                      value: 'default',
+                    },
+                    {
+                      label: t('settings.graphTooltip.sharedCrosshair'),
+                      value: 'sharedCrosshair',
+                    },
+                    {
+                      label: t('settings.graphTooltip.sharedTooltip'),
+                      value: 'sharedTooltip',
+                    },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item label={t('settings.graphZoom.label')} name='graphZoom' tooltip={t('settings.graphZoom.tip')}>
+                <Radio.Group
+                  optionType='button'
+                  options={[
+                    {
+                      label: t('settings.graphZoom.default'),
+                      value: 'default',
+                    },
+                    {
+                      label: t('settings.graphZoom.updateTimeRange'),
+                      value: 'updateTimeRange',
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </>
+          ))}
       </Form>
     </Modal>
   );

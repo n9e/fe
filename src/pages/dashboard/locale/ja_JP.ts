@@ -646,6 +646,10 @@ const ja_JP = {
       default: 'デフォルト',
       updateTimeRange: '時間範囲を更新',
     },
+    hideHeader: {
+      label: 'ダッシュボードのヘッダーを非表示',
+      tip: 'ダッシュボード詳細ページ上部のタイトルと操作バーを非表示にします。',
+    },
     save: '保存',
   },
   visualizations: {

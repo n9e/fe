@@ -665,6 +665,10 @@ const zh_CN = {
       default: '默认',
       updateTimeRange: '更新时间范围',
     },
+    hideHeader: {
+      label: '隐藏仪表盘标题栏',
+      tip: '开启后，隐藏仪表盘详情页顶部的标题和操作栏。',
+    },
     save: '保存仪表盘',
   },
   visualizations: {
