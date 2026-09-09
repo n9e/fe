@@ -46,12 +46,14 @@ const pt_BR = {
       "custom_validated": "A quantidade não pode passar de {{maxCount}}",
       "all_quantity": "Total aproximado",
       "organize_fields": "Campos especificados",
+      "organize_fields_placeholder": "Todos os campos por padrão",
       "createSuccess": "Tarefa criada com sucesso"
     },
     "log_export": {
       "status_doing": "Exportando",
       "status_done": "Concluído",
       "status3": "Cancelado",
+      "status4": "Gerado com avisos",
       "datasource": "Fonte de dados",
       "current_datasource": "Fonte atual",
       "all_datasources": "Todas as fontes",

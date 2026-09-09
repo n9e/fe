@@ -46,12 +46,14 @@ const ko_KR = {
       "custom_validated": "개수는 {{maxCount}}을(를) 넘을 수 없습니다",
       "all_quantity": "총 개수 약",
       "organize_fields": "지정 필드",
+      "organize_fields_placeholder": "기본적으로 모든 필드",
       "createSuccess": "작업을 만들었습니다"
     },
     "log_export": {
       "status_doing": "내보내는 중",
       "status_done": "완료",
       "status3": "취소됨",
+      "status4": "경고와 함께 생성됨",
       "datasource": "데이터 소스",
       "current_datasource": "현재 데이터 소스",
       "all_datasources": "모든 데이터 소스",
