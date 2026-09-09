@@ -59,6 +59,7 @@ import './style.less';
 const N9E_GIDS_LOCALKEY = 'N9E_BOARD_NODE_ID';
 const SEARCH_SESSION_STORAGE_KEY = 'n9e_dashboard_search';
 const PUBLIC_SELECT_GIDS_LOCALKEY = 'N9E_PUBLIC_SELECT_GIDS';
+const PAGE_SEARCH_KEY = '__page';
 const getDefaultPublicSelectGids = (localKey: string) => {
   const valueStr = localStorage.getItem(localKey);
   const value = valueStr ? _.map(_.split(valueStr, ','), _.toNumber) : [];
@@ -76,7 +77,7 @@ export default function index() {
   const [selectRowKeys, setSelectRowKeys] = useState<number[]>([]);
   const [refreshKey, setRefreshKey] = useState(_.uniqueId('refreshKey_'));
   const [searchVal, setsearchVal] = useState<string>(sessionStorage.getItem(SEARCH_SESSION_STORAGE_KEY) || '');
-  const [current, setCurrent] = useState<number>(() => getPageFromSearch(location.search));
+  const [current, setCurrent] = useState<number>(() => getPageFromSearch(location.search, PAGE_SEARCH_KEY));
   const [selectedBusinessGroup, setSelectedBusinessGroup] = useState<number[] | undefined>(getDefaultPublicSelectGids(PUBLIC_SELECT_GIDS_LOCALKEY)); // 目前只有公开仪表盘会用到
   const [busiGroups, setBusiGroups] = useState<Array<{ id: number; name: string }>>([]);
   const pagination = usePagination({ PAGESIZE_KEY: 'dashboard-pagesize' });
@@ -89,14 +90,14 @@ export default function index() {
     setsearchVal('');
     setCurrent(1);
     sessionStorage.removeItem(SEARCH_SESSION_STORAGE_KEY);
-    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search, PAGE_SEARCH_KEY) });
   }, [businessGroup.ids]);
   // 侧边栏切换业务组只更新本地 gids（不更新全局 businessGroup.ids），这里在业务组选择源头重置页码到第一页
   const handleSelectGids = (ids: string) => {
     setGids(ids);
     setCurrent(1);
     setSelectRowKeys([]);
-    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
+    history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search, PAGE_SEARCH_KEY) });
   };
 
   useEffect(() => {
@@ -161,7 +162,7 @@ export default function index() {
               setsearchVal(val);
               setCurrent(1);
               sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, val);
-              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1, PAGE_SEARCH_KEY) });
             }}
             visibleColumns={visibleColumns}
             setVisibleColumns={setVisibleColumns}
@@ -190,7 +191,7 @@ export default function index() {
                           className='table-active-text'
                           to={{
                             pathname: `/dashboards/${record.ident || record.id}`,
-                            search: gids === '-1' ? `__public__=true&page=${current}` : `?page=${current}`, // __public__ 用于详情页判断公开仪表盘
+                            search: gids === '-1' ? `__public__=true&__page=${current}` : `?__page=${current}`, // __public__ 用于详情页判断公开仪表盘
                           }}
                         >
                           {text}
@@ -403,7 +404,7 @@ export default function index() {
               current,
               onChange: (page: number) => {
                 setCurrent(page);
-                history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, page) });
+                history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, page, PAGE_SEARCH_KEY) });
               },
             }}
             locale={{

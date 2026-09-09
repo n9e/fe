@@ -111,8 +111,9 @@ export default function Title(props: IProps) {
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const query = querystring.parse(location.search);
   const { viewMode, __public__ } = query;
-  // 从列表进入详情时 URL 带 page 参数，返回列表时回到原页；其他入口回列表第一页
-  const goListPath = props.gobackPath || (getPageFromSearch(location.search) > 1 ? `/dashboards?page=${getPageFromSearch(location.search)}` : '/dashboards');
+  // 从列表进入详情时 URL 带 __page 参数，返回列表时回到原页；其他入口回列表第一页
+  const currentPage = getPageFromSearch(location.search, '__page');
+  const goListPath = props.gobackPath || (currentPage > 1 ? `/dashboards?__page=${currentPage}` : '/dashboards');
   // AI 分析仅在正常已保存的仪表盘下展示：匿名公开、模板预览、内置组件场景要么调不通 assistant 接口，要么没有真实 dashboard_id
   const showAiAnalysis = !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id;
   const isClickTrigger = useRef(false);
