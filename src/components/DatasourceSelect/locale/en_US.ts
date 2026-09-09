@@ -3,5 +3,6 @@ const en_US = {
   id: 'Data source',
   allCates: 'All types',
   deleted: 'Deleted',
+  default: 'Default',
 };
 export default en_US;

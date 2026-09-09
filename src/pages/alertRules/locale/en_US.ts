@@ -150,6 +150,7 @@ const en_US = {
   invalid_datasource_tip_1: 'Data sources',
   invalid_datasource_tip_2: 'are not associated with any alerting engine cluster',
   invalid_datasource_reload: 'Reload',
+  all_datasources: 'All data sources',
   advanced_settings: 'Advanced settings',
   host: {
     query: {

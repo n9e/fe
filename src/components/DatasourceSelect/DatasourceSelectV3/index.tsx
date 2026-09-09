@@ -13,7 +13,7 @@ import EmptyDatasourcePopover from '../EmptyDatasourcePopover';
 
 import './style.less';
 
-interface DatasourceItem {
+export interface DatasourceItem {
   id: number | string;
   name: string;
   plugin_type: string;
@@ -127,6 +127,7 @@ export default function index(props: SelectProps & Props) {
       ])}
       showSearch
       labelInValue
+      menuItemSelectedIcon={null}
       optionLabelProp='optionLabel'
       value={normalizeSelectedValue(props.value)}
       defaultValue={normalizeSelectedValue(props.defaultValue)}
@@ -177,7 +178,7 @@ export default function index(props: SelectProps & Props) {
                   {item.name}
                 </Space>
                 <Space size={4}>
-                  {item.is_default && <Tag className='n9e-datasource-select-v3-default-tag'>default</Tag>}
+                  {item.is_default && <Tag className='n9e-datasource-select-v3-default-tag'>{t('default')}</Tag>}
                   <span
                     style={{
                       color: 'var(--fc-text-4)',

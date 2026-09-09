@@ -3,6 +3,7 @@ const ru_RU = {
   id: 'Связанный источник данных',
   allCates: 'Все типы',
   deleted: 'Удален',
+  default: 'По умолчанию',
 };
 
 export default ru_RU;

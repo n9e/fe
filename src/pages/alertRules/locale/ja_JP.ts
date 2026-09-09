@@ -154,6 +154,7 @@ const ja_JP = {
   invalid_datasource_tip_1: 'データソース',
   invalid_datasource_tip_2: '関連するアラートエンジンクラスタが設定されていません',
   invalid_datasource_reload: 'データソースをリロード',
+  all_datasources: 'すべてのデータソース',
   advanced_settings: '補助設定',
   host: {
     query: {

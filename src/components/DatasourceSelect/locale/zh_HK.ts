@@ -3,6 +3,7 @@ const zh_HK = {
   id: '關聯數據源',
   allCates: '全部類型',
   deleted: '已刪除',
+  default: '預設',
 };
 
 export default zh_HK;

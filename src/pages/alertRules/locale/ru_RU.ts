@@ -152,6 +152,7 @@ const ru_RU = {
   invalid_datasource_tip_1: 'Источник данных',
   invalid_datasource_tip_2: 'Не настроен связанный кластер движка оповещений',
   invalid_datasource_reload: 'Обновить источник данных',
+  all_datasources: 'Все источники данных',
   advanced_settings: 'Дополнительные настройки',
   host: {
     query: {
