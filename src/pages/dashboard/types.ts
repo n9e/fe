@@ -337,6 +337,7 @@ export interface IDashboardConfig {
   mode?: 'iframe';
   iframe_url?: string;
   showTimePicker?: boolean;
+  hideHeader?: boolean;
 }
 
 export interface IDashboard {
