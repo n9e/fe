@@ -86,7 +86,7 @@ function joinValues(
       separator,
     )})`;
   } else {
-    return _.join(values, ',');
+    return values.map((item) => item.value).join(',');
   }
 }
 

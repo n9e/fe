@@ -159,6 +159,8 @@ const id_ID = {
     reg: 'Regex',
     reg_tip: 'Opsional: regex untuk menyaring pilihan. Isikan <a>literal ekspresi reguler</a>, yaitu pola yang diapit garis miring',
     reg_tip2: 'Untuk mengambil sebagian dari sebuah pilihan, <a>grup tangkapan bernama bisa memisahkan teks tampilan dari nilainya</a>',
+    reg_object_tip:
+      'Untuk pilihan dengan nama tampilan terpisah, regex mencocokkan nilai. Kecocokan biasa mempertahankan kedua bidang; grup bernama text/value hanya mengganti bidang terkait.',
     multi: 'Pilihan ganda',
     allOption: 'Sertakan opsi Semua',
     allValue: 'Nilai khusus untuk opsi Semua',

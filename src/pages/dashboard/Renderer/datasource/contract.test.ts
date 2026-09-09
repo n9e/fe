@@ -4,6 +4,7 @@ import type { ITarget } from '@/pages/dashboard/types';
 
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse, validateDashboardQueryRequest } from './contract';
 import dashboardDatasourceDefinitions, { DASHBOARD_DATASOURCE_CATES } from './registry';
+import { getDashboardVariablePlugin } from '@/pages/dashboard/Variables/plugins';
 
 jest.mock('./queryStep', () => ({
   getDashboardQueryStep: () => 30,
@@ -16,10 +17,21 @@ jest.mock('@/components/TimeRangePicker/utils', () => ({
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
   default: jest.fn((value: string) => value),
+  getBuiltInVariables: () => [],
   replaceDatasourceVariables: (value: number | string) => (value === '${metrics}' ? 9 : value),
 }));
 
+jest.mock('@/pages/dashboard/Variables/plugins', () => ({
+  getDashboardVariablePlugin: jest.fn(),
+}));
+
+const getDashboardVariablePluginMock = getDashboardVariablePlugin as jest.MockedFunction<typeof getDashboardVariablePlugin>;
+
 describe('dashboard unified query contract', () => {
+  afterEach(() => {
+    getDashboardVariablePluginMock.mockReset();
+  });
+
   it('registers every dashboard datasource contract', () => {
     const expectedCates = [
       'prometheus',
@@ -128,6 +140,35 @@ describe('dashboard unified query contract', () => {
     expect(query).not.toHaveProperty('syntax');
     expect(query).toMatchObject({ value: { func: 'rawData' } });
     expect(query).not.toHaveProperty('values');
+  });
+
+  it('skips every Elasticsearch value when its variable plugin is not ready', () => {
+    getDashboardVariablePluginMock.mockReturnValue({
+      capabilities: () => ({ multi: false, all: false }),
+      transformQuery: () => undefined,
+    });
+
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: {
+            index: 'application-*',
+            date_field: '@timestamp',
+            values: [{ func: 'rawData' }, { func: 'count' }],
+          },
+        },
+      ],
+      datasourceList: [],
+    });
+
+    expect(request.queries).toEqual([]);
   });
 
   it('expands Elasticsearch values into backend-compatible single-value queries', () => {
@@ -348,16 +389,20 @@ describe('dashboard unified query contract', () => {
 
     const firstQuery = request.queries[0]?.kind === 'query' ? request.queries[0].query : {};
     const secondQuery = request.queries[1]?.kind === 'query' ? request.queries[1].query : {};
-    expect(firstQuery).toMatchObject({ keys: {
-      valueKey: 'value count',
-      labelKey: 'host region',
-      timeKey: 'time',
-    } });
-    expect(secondQuery).toMatchObject({ keys: {
-      metricKey: 'value count',
-      labelKey: 'host',
-      timeFormat: '2006-01-02T15:04:05',
-    } });
+    expect(firstQuery).toMatchObject({
+      keys: {
+        valueKey: 'value count',
+        labelKey: 'host region',
+        timeKey: 'time',
+      },
+    });
+    expect(secondQuery).toMatchObject({
+      keys: {
+        metricKey: 'value count',
+        labelKey: 'host',
+        timeFormat: '2006-01-02T15:04:05',
+      },
+    });
   });
 
   it('builds a mixed datasource request with only backend execution fields', () => {
@@ -487,10 +532,14 @@ describe('dashboard unified query contract', () => {
       queryOptionsTime,
       scopedVars,
       datasourceList: [],
-      targets: [{
-        refId: 'A', kind: 'query', datasource: { cate: 'mysql', id: 1 },
-        query: { query: 'select ${host}', nested: { label: '${host}', timezone: 'UTC', request_id: 'old' }, values: ['${host}'], max_data_points: 1 },
-      }],
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'mysql', id: 1 },
+          query: { query: 'select ${host}', nested: { label: '${host}', timezone: 'UTC', request_id: 'old' }, values: ['${host}'], max_data_points: 1 },
+        },
+      ],
     });
 
     expect(request).toMatchObject({ from: 1784858400, to: 1784862000, queries: [{ query: { query: 'select ${host}', nested: { label: '${host}' }, values: ['${host}'] } }] });
@@ -499,11 +548,13 @@ describe('dashboard unified query contract', () => {
   });
 
   it('serializes instant Prometheus queries', () => {
-    expect(buildDashboardQueryRequest({
-      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
-      datasourceList: [],
-      targets: [{ refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 }, expr: 'up', instant: true }],
-    }).queries[0]).toMatchObject({ query: { expr: 'up', instant: true } });
+    expect(
+      buildDashboardQueryRequest({
+        time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+        datasourceList: [],
+        targets: [{ refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 }, expr: 'up', instant: true }],
+      }).queries[0],
+    ).toMatchObject({ query: { expr: 'up', instant: true } });
   });
 
   it('normalizes timeseries, logs and ref-level failures with stable ids', () => {
