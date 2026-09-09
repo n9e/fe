@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'lodash';
 import { Button, Tooltip } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -14,7 +15,7 @@ import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import ObsLoopHostEntry from 'plus:/parcels/ObsLoop/HostEntry';
 
 // @ts-ignore — 主机拓扑（plus parcel；开源构建下解析成空组件）
-import { HostTopoViewSwitch, HostTopoGlobalGraph, readHostTopoViewMode } from 'plus:/parcels/Targets';
+import { HostTopoViewSwitch, HostTopoGlobalGraph, HostTopoCenterSelect, HostTopoStats, readHostTopoViewMode } from 'plus:/parcels/Targets';
 
 import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
@@ -41,6 +42,21 @@ export default function index() {
   const [allCollapsed, setAllCollapsed] = useState(false);
 
   const businessGroupRef = React.useRef<{ getCollapse: () => boolean; setCollapse: (collapse: boolean) => void }>(null);
+
+  // 换视图的唯一入口：视图开关和「保存的视图」都走这里。
+  // 视图写进 URL 好分享，也让刷新之后还停在同一种看法上。
+  const history = useHistory();
+  const location = useLocation();
+  const changeViewMode = React.useCallback(
+    (mode: 'list' | 'topology') => {
+      setViewMode(mode);
+      const sp = new URLSearchParams(location.search);
+      if (mode === 'list') sp.delete('view');
+      else sp.set('view', mode);
+      history.replace({ pathname: location.pathname, search: sp.toString() });
+    },
+    [history, location.pathname, location.search],
+  );
 
   // 拓扑图的筛选条件。必须 memo：它进了 GlobalGraph 的 effect 依赖，
   // 写成内联字面量的话每次父组件 render 都是新对象，折叠统计栏这种
@@ -115,7 +131,7 @@ export default function index() {
             <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
             {IS_PLUS && (
               <div className='mb-2'>
-                <HostTopoViewSwitch value={viewMode} onChange={setViewMode} />
+                <HostTopoViewSwitch value={viewMode} onChange={changeViewMode} filters={hostFilters} onFiltersChange={setHostFilters} />
               </div>
             )}
             {viewMode === 'topology' && IS_PLUS ? (
@@ -123,27 +139,40 @@ export default function index() {
                 {/* 拓扑视图下 <List/> 整个不渲染，它那条工具栏也跟着没了。
                     这里挂同一个 HostFilters、共用同一份状态，切视图筛选不丢。
                     批量操作不搬过来：那是选中表格行之后的动作，图上没有对应语义。 */}
-                <div className='fc-border rounded-lg p-2 flex flex-wrap items-center gap-2'>
-                  {allCollapseNode}
-                  <Button icon={<ReloadOutlined />} onClick={() => setRefreshFlag(_.uniqueId('refreshFlag_'))} />
-                  <HostFilters value={hostFilters} onChange={setHostFilters} />
+                {/* 容器样式与 List.tsx 的工具栏逐字一致（bg + 边框 + p-4 + 内层 flex 行）：
+                    两个视图的筛选条切换时不该跳动，差一档 padding 就是 16px 的位移 */}
+                <div className='flex-shrink-0 bg-fc-100 fc-border rounded-lg p-4'>
+                  <div className='flex flex-wrap items-start justify-between gap-2'>
+                    <div className='flex min-w-0 flex-1 flex-wrap items-center gap-2'>
+                      {allCollapseNode}
+                      <Button icon={<ReloadOutlined />} onClick={() => setRefreshFlag(_.uniqueId('refreshFlag_'))} />
+                      <HostFilters value={hostFilters} onChange={setHostFilters} />
+                      {/* 中心主机紧跟在筛选控件后面：它和前面几项一样都在回答「画哪些机器」 */}
+                      <HostTopoCenterSelect gids={gids} />
+                    </div>
+                    {/* 图的统计放筛选条右端：它回答的是「这些条件圈出了多少东西」。
+                        self-center 让它和 32px 高的控件垂直居中 */}
+                    <div className='self-center'>
+                      <HostTopoStats />
+                    </div>
+                  </div>
                 </div>
                 <div className='flex-1 min-h-0'>
                   <HostTopoGlobalGraph gids={gids} hostFilter={hostFilter} refreshFlag={refreshFlag} />
                 </div>
               </div>
             ) : (
-            <List
-              allCollapseNode={allCollapseNode}
-              gids={gids}
-              filters={hostFilters}
-              setFilters={setHostFilters}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              refreshFlag={refreshFlag}
-              setRefreshFlag={setRefreshFlag}
-              setOperateType={setOperateType}
-            />
+              <List
+                allCollapseNode={allCollapseNode}
+                gids={gids}
+                filters={hostFilters}
+                setFilters={setHostFilters}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                refreshFlag={refreshFlag}
+                setRefreshFlag={setRefreshFlag}
+                setOperateType={setOperateType}
+              />
             )}
           </div>
         </div>
