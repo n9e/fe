@@ -6,6 +6,14 @@ import { buildLegacyDashboard, catesUnderTest, legacyLogsPanelSpecByCate, legacy
 
 import { buildDashboardQueryRequest } from './contract';
 
+jest.mock('@/utils/constant', () => ({
+  DatasourceCateEnum: {
+    ck: 'ck',
+    mysql: 'mysql',
+    doris: 'doris',
+  },
+}));
+
 jest.mock('./queryStep', () => ({
   getDashboardQueryStep: () => 30,
 }));
@@ -44,7 +52,7 @@ const assertLegacyQueryPayload = (cate: string, query: Record<string, unknown>) 
       break;
     case 'mysql':
       expect(query).toMatchObject({
-        query: 'SELECT ts, value, host FROM service_qps',
+        sql: 'SELECT ts, value, host FROM service_qps',
         keys: { valueKey: 'value count', labelKey: 'host', timeKey: 'ts' },
       });
       break;
@@ -55,7 +63,7 @@ const assertLegacyQueryPayload = (cate: string, query: Record<string, unknown>) 
       expect(query).toMatchObject({ query: 'SELECT _wstart, avg(value) FROM meters' });
       break;
     case 'ck':
-      expect(query).toMatchObject({ query: 'SELECT toDateTime(ts) AS time, value FROM metrics' });
+      expect(query).toMatchObject({ sql: 'SELECT toDateTime(ts) AS time, value FROM metrics' });
       break;
     case 'pgsql':
     case 'doris':
@@ -120,6 +128,49 @@ const assertLegacyQueryPayload = (cate: string, query: Record<string, unknown>) 
   }
 };
 
+const assertLegacyLogsQueryPayload = (cate: string, query: Record<string, unknown>) => {
+  switch (cate) {
+    case 'elasticsearch':
+      expect(query).toMatchObject({ value: { func: 'rawData' }, filter_language: 'kql' });
+      break;
+    case 'opensearch':
+      expect(query).toMatchObject({ value: { func: 'rawData' }, filter_language: 'lucene' });
+      break;
+    case 'ck':
+    case 'mysql':
+      expect(query).toMatchObject({ sql: 'SELECT * FROM logs' });
+      expect(query).not.toHaveProperty('query');
+      break;
+    case 'pgsql':
+    case 'doris':
+    case 'oracle':
+    case 'sqlserver':
+    case 'redshift':
+      expect(query).toMatchObject({ sql: 'SELECT * FROM logs' });
+      break;
+    case 'aliyun-sls':
+      expect(query).toMatchObject({ project: 'n9e-prod', logstore: 'app-access', query: 'status in [400 599]', mode: 'raw' });
+      break;
+    case 'tencent-cls':
+      expect(query).toMatchObject({ logset_id: 'cls-8f3c2b', topic_id: 'topic-app', query: 'status:500', mode: 'raw' });
+      break;
+    case 'volc-tls':
+      expect(query).toMatchObject({ project: 'volc-prod', topic: 'nginx-log', query: 'status:500', mode: 'raw' });
+      break;
+    case 'huawei-lts':
+      expect(query).toMatchObject({ group_id: 'lts-group-1', stream_id: 'lts-stream-1', query: 'status:500', mode: 'raw' });
+      break;
+    case 'bce-bls':
+      expect(query).toMatchObject({ project: 'bce-prod', logstore: 'bls-log', logstream: 'bls-stream', query: 'status:500', mode: 'raw' });
+      break;
+    case 'cloudwatchlogs':
+      expect(query).toMatchObject({ region: 'us-east-1', log_group_names: ['app'], query_string: 'fields @message', mode: 'raw' });
+      break;
+    default:
+      throw new Error(`unhandled logs cate ${cate}`);
+  }
+};
+
 describe('legacy dashboard query contract by cate', () => {
   it.each(catesUnderTest)('builds a compatible query from a legacy %s panel', (cate) => {
     const spec = legacyPanelSpecByCate[cate];
@@ -159,6 +210,10 @@ describe('legacy dashboard query contract by cate', () => {
       result_type: 'logs',
       datasource: { cate, id: spec.datasourceValue },
     });
+    const query = request.queries[0];
+    if (query?.kind === 'query') {
+      assertLegacyLogsQueryPayload(cate, query.query as Record<string, unknown>);
+    }
   });
 
   // 各 cate 的就绪短路条件（对应 registry.ts 的 QUERY_READINESS）

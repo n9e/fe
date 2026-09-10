@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 import type { DashboardQueryResultType } from './types';
 
@@ -28,6 +29,8 @@ export const DASHBOARD_DATASOURCE_CATES = [
   'cloudwatch',
   'gcm',
 ] as const;
+
+type DashboardDatasourceCate = (typeof DASHBOARD_DATASOURCE_CATES)[number];
 
 export const DASHBOARD_TARGET_META_FIELDS = [
   'refId',
@@ -62,6 +65,8 @@ const LOG_CAPABLE_DATASOURCES = new Set<string>([
   'bce-bls',
   'cloudwatchlogs',
 ]);
+
+const SQL_QUERY_DATASOURCE_CATES = new Set<DashboardDatasourceCate>([DatasourceCateEnum.ck, DatasourceCateEnum.mysql, DatasourceCateEnum.doris]);
 
 export interface DashboardDatasourceDefinition {
   cate: string;
@@ -133,8 +138,23 @@ const hasESValueKey = (keys: unknown) => {
   return Array.isArray(valueKey) ? valueKey.length > 0 : typeof valueKey === 'string' && valueKey.trim().length > 0;
 };
 
+/**
+ * The SQL editors for MySQL, ClickHouse and Doris keep their text in `query`
+ * so they can share the log-query input component. Their datasource adapters,
+ * however, decode the native `sql` field. Doris is the exception only when
+ * the legacy query-builder strategy is explicitly selected: that branch is a
+ * log-search query and its native field remains `query`.
+ */
+function serializeSQLQuery(payload: JsonObject, cate: DashboardDatasourceCate) {
+  const isDorisLogQuery = cate === DatasourceCateEnum.doris && payload.queryStrategy === 'query';
+  if (!isDorisLogQuery && typeof payload.query === 'string') {
+    payload.sql = payload.query;
+    delete payload.query;
+  }
+}
+
 // 沿用旧版各数据源查询函数的静默短路条件：未就绪的 target 不进入 query-batch，且不触发表单校验提示。
-const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number], (target: ITarget) => boolean>> = {
+const QUERY_READINESS: Partial<Record<DashboardDatasourceCate, (target: ITarget) => boolean>> = {
   elasticsearch: (target) => {
     const query = target.query ?? {};
     if (query.syntax === 'sql') {
@@ -160,7 +180,7 @@ const QUERY_READINESS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number
   'aliyun-sls': (target) => Boolean(target.query?.project && target.query?.logstore && target.query?.mode),
 };
 
-const serializeTarget = (target: ITarget, cate: string) => {
+const serializeTarget = (target: ITarget, cate: DashboardDatasourceCate) => {
   const payload: JsonObject = {
     ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
     ..._.omit(target, DASHBOARD_TARGET_META_FIELDS),
@@ -177,6 +197,9 @@ const serializeTarget = (target: ITarget, cate: string) => {
   // Builder configuration is editor state used to reopen the builder. The
   // datasource query APIs only need the generated query fields.
   delete payload.builderConfig;
+  if (SQL_QUERY_DATASOURCE_CATES.has(cate)) {
+    serializeSQLQuery(payload, cate);
+  }
   if (_.includes(['elasticsearch', 'opensearch'], cate)) {
     if (payload.syntax !== 'sql') {
       payload.filter_language = payload.filter_language ?? (payload.syntax === 'kuery' || payload.syntax === 'kql' ? 'kql' : 'lucene');
