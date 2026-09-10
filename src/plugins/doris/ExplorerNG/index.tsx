@@ -163,12 +163,24 @@ export default function index(props: Props) {
         start: range ? String(range.start) : undefined,
         end: range ? String(range.end) : undefined,
         query_parameters: _.pickBy(
-          { syntax: query.syntax, database: query.database, table: query.table, time_field: query.time_field },
+          {
+            syntax: query.syntax,
+            database: query.database,
+            table: query.table,
+            time_field: query.time_field,
+            // The sidebar's loaded columns, so the assistant need not probe the
+            // table it is looking at; capped, with the true count beside it.
+            fields: indexData
+              .slice(0, 100)
+              .map((field) => `${field.field}:${field.type}`)
+              .join(', '),
+            fields_total: indexData.length ? String(indexData.length) : '',
+          },
           (value) => typeof value === 'string' && value !== '',
         ),
       },
     });
-  }, [datasourceValue]);
+  }, [datasourceValue, indexData]);
   // SQL mode suggests statements, search mode suggests filters.
   const aiPromptList = useMemo(
     () =>
