@@ -323,44 +323,46 @@ export default function index(props: IProps) {
         {/* With a dock, the buttons align to the box's top and the dock hangs under the box only. */}
         <div className={`flex gap-[8px]${queryExtra ? ' items-start' : ' items-center'}`}>
           <div className={`flex min-w-0 flex-1 gap-[8px]${queryExtra ? ' items-start' : ' items-center'}`}>
-            <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
-              <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
-                <PromQLInputNG
-                  suffix={queryExtra}
-                  maxHeight={200}
-                  enableAutocomplete={completeEnabled}
-                  datasourceValue={datasourceValue}
-                  showBuiltinMetrics={showBuiltinMetrics}
-                  interpolateString={(query) => {
-                    return interpolateString({
-                      query,
-                      range,
-                      minStep,
-                    });
-                  }}
-                  onMetricUnitChange={(newUnit) => {
-                    setDefaultUnit(newUnit);
-                  }}
-                  showGlobalMetrics={showGlobalMetrics}
-                  onChangeTrigger={['onBlur', 'onEnter']}
-                  value={value}
-                  onDraftChange={(next) => {
-                    if (next !== valueRef.current) {
-                      invalidate();
-                      setQueryPaused(true);
-                      change(next);
-                    }
-                  }}
-                  onChange={(newVal) => {
-                    // The user finished typing (blur or Enter): that both shows and runs it.
-                    if (newVal !== valueRef.current) invalidate();
-                    setQueryPaused(false);
-                    change(newVal);
-                    updateSubmitted(newVal);
-                    onChange && onChange(newVal);
-                  }}
-                />
-              </PromQLInputNGWithTooltipWrapper>
+            <div className='flex min-w-0 w-full flex-col'>
+              <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
+                <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
+                  <PromQLInputNG
+                    suffix={queryExtra}
+                    maxHeight={200}
+                    enableAutocomplete={completeEnabled}
+                    datasourceValue={datasourceValue}
+                    showBuiltinMetrics={showBuiltinMetrics}
+                    interpolateString={(query) => {
+                      return interpolateString({
+                        query,
+                        range,
+                        minStep,
+                      });
+                    }}
+                    onMetricUnitChange={(newUnit) => {
+                      setDefaultUnit(newUnit);
+                    }}
+                    showGlobalMetrics={showGlobalMetrics}
+                    onChangeTrigger={['onBlur', 'onEnter']}
+                    value={value}
+                    onDraftChange={(next) => {
+                      if (next !== valueRef.current) {
+                        invalidate();
+                        setQueryPaused(true);
+                        change(next);
+                      }
+                    }}
+                    onChange={(newVal) => {
+                      // The user finished typing (blur or Enter): that both shows and runs it.
+                      if (newVal !== valueRef.current) invalidate();
+                      setQueryPaused(false);
+                      change(newVal);
+                      updateSubmitted(newVal);
+                      onChange && onChange(newVal);
+                    }}
+                  />
+                </PromQLInputNGWithTooltipWrapper>
+              </div>
               {queryExtra ? noticeBanner : null}
             </div>
             {extra && (

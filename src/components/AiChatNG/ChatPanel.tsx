@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { Button, Input, Spin } from 'antd';
+import { Button, Input, Spin, Tooltip } from 'antd';
 import type { TextAreaRef } from 'antd/lib/input/TextArea';
 import { LoadingOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { CornerDownLeft } from 'lucide-react';
+import { CornerDownLeft, SendHorizontal, Square } from 'lucide-react';
 
 import IconFont from '@/components/IconFont';
 
@@ -656,24 +656,36 @@ export default function ChatPanel(props: IAiChatProps) {
 
   const welcomeContent = typeof welcomeSlot === 'function' ? welcomeSlot((prompt) => sendUserMessage(undefined, prompt)) : welcomeSlot;
 
-  const sendButton = (
+  const onSendClick = () => {
+    if (submitting) {
+      handleStop();
+    } else {
+      sendUserMessage();
+    }
+  };
+  // The dock's bar is a row of same-sized line icons; send and stop join it
+  // instead of standing out as a filled button.
+  const sendButton = slim ? (
+    <Tooltip title={submitting ? t('input.stop') : t('input.send')}>
+      <Button
+        type='text'
+        size='small'
+        className={cn('flex h-6 w-6 items-center justify-center p-0', submitting ? 'text-main' : 'text-primary')}
+        disabled={shareReadonly}
+        aria-label={submitting ? t('input.stop') : t('input.send')}
+        icon={submitting ? <Square size={14} strokeWidth={1.75} fill='currentColor' /> : <SendHorizontal size={14} strokeWidth={1.75} />}
+        onClick={onSendClick}
+      />
+    </Tooltip>
+  ) : (
     <Button
       type='primary'
-      shape={slim && submitting ? 'default' : 'circle'}
-      size={slim ? 'small' : undefined}
+      shape='circle'
       disabled={shareReadonly}
       aria-label={submitting ? t('input.stop') : t('input.send')}
-      icon={submitting ? slim ? undefined : <PauseCircleOutlined /> : <IconFont type='icon-ic_send' style={{ color: '#fff', fontSize: 14 }} />}
-      onClick={() => {
-        if (submitting) {
-          handleStop();
-        } else {
-          sendUserMessage();
-        }
-      }}
-    >
-      {slim && submitting ? t('input.stop') : null}
-    </Button>
+      icon={submitting ? <PauseCircleOutlined /> : <IconFont type='icon-ic_send' style={{ color: '#fff', fontSize: 14 }} />}
+      onClick={onSendClick}
+    />
   );
 
   const prompts = (promptList ?? []).map((prompt) => (typeof prompt === 'string' ? { label: prompt, value: prompt } : prompt));
