@@ -395,7 +395,7 @@ function MessageItemComponent({
   return (
     <div className='ai-chat-message-item w-full space-y-3 shadow-sm'>
       <div className='flex justify-end [[data-ai-surface=query-dock]_&]:justify-start'>
-        <div className='max-w-[85%] rounded-lg bg-primary/10 px-2 py-1 text-sm [[data-ai-surface=query-dock]_&]:bg-fc-100'>
+        <div className='max-w-[85%] rounded-lg bg-primary/10 px-2 py-1 text-sm [[data-ai-surface=query-dock]_&]:bg-fc-300'>
           <div className='whitespace-pre-wrap break-words'>{message.query.content}</div>
         </div>
       </div>
