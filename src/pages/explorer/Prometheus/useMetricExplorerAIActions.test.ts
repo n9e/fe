@@ -121,6 +121,17 @@ it("passes the model's follow-up hint along with a delivered result", async () =
   });
   expect(result.current.progress).toEqual({ phase: 'success', stage: 'queried', followUp: '改成按 env 分组取平均' });
 });
+it('resets the status for a new conversation but keeps undo for what was written', async () => {
+  const { result, scope, box } = setup();
+  box.run.mockResolvedValue({ empty: false });
+  await act(async () => {
+    await scope.executePageAction(request);
+  });
+  expect(result.current.canUndo).toBe(true);
+  act(() => result.current.reset());
+  expect(result.current.progress).toEqual({ phase: 'idle' });
+  expect(result.current.canUndo).toBe(true);
+});
 it('preserves a late answer as unapplied when the user edits the draft', async () => {
   const { result, scope, box, edit } = setup();
   edit();

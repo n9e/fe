@@ -217,5 +217,11 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
     undoRef.current = undefined;
     setCanUndo(false);
   }, []);
-  return { prepareTurn, progress, canUndo, undo, cancel, invalidateUndo };
+  // A new conversation starts with a blank status line; what the assistant
+  // already wrote stays in the box, and undo stays with it.
+  const reset = useCallback(() => {
+    cancel();
+    setProgress({ phase: 'idle' });
+  }, [cancel]);
+  return { prepareTurn, progress, canUndo, undo, cancel, invalidateUndo, reset };
 }

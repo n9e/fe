@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import type { IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
 import { CloseOutlined } from '@ant-design/icons';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, SquarePen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatPanel, EAiChatContentType, IAiChatMessage, IAiChatPageInfo, IAiChatTurn } from '@/components/AiChatNG';
@@ -32,6 +32,8 @@ export interface AiQueryDockProps {
   canUndo?: boolean;
   onUndo?: () => void;
   promptList?: IAiChatProps['promptList'];
+  /** The user asked for a fresh conversation: the page resets its status; the query box is left alone. */
+  onNewConversation?: () => void;
   onClose: () => void;
   className?: string;
 }
@@ -91,7 +93,7 @@ function delivered(message: IAiChatMessage): boolean {
 }
 
 export default function AiQueryDock(props: AiQueryDockProps) {
-  const { open, pageFrom, promptList, onClose, className, progress, prepareTurn, canUndo, onUndo } = props;
+  const { open, pageFrom, promptList, onClose, onNewConversation, className, progress, prepareTurn, canUndo, onUndo } = props;
   const { t } = useTranslation(NAME_SPACE);
   const rootRef = useRef<HTMLDivElement>(null);
   const [chatId, setChatId] = useState<string>();
@@ -102,6 +104,20 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   const [busy, setBusy] = useState(false);
   const handleError = useCallback((error: Error) => setSendError(error.message), []);
   const [startedAt, setStartedAt] = useState<number>();
+  // Each conversation is its own ChatPanel: remounting is the one way to
+  // start clean, since the panel keeps the chat it created even when the
+  // parent hands back no id.
+  const [generation, setGeneration] = useState(0);
+  const startNewConversation = () => {
+    setGeneration((previous) => previous + 1);
+    setChatId(undefined);
+    setTurn(undefined);
+    setSendError(undefined);
+    setStartedAt(undefined);
+    readingRef.current = false;
+    setExpanded(true);
+    onNewConversation?.();
+  };
 
   // Delivery folds the list so the chart is free; everything else leaves
   // expansion alone. New steps must not yank the list open again — the user
@@ -219,6 +235,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       }}
     >
       <ChatPanel
+        key={generation}
         variant='slim'
         active={open}
         onBusyChange={setBusy}
@@ -275,16 +292,30 @@ export default function AiQueryDock(props: AiQueryDockProps) {
           </div>
         }
         inputSuffix={
-          <Tooltip title={closeLabel}>
-            <Button
-              type='text'
-              size='small'
-              className='text-hint opacity-70 hover:opacity-100 hover:text-main'
-              icon={<CloseOutlined />}
-              aria-label={closeLabel}
-              onClick={onClose}
-            />
-          </Tooltip>
+          <>
+            {turn && (
+              <Tooltip title={t('dock.new_conversation')}>
+                <Button
+                  type='text'
+                  size='small'
+                  className='text-hint opacity-70 hover:opacity-100 hover:text-main'
+                  icon={<SquarePen size={14} strokeWidth={1.75} />}
+                  aria-label={t('dock.new_conversation')}
+                  onClick={startNewConversation}
+                />
+              </Tooltip>
+            )}
+            <Tooltip title={closeLabel}>
+              <Button
+                type='text'
+                size='small'
+                className='text-hint opacity-70 hover:opacity-100 hover:text-main'
+                icon={<CloseOutlined />}
+                aria-label={closeLabel}
+                onClick={onClose}
+              />
+            </Tooltip>
+          </>
         }
       />
     </div>

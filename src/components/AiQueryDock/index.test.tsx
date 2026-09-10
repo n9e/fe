@@ -76,8 +76,30 @@ describe('AiQueryDock', () => {
     act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
     expect(screen.getByPlaceholderText('改成按 env 分组取平均')).toBeTruthy();
 
-    rerender(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'failed', message: 'query unavailable', followUp: '改成按 env 分组取平均' }} />);
+    rerender(
+      <AiQueryDock
+        open
+        pageFrom={{ url: '/metric/explorer' }}
+        onClose={jest.fn()}
+        progress={{ phase: 'failed', message: 'query unavailable', followUp: '改成按 env 分组取平均' }}
+      />,
+    );
     expect(screen.getByPlaceholderText('dock.placeholder_follow_up')).toBeTruthy();
+  });
+
+  it('starts a fresh conversation on request, leaving the page to reset its own status', () => {
+    const onNewConversation = jest.fn();
+    render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} onNewConversation={onNewConversation} progress={{ phase: 'success' }} />);
+    expect(screen.queryByRole('button', { name: 'dock.new_conversation' })).toBeNull();
+    act(() => panelProps!.onChatChange!({ chat_id: 'chat-9', title: '', last_update: 0 }));
+    act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+    expect(panelProps!.chatId).toBe('chat-9');
+    fireEvent.click(screen.getByRole('button', { name: 'dock.new_conversation' }));
+    expect(onNewConversation).toHaveBeenCalledTimes(1);
+    expect(panelProps!.chatId).toBeUndefined();
+    expect(screen.getByPlaceholderText('dock.placeholder_first')).toBeTruthy();
+    expect(screen.getByTestId('list').hidden).toBe(false);
+    expect(screen.queryByRole('button', { name: 'dock.new_conversation' })).toBeNull();
   });
 
   it('stays open when the assistant asks something back instead', () => {

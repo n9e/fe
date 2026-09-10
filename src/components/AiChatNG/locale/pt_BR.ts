@@ -146,6 +146,7 @@ const pt_BR = {
     placeholder_draft: 'Escreva a próxima mensagem e envie ao concluir',
     wait_to_send: 'Ainda em execução. O rascunho foi mantido; envie ao concluir.',
     close_and_stop: 'Fechar e parar',
+    new_conversation: 'Nova conversa',
     prompt_cpu: 'CPU do host',
     prompt_cpu_query: 'Gere uma consulta sobre o uso de CPU do host',
     prompt_memory: 'Memória do host',

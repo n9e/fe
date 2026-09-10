@@ -146,6 +146,7 @@ const ko_KR = {
     placeholder_draft: '다음 메시지를 작성하고 완료 후 전송하세요',
     wait_to_send: '아직 실행 중입니다. 초안은 유지되며 완료 후 전송할 수 있습니다.',
     close_and_stop: '중지하고 닫기',
+    new_conversation: '새 대화',
     prompt_cpu: '호스트 CPU 사용률',
     prompt_cpu_query: '호스트 CPU 사용률을 조회하는 쿼리를 생성해 주세요',
     prompt_memory: '호스트 메모리 사용률',

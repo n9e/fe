@@ -146,6 +146,7 @@ const fr_FR = {
     placeholder_draft: 'Rédigez le prochain message, puis envoyez-le une fois terminé',
     wait_to_send: 'Traitement en cours. Le brouillon est conservé ; envoyez-le une fois terminé.',
     close_and_stop: 'Fermer et arrêter',
+    new_conversation: 'Nouvelle conversation',
     prompt_cpu: 'CPU de l’hôte',
     prompt_cpu_query: 'Génère une requête sur l’utilisation du CPU de l’hôte',
     prompt_memory: 'Mémoire de l’hôte',

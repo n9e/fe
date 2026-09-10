@@ -146,6 +146,7 @@ const id_ID = {
     placeholder_draft: 'Tulis pesan berikutnya, kirim setelah selesai',
     wait_to_send: 'Masih berjalan. Draf tersimpan; kirim setelah selesai.',
     close_and_stop: 'Tutup dan hentikan',
+    new_conversation: 'Percakapan baru',
     prompt_cpu: 'CPU host',
     prompt_cpu_query: 'Buat kueri untuk penggunaan CPU host',
     prompt_memory: 'Memori host',

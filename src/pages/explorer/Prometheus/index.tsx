@@ -177,6 +177,7 @@ export default function Prometheus(props: IProps) {
                 canUndo={aiActions.canUndo}
                 onUndo={aiActions.undo}
                 promptList={aiPromptList}
+                onNewConversation={aiActions.reset}
                 onClose={() => {
                   aiActions.cancel();
                   setAiOpen(false);

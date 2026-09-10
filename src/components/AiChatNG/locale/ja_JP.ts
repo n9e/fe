@@ -147,6 +147,7 @@ const ja_JP = {
     placeholder_draft: '次のメッセージを入力し、完了後に送信',
     wait_to_send: '実行中です。下書きは保持されています。完了後に送信してください。',
     close_and_stop: '停止して閉じる',
+    new_conversation: '新しい会話',
     prompt_cpu: 'ホストの CPU 使用率',
     prompt_cpu_query: 'ホストの CPU 使用率を調べるクエリを生成してください',
     prompt_memory: 'ホストのメモリ使用率',

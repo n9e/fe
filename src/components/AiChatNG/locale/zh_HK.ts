@@ -147,6 +147,7 @@ const zh_HK = {
     placeholder_draft: '可先寫下一條，完成後傳送',
     wait_to_send: '目前仍在執行，草稿已保留，完成後再傳送',
     close_and_stop: '關閉並停止',
+    new_conversation: '新對話',
     prompt_cpu: '主機 CPU 使用率',
     prompt_cpu_query: '幫我產生查詢主機 CPU 使用率的語句',
     prompt_memory: '主機記憶體使用率',

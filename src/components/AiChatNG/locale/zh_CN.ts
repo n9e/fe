@@ -147,6 +147,7 @@ const zh_CN = {
     placeholder_draft: '可先写下一条，完成后发送',
     wait_to_send: '当前仍在运行，草稿已保留，完成后再发送',
     close_and_stop: '关闭并停止',
+    new_conversation: '新对话',
     prompt_cpu: '主机 CPU 使用率',
     prompt_cpu_query: '帮我生成一个查询主机 CPU 使用率的语句',
     prompt_memory: '主机内存使用率',

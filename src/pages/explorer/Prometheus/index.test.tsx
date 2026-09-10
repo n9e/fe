@@ -57,7 +57,7 @@ const mockActions = { enabled: [] as boolean[] };
 jest.mock('./useMetricExplorerAIActions', () => ({
   useMetricExplorerAIActions: (options: AiActionsOptions) => {
     mockActions.enabled.push(options.enabled);
-    return { progress: { phase: 'idle' }, canUndo: false, prepareTurn: jest.fn(), undo: jest.fn(), cancel: jest.fn(), invalidateUndo: jest.fn() };
+    return { progress: { phase: 'idle' }, canUndo: false, prepareTurn: jest.fn(), undo: jest.fn(), cancel: jest.fn(), invalidateUndo: jest.fn(), reset: jest.fn() };
   },
 }));
 jest.mock('@/services/warning', () => ({ getHistoryEventsById: jest.fn() }));

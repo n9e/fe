@@ -147,6 +147,7 @@ const en_US = {
     placeholder_draft: 'Draft the next message; send when this finishes',
     wait_to_send: 'Still running. Your draft is saved; send it when this finishes.',
     close_and_stop: 'Close and stop',
+    new_conversation: 'New conversation',
     prompt_cpu: 'Host CPU usage',
     prompt_cpu_query: 'Generate a query for host CPU usage',
     prompt_memory: 'Host memory usage',

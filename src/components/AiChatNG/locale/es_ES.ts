@@ -146,6 +146,7 @@ const es_ES = {
     placeholder_draft: 'Escribe el siguiente mensaje y envíalo al terminar',
     wait_to_send: 'Sigue en ejecución. El borrador se conserva; envíalo al terminar.',
     close_and_stop: 'Cerrar y detener',
+    new_conversation: 'Nueva conversación',
     prompt_cpu: 'CPU del host',
     prompt_cpu_query: 'Genera una consulta del uso de CPU del host',
     prompt_memory: 'Memoria del host',
