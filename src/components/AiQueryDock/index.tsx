@@ -102,7 +102,12 @@ function explanation(message: IAiChatMessage): string | undefined {
   const text = [...responses].reverse().find((item) => item.content_type === EAiChatContentType.Markdown)?.content;
   const line = text
     ?.split('\n')
-    .map((part) => part.replace(/^[#>*\-\s]+/, '').trim())
+    .map((part) =>
+      part
+        .replace(/^[#>*\-\s]+/, '')
+        .replace(/`/g, '')
+        .trim(),
+    )
     .find(Boolean);
   return line ? line.slice(0, 160) : undefined;
 }
