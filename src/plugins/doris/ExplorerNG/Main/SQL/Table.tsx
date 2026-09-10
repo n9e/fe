@@ -21,6 +21,7 @@ import filteredFields from '../../utils/filteredFields';
 import replaceTemplateVariables from '../../utils/replaceTemplateVariables';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import AddTo from '../../components/AddTo';
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 
 // @ts-ignore
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
@@ -33,12 +34,14 @@ interface IProps {
   };
   setExecuteLoading: (loading: boolean) => void;
   executeQuery: () => void;
+  /** Whoever asked for this run, told what it returned. */
+  queryRequest?: QueryRequest;
 }
 
 export default function Table(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
 
-  const { sqlVizType, tableSelector, setExecuteLoading, executeQuery } = props;
+  const { sqlVizType, tableSelector, setExecuteLoading, executeQuery, queryRequest } = props;
 
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
@@ -123,6 +126,7 @@ export default function Table(props: IProps) {
             hash: _.uniqueId('logs_'),
           }); // 首次只加载一页数据
 
+          if (!queryRequest?.signal.aborted) queryRequest?.complete({ empty: newLogs.length === 0, count: res.total ?? newLogs.length });
           return {
             list: newLogs,
             total: res.total,
@@ -130,7 +134,8 @@ export default function Table(props: IProps) {
             colWidths: calcColWidthByData(newLogs),
           };
         })
-        .catch(() => {
+        .catch((error) => {
+          if (!queryRequest?.signal.aborted) queryRequest?.complete(error instanceof Error ? error : new Error(String(error?.message ?? error)));
           loadTimeRef.current = null;
           setLogs({
             data: [],

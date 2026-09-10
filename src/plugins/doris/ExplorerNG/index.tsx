@@ -1,10 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Form, Modal, Button, Alert, Space } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
+import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
+import AiQueryDock from '@/components/AiQueryDock';
+import { AiQueryDockTrigger } from '@/components/AiQueryDock/Trigger';
+import { useQueryDockActions, QueryDockAction, QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
+import { usePendingQuery } from '@/components/AiQueryDock/usePendingQuery';
+import { buildPageFrom } from '@/components/AiChatNG/recommend';
+import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 import { copy2ClipBoard } from '@/utils';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
@@ -22,6 +30,19 @@ import Main from './Main';
 
 import './style.less';
 
+// How this panel's statement is named to the assistant. Only the SQL syntax
+// hosts the dock: the search syntax is a structured filter, not a statement.
+const LOG_SQL_ACTION: QueryDockAction = {
+  name: 'set_log_query',
+  argument: 'sql',
+  language: 'Doris SQL statement',
+  followUpExample: '只看 ERROR 级别',
+  page: { title: 'Log explorer', summary: 'The user writes SQL against a Doris log table and reads the rows it returns.' },
+};
+interface LogSQLSnapshot extends QueryDockSnapshot {
+  range?: IRawTimeRange;
+}
+
 interface Props {
   tabKey: string;
   disabled?: boolean;
@@ -31,6 +52,7 @@ interface Props {
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
+  const { t: tAi } = useTranslation(AI_CHAT_NS);
   const { darkMode } = useContext(CommonStateContext);
   const { tabKey, disabled, defaultFormValuesControl, renderCommonSettings } = props;
   const form = Form.useFormInstance();
@@ -41,8 +63,58 @@ export default function index(props: Props) {
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
+  const syntax = Form.useWatch(['query', 'syntax']);
+  const [aiOpen, setAiOpen] = useState(false);
+  // Every hand the user lays on the panel bumps this; a dock turn that started
+  // on an older revision may not write, and its undo is gone.
+  const revisionRef = useRef(0);
+  const lastFilledRef = useRef<string>();
+  const pending = usePendingQuery();
+  const queryBoxRef = useRef<HTMLDivElement>(null);
+  const queryButtonRef = useRef<HTMLButtonElement>(null);
+  const control = useRef<QueryDockControl<LogSQLSnapshot> | null>(null);
+  const aiActions = useQueryDockActions({
+    enabled: IS_ENT && aiOpen && syntax === 'sql',
+    datasourceValue,
+    getControl: () => control.current,
+    action: LOG_SQL_ACTION,
+  });
+  const invalidate = () => {
+    revisionRef.current += 1;
+    pending.clear();
+    aiActions.invalidateUndo();
+  };
+
+  // What a validated query does once it may run: remember it, then refresh.
+  const commitQuery = (values) => {
+    const queryValues = values.query;
+    // 设置 tabs 缓存值
+    if (defaultFormValuesControl?.setDefaultFormValues) {
+      defaultFormValuesControl.setDefaultFormValues({
+        datasourceCate: values.datasourceCate,
+        datasourceValue: values.datasourceValue,
+        query: values.query,
+      });
+    }
+
+    // 设置历史记录方法
+    if (queryValues.syntax === 'query') {
+      if (queryValues.database && queryValues.table && queryValues.time_field) {
+        setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
+      }
+    } else if (queryValues.syntax === 'sql') {
+      if (queryValues.sql) {
+        setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.sql);
+      }
+    }
+
+    form.setFieldsValue({
+      refreshFlag: _.uniqueId('refreshFlag_'),
+    });
+  };
 
   const executeQuery = (force = false) => {
+    invalidate();
     // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
     setTimeout(() => {
       form.validateFields().then((values) => {
@@ -55,33 +127,96 @@ export default function index(props: Props) {
           setQueryWarnModalVisible(true);
           return;
         }
-
-        // 设置 tabs 缓存值
-        if (defaultFormValuesControl?.setDefaultFormValues) {
-          defaultFormValuesControl.setDefaultFormValues({
-            datasourceCate: values.datasourceCate,
-            datasourceValue: values.datasourceValue,
-            query: values.query,
-          });
-        }
-
-        // 设置历史记录方法
-        if (queryValues.syntax === 'query') {
-          if (queryValues.database && queryValues.table && queryValues.time_field) {
-            setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
-          }
-        } else if (queryValues.syntax === 'sql') {
-          if (queryValues.sql) {
-            setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.sql);
-          }
-        }
-
-        form.setFieldsValue({
-          refreshFlag: _.uniqueId('refreshFlag_'),
-        });
+        commitQuery(values);
       });
     }, 0);
   };
+
+  // What the dock sends with each message: the data source, the statement in
+  // the box, the window, and the table the sidebar has picked.
+  const readAiPageFrom = useCallback(() => {
+    const snapshot = control.current?.snapshot();
+    const range = snapshot?.range?.start && snapshot.range.end ? timeRangeUnix(snapshot.range) : undefined;
+    const query = form.getFieldValue('query') || {};
+    return buildPageFrom({
+      param: {
+        datasource_type: 'doris',
+        datasource_id: datasourceValue,
+        query: snapshot?.query?.trim() || undefined,
+        start: range ? String(range.start) : undefined,
+        end: range ? String(range.end) : undefined,
+        query_parameters: _.pickBy(
+          { syntax: query.syntax, database: query.database, table: query.table, time_field: query.time_field },
+          (value) => typeof value === 'string' && value !== '',
+        ),
+      },
+    });
+  }, [datasourceValue]);
+  const aiPromptList = useMemo(
+    () => ['errors', 'per_minute', 'group'].map((topic) => ({ label: tAi(`dock.prompt_log_${topic}`), value: tAi(`dock.prompt_log_${topic}_query`) })),
+    [tAi],
+  );
+
+  useLayoutEffect(() => {
+    control.current = {
+      snapshot: () => ({ query: form.getFieldValue(['query', 'sql']) || '', range: _.cloneDeep(form.getFieldValue(['query', 'range'])) }),
+      revision: () => revisionRef.current,
+      fill: (sql, range) => {
+        pending.abort();
+        lastFilledRef.current = sql;
+        // Rows are the honest view of a statement; the time series view needs
+        // value columns the assistant never chose.
+        form.setFieldsValue({ query: range ? { sql, range, sqlVizType: 'table' } : { sql, sqlVizType: 'table' } });
+      },
+      run: ({ signal } = {}) => {
+        const sql: string = form.getFieldValue(['query', 'sql']) || '';
+        if (!sql.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
+        // The page refuses to run an unbounded scan; say so instead of popping its modal.
+        if (!sql.includes('$__time') && !sql.includes('$__unixEpoch')) {
+          return Promise.reject(new Error('The statement must bound time with $__timeFilter(<time column>) or $__unixEpochFilter(<time column>)'));
+        }
+        return form
+          .validateFields()
+          .catch(() => {
+            throw new Error('The page rejected the query form');
+          })
+          .then((values) => {
+            const promise = pending.begin(signal);
+            commitQuery(values);
+            return promise;
+          });
+      },
+      restore: (snapshot) => {
+        pending.abort();
+        lastFilledRef.current = snapshot.query;
+        form.setFieldsValue({ query: { sql: snapshot.query, range: snapshot.range }, refreshFlag: _.uniqueId('refreshFlag_') });
+      },
+      queryInput: () => queryBoxRef.current,
+      queryButton: () => queryButtonRef.current,
+    };
+    return () => {
+      control.current = null;
+    };
+  });
+
+  const dock = IS_ENT ? (
+    <AiQueryDock
+      open={aiOpen}
+      pageFrom={readAiPageFrom}
+      progress={aiActions.progress}
+      prepareTurn={aiActions.prepareTurn}
+      canUndo={aiActions.canUndo}
+      onUndo={aiActions.undo}
+      promptList={aiPromptList}
+      resultNoun='rows'
+      placeholder={tAi('dock.placeholder_first_sql')}
+      onNewConversation={aiActions.reset}
+      onClose={() => {
+        aiActions.cancel();
+        setAiOpen(false);
+      }}
+    />
+  ) : undefined;
 
   const handleSetStackByField = (index?: string) => {
     form.setFieldsValue({
@@ -249,6 +384,25 @@ export default function index(props: Props) {
               setStackByField={handleSetStackByField}
               defaultSearchField={defaultSearchField}
               setDefaultSearchField={handleSetDefaultSearchField}
+              queryExtra={
+                IS_ENT ? (
+                  <AiQueryDockTrigger
+                    open={aiOpen}
+                    onClick={() => {
+                      if (aiOpen) aiActions.cancel();
+                      setAiOpen((previous) => !previous);
+                    }}
+                  />
+                ) : undefined
+              }
+              noticeBanner={dock}
+              queryBoxRef={queryBoxRef}
+              queryButtonRef={queryButtonRef}
+              queryRequest={pending.queryRequest}
+              onQueryEdit={(sql) => {
+                // The assistant writing is not the user taking over.
+                if (sql !== lastFilledRef.current) invalidate();
+              }}
             />
           </div>
         </div>
