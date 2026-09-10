@@ -24,6 +24,7 @@ interface OldSeriesItem {
   data: [Ts: number, Value: number][]; // [unixTimestamp, value]
   name?: string;
   isExp?: boolean;
+  bucketInterval?: number;
 }
 
 export type { OldSeriesItem };
@@ -83,6 +84,7 @@ export interface BaseSeriesItem {
   n9e_internal: {
     id: string;
     refId: string;
+    bucketInterval?: number;
     offset?: number;
     metric: Record<string, string>;
     values?: (number | null | undefined)[];
@@ -113,6 +115,7 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
       n9e_internal: {
         id: item.id,
         refId: item.refId,
+        bucketInterval: item.bucketInterval,
         offset: item.offset,
         metric: item.metric,
       },

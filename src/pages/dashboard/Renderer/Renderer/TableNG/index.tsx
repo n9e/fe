@@ -45,6 +45,11 @@ const i18nAgGrid = {
   en_US: AG_GRID_LOCALE_EN,
   ja_JP: AG_GRID_LOCALE_JP,
   ru_RU: AG_GRID_LOCALE_EN,
+  fr_FR: AG_GRID_LOCALE_EN,
+  ko_KR: AG_GRID_LOCALE_EN,
+  id_ID: AG_GRID_LOCALE_EN,
+  es_ES: AG_GRID_LOCALE_EN,
+  pt_BR: AG_GRID_LOCALE_EN,
 };
 
 ModuleRegistry.registerModules([AllCommunityModule]);

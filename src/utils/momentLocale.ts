@@ -2,6 +2,11 @@ import moment from 'moment';
 import 'moment/dist/locale/zh-hk';
 import 'moment/dist/locale/ja';
 import 'moment/dist/locale/ru';
+import 'moment/dist/locale/fr';
+import 'moment/dist/locale/ko';
+import 'moment/dist/locale/id';
+import 'moment/dist/locale/es';
+import 'moment/dist/locale/pt-br';
 
 // TimeRangePicker 长期使用的自定义 zh-cn 配置（未加载 moment 内置 zh-cn，保持原有展示行为）
 export const momentLocaleZhCN = {
@@ -36,6 +41,11 @@ const momentLocaleMap: { [key: string]: string } = {
   en_US: 'en',
   ja_JP: 'ja',
   ru_RU: 'ru',
+  fr_FR: 'fr',
+  ko_KR: 'ko',
+  id_ID: 'id',
+  es_ES: 'es',
+  pt_BR: 'pt-br',
 };
 
 export const syncMomentLocale = (language: string) => {

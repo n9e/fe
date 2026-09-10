@@ -26,6 +26,7 @@ const en_US = {
     'Last 15 minutes': 'Last 15 minutes',
     'Last 30 minutes': 'Last 30 minutes',
     'Last 1 hour': 'Last 1 hour',
+    'Last 2 hours': 'Last 2 hours',
     'Last 3 hours': 'Last 3 hours',
     'Last 6 hours': 'Last 6 hours',
     'Last 12 hours': 'Last 12 hours',

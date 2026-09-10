@@ -6,6 +6,7 @@ import { setGlobalState } from '@/pages/dashboard/globalState';
  */
 export function resetDashboardGlobalState() {
   setGlobalState('variablesWithOptions', []);
+  setGlobalState('variableExecution', { sessionId: 0, isExecuting: false, revision: 0 });
   setGlobalState('range', { start: 'now-1h', end: 'now' });
   setGlobalState('statFields', []);
   setGlobalState('tableFields', []);

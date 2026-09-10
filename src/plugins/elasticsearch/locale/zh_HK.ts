@@ -1,5 +1,7 @@
 const zh_HK = {
   query: {
+    range: '查詢區間',
+    sql_required: 'SQL 不能為空',
     mode: '檢索方式',
     mode_indices: 'Indices',
     mode_index_patterns: 'Index patterns',
@@ -37,6 +39,12 @@ const zh_HK = {
       table: '表格',
       timeseries: '時序圖',
     },
+    dashboard: {
+      mode: {
+        timeSeries: '時序數據',
+        table: '非時序數據',
+      },
+    },
     add_to: {
       btn: '添加至...',
       recording_rule: '添加至記錄規則',
@@ -44,6 +52,11 @@ const zh_HK = {
     },
   },
   builder: {
+    title: '構建器',
+    code: '代碼',
+    open_builder: '打開構建器',
+    switch_to_builder_confirm_title: '切換至構建器',
+    switch_to_builder_confirm_content: '切換後將清空目前 SQL 及構建器設定。',
     to_pinned_btn: '固定',
     to_unpinned_btn: '取消固定',
     filters: {

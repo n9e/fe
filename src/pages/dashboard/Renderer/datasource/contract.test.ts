@@ -4,6 +4,15 @@ import type { ITarget } from '@/pages/dashboard/types';
 
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse, validateDashboardQueryRequest } from './contract';
 import dashboardDatasourceDefinitions, { DASHBOARD_DATASOURCE_CATES } from './registry';
+import { getDashboardVariablePlugin } from '@/pages/dashboard/Variables/plugins';
+
+jest.mock('@/utils/constant', () => ({
+  DatasourceCateEnum: {
+    ck: 'ck',
+    mysql: 'mysql',
+    doris: 'doris',
+  },
+}));
 
 jest.mock('./queryStep', () => ({
   getDashboardQueryStep: () => 30,
@@ -16,10 +25,21 @@ jest.mock('@/components/TimeRangePicker/utils', () => ({
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
   default: jest.fn((value: string) => value),
+  getBuiltInVariables: () => [],
   replaceDatasourceVariables: (value: number | string) => (value === '${metrics}' ? 9 : value),
 }));
 
+jest.mock('@/pages/dashboard/Variables/plugins', () => ({
+  getDashboardVariablePlugin: jest.fn(),
+}));
+
+const getDashboardVariablePluginMock = getDashboardVariablePlugin as jest.MockedFunction<typeof getDashboardVariablePlugin>;
+
 describe('dashboard unified query contract', () => {
+  afterEach(() => {
+    getDashboardVariablePluginMock.mockReset();
+  });
+
   it('registers every dashboard datasource contract', () => {
     const expectedCates = [
       'prometheus',
@@ -130,6 +150,113 @@ describe('dashboard unified query contract', () => {
     expect(query).not.toHaveProperty('values');
   });
 
+  it.each([
+    ['mysql', { query: 'SELECT ts, value FROM metrics' }],
+    ['ck', { query: 'SELECT ts, value FROM metrics' }],
+    ['doris', { queryStrategy: 'sql', query: 'SELECT ts, value FROM metrics' }],
+  ])('serializes %s dashboard SQL editor text with the adapter-native sql key', (cate, query) => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate, id: 12 },
+          query,
+        },
+      ],
+      datasourceList: [],
+    });
+
+    const payload = request.queries[0]?.kind === 'query' ? request.queries[0].query : {};
+    expect(payload).toMatchObject({ sql: 'SELECT ts, value FROM metrics' });
+    expect(payload).not.toHaveProperty('query');
+  });
+
+  it('keeps the legacy Doris log-query strategy on its native query key', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'doris', id: 12 },
+          resultType: 'logs',
+          query: { queryStrategy: 'query', query: 'status:500' },
+        },
+      ],
+      datasourceList: [],
+    });
+
+    const payload = request.queries[0]?.kind === 'query' ? request.queries[0].query : {};
+    expect(payload).toMatchObject({ query: 'status:500' });
+    expect(payload).not.toHaveProperty('sql');
+  });
+
+  it.each([
+    ['iotdb', { mode: 'raw', query: 'SELECT * FROM root.metrics' }, { query: 'SELECT * FROM root.metrics' }],
+    ['tdengine', { mode: 'raw', query: 'SELECT * FROM meters' }, { query: 'SELECT * FROM meters' }],
+    ['influxdb', { mode: 'raw', sql: 'SELECT * FROM cpu' }, { sql: 'SELECT * FROM cpu' }],
+    ['zabbix', { mode: 'raw', method: 'item.get', params: { output: 'extend' }, querytype: '0' }, { method: 'item.get', params: { output: 'extend' }, querytype: '0' }],
+  ])('preserves %s adapter-native fields for its non-timeseries query path', (cate, query, expectedPayload) => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate, id: 12 },
+          query,
+        },
+      ],
+      datasourceList: [],
+    });
+
+    expect(request.queries[0]).toMatchObject({ result_type: 'logs', query: expectedPayload });
+  });
+
+  it.each(['prometheus', 'cloudwatch', 'gcm'])('%s has no backend non-timeseries query path', (cate) => {
+    expect(dashboardDatasourceDefinitions[cate].resultTypes).not.toContain('logs');
+  });
+
+  it('skips every Elasticsearch value when its variable plugin is not ready', () => {
+    getDashboardVariablePluginMock.mockReturnValue({
+      capabilities: () => ({ multi: false, all: false }),
+      transformQuery: () => undefined,
+    });
+
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: {
+            index: 'application-*',
+            date_field: '@timestamp',
+            values: [{ func: 'rawData' }, { func: 'count' }],
+          },
+        },
+      ],
+      datasourceList: [],
+    });
+
+    expect(request.queries).toEqual([]);
+  });
+
   it('expands Elasticsearch values into backend-compatible single-value queries', () => {
     const request = buildDashboardQueryRequest({
       time: {
@@ -156,6 +283,138 @@ describe('dashboard unified query contract', () => {
       { ref_id: 'A__value_1', query: { value: { func: 'avg', field: 'duration' } } },
     ]);
     expect(JSON.stringify(request)).not.toContain('"values"');
+  });
+
+  it('builds Elasticsearch SQL requests for timeseries and raw data modes', () => {
+    const options = {
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      datasourceList: [],
+    };
+
+    const timeseriesRequest = buildDashboardQueryRequest({
+      ...options,
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: {
+            syntax: 'sql',
+            mode: 'timeSeries',
+            sql: 'SELECT time, value FROM logs',
+            keys: { valueKey: ['value'], timeKey: 'time' },
+            builderConfig: { index: 'logs', date_field: '@timestamp' },
+          },
+        },
+      ],
+    });
+    expect(timeseriesRequest.queries).toMatchObject([
+      {
+        ref_id: 'A',
+        result_type: 'time_series',
+        query: { syntax: 'sql', sql: 'SELECT time, value FROM logs', keys: { valueKey: 'value', timeKey: 'time' } },
+      },
+    ]);
+    const timeseriesQuery = timeseriesRequest.queries[0]?.kind === 'query' ? timeseriesRequest.queries[0].query : {};
+    expect(timeseriesQuery).not.toHaveProperty('builderConfig');
+
+    const rawRequest = buildDashboardQueryRequest({
+      ...options,
+      targets: [
+        {
+          refId: 'B',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: { syntax: 'sql', mode: 'raw', sql: 'SELECT * FROM logs' },
+        },
+      ],
+    });
+    expect(rawRequest.queries).toMatchObject([
+      {
+        ref_id: 'B',
+        result_type: 'logs',
+        query: { sql: 'SELECT * FROM logs' },
+      },
+    ]);
+  });
+
+  it('normalizes Elasticsearch and OpenSearch interval values for query-batch v2', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: {
+            index: 'application-*',
+            date_field: '@timestamp',
+            interval: 5,
+            interval_unit: 'min',
+            values: [{ func: 'count' }],
+          },
+        },
+        {
+          refId: 'B',
+          kind: 'query',
+          datasource: { cate: 'opensearch', id: 13 },
+          query: {
+            index: 'application-*',
+            date_field: '@timestamp',
+            interval: 2,
+            interval_unit: 'hour',
+            values: [{ func: 'count' }],
+          },
+        },
+      ],
+      datasourceList: [],
+    });
+
+    expect(request.queries).toMatchObject([
+      { ref_id: 'A', query: { interval: 300 } },
+      { ref_id: 'B', query: { interval: 7200 } },
+    ]);
+    expect(JSON.stringify(request)).not.toContain('"interval_unit"');
+  });
+
+  it('propagates the V2 Elasticsearch interval to normalized time-series results', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: { index: 'application-*', date_field: '@timestamp', interval: 5, interval_unit: 'min', values: [{ func: 'count' }] },
+        },
+      ],
+      datasourceList: [],
+    });
+    const normalized = normalizeDashboardQueryResponse(
+      {
+        results: [{ ref_id: 'A', status: 'success', result_type: 'time_series', series: [{ labels: {}, samples: [[1, 1]] }] }],
+      },
+      [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'elasticsearch', id: 12 },
+          query: { index: 'application-*', date_field: '@timestamp', interval: 5, interval_unit: 'min', values: [{ func: 'count' }] },
+        },
+      ],
+      request,
+    );
+
+    expect(normalized.series[0]).toMatchObject({ bucketInterval: 300 });
   });
 
   it('silently skips targets that do not meet legacy datasource query prerequisites', () => {
@@ -224,16 +483,20 @@ describe('dashboard unified query contract', () => {
 
     const firstQuery = request.queries[0]?.kind === 'query' ? request.queries[0].query : {};
     const secondQuery = request.queries[1]?.kind === 'query' ? request.queries[1].query : {};
-    expect(firstQuery).toMatchObject({ keys: {
-      valueKey: 'value count',
-      labelKey: 'host region',
-      timeKey: 'time',
-    } });
-    expect(secondQuery).toMatchObject({ keys: {
-      metricKey: 'value count',
-      labelKey: 'host',
-      timeFormat: '2006-01-02T15:04:05',
-    } });
+    expect(firstQuery).toMatchObject({
+      keys: {
+        valueKey: 'value count',
+        labelKey: 'host region',
+        timeKey: 'time',
+      },
+    });
+    expect(secondQuery).toMatchObject({
+      keys: {
+        metricKey: 'value count',
+        labelKey: 'host',
+        timeFormat: '2006-01-02T15:04:05',
+      },
+    });
   });
 
   it('builds a mixed datasource request with only backend execution fields', () => {
@@ -303,6 +566,7 @@ describe('dashboard unified query contract', () => {
             index: 'application-*',
             date_field: '@timestamp',
             filter_language: 'lucene',
+            interval: 60,
             value: { func: 'rawData' },
           },
         },
@@ -362,23 +626,29 @@ describe('dashboard unified query contract', () => {
       queryOptionsTime,
       scopedVars,
       datasourceList: [],
-      targets: [{
-        refId: 'A', kind: 'query', datasource: { cate: 'mysql', id: 1 },
-        query: { query: 'select ${host}', nested: { label: '${host}', timezone: 'UTC', request_id: 'old' }, values: ['${host}'], max_data_points: 1 },
-      }],
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'mysql', id: 1 },
+          query: { query: 'select ${host}', nested: { label: '${host}', timezone: 'UTC', request_id: 'old' }, values: ['${host}'], max_data_points: 1 },
+        },
+      ],
     });
 
-    expect(request).toMatchObject({ from: 1784858400, to: 1784862000, queries: [{ query: { query: 'select ${host}', nested: { label: '${host}' }, values: ['${host}'] } }] });
+    expect(request).toMatchObject({ from: 1784858400, to: 1784862000, queries: [{ query: { sql: 'select ${host}', nested: { label: '${host}' }, values: ['${host}'] } }] });
     expect(JSON.stringify(request)).not.toMatch(/timezone|max_data_points|request_id/);
     expect(replaceTemplateVariables).toHaveBeenCalledWith('select ${host}', expect.objectContaining({ range: queryOptionsTime, scopedVars }));
   });
 
   it('serializes instant Prometheus queries', () => {
-    expect(buildDashboardQueryRequest({
-      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
-      datasourceList: [],
-      targets: [{ refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 }, expr: 'up', instant: true }],
-    }).queries[0]).toMatchObject({ query: { expr: 'up', instant: true } });
+    expect(
+      buildDashboardQueryRequest({
+        time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+        datasourceList: [],
+        targets: [{ refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 }, expr: 'up', instant: true }],
+      }).queries[0],
+    ).toMatchObject({ query: { expr: 'up', instant: true } });
   });
 
   it('normalizes timeseries, logs and ref-level failures with stable ids', () => {

@@ -18,6 +18,7 @@ import React, { useContext, useState } from 'react';
 import { Button, Input, message, Modal, Select, Space, Row, Col, Dropdown, Menu } from 'antd';
 import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useLocation, useHistory } from 'react-router-dom';
@@ -180,9 +181,9 @@ const Event: React.FC = () => {
             }}
             dropdownMatchSelectWidth={false}
           >
-            <Select.Option value={1}>S1（Critical）</Select.Option>
-            <Select.Option value={2}>S2（Warning）</Select.Option>
-            <Select.Option value={3}>S3（Info）</Select.Option>
+            <Select.Option value={1}>{getAlertSeverityName(1)}</Select.Option>
+            <Select.Option value={2}>{getAlertSeverityName(2)}</Select.Option>
+            <Select.Option value={3}>{getAlertSeverityName(3)}</Select.Option>
           </Select>
           <Input
             className='search-input'

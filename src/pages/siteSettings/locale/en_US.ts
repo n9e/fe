@@ -32,5 +32,6 @@ const en_US = {
   print_access_log: 'Print access log',
   print_body_paths: 'Print request body paths',
   font_family: 'Font family',
+  alert_severity_names: 'Custom alert severity names',
 };
 export default en_US;

@@ -26,6 +26,7 @@ const zh_CN = {
     'Last 15 minutes': '最近 15 分钟',
     'Last 30 minutes': '最近 30 分钟',
     'Last 1 hour': '最近 1 小时',
+    'Last 2 hours': '最近 2 小时',
     'Last 3 hours': '最近 3 小时',
     'Last 6 hours': '最近 6 小时',
     'Last 12 hours': '最近 12 小时',

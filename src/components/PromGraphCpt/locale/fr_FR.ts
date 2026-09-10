@@ -1,0 +1,30 @@
+const fr_FR = {
+  "builder_btn": "Mode débutant",
+  "query_btn": "Requête",
+  "table_promql_interpolate_string": "Votre PromQL contenait une variable, remplacée automatiquement par 5m. La requête devient : {{query}}",
+  "tab_table": "Tableau (Table)",
+  "tab_graph": "Graphique (Graph)",
+  "max_data_points": "Nombre maximal de points",
+  "min_step": "Pas minimal (Min step)",
+  "load_time": "Durée : {{time}} ms",
+  "resolution": "Pas de la requête : {{resolution}} s",
+  "result_series": "Séries retournées : {{count}}",
+  "time": "Heure",
+  "unit": "Unité",
+  "enable_autocomplete": "Activer l'autocomplétion",
+  "evaluation_time": "Choisir une date",
+  "tooltip_mode": "Mode d'infobulle",
+  "tooltip_mode_single": "Une seule",
+  "tooltip_mode_all": "Toutes",
+  "tooltip_sort": "Tri",
+  "tooltip_sort_desc": "Décroissant",
+  "tooltip_sort_asc": "Croissant",
+  "show_legend": "Afficher la légende",
+  "value_format": "Format des valeurs",
+  "series": "Séries ({{count}})",
+  "series_filter": "Rechercher un nom de série",
+  "filtered": "Filtré",
+  "value": "Valeur"
+};
+
+export default fr_FR;

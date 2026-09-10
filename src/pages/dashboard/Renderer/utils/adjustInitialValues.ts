@@ -60,7 +60,6 @@ const adjustInitialValues = (type: string, groupedDatasourceList: GroupedDatasou
     initialValues: {
       name: 'Panel Title',
       type: visualizationType,
-      version: '4.0.0',
       id: '',
       description: '',
       layout: { h: 0, w: 0, x: 0, y: 0, i: '' },

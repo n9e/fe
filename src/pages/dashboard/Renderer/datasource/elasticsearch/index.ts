@@ -51,6 +51,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
   let batchLogParams: any[] = [];
   let exps: any[] = [];
   let series: any[] = [];
+  const bucketIntervalsByRef: Record<string, number | undefined> = {};
   let signalKey = `${id}`;
   const isInvalid = _.some(
     _.filter(targets, (item) => {
@@ -94,6 +95,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
             end,
           });
         } else {
+          const bucketInterval = normalizeInterval(rangeForInterval, query.interval, query.interval_unit);
           if (!IS_PLUS) {
             batchDsParams.push({
               index_type: query.index_type || 'index',
@@ -104,7 +106,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
               values: query?.values,
               group_by: query.group_by,
               date_field: query.date_field,
-              interval: `${normalizeInterval(rangeForInterval, query.interval, query.interval_unit)}s`,
+              interval: `${bucketInterval}s`,
               start,
               end,
             });
@@ -113,6 +115,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
             start = moment(parsedRange.start).unix();
             end = moment(parsedRange.end).unix();
             _.map(query?.values, (item) => {
+              bucketIntervalsByRef[target.refId] = bucketInterval;
               batchDsParams.push({
                 ref: target.refId,
                 ds_id: datasourceValue,
@@ -127,7 +130,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                   value: item,
                   group_by: query.group_by,
                   date_field: query.date_field,
-                  interval: normalizeInterval(parsedRange, query.interval, query.interval_unit),
+                  interval: bucketInterval,
                   start,
                   end,
                 },
@@ -198,6 +201,7 @@ export default async function elasticSearchQuery(options: IOptions): Promise<Res
                 isExp,
                 metric: serie.metric,
                 data: serie.values,
+                bucketInterval: bucketIntervalsByRef[refId],
                 mode: 'timeSeries',
               });
             }

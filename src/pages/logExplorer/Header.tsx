@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Modal, Tabs, Tooltip } from 'antd';
-import { EditOutlined, HolderOutlined } from '@ant-design/icons';
+import { Dropdown, Input, Menu, Modal, Tabs, Tooltip } from 'antd';
+import { CopyOutlined, EditOutlined, FileAddOutlined, HolderOutlined, PlusOutlined } from '@ant-design/icons';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -124,6 +124,28 @@ export default function Header(props: Props) {
   const draggingItemIndex = draggingItem ? _.findIndex(items, { key: draggingKey }) : -1;
   const draggingTabName = draggingItem ? getTabName(draggingItem, draggingItemIndex) : '';
 
+  const handleAddTab = (mode: 'new' | 'clone') => {
+    const newActiveKey = getUUID();
+    setItems((prev) => {
+      const activeItem = _.find(prev, { key: activeKey });
+      const newItem = createLogExplorerTabItem({
+        mode,
+        activeItem,
+        key: newActiveKey,
+        name: getNextLogExplorerTabName(prev),
+        defaultDatasourceCate,
+        defaultDatasourceValue,
+        logsDefaultRange,
+        datasourceList,
+      });
+      const newItems = [...prev, newItem];
+      setLocalItems(newItems);
+      return newItems;
+    });
+    setActiveKey(newActiveKey);
+    setLocalActiveKey(newActiveKey);
+  };
+
   const handleDragStart = (event: DragStartEvent) => {
     setDraggingKey(String(event.active.id));
   };
@@ -181,6 +203,34 @@ export default function Header(props: Props) {
         size='small'
         type='editable-card'
         activeKey={activeKey}
+        addIcon={
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item key='new' onClick={() => handleAddTab('new')}>
+                  <FileAddOutlined className='mr-2' />
+                  {t('common:btn.add')}
+                </Menu.Item>
+                <Menu.Item key='clone' onClick={() => handleAddTab('clone')}>
+                  <CopyOutlined className='mr-2' />
+                  {t('common:btn.clone')}
+                </Menu.Item>
+              </Menu>
+            }
+            trigger={['click']}
+            placement='bottomLeft'
+          >
+            <span
+              className='log-explorer-ng-tab-add-trigger'
+              onClick={(event) => {
+                // 阻止 editable-card 内置的新增事件，改由下拉菜单选择新增方式。
+                event.stopPropagation();
+              }}
+            >
+              <PlusOutlined />
+            </span>
+          </Dropdown>
+        }
         renderTabBar={(tabBarProps, DefaultTabBar) => (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={() => setDraggingKey(undefined)}>
             <SortableContext items={itemKeys} strategy={horizontalListSortingStrategy}>
@@ -203,26 +253,7 @@ export default function Header(props: Props) {
           </DndContext>
         )}
         onEdit={(targetKey: string, action: 'add' | 'remove') => {
-          if (action === 'add') {
-            const newActiveKey = getUUID();
-            setItems((prev) => {
-              const activeItem = _.find(prev, { key: activeKey });
-              const newItem = createLogExplorerTabItem({
-                activeItem,
-                key: newActiveKey,
-                name: getNextLogExplorerTabName(prev),
-                defaultDatasourceCate,
-                defaultDatasourceValue,
-                logsDefaultRange,
-                datasourceList,
-              });
-              const newItems = [...prev, newItem];
-              setLocalItems(newItems);
-              return newItems;
-            });
-            setActiveKey(newActiveKey);
-            setLocalActiveKey(newActiveKey);
-          } else {
+          if (action === 'remove') {
             setItems((prev) => {
               const newItems = _.filter(prev, (item) => item.key !== targetKey);
               setLocalItems(newItems);

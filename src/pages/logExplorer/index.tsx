@@ -141,7 +141,10 @@ export default function index() {
   // 如果没有可用的数据源类型，直接提示错误
   if (defaultDatasourceCate === undefined) {
     return (
-      <PageLayout title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/'>
+      <PageLayout
+        title={t('title')}
+        doc={IS_ENT ? '/docs/content/flashcat/log/discover/what-is-log-discover/' : 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/'}
+      >
         <div className='n9e'>
           <Alert
             showIcon

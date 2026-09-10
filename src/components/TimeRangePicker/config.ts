@@ -38,6 +38,7 @@ export const rangeOptions: ITimeOption[] = _.filter(
     { start: 'now-15m', end: 'now', display: 'Last 15 minutes' },
     { start: 'now-30m', end: 'now', display: 'Last 30 minutes' },
     { start: 'now-1h', end: 'now', display: 'Last 1 hour' },
+    { start: 'now-2h', end: 'now', display: 'Last 2 hours' },
     { start: 'now-3h', end: 'now', display: 'Last 3 hours' },
     { start: 'now-6h', end: 'now', display: 'Last 6 hours' },
     { start: 'now-12h', end: 'now', display: 'Last 12 hours' },

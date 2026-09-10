@@ -22,6 +22,7 @@ const en_US = {
     more_actions: 'More conversation actions',
   },
   nightingale: {
+    share_fallback_notice: 'You do not have access to the original page, only the conversation is shown here',
     title: 'Nightingale AI',
     new_chat: 'New chat',
     sessions: 'Conversations',

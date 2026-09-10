@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollArea } from '@/components/ScrollArea';
 import { CommonStateContext } from '@/App';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
-import { IS_ENT } from '@/utils/constant';
+import { IS_ENT, WIDE_MENU_LANGS } from '@/utils/constant';
 import IconFont from '../../IconFont';
 import menuIcon from '@/components/menu/configs';
 import { cn } from './utils';
@@ -307,7 +307,7 @@ const SideMenu = () => {
     }
   }, [menuPaths, location.pathname, selectedKeys]);
 
-  const uncollapsedWidth = i18n.language === 'en_US' || i18n.language === 'ru_RU' ? 'w-[250px]' : 'w-[172px]';
+  const uncollapsedWidth = WIDE_MENU_LANGS.includes(i18n.language) ? 'w-[250px]' : 'w-[172px]';
 
   return (
     <div

@@ -26,6 +26,7 @@ const ja_JP = {
     'Last 15 minutes': '最近 15 分',
     'Last 30 minutes': '最近 30 分',
     'Last 1 hour': '最近 1 時間',
+    'Last 2 hours': '最近 2 時間',
     'Last 3 hours': '最近 3 時間',
     'Last 6 hours': '最近 6 時間',
     'Last 12 hours': '最近 12 時間',

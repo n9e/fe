@@ -195,6 +195,8 @@ export interface ITimeseriesStyles {
     log?: 10 | 2;
   };
   spanNulls: boolean;
+  barAlignment?: -1 | 0 | 1;
+  barWidthFactor?: number;
 }
 
 export interface IStatStyles {
@@ -284,7 +286,6 @@ export interface ITransformation {
 }
 
 export interface IPanel {
-  version: string; // 单个图表面板使用的版本
   id: string;
   name: string;
   links?: ILink[];
@@ -304,7 +305,8 @@ export interface IPanel {
   custom: JsonObject; // 图表持久化配置
   overrides: IOverride[];
   collapsed?: boolean; // 用于 row 展开收起控制是否显示
-  panels?: IPanel[]; // 用于 row 收起时保存子面板
+  // row 收起时保存其顶层分段内的普通面板缓存；row 不支持嵌套。
+  panels?: IPanel[];
   transformations?: ITransformation[];
   transformationsNG?: ITransformation[]; // NG 版本的变换
   repeat?: string;
@@ -334,6 +336,8 @@ export interface IDashboardConfig {
   graphZoom: 'default' | 'updateTimeRange';
   mode?: 'iframe';
   iframe_url?: string;
+  showTimePicker?: boolean;
+  hideHeader?: boolean;
 }
 
 export interface IDashboard {

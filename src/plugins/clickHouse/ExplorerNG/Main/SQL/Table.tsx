@@ -8,7 +8,6 @@ import { useTranslation, Trans } from 'react-i18next';
 
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
-import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
 import getFieldsFromTableData from '@/pages/logExplorer/components/LogsViewer/utils/getFieldsFromTableData';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
@@ -108,7 +107,7 @@ export default function Table(props: IProps) {
           loadTimeRef.current = Date.now() - queryStart;
           const newLogs = _.map(res.list, (item) => {
             return {
-              ...(flatten(item) || {}),
+              ...item,
               ___raw___: item,
               ___id___: _.uniqueId('log_id_'),
             };

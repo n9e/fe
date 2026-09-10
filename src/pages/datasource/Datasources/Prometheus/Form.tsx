@@ -167,6 +167,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
         onClose={() => {
           setHelpDrawerVisible(false);
         }}
+        className='n9e-antd-drawer'
       >
         <div>
           <Trans

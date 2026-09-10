@@ -5,18 +5,29 @@ import type { IRawTimeRange } from '@/components/TimeRangePicker/types';
 import { parseRange } from '@/components/TimeRangePicker/utils';
 import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
 import flatten from '@/utils/flatten';
-import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import replaceTemplateVariables, { getBuiltInVariables, replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { getDashboardQueryStep } from './queryStep';
+import { normalizeInterval } from './elasticsearch/utils';
 import type { DashboardQueryRequest, DashboardQueryResponse, DatasourceQuery, ExpressionQuery, NormalizedDashboardQueryResponse, DashboardSeries } from './types';
 import { getTargetRefId, inferTargetResultType, isExpressionTarget } from './target';
 import { DASHBOARD_TARGET_META_FIELDS, getDashboardDatasourceDefinition } from './registry';
+
+import { getGlobalState } from '@/pages/dashboard/globalState';
+import { getDashboardVariablePlugin } from '@/pages/dashboard/Variables/plugins';
 
 export { inferTargetResultType, isExpressionTarget } from './target';
 
 const FORBIDDEN_REQUEST_FIELDS = new Set(['timezone', 'max_data_points', 'interval_ms', 'request_id']);
 const REF_ID_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
 const REF_ID_REFERENCE_PATTERN = /\$([A-Za-z][A-Za-z0-9_]*)/g;
+const ES_INTERVAL_UNITS = ['second', 'min', 'hour'] as const;
+
+type EsIntervalUnit = (typeof ES_INTERVAL_UNITS)[number];
+
+function getEsIntervalUnit(value: unknown): EsIntervalUnit {
+  return ES_INTERVAL_UNITS.includes(value as EsIntervalUnit) ? (value as EsIntervalUnit) : 'min';
+}
 
 function interpolateQueryValue(value: unknown, range: IRawTimeRange, step: number | undefined, scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined): unknown {
   if (typeof value === 'string') {
@@ -63,7 +74,22 @@ function getDatasourceQueryPayload(target: ITarget, cate: string, options: Build
     payload.value = value as JsonValue;
     delete payload.values;
   }
+  if (_.includes(['elasticsearch', 'opensearch'], cate)) {
+    const interval = typeof payload.interval === 'number' ? payload.interval : null;
+    const unit = getEsIntervalUnit(payload.interval_unit);
+    payload.interval = normalizeInterval(parseRange(options.effectiveRange), interval, unit) ?? 60;
+    delete payload.interval_unit;
+  }
 
+  const plugin = getDashboardVariablePlugin(cate);
+  if (plugin) {
+    return plugin.transformQuery(payload, {
+      variables: [...getGlobalState('variablesWithOptions'), ...getBuiltInVariables(options.effectiveRange, { step })],
+      range: options.effectiveRange,
+      step,
+      scopedVars: options.scopedVars,
+    });
+  }
   return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars);
 }
 
@@ -130,19 +156,27 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     const values = target.query?.values;
     const isElasticsearchQuery = _.includes(['elasticsearch', 'opensearch'], datasource.cate);
     if (isElasticsearchQuery && Array.isArray(values)) {
-      return values.map((value, valueIndex) => ({
-        kind: 'query' as const,
-        // 保留首个指标的 RefID，兼容表达式对该 target 的已有引用；其余指标使用唯一子 RefID。
-        ref_id: valueIndex === 0 ? refId : getValueRefId(refId, valueIndex),
-        datasource: {
-          cate: datasource.cate,
-          id: resolvedDatasourceId,
-        },
-        result_type: inferTargetResultType(target),
-        query: getDatasourceQueryPayload(target, datasource.cate, buildOptions, value),
-      }));
+      return values.flatMap((value, valueIndex) => {
+        const queryPayload = getDatasourceQueryPayload(target, datasource.cate, buildOptions, value);
+        if (queryPayload === undefined) return [];
+        return [
+          {
+            kind: 'query' as const,
+            // 保留首个指标的 RefID，兼容表达式对该 target 的已有引用；其余指标使用唯一子 RefID。
+            ref_id: valueIndex === 0 ? refId : getValueRefId(refId, valueIndex),
+            datasource: {
+              cate: datasource.cate,
+              id: resolvedDatasourceId,
+            },
+            result_type: inferTargetResultType(target),
+            query: queryPayload,
+          },
+        ];
+      });
     }
 
+    const queryPayload = getDatasourceQueryPayload(target, datasource.cate, buildOptions);
+    if (queryPayload === undefined) return [];
     return [
       {
         kind: 'query',
@@ -152,7 +186,7 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
           id: resolvedDatasourceId,
         },
         result_type: inferTargetResultType(target),
-        query: getDatasourceQueryPayload(target, datasource.cate, buildOptions),
+        query: queryPayload,
       },
     ];
   });
@@ -223,7 +257,14 @@ function stableIdentityHash(value: string) {
   return (hash >>> 0).toString(36);
 }
 
-export function normalizeDashboardQueryResponse(response: DashboardQueryResponse, targets: ITarget[]): NormalizedDashboardQueryResponse {
+function getEsBucketInterval(refId: string, request?: DashboardQueryRequest) {
+  const query = request?.queries.find((item) => item.ref_id === refId);
+  if (!query || query.kind !== 'query' || !_.includes(['elasticsearch', 'opensearch'], query.datasource.cate)) return undefined;
+  const interval = query.query && typeof query.query === 'object' ? (query.query as Record<string, unknown>).interval : undefined;
+  return typeof interval === 'number' && interval > 0 ? interval : undefined;
+}
+
+export function normalizeDashboardQueryResponse(response: DashboardQueryResponse, targets: ITarget[], request?: DashboardQueryRequest): NormalizedDashboardQueryResponse {
   const series: DashboardSeries[] = [];
   const errorsByRef: NormalizedDashboardQueryResponse['errorsByRef'] = {};
 
@@ -240,6 +281,7 @@ export function normalizeDashboardQueryResponse(response: DashboardQueryResponse
     if (target?.hide) return;
 
     if (result.result_type === 'time_series') {
+      const bucketInterval = getEsBucketInterval(refId, request);
       result.series.forEach((item) => {
         const labels = item.labels ?? {};
         series.push({
@@ -251,6 +293,7 @@ export function normalizeDashboardQueryResponse(response: DashboardQueryResponse
           mode: 'timeSeries',
           target,
           isExp: isExpressionTarget(target),
+          bucketInterval,
         });
       });
       return;

@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 
 import stringToRegex from '../../utils/stringToRegex';
+import { hasDatasourceIdentifier } from '../../utils/datasourceIdentifier';
 import Preview from '../Preview';
 
 interface Props {
@@ -29,12 +30,15 @@ export default function DatasourceIdentifier(props: Props) {
   >([]);
 
   useEffect(() => {
-    let datasourceList = typeof definition === 'string' ? (groupedDatasourceList[definition] ?? []).filter((item) => item.identifier !== undefined) : [];
+    let datasourceList = typeof definition === 'string' ? (groupedDatasourceList[definition] ?? []).filter(hasDatasourceIdentifier) : [];
     if (regex) {
-      datasourceList = datasourceList.filter((option) => option.identifier !== undefined && regex.test(option.identifier));
+      datasourceList = datasourceList.filter((option) => {
+        regex.lastIndex = 0;
+        return regex.test(option.identifier);
+      });
     }
     const itemOptions = _.map(datasourceList, (ds) => {
-      return { label: ds.identifier ?? ds.name, value: ds.identifier ?? '' };
+      return { label: ds.identifier, value: ds.identifier };
     });
     setOptions(itemOptions);
   }, [definition, regex, groupedDatasourceList]);
@@ -42,7 +46,7 @@ export default function DatasourceIdentifier(props: Props) {
   return (
     <>
       <Form.Item label={t('var.datasource.definition')} name='definition' rules={[{ required: true }]}>
-        <Select disabled={editMode === 0}>
+        <Select disabled={editMode === 0} showSearch optionFilterProp='children'>
           {_.map(datasourceCateOptions, (item) => (
             <Select.Option key={item.value} value={item.value}>
               {item.label}
@@ -68,8 +72,9 @@ export default function DatasourceIdentifier(props: Props) {
         <Select showSearch>
           {_.map(
             _.filter(typeof definition === 'string' ? groupedDatasourceList[definition] ?? [] : [], (item) => {
-              if (item.identifier) {
+              if (hasDatasourceIdentifier(item)) {
                 if (regex) {
+                  regex.lastIndex = 0;
                   return regex.test(item.identifier);
                 }
                 return true;

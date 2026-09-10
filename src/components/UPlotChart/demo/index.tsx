@@ -42,6 +42,27 @@ const oldSeries = [
   { id: 'series-d', refId: 'D', metric: {}, name: 'Series D (t2)', data: [[T2, 80] as [number, number]] },
 ];
 
+// 跨年场景：2025-12-31 00:00:00 ~ 2026-01-02 00:00:00（UTC 时间戳），2h 一个点
+const CROSS_YEAR_START = 1767139200;
+const CROSS_YEAR_END = 1767312000;
+const CROSS_YEAR_STEP = 2 * 3600;
+
+const crossYearSeries = [
+  {
+    id: 'series-cross-year',
+    refId: 'A',
+    metric: {},
+    name: 'Cross Year Requests',
+    data: (() => {
+      const points: [number, number][] = [];
+      for (let t = CROSS_YEAR_START; t <= CROSS_YEAR_END; t += CROSS_YEAR_STEP) {
+        points.push([t, Math.round(80 + 40 * Math.sin(((t - CROSS_YEAR_START) / 3600) * 0.7))]);
+      }
+      return points;
+    })(),
+  },
+];
+
 function useChartOptions({ id, baseSeries, frames, stacked }: { id: string; baseSeries: any[]; frames: AlignedData; stacked: boolean }) {
   return useMemo(() => {
     const width = typeof window !== 'undefined' ? Math.min(window.innerWidth - 48, 900) : 800;
@@ -107,9 +128,11 @@ function ScenarioCard({ title, description, children }: { title: string; descrip
 export default function ChartDemo() {
   const nonStackedId = useMemo(() => _.uniqueId('demo_tooltip_'), []);
   const stackedId = useMemo(() => _.uniqueId('demo_tooltip_'), []);
+  const crossYearId = useMemo(() => _.uniqueId('demo_crossyear_'), []);
 
   // 对齐后的帧数据
   const { frames, baseSeries } = useMemo(() => getDataFrameAndBaseSeries(oldSeries), []);
+  const crossYear = useMemo(() => getDataFrameAndBaseSeries(crossYearSeries), []);
 
   const { options: nonStackedOpts, data: nonStackedData } = useChartOptions({
     id: nonStackedId,
@@ -125,9 +148,16 @@ export default function ChartDemo() {
     stacked: true,
   });
 
+  const { options: crossYearOpts, data: crossYearData } = useChartOptions({
+    id: crossYearId,
+    baseSeries: crossYear.baseSeries,
+    frames: crossYear.frames,
+    stacked: false,
+  });
+
   return (
     <div className='p-6 space-y-8'>
-      <h1 className='text-xl font-bold'>UPlotChart Tooltip 测试</h1>
+      <h1 className='text-xl font-bold'>UPlotChart 测试</h1>
 
       {/* 场景 1: 非堆叠图 */}
       <ScenarioCard
@@ -147,6 +177,21 @@ export default function ChartDemo() {
       >
         <div className='mb-2 text-xs text-gray-500'>堆叠图使用 n9e_internal.values 保存原始值，tooltip 展示原始值而非累积值</div>
         <UPlotChart id={stackedId} options={stackedOpts} data={stackedData} />
+      </ScenarioCard>
+
+      {/* 场景 3: 跨年 X 轴 */}
+      <ScenarioCard
+        title='场景 3：X 轴跨年 · 2025-12-31 00:00:00 ~ 2026-01-02 00:00:00'
+        description={
+          '2 小时一个点的日粒度数据。预期跨年处的日界刻度第二行显示年份：' +
+          '首个日界刻度（12-31）显示 ↵2025，跨年刻度（01-01）显示 ↵2026，其余日界刻度单行。' +
+          '同时观察 X 轴高度是否为两行标签自动扩展、无截断。'
+        }
+      >
+        <div className='mb-2 text-xs text-gray-500'>
+          时间戳范围 [1767139200, 1767312000]（UTC），标签按浏览器时区渲染；非 UTC 时区下年份仍会出现在跨年的日界刻度上
+        </div>
+        <UPlotChart id={crossYearId} options={crossYearOpts} data={crossYearData} />
       </ScenarioCard>
     </div>
   );

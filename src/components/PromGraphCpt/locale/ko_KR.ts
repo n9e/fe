@@ -1,0 +1,30 @@
+const ko_KR = {
+  "builder_btn": "초보자 모드",
+  "query_btn": "쿼리",
+  "table_promql_interpolate_string": "PromQL에 변수가 있어 자동으로 5m으로 바꿨습니다. 바뀐 PromQL은 다음과 같습니다: {{query}}",
+  "tab_table": "표 (Table)",
+  "tab_graph": "그래프 (Graph)",
+  "max_data_points": "최대 데이터 포인트 수",
+  "min_step": "최소 간격 (Min step)",
+  "load_time": "소요 시간: {{time}}ms",
+  "resolution": "쿼리 간격: {{resolution}}s",
+  "result_series": "결과 시계열: {{count}}",
+  "time": "시간",
+  "unit": "단위",
+  "enable_autocomplete": "자동 완성 켜기",
+  "evaluation_time": "시간 선택",
+  "tooltip_mode": "툴팁 모드",
+  "tooltip_mode_single": "하나만",
+  "tooltip_mode_all": "전체",
+  "tooltip_sort": "정렬",
+  "tooltip_sort_desc": "내림차순",
+  "tooltip_sort_asc": "오름차순",
+  "show_legend": "범례 표시",
+  "value_format": "숫자 형식",
+  "series": "시계열 ({{count}})",
+  "series_filter": "시계열 이름 검색",
+  "filtered": "필터 적용됨",
+  "value": "값"
+};
+
+export default ko_KR;

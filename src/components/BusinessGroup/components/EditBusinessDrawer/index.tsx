@@ -140,7 +140,16 @@ export default function index(props: Props) {
     }
   };
   return (
-    <Drawer width={960} closable={false} title={t('common:btn.edit')} destroyOnClose extra={<CloseOutlined onClick={onCloseDrawer} />} onClose={onCloseDrawer} visible={open}>
+    <Drawer
+      width={960}
+      closable={false}
+      title={t('common:btn.edit')}
+      destroyOnClose
+      extra={<CloseOutlined onClick={onCloseDrawer} />}
+      onClose={onCloseDrawer}
+      visible={open}
+      className='n9e-antd-drawer'
+    >
       <div>
         <Row className='team-info'>
           <Col

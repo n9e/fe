@@ -19,6 +19,7 @@ import { useDebounceFn, useDeepCompareEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import { getErrorMessage } from '@/pages/dashboard/utils/json';
 import { N9E_PATHNAME } from '@/utils/constant';
 
 import type { ITarget } from '../../types';
@@ -45,20 +46,11 @@ interface IProps {
   queryOptionsTime?: IRawTimeRange;
 }
 
-const getErrorMessage = (error: unknown) => {
-  if (error instanceof Error) return error.message;
-  if (error && typeof error === 'object') {
-    const value = error as { message?: unknown; name?: unknown };
-    if (typeof value.message === 'string') return value.message;
-    if (typeof value.name === 'string') return value.name;
-  }
-  return String(error);
-};
-
 export default function useQuery(props: IProps) {
   const { time, targets, inViewPort, datasourceCate, datasourceValue, maxDataPoints, queryOptionsTime } = props;
   const { datasourceList } = React.useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
+  const [variableExecution] = useGlobalState('variableExecution');
   const [state, setState] = useState<DashboardQueryState>({
     query: [],
     series: [],
@@ -137,7 +129,7 @@ export default function useQuery(props: IProps) {
         }
         const response = await fetchDashboardQuery(requestData, controller.signal);
         if (!mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
-        const normalized = normalizeDashboardQueryResponse(response, targets);
+        const normalized = normalizeDashboardQueryResponse(response, targets, requestData);
         const error = Object.entries(normalized.errorsByRef)
           .map(([refId, item]) => `${refId}: ${item.message}${item.dependency_ref_ids?.length ? ` (${item.dependency_ref_ids.join(', ')})` : ''}`)
           .join('; ');
@@ -186,6 +178,14 @@ export default function useQuery(props: IProps) {
   );
 
   useDeepCompareEffect(() => {
+    if (variableExecution.isExecuting) {
+      hasRequestedRef.current = false;
+      requestSequenceRef.current.invalidate();
+      cancelDebounce();
+      controllerRef.current?.abort();
+      return;
+    }
+
     if (!targets?.length) {
       hasRequestedRef.current = false;
       loadedKeyRef.current = undefined;
@@ -229,6 +229,7 @@ export default function useQuery(props: IProps) {
     targets,
     time,
     variablesWithOptions,
+    variableExecution,
     datasourceList,
     datasourceCate,
     datasourceValue,
@@ -242,11 +243,11 @@ export default function useQuery(props: IProps) {
   ]);
 
   useEffect(() => {
-    if (inViewPort && !hasRequestedRef.current && loadedKeyRef.current !== getQueryKey()) {
+    if (!variableExecution.isExecuting && inViewPort && !hasRequestedRef.current && loadedKeyRef.current !== getQueryKey()) {
       hasRequestedRef.current = true;
       fetchData();
     }
-  }, [inViewPort, fetchData]);
+  }, [inViewPort, variableExecution, fetchData]);
 
   useEffect(
     () => () => {

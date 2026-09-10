@@ -35,6 +35,7 @@ export default function BusinessGroupSelect(props: Props) {
       value={value}
       onChange={onChange}
       dropdownMatchSelectWidth={false}
+      dropdownClassName='n9e-busi-group-select-dropdown'
       showSearch
       optionFilterProp='label'
       options={getBusinessGroupsOptions(busiGroups, allBusiGroups)}

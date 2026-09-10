@@ -1,5 +1,7 @@
 const ru_RU = {
   query: {
+    range: 'Query range',
+    sql_required: 'SQL is required',
     mode: 'Режим поиска',
     mode_indices: 'Indices',
     mode_index_patterns: 'Index patterns',
@@ -37,6 +39,12 @@ const ru_RU = {
       table: 'Таблица',
       timeseries: 'Временные ряды',
     },
+    dashboard: {
+      mode: {
+        timeSeries: 'Данные временных рядов',
+        table: 'Данные без временных рядов',
+      },
+    },
     add_to: {
       btn: 'Добавить в',
       recording_rule: 'Правило записи',
@@ -44,6 +52,11 @@ const ru_RU = {
     },
   },
   builder: {
+    title: 'Builder',
+    code: 'Code',
+    open_builder: 'Open builder',
+    switch_to_builder_confirm_title: 'Switch to Builder',
+    switch_to_builder_confirm_content: 'Switching will clear the current SQL and builder configuration.',
     to_pinned_btn: 'Закрепить',
     to_unpinned_btn: 'Открепить',
     filters: {

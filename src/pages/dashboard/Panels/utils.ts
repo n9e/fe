@@ -58,6 +58,7 @@ export function getRowIndex(panels: IPanel[], id: string) {
 export function getRowPanels(panels: IPanel[], rowId: string): IPanel[] {
   const rowIndex = getRowIndex(panels, rowId);
   const rowPanels: IPanel[] = [];
+  // Row 仅支持顶层分段；下一个 row 是当前分组的边界，而不是嵌套子项。
   for (let index = rowIndex + 1; index < panels.length; index++) {
     const panel = panels[index];
     if (panel.type === 'row') {
@@ -94,6 +95,18 @@ export function getRowPanelsMaxY(panels: IPanel[], rowId: string) {
 }
 export function getRowCollapsedPanels(panels: IPanel[], row: IPanel) {
   let newPanels = _.cloneDeep(panels);
+  const curRowPanels = getRowPanels(newPanels, row.id);
+  if (curRowPanels.length > 0) {
+    newPanels = _.filter(newPanels, (panel) => {
+      return !_.find(curRowPanels, { id: panel.id });
+    });
+    const curRow = _.find(newPanels, { id: row.id })!;
+    curRow.panels = curRowPanels;
+  }
+  return newPanels;
+}
+export function getRowUnCollapsedPanels(panels: IPanel[], row: IPanel) {
+  let newPanels = _.cloneDeep(panels);
   const rowIndex = getRowIndex(newPanels, row.id);
   const cacheRowPanels = row.panels;
   if (cacheRowPanels && cacheRowPanels.length > 0) {
@@ -118,22 +131,10 @@ export function getRowCollapsedPanels(panels: IPanel[], row: IPanel) {
   }
   return newPanels;
 }
-export function getRowUnCollapsedPanels(panels: IPanel[], row: IPanel) {
-  let newPanels = _.cloneDeep(panels);
-  const curRowPanels = getRowPanels(newPanels, row.id);
-  if (curRowPanels.length > 0) {
-    newPanels = _.filter(newPanels, (panel) => {
-      return !_.find(curRowPanels, { id: panel.id });
-    });
-    const curRow = _.find(newPanels, { id: row.id })!;
-    curRow.panels = curRowPanels;
-  }
-  return newPanels;
-}
 /**
  * 处理 Row 组件切换时需要更新的 panels，返回更新后的 panels
- * 关闭 row 时，需要把 row 下面的 rowPanels 删除掉，并且缓存被删除的 panels
- * 展开 row 是，需要把 row 下面的缓存的 rowPanels 添加到 panels 中
+ * 收起 row 时，需要把 row 下面的 rowPanels 删除掉，并且缓存被删除的 panels
+ * 展开 row 时，需要把 row 下面的缓存的 rowPanels 添加到 panels 中
  */
 export function handleRowToggle(collapsed: boolean, panels: IPanel[], row: IPanel): IPanel[] {
   let newPanels = _.cloneDeep(panels);

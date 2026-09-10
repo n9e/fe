@@ -19,7 +19,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const LANGS = ['en_US', 'zh_HK', 'ja_JP', 'ru_RU'];
+const LANGS = ['en_US', 'zh_HK', 'ja_JP', 'ru_RU', 'pt_BR', 'es_ES', 'id_ID', 'ko_KR', 'fr_FR'];
 const CJK_RE = /[一-龥]/;
 
 function loadLocale(file: string): any {

@@ -130,6 +130,19 @@ export const getMenuList = (embeddedProductMenu: MenuItem[] = [], hideDeprecated
       ],
     },
     {
+      key: 'infrastructure',
+      label: 'menu.infrastructure',
+      icon: <IconFont type='icon-nav_devicelist_light' />,
+      children: [
+        {
+          key: 'devices',
+          label: 'menu.devices',
+          type: 'tabs',
+          children: [{ key: '/targets', label: 'menu.targets' }],
+        },
+      ],
+    },
+    {
       key: 'integrations',
       label: 'menu.integrations',
       icon: <IconFont type='icon-nav_infrastructure_light' />,

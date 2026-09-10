@@ -7,6 +7,12 @@ import { uplotsMap } from '../index';
 import { shouldShowSeriesInTooltip } from './tooltipFilter';
 
 let hoveringUplotID = '';
+// tooltip overlay 与插件实例(即 uPlot 实例)一一对应。
+// 运行时切换设置会触发同一图表连续多代 destroy/create，
+// 多代实例并存期间绝不能按 id 复用同一个 DOM 节点（老实例 destroy 时会把它从文档里删掉，
+// 导致新实例持有已脱离文档的节点），所以这里用 WeakMap 让每个实例独占自己的 overlay；
+// uplotsMap 只包含存活实例，兄弟图表间通过它互相引用 overlay 是始终安全的
+const tooltipOverlays = new WeakMap<uPlot, HTMLDivElement>();
 
 function renderTooltipItem(seriesItem, value, options) {
   // value = seriesItem.value(u, value, seriesIndex + 1, idx);
@@ -76,6 +82,8 @@ export default function tooltipPlugin(options: {
   let uplot;
   let over;
   let isPinned = false;
+  // overlay 在 init 时创建、destroy 时移除，与本次图表实例的生命周期严格一致
+  let overlay: HTMLDivElement | null = null;
 
   function closeOverlay() {
     if (overlay === null) return;
@@ -87,37 +95,42 @@ export default function tooltipPlugin(options: {
     // uplot.setCursor({ left: -10, top: -10 });
   }
 
-  const tooltipID = `${id}-tooltip`;
-  let overlay = document.getElementById(tooltipID);
-  const handleOutsideClick = (event: MouseEvent) => {
-    if (isPinned) {
-      if (overlay === null) return;
-      if (!overlay.contains(event.target as Node)) {
-        closeOverlay();
-      }
-    }
-  };
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = tooltipID;
-    overlay.className = 'n9e-uplot-tooltip-container';
-    overlay.style.zIndex = _.toString(zIndex);
-    overlay.style.display = 'none';
-    overlay.style.position = 'absolute';
-    document.body.appendChild(overlay);
-
-    if (pinningEnabled) {
-      document.addEventListener('mouseup', handleOutsideClick);
+const handleOutsideClick = (event: MouseEvent) => {
+  if (isPinned) {
+    if (overlay === null) return;
+    if (!overlay.contains(event.target as Node)) {
+      closeOverlay();
     }
   }
+};
+
+// 显示其他图表的 tooltip 容器（共享提示信息模式下，由当前悬停的图表调用）
+function showSiblingOverlays(sourceId: string, sourceUplot: uPlot) {
+  uplotsMap.forEach((uplot, uid) => {
+    if (uplot === sourceUplot || uid === sourceId) return;
+    const siblingOverlay = tooltipOverlays.get(uplot);
+    if (siblingOverlay) {
+      siblingOverlay.style.display = 'block';
+    }
+  });
+}
 
   return {
     hooks: {
       init: (u: uPlot) => {
-        if (overlay === null) return;
         uplot = u;
         over = u.over;
+        overlay = document.createElement('div');
+        overlay.id = `${id}-tooltip`;
+        overlay.className = 'n9e-uplot-tooltip-container';
+        overlay.style.zIndex = _.toString(zIndex);
         overlay.style.display = 'none';
+        overlay.style.position = 'absolute';
+        document.body.appendChild(overlay);
+        tooltipOverlays.set(u, overlay);
+        if (pinningEnabled) {
+          document.addEventListener('mouseup', handleOutsideClick);
+        }
         overlay.innerHTML = `
           <div class="n9e-uplot-tooltip">
             <div class="n9e-uplot-tooltip-header"></div>
@@ -131,17 +144,8 @@ export default function tooltipPlugin(options: {
           overlay.style.display = 'block';
           if (graphTooltip === 'sharedTooltip') {
             // 同步其他图表的 tooltip 显示
-            const { event } = u.cursor;
-            if (event) {
-              uplotsMap.forEach((uplot, id) => {
-                if (uplot !== u) {
-                  const curTooltipID = `${id}-tooltip`;
-                  const curOverlay = document.getElementById(curTooltipID);
-                  if (curOverlay) {
-                    curOverlay.style.display = 'block';
-                  }
-                }
-              });
+            if (u.cursor.event) {
+              showSiblingOverlays(id, u);
             }
           }
         };
@@ -153,10 +157,9 @@ export default function tooltipPlugin(options: {
           // 同步其他图表的 tooltip 隐藏
           const { event } = u.cursor;
           if (event) {
-            uplotsMap.forEach((uplot, id) => {
-              if (uplot !== u) {
-                const curTooltipID = `${id}-tooltip`;
-                const curOverlay = document.getElementById(curTooltipID);
+            uplotsMap.forEach((siblingUplot, uid) => {
+              if (siblingUplot !== u) {
+                const curOverlay = tooltipOverlays.get(siblingUplot);
                 if (curOverlay) {
                   curOverlay.style.display = 'none';
                 }
@@ -215,7 +218,8 @@ export default function tooltipPlugin(options: {
           seriesIndex: number;
           seriesItem: any;
         }[] = _.slice(originData, 1);
-        valuesData = _.filter(valuesData, (item) => shouldShowSeriesInTooltip(item.seriesItem, item.values, idx));
+        // series 与 data 偶发的瞬时错配（如图表重建、数据刷新竞态）会产生 seriesItem 为空的行，直接跳过避免渲染崩溃
+        valuesData = _.filter(valuesData, (item) => item.seriesItem != null && shouldShowSeriesInTooltip(item.seriesItem, item.values, idx));
 
         // 同步控制 uPlot 光标点的显隐，与 tooltip 内容保持一致
         const cursorPtNodes = u.over.querySelectorAll('.u-cursor-pt');
@@ -227,13 +231,28 @@ export default function tooltipPlugin(options: {
 
         if (graphTooltip === 'sharedTooltip' || graphTooltip === 'sharedCrosshair') {
           if (event && hoveringUplotID === id) {
+            // 源图表可能没有数据（如空查询），此时拿不到有效时间戳，
+            // 必须发重置信号而不是用 undefined 计算出 NaN 坐标（会让目标图表 cursor.idx 异常进而崩溃）
+            const sourceTime = timeData ? timeData[idx] : undefined;
+            const hasShareableCursor = !(left === -10 && top === -10) && sourceTime != null;
+            // 光标同步是随鼠标移动持续执行的，这里持续兜底显示其他图表的 tooltip 容器。
+            // 不能只依赖 mouseenter 的一次性显示：图表因设置变更（如切换提示信息模式）重建后，
+            // mouseenter 可能不会按预期时序再次触发，导致表现为只有共享十字线而没有其他图表的 tooltip
+            if (graphTooltip === 'sharedTooltip' && hasShareableCursor) {
+              showSiblingOverlays(id, u);
+            }
             uplotsMap.forEach((uplot) => {
               if (uplot !== u) {
-                if (left === -10 && top === -10) {
+                if (!hasShareableCursor) {
                   uplot.setCursor({ left: -10, top: -10 });
+                  // 源上没有可共享的内容，同步收起目标图表的 tooltip，避免残留空白框
+                  const siblingOverlay = tooltipOverlays.get(uplot);
+                  if (siblingOverlay) {
+                    siblingOverlay.style.display = 'none';
+                  }
                 } else {
                   // 根据时间值对齐
-                  const x = uplot.valToPos(timeData[idx], 'x');
+                  const x = uplot.valToPos(sourceTime, 'x');
                   // 根据 top 和 height 比例对齐
                   const y = (top / u.height) * uplot.height;
                   uplot.setCursor({ left: x, top: y });
@@ -366,9 +385,13 @@ export default function tooltipPlugin(options: {
       destroy: () => {
         if (overlay === null) return;
         overlay.remove();
+        if (uplot) {
+          tooltipOverlays.delete(uplot);
+        }
         if (pinningEnabled) {
           document.removeEventListener('mouseup', handleOutsideClick);
         }
+        overlay = null;
       },
     },
   };
