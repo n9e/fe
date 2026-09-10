@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Form, Modal, Button, Alert, Space } from 'antd';
@@ -6,11 +6,11 @@ import { CopyOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
-import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
+import { timeRangeUnix } from '@/components/TimeRangePicker';
 import AiQueryDock from '@/components/AiQueryDock';
 import { AiQueryDockTrigger } from '@/components/AiQueryDock/Trigger';
-import { useQueryDockActions, QueryDockAction, QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
-import { usePendingQuery } from '@/components/AiQueryDock/usePendingQuery';
+import { useQueryDockActions, QueryDockAction } from '@/components/AiQueryDock/useQueryDockActions';
+import { useFormQueryControl } from '@/components/AiQueryDock/useFormQueryControl';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
 import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 import { copy2ClipBoard } from '@/utils';
@@ -52,13 +52,6 @@ const LOG_SEARCH_ACTION: QueryDockAction = {
   ],
   page: { title: 'Log explorer', summary: 'The user filters a Doris log table with a search expression and reads the matching logs.' },
 };
-interface LogSnapshot extends QueryDockSnapshot {
-  syntax?: 'query' | 'sql';
-  range?: IRawTimeRange;
-  database?: string;
-  table?: string;
-  time_field?: string;
-}
 
 interface Props {
   tabKey: string;
@@ -82,28 +75,54 @@ export default function index(props: Props) {
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
   const syntax = Form.useWatch(['query', 'syntax']);
   const [aiOpen, setAiOpen] = useState(false);
-  // Every hand the user lays on the panel bumps this; a dock turn that started
-  // on an older revision may not write, and its undo is gone.
-  const revisionRef = useRef(0);
-  const lastFilledRef = useRef<string>();
-  const pending = usePendingQuery();
   const queryBoxRef = useRef<HTMLDivElement>(null);
   const queryButtonRef = useRef<HTMLButtonElement>(null);
-  const control = useRef<QueryDockControl<LogSnapshot> | null>(null);
+  const undoRef = useRef<() => void>();
+  const inSQL = () => form.getFieldValue(['query', 'syntax']) === 'sql';
+  // The dock's control: SQL mode delivers a statement, search mode a filter
+  // plus the table it runs against; the sidebar's choice stays unless the
+  // action names another.
+  const formControl = useFormQueryControl({
+    form,
+    datasourceValue,
+    paths: () => ({
+      statement: inSQL() ? ['query', 'sql'] : ['query', 'query'],
+      range: ['query', 'range'],
+      settings: { database: ['query', 'database'], table: ['query', 'table'], time_field: ['query', 'time_field'] },
+      extra: { syntax: ['query', 'syntax'] },
+    }),
+    // Rows are the honest view of a statement; the time series view needs
+    // value columns the assistant never chose.
+    fillExtras: () => (inSQL() ? { query: { sqlVizType: 'table' } } : undefined),
+    guard: (statement, values) => {
+      const query = (values.query ?? {}) as { syntax?: string; database?: string; table?: string; time_field?: string };
+      // The page refuses to run an unbounded scan; say so instead of popping its modal.
+      if (query.syntax === 'sql' && !statement.includes('$__time') && !statement.includes('$__unixEpoch')) {
+        return 'The statement must bound time with $__timeFilter(<time column>) or $__unixEpochFilter(<time column>)';
+      }
+      if (query.syntax !== 'sql' && !(query.database && query.table && query.time_field)) {
+        return 'Search mode needs a database, a table and a time column: pass them with the expression';
+      }
+      return undefined;
+    },
+    validate: () => form.validateFields(),
+    commit: (values) => commitQuery(values),
+    refresh: () => form.setFieldsValue({ refreshFlag: _.uniqueId('refreshFlag_') }),
+    queryInput: () => queryBoxRef.current,
+    queryButton: () => queryButtonRef.current,
+    onInvalidate: () => undoRef.current?.(),
+  });
   const aiActions = useQueryDockActions({
     enabled: IS_ENT && aiOpen,
     datasourceValue,
-    getControl: () => control.current,
+    getControl: formControl.getControl,
     action: syntax === 'sql' ? LOG_SQL_ACTION : LOG_SEARCH_ACTION,
   });
-  const invalidate = () => {
-    revisionRef.current += 1;
-    pending.clear();
-    aiActions.invalidateUndo();
-  };
+  undoRef.current = aiActions.invalidateUndo;
+  const invalidate = formControl.invalidate;
 
   // What a validated query does once it may run: remember it, then refresh.
-  const commitQuery = (values) => {
+  function commitQuery(values) {
     const queryValues = values.query;
     // 设置 tabs 缓存值
     if (defaultFormValuesControl?.setDefaultFormValues) {
@@ -128,7 +147,7 @@ export default function index(props: Props) {
     form.setFieldsValue({
       refreshFlag: _.uniqueId('refreshFlag_'),
     });
-  };
+  }
 
   const executeQuery = (force = false) => {
     invalidate();
@@ -152,7 +171,7 @@ export default function index(props: Props) {
   // What the dock sends with each message: the data source, the statement in
   // the box, the window, and the table the sidebar has picked.
   const readAiPageFrom = useCallback(() => {
-    const snapshot = control.current?.snapshot();
+    const snapshot = formControl.getControl()?.snapshot();
     const range = snapshot?.range?.start && snapshot.range.end ? timeRangeUnix(snapshot.range) : undefined;
     const query = form.getFieldValue('query') || {};
     return buildPageFrom({
@@ -180,7 +199,7 @@ export default function index(props: Props) {
         ),
       },
     });
-  }, [datasourceValue, indexData]);
+  }, [datasourceValue, indexData, formControl]);
   // SQL mode suggests statements, search mode suggests filters.
   const aiPromptList = useMemo(
     () =>
@@ -189,68 +208,6 @@ export default function index(props: Props) {
         : ['errors', 'service', 'timeout'].map((topic) => ({ label: tAi(`dock.prompt_search_${topic}`), value: tAi(`dock.prompt_search_${topic}_query`) })),
     [tAi, syntax],
   );
-
-  useLayoutEffect(() => {
-    control.current = {
-      snapshot: () => {
-        const query = form.getFieldValue('query') || {};
-        return {
-          query: (query.syntax === 'sql' ? query.sql : query.query) || '',
-          syntax: query.syntax,
-          range: _.cloneDeep(query.range),
-          database: query.database,
-          table: query.table,
-          time_field: query.time_field,
-        };
-      },
-      revision: () => revisionRef.current,
-      fill: (text, range, settings) => {
-        pending.abort();
-        lastFilledRef.current = text;
-        const inSQL = form.getFieldValue(['query', 'syntax']) === 'sql';
-        // In SQL mode rows are the honest view of a statement: the time series
-        // view needs value columns the assistant never chose. In search mode
-        // the table the sidebar has stays unless the action names another.
-        const next = inSQL ? { sql: text, sqlVizType: 'table' } : { query: text, ..._.pick(settings, ['database', 'table', 'time_field']) };
-        form.setFieldsValue({ query: range ? { ...next, range } : next });
-      },
-      run: ({ signal } = {}) => {
-        const query = form.getFieldValue('query') || {};
-        const inSQL = query.syntax === 'sql';
-        const text: string = (inSQL ? query.sql : query.query) || '';
-        if (!text.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
-        // The page refuses to run an unbounded scan; say so instead of popping its modal.
-        if (inSQL && !text.includes('$__time') && !text.includes('$__unixEpoch')) {
-          return Promise.reject(new Error('The statement must bound time with $__timeFilter(<time column>) or $__unixEpochFilter(<time column>)'));
-        }
-        if (!inSQL && !(query.database && query.table && query.time_field)) {
-          return Promise.reject(new Error('Search mode needs a database, a table and a time column: pass them with the expression'));
-        }
-        return form
-          .validateFields()
-          .catch(() => {
-            throw new Error('The page rejected the query form');
-          })
-          .then((values) => {
-            const promise = pending.begin(signal);
-            commitQuery(values);
-            return promise;
-          });
-      },
-      restore: (snapshot) => {
-        pending.abort();
-        lastFilledRef.current = snapshot.query;
-        const back =
-          snapshot.syntax === 'sql' ? { sql: snapshot.query } : { query: snapshot.query, database: snapshot.database, table: snapshot.table, time_field: snapshot.time_field };
-        form.setFieldsValue({ query: { ...back, syntax: snapshot.syntax, range: snapshot.range }, refreshFlag: _.uniqueId('refreshFlag_') });
-      },
-      queryInput: () => queryBoxRef.current,
-      queryButton: () => queryButtonRef.current,
-    };
-    return () => {
-      control.current = null;
-    };
-  });
 
   const dock = IS_ENT ? (
     <AiQueryDock
@@ -451,12 +408,9 @@ export default function index(props: Props) {
               noticeBanner={dock}
               queryBoxRef={queryBoxRef}
               queryButtonRef={queryButtonRef}
-              queryRequest={pending.queryRequest}
+              queryRequest={formControl.queryRequest}
               dockOpen={aiOpen}
-              onQueryEdit={(sql) => {
-                // The assistant writing is not the user taking over.
-                if (sql !== lastFilledRef.current) invalidate();
-              }}
+              onQueryEdit={formControl.onUserEdit}
             />
           </div>
         </div>

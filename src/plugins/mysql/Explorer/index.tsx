@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { useGetState } from 'ahooks';
 import { useTranslation } from 'react-i18next';
@@ -6,11 +6,11 @@ import { Resizable } from 're-resizable';
 import { Button, Tabs, Form } from 'antd';
 
 import { IS_ENT } from '@/utils/constant';
-import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
+import { timeRangeUnix } from '@/components/TimeRangePicker';
 import AiQueryDock from '@/components/AiQueryDock';
 import { AiQueryDockTrigger } from '@/components/AiQueryDock/Trigger';
-import { useQueryDockActions, QueryDockAction, QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
-import { usePendingQuery } from '@/components/AiQueryDock/usePendingQuery';
+import { useQueryDockActions, QueryDockAction } from '@/components/AiQueryDock/useQueryDockActions';
+import { useFormQueryControl } from '@/components/AiQueryDock/useFormQueryControl';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
 import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 
@@ -31,9 +31,6 @@ const SQL_ACTION: QueryDockAction = {
   page: { title: 'SQL explorer', summary: 'The user writes SQL against a MySQL data source and reads the rows it returns.' },
 };
 
-interface SQLSnapshot extends QueryDockSnapshot {
-  range?: IRawTimeRange;
-}
 interface IProps {
   datasourceValue: number;
 }
@@ -47,25 +44,38 @@ export default function Prometheus(props: IProps) {
   const [refreshFlag, setRefreshFlag] = useState<string>();
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('tdengine-meta-sidebar') || 200));
   const [aiOpen, setAiOpen] = useState(false);
-  // Every hand the user lays on the panel bumps this; a dock turn that started
-  // on an older revision may not write, and its undo is gone.
-  const revisionRef = useRef(0);
-  const pending = usePendingQuery();
   const queryRowRef = useRef<HTMLDivElement>(null);
   const queryButtonRef = useRef<HTMLButtonElement>(null);
-  const control = useRef<QueryDockControl<SQLSnapshot> | null>(null);
+  const refresh = () => setRefreshFlag(_.uniqueId('refreshFlag_'));
+  const undoRef = useRef<() => void>();
+  // The dock's control: the box, the window, and how this page runs a query.
+  const formControl = useFormQueryControl({
+    form,
+    datasourceValue,
+    paths: () => ({ statement: ['query', 'query'], range: ['query', 'range'] }),
+    // The box being empty is the panel's only rule, and the dock already
+    // refuses that with a reason, so there is nothing here to validate.
+    // Rows are the honest view of a statement: the graph needs a value column
+    // the assistant never chose, and would silently draw nothing.
+    commit: () => {
+      setMode('table');
+      refresh();
+    },
+    refresh,
+    // The box itself, not the whole row.
+    queryInput: () => queryRowRef.current?.querySelector('.logql-codemirror') ?? queryRowRef.current,
+    queryButton: () => queryButtonRef.current,
+    onInvalidate: () => undoRef.current?.(),
+  });
   const aiActions = useQueryDockActions({
     enabled: IS_ENT && aiOpen,
     datasourceValue,
-    getControl: () => control.current,
+    getControl: formControl.getControl,
     action: SQL_ACTION,
   });
-  const refresh = () => setRefreshFlag(_.uniqueId('refreshFlag_'));
-  const invalidate = () => {
-    revisionRef.current += 1;
-    pending.clear();
-    aiActions.invalidateUndo();
-  };
+  undoRef.current = aiActions.invalidateUndo;
+  // Every hand the user lays on the panel: a dock turn that started earlier may not write.
+  const invalidate = formControl.invalidate;
   const executeQuery = () => {
     invalidate();
     form.validateFields().then(refresh);
@@ -73,7 +83,7 @@ export default function Prometheus(props: IProps) {
   // What the dock sends with each message: the data source plus what is in the
   // box and which window the panel is on, read at send time.
   const readAiPageFrom = useCallback(() => {
-    const snapshot = control.current?.snapshot();
+    const snapshot = formControl.getControl()?.snapshot();
     const range = snapshot?.range?.start && snapshot.range.end ? timeRangeUnix(snapshot.range) : undefined;
     return buildPageFrom({
       param: {
@@ -84,43 +94,11 @@ export default function Prometheus(props: IProps) {
         end: range ? String(range.end) : undefined,
       },
     });
-  }, [datasourceValue]);
+  }, [datasourceValue, formControl]);
   const aiPromptList = useMemo(
     () => ['tables', 'per_minute', 'group'].map((topic) => ({ label: tAi(`dock.prompt_sql_${topic}`), value: tAi(`dock.prompt_sql_${topic}_query`) })),
     [tAi],
   );
-
-  useLayoutEffect(() => {
-    control.current = {
-      snapshot: () => ({ query: form.getFieldValue(['query', 'query']) || '', range: _.cloneDeep(form.getFieldValue(['query', 'range'])) }),
-      revision: () => revisionRef.current,
-      fill: (sql, range) => {
-        pending.abort();
-        form.setFieldsValue({ query: range ? { query: sql, range } : { query: sql } });
-      },
-      run: ({ signal } = {}) => {
-        const sql: string | undefined = form.getFieldValue(['query', 'query']);
-        if (!sql?.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
-        const promise = pending.begin(signal);
-        // Rows are the honest view of a statement: the graph needs a value
-        // column the assistant never chose, and would silently draw nothing.
-        setMode('table');
-        refresh();
-        return promise;
-      },
-      restore: (snapshot) => {
-        pending.abort();
-        form.setFieldsValue({ query: { query: snapshot.query, range: snapshot.range } });
-        refresh();
-      },
-      // The SQL box itself, not the whole row.
-      queryInput: () => queryRowRef.current?.querySelector('.logql-codemirror') ?? queryRowRef.current,
-      queryButton: () => queryButtonRef.current,
-    };
-    return () => {
-      control.current = null;
-    };
-  });
 
   const dock = IS_ENT ? (
     <AiQueryDock
@@ -224,7 +202,7 @@ export default function Prometheus(props: IProps) {
                   height: '100%',
                 }}
               >
-                <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} queryRequest={pending.queryRequest} />
+                <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} queryRequest={formControl.queryRequest} />
               </div>
             </Tabs.TabPane>
             <Tabs.TabPane tab='Graph' key='graph'>
