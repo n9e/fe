@@ -31,13 +31,15 @@ interface Props {
   queryBoxRef?: React.Ref<HTMLDivElement>;
   /** The user typed in the box; the value it now holds. */
   onQueryEdit?: (sql?: string) => void;
+  /** The dock under the box is open: the editor then grows in flow and pushes it down instead of floating over it. */
+  dockOpen?: boolean;
 }
 
 export default forwardRef(function QueryInputCpt(props: Props, ref) {
   const { t } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
 
-  const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick, queryExtra, noticeBanner, queryBoxRef, onQueryEdit } = props;
+  const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick, queryExtra, noticeBanner, queryBoxRef, onQueryEdit, dockOpen } = props;
 
   const [focused, setFocused] = React.useState(false);
 
@@ -85,7 +87,7 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
         >
           <div
             className={classNames('w-full', {
-              absolute: queryBuilderPinned,
+              absolute: queryBuilderPinned && !dockOpen,
             })}
           >
             <AiQueryDockAffix trigger={queryExtra} boxRef={queryBoxRef}>

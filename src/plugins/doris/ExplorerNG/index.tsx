@@ -440,6 +440,7 @@ export default function index(props: Props) {
               queryBoxRef={queryBoxRef}
               queryButtonRef={queryButtonRef}
               queryRequest={pending.queryRequest}
+              dockOpen={aiOpen}
               onQueryEdit={(sql) => {
                 // The assistant writing is not the user taking over.
                 if (sql !== lastFilledRef.current) invalidate();
