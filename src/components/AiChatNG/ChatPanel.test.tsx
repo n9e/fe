@@ -9,7 +9,7 @@ const startStream = jest.fn();
 const stopStream = jest.fn();
 const maybeScrollToBottom = jest.fn();
 const scrollToBottom = jest.fn();
-let streamCallbacks: { onChunk?: (chunk: IAiChatStreamChunk) => void; onFinish?: () => void onClose?: () => void } = {};
+let streamCallbacks: { onChunk?: (chunk: IAiChatStreamChunk) => void; onFinish?: () => void; onClose?: () => void } = {};
 
 const inProgress: IAiChatMessage = {
   chat_id: 'chat-1',
