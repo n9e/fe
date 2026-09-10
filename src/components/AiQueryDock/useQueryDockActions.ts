@@ -205,7 +205,8 @@ export function useQueryDockActions<S extends QueryDockSnapshot = QueryDockSnaps
                 return typeof value === 'string' && value.trim() ? [[setting.name, value.trim()]] : [];
               }),
             );
-            control.fill(query, args.time_range ?? undefined, action.settings ? settings : undefined);
+            if (action.settings) control.fill(query, args.time_range ?? undefined, settings);
+            else control.fill(query, args.time_range ?? undefined);
             turn.stage = 'filled';
             setCanUndo(true);
             await ctx.feedback.click(control.queryButton());
