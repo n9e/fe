@@ -19,9 +19,12 @@ import { Alert, Form, Modal, Select, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { deleteAlertMutes } from '@/services/shield';
 
 interface Props {
+  runMutation: ReturnType<typeof useRowMutation>['run'];
+  rowIds: readonly React.Key[];
   visible: boolean;
   onCancel: () => void;
   onOk: () => void;
@@ -30,7 +33,7 @@ interface Props {
 
 export default function DeleteMutesModal(props: Props) {
   const { t } = useTranslation('alertMutes');
-  const { visible, onCancel, onOk, gids } = props;
+  const { visible, onCancel, onOk, gids, runMutation, rowIds } = props;
   const [form] = Form.useForm();
 
   return (
@@ -43,17 +46,19 @@ export default function DeleteMutesModal(props: Props) {
         Modal.confirm({
           title: t('delete_mutes.alert_message'),
           onOk() {
-            form.validateFields().then((values) => {
+            return form.validateFields().then((values) => {
               const group_ids = gids && gids !== '-2' ? gids.split(',').map((id) => Number(id)) : undefined;
-              deleteAlertMutes({
-                group_ids,
-                timestamp: moment().subtract(values.month, 'months').unix(),
-              }).then((res) => {
-                if (typeof res.dat === 'string') {
-                  message.success(res.dat);
-                }
-                onOk();
-              });
+              return runMutation(rowIds, () =>
+                deleteAlertMutes({
+                  group_ids,
+                  timestamp: moment().subtract(values.month, 'months').unix(),
+                }).then((res) => {
+                  if (typeof res.dat === 'string') {
+                    message.success(res.dat);
+                  }
+                  onOk();
+                }),
+              );
             });
           },
         });

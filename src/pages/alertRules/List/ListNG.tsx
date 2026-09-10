@@ -8,6 +8,7 @@ import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
@@ -65,6 +66,7 @@ export default function AlertRules(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
   const { busiGroups, datasourceList, feats } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide, gids, groupSwitchCount } = props;
+  const { run: runMutation, pendingIds } = useRowMutation();
   const history = useHistory();
   const location = useLocation();
   let defaultFilter = {} as Filter;
@@ -330,21 +332,24 @@ export default function AlertRules(props: Props) {
             width: 80,
             render: (disabled, record) => (
               <Switch
+                loading={pendingIds.has(record.id)}
                 checked={disabled === AlertRuleStatus.Enable}
                 size='small'
                 onChange={() => {
                   const { id, disabled } = record;
-                  updateAlertRules(
-                    {
-                      ids: [id],
-                      fields: {
-                        disabled: !disabled ? 1 : 0,
+                  runMutation([id], () =>
+                    updateAlertRules(
+                      {
+                        ids: [id],
+                        fields: {
+                          disabled: !disabled ? 1 : 0,
+                        },
                       },
-                    },
-                    record.group_id,
-                  ).then(() => {
-                    updateStatus([id], disabled ? 0 : 1);
-                  });
+                      record.group_id,
+                    ).then(() => {
+                      updateStatus([id], disabled ? 0 : 1);
+                    }),
+                  );
                 }}
               />
             ),
@@ -498,6 +503,8 @@ export default function AlertRules(props: Props) {
             React.cloneElement(headerExtra, {
               selectRowKeys,
               selectedRows,
+              runMutation,
+              pendingIds,
               getList: fetchData,
               onStatusChange: updateStatus,
               clearSelection,
@@ -594,10 +601,12 @@ export default function AlertRules(props: Props) {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
                           onOk: () => {
-                            deleteStrategy([record.id], record.group_id).then(() => {
-                              message.success(t('common:success.delete'));
-                              fetchData();
-                            });
+                            return runMutation([record.id], () =>
+                              deleteStrategy([record.id], record.group_id).then(() => {
+                                message.success(t('common:success.delete'));
+                                fetchData();
+                              }),
+                            );
                           },
                           onCancel() {},
                         });

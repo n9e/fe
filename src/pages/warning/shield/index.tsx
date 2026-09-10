@@ -24,6 +24,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useHistory, Link, useLocation } from 'react-router-dom';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import Tags from '@/components/TableTags/Tags';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { dateColumn, updateByColumn } from '@/components/EnhancedTable/columns';
@@ -90,6 +91,7 @@ const Shield: React.FC = () => {
     setCurrent(1);
     history.replace({ pathname: location.pathname, search: removePageFromSearch(location.search) });
   };
+  const { run: runMutation, pendingIds } = useRowMutation();
   const columns: ColumnsType = [
     {
       title: t('note'),
@@ -254,22 +256,25 @@ const Shield: React.FC = () => {
       width: 80,
       render: (disabled, record) => (
         <Switch
+          loading={pendingIds.has(record.id as React.Key)}
           checked={disabled === strategyStatus.Enable}
           size='small'
           onChange={() => {
             // @ts-ignore
             const { id, disabled, group_id } = record;
-            updateShields(
-              {
-                ids: [id],
-                fields: {
-                  disabled: !disabled ? 1 : 0,
+            runMutation([id], () =>
+              updateShields(
+                {
+                  ids: [id],
+                  fields: {
+                    disabled: !disabled ? 1 : 0,
+                  },
                 },
-              },
-              group_id,
-            ).then(() => {
-              updateStatus(id, !disabled ? 1 : 0);
-            });
+                group_id,
+              ).then(() => {
+                updateStatus(id, !disabled ? 1 : 0);
+              }),
+            );
           }}
         />
       ),
@@ -488,14 +493,16 @@ const Shield: React.FC = () => {
                       title: t('common:confirm.delete'),
                       icon: <ExclamationCircleOutlined />,
                       onOk: () => {
-                        deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
-                          refreshList();
-                          if (res.err) {
-                            message.success(res.err);
-                          } else {
-                            message.success(t('common:success.delete'));
-                          }
-                        });
+                        return runMutation([record.id], () =>
+                          deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
+                            refreshList();
+                            if (res.err) {
+                              message.success(res.err);
+                            } else {
+                              message.success(t('common:success.delete'));
+                            }
+                          }),
+                        );
                       },
                       onCancel() {},
                     });
@@ -506,6 +513,8 @@ const Shield: React.FC = () => {
             actionColumn={{ title: t('common:table.operations'), width: 80 }}
           />
           <DeleteMutesModal
+            runMutation={runMutation}
+            rowIds={[...new Set([...currentShieldDataAll.map((row) => row.id), ...pendingIds])]}
             visible={deleteMutesModalVisible}
             gids={gids}
             onCancel={() => {

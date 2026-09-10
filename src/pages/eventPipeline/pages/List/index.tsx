@@ -7,6 +7,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Info } from 'lucide-react';
 import _ from 'lodash';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
@@ -57,8 +58,7 @@ export default function List({ embedded = false }: ListProps) {
   // 存 record 引用的话，行内启停或列表刷新后拿到的仍是勾选那一刻的旧对象，
   // 批量删除的「启用中不可删」校验会读到过期的 disabled 值而被绕过。
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  // 切换中的行：请求返回前必须挡住重复点击，否则两次请求的落库顺序不保证
-  const [togglingIds, setTogglingIds] = useState<number[]>([]);
+  const { run: runMutation, pendingIds } = useRowMutation();
 
   const pagination = usePagination({ PAGESIZE_KEY: 'event-pipelines-pagesize' });
 
@@ -154,19 +154,14 @@ export default function List({ embedded = false }: ListProps) {
   });
 
   const toggleDisabled = (record: Item, checked: boolean) => {
-    if (_.includes(togglingIds, record.id)) return;
-    setTogglingIds((prev) => [...prev, record.id]);
-    putItemsDisabled([record.id], !checked)
-      .then(() => {
+    runMutation([record.id], () =>
+      putItemsDisabled([record.id], !checked).then(() => {
         message.success(t('common:success.modify'));
         updateStatus([record.id], !checked);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        setTogglingIds((prev) => _.without(prev, record.id));
-      });
+      }),
+    ).catch((err) => {
+      console.error(err);
+    });
   };
 
   const openDoc = () => {
@@ -217,6 +212,8 @@ export default function List({ embedded = false }: ListProps) {
             {t('common:btn.add')}
           </Button>
           <MoreOperations
+            runMutation={runMutation}
+            pendingIds={pendingIds}
             selectedRows={selectedRows}
             onStatusChange={(ids, disabled) => {
               updateStatus(ids, disabled);
@@ -322,7 +319,7 @@ export default function List({ embedded = false }: ListProps) {
             key: 'disabled',
             width: 90,
             render: (value, record: Item) => (
-              <Switch size='small' checked={value === false} loading={_.includes(togglingIds, record.id)} onChange={(checked) => toggleDisabled(record, checked)} />
+              <Switch size='small' checked={value === false} loading={pendingIds.has(record.id)} onChange={(checked) => toggleDisabled(record, checked)} />
             ),
           },
         ]}
@@ -383,9 +380,11 @@ export default function List({ embedded = false }: ListProps) {
                 Modal.confirm({
                   title: t('common:confirm.delete'),
                   onOk: () => {
-                    deleteItems([item.id]).then(() => {
-                      featchData();
-                    });
+                    return runMutation([item.id], () =>
+                      deleteItems([item.id]).then(() => {
+                        featchData();
+                      }),
+                    );
                   },
                 });
               },
@@ -417,6 +416,7 @@ export default function List({ embedded = false }: ListProps) {
         )}
         {eventPipelineDrawerState.action === 'edit' && eventPipelineDrawerState?.id && (
           <Edit
+            runMutation={runMutation}
             id={eventPipelineDrawerState.id}
             onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
             onOk={() => {

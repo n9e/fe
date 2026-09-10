@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { arrayMoveImmutable } from 'array-move';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
@@ -38,7 +39,7 @@ export default function Index() {
   const [currentRecord, setCurrentRecord] = useState<EmbeddedProductResponse | null>(null);
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
-  const [hideSavingId, setHideSavingId] = useState<number | null>(null);
+  const { run: runMutation, pendingIds } = useRowMutation();
   const pagination = usePagination({ PAGESIZE_KEY: NS });
 
   const {
@@ -51,7 +52,7 @@ export default function Index() {
       if (res) setData(_.orderBy(res, ['weight', 'id'], ['asc', 'asc']));
     },
   });
-  const confirmHide = useMemoizedFn((id: number, hide: boolean) => {
+  const updateHide = useMemoizedFn((id: number, hide: boolean) => {
     cancel();
     setData((rows) => rows.map((row) => (row.id === id ? { ...row, hide } : row)));
     if (loading) fetchData();
@@ -65,7 +66,7 @@ export default function Index() {
         width: 40,
         className: 'embedded-product-sort-col',
         render: () => {
-          return <DragHandle disabled={saving} />;
+          return <DragHandle disabled={saving || pendingIds.size > 0} />;
         },
       },
       {
@@ -96,28 +97,24 @@ export default function Index() {
         render: (_val, record: EmbeddedProductResponse) => {
           const hide = record.hide ?? true;
           const checked = !hide;
-          const disabled = saving || hideSavingId === record.id;
+          const disabled = saving || pendingIds.has(record.id);
           return (
             <Switch
               size='small'
               checked={checked}
               disabled={disabled}
+              loading={pendingIds.has(record.id)}
               onChange={async (nextChecked) => {
-                if (disabled) return;
-                const prevHide = record.hide ?? true;
                 const nextHide = !nextChecked;
-                setHideSavingId(record.id);
-                setData((prev) => prev.map((item) => (item.id === record.id ? { ...item, hide: nextHide } : item)));
                 try {
-                  await putEmbeddedProductHide(String(record.id), { hide: nextHide });
-                  confirmHide(record.id, nextHide);
-                  message.success(t('common:success.save'));
-                  eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                  await runMutation([record.id], async () => {
+                    await putEmbeddedProductHide(String(record.id), { hide: nextHide });
+                    updateHide(record.id, nextHide);
+                    message.success(t('common:success.save'));
+                    eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                  });
                 } catch (e) {
-                  setData((prev) => prev.map((item) => (item.id === record.id ? { ...item, hide: prevHide } : item)));
                   message.error(t('common:error.save'));
-                } finally {
-                  setHideSavingId(null);
                 }
               }}
             />
@@ -127,7 +124,7 @@ export default function Index() {
       dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }) as any,
       updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
     ];
-  }, [t, userGroups, saving, hideSavingId]);
+  }, [t, userGroups, saving, pendingIds]);
 
   useEffect(() => {
     fetchData();
@@ -139,7 +136,7 @@ export default function Index() {
   const handleModalOk = async (values: EmbeddedProductParams) => {
     try {
       if (currentRecord) {
-        await updateEmbeddedProducts(currentRecord.id.toString(), values);
+        await runMutation([currentRecord.id], () => updateEmbeddedProducts(currentRecord.id.toString(), values));
         message.success(t('common:success.edit'));
       } else {
         await addEmbeddedProducts([values]);
@@ -205,11 +202,13 @@ export default function Index() {
                   Modal.confirm({
                     title: t('common:confirm.delete'),
                     onOk: () => {
-                      return deleteEmbeddedProducts(String(record.id)).then(() => {
-                        message.success(t('common:success.delete'));
-                        fetchData();
-                        eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
-                      });
+                      return runMutation([record.id], () =>
+                        deleteEmbeddedProducts(String(record.id)).then(() => {
+                          message.success(t('common:success.delete'));
+                          fetchData();
+                          eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                        }),
+                      );
                     },
                   });
                 },
@@ -235,17 +234,21 @@ export default function Index() {
                     helperClass='n9e-embedded-products-row-dragging'
                     hideSortableGhost
                     onSortEnd={async ({ oldIndex, newIndex }) => {
-                      if (saving || oldIndex === newIndex) return;
+                      if (saving || pendingIds.size > 0 || oldIndex === newIndex) return;
                       const oldData = data;
                       const newData = arrayMoveImmutable(oldData, oldIndex, newIndex);
                       setData(newData);
                       setSaving(true);
                       try {
-                        await putEmbeddedProductsWeights(
-                          newData.map((item, idx) => ({
-                            id: item.id,
-                            weight: idx,
-                          })),
+                        await runMutation(
+                          newData.map((item) => item.id),
+                          () =>
+                            putEmbeddedProductsWeights(
+                              newData.map((item, idx) => ({
+                                id: item.id,
+                                weight: idx,
+                              })),
+                            ),
                         );
                         message.success(t('common:success.save'));
                         fetchData();

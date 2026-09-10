@@ -6,6 +6,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { deleteSubscribes, editSubscribe } from '@/services/subscribe';
 import { subscribeItem } from '@/store/warningInterface/subscribe';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -93,6 +94,7 @@ const Subscribe = (props: Props) => {
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
   const notificationRulesAuthorized = useIsAuthorized([notificationRulesPerm]);
 
+  const { run: runMutation, pendingIds } = useRowMutation();
   const columns: ColumnsType = _.concat(
     [
       {
@@ -283,20 +285,23 @@ const Subscribe = (props: Props) => {
             width: 80,
             render: (disabled, record: any) => (
               <Switch
+                loading={pendingIds.has(record.id)}
                 checked={disabled === strategyStatus.Enable}
                 size='small'
                 onChange={() => {
-                  editSubscribe(
-                    [
-                      {
-                        ..._.omit(record, ['create_at', 'create_by', 'update_at', 'update_by']),
-                        disabled: disabled === 0 ? 1 : 0,
-                      },
-                    ],
-                    record.group_id,
-                  ).then(() => {
-                    props.onStatusChange?.([record.id], disabled === 0 ? 1 : 0);
-                  });
+                  runMutation([record.id], () =>
+                    editSubscribe(
+                      [
+                        {
+                          ..._.omit(record, ['create_at', 'create_by', 'update_at', 'update_by']),
+                          disabled: disabled === 0 ? 1 : 0,
+                        },
+                      ],
+                      record.group_id,
+                    ).then(() => {
+                      props.onStatusChange?.([record.id], disabled === 0 ? 1 : 0);
+                    }),
+                  );
                 }}
               />
             ),
@@ -504,14 +509,16 @@ const Subscribe = (props: Props) => {
                         title: t('common:confirm.delete'),
                         icon: <ExclamationCircleOutlined />,
                         onOk: () => {
-                          deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
-                            refreshList();
-                            if (res.err) {
-                              message.success(res.err);
-                            } else {
-                              message.success(t('common:success.delete'));
-                            }
-                          });
+                          return runMutation([record.id], () =>
+                            deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
+                              refreshList();
+                              if (res.err) {
+                                message.success(res.err);
+                              } else {
+                                message.success(t('common:success.delete'));
+                              }
+                            }),
+                          );
                         },
                         onCancel() {},
                       });
