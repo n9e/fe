@@ -64,10 +64,8 @@ interface IProps {
   showBuilder?: boolean;
   onChange?: (promQL?: string) => void;
   promQLInputTooltip?: string;
-  /** Sits to the left of the PromQL box, outside its border (e.g. the AI orb). */
-  leadingExtra?: React.ReactNode;
-  /** When true, draws a spine under leadingExtra that ties it to noticeBanner. */
-  leadingExtraActive?: boolean;
+  /** Sits inside the PromQL box at its right end (e.g. the AI trigger); noticeBanner then hangs under the box, as wide as it. */
+  queryExtra?: React.ReactNode;
   extra?: React.ReactElement;
   showExportButton?: boolean; // 是否显示导出按钮
   refetchOnZoom?: boolean;
@@ -118,8 +116,7 @@ export default function index(props: IProps) {
     showBuilder = true,
     onChange,
     promQLInputTooltip,
-    leadingExtra,
-    leadingExtraActive,
+    queryExtra,
     extra,
     defaultRange,
     showExportButton,
@@ -322,17 +319,14 @@ export default function index(props: IProps) {
         </div>
       )}
 
-      <div className={`prom-graph-expression-input-ng${leadingExtra ? ' ai-query-prom-with-dock' : ''}`} ref={inputWrapRef}>
-        {/*
-          Two rows share a w-8 rail: orb on the PromQL row, spine bridging into
-          the dock row so the trigger and panel read as one control.
-        */}
-        <div className={`flex gap-[8px]${leadingExtra ? ' items-start' : ' items-center'}`}>
-          {leadingExtra && <div className='ai-query-dock-rail flex h-8 w-8 shrink-0 items-center justify-center'>{leadingExtra}</div>}
-          <div className='flex min-w-0 flex-1 items-center gap-[8px]'>
+      <div className={`prom-graph-expression-input-ng${queryExtra ? ' ai-query-prom-with-dock' : ''}`} ref={inputWrapRef}>
+        {/* With a dock, the buttons align to the box's top and the dock hangs under the box only. */}
+        <div className={`flex gap-[8px]${queryExtra ? ' items-start' : ' items-center'}`}>
+          <div className={`flex min-w-0 flex-1 gap-[8px]${queryExtra ? ' items-start' : ' items-center'}`}>
             <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
               <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
                 <PromQLInputNG
+                  suffix={queryExtra}
                   maxHeight={200}
                   enableAutocomplete={completeEnabled}
                   datasourceValue={datasourceValue}
@@ -367,6 +361,7 @@ export default function index(props: IProps) {
                   }}
                 />
               </PromQLInputNGWithTooltipWrapper>
+              {queryExtra ? noticeBanner : null}
             </div>
             {extra && (
               <div className='flex-shrink-0'>
@@ -395,14 +390,6 @@ export default function index(props: IProps) {
             </Button>
           </div>
         </div>
-        {noticeBanner && leadingExtra ? (
-          <div className='mt-0 flex gap-[8px] items-stretch'>
-            <div className='ai-query-dock-rail flex w-8 shrink-0 flex-col items-center' aria-hidden='true'>
-              {leadingExtraActive ? <div className='ai-query-dock-spine' /> : null}
-            </div>
-            <div className='ai-query-dock-slot min-w-0 flex-1'>{noticeBanner}</div>
-          </div>
-        ) : null}
       </div>
       {tabActiveKey === 'table' && value && includesVariables(value) && (
         <Alert
@@ -416,7 +403,7 @@ export default function index(props: IProps) {
         />
       )}
       {/* With the AI rail, the banner hangs under the PromQL column so the spine can meet it. */}
-      {noticeBanner && !leadingExtra ? noticeBanner : null}
+      {noticeBanner && !queryExtra ? noticeBanner : null}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
         <Tabs

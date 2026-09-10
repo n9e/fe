@@ -31,7 +31,7 @@ jest.mock('@/components/PromGraphCpt', () => ({
   __esModule: true,
   default: (props: PromGraphProps) => (
     <div>
-      <div data-testid='leading'>{props.leadingExtra}</div>
+      <div data-testid='leading'>{props.queryExtra}</div>
       <div data-testid='notice'>{props.noticeBanner}</div>
       <div data-testid='extra'>{props.extra}</div>
       <div data-testid='promql'>{props.promQL}</div>

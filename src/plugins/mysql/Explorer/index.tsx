@@ -142,19 +142,24 @@ export default function Prometheus(props: IProps) {
     };
   });
 
-  const queryBuilder = (
-    <QueryBuilder
-      extra={
-        <Button type='primary' onClick={executeQuery} ref={queryButtonRef}>
-          {t('query.execute')}
-        </Button>
-      }
-      executeQuery={executeQuery}
-      onUserContextChange={invalidate}
-      datasourceValue={datasourceValue}
-      getMode={getMode}
+  const dock = IS_ENT ? (
+    <AiQueryDock
+      open={aiOpen}
+      pageFrom={readAiPageFrom}
+      progress={aiActions.progress}
+      prepareTurn={aiActions.prepareTurn}
+      canUndo={aiActions.canUndo}
+      onUndo={aiActions.undo}
+      promptList={aiPromptList}
+      resultNoun='rows'
+      placeholder={tAi('dock.placeholder_first_sql')}
+      onNewConversation={aiActions.reset}
+      onClose={() => {
+        aiActions.cancel();
+        setAiOpen(false);
+      }}
     />
-  );
+  ) : undefined;
 
   return (
     <div className={`${NAME_SPACE}-explorer-container`}>
@@ -194,14 +199,17 @@ export default function Prometheus(props: IProps) {
             width: `calc(100% - ${width + 8}px)`,
           }}
         >
-          {IS_ENT ? (
-            <>
-              {/*
-                Two rows share a w-8 rail: the orb on the query row, a spine
-                bridging into the dock row so trigger and panel read as one control.
-              */}
-              <div className='flex items-start gap-[8px]'>
-                <div className='ai-query-dock-rail flex h-8 w-8 shrink-0 items-center justify-center'>
+          <div ref={queryRowRef}>
+            <QueryBuilder
+              extra={
+                <Button type='primary' onClick={executeQuery} ref={queryButtonRef}>
+                  {t('query.execute')}
+                </Button>
+              }
+              executeQuery={executeQuery}
+              onUserContextChange={invalidate}
+              queryExtra={
+                IS_ENT ? (
                   <AiQueryDockTrigger
                     open={aiOpen}
                     onClick={() => {
@@ -209,38 +217,13 @@ export default function Prometheus(props: IProps) {
                       setAiOpen((previous) => !previous);
                     }}
                   />
-                </div>
-                <div className='min-w-0 flex-1' ref={queryRowRef}>
-                  {queryBuilder}
-                </div>
-              </div>
-              <div className='flex items-stretch gap-[8px]'>
-                <div className='ai-query-dock-rail flex w-8 shrink-0 flex-col items-center' aria-hidden='true'>
-                  {aiOpen ? <div className='ai-query-dock-spine' /> : null}
-                </div>
-                <div className='ai-query-dock-slot min-w-0 flex-1'>
-                  <AiQueryDock
-                    open={aiOpen}
-                    pageFrom={readAiPageFrom}
-                    progress={aiActions.progress}
-                    prepareTurn={aiActions.prepareTurn}
-                    canUndo={aiActions.canUndo}
-                    onUndo={aiActions.undo}
-                    promptList={aiPromptList}
-                    resultNoun='rows'
-                    placeholder={tAi('dock.placeholder_first_sql')}
-                    onNewConversation={aiActions.reset}
-                    onClose={() => {
-                      aiActions.cancel();
-                      setAiOpen(false);
-                    }}
-                  />
-                </div>
-              </div>
-            </>
-          ) : (
-            queryBuilder
-          )}
+                ) : undefined
+              }
+              noticeBanner={dock}
+              datasourceValue={datasourceValue}
+              getMode={getMode}
+            />
+          </div>
           <Tabs
             destroyInactiveTabPane
             tabBarGutter={0}

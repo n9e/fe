@@ -235,7 +235,7 @@ export default function Prometheus(props: IProps) {
             onDefaultTypeChange(newType);
           }
         }}
-        leadingExtra={
+        queryExtra={
           IS_ENT ? (
             <AiQueryDockTrigger
               open={aiOpen}
@@ -249,7 +249,6 @@ export default function Prometheus(props: IProps) {
             />
           ) : undefined
         }
-        leadingExtraActive={IS_ENT && aiOpen}
         extra={
           <Space size={SIZE}>
             {IS_ENT ? undefined : (

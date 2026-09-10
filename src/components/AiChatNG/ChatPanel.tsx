@@ -755,7 +755,7 @@ export default function ChatPanel(props: IAiChatProps) {
             listHidden && 'hidden',
           )}
         >
-          <div ref={chatContentRef} className={cn('mx-auto flex w-full flex-col', !slim && 'min-h-full max-w-[900px]')}>
+          <div ref={chatContentRef} className={cn('flex w-full flex-col', slim ? 'max-w-[880px]' : 'mx-auto min-h-full max-w-[900px]')}>
             {messagesLoading ? (
               <div className='flex flex-1 items-center justify-center'>
                 <Spin indicator={<LoadingOutlined />} />
