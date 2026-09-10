@@ -52,8 +52,17 @@ function useAiEntClickHandler(options?: {
         // content: ' ', // 预填充一个空格，表示新建会话，不然 FlashAI Chat 会报错导致页面崩溃
         prefillOnly: true, // 禁止自动发送消息
         createNew: true,
-        ...queryPageFrom,
-        ...queryAction,
+        // Spread the page's own params, not the wrapper around them. The chat
+        // strips the fields it uses itself and sends everything left over as
+        // page_from.param, alongside workspace_id and the firemap keys — a flat
+        // bag. Passing `queryPageFrom` whole nested that bag one level deeper,
+        // where nothing reads it, so the page's data source never reached the
+        // model. `url` is dropped on purpose: the chat reads the address bar,
+        // which is the same page and stays right across a navigation.
+        ...(queryPageFrom?.param ?? {}),
+        // The action goes in the field the chat actually looks at. Spread flat
+        // it landed as a stray `key`, and its `param` overwrote the page's.
+        ...(queryAction ? { action: queryAction } : {}),
         // After spreads: ConfigHost pages live on /flashai*, where AiChat stays
         // in page mode unless forceDrawer is set (knowledge / scheduled-task).
         forceDrawer: true,
