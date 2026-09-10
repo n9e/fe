@@ -160,19 +160,29 @@
   }
 }
 
-/* AI dock: spine bridges the orb row into the dock row under the same rail. */
+/* AI dock: a hairline "L" from the orb down and across into the dock bar,
+   drawn in the same grey as the borders around it. */
 .ai-query-dock-spine {
-  width: 2px;
-  flex: 1 1 auto;
-  min-height: 12px;
-  /* Nudge up so the line reads continuous from the orb into the panel. */
+  position: relative;
+  width: 1px;
+  /* Reaches the vertical middle of the dock bar (8px panel gap + half the bar). */
+  height: 28px;
+  /* Nudge up so the line reads continuous from the orb. */
   margin-top: -2px;
-  border-radius: 1px;
-  background: color-mix(in srgb, var(--fc-fill-primary, #6c53b1) 40%, transparent);
+  background: var(--fc-antd-border-color);
+}
+
+.ai-query-dock-spine::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  /* From the rail's centre across the 8px gap to the bar's left border. */
+  width: 24px;
+  height: 1px;
+  background: var(--fc-antd-border-color);
 }
 
 .ai-query-dock-slot {
   min-width: 0;
-  /* Sit flush against the rail so the spine meets the panel edge. */
-  margin-left: -2px;
 }

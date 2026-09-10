@@ -786,7 +786,7 @@ export default function ChatPanel(props: IAiChatProps) {
               ? cn(
                   'ai-query-dock-input flex w-full items-center gap-2 border bg-transparent px-2 py-1',
                   // The bar and whatever floats under it read as one surface.
-                  listHidden && !suggestionsOpen ? 'rounded-md' : 'rounded-t-md rounded-b-none border-b-0',
+                  listHidden && !suggestionsOpen ? 'rounded-lg' : 'rounded-t-lg rounded-b-none border-b-0',
                 )
               : 'mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md',
             inputContainerClassName,

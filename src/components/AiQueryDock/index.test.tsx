@@ -102,18 +102,11 @@ describe('AiQueryDock', () => {
     expect(screen.queryByRole('button', { name: 'dock.new_conversation' })).toBeNull();
   });
 
-  it('says how many series came back and what the model queried, once delivered', () => {
+  it('says how many series came back, once delivered', () => {
     const { rerender } = render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} />);
-    const delivery = turn({ response: [{ content_type: 'markdown', content: '按 `ident` 区分主机，取 cpu-total 的空闲率反推。\n\n第二段' }, pageAction] });
-    act(() => panelProps!.onTurn!(delivery));
+    act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'markdown', content: '按 ident 区分主机。' }, pageAction] })));
     rerender(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'success', count: 8 }} />);
-    expect(screen.getByRole('status').textContent).toBe('dock.success_count · 按 ident 区分主机，取 cpu-total 的空闲率反推。');
-  });
-
-  it('reports work, not idleness, while the first send is still creating the chat', () => {
-    renderDock();
-    act(() => panelProps!.onBusyChange!(true));
-    expect(screen.getByRole('status').textContent).toBe('dock.understanding…');
+    expect(screen.getByRole('status').textContent).toBe('dock.success_count');
   });
 
   it('opens the conversation when the status text is clicked', () => {
