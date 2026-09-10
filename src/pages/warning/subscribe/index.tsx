@@ -4,10 +4,10 @@ import { CopyOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { useMemoizedFn, useRequest } from 'ahooks';
 
 import PageLayout from '@/components/pageLayout';
 import { getBusiGroupsAlertSubscribes } from '@/services/subscribe';
-import { subscribeItem } from '@/store/warningInterface/subscribe';
 import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import { CommonStateContext } from '@/App';
 
@@ -33,19 +33,26 @@ export default function List() {
     setGroupSwitchCount((count) => count + 1);
   };
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
-  const [data, setData] = useState<Array<subscribeItem>>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const getList = async () => {
-    if (gids) {
-      setLoading(true);
+  const {
+    data = [],
+    loading,
+    run: getList,
+    cancel,
+    mutate,
+  } = useRequest(
+    async () => {
+      if (!gids) return [];
       const ids = gids === '-2' ? undefined : gids;
-      const { success, dat } = await getBusiGroupsAlertSubscribes(ids);
-      if (success) {
-        setData(dat || []);
-        setLoading(false);
-      }
-    }
-  };
+      const { dat } = await getBusiGroupsAlertSubscribes(ids);
+      return dat || [];
+    },
+    { manual: true },
+  );
+  const updateStatus = useMemoizedFn((ids: React.Key[], disabled: 0 | 1) => {
+    cancel();
+    mutate((rows) => rows?.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)));
+    if (loading) getList();
+  });
 
   useEffect(() => {
     getList();
@@ -85,9 +92,7 @@ export default function List() {
             data={data}
             loading={loading}
             setRefreshFlag={setRefreshFlag}
-            onStatusChange={(ids, disabled) => {
-              setData((rows) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)));
-            }}
+            onStatusChange={updateStatus}
           />
         </div>
       </div>

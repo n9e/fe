@@ -1,3 +1,4 @@
+import { useMemoizedFn, useRequest } from 'ahooks';
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import { Button, Modal, message, Switch } from 'antd';
@@ -40,10 +41,21 @@ export default function Index() {
   const [hideSavingId, setHideSavingId] = useState<number | null>(null);
   const pagination = usePagination({ PAGESIZE_KEY: NS });
 
-  const fetchData = async (): Promise<any> => {
-    const res = await getEmbeddedProducts();
-    if (res) setData(_.orderBy(res, ['weight', 'id'], ['asc', 'asc']));
-  };
+  const {
+    run: fetchData,
+    cancel,
+    loading,
+  } = useRequest(getEmbeddedProducts, {
+    manual: true,
+    onSuccess: (res) => {
+      if (res) setData(_.orderBy(res, ['weight', 'id'], ['asc', 'asc']));
+    },
+  });
+  const confirmHide = useMemoizedFn((id: number, hide: boolean) => {
+    cancel();
+    setData((rows) => rows.map((row) => (row.id === id ? { ...row, hide } : row)));
+    if (loading) fetchData();
+  });
 
   const columns: ColumnType<EmbeddedProductResponse>[] = useMemo(() => {
     return [
@@ -98,6 +110,7 @@ export default function Index() {
                 setData((prev) => prev.map((item) => (item.id === record.id ? { ...item, hide: nextHide } : item)));
                 try {
                   await putEmbeddedProductHide(String(record.id), { hide: nextHide });
+                  confirmHide(record.id, nextHide);
                   message.success(t('common:success.save'));
                   eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
                 } catch (e) {
