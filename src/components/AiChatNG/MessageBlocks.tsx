@@ -404,7 +404,7 @@ function MessageItemComponent({
             <User size={12} strokeWidth={1.75} />
           </span>
         )}
-        <div className={cn('max-w-[85%] rounded-lg px-2 py-1 text-sm', slim ? 'bg-fc-300' : 'bg-primary/10')}>
+        <div className={cn('max-w-[85%] rounded-lg px-2 py-1 text-sm', slim ? 'bg-fc-200' : 'bg-primary/10')}>
           <div className='whitespace-pre-wrap break-words'>{message.query.content}</div>
         </div>
       </div>
