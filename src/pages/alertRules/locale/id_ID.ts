@@ -1,4 +1,5 @@
 const id_ID = {
+  "all_datasources": "Semua sumber data",
   "step_title": "Langkah konfigurasi",
   "validate_metric_msg": "Validasi metriknya terlebih dahulu",
   "smart_rule_limit_msg": "Batas jumlah aturan alert cerdas telah tercapai. Hubungi tim dukungan",
