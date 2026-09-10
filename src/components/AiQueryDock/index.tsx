@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Tooltip } from 'antd';
-import type { IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
+import type { AiChatPageFromSource, IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
 import { ChevronDown, ChevronUp, SquarePen, Undo2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { ChatPanel, EAiChatContentType, IAiChatMessage, IAiChatPageInfo, IAiChatTurn } from '@/components/AiChatNG';
+import { ChatPanel, EAiChatContentType, IAiChatMessage, IAiChatTurn } from '@/components/AiChatNG';
 import { NAME_SPACE } from '@/components/AiChatNG/constants';
 import { cn } from '@/components/AiChatNG/utils';
 
@@ -25,7 +25,7 @@ import { cn } from '@/components/AiChatNG/utils';
  */
 export interface AiQueryDockProps {
   open: boolean;
-  pageFrom: IAiChatPageInfo;
+  pageFrom: AiChatPageFromSource;
   progress?: IAiQueryProgress;
   prepareTurn?: IAiChatProps['prepareTurn'];
   canUndo?: boolean;
@@ -94,6 +94,17 @@ function lastResponseType(message: IAiChatMessage): string | undefined {
 /** The turn ended with the model handing the page something to run. */
 function delivered(message: IAiChatMessage): boolean {
   return lastResponseType(message) === EAiChatContentType.PageAction;
+}
+
+/** The sentence the model wrote before calling the action: what it queried and why. */
+function explanation(message: IAiChatMessage): string | undefined {
+  const responses = message.response ?? [];
+  const text = [...responses].reverse().find((item) => item.content_type === EAiChatContentType.Markdown)?.content;
+  const line = text
+    ?.split('\n')
+    .map((part) => part.replace(/^[#>*\-\s]+/, '').trim())
+    .find(Boolean);
+  return line ? line.slice(0, 160) : undefined;
 }
 
 export default function AiQueryDock(props: AiQueryDockProps) {
@@ -198,14 +209,26 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     }
   }
 
+  if (!turn && busy) {
+    // First send: the chat is still being created, nothing to report yet but work.
+    tone = 'running';
+    status = <>{t('dock.understanding')}…</>;
+  }
+  let detail = false;
   if (progress && progress.phase !== 'idle') {
     const phase = progress.phase;
     tone = phase === 'success' || phase === 'empty' || phase === 'undone' ? 'ok' : phase === 'failed' ? 'error' : phase === 'applying' || phase === 'querying' ? 'running' : 'warn';
     const key = phase === 'stopped' && progress.stage ? `stopped_${progress.stage}` : phase;
+    // After a delivery the status says what came back and what the model
+    // said it queried — the one sentence the folded conversation hides.
+    const said = (phase === 'success' || phase === 'empty') && message && delivered(message) ? explanation(message) : undefined;
+    const headline = phase === 'success' && progress.count != null ? t('dock.success_count', { count: progress.count }) : t(`dock.${key}`);
+    detail = !!said;
     status = (
       <>
-        <span>{t(`dock.${key}`)}</span>
+        <span>{headline}</span>
         {progress.message ? ` · ${progress.message}` : ''}
+        {said ? ` · ${said}` : ''}
       </>
     );
   }
@@ -277,7 +300,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                 tone === 'idle' && 'bg-fc-300',
               )}
             />
-            <span className={cn('ai-query-dock-status-copy', (asked || tone === 'error') && 'ai-query-dock-status-detail')} role='status' aria-live='polite'>
+            <span className={cn('ai-query-dock-status-copy', (asked || detail || tone === 'error') && 'ai-query-dock-status-detail')} role='status' aria-live='polite'>
               {status}
             </span>
             {canUndo && (

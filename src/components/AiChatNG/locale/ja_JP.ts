@@ -170,6 +170,7 @@ const ja_JP = {
     applying: 'クエリを入力中',
     querying: 'クエリを実行中',
     success: 'クエリ完了',
+    success_count: '{{count}} 件のシリーズ',
     empty: 'クエリ完了、データなし',
     changed: 'ページが変更されたため未適用',
     undone: '今回の変更を元に戻しました',

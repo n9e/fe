@@ -19,7 +19,7 @@ import { RequestMethod } from '@/store/common';
 
 export interface QueryRequest {
   signal: AbortSignal;
-  complete: (result: { empty: boolean } | Error) => void;
+  complete: (result: { empty: boolean; count?: number } | Error) => void;
 }
 
 export const getPromData = (url: string, params, signal?: AbortSignal) => {

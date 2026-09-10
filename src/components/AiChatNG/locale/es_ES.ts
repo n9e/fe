@@ -169,6 +169,7 @@ const es_ES = {
     applying: 'Introduciendo la consulta',
     querying: 'Ejecutando la consulta',
     success: 'Consulta completada',
+    success_count: '{{count}} series encontradas',
     empty: 'Consulta completada, sin datos',
     changed: 'La página ha cambiado, consulta sin aplicar',
     undone: 'Cambio deshecho',

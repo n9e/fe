@@ -271,7 +271,7 @@ export default function Table(props: IProps) {
               resultSeries: result.length,
             });
           settled = true;
-          queryRequest?.complete({ empty });
+          queryRequest?.complete({ empty, count: result.length });
         })
         .catch((err) => {
           if (controller.signal.aborted) return;

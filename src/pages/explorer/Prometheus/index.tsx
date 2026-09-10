@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
@@ -78,8 +78,24 @@ export default function Prometheus(props: IProps) {
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
   const [aiOpen, setAiOpen] = useState(false);
-  // Stable per data source: the chat treats a new page-info object as a new conversation.
   const aiPageFrom = useMemo(() => buildPageFrom({ param: { datasource_type: 'prometheus', datasource_id: datasourceValue } }), [datasourceValue]);
+  // What the dock sends with each message: the data source plus what is in the
+  // box and which window the panel is on, read at send time. The assistant
+  // verifies against that window instead of "now", and a follow-up sees the
+  // expression the user may have edited since.
+  const readAiPageFrom = useCallback(() => {
+    const snapshot = graphControl.current?.snapshot();
+    const range = snapshot?.range?.start && snapshot.range.end ? timeRangeUnix(snapshot.range) : undefined;
+    return buildPageFrom({
+      param: {
+        datasource_type: 'prometheus',
+        datasource_id: datasourceValue,
+        promql: snapshot?.promql?.trim() || undefined,
+        start: range ? String(range.start) : undefined,
+        end: range ? String(range.end) : undefined,
+      },
+    });
+  }, [datasourceValue]);
   const aiPromptList = useMemo(() => ['cpu', 'memory', 'disk'].map((metric) => ({ label: tAi(`dock.prompt_${metric}`), value: tAi(`dock.prompt_${metric}_query`) })), [tAi]);
   // This panel's own query box; panels on this page can each be on a different
   // data source, so the assistant is handed the box, not a page-wide lookup.
@@ -171,7 +187,7 @@ export default function Prometheus(props: IProps) {
             {IS_ENT ? (
               <AiQueryDock
                 open={aiOpen}
-                pageFrom={aiPageFrom}
+                pageFrom={readAiPageFrom}
                 progress={aiActions.progress}
                 prepareTurn={aiActions.prepareTurn}
                 canUndo={aiActions.canUndo}

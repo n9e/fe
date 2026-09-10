@@ -91,7 +91,7 @@ export interface PromGraphControl {
   snapshot(): PromGraphSnapshot;
   revision(): number;
   fill(next: string, range?: IRawTimeRange): void;
-  run(options?: { signal?: AbortSignal }): Promise<{ empty: boolean }>;
+  run(options?: { signal?: AbortSignal }): Promise<{ empty: boolean; count?: number }>;
   restore(snapshot: PromGraphSnapshot): void;
   queryInput(): Element | null;
   queryButton(): Element | null;
@@ -259,9 +259,9 @@ export default function index(props: IProps) {
         if (signal?.aborted) return Promise.reject(new DOMException('Query stopped', 'AbortError'));
         if (!valueRef.current?.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
         const controller = new AbortController();
-        const promise = new Promise<{ empty: boolean }>((resolve, reject) => {
+        const promise = new Promise<{ empty: boolean; count?: number }>((resolve, reject) => {
           let settled = false;
-          const complete = (result: { empty: boolean } | Error) => {
+          const complete = (result: { empty: boolean; count?: number } | Error) => {
             if (settled) return;
             settled = true;
             signal?.removeEventListener('abort', abort);

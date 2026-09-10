@@ -170,6 +170,7 @@ const en_US = {
     applying: 'Filling in query',
     querying: 'Running query',
     success: 'Query complete',
+    success_count: 'Found {{count}} series',
     empty: 'Query complete, no data',
     changed: 'Page changed, not applied',
     undone: 'Change undone',

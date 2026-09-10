@@ -71,7 +71,7 @@ it.each(['table', 'graph'] as const)('waits for the actual %s response and does 
   expect(settled).not.toHaveBeenCalled();
   expect((getPromData as jest.Mock).mock.calls[1][1].query).toBe('sum(up)');
   await act(async () => requests[1].resolve({ resultType: 'vector', result: [] }));
-  await expect(run!).resolves.toEqual({ empty: true });
+  await expect(run!).resolves.toMatchObject({ empty: true });
 });
 
 it('rejects failed queries instead of reporting success', async () => {
@@ -158,7 +158,7 @@ it('rejects the replaced run and resolves only the newest matching request', asy
   await act(async () => requests[0].resolve(response('replaced')));
   expect(completed).not.toHaveBeenCalled();
   await act(async () => requests[1].resolve(response('current')));
-  await expect(second!).resolves.toEqual({ empty: false });
+  await expect(second!).resolves.toMatchObject({ empty: false });
 });
 
 it('invalidates a running query when the user edits an unblurred draft', async () => {

@@ -168,8 +168,8 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
             report(turn, { phase: 'querying', stage: turn.stage });
             const result = await control.run({ signal: turn.controller.signal });
             guard();
-            report(turn, { phase: result.empty ? 'empty' : 'success', stage: turn.stage, followUp: args.follow_up?.trim().slice(0, 60) || undefined });
-            return { promql: latest.current.getControl()!.snapshot().promql, datasource_id: turn.datasource, empty: result.empty };
+            report(turn, { phase: result.empty ? 'empty' : 'success', stage: turn.stage, count: result.count, followUp: args.follow_up?.trim().slice(0, 60) || undefined });
+            return { promql: latest.current.getControl()!.snapshot().promql, datasource_id: turn.datasource, empty: result.empty, series: result.count };
           } catch (error) {
             // Context changes and cancellation must never leave a success banner.
             if (turn.changed || (!turn.controller.signal.aborted && changed(turn))) {

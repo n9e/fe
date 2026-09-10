@@ -169,6 +169,7 @@ const fr_FR = {
     applying: 'Saisie de la requête',
     querying: 'Exécution de la requête',
     success: 'Requête terminée',
+    success_count: '{{count}} séries trouvées',
     empty: 'Requête terminée, aucune donnée',
     changed: 'La page a changé, requête non appliquée',
     undone: 'Modification annulée',

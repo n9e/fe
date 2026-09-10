@@ -170,6 +170,7 @@ const zh_CN = {
     applying: '正在填入查询',
     querying: '正在查询',
     success: '查询完成',
+    success_count: '已查到 {{count}} 条',
     empty: '查询完成，暂无数据',
     changed: '页面已变化，尚未应用',
     undone: '已撤销本次修改',

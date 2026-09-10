@@ -254,7 +254,7 @@ export default function Graph(props: IProps) {
           setData(series);
           setErrorContent('');
           settled = true;
-          queryRequest?.complete({ empty: series.length === 0 });
+          queryRequest?.complete({ empty: series.length === 0, count: series.length });
         })
         .catch((err) => {
           if (controller.signal.aborted) return;

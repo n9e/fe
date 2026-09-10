@@ -169,6 +169,7 @@ const pt_BR = {
     applying: 'Preenchendo a consulta',
     querying: 'Executando a consulta',
     success: 'Consulta concluída',
+    success_count: '{{count}} séries encontradas',
     empty: 'Consulta concluída, sem dados',
     changed: 'A página mudou, consulta não aplicada',
     undone: 'Alteração desfeita',

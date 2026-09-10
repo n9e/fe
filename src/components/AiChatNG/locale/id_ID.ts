@@ -169,6 +169,7 @@ const id_ID = {
     applying: 'Mengisi kueri',
     querying: 'Menjalankan kueri',
     success: 'Kueri selesai',
+    success_count: '{{count}} seri ditemukan',
     empty: 'Kueri selesai, tidak ada data',
     changed: 'Halaman berubah, kueri belum diterapkan',
     undone: 'Perubahan dibatalkan',

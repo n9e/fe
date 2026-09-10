@@ -170,6 +170,7 @@ const zh_HK = {
     applying: '正在填入查詢',
     querying: '正在查詢',
     success: '查詢完成',
+    success_count: '已查到 {{count}} 條',
     empty: '查詢完成，暫無資料',
     changed: '頁面已變更，尚未套用',
     undone: '已復原本次修改',

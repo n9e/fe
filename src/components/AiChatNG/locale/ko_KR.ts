@@ -169,6 +169,7 @@ const ko_KR = {
     applying: '쿼리 입력 중',
     querying: '쿼리 실행 중',
     success: '쿼리 완료',
+    success_count: '{{count}}개 시리즈',
     empty: '쿼리 완료, 데이터 없음',
     changed: '페이지가 변경되어 적용되지 않음',
     undone: '이번 변경을 되돌렸습니다',

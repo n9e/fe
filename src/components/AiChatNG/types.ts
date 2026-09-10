@@ -12,6 +12,9 @@ export interface IAiChatPageInfo {
   param?: Record<string, unknown>;
 }
 
+/** Page info, or a reader for it: the page's current state is read when a message is sent. */
+export type AiChatPageFromSource = IAiChatPageInfo | (() => IAiChatPageInfo);
+
 export interface IAiChatAction {
   key?: string;
   param?: IAiChatActionParam;
@@ -195,6 +198,8 @@ export interface IAiQueryProgress {
   message?: string;
   /** The model's one-line suggestion for the next refinement, shown as the composer placeholder after delivery. */
   followUp?: string;
+  /** Series the page's own query returned, when it reported one. */
+  count?: number;
 }
 
 /** Outcome of the page actions this panel ran, keyed by call id. */
@@ -226,7 +231,7 @@ export interface IAiChatProps {
   onBusyChange?: (busy: boolean) => void;
   /** Closing an embedded surface stops its active turn but preserves history. */
   active?: boolean;
-  queryPageFrom: IAiChatPageInfo;
+  queryPageFrom: AiChatPageFromSource;
   queryAction?: IAiChatAction;
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);
   promptList?: Array<string | { label: string; value: string }>;
