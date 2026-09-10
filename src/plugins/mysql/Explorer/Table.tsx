@@ -13,15 +13,29 @@ import { setLocalQueryHistory } from '../components/HistoricalRecords';
 import { CACHE_KEY } from '../constants';
 import { useGlobalState } from '../globalState';
 
+/** What a run of the statement came back with, for whoever asked for the run. */
+export interface QueryResult {
+  empty: boolean;
+  count?: number;
+}
+/**
+ * One caller's interest in the next fetch. Bound to that fetch by closure, so a
+ * slow response from an earlier statement can never answer a later request.
+ */
+export interface QueryRequest {
+  signal: AbortSignal;
+  complete: (result: QueryResult | Error) => void;
+}
 interface Props {
   form: FormInstance;
   datasourceValue: number;
   refreshFlag?: string;
   setRefreshFlag: (flag?: string) => void;
+  queryRequest?: QueryRequest;
 }
 
 export default function TableCpt(props: Props) {
-  const { form, datasourceValue, refreshFlag, setRefreshFlag } = props;
+  const { form, datasourceValue, refreshFlag, setRefreshFlag, queryRequest } = props;
   const [mySQLTableFields, setMySQLTableFields] = useGlobalState('mySQLTableFields');
   const [columnsKeys, setColumnsKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -101,6 +115,7 @@ export default function TableCpt(props: Props) {
             }),
           );
           setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, query);
+          if (!queryRequest?.signal.aborted) queryRequest?.complete({ empty: data.length === 0, count: data.length });
         })
         .catch((err) => {
           const msg = _.get(err, 'message');
@@ -108,6 +123,7 @@ export default function TableCpt(props: Props) {
           setData([]);
           setColumnsKeys([]);
           setMySQLTableFields([]);
+          if (!queryRequest?.signal.aborted) queryRequest?.complete(err instanceof Error ? err : new Error(String(msg)));
         })
         .finally(() => {
           setRefreshFlag();

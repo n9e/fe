@@ -33,6 +33,8 @@ export interface AiQueryDockProps {
   promptList?: IAiChatProps['promptList'];
   /** The user asked for a fresh conversation: the page resets its status; the query box is left alone. */
   onNewConversation?: () => void;
+  /** What a delivered count counts: time series (default) or table rows. */
+  resultNoun?: 'series' | 'rows';
   onClose: () => void;
   className?: string;
 }
@@ -97,7 +99,7 @@ function delivered(message: IAiChatMessage): boolean {
 }
 
 export default function AiQueryDock(props: AiQueryDockProps) {
-  const { open, pageFrom, promptList, onClose, onNewConversation, className, progress, prepareTurn, canUndo, onUndo } = props;
+  const { open, pageFrom, promptList, onClose, resultNoun, onNewConversation, className, progress, prepareTurn, canUndo, onUndo } = props;
   const { t } = useTranslation(NAME_SPACE);
   const rootRef = useRef<HTMLDivElement>(null);
   const [chatId, setChatId] = useState<string>();
@@ -208,7 +210,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     tone = phase === 'success' || phase === 'empty' || phase === 'undone' ? 'ok' : phase === 'failed' ? 'error' : phase === 'applying' || phase === 'querying' ? 'running' : 'warn';
     const key = phase === 'stopped' && progress.stage ? `stopped_${progress.stage}` : phase;
     // One line: what came back. The model's own account stays in the conversation.
-    const headline = phase === 'success' && progress.count != null ? t('dock.success_count', { count: progress.count }) : t(`dock.${key}`);
+    const headline =
+      phase === 'success' && progress.count != null ? t(resultNoun === 'rows' ? 'dock.success_rows' : 'dock.success_count', { count: progress.count }) : t(`dock.${key}`);
     status = (
       <>
         <span>{headline}</span>

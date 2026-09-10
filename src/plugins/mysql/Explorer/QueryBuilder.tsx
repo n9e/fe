@@ -18,6 +18,8 @@ import { useGlobalState } from '../globalState';
 interface Props {
   extra?: React.ReactNode;
   executeQuery: () => void;
+  /** The user typed in the box or moved the window: the panel is theirs again. */
+  onUserContextChange?: () => void;
   datasourceValue: number;
   getMode: () => string;
 }
@@ -26,7 +28,7 @@ export default function QueryBuilder(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const [mySQLTableFields, setMySQLTableFields] = useGlobalState('mySQLTableFields');
   const form = Form.useFormInstance();
-  const { extra, executeQuery, datasourceValue, getMode } = props;
+  const { extra, executeQuery, onUserContextChange, datasourceValue, getMode } = props;
   const { darkMode } = useContext(CommonStateContext);
 
   return (
@@ -62,6 +64,7 @@ export default function QueryBuilder(props: Props) {
               historicalRecords={[]}
               onPressEnter={executeQuery}
               onChange={() => {
+                onUserContextChange?.();
                 // 在 graph 视图里 sql 修改后清空缓存的 fields
                 if (getMode() === 'graph') {
                   setMySQLTableFields([]);
@@ -84,7 +87,7 @@ export default function QueryBuilder(props: Props) {
           }}
         />
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-          <TimeRangePicker />
+          <TimeRangePicker onChange={onUserContextChange} />
         </Form.Item>
         {extra}
       </div>
