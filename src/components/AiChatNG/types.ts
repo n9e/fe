@@ -193,6 +193,8 @@ export interface IAiQueryProgress {
   phase: 'idle' | 'applying' | 'querying' | 'success' | 'empty' | 'failed' | 'changed' | 'stopped' | 'undone';
   stage?: 'unchanged' | 'filled' | 'queried';
   message?: string;
+  /** The model's one-line suggestion for the next refinement, shown as the composer placeholder after delivery. */
+  followUp?: string;
 }
 
 /** Outcome of the page actions this panel ran, keyed by call id. */

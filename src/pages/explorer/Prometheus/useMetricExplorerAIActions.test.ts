@@ -113,6 +113,14 @@ it('distinguishes empty results and query errors from success', async () => {
   expect(result.current.progress.phase).toBe('failed');
   expect(result.current.progress.message).toContain('query unavailable');
 });
+it("passes the model's follow-up hint along with a delivered result", async () => {
+  const { result, scope, box } = setup();
+  box.run.mockResolvedValue({ empty: false });
+  await act(async () => {
+    await scope.executePageAction({ ...request, args: { promql: 'up', follow_up: ' 改成按 env 分组取平均 ' } });
+  });
+  expect(result.current.progress).toEqual({ phase: 'success', stage: 'queried', followUp: '改成按 env 分组取平均' });
+});
 it('preserves a late answer as unapplied when the user edits the draft', async () => {
   const { result, scope, box, edit } = setup();
   edit();

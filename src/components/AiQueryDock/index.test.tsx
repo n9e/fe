@@ -71,6 +71,15 @@ describe('AiQueryDock', () => {
     expect(screen.getByPlaceholderText('dock.placeholder_follow_up')).toBeTruthy();
   });
 
+  it("offers the model's follow-up hint as the next placeholder, and only after a delivery", () => {
+    const { rerender } = render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'success', followUp: '改成按 env 分组取平均' }} />);
+    act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+    expect(screen.getByPlaceholderText('改成按 env 分组取平均')).toBeTruthy();
+
+    rerender(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'failed', message: 'query unavailable', followUp: '改成按 env 分组取平均' }} />);
+    expect(screen.getByPlaceholderText('dock.placeholder_follow_up')).toBeTruthy();
+  });
+
   it('stays open when the assistant asks something back instead', () => {
     renderDock();
     act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'input_request', content: '哪个数据源？' }] })));

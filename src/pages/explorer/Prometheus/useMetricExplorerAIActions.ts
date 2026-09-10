@@ -14,6 +14,7 @@ export interface MetricExplorerAIActionsOptions {
 interface SetMetricQueryArgs {
   promql: string;
   time_range?: { start: string; end: string } | null;
+  follow_up?: string | null;
 }
 interface QueryTurn {
   controller: AbortController;
@@ -125,6 +126,12 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
               },
               required: ['start', 'end'],
             },
+            follow_up: {
+              type: 'string',
+              description:
+                'The one refinement the user is most likely to ask for next, as a short sentence in their language (under 20 characters), e.g. "改成按 env 分组取平均". ' +
+                'Base it on labels you actually found. It is shown as a hint in the input box, never run.',
+            },
           },
           required: ['promql'],
         },
@@ -161,7 +168,7 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
             report(turn, { phase: 'querying', stage: turn.stage });
             const result = await control.run({ signal: turn.controller.signal });
             guard();
-            report(turn, { phase: result.empty ? 'empty' : 'success', stage: turn.stage });
+            report(turn, { phase: result.empty ? 'empty' : 'success', stage: turn.stage, followUp: args.follow_up?.trim().slice(0, 60) || undefined });
             return { promql: latest.current.getControl()!.snapshot().promql, datasource_id: turn.datasource, empty: result.empty };
           } catch (error) {
             // Context changes and cancellation must never leave a success banner.

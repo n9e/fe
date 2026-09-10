@@ -195,7 +195,9 @@ export default function AiQueryDock(props: AiQueryDockProps) {
 
   const asked = !running && !!message && lastResponseType(message) === 'input_request';
   const closeLabel = t(busy || running ? 'dock.close_and_stop' : 'dock.close');
-  const placeholder = !turn ? t('dock.placeholder_first') : asked ? t('dock.placeholder_answer') : t('dock.placeholder_follow_up');
+  // After a delivery the model's own suggestion replaces the generic prompt.
+  const suggested = progress && (progress.phase === 'success' || progress.phase === 'empty') ? progress.followUp : undefined;
+  const placeholder = !turn ? t('dock.placeholder_first') : asked ? t('dock.placeholder_answer') : suggested || t('dock.placeholder_follow_up');
 
   return (
     <div
