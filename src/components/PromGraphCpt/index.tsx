@@ -24,6 +24,7 @@ import { TooltipPlacement } from 'antd/lib/tooltip';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
 import { N9E_PATHNAME } from '@/utils/constant';
 import PromQLInputNG, { interpolateString, instantInterpolateString, includesVariables } from '@/components/PromQLInputNG';
 
@@ -80,22 +81,13 @@ interface IProps {
   onUserContextChange?: () => void;
 }
 
-export interface PromGraphSnapshot {
-  promql: string;
+export interface PromGraphSnapshot extends QueryDockSnapshot {
   submitted?: string;
   range: IRawTimeRange;
   timestamp?: number;
 }
 
-export interface PromGraphControl {
-  snapshot(): PromGraphSnapshot;
-  revision(): number;
-  fill(next: string, range?: IRawTimeRange): void;
-  run(options?: { signal?: AbortSignal }): Promise<{ empty: boolean; count?: number }>;
-  restore(snapshot: PromGraphSnapshot): void;
-  queryInput(): Element | null;
-  queryButton(): Element | null;
-}
+export type PromGraphControl = QueryDockControl<PromGraphSnapshot>;
 
 const TabPane = Tabs.TabPane;
 
@@ -246,7 +238,7 @@ export default function index(props: IProps) {
   useLayoutEffect(() => {
     if (!controlRef) return;
     controlRef.current = {
-      snapshot: () => ({ promql: valueRef.current || '', submitted: submittedRef.current, range: _.cloneDeep(rangeRef.current), timestamp: timestampRef.current }),
+      snapshot: () => ({ query: valueRef.current || '', submitted: submittedRef.current, range: _.cloneDeep(rangeRef.current), timestamp: timestampRef.current }),
       revision: () => revisionRef.current,
       fill: (next, nextRange) => {
         pendingRef.current?.abort();
@@ -287,7 +279,7 @@ export default function index(props: IProps) {
         setQueryStats(null);
         setQueryRequest(undefined);
         setQueryPaused(false);
-        change(snapshot.promql);
+        change(snapshot.query);
         updateSubmitted(snapshot.submitted);
         updateRange(_.cloneDeep(snapshot.range));
         updateTimestamp(snapshot.timestamp);

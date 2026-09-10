@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 import { act, renderHook } from '@testing-library/react';
 import type { ActionRunContext, UIAction } from '@flashcatcloud/ai-kit/actions';
-import { useMetricExplorerAIActions, MetricExplorerAIActionsOptions } from './useMetricExplorerAIActions';
+import { useQueryDockActions, QueryDockActionsOptions, QueryDockAction } from './useQueryDockActions';
 
 const registered = new Map<string, UIAction<any>>();
 let feedback: ActionRunContext['feedback'];
@@ -26,6 +26,13 @@ jest.mock('@/components/AiChatNG/uiActionRuntime', () => ({
     },
   },
 }));
+const action: QueryDockAction = {
+  name: 'set_metric_query',
+  argument: 'promql',
+  language: 'PromQL expression',
+  followUpExample: '改成按 env 分组取平均',
+  page: { title: 'Metric explorer', summary: 'One query panel.' },
+};
 const request = { call_id: 'call-1', name: 'set_metric_query', description: 'Fill and run the query', args: { promql: 'up' } };
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -38,7 +45,7 @@ function deferred<T>() {
 }
 function setup() {
   let revision = 0;
-  const snapshot = { promql: 'draft', submitted: 'previous', range: { start: 'now-1h', end: 'now' }, timestamp: 123 };
+  const snapshot = { query: 'draft', submitted: 'previous', range: { start: 'now-1h', end: 'now' }, timestamp: 123 };
   const box = {
     snapshot: () => snapshot,
     revision: () => revision,
@@ -48,8 +55,8 @@ function setup() {
     queryInput: () => document.createElement('div'),
     queryButton: () => document.createElement('button'),
   };
-  const props = { enabled: true, datasourceValue: 1, getControl: () => box };
-  const view = renderHook((p: MetricExplorerAIActionsOptions) => useMetricExplorerAIActions(p), { initialProps: props });
+  const props = { enabled: true, datasourceValue: 1, getControl: () => box, action };
+  const view = renderHook((p: QueryDockActionsOptions<typeof snapshot>) => useQueryDockActions(p), { initialProps: props });
   let scope!: ReturnType<typeof view.result.current.prepareTurn>;
   act(() => {
     scope = view.result.current.prepareTurn();
@@ -243,4 +250,22 @@ it('removes undo when the user changes query context', async () => {
   expect(result.current.canUndo).toBe(true);
   act(() => result.current.invalidateUndo());
   expect(result.current.canUndo).toBe(false);
+});
+it('declares the tool and reads the statement under the names the action gives', async () => {
+  const sql: QueryDockAction = { ...action, name: 'set_sql_query', argument: 'sql', language: 'SQL statement' };
+  const { result, box, rerender, props } = setup();
+  rerender({ ...props, action: sql });
+  // Re-declaring the action ends the turn it was prepared under.
+  let scope!: ReturnType<typeof result.current.prepareTurn>;
+  act(() => {
+    scope = result.current.prepareTurn();
+  });
+  expect(registered.has('set_sql_query')).toBe(true);
+  expect(registered.get('set_sql_query')!.inputSchema).toMatchObject({ required: ['sql'], properties: { sql: { type: 'string' } } });
+  let outcome;
+  await act(async () => {
+    outcome = await scope.executePageAction({ ...request, name: 'set_sql_query', args: { sql: 'select 1' } });
+  });
+  expect(box.fill).toHaveBeenCalledWith('select 1', undefined);
+  expect(outcome.result).toMatchObject({ sql: 'draft', datasource_id: 1 });
 });

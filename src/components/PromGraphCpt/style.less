@@ -159,30 +159,3 @@
     background-color: var(--fc-fill-3);
   }
 }
-
-/* AI dock: a hairline "L" from the orb down and across into the dock bar,
-   drawn in the same grey as the borders around it. */
-.ai-query-dock-spine {
-  position: relative;
-  width: 1px;
-  /* Reaches the vertical middle of the dock bar (8px panel gap + half the bar). */
-  height: 28px;
-  /* Nudge up so the line reads continuous from the orb. */
-  margin-top: -2px;
-  background: var(--fc-antd-border-color);
-}
-
-.ai-query-dock-spine::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  /* From the rail's centre across the 8px gap to the bar's left border. */
-  width: 24px;
-  height: 1px;
-  background: var(--fc-antd-border-color);
-}
-
-.ai-query-dock-slot {
-  min-width: 0;
-}

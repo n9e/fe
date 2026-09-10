@@ -7,13 +7,13 @@ import type PromGraph from '@/components/PromGraphCpt';
 import type AiQueryDock from '@/components/AiQueryDock';
 import type { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import type { IAiChatQueryContentContext } from '@/components/AiChatNG/types';
-import type { useMetricExplorerAIActions } from './useMetricExplorerAIActions';
+import type { useQueryDockActions } from '@/components/AiQueryDock/useQueryDockActions';
 import Prometheus from './index';
 
 type PromGraphProps = React.ComponentProps<typeof PromGraph>;
 type AiQueryDockProps = React.ComponentProps<typeof AiQueryDock>;
 type AiButtonProps = React.ComponentProps<typeof AiButton>;
-type AiActionsOptions = Parameters<typeof useMetricExplorerAIActions>[0];
+type AiActionsOptions = Parameters<typeof useQueryDockActions>[0];
 
 // Which build we are: the page reads IS_ENT at render time, so a getter lets
 // each test pick the build without reloading the module.
@@ -54,8 +54,8 @@ jest.mock('@/components/AiChatNG/FlashAiButton', () => ({
   ),
 }));
 const mockActions = { enabled: [] as boolean[] };
-jest.mock('./useMetricExplorerAIActions', () => ({
-  useMetricExplorerAIActions: (options: AiActionsOptions) => {
+jest.mock('@/components/AiQueryDock/useQueryDockActions', () => ({
+  useQueryDockActions: (options: AiActionsOptions) => {
     mockActions.enabled.push(options.enabled);
     return { progress: { phase: 'idle' }, canUndo: false, prepareTurn: jest.fn(), undo: jest.fn(), cancel: jest.fn(), invalidateUndo: jest.fn(), reset: jest.fn() };
   },

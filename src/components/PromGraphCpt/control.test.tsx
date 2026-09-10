@@ -46,7 +46,7 @@ it('captures unblurred edits and restores the draft, submitted expression and ra
   const controlRef: any = { current: null };
   render(<PromGraph datasourceValue={1} promQL='up' controlRef={controlRef} />);
   fireEvent.change(screen.getByLabelText('query draft'), { target: { value: 'rate(up[5m])' } });
-  expect(controlRef.current.snapshot().promql).toBe('rate(up[5m])');
+  expect(controlRef.current.snapshot().query).toBe('rate(up[5m])');
   expect(controlRef.current.snapshot().submitted).toBe('up');
   const revision = controlRef.current.revision();
   const snapshot = controlRef.current.snapshot();
@@ -174,7 +174,7 @@ it('invalidates a running query when the user edits an unblurred draft', async (
   fireEvent.change(screen.getByLabelText('query draft'), { target: { value: 'my_draft' } });
   await rejected;
   expect(controlRef.current.revision()).toBeGreaterThan(revision);
-  expect(controlRef.current.snapshot().promql).toBe('my_draft');
+  expect(controlRef.current.snapshot().query).toBe('my_draft');
 });
 
 it('tracks time range and query mode changes as user revisions', () => {

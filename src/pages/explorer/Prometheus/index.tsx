@@ -3,10 +3,9 @@ import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
-import { Space, Tooltip } from 'antd';
+import { Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
 import { useTranslation } from 'react-i18next';
-import { Sparkles } from 'lucide-react';
 
 import { IS_ENT, SIZE } from '@/utils/constant';
 import PromGraph, { PromGraphControl } from '@/components/PromGraphCpt';
@@ -17,13 +16,22 @@ import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
 import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 import AiQueryDock from '@/components/AiQueryDock';
+import { AiQueryDockTrigger } from '@/components/AiQueryDock/Trigger';
+import { useQueryDockActions, QueryDockAction } from '@/components/AiQueryDock/useQueryDockActions';
 
 import { queryStringOptions } from '../constants';
 import ProbeBanner from '../components/ProbeBanner';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
-import { useMetricExplorerAIActions } from './useMetricExplorerAIActions';
 
 const LOCAL_KEY = 'n9e-query-promql-history';
+// How this panel's statement is named to the assistant.
+const PROMQL_ACTION: QueryDockAction = {
+  name: 'set_metric_query',
+  argument: 'promql',
+  language: 'PromQL expression',
+  followUpExample: '改成按 env 分组取平均',
+  page: { title: 'Metric explorer', summary: 'The user writes PromQL and reads its results in a single query panel.' },
+};
 
 type IMode = 'table' | 'graph';
 interface IProps {
@@ -90,7 +98,7 @@ export default function Prometheus(props: IProps) {
       param: {
         datasource_type: 'prometheus',
         datasource_id: datasourceValue,
-        promql: snapshot?.promql?.trim() || undefined,
+        promql: snapshot?.query?.trim() || undefined,
         start: range ? String(range.start) : undefined,
         end: range ? String(range.end) : undefined,
       },
@@ -105,11 +113,12 @@ export default function Prometheus(props: IProps) {
   // enterprise build: its assistant is fc-model, which understands page
   // actions. The open-source and Nightingale commercial builds talk to the
   // n9e assistant and keep the global chat button they always had.
-  const aiActions = useMetricExplorerAIActions({
+  const aiActions = useQueryDockActions({
     // Only the panel whose dock is open may be written to by the assistant.
     enabled: IS_ENT && aiOpen,
     datasourceValue,
     getControl: () => graphControl.current,
+    action: PROMQL_ACTION,
   });
 
   useEffect(() => {
@@ -228,25 +237,16 @@ export default function Prometheus(props: IProps) {
         }}
         leadingExtra={
           IS_ENT ? (
-            <Tooltip title={tAi('dock.open')}>
-              <button
-                type='button'
-                aria-label={tAi('dock.open')}
-                aria-pressed={aiOpen}
-                className={`inline-flex h-8 w-8 items-center justify-center rounded-full border-0 p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-                  aiOpen ? 'bg-fc-200/80 text-primary' : 'bg-transparent text-primary/80 hover:bg-fc-200/80 hover:text-primary'
-                }`}
-                onClick={() => {
-                  // Opening the assistant is taking over, same as editing the
-                  // query by hand: the onboarding banner steps aside.
-                  setProbeBannerVisible(false);
-                  if (aiOpen) aiActions.cancel();
-                  setAiOpen((previous) => !previous);
-                }}
-              >
-                <Sparkles size={16} strokeWidth={1.75} aria-hidden='true' />
-              </button>
-            </Tooltip>
+            <AiQueryDockTrigger
+              open={aiOpen}
+              onClick={() => {
+                // Opening the assistant is taking over, same as editing the
+                // query by hand: the onboarding banner steps aside.
+                setProbeBannerVisible(false);
+                if (aiOpen) aiActions.cancel();
+                setAiOpen((previous) => !previous);
+              }}
+            />
           ) : undefined
         }
         leadingExtraActive={IS_ENT && aiOpen}
