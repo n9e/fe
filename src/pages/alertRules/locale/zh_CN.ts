@@ -152,6 +152,7 @@ const zh_CN = {
   invalid_datasource_tip_1: '数据源',
   invalid_datasource_tip_2: '存在未配置关联告警引擎集群的数据源',
   invalid_datasource_reload: '刷新数据源',
+  all_datasources: '全部数据源',
   advanced_settings: '辅助配置',
   host: {
     query: {

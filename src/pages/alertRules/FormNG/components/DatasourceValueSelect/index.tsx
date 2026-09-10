@@ -25,12 +25,13 @@ import { Link } from 'react-router-dom';
 import { getDatasourceBriefList } from '@/services/common';
 import { IS_ENT } from '@/utils/constant';
 import DatasourceSelectExtra from '@/pages/alertRules/Form/components/DatasourceSelectExtra';
+import { DatasourceSelectV3, DatasourceItem } from '@/components/DatasourceSelect';
 
 import { getDatasourcesByQueries } from './services';
 import './style.less';
 
 interface IProps {
-  datasourceList: { id: number; name: string }[];
+  datasourceList: DatasourceItem[];
   reloadGroupedDatasourceList: () => void;
   datasourceCate?: string;
   names?: string[];
@@ -154,19 +155,23 @@ function Query({ idx, names, field, remove, invalidDatasourceIds, datasourceList
                 },
               ]}
             >
-              <Select
-                disabled={disabled}
-                mode={match_type === 0 ? 'multiple' : 'tags'}
-                tokenSeparators={[' ']}
-                open={match_type === 1 ? false : undefined}
-                options={_.map(datasourceList, (item) => {
-                  return {
-                    value: item.id,
-                    label: item.name,
-                  };
-                })}
-                optionFilterProp='label'
-              />
+              {match_type === 0 ? (
+                <DatasourceSelectV3 datasourceList={datasourceList} disabled={disabled} mode='multiple' style={{ width: '100%' }} />
+              ) : (
+                <Select
+                  disabled={disabled}
+                  mode='tags'
+                  tokenSeparators={[' ']}
+                  open={false}
+                  options={_.map(datasourceList, (item) => {
+                    return {
+                      value: item.id,
+                      label: item.name,
+                    };
+                  })}
+                  optionFilterProp='label'
+                />
+              )}
             </Form.Item>
           </Col>
         </>
