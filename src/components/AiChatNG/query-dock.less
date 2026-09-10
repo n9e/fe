@@ -156,6 +156,8 @@
   .ai-query-dock-status {
     position: relative;
     flex: 0 0 auto;
+    /* Full bar height, so the progress line under it lands on the bar's edge. */
+    align-self: stretch;
   }
 
   /* A fixed slot wide enough for "正在执行脚本… 12s"; longer states ellipsize
@@ -206,6 +208,11 @@
       max-width: 100%;
       padding: 4px 0;
       border-bottom: 1px solid var(--fc-border-color);
+    }
+
+    /* Stacked: the status has its own bottom rule; the line sits on that. */
+    .ai-query-dock-progress {
+      bottom: -1px;
     }
 
     .ai-query-dock-composer {
