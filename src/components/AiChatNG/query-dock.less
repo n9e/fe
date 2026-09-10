@@ -223,7 +223,12 @@
   }
 }
 
-/* The SQL box hosting a trigger keeps the text clear of it. */
+/* The SQL box hosting a trigger keeps the text clear of it, and the column
+   carries the form row's bottom margin so the dock sits right under the box. */
+.ai-query-dock-host {
+  margin-bottom: @form-item-margin-bottom;
+}
+
 .ai-query-dock-host .logql-codemirror {
   padding-left: 32px;
 }

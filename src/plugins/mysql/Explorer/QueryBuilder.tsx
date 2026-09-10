@@ -55,6 +55,8 @@ export default function QueryBuilder(props: Props) {
           >
             <div className='relative'>
               <Form.Item
+                // With a dock under the box, the row's bottom margin moves to the column's end.
+                className={queryExtra ? 'mb-0' : undefined}
                 name={['query', 'query']}
                 rules={[
                   {
