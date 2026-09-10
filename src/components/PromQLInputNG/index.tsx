@@ -32,8 +32,8 @@ interface MonacoEditorPromQLProps {
   enableAutocomplete?: boolean;
   durationVariablesCompletion?: boolean;
   showGlobalMetrics?: boolean;
-  /** Rendered inside the box at its right end, after the metrics search (e.g. the AI trigger). */
-  suffix?: React.ReactNode;
+  /** Rendered inside the box at its left end, before the text (e.g. the AI trigger). */
+  prefix?: React.ReactNode;
   onChangeTrigger?: string[]; // 触发 onChange 的事件
   interpolateString?: (query: string) => string;
   onChange?: (value?: string) => void;
@@ -62,7 +62,7 @@ export default function index(props: MonacoEditorPromQLProps) {
     enableAutocomplete,
     durationVariablesCompletion,
     showGlobalMetrics,
-    suffix,
+    prefix,
     onChangeTrigger,
     interpolateString,
     onChange,
@@ -111,6 +111,7 @@ export default function index(props: MonacoEditorPromQLProps) {
               : undefined
           }
         >
+          {prefix ? <span className='ant-input-prefix'>{prefix}</span> : null}
           <PromQLMonacoEditor
             readOnly={readOnly}
             size={size}
@@ -171,20 +172,17 @@ export default function index(props: MonacoEditorPromQLProps) {
               onEditorDidMount?.(editor);
             }}
           />
-          {showGlobalMetrics || suffix ? (
-            <span className='ant-input-suffix gap-2'>
-              {showGlobalMetrics && (
-                <Search
-                  size={16}
-                  className='prom-graph-metrics-target'
-                  onClick={() => {
-                    setMetricsExplorerVisible(true);
-                  }}
-                />
-              )}
-              {suffix}
+          {showGlobalMetrics && (
+            <span className='ant-input-suffix'>
+              <Search
+                size={16}
+                className='prom-graph-metrics-target'
+                onClick={() => {
+                  setMetricsExplorerVisible(true);
+                }}
+              />
             </span>
-          ) : null}
+          )}
         </span>
       </div>
       <MetricsExplorer

@@ -20,7 +20,7 @@ interface Props {
   executeQuery: () => void;
   /** The user typed in the box or moved the window: the panel is theirs again. */
   onUserContextChange?: () => void;
-  /** Sits inside the SQL box at its right end (e.g. the AI trigger). */
+  /** Sits inside the SQL box at its left end (e.g. the AI trigger). */
   queryExtra?: React.ReactNode;
   /** Hangs under the SQL box, as wide as it. */
   noticeBanner?: React.ReactNode;
@@ -79,7 +79,7 @@ export default function QueryBuilder(props: Props) {
                   placeholder={t('query.query_placeholder')}
                 />
               </Form.Item>
-              {queryExtra ? <span className='ai-query-dock-affix absolute right-2 top-0 flex h-8 items-center'>{queryExtra}</span> : null}
+              {queryExtra ? <span className='ai-query-dock-affix absolute left-2 top-0 z-10 flex h-8 items-center'>{queryExtra}</span> : null}
             </div>
           </InputGroupWithFormItem>
           {noticeBanner}

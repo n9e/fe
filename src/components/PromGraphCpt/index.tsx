@@ -64,7 +64,7 @@ interface IProps {
   showBuilder?: boolean;
   onChange?: (promQL?: string) => void;
   promQLInputTooltip?: string;
-  /** Sits inside the PromQL box at its right end (e.g. the AI trigger); noticeBanner then hangs under the box, as wide as it. */
+  /** Sits inside the PromQL box at its left end (e.g. the AI trigger); noticeBanner then hangs under the box, as wide as it. */
   queryExtra?: React.ReactNode;
   extra?: React.ReactElement;
   showExportButton?: boolean; // 是否显示导出按钮
@@ -327,7 +327,7 @@ export default function index(props: IProps) {
               <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
                 <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
                   <PromQLInputNG
-                    suffix={queryExtra}
+                    prefix={queryExtra}
                     maxHeight={200}
                     enableAutocomplete={completeEnabled}
                     datasourceValue={datasourceValue}
