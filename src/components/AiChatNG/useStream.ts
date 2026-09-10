@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import i18next from 'i18next';
 import { basePrefix } from '@/App';
-import { AccessTokenKey } from '@/utils/constant';
+import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import { IAiChatStreamChunk } from './types';
 import { normalizeStreamChunk } from './utils';
 
@@ -31,7 +31,9 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
       setStreaming(true);
 
       try {
-        const response = await fetch(`${basePrefix}/api/n9e/stream`, {
+        // The enterprise build talks to fc-model directly, the same host the
+        // chat's other calls use; the open-source build streams through n9e.
+        const response = await fetch(`${basePrefix}${IS_ENT ? '/api/fc-model/stream' : '/api/n9e/stream'}`, {
           method: 'POST',
           credentials: 'include',
           headers: {
