@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Collapse, Space } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { Trans, useTranslation } from 'react-i18next';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, User } from 'lucide-react';
 
 import { IS_ENT } from '@/utils/constant';
 import {
@@ -78,6 +78,8 @@ interface IAiChatResponseBlocksProps {
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
   /** What happened to the page actions in this message, by call id. */
   pageActionOutcomes?: AiChatPageActionOutcomes;
+  /** The dock lays both sides out on the left and tells them apart by a mark; the full panel keeps its bubbles. */
+  variant?: 'full' | 'slim';
 }
 
 interface IThinkingBlockProps {
@@ -387,39 +389,53 @@ function MessageItemComponent({
   onOKForFormSelectContent,
   maybeScrollToBottom,
   pageActionOutcomes,
+  variant,
 }: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
+  const slim = variant === 'slim';
   const showInitialRunningStatus = shouldShowInitialRunningStatus(message.is_finish, message.response);
   const showBottomRunningStatus = shouldShowRunningStatusAtMessageBottom(message.is_finish, message.response);
 
   return (
     <div className='ai-chat-message-item w-full space-y-3 shadow-sm'>
-      <div className='flex justify-end [[data-ai-surface=query-dock]_&]:justify-start'>
-        <div className='max-w-[85%] rounded-lg bg-primary/10 px-2 py-1 text-sm [[data-ai-surface=query-dock]_&]:bg-fc-300'>
+      <div className={cn('flex', slim ? 'items-start gap-2' : 'justify-end')}>
+        {slim && (
+          <span className='mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-fc-300 text-hint' aria-hidden='true'>
+            <User size={12} strokeWidth={1.75} />
+          </span>
+        )}
+        <div className={cn('max-w-[85%] rounded-lg px-2 py-1 text-sm', slim ? 'bg-fc-300' : 'bg-primary/10')}>
           <div className='whitespace-pre-wrap break-words'>{message.query.content}</div>
         </div>
       </div>
-      <div className={cn('space-y-3', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
-        <ResponseBlocks
-          message={message}
-          isStreaming={isStreaming}
-          pageActionOutcomes={pageActionOutcomes}
-          onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
-          onActionClick={onActionClick}
-          onOKForFormSelectContent={onOKForFormSelectContent}
-          maybeScrollToBottom={maybeScrollToBottom}
-        />
-        {!message.is_finish && (
-          <div className='inline-flex items-center w-fit text-main text-sm'>
-            {!!showInitialRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.generating')}</span>}
-            {!!showBottomRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.processing')}</span>}
-            <span className='inline-flex items-center gap-[3px]' aria-hidden='true'>
-              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse' />
-              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:160ms]' />
-              <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:320ms]' />
-            </span>
-          </div>
+      <div className={cn(slim && 'flex items-start gap-2')}>
+        {slim && (
+          <span className='mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10' aria-hidden='true'>
+            <img src='/image/ai-chat/ai.gif' alt='' className='h-[14px] w-[14px]' />
+          </span>
         )}
+        <div className={cn('space-y-3', slim && 'min-w-0 flex-1', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
+          <ResponseBlocks
+            message={message}
+            isStreaming={isStreaming}
+            pageActionOutcomes={pageActionOutcomes}
+            onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
+            onActionClick={onActionClick}
+            onOKForFormSelectContent={onOKForFormSelectContent}
+            maybeScrollToBottom={maybeScrollToBottom}
+          />
+          {!message.is_finish && (
+            <div className='inline-flex items-center w-fit text-main text-sm'>
+              {!!showInitialRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.generating')}</span>}
+              {!!showBottomRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.processing')}</span>}
+              <span className='inline-flex items-center gap-[3px]' aria-hidden='true'>
+                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse' />
+                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:160ms]' />
+                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:320ms]' />
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -642,6 +642,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const messageItems = useMemo(() => {
     return messages.map((messageItem) => (
       <MessageItem
+        variant={variant}
         key={`${messageItem.chat_id}-${messageItem.seq_id}`}
         message={messageItem}
         isStreaming={streamingLocator?.chat_id === messageItem.chat_id && streamingLocator?.seq_id === messageItem.seq_id}
@@ -692,6 +693,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const pendingItem =
     slim && pendingContent && !messages.length ? (
       <MessageItem
+        variant={variant}
         key='pending'
         message={{ chat_id: '', seq_id: 0, query: { content: pendingContent, page_from: currentPageFrom() }, response: [], cur_step: t('message.generating'), is_finish: false }}
         isStreaming={false}
