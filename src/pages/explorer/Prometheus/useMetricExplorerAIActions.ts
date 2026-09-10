@@ -107,7 +107,7 @@ export function useMetricExplorerAIActions(options: MetricExplorerAIActionsOptio
         name: 'set_metric_query',
         description:
           'Fill and run a PromQL expression in the current query panel. Send an expression verified against the selected data source. The page reports its actual query result. Nothing is saved.',
-        schema: {
+        inputSchema: {
           type: 'object',
           properties: {
             promql: {

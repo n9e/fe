@@ -88,7 +88,7 @@ describe('ChatPanel 页面动作', () => {
     execute.mockReset();
     execute.mockResolvedValue({ ok: true, status: 'ok', action: 'set_metric_query' });
     manifest.mockReset();
-    manifest.mockReturnValue([{ name: 'set_metric_query', description: 'fill', schema: {} }]);
+    manifest.mockReturnValue([{ name: 'set_metric_query', description: 'fill', inputSchema: {} }]);
     getMessageDetail.mockReset();
   });
 
@@ -105,7 +105,9 @@ describe('ChatPanel 页面动作', () => {
     fireEvent.keyDown(box, { key: 'Enter' });
 
     // The page's actions ride along with the message.
-    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ manifest: [{ name: 'set_metric_query', description: 'fill', schema: {} }] })));
+    await waitFor(() =>
+      expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ manifest: [{ name: 'set_metric_query', description: 'fill', inputSchema: {} }] })),
+    );
     await waitFor(() => expect(execute).toHaveBeenCalledWith({ callId: 'call-7', name: 'set_metric_query', args: { promql: 'up' } }));
     expect(execute).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(onTurn).toHaveBeenCalledWith(expect.objectContaining({ phase: 'done' })));
