@@ -1,4 +1,5 @@
 const es_ES = {
+  "all_datasources": "Todos los orígenes de datos",
   "step_title": "Pasos de configuración",
   "validate_metric_msg": "Valida antes la métrica",
   "smart_rule_limit_msg": "Se alcanzó el límite de reglas de alerta inteligentes. Ponte en contacto con el soporte",
