@@ -78,6 +78,8 @@ export default function index(props: SelectProps & Props) {
   const additionalOptionValues = (additionalOptions ?? [])
     .map((option) => option?.value)
     .filter((value): value is DatasourceValue => typeof value === 'string' || typeof value === 'number');
+  const selectedValue = props.value ?? props.defaultValue;
+  const hasSelectedValue = Array.isArray(selectedValue) ? selectedValue.length > 0 : selectedValue != null;
   // additionalOptions 中的伪值（如 mixed）并非数据源，回填时保留其原有展示。
   const preservedOptionValues = new Set<DatasourceValue>([...additionalOptionValues, ...(showHost ? [-999] : [])]);
   const normalizeSelectedValue = (value: SelectProps['value']) => {
@@ -106,7 +108,7 @@ export default function index(props: SelectProps & Props) {
 
   const select = (
     <Select
-      className={classNames('n9e-datasource-select-v3', className)}
+      className={classNames('n9e-datasource-select-v3', { 'n9e-datasource-select-v3-has-value': hasSelectedValue }, className)}
       dropdownMatchSelectWidth={false}
       {..._.omit(props, [
         'type',
