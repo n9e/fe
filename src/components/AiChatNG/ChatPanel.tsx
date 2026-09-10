@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Button, Input, Spin } from 'antd';
+import type { TextAreaRef } from 'antd/lib/input/TextArea';
 import { LoadingOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { CornerDownLeft } from 'lucide-react';
 
 import IconFont from '@/components/IconFont';
 
@@ -36,6 +38,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const { t } = useTranslation(NAME_SPACE);
   const {
     placeholder,
+    suggestion,
     chatId,
     queryPageFrom,
     queryAction,
@@ -68,6 +71,12 @@ export default function ChatPanel(props: IAiChatProps) {
   messagesRef.current = messages;
   const activeRef = useRef(active);
   activeRef.current = active;
+  // Slim: the composer takes focus when the dock opens or starts over, so the
+  // user can type at once and Esc reaches the dock as the key legend promises.
+  const composerRef = useRef<TextAreaRef>(null);
+  useEffect(() => {
+    if (slim && active) composerRef.current?.focus();
+  }, [slim, active]);
   const turnGenerationRef = useRef(0);
   const pendingTurnRef = useRef<{ scope?: IAiChatTurnScope; locator?: IAiChatMessageLocator; content: string }>();
   const finishingTurnsRef = useRef(new Set<string>());
@@ -75,6 +84,8 @@ export default function ChatPanel(props: IAiChatProps) {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [draftHint, setDraftHint] = useState(false);
+  // Which suggestion the arrow keys have moved to; Tab fills it, Enter sends it.
+  const [highlight, setHighlight] = useState(0);
   useEffect(() => {
     onBusyChange?.(submitting);
     if (!submitting) setDraftHint(false);
@@ -648,29 +659,56 @@ export default function ChatPanel(props: IAiChatProps) {
     </Button>
   );
 
-  // Slim has no room for the greeting: suggestions stay as quiet text links —
-  // not filled chips (those read as a second card under the dock).
-  const promptChips =
-    slim && promptList?.length ? (
-      <div className='ai-query-dock-prompts flex flex-wrap items-center gap-x-3 gap-y-1'>
-        {promptList.map((prompt) => {
-          const value = typeof prompt === 'string' ? prompt : prompt.value;
-          const label = typeof prompt === 'string' ? prompt : prompt.label;
-          return (
-            <button key={value} type='button' className='ai-query-dock-prompt' onClick={() => setInputValue(value)}>
-              {label}
-            </button>
-          );
-        })}
-      </div>
-    ) : null;
-
+  const prompts = (promptList ?? []).map((prompt) => (typeof prompt === 'string' ? { label: prompt, value: prompt } : prompt));
   const hasConversation = messagesLoading || messageItems.length > 0 || !!welcomeContent;
-  // Empty slim: prompts sit under the input in the flow. Hide them the moment a
-  // send starts — otherwise a cancelled first turn flashes the suggestions back
-  // under a "stopped" status and looks like the send did nothing useful.
   const listHidden = slim && (collapsed || !hasConversation);
-  const chipsUnderInput = slim && !collapsed && !hasConversation && !submitting && promptChips;
+  // Empty slim: the suggestions float under the bar the way the conversation
+  // will, one per row. They go away as soon as the user types or sends —
+  // otherwise a cancelled first turn flashes them back under a "stopped"
+  // status and looks like the send did nothing useful.
+  const suggestionsOpen = slim && !collapsed && !hasConversation && !submitting && prompts.length > 0 && !inputValue.trim();
+  const highlighted = prompts[Math.min(highlight, prompts.length - 1)];
+  const sendPrompt = (value: string) => {
+    void sendUserMessage(undefined, value);
+  };
+  const suggestionSheet = suggestionsOpen ? (
+    <div role='listbox' aria-label={t('dock.try')} className='ai-query-dock-sheet absolute left-0 right-0 top-full z-20 overflow-hidden rounded-b-lg rounded-t-none border'>
+      <div className='px-3 pb-1 pt-2 text-xs text-primary'>{t('dock.try')}</div>
+      <div className='pb-1'>
+        {prompts.map((prompt, index) => (
+          <button
+            key={prompt.value}
+            type='button'
+            role='option'
+            aria-selected={index === highlight}
+            tabIndex={-1}
+            className={cn('ai-query-dock-prompt', index === highlight && 'is-active')}
+            onMouseEnter={() => setHighlight(index)}
+            // mousedown, not click: the composer keeps focus, so the next Enter
+            // still lands in the box rather than on a button.
+            onMouseDown={(event) => {
+              event.preventDefault();
+              sendPrompt(prompt.value);
+            }}
+          >
+            {prompt.label}
+          </button>
+        ))}
+      </div>
+      <div className='ai-query-dock-keys'>
+        <kbd>Tab</kbd>
+        <span>{t('dock.key_fill')}</span>
+        <i />
+        <kbd>
+          <CornerDownLeft size={11} strokeWidth={2} aria-hidden='true' />
+        </kbd>
+        <span>{t('dock.key_send')}</span>
+        <i />
+        <kbd>Esc</kbd>
+        <span>{t('dock.close')}</span>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <div className={cn('flex w-full min-h-0', slim ? 'relative' : 'h-full')} {...(slim ? { 'data-ai-surface': 'query-dock' } : {})}>
@@ -683,10 +721,7 @@ export default function ChatPanel(props: IAiChatProps) {
           className={cn(
             'min-h-0 w-full best-looking-scroll',
             slim
-              ? cn(
-                  'ai-query-dock-sheet absolute left-0 right-0 top-full z-20 max-h-[52vh] overflow-y-auto overscroll-contain border border-fc-200 p-3',
-                  'rounded-b-lg rounded-t-none',
-                )
+              ? cn('ai-query-dock-sheet absolute left-0 right-0 top-full z-20 max-h-[52vh] overflow-y-auto overscroll-contain rounded-b-lg rounded-t-none border p-3')
               : 'h-full flex-1',
             listHidden && 'hidden',
           )}
@@ -719,8 +754,9 @@ export default function ChatPanel(props: IAiChatProps) {
           className={cn(
             slim
               ? cn(
-                  'ai-query-dock-input flex w-full items-center gap-2 border border-fc-200 bg-transparent px-2 py-1',
-                  listHidden ? 'rounded-md' : 'rounded-t-md rounded-b-none border-b-0',
+                  'ai-query-dock-input flex w-full items-center gap-2 border bg-transparent px-2 py-1',
+                  // The bar and whatever floats under it read as one surface.
+                  listHidden && !suggestionsOpen ? 'rounded-md' : 'rounded-t-md rounded-b-none border-b-0',
                 )
               : 'mx-auto mt-4 w-full max-w-[900px] rounded-lg fc-border shadow-md',
             inputContainerClassName,
@@ -729,6 +765,7 @@ export default function ChatPanel(props: IAiChatProps) {
           {slim && inputPrefix}
           <div className={slim ? 'ai-query-dock-composer' : 'contents'}>
             <Input.TextArea
+              ref={composerRef}
               autoSize={slim ? { minRows: 1, maxRows: 4 } : { minRows: 3, maxRows: 8 }}
               bordered={false}
               value={inputValue}
@@ -741,9 +778,31 @@ export default function ChatPanel(props: IAiChatProps) {
               onCompositionStart={() => setIsComposing(true)}
               onCompositionEnd={() => setIsComposing(false)}
               onKeyDown={(event) => {
+                if (isComposing) return;
+                if (suggestionsOpen && highlighted) {
+                  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    setHighlight((previous) => (previous + (event.key === 'ArrowDown' ? 1 : prompts.length - 1)) % prompts.length);
+                    return;
+                  }
+                  if (event.key === 'Tab' && !event.shiftKey) {
+                    event.preventDefault();
+                    setInputValue(highlighted.value);
+                    return;
+                  }
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    sendPrompt(highlighted.value);
+                    return;
+                  }
+                } else if (slim && suggestion && !inputValue.trim() && event.key === 'Tab' && !event.shiftKey) {
+                  // The placeholder is the model's suggested next message; Tab takes it.
+                  event.preventDefault();
+                  setInputValue(suggestion);
+                  return;
+                }
                 if (event.key !== 'Enter') return;
                 if (event.shiftKey) return;
-                if (isComposing) return;
                 event.preventDefault();
                 if (slim && (submitting || pendingTurnRef.current)) {
                   setDraftHint(true);
@@ -775,7 +834,7 @@ export default function ChatPanel(props: IAiChatProps) {
             {t('dock.wait_to_send')}
           </div>
         )}
-        {chipsUnderInput && <div className='mt-2 px-1'>{chipsUnderInput}</div>}
+        {suggestionSheet}
       </div>
     </div>
   );

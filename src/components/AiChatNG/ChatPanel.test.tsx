@@ -339,9 +339,44 @@ describe('ChatPanel turn cancellation and completion', () => {
     });
     expect(nextScope.executePageAction).not.toHaveBeenCalled();
   });
-  it('inserts the full query when a compact suggestion is selected', () => {
+  it('sends the full question when a suggestion is clicked', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
     render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} promptList={[{ label: 'Host CPU', value: 'Generate a query for host CPU usage' }]} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Host CPU' }));
-    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toBe('Generate a query for host CPU usage');
+    fireEvent.mouseDown(screen.getByRole('option', { name: 'Host CPU' }));
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ query: expect.objectContaining({ content: 'Generate a query for host CPU usage' }) })));
+  });
+
+  it('lets the keyboard pick a suggestion: arrows move, Tab fills, Enter sends', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    const promptList = [
+      { label: 'Host CPU', value: 'Generate a query for host CPU usage' },
+      { label: 'Host memory', value: 'Generate a query for host memory usage' },
+    ];
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} promptList={promptList} />);
+    const box = screen.getByRole('textbox') as HTMLTextAreaElement;
+    expect(screen.getByRole('option', { name: 'Host CPU' })).toHaveAttribute('aria-selected', 'true');
+    fireEvent.keyDown(box, { key: 'ArrowDown' });
+    expect(screen.getByRole('option', { name: 'Host memory' })).toHaveAttribute('aria-selected', 'true');
+    fireEvent.keyDown(box, { key: 'Tab' });
+    expect(box.value).toBe('Generate a query for host memory usage');
+    // Typing hides the list; clearing brings it back and Enter sends the highlighted one.
+    expect(screen.queryByRole('listbox')).toBeNull();
+    fireEvent.change(box, { target: { value: '' } });
+    fireEvent.keyDown(box, { key: 'Enter' });
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ query: expect.objectContaining({ content: 'Generate a query for host memory usage' }) })));
+  });
+
+  it('focuses the composer as soon as the dock is active', () => {
+    render(<ChatPanel variant='slim' active queryPageFrom={{ url: '/metric/explorer' }} />);
+    expect(document.activeElement).toBe(screen.getByRole('textbox'));
+  });
+
+  it("fills the host's suggested follow-up on Tab when the composer is empty", () => {
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} placeholder='Group by env instead' suggestion='Group by env instead' />);
+    const box = screen.getByRole('textbox') as HTMLTextAreaElement;
+    fireEvent.keyDown(box, { key: 'Tab' });
+    expect(box.value).toBe('Group by env instead');
   });
 });

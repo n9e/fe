@@ -8,15 +8,22 @@
  */
 [data-ai-surface='query-dock'] {
   .ai-query-dock-sheet {
-    /* Outer card: flush under the input bar (shared edge, one surface). */
-    background-color: var(--fc-fill-1, #fff);
-    /* Downward only — reads as growing from the bar, not floating. */
-    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.06);
+    /* A panel floating just under the bar: slightly see-through over the
+       table, blurred so the rows behind never compete with the text. */
+    background-color: color-mix(in srgb, var(--fc-fill-1, #fff) 90%, transparent);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.1);
   }
 
   .ai-query-dock-input {
     box-shadow: none;
     background-color: var(--fc-fill-1, #fff);
+  }
+
+  /* Same border as the query box and the tabs around it. */
+  .ai-query-dock-input,
+  .ai-query-dock-sheet {
+    border-color: var(--fc-border-color);
   }
 
   .ai-chat-content-card {
@@ -51,25 +58,62 @@
     display: none;
   }
 
-  /* Suggestion row: plain text, no chip chrome / no second card layer. */
+  /* Suggestion row: full width, one per line, the highlighted one tinted. */
   .ai-query-dock-prompt {
+    display: block;
+    width: 100%;
     margin: 0;
-    padding: 4px 8px;
+    padding: 6px 12px;
     border: 0;
-    border-radius: 4px;
     background: transparent;
     box-shadow: none;
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--fc-text-2);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--fc-text-1);
     cursor: pointer;
     text-align: left;
   }
 
-  .ai-query-dock-prompt:hover,
-  .ai-query-dock-prompt:focus-visible {
+  .ai-query-dock-prompt.is-active {
     color: var(--fc-fill-primary, #6c53b1);
+    background: color-mix(in srgb, var(--fc-fill-primary, #6c53b1) 8%, transparent);
+  }
+
+  /* Footer: the same key legend the RUM natural-language box uses. */
+  .ai-query-dock-keys {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px 12px;
     background: var(--fc-fill-2);
+    font-size: 12px;
+    color: var(--fc-text-2);
+
+    kbd {
+      display: inline-flex;
+      align-items: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 3px;
+      background: var(--fc-fill-1);
+      font-family: inherit;
+      font-size: 11px;
+      line-height: 1;
+      justify-content: center;
+    }
+
+    span {
+      margin-left: 4px;
+    }
+
+    i {
+      width: 1px;
+      height: 12px;
+      margin: 0 8px;
+      background: var(--fc-border-color);
+    }
   }
 }
 

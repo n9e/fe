@@ -102,6 +102,14 @@ describe('AiQueryDock', () => {
     expect(screen.queryByRole('button', { name: 'dock.new_conversation' })).toBeNull();
   });
 
+  it('opens the conversation when the status text is clicked', () => {
+    renderDock();
+    act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
+    expect(screen.getByTestId('list').hidden).toBe(true);
+    fireEvent.click(screen.getByText('dock.success'));
+    expect(screen.getByTestId('list').hidden).toBe(false);
+  });
+
   it('stays open when the assistant asks something back instead', () => {
     renderDock();
     act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'input_request', content: '哪个数据源？' }] })));
@@ -113,7 +121,7 @@ describe('AiQueryDock', () => {
   it('does not reopen a manually collapsed list when the assistant asks back', () => {
     renderDock();
     act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'markdown', content: '找不到' }] })));
-    fireEvent.click(screen.getByText('dock.collapse'));
+    fireEvent.click(screen.getByRole('button', { name: 'dock.collapse' }));
     expect(screen.getByTestId('list').hidden).toBe(true);
     act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'input_request', content: '哪个数据源？' }] })));
     expect(screen.getByTestId('list').hidden).toBe(true);
@@ -140,9 +148,9 @@ describe('AiQueryDock', () => {
   it('lets the user reopen the conversation after it folded', () => {
     renderDock();
     act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
-    fireEvent.click(screen.getByText('dock.expand'));
+    fireEvent.click(screen.getByRole('button', { name: 'dock.expand' }));
     expect(screen.getByTestId('list').hidden).toBe(false);
-    expect(screen.getByText('dock.collapse')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'dock.collapse' })).toBeTruthy();
   });
 
   it('keeps one conversation across turns by remembering its id', () => {
@@ -198,7 +206,7 @@ it('does not collapse a conversation the user opened to read while working', () 
   renderDock();
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
   act(() => panelProps!.onTurn!(turn({ is_finish: false }, { phase: 'running' })));
-  fireEvent.click(screen.getByText('dock.expand'));
+  fireEvent.click(screen.getByRole('button', { name: 'dock.expand' }));
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
   expect(screen.getByTestId('list').hidden).toBe(false);
 });
@@ -211,14 +219,14 @@ it('offers undo after a partial write and explains that no query ran', () => {
   const undo = jest.fn();
   render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'stopped', stage: 'filled' }} canUndo onUndo={undo} />);
   expect(screen.getByText('dock.stopped_filled')).toBeTruthy();
-  fireEvent.click(screen.getByText('dock.undo'));
+  fireEvent.click(screen.getByRole('button', { name: 'dock.undo' }));
   expect(undo).toHaveBeenCalled();
 });
 
 it('preserves an explicitly expanded conversation across a follow-up send', () => {
   renderDock();
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
-  fireEvent.click(screen.getByText('dock.expand'));
+  fireEvent.click(screen.getByRole('button', { name: 'dock.expand' }));
   act(() => {
     panelProps!.prepareTurn?.();
   });

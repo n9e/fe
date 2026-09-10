@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import type { IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
-import { CloseOutlined } from '@ant-design/icons';
-import { ChevronDown, ChevronUp, SquarePen } from 'lucide-react';
+import { ChevronDown, ChevronUp, SquarePen, Undo2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatPanel, EAiChatContentType, IAiChatMessage, IAiChatPageInfo, IAiChatTurn } from '@/components/AiChatNG';
@@ -37,6 +36,11 @@ export interface AiQueryDockProps {
   onClose: () => void;
   className?: string;
 }
+
+/** One box for every icon button on the row, so they line up and read as one set. */
+const ICON_BUTTON = 'flex h-6 w-6 items-center justify-center p-0 text-hint hover:text-main';
+const ICON = 14;
+const STROKE = 1.75;
 
 /** How long a step may run before the status starts counting seconds. */
 const SHOW_ELAPSED_AFTER_MS = 15_000;
@@ -134,6 +138,11 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   }, []);
 
   useSoleOpenDock(open, onClose);
+  // Also wired to the status text: it is the biggest target on the row.
+  const toggleExpanded = () => {
+    readingRef.current = !expanded;
+    setExpanded(!expanded);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -220,7 +229,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       ref={rootRef}
       tabIndex={-1}
       hidden={!open}
-      className={cn('mb-1 outline-none', className)}
+      className={cn('mt-2 mb-1 outline-none', className)}
       onKeyDown={(event) => {
         if (event.key !== 'Escape') return;
         // Scoped, not global: Esc belongs to whatever is open inside the page.
@@ -252,10 +261,11 @@ export default function AiQueryDock(props: AiQueryDockProps) {
         queryPageFrom={pageFrom}
         promptList={promptList}
         placeholder={placeholder}
+        suggestion={suggested}
         onChatChange={(chat) => setChatId(chat?.chat_id)}
         onTurn={handleTurn}
         inputPrefix={
-          <div className='ai-query-dock-status flex min-w-0 items-center gap-1.5 text-xs text-main'>
+          <div className={cn('ai-query-dock-status flex min-w-0 items-center gap-1.5 text-xs text-main', turn && 'cursor-pointer')} onClick={turn ? toggleExpanded : undefined}>
             <span
               aria-hidden='true'
               className={cn(
@@ -271,51 +281,51 @@ export default function AiQueryDock(props: AiQueryDockProps) {
               {status}
             </span>
             {canUndo && (
-              <Button type='link' size='small' className='shrink-0 px-1' disabled={busy || running} onClick={onUndo}>
-                {t('dock.undo')}
-              </Button>
-            )}
-            {turn && (
-              <Button
-                type='text'
-                size='small'
-                className='shrink-0 px-0.5 text-hint hover:text-main'
-                aria-label={expanded ? t('dock.collapse') : t('dock.expand')}
-                aria-expanded={expanded}
-                onClick={() => {
-                  readingRef.current = !expanded;
-                  setExpanded(!expanded);
-                }}
-                icon={expanded ? <ChevronUp size={14} strokeWidth={1.75} /> : <ChevronDown size={14} strokeWidth={1.75} />}
-              />
+              <Tooltip title={t('dock.undo')}>
+                <Button
+                  type='text'
+                  size='small'
+                  className={ICON_BUTTON}
+                  disabled={busy || running}
+                  aria-label={t('dock.undo')}
+                  onClick={onUndo}
+                  icon={<Undo2 size={ICON} strokeWidth={STROKE} />}
+                />
+              </Tooltip>
             )}
           </div>
         }
         inputSuffix={
-          <>
+          <div className='flex shrink-0 items-center gap-0.5'>
+            {turn && (
+              <Tooltip title={expanded ? t('dock.collapse') : t('dock.expand')}>
+                <Button
+                  type='text'
+                  size='small'
+                  className={ICON_BUTTON}
+                  aria-label={expanded ? t('dock.collapse') : t('dock.expand')}
+                  aria-expanded={expanded}
+                  onClick={toggleExpanded}
+                  icon={expanded ? <ChevronUp size={ICON} strokeWidth={STROKE} /> : <ChevronDown size={ICON} strokeWidth={STROKE} />}
+                />
+              </Tooltip>
+            )}
             {turn && (
               <Tooltip title={t('dock.new_conversation')}>
                 <Button
                   type='text'
                   size='small'
-                  className='text-hint opacity-70 hover:opacity-100 hover:text-main'
-                  icon={<SquarePen size={14} strokeWidth={1.75} />}
+                  className={ICON_BUTTON}
+                  icon={<SquarePen size={ICON} strokeWidth={STROKE} />}
                   aria-label={t('dock.new_conversation')}
                   onClick={startNewConversation}
                 />
               </Tooltip>
             )}
             <Tooltip title={closeLabel}>
-              <Button
-                type='text'
-                size='small'
-                className='text-hint opacity-70 hover:opacity-100 hover:text-main'
-                icon={<CloseOutlined />}
-                aria-label={closeLabel}
-                onClick={onClose}
-              />
+              <Button type='text' size='small' className={ICON_BUTTON} icon={<X size={ICON} strokeWidth={STROKE} />} aria-label={closeLabel} onClick={onClose} />
             </Tooltip>
-          </>
+          </div>
         }
       />
     </div>

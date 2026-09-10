@@ -204,6 +204,8 @@ export interface IAiChatProps {
   className?: string;
   inputContainerClassName?: string;
   placeholder?: string;
+  /** Slim only: text Tab fills into an empty composer — the host's suggested next message. */
+  suggestion?: string;
   chatId?: string;
   /**
    * `slim` is the panel embedded under a page's own input: one-line input row
