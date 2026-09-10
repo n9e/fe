@@ -5,6 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
 import _ from 'lodash';
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import RefreshIcon from '@/components/RefreshIcon';
 import { DownOutlined } from '@ant-design/icons';
 import { getBusiGroupsRecordingRules, updateRecordingRules } from '@/services/recording';
@@ -142,6 +143,7 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
     }
   }, [groupSwitchCount]);
 
+  const { run: runMutation, pendingIds } = useRowMutation();
   const updateStatus = useMemoizedFn((ids: React.Key[], disabled: 0 | 1) => {
     cancel();
     const patch = (rows: strategyItem[]) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row));
@@ -212,21 +214,24 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
 
       render: (disabled, record) => (
         <Switch
+          loading={pendingIds.has(record.id)}
           checked={disabled === strategyStatus.Enable}
           size='small'
           onChange={() => {
             const { id, disabled } = record;
-            updateRecordingRules(
-              {
-                ids: [id],
-                fields: {
-                  disabled: !disabled ? 1 : 0,
+            runMutation([id], () =>
+              updateRecordingRules(
+                {
+                  ids: [id],
+                  fields: {
+                    disabled: !disabled ? 1 : 0,
+                  },
                 },
-              },
-              record.group_id,
-            ).then(() => {
-              updateStatus([id], disabled ? 0 : 1);
-            });
+                record.group_id,
+              ).then(() => {
+                updateStatus([id], disabled ? 0 : 1);
+              }),
+            );
           }}
         />
       ),
@@ -284,11 +289,13 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
                 title: t('common:confirm.delete'),
                 onOk: () => {
                   if (businessGroup.id) {
-                    deleteRecordingRule(selectRowKeys as number[], businessGroup.id).then(() => {
-                      message.success(t('common:success.delete'));
-                      clearSelection();
-                      refreshList();
-                    });
+                    return runMutation(selectRowKeys as number[], () =>
+                      deleteRecordingRule(selectRowKeys as number[], businessGroup.id).then(() => {
+                        message.success(t('common:success.delete'));
+                        clearSelection();
+                        refreshList();
+                      }),
+                    );
                   }
                 },
 
@@ -319,25 +326,27 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
 
   const editModalFinish = async (isOk, fieldsData?) => {
     if (isOk && businessGroup.id) {
-      const res = await updateRecordingRules(
-        {
-          ids: selectRowKeys,
-          fields: fieldsData,
-        },
-        businessGroup.id,
-      );
-      if (!res.err) {
-        message.success(t('common:success.edit'));
-        clearSelection();
-        if (Object.keys(fieldsData).length === 1 && (fieldsData.disabled === 0 || fieldsData.disabled === 1)) {
-          updateStatus(selectRowKeys, fieldsData.disabled);
+      return runMutation(selectRowKeys, async () => {
+        const res = await updateRecordingRules(
+          {
+            ids: selectRowKeys,
+            fields: fieldsData,
+          },
+          businessGroup.id,
+        );
+        if (!res.err) {
+          message.success(t('common:success.edit'));
+          clearSelection();
+          if (Object.keys(fieldsData).length === 1 && (fieldsData.disabled === 0 || fieldsData.disabled === 1)) {
+            updateStatus(selectRowKeys, fieldsData.disabled);
+          } else {
+            refreshList();
+          }
+          setisModalVisible(false);
         } else {
-          refreshList();
+          message.error(res.err);
         }
-        setisModalVisible(false);
-      } else {
-        message.error(res.err);
-      }
+      });
     } else {
       setisModalVisible(false);
     }
@@ -407,7 +416,7 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
               </Button>
               <div className={'table-more-options'}>
                 <Dropdown overlay={menu} trigger={['click']}>
-                  <Button onClick={(e) => e.stopPropagation()}>
+                  <Button disabled={selectRowKeys.some((id) => pendingIds.has(id))} onClick={(e) => e.stopPropagation()}>
                     {t('common:btn.more')}
                     <DownOutlined
                       style={{
@@ -467,10 +476,12 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
                 confirm({
                   title: t('common:confirm.delete'),
                   onOk: () => {
-                    deleteRecordingRule([record.id], record.group_id).then(() => {
-                      message.success(t('common:success.delete'));
-                      refreshList();
-                    });
+                    return runMutation([record.id], () =>
+                      deleteRecordingRule([record.id], record.group_id).then(() => {
+                        message.success(t('common:success.delete'));
+                        refreshList();
+                      }),
+                    );
                   },
 
                   onCancel() {},

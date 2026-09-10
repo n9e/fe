@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { Space, Button } from 'antd';
 import { useMemoizedFn, useRequest } from 'ahooks';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
 import { getBusiGroupsAlertRules } from '@/services/warning';
 import EmptyGuide from '@/components/EmptyGuide';
@@ -23,6 +24,8 @@ interface ListProps {
 function HeaderExtra(
   props: ListProps & {
     selectRowKeys?: React.Key[];
+    runMutation?: ReturnType<typeof useRowMutation>['run'];
+    pendingIds?: ReadonlySet<React.Key>;
     selectedRows?: AlertRuleType<any>[];
     getList?: () => void;
     onStatusChange?: (ids: React.Key[], disabled: 0 | 1) => void;
@@ -66,6 +69,8 @@ function HeaderExtra(
       )}
       {getList && (
         <MoreOperations
+          runMutation={props.runMutation!}
+          pendingIds={props.pendingIds!}
           bgid={businessGroup.id}
           isLeaf={!!(businessGroup.isLeaf && businessGroup.id && gids !== '-2')}
           selectRowKeys={selectRowKeys}
