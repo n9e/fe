@@ -856,7 +856,7 @@ export default function ChatPanel(props: IAiChatProps) {
               }}
               className={
                 slim
-                  ? 'min-w-0 flex-1 bg-transparent px-2 py-1 text-sm text-main placeholder:text-[13px] placeholder:text-placeholder'
+                  ? 'min-w-0 flex-1 bg-transparent px-2 py-[3px] text-sm text-main placeholder:text-[13px] placeholder:text-placeholder'
                   : 'bg-transparent px-5 py-3.5 text-base text-main placeholder:text-[14px] placeholder:text-placeholder'
               }
             />
