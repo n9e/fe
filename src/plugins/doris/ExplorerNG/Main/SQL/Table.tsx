@@ -135,7 +135,12 @@ export default function Table(props: IProps) {
           };
         })
         .catch((error) => {
-          if (!queryRequest?.signal.aborted) queryRequest?.complete(error instanceof Error ? error : new Error(String(error?.message ?? error)));
+          if (!queryRequest?.signal.aborted) {
+            const message = String(error?.message ?? error);
+            // The backend answers an empty window with an error, "no data"; to
+            // whoever asked for the run that is a result, not a failure.
+            queryRequest?.complete(/no data/i.test(message) ? { empty: true, count: 0 } : error instanceof Error ? error : new Error(message));
+          }
           loadTimeRef.current = null;
           setLogs({
             data: [],
