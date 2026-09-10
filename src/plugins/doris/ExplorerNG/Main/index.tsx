@@ -141,7 +141,16 @@ export default function index(props: Props) {
               <div />
             </Form.Item>
             {syntax === 'query' && (
-              <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
+              <QueryQueryInput
+                snapRangeRef={snapRangeRef}
+                executeQuery={executeQuery}
+                defaultSearchField={defaultSearchField}
+                setDefaultSearchField={setDefaultSearchField}
+                queryExtra={queryExtra}
+                noticeBanner={noticeBanner}
+                queryBoxRef={queryBoxRef}
+                onQueryEdit={onQueryEdit}
+              />
             )}
             {syntax === 'sql' && (
               <SQLQueryInput
@@ -263,6 +272,7 @@ export default function index(props: Props) {
           stackByField={stackByField}
           setStackByField={setStackByField}
           defaultSearchField={defaultSearchField}
+          queryRequest={queryRequest}
         />
       )}
       {syntax === 'sql' && (

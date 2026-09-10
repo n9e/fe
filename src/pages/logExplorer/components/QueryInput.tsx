@@ -6,6 +6,8 @@ interface Props {
   inputRef?: React.Ref<any>;
   disabled?: boolean;
   enableAddonBefore?: boolean;
+  /** A control is pinned inside the box at its left; the text starts after it (and after the addon when both are there). */
+  leadingExtra?: boolean;
   placeholder?: string;
   value?: string;
   onChange?: (value?: string) => void;
@@ -38,7 +40,8 @@ export default function QueryInput(props: Props) {
       key={!props.value ? props.placeholder : undefined} // reset when placeholder changes
       ref={props.inputRef}
       className={classNames('doris-log-explorer-query-input', {
-        'pl-[32px]': props.enableAddonBefore,
+        'pl-[32px]': props.enableAddonBefore !== props.leadingExtra,
+        'pl-[60px]': props.enableAddonBefore && props.leadingExtra,
       })}
       autoSize={{ minRows: 1, maxRows: 10 }}
       disabled={props.disabled}

@@ -30,8 +30,9 @@ import Main from './Main';
 
 import './style.less';
 
-// How this panel's statement is named to the assistant. Only the SQL syntax
-// hosts the dock: the search syntax is a structured filter, not a statement.
+// How this panel's statement is named to the assistant, one action per
+// syntax: SQL mode takes a statement, search mode a filter plus the table it
+// runs against.
 const LOG_SQL_ACTION: QueryDockAction = {
   name: 'set_log_query',
   argument: 'sql',
@@ -39,8 +40,24 @@ const LOG_SQL_ACTION: QueryDockAction = {
   followUpExample: '只看 ERROR 级别',
   page: { title: 'Log explorer', summary: 'The user writes SQL against a Doris log table and reads the rows it returns.' },
 };
-interface LogSQLSnapshot extends QueryDockSnapshot {
+const LOG_SEARCH_ACTION: QueryDockAction = {
+  name: 'set_log_search',
+  argument: 'query',
+  language: 'Doris log search expression (the inverted-index syntax, e.g. level:error AND msg:"timeout")',
+  followUpExample: '只看 ERROR 级别',
+  settings: [
+    { name: 'database', description: 'The database to search. Omit to keep the one the sidebar has.' },
+    { name: 'table', description: 'The table to search. Omit to keep the one the sidebar has.' },
+    { name: 'time_field', description: "The table's time column. Omit to keep the one the sidebar has." },
+  ],
+  page: { title: 'Log explorer', summary: 'The user filters a Doris log table with a search expression and reads the matching logs.' },
+};
+interface LogSnapshot extends QueryDockSnapshot {
+  syntax?: 'query' | 'sql';
   range?: IRawTimeRange;
+  database?: string;
+  table?: string;
+  time_field?: string;
 }
 
 interface Props {
@@ -72,12 +89,12 @@ export default function index(props: Props) {
   const pending = usePendingQuery();
   const queryBoxRef = useRef<HTMLDivElement>(null);
   const queryButtonRef = useRef<HTMLButtonElement>(null);
-  const control = useRef<QueryDockControl<LogSQLSnapshot> | null>(null);
+  const control = useRef<QueryDockControl<LogSnapshot> | null>(null);
   const aiActions = useQueryDockActions({
-    enabled: IS_ENT && aiOpen && syntax === 'sql',
+    enabled: IS_ENT && aiOpen,
     datasourceValue,
     getControl: () => control.current,
-    action: LOG_SQL_ACTION,
+    action: syntax === 'sql' ? LOG_SQL_ACTION : LOG_SEARCH_ACTION,
   });
   const invalidate = () => {
     revisionRef.current += 1;
@@ -159,21 +176,39 @@ export default function index(props: Props) {
 
   useLayoutEffect(() => {
     control.current = {
-      snapshot: () => ({ query: form.getFieldValue(['query', 'sql']) || '', range: _.cloneDeep(form.getFieldValue(['query', 'range'])) }),
+      snapshot: () => {
+        const query = form.getFieldValue('query') || {};
+        return {
+          query: (query.syntax === 'sql' ? query.sql : query.query) || '',
+          syntax: query.syntax,
+          range: _.cloneDeep(query.range),
+          database: query.database,
+          table: query.table,
+          time_field: query.time_field,
+        };
+      },
       revision: () => revisionRef.current,
-      fill: (sql, range) => {
+      fill: (text, range, settings) => {
         pending.abort();
-        lastFilledRef.current = sql;
-        // Rows are the honest view of a statement; the time series view needs
-        // value columns the assistant never chose.
-        form.setFieldsValue({ query: range ? { sql, range, sqlVizType: 'table' } : { sql, sqlVizType: 'table' } });
+        lastFilledRef.current = text;
+        const inSQL = form.getFieldValue(['query', 'syntax']) === 'sql';
+        // In SQL mode rows are the honest view of a statement: the time series
+        // view needs value columns the assistant never chose. In search mode
+        // the table the sidebar has stays unless the action names another.
+        const next = inSQL ? { sql: text, sqlVizType: 'table' } : { query: text, ..._.pick(settings, ['database', 'table', 'time_field']) };
+        form.setFieldsValue({ query: range ? { ...next, range } : next });
       },
       run: ({ signal } = {}) => {
-        const sql: string = form.getFieldValue(['query', 'sql']) || '';
-        if (!sql.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
+        const query = form.getFieldValue('query') || {};
+        const inSQL = query.syntax === 'sql';
+        const text: string = (inSQL ? query.sql : query.query) || '';
+        if (!text.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
         // The page refuses to run an unbounded scan; say so instead of popping its modal.
-        if (!sql.includes('$__time') && !sql.includes('$__unixEpoch')) {
+        if (inSQL && !text.includes('$__time') && !text.includes('$__unixEpoch')) {
           return Promise.reject(new Error('The statement must bound time with $__timeFilter(<time column>) or $__unixEpochFilter(<time column>)'));
+        }
+        if (!inSQL && !(query.database && query.table && query.time_field)) {
+          return Promise.reject(new Error('Search mode needs a database, a table and a time column: pass them with the expression'));
         }
         return form
           .validateFields()
@@ -189,7 +224,9 @@ export default function index(props: Props) {
       restore: (snapshot) => {
         pending.abort();
         lastFilledRef.current = snapshot.query;
-        form.setFieldsValue({ query: { sql: snapshot.query, range: snapshot.range }, refreshFlag: _.uniqueId('refreshFlag_') });
+        const back =
+          snapshot.syntax === 'sql' ? { sql: snapshot.query } : { query: snapshot.query, database: snapshot.database, table: snapshot.table, time_field: snapshot.time_field };
+        form.setFieldsValue({ query: { ...back, syntax: snapshot.syntax, range: snapshot.range }, refreshFlag: _.uniqueId('refreshFlag_') });
       },
       queryInput: () => queryBoxRef.current,
       queryButton: () => queryButtonRef.current,

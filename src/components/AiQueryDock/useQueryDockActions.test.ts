@@ -269,3 +269,22 @@ it('declares the tool and reads the statement under the names the action gives',
   expect(box.fill).toHaveBeenCalledWith('select 1', undefined);
   expect(outcome.result).toMatchObject({ sql: 'draft', datasource_id: 1 });
 });
+it('passes the settings the action declares along with the statement', async () => {
+  const search: QueryDockAction = {
+    ...action,
+    name: 'set_log_search',
+    argument: 'query',
+    settings: [{ name: 'table', description: 'The table to search.' }],
+  };
+  const { result, box, rerender, props } = setup();
+  rerender({ ...props, action: search });
+  let scope!: ReturnType<typeof result.current.prepareTurn>;
+  act(() => {
+    scope = result.current.prepareTurn();
+  });
+  expect(registered.get('set_log_search')!.inputSchema).toMatchObject({ properties: { table: { type: 'string' } } });
+  await act(async () => {
+    await scope.executePageAction({ ...request, name: 'set_log_search', args: { query: 'level:error', table: ' access_log ' } });
+  });
+  expect(box.fill).toHaveBeenCalledWith('level:error', undefined, { table: 'access_log' });
+});

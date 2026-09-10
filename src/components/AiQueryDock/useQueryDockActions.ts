@@ -20,7 +20,8 @@ export interface QueryDockControl<S extends QueryDockSnapshot = QueryDockSnapsho
   snapshot(): S;
   /** Bumps whenever the user touches the panel; a turn that started on an older revision may not write. */
   revision(): number;
-  fill(query: string, range?: IRawTimeRange): void;
+  /** Writes the statement, the window when one was asked for, and the panel settings the action declared. */
+  fill(query: string, range?: IRawTimeRange, settings?: Record<string, string>): void;
   run(options?: { signal?: AbortSignal }): Promise<{ empty: boolean; count?: number }>;
   restore(snapshot: S): void;
   queryInput(): Element | null;
@@ -37,6 +38,8 @@ export interface QueryDockAction {
   language: string;
   /** A follow-up hint in the shape the model should imitate. */
   followUpExample: string;
+  /** Other panel settings the statement needs, each an optional string argument (e.g. a log table's database). */
+  settings?: { name: string; description: string }[];
   page: { title: string; summary: string };
 }
 
@@ -167,6 +170,7 @@ export function useQueryDockActions<S extends QueryDockSnapshot = QueryDockSnaps
                 `The one refinement the user is most likely to ask for next, as a short sentence in their language (under 20 characters), e.g. "${action.followUpExample}". ` +
                 'Base it on what you actually found in the data source. It is shown as a hint in the input box, never run.',
             },
+            ...Object.fromEntries((action.settings ?? []).map((setting) => [setting.name, { type: 'string', description: setting.description }])),
           },
           required: [action.argument],
         },
@@ -195,7 +199,13 @@ export function useQueryDockActions<S extends QueryDockSnapshot = QueryDockSnaps
             guard();
             undoRef.current = { snapshot: control.snapshot(), datasource: turn.datasource, revision: turn.revision };
             ctx.feedback.highlight(control.queryInput());
-            control.fill(query, args.time_range ?? undefined);
+            const settings = Object.fromEntries(
+              (action.settings ?? []).flatMap((setting) => {
+                const value = args[setting.name];
+                return typeof value === 'string' && value.trim() ? [[setting.name, value.trim()]] : [];
+              }),
+            );
+            control.fill(query, args.time_range ?? undefined, action.settings ? settings : undefined);
             turn.stage = 'filled';
             setCanUndo(true);
             await ctx.feedback.click(control.queryButton());
