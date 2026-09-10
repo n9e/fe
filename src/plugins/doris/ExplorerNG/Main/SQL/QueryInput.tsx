@@ -96,7 +96,8 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
                 rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}
               >
                 <SqlMonacoEditor
-                  className={classNames('bg-fc-100 z-0', { 'ai-query-dock-padded': !!queryExtra })}
+                  // Room for the trigger pinned at the left; a utility, since antd's padding is important here.
+                  className={classNames('bg-fc-100 z-0', { 'pl-8': !!queryExtra })}
                   onChange={(next) => onQueryEdit?.(next)}
                   maxHeight={200}
                   theme={darkMode ? 'dark' : 'light'}
