@@ -187,6 +187,7 @@ const fr_FR = {
     turn_failed: 'Échec de la réponse',
     timeout: 'La requête a expiré. Veuillez réessayer',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: 'Décrivez la requête voulue, p. ex. « lignes par minute sur la dernière heure »',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

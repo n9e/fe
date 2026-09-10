@@ -187,6 +187,7 @@ const pt_BR = {
     turn_failed: 'Falha na resposta',
     timeout: 'A consulta excedeu o tempo limite. Tente novamente',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: 'Descreva a consulta que você quer, ex.: "linhas por minuto na última hora"',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

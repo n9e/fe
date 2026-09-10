@@ -188,6 +188,7 @@ const zh_CN = {
     turn_failed: '回复失败',
     timeout: '查询超时，请重试',
     placeholder_first: '描述你要的查询，比如「每台主机的 CPU 使用率」',
+    placeholder_first_sql: '描述你要的查询，比如「最近一小时每分钟的记录数」',
     placeholder_follow_up: '继续调整…',
     placeholder_answer: '回答它…',
   },

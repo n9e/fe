@@ -188,6 +188,7 @@ const en_US = {
     turn_failed: 'Reply failed',
     timeout: 'Query timed out, please retry',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: 'Describe the query you want, e.g. "rows per minute over the last hour"',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

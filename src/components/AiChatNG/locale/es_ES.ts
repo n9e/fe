@@ -187,6 +187,7 @@ const es_ES = {
     turn_failed: 'Error en la respuesta',
     timeout: 'La consulta ha agotado el tiempo de espera. Inténtalo de nuevo',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: 'Describe la consulta que quieres, p. ej. «filas por minuto en la última hora»',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

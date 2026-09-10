@@ -228,6 +228,7 @@ export default function Prometheus(props: IProps) {
                     onUndo={aiActions.undo}
                     promptList={aiPromptList}
                     resultNoun='rows'
+                    placeholder={tAi('dock.placeholder_first_sql')}
                     onNewConversation={aiActions.reset}
                     onClose={() => {
                       aiActions.cancel();

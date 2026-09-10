@@ -188,6 +188,7 @@ const ru_RU = {
     turn_failed: 'Ошибка ответа',
     timeout: 'Время ожидания запроса истекло. Повторите попытку',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: 'Опишите нужный запрос, например «строк в минуту за последний час»',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

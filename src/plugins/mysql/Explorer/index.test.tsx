@@ -120,6 +120,7 @@ describe('Flashcat enterprise build', () => {
     expect(latest.enabled).toBe(true);
     expect(latest.action).toMatchObject({ name: 'set_sql_query', argument: 'sql' });
     expect(dockProps?.resultNoun).toBe('rows');
+    expect(dockProps?.placeholder).toBe('dock.placeholder_first_sql');
   });
 
   it('writes the statement into the box, runs it in the table view and reports the rows', async () => {

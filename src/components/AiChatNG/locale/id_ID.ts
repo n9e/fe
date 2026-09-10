@@ -187,6 +187,7 @@ const id_ID = {
     turn_failed: 'Balasan gagal',
     timeout: 'Waktu kueri habis, coba lagi',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: 'Jelaskan kueri yang Anda inginkan, mis. "baris per menit selama satu jam terakhir"',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

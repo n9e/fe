@@ -188,6 +188,7 @@ const ja_JP = {
     turn_failed: '返信に失敗しました',
     timeout: 'クエリがタイムアウトしました。再試行してください',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: '欲しいクエリを説明してください。例：「直近1時間の分ごとの件数」',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

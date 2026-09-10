@@ -187,6 +187,7 @@ const ko_KR = {
     turn_failed: '응답 실패',
     timeout: '쿼리 시간이 초과되었습니다. 다시 시도하세요',
     placeholder_first: 'Describe the query you want, e.g. "CPU usage per host"',
+    placeholder_first_sql: '원하는 쿼리를 설명해 주세요. 예: "최근 1시간 분당 건수"',
     placeholder_follow_up: 'Keep going…',
     placeholder_answer: 'Answer it…',
   },

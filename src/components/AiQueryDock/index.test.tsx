@@ -109,6 +109,11 @@ describe('AiQueryDock', () => {
     expect(screen.getByRole('status').textContent).toBe('dock.success_count');
   });
 
+  it('lets the host choose what the composer suggests first', () => {
+    render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} placeholder='say it in SQL' />);
+    expect(screen.getByPlaceholderText('say it in SQL')).toBeTruthy();
+  });
+
   it('opens the conversation when the status text is clicked', () => {
     renderDock();
     act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));

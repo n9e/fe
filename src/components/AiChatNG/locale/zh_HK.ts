@@ -188,6 +188,7 @@ const zh_HK = {
     turn_failed: '回覆失敗',
     timeout: '查詢逾時，請重試',
     placeholder_first: '描述你要的查詢，比如「每台主機的 CPU 使用率」',
+    placeholder_first_sql: '描述你要的查詢，比如「最近一小時每分鐘的記錄數」',
     placeholder_follow_up: '繼續調整…',
     placeholder_answer: '回答它…',
   },

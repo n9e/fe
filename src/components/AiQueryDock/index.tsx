@@ -35,6 +35,8 @@ export interface AiQueryDockProps {
   onNewConversation?: () => void;
   /** What a delivered count counts: time series (default) or table rows. */
   resultNoun?: 'series' | 'rows';
+  /** What the composer suggests before the first message; defaults to the metrics wording. */
+  placeholder?: string;
   onClose: () => void;
   className?: string;
 }
@@ -99,7 +101,7 @@ function delivered(message: IAiChatMessage): boolean {
 }
 
 export default function AiQueryDock(props: AiQueryDockProps) {
-  const { open, pageFrom, promptList, onClose, resultNoun, onNewConversation, className, progress, prepareTurn, canUndo, onUndo } = props;
+  const { open, pageFrom, promptList, onClose, resultNoun, placeholder: firstPlaceholder, onNewConversation, className, progress, prepareTurn, canUndo, onUndo } = props;
   const { t } = useTranslation(NAME_SPACE);
   const rootRef = useRef<HTMLDivElement>(null);
   const [chatId, setChatId] = useState<string>();
@@ -232,7 +234,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   const closeLabel = t(busy || running ? 'dock.close_and_stop' : 'dock.close');
   // After a delivery the model's own suggestion replaces the generic prompt.
   const suggested = progress && (progress.phase === 'success' || progress.phase === 'empty') ? progress.followUp : undefined;
-  const placeholder = !turn ? t('dock.placeholder_first') : asked ? t('dock.placeholder_answer') : suggested || t('dock.placeholder_follow_up');
+  const placeholder = !turn ? firstPlaceholder || t('dock.placeholder_first') : asked ? t('dock.placeholder_answer') : suggested || t('dock.placeholder_follow_up');
 
   return (
     <div
