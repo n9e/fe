@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import { basePrefix } from '@/App';
 import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import { IAiChatStreamChunk } from './types';
-import { normalizeStreamChunk } from './utils';
+import { parseStreamEntry } from './utils';
 
 interface IUseAiChatStreamOptions {
   onChunk?: (chunk: IAiChatStreamChunk) => void;
@@ -63,29 +63,10 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
           buffer = chunks.pop() || '';
 
           chunks.forEach((entry) => {
-            const lines = entry
-              .split('\n')
-              .map((line) => line.trim())
-              .filter(Boolean);
-            if (!lines.length) return;
-
-            const eventLine = lines.find((line) => line.startsWith('event:'));
-            if (eventLine?.slice(6).trim() === 'finish') {
-              onFinish?.();
-              stop();
-              return;
-            }
-
-            const dataLine = lines.find((line) => line.startsWith('data:'));
-            if (!dataLine) return;
-
-            const payload = dataLine.slice(5).trim();
-            if (!payload) return;
-
             try {
-              const parsed = normalizeStreamChunk(JSON.parse(payload) as IAiChatStreamChunk);
-              onChunk?.(parsed);
-              if (parsed.done || parsed.type === 'done') {
+              const { finished, chunk } = parseStreamEntry(entry);
+              if (chunk) onChunk?.(chunk);
+              if (finished || chunk?.done || chunk?.type === 'done') {
                 onFinish?.();
                 stop();
               }
