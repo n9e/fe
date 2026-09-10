@@ -81,7 +81,11 @@ export default function ChatPanel(props: IAiChatProps) {
   // user can type at once and Esc reaches the dock as the key legend promises.
   const composerRef = useRef<TextAreaRef>(null);
   useEffect(() => {
-    if (slim && active) composerRef.current?.focus();
+    if (slim && active) {
+      composerRef.current?.focus();
+      // Measured while hidden, the composer opens at two rows; measure again now it shows.
+      (composerRef.current?.resizableTextArea as { resizeTextarea?: () => void } | undefined)?.resizeTextarea?.();
+    }
   }, [slim, active]);
   const turnGenerationRef = useRef(0);
   const pendingTurnRef = useRef<{ scope?: IAiChatTurnScope; locator?: IAiChatMessageLocator; content: string }>();
