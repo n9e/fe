@@ -157,6 +157,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   const message = turn?.message;
   let tone: 'idle' | 'running' | 'ok' | 'warn' | 'error' = 'idle';
   let status: React.ReactNode = t('dock.idle');
+  // The status is one short word; anything longer lives in its hover title.
+  let detail: string | undefined;
   if (turn && message) {
     if (running) {
       tone = 'running';
@@ -170,12 +172,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       status = t('dock.stopped');
     } else if (turn.reason === 'error' || message.err_code) {
       tone = 'error';
-      status = (
-        <>
-          {t('dock.turn_failed')}
-          {message.err_msg || message.err_title ? ` · ${message.err_msg || message.err_title}` : ''}
-        </>
-      );
+      status = t('dock.turn_failed');
+      detail = message.err_msg || message.err_title || undefined;
     } else if (delivered(message)) {
       if (turn.actionOutcome?.ok) {
         tone = 'ok';
@@ -191,12 +189,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     } else if (lastResponseType(message) === 'input_request') {
       const response = message.response?.[message.response.length - 1];
       const question = (response?.param as IAiChatInputRequest | undefined)?.question?.trim() || response?.content?.trim();
-      status = (
-        <>
-          <span>{t('dock.asked')}</span>
-          {question ? ` · ${question}` : ''}
-        </>
-      );
+      status = t('dock.asked');
+      detail = question || undefined;
     } else {
       status = t('dock.replied');
     }
@@ -214,20 +208,13 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     // One line: what came back. The model's own account stays in the conversation.
     const headline =
       phase === 'success' && progress.count != null ? t(resultNoun === 'rows' ? 'dock.success_rows' : 'dock.success_count', { count: progress.count }) : t(`dock.${key}`);
-    status = (
-      <>
-        <span>{headline}</span>
-        {progress.message ? ` · ${progress.message}` : ''}
-      </>
-    );
+    status = headline;
+    detail = progress.message;
   }
   if (sendError) {
     tone = 'error';
-    status = (
-      <>
-        {t('dock.turn_failed')} · {sendError}
-      </>
-    );
+    status = t('dock.turn_failed');
+    detail = sendError;
   }
 
   const asked = !running && !!message && lastResponseType(message) === 'input_request';
@@ -289,7 +276,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                 tone === 'idle' && 'bg-fc-300',
               )}
             />
-            <span className={cn('ai-query-dock-status-copy', (asked || tone === 'error') && 'ai-query-dock-status-detail')} role='status' aria-live='polite'>
+            <span className='ai-query-dock-status-copy' role='status' aria-live='polite' title={detail}>
               {status}
             </span>
             {canUndo && (

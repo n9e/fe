@@ -211,7 +211,9 @@ it('shows the actual question while preserving a collapsed list', () => {
   renderDock();
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
   act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'input_request', content: '', param: { question: 'Group by host or service?' } }] })));
-  expect(screen.getByText(/Group by host or service/)).toBeTruthy();
+  // The status stays one word; the question itself is the hover title.
+  expect(screen.getByRole('status')).toHaveTextContent('dock.asked');
+  expect(screen.getByRole('status')).toHaveAttribute('title', expect.stringContaining('Group by host or service'));
   expect(screen.getByTestId('list').hidden).toBe(true);
 });
 it('does not collapse a conversation the user opened to read while working', () => {
@@ -224,7 +226,7 @@ it('does not collapse a conversation the user opened to read while working', () 
 });
 it('shows query failure details without collapsing', () => {
   render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'failed', message: 'Backend unavailable' }} />);
-  expect(screen.getByText(/Backend unavailable/)).toBeTruthy();
+  expect(screen.getByRole('status')).toHaveAttribute('title', expect.stringContaining('Backend unavailable'));
   expect(screen.getByTestId('list').hidden).toBe(false);
 });
 it('offers undo after a partial write and explains that no query ran', () => {
@@ -248,9 +250,9 @@ it('preserves an explicitly expanded conversation across a follow-up send', () =
 it('clears a recoverable transport error when the turn subsequently succeeds', () => {
   renderDock();
   act(() => panelProps!.onError!(new Error('Connection interrupted')));
-  expect(screen.getByText(/Connection interrupted/)).toBeTruthy();
+  expect(screen.getByRole('status')).toHaveAttribute('title', expect.stringContaining('Connection interrupted'));
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
-  expect(screen.queryByText(/Connection interrupted/)).toBeNull();
+  expect(screen.getByRole('status').getAttribute('title') || '').not.toMatch(/Connection interrupted/);
   expect(screen.getByText('dock.success')).toBeTruthy();
 });
 

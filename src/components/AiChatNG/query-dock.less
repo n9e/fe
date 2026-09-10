@@ -122,23 +122,16 @@
   container-type: inline-size;
 
   .ai-query-dock-status {
-    flex: 0 1 auto;
-    max-width: 42%;
+    flex: 0 0 auto;
   }
 
+  /* A fixed slot wide enough for "正在执行脚本… 12s"; longer states ellipsize
+     and carry the full text in their title. */
   .ai-query-dock-status-copy {
-    min-width: 0;
+    width: 12em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .ai-query-dock-status-detail {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    white-space: normal;
-    overflow-wrap: anywhere;
   }
 
   .ai-query-dock-composer {
