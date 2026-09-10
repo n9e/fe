@@ -214,21 +214,10 @@ export default function TargetMetaDrawer(props: IProps) {
     <>
       {!drawerOnly && (
         <Tooltip title={t('meta_tip')} placement='left'>
-          {targetNode ? (
-            <span onClick={handleTriggerClick}>{targetNode}</span>
-          ) : (
-            <a onClick={handleTriggerClick}>{ident}</a>
-          )}
+          {targetNode ? <span onClick={handleTriggerClick}>{targetNode}</span> : <a onClick={handleTriggerClick}>{ident}</a>}
         </Tooltip>
       )}
-      <Drawer
-        destroyOnClose
-        title={t('meta_title')}
-        width={800}
-        placement='right'
-        onClose={handleClose}
-        visible={drawerVisible}
-      >
+      <Drawer destroyOnClose title={t('meta_title')} width={800} placement='right' onClose={handleClose} visible={drawerVisible} className='n9e-antd-drawer'>
         {extraActions && <div className='mb-3 flex flex-wrap items-center gap-3'>{extraActions}</div>}
         {_.map(groupsName, (groupName) => {
           return <Group key={groupName} name={groupName} data={information[groupName]} />;

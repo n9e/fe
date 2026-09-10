@@ -127,7 +127,6 @@ export const defaultOptionsValues = {
 };
 
 export const defaultValues = {
-  version: '1.0.0',
   type: 'timeseries',
   options: defaultOptionsValues,
   custom: {},
@@ -220,6 +219,7 @@ export const defaultCustomValuesMap = {
     valueField: 'Value',
     scheme: 'Blues',
   },
+  iframe: {},
   barchart: {
     calc: 'lastNotNull',
     valueField: 'Value',
@@ -235,6 +235,9 @@ export const defaultOptionsValuesMap = {
   hexbin: defaultOptionsValues,
   barGauge: defaultOptionsValues,
   text: defaultOptionsValues,
+  heatmap: defaultOptionsValues,
+  iframe: defaultOptionsValues,
+  barchart: defaultOptionsValues,
   gauge: {
     ...defaultOptionsValues,
     thresholds: {

@@ -41,6 +41,7 @@ export default function AddDrawer(props: Props) {
           </Button>
         </Space>
       }
+      className='n9e-antd-drawer'
     >
       <FormCpt form={form} />
     </Drawer>

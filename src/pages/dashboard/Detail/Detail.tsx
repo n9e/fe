@@ -49,7 +49,7 @@ import Editor from '../Editor';
 import { validateDashboardConfig } from '../utils/validateDashboardConfig';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
 import { useGlobalState, DashboardMeta } from '../globalState';
-import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimezoneCacheKey } from './utils';
+import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimeCacheKey, dashboardTimezoneCacheKey } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
 import './style.less';
@@ -372,6 +372,8 @@ export default function DetailV2(props: IProps) {
     });
   }, [_.map(variablesWithOptions, (item) => _.pick(item, ['name', 'value'])), range]);
 
+  const shouldHideIframeHeader = dashboard.configs?.mode === 'iframe' && dashboard.configs?.hideHeader === true;
+
   return (
     <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
@@ -385,7 +387,7 @@ export default function DetailV2(props: IProps) {
             <div
               className='dashboard-detail-content-header-container'
               style={{
-                display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
+                display: query.viewMode !== 'fullscreen' && !shouldHideIframeHeader ? 'block' : 'none',
                 paddingBottom: dashboard.configs?.mode === 'iframe' ? 0 : 16,
               }}
             >
@@ -424,7 +426,7 @@ export default function DetailV2(props: IProps) {
                         type: 'row',
                         id: uuidv4(),
                         name: t('visualizations.row'),
-                        collapsed: true,
+                        collapsed: false,
                       } as IPanel,
                       'row',
                     );
@@ -544,7 +546,16 @@ export default function DetailV2(props: IProps) {
               />
             </>
           ) : (
-            <iframe className='embedded-dashboards-iframe' src={adjustURL(dashboard.configs?.iframe_url!, darkMode)} width='100%' height='100%' />
+            <iframe
+              className='embedded-dashboards-iframe'
+              src={adjustURL(dashboard.configs?.iframe_url!, darkMode, {
+                range,
+                refreshIntervalSeconds: intervalSeconds,
+                refreshLocalKey: `${dashboardTimeCacheKey}_${dashboard.id}_refresh`,
+              })}
+              width='100%'
+              height='100%'
+            />
           )}
         </div>
       </div>

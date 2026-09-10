@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 
 import PageLayout from '@/components/pageLayout';
 import { useAiChatContext } from '@/components/AiChatNG';
+import { IS_ENT } from '@/utils/constant';
 
 import Explorer from './Explorer';
 import './index.less';
@@ -36,7 +37,11 @@ function MetricExplorerPageContent() {
   ]);
 
   return (
-    <PageLayout title={t('title')} icon={<LineChartOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/'>
+    <PageLayout
+      title={t('title')}
+      icon={<LineChartOutlined />}
+      doc={IS_ENT ? '/docs/content/flashcat/metric/explore/' : 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/'}
+    >
       <div className='n9e'>
         <div className='w-full h-full flex'>
           <div className='flex-1 min-w-0 h-full best-looking-scroll'>

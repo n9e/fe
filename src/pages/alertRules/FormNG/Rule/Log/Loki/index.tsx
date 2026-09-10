@@ -25,7 +25,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { IS_PLUS } from '@/utils/constant';
-import { FormStateContext } from '@/pages/alertRules/Form';
+import { FormStateContext } from '@/pages/alertRules/FormNG';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';

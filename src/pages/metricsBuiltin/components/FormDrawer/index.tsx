@@ -106,6 +106,7 @@ export default function index(props: Props) {
           </Button>
         </Space>
       }
+      className='n9e-antd-drawer'
     >
       <Form
         preserve={false}

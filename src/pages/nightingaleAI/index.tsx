@@ -8,9 +8,11 @@ import { CommonStateContext } from '@/App';
 import { useAiChatContext } from '@/components/AiChatNG';
 import ChatHistory from '@/components/AiChatNG/ChatHistory';
 import ChatPanel from '@/components/AiChatNG/ChatPanel';
+import PageError from '@/components/PageError';
 import { EmptyConversation } from '@/components/AiChatNG/MessageBlocks';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
 import { aiChatShareQueryKey, aiChatShareReadonlyQueryKey, copyAiChatShareUrl } from '@/components/AiChatNG/share';
+import { aiChatShareFallbackQueryKey } from '@/components/AiChatNG/useShareFallback';
 import { IAiChatHistoryItem } from '@/components/AiChatNG/types';
 import { IS_ENT, IS_PLUS } from '@/utils/constant';
 
@@ -108,6 +110,8 @@ export default function NightingaleAIPage() {
   const isAdmin = profile?.roles?.includes('Admin');
   const visibleConfigItems = useMemo(() => configItems.filter((item) => (!item.plusOnly || (IS_PLUS && !IS_ENT)) && (isAdmin || perms?.includes(item.perm))), [isAdmin, perms]);
   const chatPageFrom = useMemo(() => buildPageFrom({ url: PAGE_PATH }), []);
+  // 从没权限的原页面降级过来的分享链接，给个说明，免得用户奇怪自己怎么跑到这儿了
+  const isShareFallback = useMemo(() => new URLSearchParams(location.search).get(aiChatShareFallbackQueryKey) === '1', [location.search]);
 
   useEffect(() => {
     const isNewChat = (location.state as { newChat?: boolean } | undefined)?.newChat;
@@ -209,7 +213,7 @@ export default function NightingaleAIPage() {
   const chatTitle = chatId ? historyChat?.title || (selectedChat?.chat_id === chatId ? selectedChat.title : t('nightingale.title')) : t('nightingale.new_chat');
 
   if (isConfigPath && !configItem && !chatId) return <Redirect to={PAGE_PATH} />;
-  if (configItem && !isAdmin && perms && !perms.includes(configItem.perm)) return <Redirect to='/403' />;
+  if (configItem && !isAdmin && perms && !perms.includes(configItem.perm)) return <PageError status={403} />;
 
   return (
     <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
@@ -308,6 +312,7 @@ export default function NightingaleAIPage() {
                 </Tooltip>
               )}
             </div>
+            {isShareFallback && <div className='shrink-0 border-b border-fc-300 bg-fc-50 px-4 py-2 text-base text-hint'>{t('nightingale.share_fallback_notice')}</div>}
             <div className='min-h-0 flex-1 p-4'>
               <ChatPanel
                 chatId={chatId}

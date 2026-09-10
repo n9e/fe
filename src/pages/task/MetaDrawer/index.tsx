@@ -72,6 +72,7 @@ export default function MetaDrawer(props: Props) {
           </Link>
         )
       }
+      className='n9e-antd-drawer'
     >
       <Spin spinning={loading}>
         <div className='job-task-table'>

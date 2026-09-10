@@ -126,6 +126,10 @@ const en_US = {
       topNSettings: {
         title: 'Top N values settings',
       },
+      flattenSettings: {
+        title: 'Flatten depth',
+        extra: '0: no parsing or flattening, field values are displayed as raw log strings\nN (>=1): nested JSON is expanded up to N levels, deeper parts are displayed as a whole',
+      },
     },
     fieldLabelTip: 'Field statistics not enabled, unable to perform statistical analysis',
     filterAnd: 'Add "{{token}}" to current query',

@@ -1,5 +1,7 @@
 const id_ID = {
   "query": {
+    "range": "Query range",
+    "sql_required": "SQL is required",
     "mode": "Metode pencarian",
     "mode_indices": "Indices",
     "mode_index_patterns": "Index patterns",
@@ -37,6 +39,12 @@ const id_ID = {
       "table": "Tabel",
       "timeseries": "Grafik deret waktu"
     },
+    "dashboard": {
+      "mode": {
+        "timeSeries": "Data deret waktu",
+        "table": "Data non-deret waktu"
+      }
+    },
     "add_to": {
       "btn": "Tambahkan ke",
       "recording_rule": "Recording rules",
@@ -44,6 +52,11 @@ const id_ID = {
     }
   },
   "builder": {
+    "title": "Builder",
+    "code": "Code",
+    "open_builder": "Open builder",
+    "switch_to_builder_confirm_title": "Switch to Builder",
+    "switch_to_builder_confirm_content": "Switching will clear the current SQL and builder configuration.",
     "to_pinned_btn": "Tetap",
     "to_unpinned_btn": "Lepas sematan",
     "filters": {

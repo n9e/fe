@@ -36,3 +36,8 @@
 - refactor: Elasticsearch/OpenSearch 查询的 `query.syntax`（kuery/kql/lucene）迁移为 `query.filter_language`（kql/lucene）
 - feat: 查询 target 新增 `resultType`（`time_series` | `logs`），按查询模式自动推断
 - refactor: Elasticsearch/OpenSearch 多值 target（`query.values` 含多个值）在请求时展开为多个单值查询，首个值保留原 refId，其余分配唯一子 refId
+
+## 4.1.0
+
+- refactor: 使用 `dashboard.version` 作为唯一配置版本，移除面板版本字段
+- fix: 修正 4.1.0 前仪表盘分组面板的折叠状态语义

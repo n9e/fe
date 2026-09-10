@@ -100,6 +100,7 @@ export default function OutputDrawer(props: Props) {
           onChange={(value) => setSize(value as SizeType)}
         />
       }
+      className='n9e-antd-drawer'
     >
       <Spin spinning={loading}>
         <pre style={{ fontSize: 12, padding: 10 }}>{getOutput()}</pre>

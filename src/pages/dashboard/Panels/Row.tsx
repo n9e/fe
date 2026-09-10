@@ -50,7 +50,7 @@ export default function Row(props: IProps) {
   return (
     <div
       className={classNames('dashboards-panels-row', {
-        'dashboards-panels-row-collapsed': row.collapsed,
+        'dashboards-panels-row-expanded': !row.collapsed,
       })}
     >
       <div className='dashboards-panels-row-name'>
@@ -60,10 +60,10 @@ export default function Row(props: IProps) {
             onToggle();
           }}
         >
-          {row.collapsed ? <CaretDownOutlined /> : <CaretRightOutlined />}
+          {row.collapsed ? <CaretRightOutlined /> : <CaretDownOutlined />}
           <span className='pl-2'>
             <span>{replaceTemplateVariables(name)}</span>
-            {!row.collapsed && (
+            {row.collapsed && (
               <span className='ml-4 dashboards-panels-row-name-panels-count'>
                 (
                 {rowPanels > 1
@@ -87,7 +87,7 @@ export default function Row(props: IProps) {
                   <Menu.Item
                     key='paste'
                     onClick={() => {
-                      if (!row.collapsed) {
+                      if (row.collapsed) {
                         onToggle();
                       }
                       onPasteClick();
@@ -98,7 +98,7 @@ export default function Row(props: IProps) {
                   <Menu.Item
                     key='add'
                     onClick={() => {
-                      if (!row.collapsed) {
+                      if (row.collapsed) {
                         onToggle();
                       }
                       onAddClick();

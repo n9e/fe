@@ -22,6 +22,7 @@ const zh_HK = {
     more_actions: '更多會話操作',
   },
   nightingale: {
+    share_fallback_notice: '你沒有原頁面的存取權限，這裡只顯示對話內容',
     title: 'Nightingale AI',
     new_chat: '新建會話',
     sessions: '會話',
