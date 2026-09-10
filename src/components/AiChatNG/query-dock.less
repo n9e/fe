@@ -178,6 +178,13 @@
     padding-left: 8px;
     border-left: 1px solid var(--fc-border-color);
 
+    /* One line of text plus the bar's own padding adds up to the 32px of
+       the query box above; antd's 4px would make the bar 34. */
+    textarea.ant-input {
+      padding-top: 3px;
+      padding-bottom: 3px;
+    }
+
     > button,
     > .ant-tooltip-open {
       flex-shrink: 0;
