@@ -66,7 +66,9 @@ export default function index(props: SelectProps & Props) {
   const { datasourceList: contextDatasourceList = [], datasourceCateOptions = [], isPlus } = useContext(CommonStateContext);
   const resolvedDatasourceList: DatasourceItem[] = providedDatasourceList ?? contextDatasourceList;
   const resolvedDatasourceCateList = datasourceCateList ?? datasourceCateOptions;
-  const currentDatasourceList = (ajustDatasourceList ? ajustDatasourceList(resolvedDatasourceList) : resolvedDatasourceList).filter((item) => {
+  // 调整后的列表可能包含仪表盘注入的数据源变量选项，不能只用原始列表判断当前值是否已删除。
+  const adjustedDatasourceList = ajustDatasourceList ? ajustDatasourceList(resolvedDatasourceList) : resolvedDatasourceList;
+  const currentDatasourceList = adjustedDatasourceList.filter((item) => {
     if (!filterKey) {
       return true;
     }
@@ -87,8 +89,9 @@ export default function index(props: SelectProps & Props) {
 
     const normalizeValue = (item: DatasourceValue | { value: DatasourceValue }) => {
       const rawValue = getRawValue(item);
-      // 业务过滤仅影响下拉可选项，不能将原始数据源列表中仍存在的数据源标记为已删除。
-      const exists = _.some(resolvedDatasourceList, { id: rawValue }) || preservedOptionValues.has(rawValue);
+      // 业务过滤仅影响下拉可选项，不能将原始数据源列表或调用方注入的选项标记为已删除。
+      const exists =
+        _.some(resolvedDatasourceList, { id: rawValue }) || _.some(adjustedDatasourceList, { id: rawValue }) || preservedOptionValues.has(rawValue);
 
       return exists
         ? { value: rawValue }
