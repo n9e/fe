@@ -31,7 +31,8 @@ const es_ES = {
   "explorer_timeseries_legend_columns_placeholder": "El valor predeterminado es Last",
   "print_access_log": "Activar el registro de acceso",
   "print_body_paths": "Rutas cuyo cuerpo de solicitud se registra",
-  "font_family": "Fuente"
+  "font_family": "Fuente",
+  "alert_severity_names": "Nombres personalizados de severidad de alerta"
 };
 
 export default es_ES;

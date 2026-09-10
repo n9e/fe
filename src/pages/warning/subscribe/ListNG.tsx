@@ -11,6 +11,7 @@ import { subscribeItem } from '@/store/warningInterface/subscribe';
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import { DatasourceSelect } from '@/components/DatasourceSelect';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
@@ -160,14 +161,18 @@ const Subscribe = (props: Props) => {
             <Tags
               type='fill'
               borderRadius={6}
-              data={_.map(data, (severity) => `S${severity}`)}
-              bgColor={(tagname) => {
-                const bgColorMap = { S1: 'var(--fc-red-3)', S2: 'var(--fc-orange-3)', S3: 'var(--fc-yellow-3)' };
-                return bgColorMap[tagname as string] || 'var(--fc-gray-3)';
+              data={data}
+              getLabel={(severity) => `S${severity}`}
+              getTooltipTitle={(severity) => (typeof severity === 'number' ? getAlertSeverityName(severity) : undefined)}
+              bgColor={(severity) => {
+                const level = Number(severity);
+                const bgColorMap: Record<number, string> = { 1: 'var(--fc-red-3)', 2: 'var(--fc-orange-3)', 3: 'var(--fc-yellow-3)' };
+                return bgColorMap[level] || 'var(--fc-gray-3)';
               }}
-              fontColor={(tagname) => {
-                const fontColorMap = { S1: 'var(--fc-red-11)', S2: 'var(--fc-orange-11)', S3: 'var(--fc-yellow-11)' };
-                return fontColorMap[tagname as string] || 'var(--fc-gray-11)';
+              fontColor={(severity) => {
+                const level = Number(severity);
+                const fontColorMap: Record<number, string> = { 1: 'var(--fc-red-11)', 2: 'var(--fc-orange-11)', 3: 'var(--fc-yellow-11)' };
+                return fontColorMap[level] || 'var(--fc-gray-11)';
               }}
             />
           );

@@ -1,6 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
@@ -327,9 +328,9 @@ const Event = (props: Props) => {
               }}
               dropdownMatchSelectWidth={false}
             >
-              <Select.Option value={1}>S1（Critical）</Select.Option>
-              <Select.Option value={2}>S2（Warning）</Select.Option>
-              <Select.Option value={3}>S3（Info）</Select.Option>
+              <Select.Option value={1}>{getAlertSeverityName(1)}</Select.Option>
+              <Select.Option value={2}>{getAlertSeverityName(2)}</Select.Option>
+              <Select.Option value={3}>{getAlertSeverityName(3)}</Select.Option>
             </Select>
             <Select
               style={{ minWidth: 60 }}

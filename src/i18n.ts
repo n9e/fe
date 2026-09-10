@@ -20,7 +20,19 @@ import _ from 'lodash';
 
 import { syncMomentLocale } from './utils/momentLocale';
 
-const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP', 'pt_BR', 'es_ES', 'id_ID', 'ko_KR', 'fr_FR'];
+export const languages = ['zh_CN', 'en_US', 'zh_HK', 'ru_RU', 'ja_JP', 'pt_BR', 'es_ES', 'id_ID', 'ko_KR', 'fr_FR'] as const;
+export const languageLabels: Record<(typeof languages)[number], string> = {
+  zh_CN: '简体中文',
+  zh_HK: '繁體中文',
+  en_US: 'English',
+  ja_JP: '日本語',
+  ru_RU: 'Русский',
+  pt_BR: 'Português',
+  es_ES: 'Español',
+  id_ID: 'Bahasa Indonesia',
+  ko_KR: '한국어',
+  fr_FR: 'Français',
+};
 
 // 缺失 key 时的回退链：繁体优先回退简体；其他语言（ja/ru 等）优先回退英文，最终兜底 zh_CN
 const fallbackLng = {

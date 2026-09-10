@@ -31,7 +31,8 @@ const ko_KR = {
   "explorer_timeseries_legend_columns_placeholder": "기본값은 Last입니다",
   "print_access_log": "액세스 로그 켜기",
   "print_body_paths": "요청 본문을 기록할 경로",
-  "font_family": "글꼴"
+  "font_family": "글꼴",
+  "alert_severity_names": "사용자 지정 알림 등급 이름"
 };
 
 export default ko_KR;
