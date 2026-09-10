@@ -9,10 +9,12 @@ interface IUseAiChatStreamOptions {
   onChunk?: (chunk: IAiChatStreamChunk) => void;
   onFinish?: () => void;
   onError?: (error: Error) => void;
+  /** The connection ended before the finish frame: a proxy's idle limit, a dropped network. The turn may still be running. */
+  onClose?: () => void;
 }
 
 export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
-  const { onChunk, onFinish, onError } = options;
+  const { onChunk, onFinish, onError, onClose } = options;
   const abortControllerRef = useRef<AbortController | null>(null);
   const [streaming, setStreaming] = useState(false);
 
@@ -53,6 +55,7 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
         const reader = response.body.getReader();
         const decoder = new TextDecoder('utf-8');
         let buffer = '';
+        let finished = false;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -64,9 +67,11 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
 
           chunks.forEach((entry) => {
             try {
-              const { finished, chunk } = parseStreamEntry(entry);
+              const parsed = parseStreamEntry(entry);
+              const { chunk } = parsed;
               if (chunk) onChunk?.(chunk);
-              if (finished || chunk?.done || chunk?.type === 'done') {
+              if (parsed.finished || chunk?.done || chunk?.type === 'done') {
+                finished = true;
                 onFinish?.();
                 stop();
               }
@@ -74,6 +79,10 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
               onError?.(error instanceof Error ? error : new Error('stream parse failed'));
             }
           });
+        }
+        if (!finished) {
+          stop();
+          onClose?.();
         }
       } catch (error) {
         if ((error as Error)?.name === 'AbortError') {
@@ -84,7 +93,7 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
         stop();
       }
     },
-    [onChunk, onError, onFinish, stop],
+    [onChunk, onClose, onError, onFinish, stop],
   );
 
   useEffect(() => {

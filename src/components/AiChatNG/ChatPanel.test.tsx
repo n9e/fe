@@ -9,7 +9,7 @@ const startStream = jest.fn();
 const stopStream = jest.fn();
 const maybeScrollToBottom = jest.fn();
 const scrollToBottom = jest.fn();
-let streamCallbacks: { onChunk?: (chunk: IAiChatStreamChunk) => void; onFinish?: () => void } = {};
+let streamCallbacks: { onChunk?: (chunk: IAiChatStreamChunk) => void; onFinish?: () => void onClose?: () => void } = {};
 
 const inProgress: IAiChatMessage = {
   chat_id: 'chat-1',
@@ -156,6 +156,22 @@ describe('ChatPanel 流式刷新（jsdom 集成）', () => {
 
   afterEach(() => {
     jest.useRealTimers();
+  });
+
+  it('resumes polling when the stream ends before the turn finishes', async () => {
+    render(<ChatPanel chatId='chat-1' queryPageFrom={{ url: '/alert-rules' }} />);
+    await waitFor(() => expect(startStream).toHaveBeenCalledWith('stream-1'));
+    const polledBefore = getMessageDetail.mock.calls.length;
+    jest.useFakeTimers();
+
+    act(() => {
+      streamCallbacks.onClose?.();
+    });
+    await act(async () => {
+      jest.advanceTimersByTime(3000);
+      await Promise.resolve();
+    });
+    expect(getMessageDetail.mock.calls.length).toBeGreaterThan(polledBefore);
   });
 
   it('把高频 chunk 合并为最多每 50ms 一次的 React state 刷新，并在结束时立即 flush', async () => {

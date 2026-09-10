@@ -301,7 +301,19 @@ export default function ChatPanel(props: IAiChatProps) {
       flushStreamingMessageImmediately();
       syncMessageDetail(locator).catch((error) => handleError(error instanceof Error ? error : new Error('sync message failed')));
     },
-    onError: handleError,
+    // The stream can end or fail while the turn goes on server-side; polling
+    // picks the turn back up and stops itself once the message finishes.
+    onClose: () => {
+      const locator = streamBufferRef.current.locator;
+      if (!locator) return;
+      flushStreamingMessageImmediately();
+      startPollingRef.current?.(locator);
+    },
+    onError: (error) => {
+      handleError(error);
+      const locator = streamBufferRef.current.locator;
+      if (locator) startPollingRef.current?.(locator);
+    },
   });
 
   // 流式消息更新后，如果用户未手动滚动则跟随到底部
@@ -314,6 +326,7 @@ export default function ChatPanel(props: IAiChatProps) {
   useEffect(() => {
     startStreamRef.current = startStream;
   }, [startStream]);
+  const startPollingRef = useRef<(locator: IAiChatMessageLocator) => void>();
 
   const startPolling = useCallback(
     (locator: IAiChatMessageLocator) => {
@@ -329,6 +342,9 @@ export default function ChatPanel(props: IAiChatProps) {
     },
     [cleanupPolling, handleError, isCurrentChat, syncMessageDetail],
   );
+  useEffect(() => {
+    startPollingRef.current = startPolling;
+  }, [startPolling]);
 
   const loadMessages = useCallback(
     async (targetChatId: string) => {
