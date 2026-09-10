@@ -4,12 +4,15 @@ import { Dropdown, Menu, Button, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { Export } from '@/components/ExportImport';
 
 import { NS } from '../../constants';
 import { Item, deleteItems, putItemsDisabled } from '../../services';
 
 interface MoreOperationsProps {
+  runMutation: ReturnType<typeof useRowMutation>['run'];
+  pendingIds: ReadonlySet<React.Key>;
   selectedRows: Item[];
   onStatusChange: (ids: number[], disabled: boolean) => void;
   /** Refresh the list and clear selection after deletion. */
@@ -50,11 +53,13 @@ export default function MoreOperations(props: MoreOperationsProps) {
     Modal.confirm({
       title: t(disabled ? 'batch.disable_confirm' : 'batch.enable_confirm', { count: targets.length }),
       onOk: () =>
-        putItemsDisabled(_.map(targets, 'id'), disabled)
-          .then(() => {
-            message.success(t('common:success.modify'));
-            props.onStatusChange(_.map(targets, 'id'), disabled);
-          })
+        props
+          .runMutation(_.map(targets, 'id'), () =>
+            putItemsDisabled(_.map(targets, 'id'), disabled).then(() => {
+              message.success(t('common:success.modify'));
+              props.onStatusChange(_.map(targets, 'id'), disabled);
+            }),
+          )
           .catch((err) => {
             console.error(err);
           }),
@@ -84,7 +89,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
     Modal.confirm({
       title: enabled.length ? t('batch.delete_enabled_confirm', { count: enabled.length }) : t('batch.delete_confirm', { count: selectedRows.length }),
       okButtonProps: { danger: true },
-      onOk: () => (enabled.length ? putItemsDisabled(_.map(enabled, 'id'), true).then(doDelete) : doDelete()),
+      onOk: () => props.runMutation(ids, () => (enabled.length ? putItemsDisabled(_.map(enabled, 'id'), true).then(doDelete) : doDelete())),
     });
   };
 
@@ -109,7 +114,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
 
   return (
     <Dropdown overlay={overlay} trigger={['click']}>
-      <Button onClick={(e) => e.stopPropagation()}>
+      <Button disabled={selectedRows.some((row) => props.pendingIds.has(row.id))} onClick={(e) => e.stopPropagation()}>
         {t('common:btn.more')} <DownOutlined />
       </Button>
     </Dropdown>
