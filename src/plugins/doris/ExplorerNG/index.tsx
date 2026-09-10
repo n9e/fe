@@ -169,9 +169,13 @@ export default function index(props: Props) {
       },
     });
   }, [datasourceValue]);
+  // SQL mode suggests statements, search mode suggests filters.
   const aiPromptList = useMemo(
-    () => ['errors', 'per_minute', 'group'].map((topic) => ({ label: tAi(`dock.prompt_log_${topic}`), value: tAi(`dock.prompt_log_${topic}_query`) })),
-    [tAi],
+    () =>
+      syntax === 'sql'
+        ? ['errors', 'per_minute', 'group'].map((topic) => ({ label: tAi(`dock.prompt_log_${topic}`), value: tAi(`dock.prompt_log_${topic}_query`) }))
+        : ['errors', 'service', 'timeout'].map((topic) => ({ label: tAi(`dock.prompt_search_${topic}`), value: tAi(`dock.prompt_search_${topic}_query`) })),
+    [tAi, syntax],
   );
 
   useLayoutEffect(() => {
