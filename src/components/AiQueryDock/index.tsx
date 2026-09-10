@@ -307,7 +307,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                   aria-label={expanded ? t('dock.collapse') : t('dock.expand')}
                   aria-expanded={expanded}
                   onClick={toggleExpanded}
-                  icon={expanded ? <ChevronUp size={ICON} strokeWidth={STROKE} /> : <ChevronDown size={ICON} strokeWidth={STROKE} />}
+                  // A chevron has less ink than the icons beside it; two more pixels even the weight.
+                  icon={expanded ? <ChevronUp size={ICON + 2} strokeWidth={STROKE} /> : <ChevronDown size={ICON + 2} strokeWidth={STROKE} />}
                 />
               </Tooltip>
             )}
