@@ -177,6 +177,13 @@
     gap: 8px;
     padding-left: 8px;
     border-left: 1px solid var(--fc-border-color);
+    /* The divider runs the bar's full height, like an input group's addon
+       seam: stretch past the bar's 3px padding and take it back inside. */
+    align-self: stretch;
+    margin-top: -3px;
+    margin-bottom: -3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
 
     > button,
     > .ant-tooltip-open {
@@ -219,6 +226,8 @@
       flex-basis: 100%;
       padding-left: 0;
       border-left: 0;
+      margin-top: 0;
+      margin-bottom: 0;
     }
   }
 }
