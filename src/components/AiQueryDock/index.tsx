@@ -279,7 +279,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
             <span className='ai-query-dock-status-copy' role='status' aria-live='polite' title={detail}>
               {status}
             </span>
-            {tone === 'running' && <span className='ai-query-dock-progress' aria-hidden='true' />}
+            {/* Only while the conversation is folded away: open, it shows its own progress. */}
+            {tone === 'running' && !expanded && <span className='ai-query-dock-progress' aria-hidden='true' />}
             {canUndo && (
               <Tooltip title={t('dock.undo')}>
                 <Button
