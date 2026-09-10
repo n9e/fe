@@ -2,7 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
-import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined, AppstoreAddOutlined, ShareAltOutlined } from '@ant-design/icons';
+import {
+  ReloadOutlined,
+  SearchOutlined,
+  DownOutlined,
+  QuestionCircleOutlined,
+  CopyOutlined,
+  DownloadOutlined,
+  AppstoreAddOutlined,
+  DeploymentUnitOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import semver from 'semver';
 import { useAntdTable } from 'ahooks';
@@ -522,27 +532,15 @@ export default function List(props: Props) {
                               {ident}
                             </span>
                           </Tooltip>
+                          {/* 两个图标各自直达详情抽屉的一个页签，顺序跟着页签走：
+                              概览 · 拓扑 · 采集配置，所以拓扑在左、采集配置在右。
+                              常驻而不是 hover 才显形：这是「从机器出发看/配采集」的入口，
+                              藏在 hover 里新用户不可能找到。这一列已经在算 identIpWidth 排版，
+                              所以只放开可见性、不加文字，免得把这列撑变形 */}
                           {IS_PLUS && (
-                            // 常驻而不是 hover 才显形：这是「从机器出发看/配采集」的入口，
-                            // 藏在 hover 里新用户不可能找到。这一列已经在算 identIpWidth 排版，
-                            // 所以只放开可见性、不加文字，免得把这列撑变形
-                            <Tooltip title={t('view_collects')}>
-                              <Button
-                                className='ml-2'
-                                size='small'
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setMetaDrawerIdent(ident);
-                                  setMetaDrawerTab('collects');
-                                  setMetaDrawerOpen(true);
-                                }}
-                                icon={<ApartmentOutlined />}
-                              />
-                            </Tooltip>
-                          )}
-                          {IS_PLUS && (
-                            // 与采集配置那个按钮并排：两个都是「从这台机器出发」的入口。
-                            // 点它直接把元信息抽屉打开并落在拓扑页签上
+                            // 连通图用 DeploymentUnit（中心节点连着几个卫星节点），不用 ShareAlt ——
+                            // 后者在本仓库各处都是「分享」，也不用 Apartment，那是层级树，
+                            // 而且在数据探索里已经是「下钻」的意思
                             <Tooltip title={t('host_topology')}>
                               <Button
                                 className='ml-2'
@@ -553,7 +551,24 @@ export default function List(props: Props) {
                                   setMetaDrawerTab('topology');
                                   setMetaDrawerOpen(true);
                                 }}
-                                icon={<ShareAltOutlined />}
+                                icon={<DeploymentUnitOutlined />}
+                              />
+                            </Tooltip>
+                          )}
+                          {IS_PLUS && (
+                            // 齿轮与「采集规则」页自己的页面图标一致，也与拓扑工具条上那个
+                            // 「配置采集」按钮一致——同一件事在三处用同一个字形
+                            <Tooltip title={t('view_collects')}>
+                              <Button
+                                className='ml-2'
+                                size='small'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMetaDrawerIdent(ident);
+                                  setMetaDrawerTab('collects');
+                                  setMetaDrawerOpen(true);
+                                }}
+                                icon={<SettingOutlined />}
                               />
                             </Tooltip>
                           )}
