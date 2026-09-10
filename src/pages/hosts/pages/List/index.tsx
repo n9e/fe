@@ -43,6 +43,31 @@ export default function index() {
 
   const businessGroupRef = React.useRef<{ getCollapse: () => boolean; setCollapse: (collapse: boolean) => void }>(null);
 
+  /**
+   * 切到拓扑视图时自动收起上面那排统计卡片。
+   *
+   * 那几张图讲的是「这批机器的心跳、内存、CPU 分布」，是列表的注解；图上用不到，
+   * 而它们占掉的两百来像素正是画布最缺的。回到列表时还原用户自己的选择 ——
+   * 用 ref 记住进拓扑之前的值，而不是一律展开。
+   *
+   * 这里只改 state 不写 localStorage：那份持久化的是用户在列表视图下的偏好，
+   * 由 StatsCards 上那个把手负责，自动折叠不该把它覆盖掉。
+   */
+  const statsCollapsedBeforeTopoRef = React.useRef<boolean | null>(null);
+  useEffect(() => {
+    if (viewMode === 'topology') {
+      if (statsCollapsedBeforeTopoRef.current === null) {
+        statsCollapsedBeforeTopoRef.current = statsCollapsed;
+        setStatsCollapsed(true);
+      }
+    } else if (statsCollapsedBeforeTopoRef.current !== null) {
+      setStatsCollapsed(statsCollapsedBeforeTopoRef.current);
+      statsCollapsedBeforeTopoRef.current = null;
+    }
+    // 只跟着视图变，statsCollapsed 不进依赖：用户在拓扑里手动展开时不该被立刻收回去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode]);
+
   // 换视图的唯一入口：视图开关和「保存的视图」都走这里。
   // 视图写进 URL 好分享，也让刷新之后还停在同一种看法上。
   const history = useHistory();
@@ -128,12 +153,14 @@ export default function index() {
             }}
           />
           <div className='w-full min-w-0 flex flex-col'>
-            <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
+            {/* 视图开关摆在统计卡片上面：它决定下面整块内容是什么，
+                夹在卡片和筛选条中间的话，用户得先看完一屏图表才找得到「换一种看法」 */}
             {IS_PLUS && (
               <div className='mb-2'>
                 <HostTopoViewSwitch value={viewMode} onChange={changeViewMode} filters={hostFilters} onFiltersChange={setHostFilters} />
               </div>
             )}
+            <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
             {viewMode === 'topology' && IS_PLUS ? (
               <div className='flex-1 min-h-0 flex flex-col gap-2'>
                 {/* 拓扑视图下 <List/> 整个不渲染，它那条工具栏也跟着没了。
