@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import type { AiChatPageFromSource, IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
-import { ChevronDown, ChevronUp, SquarePen, Undo2, X } from 'lucide-react';
+import { ChevronsDownUp, ChevronsUpDown, SquarePen, Undo2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatPanel, EAiChatContentType, IAiChatMessage, IAiChatTurn } from '@/components/AiChatNG';
@@ -307,8 +307,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                   aria-label={expanded ? t('dock.collapse') : t('dock.expand')}
                   aria-expanded={expanded}
                   onClick={toggleExpanded}
-                  // A chevron has less ink than the icons beside it; two more pixels even the weight.
-                  icon={expanded ? <ChevronUp size={ICON + 2} strokeWidth={STROKE} /> : <ChevronDown size={ICON + 2} strokeWidth={STROKE} />}
+                  icon={expanded ? <ChevronsDownUp size={ICON} strokeWidth={STROKE} /> : <ChevronsUpDown size={ICON} strokeWidth={STROKE} />}
                 />
               </Tooltip>
             )}
