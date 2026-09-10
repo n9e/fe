@@ -344,7 +344,9 @@ describe('ChatPanel turn cancellation and completion', () => {
     services.sendMessage.mockClear();
     render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} promptList={[{ label: 'Host CPU', value: 'Generate a query for host CPU usage' }]} />);
     fireEvent.mouseDown(screen.getByRole('option', { name: 'Host CPU' }));
-    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ query: expect.objectContaining({ content: 'Generate a query for host CPU usage' }) })));
+    await waitFor(() =>
+      expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ query: expect.objectContaining({ content: 'Generate a query for host CPU usage' }) })),
+    );
   });
 
   it('lets the keyboard pick a suggestion: arrows move, Tab fills, Enter sends', async () => {
@@ -365,7 +367,39 @@ describe('ChatPanel turn cancellation and completion', () => {
     expect(screen.queryByRole('listbox')).toBeNull();
     fireEvent.change(box, { target: { value: '' } });
     fireEvent.keyDown(box, { key: 'Enter' });
-    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ query: expect.objectContaining({ content: 'Generate a query for host memory usage' }) })));
+    await waitFor(() =>
+      expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ query: expect.objectContaining({ content: 'Generate a query for host memory usage' }) })),
+    );
+  });
+
+  it('shows the question at once, while the chat is still being created', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    const creating = pending<{ chat_id: string; title: string; last_update: number }>();
+    services.createChat.mockReturnValueOnce(creating.promise);
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} promptList={[{ label: 'Host CPU', value: 'Generate a query for host CPU usage' }]} />);
+    fireEvent.mouseDown(screen.getByRole('option', { name: 'Host CPU' }));
+    // MessageBlocks is stubbed here; the message element standing in for the bubble is what matters.
+    expect(screen.getByTestId('message')).toBeTruthy();
+    expect(screen.queryByRole('listbox')).toBeNull();
+    await act(async () => {
+      creating.resolve({ chat_id: 'chat-1', title: '', last_update: 0 });
+    });
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+  });
+
+  it('reads the page info at send time when given a reader', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    let promql = 'up';
+    render(<ChatPanel variant='slim' queryPageFrom={() => ({ url: '/metric/explorer', param: { promql } })} />);
+    promql = 'rate(up[1m])';
+    send();
+    await waitFor(() =>
+      expect(services.sendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ page_from: { url: '/metric/explorer', param: { promql: 'rate(up[1m])' } } }) }),
+      ),
+    );
   });
 
   it('focuses the composer as soon as the dock is active', () => {

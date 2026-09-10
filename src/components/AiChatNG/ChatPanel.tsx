@@ -65,6 +65,12 @@ export default function ChatPanel(props: IAiChatProps) {
   // new identity must not be mistaken for a new conversation.
   const queryPageFromRef = useRef(queryPageFrom);
   queryPageFromRef.current = queryPageFrom;
+  // A page may hand a reader instead of an object, so what goes out with a
+  // message is the page as it is at that moment, not as it was at mount.
+  const currentPageFrom = () => {
+    const source = queryPageFromRef.current;
+    return typeof source === 'function' ? source() : source;
+  };
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
   const messagesRef = useRef(messages);
@@ -84,6 +90,9 @@ export default function ChatPanel(props: IAiChatProps) {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [draftHint, setDraftHint] = useState(false);
+  // The question being sent, shown at once: the server-side message it becomes
+  // only exists after chat/new and message/new have both returned.
+  const [pendingContent, setPendingContent] = useState<string>();
   // Which suggestion the arrow keys have moved to; Tab fills it, Enter sends it.
   const [highlight, setHighlight] = useState(0);
   useEffect(() => {
@@ -136,7 +145,7 @@ export default function ChatPanel(props: IAiChatProps) {
     if (!chatId) {
       activeChatRef.current = undefined;
     } else if (activeChatRef.current?.chat_id !== chatId) {
-      activeChatRef.current = { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current };
+      activeChatRef.current = { chat_id: chatId, title: '', last_update: 0, page_from: currentPageFrom() };
     }
   }, [chatId]);
 
@@ -253,6 +262,7 @@ export default function ChatPanel(props: IAiChatProps) {
         const actionOutcome = detail.err_code ? undefined : await runPageAction(detail);
         if (!isCurrentTurn()) return false;
         setSubmitting(false);
+        setPendingContent(undefined);
         pendingTurnRef.current?.scope?.finish?.();
         pendingTurnRef.current = undefined;
         onTurnRef.current?.({ phase: 'done', message: detail, actionOutcome, reason: detail.err_code === -2 ? 'stopped' : detail.err_code ? 'error' : undefined });
@@ -337,7 +347,7 @@ export default function ChatPanel(props: IAiChatProps) {
                 chat_id: targetChatId,
                 title: previous?.title || '',
                 last_update: previous?.last_update || 0,
-                page_from: previous?.page_from || queryPageFromRef.current,
+                page_from: previous?.page_from || currentPageFrom(),
               };
         activeChatRef.current = nextChat;
         setActiveChat(nextChat);
@@ -359,6 +369,7 @@ export default function ChatPanel(props: IAiChatProps) {
       } catch (error) {
         if (isLatestRequest()) {
           setSubmitting(false);
+          setPendingContent(undefined);
           // 读不到这个会话（多半是没有 FlashAI 权限，或会话不属于自己）：
           // 这个请求带着 silence，不报出来就是白屏转圈，所以在这里显式交给整页错误
           if ((error as { status?: number })?.status === 403 && window.location.pathname === sourcePathname) {
@@ -407,6 +418,7 @@ export default function ChatPanel(props: IAiChatProps) {
     cleanupPolling();
     stopStream();
     setSubmitting(false);
+    setPendingContent(undefined);
     setStreamingLocator(undefined);
     // 切会话时未 flush 的流式缓冲有意丢弃：切回时由 loadMessages 从服务端重拉兜底。
     streamBufferRef.current = {
@@ -430,7 +442,7 @@ export default function ChatPanel(props: IAiChatProps) {
             chat_id: chatId,
             title: '',
             last_update: 0,
-            page_from: queryPageFromRef.current,
+            page_from: currentPageFrom(),
           };
     activeChatRef.current = nextChat;
     setActiveChat(nextChat);
@@ -456,7 +468,7 @@ export default function ChatPanel(props: IAiChatProps) {
   const createNewChat = useCallback(
     async (generation: number) => {
       try {
-        const chat = await createChat(queryPageFromRef.current);
+        const chat = await createChat(currentPageFrom());
         if (generation !== turnGenerationRef.current || !activeRef.current) return;
         ownChatIdRef.current = chat.chat_id;
         activeChatRef.current = chat;
@@ -481,13 +493,14 @@ export default function ChatPanel(props: IAiChatProps) {
       const generation = ++turnGenerationRef.current;
       const pending = { scope: prepareTurn?.(), content, locator: undefined as IAiChatMessageLocator | undefined };
       pendingTurnRef.current = pending;
-      const pageFrom = queryPageFromRef.current;
+      const pageFrom = currentPageFrom();
       setSubmitting(true);
+      setPendingContent(content);
       setInputValue('');
       setDraftHint(false);
       try {
         const currentChat = chatId && activeChat?.chat_id !== chatId ? undefined : activeChat;
-        const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: queryPageFromRef.current } : await createNewChat(generation));
+        const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: currentPageFrom() } : await createNewChat(generation));
         if (generation !== turnGenerationRef.current || !activeRef.current) {
           return;
         }
@@ -495,6 +508,7 @@ export default function ChatPanel(props: IAiChatProps) {
           setInputValue((draft) => draft || content);
           pendingTurnRef.current = undefined;
           setSubmitting(false);
+          setPendingContent(undefined);
           return;
         }
         // Lift the id before message/new so the chatId effect sees a stable
@@ -536,6 +550,7 @@ export default function ChatPanel(props: IAiChatProps) {
           err_code: 0,
         };
 
+        setPendingContent(undefined);
         mergeMessage(optimisticMessage);
         onTurnRef.current?.({ phase: 'running', message: optimisticMessage });
         scrollToBottom('smooth');
@@ -561,6 +576,7 @@ export default function ChatPanel(props: IAiChatProps) {
         pendingTurnRef.current?.scope?.finish?.();
         pendingTurnRef.current = undefined;
         setSubmitting(false);
+        setPendingContent(undefined);
         if (!pending.locator) setInputValue((draft) => draft || content);
         const nextError = error instanceof Error ? error : new Error('send message failed');
         handleError(nextError);
@@ -605,6 +621,7 @@ export default function ChatPanel(props: IAiChatProps) {
     stopStream();
     cleanupPolling();
     setSubmitting(false);
+    setPendingContent(undefined);
     setStreamingLocator(undefined);
     streamBufferRef.current = { locator: undefined, segments: [] };
     const message = locator && messagesRef.current.find((item) => item.chat_id === locator.chat_id && item.seq_id === locator.seq_id);
@@ -660,7 +677,19 @@ export default function ChatPanel(props: IAiChatProps) {
   );
 
   const prompts = (promptList ?? []).map((prompt) => (typeof prompt === 'string' ? { label: prompt, value: prompt } : prompt));
-  const hasConversation = messagesLoading || messageItems.length > 0 || !!welcomeContent;
+  const pendingItem =
+    slim && pendingContent && !messages.length ? (
+      <MessageItem
+        key='pending'
+        message={{ chat_id: '', seq_id: 0, query: { content: pendingContent, page_from: currentPageFrom() }, response: [], cur_step: t('message.generating'), is_finish: false }}
+        isStreaming={false}
+        onActionClick={sendUserMessage}
+        onOKForFormSelectContent={sendUserMessage}
+        maybeScrollToBottom={maybeScrollToBottom}
+        pageActionOutcomes={pageActionOutcomes}
+      />
+    ) : null;
+  const hasConversation = messagesLoading || messageItems.length > 0 || !!welcomeContent || !!pendingItem;
   const listHidden = slim && (collapsed || !hasConversation);
   // Empty slim: the suggestions float under the bar the way the conversation
   // will, one per row. They go away as soon as the user types or sends —
@@ -733,18 +762,19 @@ export default function ChatPanel(props: IAiChatProps) {
               </div>
             ) : (
               <div className={cn('flex-1 flex flex-col', slim ? 'gap-3' : 'gap-8')}>
-                {messageItems.length
-                  ? messageItems
-                  : welcomeContent
-                  ? welcomeContent
-                  : !slim && (
-                      <EmptyConversation
-                        prompts={promptList?.map((prompt) => (typeof prompt === 'string' ? prompt : prompt.value))}
-                        onPromptClick={(prompt) => {
-                          setInputValue(prompt);
-                        }}
-                      />
-                    )}
+                {pendingItem ||
+                  (messageItems.length
+                    ? messageItems
+                    : welcomeContent
+                    ? welcomeContent
+                    : !slim && (
+                        <EmptyConversation
+                          prompts={promptList?.map((prompt) => (typeof prompt === 'string' ? prompt : prompt.value))}
+                          onPromptClick={(prompt) => {
+                            setInputValue(prompt);
+                          }}
+                        />
+                      ))}
               </div>
             )}
           </div>
