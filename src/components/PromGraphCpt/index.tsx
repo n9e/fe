@@ -282,7 +282,8 @@ export default function index(props: IProps) {
         updateTimestamp(snapshot.timestamp);
         setRefreshFlag(_.uniqueId('refreshFlag_'));
       },
-      queryInput: () => inputWrapRef.current,
+      // The box itself, not the whole row: the ring should not swallow the buttons or the dock.
+      queryInput: () => inputWrapRef.current?.querySelector('.ant-input-affix-wrapper') ?? inputWrapRef.current,
       queryButton: () => queryButtonRef.current,
     };
     return () => {

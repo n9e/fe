@@ -134,7 +134,8 @@ export default function Prometheus(props: IProps) {
         form.setFieldsValue({ query: { query: snapshot.query, range: snapshot.range } });
         refresh();
       },
-      queryInput: () => queryRowRef.current,
+      // The SQL box itself, not the whole row.
+      queryInput: () => queryRowRef.current?.querySelector('.logql-codemirror') ?? queryRowRef.current,
       queryButton: () => queryButtonRef.current,
     };
     return () => {
