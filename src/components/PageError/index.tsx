@@ -30,15 +30,7 @@ function illustrationSrc(status: number) {
 }
 
 function PageErrorIllustration({ status }: { status: number }) {
-  return (
-    <img
-      src={illustrationSrc(status)}
-      alt=''
-      width={240}
-      draggable={false}
-      style={{ width: 240, height: 'auto', display: 'block' }}
-    />
-  );
+  return <img src={illustrationSrc(status)} alt='' width={240} draggable={false} style={{ width: 240, height: 'auto', display: 'block' }} />;
 }
 
 /** 「找谁要权限」最多列这么多人：真实环境里管理员可能有几十个，全列出来既没法用，也等于把用户名单摊在错误页上 */
