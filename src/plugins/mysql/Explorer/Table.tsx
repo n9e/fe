@@ -13,19 +13,8 @@ import { setLocalQueryHistory } from '../components/HistoricalRecords';
 import { CACHE_KEY } from '../constants';
 import { useGlobalState } from '../globalState';
 
-/** What a run of the statement came back with, for whoever asked for the run. */
-export interface QueryResult {
-  empty: boolean;
-  count?: number;
-}
-/**
- * One caller's interest in the next fetch. Bound to that fetch by closure, so a
- * slow response from an earlier statement can never answer a later request.
- */
-export interface QueryRequest {
-  signal: AbortSignal;
-  complete: (result: QueryResult | Error) => void;
-}
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
+
 interface Props {
   form: FormInstance;
   datasourceValue: number;

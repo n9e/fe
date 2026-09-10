@@ -7,6 +7,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import LogQL from '@/components/LogQL';
+import { AiQueryDockAffix } from '@/components/AiQueryDock/Affix';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 
@@ -53,7 +54,7 @@ export default function QueryBuilder(props: Props) {
               </Space>
             }
           >
-            <div className='relative'>
+            <AiQueryDockAffix trigger={queryExtra}>
               <Form.Item
                 // With a dock under the box, the row's bottom margin moves to the column's end.
                 className={queryExtra ? 'mb-0' : undefined}
@@ -81,8 +82,7 @@ export default function QueryBuilder(props: Props) {
                   placeholder={t('query.query_placeholder')}
                 />
               </Form.Item>
-              {queryExtra ? <span className='ai-query-dock-affix absolute left-2 top-0 z-10 flex h-8 items-center'>{queryExtra}</span> : null}
-            </div>
+            </AiQueryDockAffix>
           </InputGroupWithFormItem>
           {noticeBanner}
         </div>

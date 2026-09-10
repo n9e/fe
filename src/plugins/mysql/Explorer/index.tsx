@@ -10,6 +10,7 @@ import { IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import AiQueryDock from '@/components/AiQueryDock';
 import { AiQueryDockTrigger } from '@/components/AiQueryDock/Trigger';
 import { useQueryDockActions, QueryDockAction, QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
+import { usePendingQuery } from '@/components/AiQueryDock/usePendingQuery';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
 import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 
@@ -17,7 +18,7 @@ import { NAME_SPACE } from '../constants';
 import Meta from '../components/Meta';
 import QueryBuilder from './QueryBuilder';
 import Graph from './Graph';
-import Table, { QueryRequest, QueryResult } from './Table';
+import Table from './Table';
 
 import './style.less';
 
@@ -49,8 +50,7 @@ export default function Prometheus(props: IProps) {
   // Every hand the user lays on the panel bumps this; a dock turn that started
   // on an older revision may not write, and its undo is gone.
   const revisionRef = useRef(0);
-  const pendingRef = useRef<{ abort: () => void }>();
-  const [queryRequest, setQueryRequest] = useState<QueryRequest>();
+  const pending = usePendingQuery();
   const queryRowRef = useRef<HTMLDivElement>(null);
   const queryButtonRef = useRef<HTMLButtonElement>(null);
   const control = useRef<QueryDockControl<SQLSnapshot> | null>(null);
@@ -63,8 +63,7 @@ export default function Prometheus(props: IProps) {
   const refresh = () => setRefreshFlag(_.uniqueId('refreshFlag_'));
   const invalidate = () => {
     revisionRef.current += 1;
-    pendingRef.current?.abort();
-    setQueryRequest(undefined);
+    pending.clear();
     aiActions.invalidateUndo();
   };
   const executeQuery = () => {
@@ -96,33 +95,13 @@ export default function Prometheus(props: IProps) {
       snapshot: () => ({ query: form.getFieldValue(['query', 'query']) || '', range: _.cloneDeep(form.getFieldValue(['query', 'range'])) }),
       revision: () => revisionRef.current,
       fill: (sql, range) => {
-        pendingRef.current?.abort();
+        pending.abort();
         form.setFieldsValue({ query: range ? { query: sql, range } : { query: sql } });
       },
       run: ({ signal } = {}) => {
-        pendingRef.current?.abort();
-        if (signal?.aborted) return Promise.reject(new DOMException('Query stopped', 'AbortError'));
         const sql: string | undefined = form.getFieldValue(['query', 'query']);
         if (!sql?.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
-        const controller = new AbortController();
-        const promise = new Promise<QueryResult>((resolve, reject) => {
-          let settled = false;
-          const complete = (result: QueryResult | Error) => {
-            if (settled) return;
-            settled = true;
-            signal?.removeEventListener('abort', abort);
-            if (pendingRef.current?.abort === abort) pendingRef.current = undefined;
-            if (result instanceof Error) reject(result);
-            else resolve(result);
-          };
-          const abort = () => {
-            controller.abort();
-            complete(new DOMException('Query stopped', 'AbortError'));
-          };
-          pendingRef.current = { abort };
-          signal?.addEventListener('abort', abort, { once: true });
-          setQueryRequest({ signal: controller.signal, complete });
-        });
+        const promise = pending.begin(signal);
         // Rows are the honest view of a statement: the graph needs a value
         // column the assistant never chose, and would silently draw nothing.
         setMode('table');
@@ -130,7 +109,7 @@ export default function Prometheus(props: IProps) {
         return promise;
       },
       restore: (snapshot) => {
-        pendingRef.current?.abort();
+        pending.abort();
         form.setFieldsValue({ query: { query: snapshot.query, range: snapshot.range } });
         refresh();
       },
@@ -245,7 +224,7 @@ export default function Prometheus(props: IProps) {
                   height: '100%',
                 }}
               >
-                <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} queryRequest={queryRequest} />
+                <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} queryRequest={pending.queryRequest} />
               </div>
             </Tabs.TabPane>
             <Tabs.TabPane tab='Graph' key='graph'>
