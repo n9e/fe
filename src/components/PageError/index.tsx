@@ -22,14 +22,6 @@ interface IProps {
   onRetry?: () => void;
 }
 
-/** antd Result 只认这几种，其余状态统一按 error 画 */
-function toResultStatus(status: number) {
-  if (status === 403) return '403' as const;
-  if (status === 404) return '404' as const;
-  if (status >= 500 && status < 600) return '500' as const;
-  return 'error' as const;
-}
-
 /** 自定义插画：明暗共用透明底 WebP；未知/其它 5xx 统一走 500 */
 function illustrationSrc(status: number) {
   if (status === 403) return '/image/page-error/403.webp';
@@ -147,8 +139,8 @@ export default function PageError(props: IProps) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+      {/* antd Result ignores custom icon when status is 403/404/500 — omit status so our art shows */}
       <Result
-        status={toResultStatus(status)}
         icon={<PageErrorIllustration status={status} />}
         title={t(`${status}.title`, { defaultValue: `${status}` })}
         subTitle={
