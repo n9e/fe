@@ -178,6 +178,12 @@
     gap: 8px;
     padding-left: 8px;
     border-left: 1px solid var(--fc-border-color);
+
+    /* Pages that give every textarea a 32px floor would push the bar to 39;
+       the composer's height is its own line count. */
+    textarea.ant-input {
+      min-height: 0;
+    }
     /* The divider runs the bar's full height, like an input group's addon
        seam: stretch past the bar's 3px padding and take it back inside. */
     align-self: stretch;
