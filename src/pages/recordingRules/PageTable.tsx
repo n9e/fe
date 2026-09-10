@@ -1,3 +1,4 @@
+import { useMemoizedFn, useRequest } from 'ahooks';
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { Button, Modal, message, Dropdown, Switch, Select, Space } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -69,7 +70,6 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState<strategyItem[]>([]);
   const [currentStrategyData, setCurrentStrategyData] = useState<strategyItem[]>([]);
-  const [loading, setLoading] = useState(false);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
   const [current, setCurrent] = useState<number>(defaultPage);
@@ -87,18 +87,19 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
     filterData();
   }, [query, datasourceIds, filterDisabled, currentStrategyDataAll]);
 
-  const getRecordingRules = async () => {
-    if (!gids) {
-      return;
-    }
-    setLoading(true);
-    const ids = gids === '-2' ? undefined : gids;
-    const { success, dat } = await getBusiGroupsRecordingRules(ids);
-    if (success) {
-      setCurrentStrategyDataAll(dat.filter((item) => !severity || item.severity === severity) || []);
-      setLoading(false);
-    }
-  };
+  const {
+    loading,
+    run: getRecordingRules,
+    cancel,
+  } = useRequest(
+    async () => {
+      if (!gids) return [];
+      const ids = gids === '-2' ? undefined : gids;
+      const { dat } = await getBusiGroupsRecordingRules(ids);
+      return (dat || []).filter((item) => !severity || item.severity === severity);
+    },
+    { manual: true, onSuccess: setCurrentStrategyDataAll },
+  );
 
   const filterData = () => {
     const data = JSON.parse(JSON.stringify(currentStrategyDataAll));
@@ -141,11 +142,13 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
     }
   }, [groupSwitchCount]);
 
-  const updateStatus = (ids: React.Key[], disabled: 0 | 1) => {
+  const updateStatus = useMemoizedFn((ids: React.Key[], disabled: 0 | 1) => {
+    cancel();
     const patch = (rows: strategyItem[]) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row));
     setCurrentStrategyDataAll(patch);
     setSelectedRows(patch);
-  };
+    if (loading) getRecordingRules();
+  });
 
   const columns: ColumnType<strategyItem>[] = _.concat([
     {

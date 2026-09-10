@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+import { useMemoizedFn, useRequest } from 'ahooks';
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Tooltip, message, Modal, Switch, Space, Tag, Select } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -75,8 +76,6 @@ const Shield: React.FC = () => {
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [currentShieldDataAll, setCurrentShieldDataAll] = useState<Array<shieldItem>>([]);
   const [currentShieldData, setCurrentShieldData] = useState<Array<shieldItem>>([]);
-  // 有业务组时首屏就会拉列表，初始即置为 loading，避免接口返回前闪现空态引导
-  const [loading, setLoading] = useState<boolean>(!!gids);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
   const [deleteMutesModalVisible, setDeleteMutesModalVisible] = useState(false);
@@ -269,7 +268,7 @@ const Shield: React.FC = () => {
               },
               group_id,
             ).then(() => {
-              setCurrentShieldDataAll((items) => items.map((item) => (item.id === id ? { ...item, disabled: !disabled ? 1 : 0 } : item)));
+              updateStatus(id, !disabled ? 1 : 0);
             });
           }}
         />
@@ -277,10 +276,6 @@ const Shield: React.FC = () => {
     },
   ];
   const pagination = usePagination({ pageSizeLocalstorageKey: 'alert-mutes-table-pagesize' });
-
-  useEffect(() => {
-    getList();
-  }, [gids]);
 
   useEffect(() => {
     filterData();
@@ -311,22 +306,24 @@ const Shield: React.FC = () => {
     setCurrentShieldData(res || []);
   };
 
-  const getList = async () => {
-    if (!gids) return;
-    setLoading(true);
-    const ids = gids === '-2' ? undefined : gids;
-    try {
-      const { success, dat } = await getBusiGroupsAlertMutes(ids);
-      if (success) {
-        setCurrentShieldDataAll(dat || []);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      // 请求失败也要结束 loading，否则表格会一直转圈且空态引导永远不出现
-      setLoading(false);
-    }
-  };
+  const {
+    loading,
+    run: getList,
+    cancel,
+  } = useRequest(
+    async () => {
+      if (!gids) return [];
+      const ids = gids === '-2' ? undefined : gids;
+      const { dat } = await getBusiGroupsAlertMutes(ids);
+      return dat || [];
+    },
+    { ready: !!gids, refreshDeps: [gids], onSuccess: setCurrentShieldDataAll },
+  );
+  const updateStatus = useMemoizedFn((id: number, disabled: 0 | 1) => {
+    cancel();
+    setCurrentShieldDataAll((items) => items.map((item) => (item.id === id ? { ...item, disabled } : item)));
+    if (loading) getList();
+  });
 
   const refreshList = () => {
     getList();

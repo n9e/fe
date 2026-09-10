@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import _ from 'lodash';
 import { Space, Button } from 'antd';
+import { useMemoizedFn, useRequest } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import { getBusiGroupsAlertRules } from '@/services/warning';
@@ -84,19 +85,26 @@ export default function List(props: ListProps) {
   const history = useHistory();
   const { gids, groupSwitchCount } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
-  const [data, setData] = useState<AlertRuleType<any>[]>([]);
-  const [loading, setLoading] = useState(false);
-  const fetchData = () => {
-    setLoading(true);
-    const ids = gids === '-2' ? undefined : gids;
-    getBusiGroupsAlertRules(ids)
-      .then((res) => {
-        setData(res.dat || []);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const {
+    data = [],
+    loading,
+    run: fetchData,
+    cancel,
+    mutate,
+  } = useRequest(
+    async () => {
+      const ids = gids === '-2' ? undefined : gids;
+      const res = await getBusiGroupsAlertRules(ids);
+      return res.dat || [];
+    },
+    { manual: true },
+  );
+  const updateStatus = useMemoizedFn((ids: React.Key[], disabled: 0 | 1) => {
+    cancel();
+    mutate((rows) => rows?.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)));
+    // A pending refresh or group change still needs its latest server result.
+    if (loading) fetchData();
+  });
 
   useEffect(() => {
     fetchData();
@@ -118,9 +126,7 @@ export default function List(props: ListProps) {
         data={data}
         loading={loading}
         setRefreshFlag={setRefreshFlag}
-        onStatusChange={(ids, disabled) => {
-          setData((rows) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)));
-        }}
+        onStatusChange={updateStatus}
         emptyGuide={
           <EmptyGuide
             title={t('empty_guide.title')}
