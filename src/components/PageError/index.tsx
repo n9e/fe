@@ -30,6 +30,25 @@ function toResultStatus(status: number) {
   return 'error' as const;
 }
 
+/** 自定义插画：明暗共用透明底 WebP；未知/其它 5xx 统一走 500 */
+function illustrationSrc(status: number) {
+  if (status === 403) return '/image/page-error/403.webp';
+  if (status === 404) return '/image/page-error/404.webp';
+  return '/image/page-error/500.webp';
+}
+
+function PageErrorIllustration({ status }: { status: number }) {
+  return (
+    <img
+      src={illustrationSrc(status)}
+      alt=''
+      width={240}
+      draggable={false}
+      style={{ width: 240, height: 'auto', display: 'block' }}
+    />
+  );
+}
+
 /** 「找谁要权限」最多列这么多人：真实环境里管理员可能有几十个，全列出来既没法用，也等于把用户名单摊在错误页上 */
 const MAX_SHOWN_OWNERS = 3;
 
@@ -130,6 +149,7 @@ export default function PageError(props: IProps) {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
       <Result
         status={toResultStatus(status)}
+        icon={<PageErrorIllustration status={status} />}
         title={t(`${status}.title`, { defaultValue: `${status}` })}
         subTitle={
           <div style={{ maxWidth: 560, margin: '0 auto' }}>
