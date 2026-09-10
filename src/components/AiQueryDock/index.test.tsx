@@ -216,6 +216,15 @@ it('shows the actual question while preserving a collapsed list', () => {
   expect(screen.getByRole('status')).toHaveAttribute('title', expect.stringContaining('Group by host or service'));
   expect(screen.getByTestId('list').hidden).toBe(true);
 });
+it('runs a progress line along the bar only while the assistant works', () => {
+  const { container } = render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} />);
+  expect(container.querySelector('.ai-query-dock-progress')).toBeNull();
+  act(() => panelProps!.onTurn!(turn({ is_finish: false }, { phase: 'running' })));
+  expect(container.querySelector('.ai-query-dock-progress')).toBeTruthy();
+  act(() => panelProps!.onTurn!(turn({ is_finish: true, response: [{ content_type: 'markdown', content: 'done' }] })));
+  expect(container.querySelector('.ai-query-dock-progress')).toBeNull();
+});
+
 it('does not collapse a conversation the user opened to read while working', () => {
   renderDock();
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));

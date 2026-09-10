@@ -279,6 +279,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
             <span className='ai-query-dock-status-copy' role='status' aria-live='polite' title={detail}>
               {status}
             </span>
+            {tone === 'running' && <span className='ai-query-dock-progress' aria-hidden='true' />}
             {canUndo && (
               <Tooltip title={t('dock.undo')}>
                 <Button
