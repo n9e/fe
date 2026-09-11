@@ -35,7 +35,10 @@ export function getDateTokenDisplayValue(params: GetTokenDisplayValueParams): Fi
   const fieldAttr = fieldConfig?.arr?.find((i) => i.field === name);
 
   if (fieldAttr?.formatMap?.type === 'date' && fieldAttr?.formatMap?.params?.pattern && (typeof fieldValue === 'number' || typeof fieldValue === 'string')) {
-    displayValue = moment(fieldValue).format(fieldAttr.formatMap.params.pattern);
+    const parsedValue = moment(fieldValue);
+    if (parsedValue.isValid()) {
+      displayValue = parsedValue.format(fieldAttr.formatMap.params.pattern);
+    }
   }
 
   return displayValue;
