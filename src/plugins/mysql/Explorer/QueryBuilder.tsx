@@ -7,6 +7,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import LogQL from '@/components/LogQL';
+import QueryBoxPrefix, { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 
@@ -18,6 +19,12 @@ import { useGlobalState } from '../globalState';
 interface Props {
   extra?: React.ReactNode;
   executeQuery: () => void;
+  /** The user typed in the box or moved the window: the panel is theirs again. */
+  onUserContextChange?: () => void;
+  /** Sits inside the SQL box at its left end (e.g. the AI trigger). */
+  queryExtra?: React.ReactNode;
+  /** Hangs under the SQL box, as wide as it. */
+  noticeBanner?: React.ReactNode;
   datasourceValue: number;
   getMode: () => string;
 }
@@ -26,51 +33,58 @@ export default function QueryBuilder(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const [mySQLTableFields, setMySQLTableFields] = useGlobalState('mySQLTableFields');
   const form = Form.useFormInstance();
-  const { extra, executeQuery, datasourceValue, getMode } = props;
+  const { extra, executeQuery, onUserContextChange, queryExtra, noticeBanner, datasourceValue, getMode } = props;
   const { darkMode } = useContext(CommonStateContext);
 
   return (
     <div style={{ width: '100%' }}>
       <div className='explorer-query'>
-        <InputGroupWithFormItem
-          label={
-            <Space>
-              {t('query.query')}
-              <InfoCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    darkMode,
-                  });
-                }}
-              />
-            </Space>
-          }
-        >
-          <Form.Item
-            name={['query', 'query']}
-            rules={[
-              {
-                required: true,
-                message: t('query.query_required'),
-              },
-            ]}
+        <QueryBoxColumn className='min-w-0 flex-1' prefixed={!!queryExtra} below={noticeBanner}>
+          <InputGroupWithFormItem
+            label={
+              <Space>
+                {t('query.query')}
+                <InfoCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      darkMode,
+                    });
+                  }}
+                />
+              </Space>
+            }
           >
-            <LogQL
-              datasourceCate={DatasourceCateEnum.mysql}
-              datasourceValue={datasourceValue}
-              query={{}}
-              historicalRecords={[]}
-              onPressEnter={executeQuery}
-              onChange={() => {
-                // 在 graph 视图里 sql 修改后清空缓存的 fields
-                if (getMode() === 'graph') {
-                  setMySQLTableFields([]);
-                }
-              }}
-              placeholder={t('query.query_placeholder')}
-            />
-          </Form.Item>
-        </InputGroupWithFormItem>
+            <QueryBoxPrefix prefix={queryExtra}>
+              <Form.Item
+                // With a dock under the box, the row's bottom margin moves to the column's end.
+                className={queryExtra ? 'mb-0' : undefined}
+                name={['query', 'query']}
+                rules={[
+                  {
+                    required: true,
+                    message: t('query.query_required'),
+                  },
+                ]}
+              >
+                <LogQL
+                  datasourceCate={DatasourceCateEnum.mysql}
+                  datasourceValue={datasourceValue}
+                  query={{}}
+                  historicalRecords={[]}
+                  onPressEnter={executeQuery}
+                  onChange={() => {
+                    onUserContextChange?.();
+                    // 在 graph 视图里 sql 修改后清空缓存的 fields
+                    if (getMode() === 'graph') {
+                      setMySQLTableFields([]);
+                    }
+                  }}
+                  placeholder={t('query.query_placeholder')}
+                />
+              </Form.Item>
+            </QueryBoxPrefix>
+          </InputGroupWithFormItem>
+        </QueryBoxColumn>
         <HistoricalRecords
           localKey={CACHE_KEY}
           datasourceValue={datasourceValue}
@@ -84,7 +98,7 @@ export default function QueryBuilder(props: Props) {
           }}
         />
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
-          <TimeRangePicker />
+          <TimeRangePicker onChange={onUserContextChange} />
         </Form.Item>
         {extra}
       </div>

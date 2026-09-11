@@ -17,13 +17,16 @@
 /**
  * 类似 prometheus graph 的组件
  */
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Tabs, Button, Alert, Checkbox } from 'antd';
 import { TooltipPlacement } from 'antd/lib/tooltip';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import type { QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
+import { usePendingQuery } from '@/components/AiQueryDock/usePendingQuery';
+import { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 import { N9E_PATHNAME } from '@/utils/constant';
 import PromQLInputNG, { interpolateString, instantInterpolateString, includesVariables } from '@/components/PromQLInputNG';
 
@@ -62,11 +65,28 @@ interface IProps {
   showBuilder?: boolean;
   onChange?: (promQL?: string) => void;
   promQLInputTooltip?: string;
+  /** Sits inside the PromQL box at its left end (e.g. the AI trigger); noticeBanner then hangs under the box, as wide as it. */
+  queryExtra?: React.ReactNode;
   extra?: React.ReactElement;
   showExportButton?: boolean; // 是否显示导出按钮
   refetchOnZoom?: boolean;
   noticeBanner?: React.ReactNode; // 查询框与结果区之间的提示横幅（如数据源体检结论），由调用方控制显隐
+  /**
+   * Lets the page drive the query box the way a user would: write into it,
+   * then press 查询. Separate steps on purpose — the assistant's cursor moves
+   * between them, so what the user sees matches what happened.
+   */
+  controlRef?: React.MutableRefObject<PromGraphControl | null>;
+  onUserContextChange?: () => void;
 }
+
+export interface PromGraphSnapshot extends QueryDockSnapshot {
+  submitted?: string;
+  range: IRawTimeRange;
+  timestamp?: number;
+}
+
+export type PromGraphControl = QueryDockControl<PromGraphSnapshot>;
 
 const TabPane = Tabs.TabPane;
 
@@ -97,13 +117,22 @@ export default function index(props: IProps) {
     showBuilder = true,
     onChange,
     promQLInputTooltip,
+    queryExtra,
     extra,
     defaultRange,
     showExportButton,
     refetchOnZoom = false,
     noticeBanner,
+    controlRef,
+    onUserContextChange,
   } = props;
   const [value, setValue] = useState<string | undefined>(promQL); // for promQLInput
+  // What the results show. Kept apart from `value` so the box can hold an
+  // expression that has not been run yet, the way it does while a user types.
+  const [submitted, setSubmitted] = useState<string | undefined>(promQL);
+  const valueRef = useRef<string | undefined>(promQL);
+  const inputWrapRef = useRef<HTMLDivElement>(null);
+  const queryButtonRef = useRef<HTMLElement>(null);
   const [queryStats, setQueryStats] = useState<QueryStats | null>(null);
   const [errorContent, setErrorContent] = useState('');
   const [tabActiveKey, setTabActiveKey] = useState(type || defaultType || 'table');
@@ -112,6 +141,43 @@ export default function index(props: IProps) {
   const [range, setRange] = useState<IRawTimeRange>({ start: 'now-1h', end: 'now' }); // for graph
   const [minStep, setMinStep] = useState<number>(); // for graph
   const [maxDataPoints, setMaxDataPoints] = useState<number>(); // for graph
+  const rangeRef = useRef(range);
+  const timestampRef = useRef(timestamp);
+  const submittedRef = useRef(submitted);
+  const revisionRef = useRef(0);
+  const pending = usePendingQuery();
+  const [queryPaused, setQueryPaused] = useState(false);
+  const invalidate = () => {
+    revisionRef.current += 1;
+    onUserContextChange?.();
+    pending.clear();
+    setQueryPaused(false);
+  };
+  const updateRange = (next: IRawTimeRange) => {
+    rangeRef.current = _.cloneDeep(next);
+    setRange(next);
+  };
+  const updateTimestamp = (next?: number) => {
+    timestampRef.current = next;
+    setTimestamp(next);
+  };
+  const updateSubmitted = (next?: string) => {
+    submittedRef.current = next;
+    setSubmitted(next);
+  };
+  const externalContext = JSON.stringify({ datasourceValue, url, promQL, defaultTime, defaultRange, type });
+  const previousContextRef = useRef(externalContext);
+  useLayoutEffect(() => {
+    if (previousContextRef.current !== externalContext) {
+      previousContextRef.current = externalContext;
+      invalidate();
+    }
+  }, [externalContext]);
+  // `usePendingQuery` hands back a fresh object each render, so depend on the
+  // stable callback inside it: depending on the object would abort the run in
+  // flight on every render.
+  const { abort: abortPending } = pending;
+  useEffect(() => () => abortPending(), [abortPending]);
   const [completeEnabled, setCompleteEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
@@ -128,18 +194,18 @@ export default function index(props: IProps) {
   useEffect(() => {
     if (typeof defaultTime === 'number') {
       if (tabActiveKey == 'table') {
-        setTimestamp(defaultTime);
+        updateTimestamp(defaultTime);
       }
     } else {
       if (defaultTime?.start && defaultTime?.end) {
-        setRange(defaultTime);
+        updateRange(defaultTime);
       }
     }
   }, [defaultTime]);
 
   useEffect(() => {
     if (defaultRange?.start && defaultRange?.end) {
-      setRange(defaultRange);
+      updateRange(defaultRange);
     }
   }, [defaultRange]);
 
@@ -153,8 +219,61 @@ export default function index(props: IProps) {
   }, [type]);
 
   useEffect(() => {
+    // The caller's expression is both shown and queried: deep links, jumps from an event.
+    valueRef.current = promQL;
     setValue(promQL);
+    updateSubmitted(promQL);
   }, [promQL]);
+
+  const change = (next?: string) => {
+    valueRef.current = next;
+    setValue(next);
+  };
+  const submit = () => {
+    updateSubmitted(valueRef.current);
+    setRefreshFlag(_.uniqueId('refreshFlag_'));
+    executeQuery && executeQuery(valueRef.current);
+  };
+
+  useLayoutEffect(() => {
+    if (!controlRef) return;
+    controlRef.current = {
+      snapshot: () => ({ query: valueRef.current || '', submitted: submittedRef.current, range: _.cloneDeep(rangeRef.current), timestamp: timestampRef.current }),
+      revision: () => revisionRef.current,
+      fill: (next, nextRange) => {
+        pending.abort();
+        setQueryPaused(true);
+        change(next);
+        if (nextRange) updateRange(nextRange);
+      },
+      run: ({ signal } = {}) => {
+        if (!valueRef.current?.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
+        // Opening the run and sending it belong in one block, so the fetcher
+        // gets the request and the refresh in a single render.
+        const result = pending.begin(signal);
+        setQueryPaused(false);
+        submit();
+        return result;
+      },
+      restore: (snapshot) => {
+        pending.clear();
+        setErrorContent('');
+        setQueryStats(null);
+        setQueryPaused(false);
+        change(snapshot.query);
+        updateSubmitted(snapshot.submitted);
+        updateRange(_.cloneDeep(snapshot.range));
+        updateTimestamp(snapshot.timestamp);
+        setRefreshFlag(_.uniqueId('refreshFlag_'));
+      },
+      // The box itself, not the whole row: the ring should not swallow the buttons or the dock.
+      queryInput: () => inputWrapRef.current?.querySelector('.ant-input-affix-wrapper') ?? inputWrapRef.current,
+      queryButton: () => queryButtonRef.current,
+    };
+    return () => {
+      controlRef.current = null;
+    };
+  });
 
   return (
     <div className='prom-graph-container'>
@@ -185,53 +304,71 @@ export default function index(props: IProps) {
         </div>
       )}
 
-      <div className='prom-graph-expression-input-ng'>
-        <div className='flex gap-[8px]'>
-          <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
-            <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
-              <PromQLInputNG
-                maxHeight={200}
-                enableAutocomplete={completeEnabled}
-                datasourceValue={datasourceValue}
-                showBuiltinMetrics={showBuiltinMetrics}
-                interpolateString={(query) => {
-                  return interpolateString({
-                    query,
-                    range,
-                    minStep,
-                  });
-                }}
-                onMetricUnitChange={(newUnit) => {
-                  setDefaultUnit(newUnit);
-                }}
-                showGlobalMetrics={showGlobalMetrics}
-                onChangeTrigger={['onBlur', 'onEnter']}
-                value={value}
-                onChange={(newVal) => {
-                  setValue(newVal);
-                  onChange && onChange(newVal);
-                }}
-              />
-            </PromQLInputNGWithTooltipWrapper>
-          </div>
+      <div className={`prom-graph-expression-input-ng${queryExtra ? ' ai-query-prom-with-dock' : ''}`} ref={inputWrapRef}>
+        {/* With a dock, the buttons align to the box's top and the dock hangs under the box only. */}
+        <div className={`flex gap-[8px]${queryExtra ? ' items-start' : ''}`}>
+          <QueryBoxColumn className='flex min-w-0 w-full flex-col' below={queryExtra ? noticeBanner : undefined}>
+            <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
+              <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
+                <PromQLInputNG
+                  prefix={queryExtra}
+                  maxHeight={200}
+                  enableAutocomplete={completeEnabled}
+                  datasourceValue={datasourceValue}
+                  showBuiltinMetrics={showBuiltinMetrics}
+                  interpolateString={(query) => {
+                    return interpolateString({
+                      query,
+                      range,
+                      minStep,
+                    });
+                  }}
+                  onMetricUnitChange={(newUnit) => {
+                    setDefaultUnit(newUnit);
+                  }}
+                  showGlobalMetrics={showGlobalMetrics}
+                  onChangeTrigger={['onBlur', 'onEnter']}
+                  value={value}
+                  onDraftChange={(next) => {
+                    if (next !== valueRef.current) {
+                      invalidate();
+                      setQueryPaused(true);
+                      change(next);
+                    }
+                  }}
+                  onChange={(newVal) => {
+                    // The user finished typing (blur or Enter): that both shows and runs it.
+                    if (newVal !== valueRef.current) invalidate();
+                    setQueryPaused(false);
+                    change(newVal);
+                    updateSubmitted(newVal);
+                    onChange && onChange(newVal);
+                  }}
+                />
+              </PromQLInputNGWithTooltipWrapper>
+            </div>
+          </QueryBoxColumn>
           {extra && (
             <div className='flex-shrink-0'>
               {React.cloneElement(extra as React.ReactElement, {
                 onChange: (newValue?: string) => {
                   if (typeof newValue === 'string') {
-                    setValue(newValue);
+                    invalidate();
+                    change(newValue);
+                    updateSubmitted(newValue);
                   }
                 },
               })}
             </div>
           )}
           <Button
+            ref={queryButtonRef}
             className='flex-shrink-0'
             type='primary'
             loading={loading}
             onClick={() => {
-              setRefreshFlag(_.uniqueId('refreshFlag_'));
-              executeQuery && executeQuery(value);
+              invalidate();
+              submit();
             }}
           >
             {t('query_btn')}
@@ -249,7 +386,8 @@ export default function index(props: IProps) {
           type='info'
         />
       )}
-      {noticeBanner}
+      {/* With the AI rail, the banner hangs under the PromQL column so the spine can meet it. */}
+      {noticeBanner && !queryExtra ? noticeBanner : null}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
       <div style={{ minHeight: 0, height: '100%' }}>
         <Tabs
@@ -257,6 +395,7 @@ export default function index(props: IProps) {
           tabBarGutter={0}
           activeKey={tabActiveKey}
           onChange={(key: 'table' | 'graph') => {
+            invalidate();
             if (key !== tabActiveKey && value && datasourceValue) {
               preserveSeriesFilterRef.current = true;
             }
@@ -273,11 +412,14 @@ export default function index(props: IProps) {
               url={url}
               contentMaxHeight={contentMaxHeight}
               datasourceValue={datasourceValue}
-              promql={value}
+              promql={submitted}
               setQueryStats={setQueryStats}
               setErrorContent={setErrorContent}
               timestamp={timestamp}
-              setTimestamp={setTimestamp}
+              setTimestamp={(next) => {
+                invalidate();
+                updateTimestamp(next);
+              }}
               refreshFlag={refreshFlag}
               loading={loading}
               setLoading={setLoading}
@@ -285,6 +427,8 @@ export default function index(props: IProps) {
               showExportButton={showExportButton}
               seriesFilterText={seriesFilterText}
               onSeriesFilterTextChange={setSeriesFilterText}
+              queryRequest={pending.queryRequest}
+              queryPaused={queryPaused}
               onQueryRequest={handleQueryRequest}
             />
           </TabPane>
@@ -294,18 +438,29 @@ export default function index(props: IProps) {
                 url={url}
                 contentMaxHeight={contentMaxHeight}
                 datasourceValue={datasourceValue}
-                promql={value}
+                promql={submitted}
                 setQueryStats={setQueryStats}
                 setErrorContent={setErrorContent}
                 range={range}
                 setRange={(newRange) => {
-                  setRange(newRange);
+                  invalidate();
+                  updateRange(newRange);
                   onTimeChange && onTimeChange(newRange);
                 }}
                 minStep={minStep}
-                setMinStep={setMinStep}
+                setMinStep={(next) => {
+                  if (next !== minStep) {
+                    invalidate();
+                    setMinStep(next);
+                  }
+                }}
                 maxDataPoints={maxDataPoints}
-                setMaxDataPoints={setMaxDataPoints}
+                setMaxDataPoints={(next) => {
+                  if (next !== maxDataPoints) {
+                    invalidate();
+                    setMaxDataPoints(next);
+                  }
+                }}
                 graphOperates={graphOperates}
                 refreshFlag={refreshFlag}
                 loading={loading}
@@ -314,8 +469,11 @@ export default function index(props: IProps) {
                 graphStandardOptionsPlacement={graphStandardOptionsPlacement}
                 defaultUnit={defaultUnit}
                 refetchOnZoom={refetchOnZoom}
+                onQueryContextChange={invalidate}
                 seriesFilterText={seriesFilterText}
                 onSeriesFilterTextChange={setSeriesFilterText}
+                queryRequest={pending.queryRequest}
+                queryPaused={queryPaused}
                 onQueryRequest={handleQueryRequest}
               />
             </Panel>

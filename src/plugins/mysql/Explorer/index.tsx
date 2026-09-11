@@ -10,6 +10,7 @@ import Meta from '../components/Meta';
 import QueryBuilder from './QueryBuilder';
 import Graph from './Graph';
 import Table from './Table';
+import { useMysqlAiDock } from './aiDock';
 
 import './style.less';
 
@@ -24,10 +25,23 @@ export default function Prometheus(props: IProps) {
   const [mode, setMode, getMode] = useGetState<string>('table');
   const [refreshFlag, setRefreshFlag] = useState<string>();
   const [width, setWidth] = useState(_.toNumber(localStorage.getItem('tdengine-meta-sidebar') || 200));
+  const refresh = () => setRefreshFlag(_.uniqueId('refreshFlag_'));
+  const ai = useMysqlAiDock({
+    form,
+    datasourceValue,
+    // Rows are the honest view of a statement: the graph needs a value column
+    // the assistant never chose, and would silently draw nothing.
+    commit: () => {
+      setMode('table');
+      refresh();
+    },
+    refresh,
+  });
+  // Every hand the user lays on the panel: a dock turn that started earlier may not write.
+  const invalidate = ai.invalidate;
   const executeQuery = () => {
-    form.validateFields().then(() => {
-      setRefreshFlag(_.uniqueId('refreshFlag_'));
-    });
+    invalidate();
+    form.validateFields().then(refresh);
   };
 
   return (
@@ -51,12 +65,13 @@ export default function Prometheus(props: IProps) {
             <Meta
               datasourceValue={datasourceValue}
               onTreeNodeClick={(nodeData) => {
+                invalidate();
                 const query = form.getFieldValue(['query']);
                 _.set(query, 'query', `select * from ${nodeData.database}.${nodeData.table} limit 20;`);
                 form.setFieldsValue({
                   query,
                 });
-                setRefreshFlag(_.uniqueId('refreshFlag_'));
+                refresh();
               }}
             />
           </Resizable>
@@ -67,26 +82,30 @@ export default function Prometheus(props: IProps) {
             width: `calc(100% - ${width + 8}px)`,
           }}
         >
-          <QueryBuilder
-            extra={
-              <Button type='primary' onClick={executeQuery}>
-                {t('query.execute')}
-              </Button>
-            }
-            executeQuery={executeQuery}
-            datasourceValue={datasourceValue}
-            getMode={getMode}
-          />
+          <div ref={ai.queryRowRef}>
+            <QueryBuilder
+              extra={
+                <Button type='primary' onClick={executeQuery} ref={ai.queryButtonRef}>
+                  {t('query.execute')}
+                </Button>
+              }
+              executeQuery={executeQuery}
+              onUserContextChange={invalidate}
+              queryExtra={ai.trigger}
+              noticeBanner={ai.dock}
+              datasourceValue={datasourceValue}
+              getMode={getMode}
+            />
+          </div>
           <Tabs
             destroyInactiveTabPane
             tabBarGutter={0}
             activeKey={mode}
             onChange={(key: 'table' | 'graph') => {
+              invalidate();
               setMode(key);
               // TODO 不清楚这里为什么要加延迟 200ms
-              setTimeout(() => {
-                setRefreshFlag(_.uniqueId('refreshFlag_'));
-              }, 200);
+              setTimeout(refresh, 200);
             }}
             type='card'
           >
@@ -98,7 +117,7 @@ export default function Prometheus(props: IProps) {
                   height: '100%',
                 }}
               >
-                <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} />
+                <Table form={form} datasourceValue={datasourceValue} refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag} queryRequest={ai.queryRequest} />
               </div>
             </Tabs.TabPane>
             <Tabs.TabPane tab='Graph' key='graph'>

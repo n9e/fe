@@ -14,15 +14,15 @@
  * limitations under the License.
  *
  */
-import _ from 'lodash';
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-export const getPromData = (url: string, params) => {
+export const getPromData = (url: string, params, signal?: AbortSignal) => {
   return request(url, {
     method: RequestMethod.Get,
     params,
     silence: true,
+    signal,
   }).then((res) => res.data);
 };
 

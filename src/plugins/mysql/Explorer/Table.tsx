@@ -13,15 +13,18 @@ import { setLocalQueryHistory } from '../components/HistoricalRecords';
 import { CACHE_KEY } from '../constants';
 import { useGlobalState } from '../globalState';
 
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
+
 interface Props {
   form: FormInstance;
   datasourceValue: number;
   refreshFlag?: string;
   setRefreshFlag: (flag?: string) => void;
+  queryRequest?: QueryRequest;
 }
 
 export default function TableCpt(props: Props) {
-  const { form, datasourceValue, refreshFlag, setRefreshFlag } = props;
+  const { form, datasourceValue, refreshFlag, setRefreshFlag, queryRequest } = props;
   const [mySQLTableFields, setMySQLTableFields] = useGlobalState('mySQLTableFields');
   const [columnsKeys, setColumnsKeys] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -101,6 +104,7 @@ export default function TableCpt(props: Props) {
             }),
           );
           setLocalQueryHistory(`${CACHE_KEY}-${datasourceValue}`, query);
+          if (!queryRequest?.signal.aborted) queryRequest?.complete({ empty: data.length === 0, count: data.length });
         })
         .catch((err) => {
           const msg = _.get(err, 'message');
@@ -108,6 +112,7 @@ export default function TableCpt(props: Props) {
           setData([]);
           setColumnsKeys([]);
           setMySQLTableFields([]);
+          if (!queryRequest?.signal.aborted) queryRequest?.complete(err instanceof Error ? err : new Error(String(msg)));
         })
         .finally(() => {
           setRefreshFlag();

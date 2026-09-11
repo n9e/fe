@@ -19,6 +19,7 @@ import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } fr
 
 import SideBarNav from './SideBarNav';
 import Main from './Main';
+import { useDorisAiDock } from './aiDock';
 
 import './style.less';
 
@@ -41,8 +42,40 @@ export default function index(props: Props) {
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
+  const syntax = Form.useWatch(['query', 'syntax']);
+  const ai = useDorisAiDock({ form, datasourceValue, syntax, indexData, commit: (values) => commitQuery(values) });
+  const invalidate = ai.invalidate;
+
+  // What a validated query does once it may run: remember it, then refresh.
+  function commitQuery(values) {
+    const queryValues = values.query;
+    // 设置 tabs 缓存值
+    if (defaultFormValuesControl?.setDefaultFormValues) {
+      defaultFormValuesControl.setDefaultFormValues({
+        datasourceCate: values.datasourceCate,
+        datasourceValue: values.datasourceValue,
+        query: values.query,
+      });
+    }
+
+    // 设置历史记录方法
+    if (queryValues.syntax === 'query') {
+      if (queryValues.database && queryValues.table && queryValues.time_field) {
+        setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
+      }
+    } else if (queryValues.syntax === 'sql') {
+      if (queryValues.sql) {
+        setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.sql);
+      }
+    }
+
+    form.setFieldsValue({
+      refreshFlag: _.uniqueId('refreshFlag_'),
+    });
+  }
 
   const executeQuery = (force = false) => {
+    invalidate();
     // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
     setTimeout(() => {
       form.validateFields().then((values) => {
@@ -55,30 +88,7 @@ export default function index(props: Props) {
           setQueryWarnModalVisible(true);
           return;
         }
-
-        // 设置 tabs 缓存值
-        if (defaultFormValuesControl?.setDefaultFormValues) {
-          defaultFormValuesControl.setDefaultFormValues({
-            datasourceCate: values.datasourceCate,
-            datasourceValue: values.datasourceValue,
-            query: values.query,
-          });
-        }
-
-        // 设置历史记录方法
-        if (queryValues.syntax === 'query') {
-          if (queryValues.database && queryValues.table && queryValues.time_field) {
-            setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
-          }
-        } else if (queryValues.syntax === 'sql') {
-          if (queryValues.sql) {
-            setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.sql);
-          }
-        }
-
-        form.setFieldsValue({
-          refreshFlag: _.uniqueId('refreshFlag_'),
-        });
+        commitQuery(values);
       });
     }, 0);
   };
@@ -252,6 +262,13 @@ export default function index(props: Props) {
               setStackByField={handleSetStackByField}
               defaultSearchField={defaultSearchField}
               setDefaultSearchField={handleSetDefaultSearchField}
+              queryExtra={ai.trigger}
+              noticeBanner={ai.dock}
+              queryBoxRef={ai.queryBoxRef}
+              queryButtonRef={ai.queryButtonRef}
+              queryRequest={ai.queryRequest}
+              keepEditorInFlow={ai.open}
+              onQueryEdit={ai.onQueryEdit}
             />
           </div>
         </div>

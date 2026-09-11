@@ -243,3 +243,30 @@ export function normalizeStreamChunk(chunk: IAiChatStreamChunk): IAiChatStreamCh
 
   return chunk;
 }
+
+/**
+ * One SSE entry (the lines between two blank lines) from the assistant's
+ * stream. fc-model writes `event: start` and `event: finish` with `data: null`
+ * around the message frames, and `event: not_found` when the stream is gone;
+ * only message frames carry a chunk to render.
+ */
+export function parseStreamEntry(entry: string): { finished: boolean; chunk?: IAiChatStreamChunk } {
+  const lines = entry
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const event = lines
+    .find((line) => line.startsWith('event:'))
+    ?.slice(6)
+    .trim();
+  if (event === 'finish') return { finished: true };
+  if (event && event !== 'message') return { finished: false };
+  const payload = lines
+    .find((line) => line.startsWith('data:'))
+    ?.slice(5)
+    .trim();
+  if (!payload) return { finished: false };
+  const raw = JSON.parse(payload) as IAiChatStreamChunk | null;
+  if (raw == null || typeof raw !== 'object') return { finished: false };
+  return { finished: false, chunk: normalizeStreamChunk(raw) };
+}

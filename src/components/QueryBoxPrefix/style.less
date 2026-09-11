@@ -1,0 +1,10 @@
+/* A column whose box has a prefix pinned in it keeps the SQL text clear of
+   it, and carries the form row's bottom margin so whatever follows the box
+   sits right under it. */
+.query-box-prefix-column {
+  margin-bottom: @form-item-margin-bottom;
+}
+
+.query-box-prefix-column .logql-codemirror {
+  padding-left: 32px;
+}
