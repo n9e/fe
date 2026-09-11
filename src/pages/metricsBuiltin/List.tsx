@@ -607,7 +607,7 @@ export default function index() {
                   ]),
                 };
               }}
-              actionColumn={{ title: t('common:table.operations'), width: 64 }}
+              actionColumn={{ title: t('common:table.operations'), width: 130 }}
               pagination={{
                 ...pagination,
                 ...tableProps.pagination,

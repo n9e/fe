@@ -434,7 +434,7 @@ export default function index(props: Props) {
             ]),
           };
         }}
-        actionColumn={{ title: t('common:table.operations'), width: 60 }}
+        actionColumn={{ title: t('common:table.operations'), width: 64 }}
       />
     </>
   );
