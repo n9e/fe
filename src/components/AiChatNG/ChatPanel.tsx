@@ -476,12 +476,16 @@ export default function ChatPanel(props: IAiChatProps) {
       pending?.scope?.cancel();
       pendingTurnRef.current = undefined;
       liveTurnsRef.current.clear();
-      if (pending?.locator) void cancelMessage(pending.locator).catch(() => {});
+      // Only the dock ends its turn on the server when it goes away: that turn
+      // may finish in a page action, which nothing can run once the page is
+      // gone. The full chat lets an answer finish in the background, as it
+      // always has, and shows it in the history.
+      if (slim && pending?.locator) void cancelMessage(pending.locator).catch(() => {});
       cancelScheduledStreamRender();
       cleanupPolling();
       stopStream();
     };
-  }, [cancelScheduledStreamRender, cleanupPolling, stopStream]);
+  }, [cancelScheduledStreamRender, cleanupPolling, stopStream, slim]);
 
   const initialMessageSentRef = useRef(false);
 

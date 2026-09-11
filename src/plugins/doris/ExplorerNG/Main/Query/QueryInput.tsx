@@ -9,7 +9,7 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 import QueryInput from '@/pages/logExplorer/components/QueryInput';
-import { AiQueryDockAffix } from '@/components/AiQueryDock/Affix';
+import QueryBoxPrefix, { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 
 import { NAME_SPACE } from '../../../constants';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from '../../SideBarNav/FieldsSidebar/DefaultSearchIcon';
@@ -40,7 +40,7 @@ export default function QueryInputCpt(props: Props) {
   const { snapRangeRef, executeQuery, defaultSearchField, setDefaultSearchField, queryExtra, noticeBanner, queryBoxRef, onQueryEdit } = props;
 
   return (
-    <div className={classNames('min-w-0', { 'ai-query-dock-host': !!queryExtra })}>
+    <QueryBoxColumn className='min-w-0' prefixed={!!queryExtra} below={noticeBanner}>
       <InputGroupWithFormItem
         label={
           <Space>
@@ -60,7 +60,7 @@ export default function QueryInputCpt(props: Props) {
         }
         addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
       >
-        <AiQueryDockAffix trigger={queryExtra} boxRef={queryBoxRef}>
+        <QueryBoxPrefix prefix={queryExtra} boxRef={queryBoxRef}>
           <Form.Item
             // With a dock under the box, the row's bottom margin moves to the column's end.
             className={queryExtra ? 'mb-0' : undefined}
@@ -113,9 +113,8 @@ export default function QueryInputCpt(props: Props) {
               />
             </Popover>
           )}
-        </AiQueryDockAffix>
+        </QueryBoxPrefix>
       </InputGroupWithFormItem>
-      {noticeBanner}
-    </div>
+    </QueryBoxColumn>
   );
 }

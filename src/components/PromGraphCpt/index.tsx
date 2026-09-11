@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import type { QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
 import { usePendingQuery } from '@/components/AiQueryDock/usePendingQuery';
+import { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 import { N9E_PATHNAME } from '@/utils/constant';
 import PromQLInputNG, { interpolateString, instantInterpolateString, includesVariables } from '@/components/PromQLInputNG';
 
@@ -305,76 +306,73 @@ export default function index(props: IProps) {
 
       <div className={`prom-graph-expression-input-ng${queryExtra ? ' ai-query-prom-with-dock' : ''}`} ref={inputWrapRef}>
         {/* With a dock, the buttons align to the box's top and the dock hangs under the box only. */}
-        <div className={`flex gap-[8px]${queryExtra ? ' items-start' : ' items-center'}`}>
-          <div className={`flex min-w-0 flex-1 gap-[8px]${queryExtra ? ' items-start' : ' items-center'}`}>
-            <div className='flex min-w-0 w-full flex-col'>
-              <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
-                <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
-                  <PromQLInputNG
-                    prefix={queryExtra}
-                    maxHeight={200}
-                    enableAutocomplete={completeEnabled}
-                    datasourceValue={datasourceValue}
-                    showBuiltinMetrics={showBuiltinMetrics}
-                    interpolateString={(query) => {
-                      return interpolateString({
-                        query,
-                        range,
-                        minStep,
-                      });
-                    }}
-                    onMetricUnitChange={(newUnit) => {
-                      setDefaultUnit(newUnit);
-                    }}
-                    showGlobalMetrics={showGlobalMetrics}
-                    onChangeTrigger={['onBlur', 'onEnter']}
-                    value={value}
-                    onDraftChange={(next) => {
-                      if (next !== valueRef.current) {
-                        invalidate();
-                        setQueryPaused(true);
-                        change(next);
-                      }
-                    }}
-                    onChange={(newVal) => {
-                      // The user finished typing (blur or Enter): that both shows and runs it.
-                      if (newVal !== valueRef.current) invalidate();
-                      setQueryPaused(false);
-                      change(newVal);
-                      updateSubmitted(newVal);
-                      onChange && onChange(newVal);
-                    }}
-                  />
-                </PromQLInputNGWithTooltipWrapper>
-              </div>
-              {queryExtra ? noticeBanner : null}
-            </div>
-            {extra && (
-              <div className='flex-shrink-0'>
-                {React.cloneElement(extra as React.ReactElement, {
-                  onChange: (newValue?: string) => {
-                    if (typeof newValue === 'string') {
+        <div className={`flex gap-[8px]${queryExtra ? ' items-start' : ''}`}>
+          <QueryBoxColumn className='flex min-w-0 w-full flex-col' below={queryExtra ? noticeBanner : undefined}>
+            <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
+              <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
+                <PromQLInputNG
+                  prefix={queryExtra}
+                  maxHeight={200}
+                  enableAutocomplete={completeEnabled}
+                  datasourceValue={datasourceValue}
+                  showBuiltinMetrics={showBuiltinMetrics}
+                  interpolateString={(query) => {
+                    return interpolateString({
+                      query,
+                      range,
+                      minStep,
+                    });
+                  }}
+                  onMetricUnitChange={(newUnit) => {
+                    setDefaultUnit(newUnit);
+                  }}
+                  showGlobalMetrics={showGlobalMetrics}
+                  onChangeTrigger={['onBlur', 'onEnter']}
+                  value={value}
+                  onDraftChange={(next) => {
+                    if (next !== valueRef.current) {
                       invalidate();
-                      change(newValue);
-                      updateSubmitted(newValue);
+                      setQueryPaused(true);
+                      change(next);
                     }
-                  },
-                })}
-              </div>
-            )}
-            <Button
-              ref={queryButtonRef}
-              className='flex-shrink-0'
-              type='primary'
-              loading={loading}
-              onClick={() => {
-                invalidate();
-                submit();
-              }}
-            >
-              {t('query_btn')}
-            </Button>
-          </div>
+                  }}
+                  onChange={(newVal) => {
+                    // The user finished typing (blur or Enter): that both shows and runs it.
+                    if (newVal !== valueRef.current) invalidate();
+                    setQueryPaused(false);
+                    change(newVal);
+                    updateSubmitted(newVal);
+                    onChange && onChange(newVal);
+                  }}
+                />
+              </PromQLInputNGWithTooltipWrapper>
+            </div>
+          </QueryBoxColumn>
+          {extra && (
+            <div className='flex-shrink-0'>
+              {React.cloneElement(extra as React.ReactElement, {
+                onChange: (newValue?: string) => {
+                  if (typeof newValue === 'string') {
+                    invalidate();
+                    change(newValue);
+                    updateSubmitted(newValue);
+                  }
+                },
+              })}
+            </div>
+          )}
+          <Button
+            ref={queryButtonRef}
+            className='flex-shrink-0'
+            type='primary'
+            loading={loading}
+            onClick={() => {
+              invalidate();
+              submit();
+            }}
+          >
+            {t('query_btn')}
+          </Button>
         </div>
       </div>
       {tabActiveKey === 'table' && value && includesVariables(value) && (

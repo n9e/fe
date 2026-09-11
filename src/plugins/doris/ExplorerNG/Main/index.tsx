@@ -42,7 +42,7 @@ interface Props {
   queryButtonRef?: React.Ref<HTMLButtonElement>;
   queryRequest?: QueryRequest;
   onQueryEdit?: (sql?: string) => void;
-  dockOpen?: boolean;
+  keepEditorInFlow?: boolean;
 }
 
 const queryBuilderPinnedCache = window.localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY);
@@ -69,7 +69,7 @@ export default function index(props: Props) {
     queryButtonRef,
     queryRequest,
     onQueryEdit,
-    dockOpen,
+    keepEditorInFlow,
   } = props;
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
@@ -168,7 +168,7 @@ export default function index(props: Props) {
                 noticeBanner={noticeBanner}
                 queryBoxRef={queryBoxRef}
                 onQueryEdit={onQueryEdit}
-                dockOpen={dockOpen}
+                keepEditorInFlow={keepEditorInFlow}
               />
             )}
           </Col>
