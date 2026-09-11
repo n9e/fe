@@ -380,11 +380,9 @@ export default function List({ embedded = false }: ListProps) {
                 Modal.confirm({
                   title: t('common:confirm.delete'),
                   onOk: () => {
-                    return runMutation([item.id], () =>
-                      deleteItems([item.id]).then(() => {
-                        featchData();
-                      }),
-                    );
+                    deleteItems([item.id]).then(() => {
+                      featchData();
+                    });
                   },
                 });
               },

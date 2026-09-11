@@ -89,7 +89,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
     Modal.confirm({
       title: enabled.length ? t('batch.delete_enabled_confirm', { count: enabled.length }) : t('batch.delete_confirm', { count: selectedRows.length }),
       okButtonProps: { danger: true },
-      onOk: () => props.runMutation(ids, () => (enabled.length ? putItemsDisabled(_.map(enabled, 'id'), true).then(doDelete) : doDelete())),
+      onOk: () => (enabled.length ? putItemsDisabled(_.map(enabled, 'id'), true).then(doDelete) : doDelete()),
     });
   };
 
