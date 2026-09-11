@@ -17,11 +17,6 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
-export interface QueryRequest {
-  signal: AbortSignal;
-  complete: (result: { empty: boolean; count?: number } | Error) => void;
-}
-
 export const getPromData = (url: string, params, signal?: AbortSignal) => {
   return request(url, {
     method: RequestMethod.Get,

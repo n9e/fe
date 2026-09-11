@@ -12,7 +12,8 @@ import { instantInterpolateString } from '@/components/PromQLInputNG';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { downloadFile } from '@/pages/alertRules/List/utils';
 
-import { getPromData, QueryRequest } from './services';
+import { getPromData } from './services';
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { QueryStats } from './components/QueryStatsView';
 import { formatPrometheusValue } from './value';
 

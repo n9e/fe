@@ -30,7 +30,8 @@ import { interpolateString, getRealStep } from '@/components/PromQLInputNG';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 
-import { getPromData, setTmpChartData, QueryRequest } from './services';
+import { getPromData, setTmpChartData } from './services';
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { QueryStats } from './components/QueryStatsView';
 import LineGraphStandardOptions from './components/GraphStandardOptions';
 
