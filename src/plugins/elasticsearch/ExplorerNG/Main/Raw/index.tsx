@@ -601,8 +601,8 @@ export default function index(props: Props) {
                 if (!queryValues.date_field) return val as string;
                 if (queryValues?.index_pattern) {
                   return getDateTokenDisplayValue({
-                    value: _.toString(val),
-                    fieldValue: _.toString(val),
+                    value: val,
+                    fieldValue: val,
                     name: queryValues.date_field,
                     fieldConfig: currentFieldConfig,
                   });
