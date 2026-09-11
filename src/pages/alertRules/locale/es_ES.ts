@@ -12,7 +12,7 @@ const es_ES = {
   "name_placeholder": "Introduce el nombre de la regla",
   "group_id_placeholder": "Selecciona el grupo de negocio",
   "note_placeholder": "Usa este campo para las pautas de respuesta a la alerta, enlaces de documentación, el turno de guardia y otra información complementaria",
-  "search_placeholder": "Buscar por nombre o etiqueta",
+  "search_placeholder": "Buscar por nombre, etiqueta o consulta",
   "status_triggered": "En alerta",
   "status_normal": "Sin alertas",
   "notify_rule_not_found": "No se encontró ninguna regla de notificación correspondiente",

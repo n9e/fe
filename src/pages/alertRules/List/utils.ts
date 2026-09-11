@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import type { AlertRuleType } from '@/pages/alertRules/types';
 
 export const downloadFile = (data = '', filename = 'export.csv') => {
@@ -38,4 +40,14 @@ export function matchTriggerType(rule: Pick<AlertRuleType<any>, 'rule_config'> |
     default:
       return true;
   }
+}
+
+// 查询语句所在字段：prom_ql（Prometheus 普通模式、Loki）、query（Prometheus 高级模式及多数数据源）、sql（SQL 类数据源）、filter（Elasticsearch 的 Lucene 查询条件）
+const QUERY_TEXT_KEYS = ['prom_ql', 'query', 'sql', 'filter'];
+
+// 判断告警规则的名称、附加标签或查询语句是否包含搜索词（不区分大小写的子串匹配）
+export function matchSearch(rule: Pick<AlertRuleType<any>, 'name' | 'append_tags' | 'rule_config'>, search?: string): boolean {
+  const lowerCaseSearch = search?.toLowerCase() || '';
+  const queryTexts = _.flatMap(rule.rule_config?.queries, (query) => _.map(QUERY_TEXT_KEYS, (key) => query?.[key]));
+  return _.some([rule.name, _.join(rule.append_tags, ' '), ...queryTexts], (text) => typeof text === 'string' && text.toLowerCase().includes(lowerCaseSearch));
 }

@@ -12,7 +12,7 @@ const id_ID = {
   "name_placeholder": "Masukkan nama aturan",
   "group_id_placeholder": "Pilih grup bisnis",
   "note_placeholder": "Tempat menuliskan saran penanganan saat alert terpicu, tautan dokumen terkait, jadwal jaga, dan catatan tambahan lain",
-  "search_placeholder": "Cari nama atau label",
+  "search_placeholder": "Cari nama, label, atau kueri",
   "status_triggered": "Sedang alert",
   "status_normal": "Tidak ada alert",
   "notify_rule_not_found": "Aturan notifikasi yang cocok tidak ditemukan",

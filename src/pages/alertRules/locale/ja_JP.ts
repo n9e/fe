@@ -11,7 +11,7 @@ const ja_JP = {
   name_placeholder: 'ルール名を入力してください',
   group_id_placeholder: 'ビジネスグループを選択してください',
   note_placeholder: 'アラート発火時の処理提案、関連ドキュメントリンク、当直情報などを入力',
-  search_placeholder: '名前またはタグを検索',
+  search_placeholder: '名前、タグまたはクエリを検索',
   status_triggered: 'アラート中',
   status_normal: '正常',
   notify_rule_not_found: '対応する通知ルールが見つかりません',

@@ -25,7 +25,7 @@ import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY, FILTER_SESSION_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
 import EvalRecordsDrawer, { Props as EvalRecordsDrawerProps } from '@/pages/alertRules/List/EvalRecordsDrawer';
-import { matchTriggerType, TRIGGER_TYPE_OPTIONS, TriggerType } from '@/pages/alertRules/List/utils';
+import { matchSearch, matchTriggerType, TRIGGER_TYPE_OPTIONS, TriggerType } from '@/pages/alertRules/List/utils';
 import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import { getAlertSeverityName } from '@/utils/alertSeverity';
 
@@ -364,11 +364,10 @@ export default function AlertRules(props: Props) {
     return _.filter(data, (item) => {
       const { datasourceIds, search, prod, severities, triggerType } = filter;
       const datasourceIdsWithoutHost = _.filter(datasourceIds, (id) => id !== -999);
-      const lowerCaseQuery = search?.toLowerCase() || '';
       return (
         // 列表数据排除 prod 为 firemap(灭火图)、northstar(北极星) 的记录
         !_.includes(['firemap', 'northstar'], item.prod) &&
-        (item.name.toLowerCase().indexOf(lowerCaseQuery) > -1 || _.join(item.append_tags, ' ').toLowerCase().indexOf(lowerCaseQuery) > -1) &&
+        matchSearch(item, search) &&
         ((prod && prod === item.prod) || !prod) &&
         ((item.severities &&
           _.some(item.severities, (severity) => {
