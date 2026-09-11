@@ -25,11 +25,11 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import type { QueryDockControl, QueryDockSnapshot } from '@/components/AiQueryDock/useQueryDockActions';
+import { usePendingQuery } from '@/components/AiQueryDock/usePendingQuery';
 import { N9E_PATHNAME } from '@/utils/constant';
 import PromQLInputNG, { interpolateString, instantInterpolateString, includesVariables } from '@/components/PromQLInputNG';
 
 import Table from './Table';
-import { QueryRequest } from './services';
 import Graph from './Graph';
 import QueryStatsView, { QueryStats } from './components/QueryStatsView';
 import PromQLInputNGWithTooltipWrapper from './components/PromQLInputNGWithTooltipWrapper';
@@ -144,14 +144,12 @@ export default function index(props: IProps) {
   const timestampRef = useRef(timestamp);
   const submittedRef = useRef(submitted);
   const revisionRef = useRef(0);
-  const pendingRef = useRef<{ abort: () => void }>();
-  const [queryRequest, setQueryRequest] = useState<QueryRequest>();
+  const pending = usePendingQuery();
   const [queryPaused, setQueryPaused] = useState(false);
   const invalidate = () => {
     revisionRef.current += 1;
     onUserContextChange?.();
-    pendingRef.current?.abort();
-    setQueryRequest(undefined);
+    pending.clear();
     setQueryPaused(false);
   };
   const updateRange = (next: IRawTimeRange) => {
@@ -174,7 +172,11 @@ export default function index(props: IProps) {
       invalidate();
     }
   }, [externalContext]);
-  useEffect(() => () => pendingRef.current?.abort(), []);
+  // `usePendingQuery` hands back a fresh object each render, so depend on the
+  // stable callback inside it: depending on the object would abort the run in
+  // flight on every render.
+  const { abort: abortPending } = pending;
+  useEffect(() => () => abortPending(), [abortPending]);
   const [completeEnabled, setCompleteEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [defaultUnit, setDefaultUnit] = useState<string | undefined>(props.defaultUnit);
@@ -238,43 +240,24 @@ export default function index(props: IProps) {
       snapshot: () => ({ query: valueRef.current || '', submitted: submittedRef.current, range: _.cloneDeep(rangeRef.current), timestamp: timestampRef.current }),
       revision: () => revisionRef.current,
       fill: (next, nextRange) => {
-        pendingRef.current?.abort();
+        pending.abort();
         setQueryPaused(true);
         change(next);
         if (nextRange) updateRange(nextRange);
       },
       run: ({ signal } = {}) => {
-        pendingRef.current?.abort();
-        if (signal?.aborted) return Promise.reject(new DOMException('Query stopped', 'AbortError'));
         if (!valueRef.current?.trim() || !datasourceValue) return Promise.reject(new Error('A query and data source are required'));
-        const controller = new AbortController();
-        const promise = new Promise<{ empty: boolean; count?: number }>((resolve, reject) => {
-          let settled = false;
-          const complete = (result: { empty: boolean; count?: number } | Error) => {
-            if (settled) return;
-            settled = true;
-            signal?.removeEventListener('abort', abort);
-            if (pendingRef.current?.abort === abort) pendingRef.current = undefined;
-            if (result instanceof Error) reject(result);
-            else resolve(result);
-          };
-          const abort = () => {
-            controller.abort();
-            complete(new DOMException('Query stopped', 'AbortError'));
-          };
-          pendingRef.current = { abort };
-          signal?.addEventListener('abort', abort, { once: true });
-          setQueryRequest({ signal: controller.signal, complete });
-        });
+        // Opening the run and sending it belong in one block, so the fetcher
+        // gets the request and the refresh in a single render.
+        const result = pending.begin(signal);
         setQueryPaused(false);
         submit();
-        return promise;
+        return result;
       },
       restore: (snapshot) => {
-        pendingRef.current?.abort();
+        pending.clear();
         setErrorContent('');
         setQueryStats(null);
-        setQueryRequest(undefined);
         setQueryPaused(false);
         change(snapshot.query);
         updateSubmitted(snapshot.submitted);
@@ -446,7 +429,7 @@ export default function index(props: IProps) {
               showExportButton={showExportButton}
               seriesFilterText={seriesFilterText}
               onSeriesFilterTextChange={setSeriesFilterText}
-              queryRequest={queryRequest}
+              queryRequest={pending.queryRequest}
               queryPaused={queryPaused}
               onQueryRequest={handleQueryRequest}
             />
@@ -491,7 +474,7 @@ export default function index(props: IProps) {
                 onQueryContextChange={invalidate}
                 seriesFilterText={seriesFilterText}
                 onSeriesFilterTextChange={setSeriesFilterText}
-                queryRequest={queryRequest}
+                queryRequest={pending.queryRequest}
                 queryPaused={queryPaused}
                 onQueryRequest={handleQueryRequest}
               />

@@ -38,7 +38,6 @@ export interface AiQueryDockProps {
   /** What the composer suggests before the first message; defaults to the metrics wording. */
   placeholder?: string;
   onClose: () => void;
-  className?: string;
 }
 
 /** One box for every icon button on the row, so they line up and read as one set. */
@@ -101,7 +100,7 @@ function delivered(message: IAiChatMessage): boolean {
 }
 
 export default function AiQueryDock(props: AiQueryDockProps) {
-  const { open, pageFrom, promptList, onClose, resultNoun, placeholder: firstPlaceholder, onNewConversation, className, progress, prepareTurn, canUndo, onUndo } = props;
+  const { open, pageFrom, promptList, onClose, resultNoun, placeholder: firstPlaceholder, onNewConversation, progress, prepareTurn, canUndo, onUndo } = props;
   const { t } = useTranslation(NAME_SPACE);
   const rootRef = useRef<HTMLDivElement>(null);
   const [chatId, setChatId] = useState<string>();
@@ -228,7 +227,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       ref={rootRef}
       tabIndex={-1}
       hidden={!open}
-      className={cn('mt-2 mb-1 outline-none', className)}
+      className='mt-2 mb-1 outline-none'
       onKeyDown={(event) => {
         if (event.key !== 'Escape') return;
         // Scoped, not global: Esc belongs to whatever is open inside the page.
