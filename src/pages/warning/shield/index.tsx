@@ -503,16 +503,14 @@ const Shield: React.FC = () => {
                       title: t('common:confirm.delete'),
                       icon: <ExclamationCircleOutlined />,
                       onOk: () => {
-                        return runMutation([record.id], () =>
-                          deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
-                            refreshList();
-                            if (res.err) {
-                              message.success(res.err);
-                            } else {
-                              message.success(t('common:success.delete'));
-                            }
-                          }),
-                        );
+                        deleteShields({ ids: [record.id] }, record.group_id).then((res) => {
+                          refreshList();
+                          if (res.err) {
+                            message.success(res.err);
+                          } else {
+                            message.success(t('common:success.delete'));
+                          }
+                        });
                       },
                       onCancel() {},
                     });
@@ -523,8 +521,6 @@ const Shield: React.FC = () => {
             actionColumn={{ title: t('common:table.operations'), width: 80 }}
           />
           <DeleteMutesModal
-            runMutation={runMutation}
-            rowIds={[...new Set([...currentShieldDataAll.map((row) => row.id), ...pendingIds])]}
             visible={deleteMutesModalVisible}
             gids={gids}
             onCancel={() => {

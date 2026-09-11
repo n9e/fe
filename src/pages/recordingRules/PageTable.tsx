@@ -289,13 +289,11 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
                 title: t('common:confirm.delete'),
                 onOk: () => {
                   if (businessGroup.id) {
-                    return runMutation(selectRowKeys as number[], () =>
-                      deleteRecordingRule(selectRowKeys as number[], businessGroup.id).then(() => {
-                        message.success(t('common:success.delete'));
-                        clearSelection();
-                        refreshList();
-                      }),
-                    );
+                    deleteRecordingRule(selectRowKeys as number[], businessGroup.id).then(() => {
+                      message.success(t('common:success.delete'));
+                      clearSelection();
+                      refreshList();
+                    });
                   }
                 },
 
@@ -476,12 +474,10 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
                 confirm({
                   title: t('common:confirm.delete'),
                   onOk: () => {
-                    return runMutation([record.id], () =>
-                      deleteRecordingRule([record.id], record.group_id).then(() => {
-                        message.success(t('common:success.delete'));
-                        refreshList();
-                      }),
-                    );
+                    deleteRecordingRule([record.id], record.group_id).then(() => {
+                      message.success(t('common:success.delete'));
+                      refreshList();
+                    });
                   },
 
                   onCancel() {},
