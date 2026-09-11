@@ -1,9 +1,11 @@
+import { useMemoizedFn, useRequest } from 'ahooks';
 import React, { useEffect, useState, useMemo, useContext } from 'react';
 import { Button, Modal, message, Dropdown, Switch, Select, Space } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ColumnType } from 'antd/lib/table';
 import _ from 'lodash';
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import RefreshIcon from '@/components/RefreshIcon';
 import { DownOutlined } from '@ant-design/icons';
 import { getBusiGroupsRecordingRules, updateRecordingRules } from '@/services/recording';
@@ -67,9 +69,8 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
   const defaultPage = getPageFromSearch(location.search);
   const [query, setQuery] = useState<string>(defaultFilter.query ?? '');
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
-  const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState([]);
-  const [currentStrategyData, setCurrentStrategyData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [currentStrategyDataAll, setCurrentStrategyDataAll] = useState<strategyItem[]>([]);
+  const [currentStrategyData, setCurrentStrategyData] = useState<strategyItem[]>([]);
   const [datasourceIds, setDatasourceIds] = useState<number[] | undefined>(defaultFilter.datasourceIds);
   const [filterDisabled, setFilterDisabled] = useState<0 | 1 | undefined>(defaultFilter.disabled);
   const [current, setCurrent] = useState<number>(defaultPage);
@@ -87,18 +88,19 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
     filterData();
   }, [query, datasourceIds, filterDisabled, currentStrategyDataAll]);
 
-  const getRecordingRules = async () => {
-    if (!gids) {
-      return;
-    }
-    setLoading(true);
-    const ids = gids === '-2' ? undefined : gids;
-    const { success, dat } = await getBusiGroupsRecordingRules(ids);
-    if (success) {
-      setCurrentStrategyDataAll(dat.filter((item) => !severity || item.severity === severity) || []);
-      setLoading(false);
-    }
-  };
+  const {
+    loading,
+    run: getRecordingRules,
+    cancel,
+  } = useRequest(
+    async () => {
+      if (!gids) return [];
+      const ids = gids === '-2' ? undefined : gids;
+      const { dat } = await getBusiGroupsRecordingRules(ids);
+      return (dat || []).filter((item) => !severity || item.severity === severity);
+    },
+    { manual: true, onSuccess: setCurrentStrategyDataAll },
+  );
 
   const filterData = () => {
     const data = JSON.parse(JSON.stringify(currentStrategyDataAll));
@@ -140,6 +142,15 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
       resetPaging();
     }
   }, [groupSwitchCount]);
+
+  const { run: runMutation, pendingIds } = useRowMutation();
+  const updateStatus = useMemoizedFn((ids: React.Key[], disabled: 0 | 1) => {
+    cancel();
+    const patch = (rows: strategyItem[]) => rows.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row));
+    setCurrentStrategyDataAll(patch);
+    setSelectedRows(patch);
+    if (loading) getRecordingRules();
+  });
 
   const columns: ColumnType<strategyItem>[] = _.concat([
     {
@@ -203,21 +214,24 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
 
       render: (disabled, record) => (
         <Switch
+          loading={pendingIds.has(record.id)}
           checked={disabled === strategyStatus.Enable}
           size='small'
           onChange={() => {
             const { id, disabled } = record;
-            updateRecordingRules(
-              {
-                ids: [id],
-                fields: {
-                  disabled: !disabled ? 1 : 0,
+            runMutation([id], () =>
+              updateRecordingRules(
+                {
+                  ids: [id],
+                  fields: {
+                    disabled: !disabled ? 1 : 0,
+                  },
                 },
-              },
-              record.group_id,
-            ).then(() => {
-              refreshList();
-            });
+                record.group_id,
+              ).then(() => {
+                updateStatus([id], disabled ? 0 : 1);
+              }),
+            );
           }}
         />
       ),
@@ -310,21 +324,27 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
 
   const editModalFinish = async (isOk, fieldsData?) => {
     if (isOk && businessGroup.id) {
-      const res = await updateRecordingRules(
-        {
-          ids: selectRowKeys,
-          fields: fieldsData,
-        },
-        businessGroup.id,
-      );
-      if (!res.err) {
-        message.success(t('common:success.edit'));
-        clearSelection();
-        refreshList();
-        setisModalVisible(false);
-      } else {
-        message.error(res.err);
-      }
+      return runMutation(selectRowKeys, async () => {
+        const res = await updateRecordingRules(
+          {
+            ids: selectRowKeys,
+            fields: fieldsData,
+          },
+          businessGroup.id,
+        );
+        if (!res.err) {
+          message.success(t('common:success.edit'));
+          clearSelection();
+          if (Object.keys(fieldsData).length === 1 && (fieldsData.disabled === 0 || fieldsData.disabled === 1)) {
+            updateStatus(selectRowKeys, fieldsData.disabled);
+          } else {
+            refreshList();
+          }
+          setisModalVisible(false);
+        } else {
+          message.error(res.err);
+        }
+      });
     } else {
       setisModalVisible(false);
     }
@@ -394,7 +414,7 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
               </Button>
               <div className={'table-more-options'}>
                 <Dropdown overlay={menu} trigger={['click']}>
-                  <Button onClick={(e) => e.stopPropagation()}>
+                  <Button disabled={selectRowKeys.some((id) => pendingIds.has(id))} onClick={(e) => e.stopPropagation()}>
                     {t('common:btn.more')}
                     <DownOutlined
                       style={{
