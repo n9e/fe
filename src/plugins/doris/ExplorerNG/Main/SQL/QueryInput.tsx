@@ -8,7 +8,7 @@ import { WandSparkles } from 'lucide-react';
 
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import { AiQueryDockAffix } from '@/components/AiQueryDock/Affix';
+import QueryBoxPrefix, { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../../../constants';
@@ -31,15 +31,15 @@ interface Props {
   queryBoxRef?: React.Ref<HTMLDivElement>;
   /** The user typed in the box; the value it now holds. */
   onQueryEdit?: (sql?: string) => void;
-  /** The dock under the box is open: the editor then grows in flow and pushes it down instead of floating over it. */
-  dockOpen?: boolean;
+  /** Something open under the box (e.g. the AI dock): the editor then grows in flow and pushes it down instead of floating over it. */
+  keepEditorInFlow?: boolean;
 }
 
 export default forwardRef(function QueryInputCpt(props: Props, ref) {
   const { t } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
 
-  const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick, queryExtra, noticeBanner, queryBoxRef, onQueryEdit, dockOpen } = props;
+  const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick, queryExtra, noticeBanner, queryBoxRef, onQueryEdit, keepEditorInFlow } = props;
 
   const [focused, setFocused] = React.useState(false);
 
@@ -52,7 +52,7 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
   }));
 
   return (
-    <div className={classNames('min-w-0', { 'ai-query-dock-host': !!queryExtra })}>
+    <QueryBoxColumn className='min-w-0' prefixed={!!queryExtra} below={noticeBanner}>
       <InputGroupWithFormItem
         className={classNames({
           'doris-sql-input-container-with-builder': queryBuilderVisible,
@@ -87,10 +87,10 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
         >
           <div
             className={classNames('w-full', {
-              absolute: queryBuilderPinned && !dockOpen,
+              absolute: queryBuilderPinned && !keepEditorInFlow,
             })}
           >
-            <AiQueryDockAffix trigger={queryExtra} boxRef={queryBoxRef}>
+            <QueryBoxPrefix prefix={queryExtra} boxRef={queryBoxRef}>
               <Form.Item
                 // With a dock under the box, the row's bottom margin moves to the column's end.
                 className={queryExtra ? 'mb-0' : undefined}
@@ -127,11 +127,10 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
                   }}
                 />
               </Form.Item>
-            </AiQueryDockAffix>
+            </QueryBoxPrefix>
           </div>
         </div>
       </InputGroupWithFormItem>
-      {noticeBanner}
-    </div>
+    </QueryBoxColumn>
   );
 });

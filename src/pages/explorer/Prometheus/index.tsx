@@ -1,37 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import moment from 'moment';
 import _ from 'lodash';
 import { Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { useTranslation } from 'react-i18next';
 
-import { IS_ENT, SIZE } from '@/utils/constant';
-import PromGraph, { PromGraphControl } from '@/components/PromGraphCpt';
+import { SIZE } from '@/utils/constant';
+import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
-
-import { AiButton } from '@/components/AiChatNG/FlashAiButton';
-import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
-import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
-import AiQueryDock from '@/components/AiQueryDock';
-import { AiQueryDockTrigger } from '@/components/AiQueryDock/Trigger';
-import { useQueryDockActions, QueryDockAction } from '@/components/AiQueryDock/useQueryDockActions';
 
 import { queryStringOptions } from '../constants';
 import ProbeBanner from '../components/ProbeBanner';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
+import { usePrometheusAiDock } from './aiDock';
 
 const LOCAL_KEY = 'n9e-query-promql-history';
-// How this panel's statement is named to the assistant.
-const PROMQL_ACTION: QueryDockAction = {
-  name: 'set_metric_query',
-  argument: 'promql',
-  language: 'PromQL expression',
-  followUpExample: '改成按 env 分组取平均',
-  page: { title: 'Metric explorer', summary: 'The user writes PromQL and reads its results in a single query panel.' },
-};
 
 type IMode = 'table' | 'graph';
 interface IProps {
@@ -76,7 +61,6 @@ export default function Prometheus(props: IProps) {
     defaultTime,
     onDefaultTimeChange,
   } = props;
-  const { t: tAi, i18n } = useTranslation(AI_CHAT_NS);
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -85,40 +69,11 @@ export default function Prometheus(props: IProps) {
   const [promql, setPromql] = useState<string>(defaultPromQL);
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
-  const [aiOpen, setAiOpen] = useState(false);
-  const aiPageFrom = useMemo(() => buildPageFrom({ param: { datasource_type: 'prometheus', datasource_id: datasourceValue } }), [datasourceValue]);
-  // What the dock sends with each message: the data source plus what is in the
-  // box and which window the panel is on, read at send time. The assistant
-  // verifies against that window instead of "now", and a follow-up sees the
-  // expression the user may have edited since.
-  const readAiPageFrom = useCallback(() => {
-    const snapshot = graphControl.current?.snapshot();
-    const range = snapshot?.range?.start && snapshot.range.end ? timeRangeUnix(snapshot.range) : undefined;
-    return buildPageFrom({
-      param: {
-        datasource_type: 'prometheus',
-        datasource_id: datasourceValue,
-        promql: snapshot?.query?.trim() || undefined,
-        start: range ? String(range.start) : undefined,
-        end: range ? String(range.end) : undefined,
-      },
-    });
-  }, [datasourceValue]);
-  const aiPromptList = useMemo(() => ['cpu', 'memory', 'disk'].map((metric) => ({ label: tAi(`dock.prompt_${metric}`), value: tAi(`dock.prompt_${metric}_query`) })), [tAi]);
-  // This panel's own query box; panels on this page can each be on a different
-  // data source, so the assistant is handed the box, not a page-wide lookup.
-  const graphControl = useRef<PromGraphControl | null>(null);
-
-  // The dock, and the page action behind it, exist only in the Flashcat
-  // enterprise build: its assistant is fc-model, which understands page
-  // actions. The open-source and Nightingale commercial builds talk to the
-  // n9e assistant and keep the global chat button they always had.
-  const aiActions = useQueryDockActions({
-    // Only the panel whose dock is open may be written to by the assistant.
-    enabled: IS_ENT && aiOpen,
+  const ai = usePrometheusAiDock({
     datasourceValue,
-    getControl: () => graphControl.current,
-    action: PROMQL_ACTION,
+    // Reaching for the assistant is taking over, the onboarding banner steps aside.
+    onTakeOver: () => setProbeBannerVisible(false),
+    onQuery: setPromql,
   });
 
   useEffect(() => {
@@ -153,8 +108,8 @@ export default function Prometheus(props: IProps) {
   return (
     <>
       <PromGraph
-        controlRef={graphControl}
-        onUserContextChange={aiActions.invalidateUndo}
+        controlRef={ai.controlRef}
+        onUserContextChange={ai.onUserContextChange}
         // key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
         type={query.mode as IMode}
         defaultType={defaultType}
@@ -193,22 +148,7 @@ export default function Prometheus(props: IProps) {
         showBuilder={showBuilder}
         noticeBanner={
           <>
-            {IS_ENT ? (
-              <AiQueryDock
-                open={aiOpen}
-                pageFrom={readAiPageFrom}
-                progress={aiActions.progress}
-                prepareTurn={aiActions.prepareTurn}
-                canUndo={aiActions.canUndo}
-                onUndo={aiActions.undo}
-                promptList={aiPromptList}
-                onNewConversation={aiActions.reset}
-                onClose={() => {
-                  aiActions.cancel();
-                  setAiOpen(false);
-                }}
-              />
-            ) : undefined}
+            {ai.dock}
             {probeBannerVisible ? (
               <ProbeBanner
                 datasourceId={datasourceValue}
@@ -235,38 +175,10 @@ export default function Prometheus(props: IProps) {
             onDefaultTypeChange(newType);
           }
         }}
-        queryExtra={
-          IS_ENT ? (
-            <AiQueryDockTrigger
-              open={aiOpen}
-              onClick={() => {
-                // Opening the assistant is taking over, same as editing the
-                // query by hand: the onboarding banner steps aside.
-                setProbeBannerVisible(false);
-                if (aiOpen) aiActions.cancel();
-                setAiOpen((previous) => !previous);
-              }}
-            />
-          ) : undefined
-        }
+        queryExtra={ai.trigger}
         extra={
           <Space size={SIZE}>
-            {IS_ENT ? undefined : (
-              <AiButton
-                queryPageFrom={aiPageFrom}
-                queryAction={{
-                  key: 'query_generator',
-                  param: {
-                    datasource_type: 'prometheus',
-                    datasource_id: datasourceValue,
-                  },
-                }}
-                promptList={getExplorerPrompts(i18n.language)}
-                onExecuteQueryForQueryContent={(nextPromql) => {
-                  setPromql(nextPromql);
-                }}
-              />
-            )}
+            {ai.chatButton}
             <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} onChange={setPromql} />
           </Space>
         }

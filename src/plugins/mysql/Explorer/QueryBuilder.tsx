@@ -7,7 +7,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import LogQL from '@/components/LogQL';
-import { AiQueryDockAffix } from '@/components/AiQueryDock/Affix';
+import QueryBoxPrefix, { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 import { CommonStateContext } from '@/App';
 import { DatasourceCateEnum } from '@/utils/constant';
 
@@ -39,7 +39,7 @@ export default function QueryBuilder(props: Props) {
   return (
     <div style={{ width: '100%' }}>
       <div className='explorer-query'>
-        <div className={`min-w-0 flex-1${queryExtra ? ' ai-query-dock-host' : ''}`}>
+        <QueryBoxColumn className='min-w-0 flex-1' prefixed={!!queryExtra} below={noticeBanner}>
           <InputGroupWithFormItem
             label={
               <Space>
@@ -54,7 +54,7 @@ export default function QueryBuilder(props: Props) {
               </Space>
             }
           >
-            <AiQueryDockAffix trigger={queryExtra}>
+            <QueryBoxPrefix prefix={queryExtra}>
               <Form.Item
                 // With a dock under the box, the row's bottom margin moves to the column's end.
                 className={queryExtra ? 'mb-0' : undefined}
@@ -82,10 +82,9 @@ export default function QueryBuilder(props: Props) {
                   placeholder={t('query.query_placeholder')}
                 />
               </Form.Item>
-            </AiQueryDockAffix>
+            </QueryBoxPrefix>
           </InputGroupWithFormItem>
-          {noticeBanner}
-        </div>
+        </QueryBoxColumn>
         <HistoricalRecords
           localKey={CACHE_KEY}
           datasourceValue={datasourceValue}

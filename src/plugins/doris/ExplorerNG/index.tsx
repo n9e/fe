@@ -1,18 +1,10 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Form, Modal, Button, Alert, Space } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
-import { IS_ENT } from '@/utils/constant';
-import { timeRangeUnix } from '@/components/TimeRangePicker';
-import AiQueryDock from '@/components/AiQueryDock';
-import { AiQueryDockTrigger } from '@/components/AiQueryDock/Trigger';
-import { useQueryDockActions, QueryDockAction } from '@/components/AiQueryDock/useQueryDockActions';
-import { useFormQueryControl } from '@/components/AiQueryDock/useFormQueryControl';
-import { buildPageFrom } from '@/components/AiChatNG/recommend';
-import { NAME_SPACE as AI_CHAT_NS } from '@/components/AiChatNG/constants';
 import { copy2ClipBoard } from '@/utils';
 import { setLocalQueryHistory } from '@/components/HistoricalRecords/ConditionHistoricalRecords';
 import { setLocalQueryHistory as setLocalQueryHistoryUtil } from '@/components/HistoricalRecords';
@@ -27,31 +19,9 @@ import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } fr
 
 import SideBarNav from './SideBarNav';
 import Main from './Main';
+import { useDorisAiDock } from './aiDock';
 
 import './style.less';
-
-// How this panel's statement is named to the assistant, one action per
-// syntax: SQL mode takes a statement, search mode a filter plus the table it
-// runs against.
-const LOG_SQL_ACTION: QueryDockAction = {
-  name: 'set_log_query',
-  argument: 'sql',
-  language: 'Doris SQL statement',
-  followUpExample: '只看 ERROR 级别',
-  page: { title: 'Log explorer', summary: 'The user writes SQL against a Doris log table and reads the rows it returns.' },
-};
-const LOG_SEARCH_ACTION: QueryDockAction = {
-  name: 'set_log_search',
-  argument: 'query',
-  language: 'Doris log search expression (the inverted-index syntax, e.g. level:error AND msg:"timeout")',
-  followUpExample: '只看 ERROR 级别',
-  settings: [
-    { name: 'database', description: 'The database to search. Omit to keep the one the sidebar has.' },
-    { name: 'table', description: 'The table to search. Omit to keep the one the sidebar has.' },
-    { name: 'time_field', description: "The table's time column. Omit to keep the one the sidebar has." },
-  ],
-  page: { title: 'Log explorer', summary: 'The user filters a Doris log table with a search expression and reads the matching logs.' },
-};
 
 interface Props {
   tabKey: string;
@@ -62,7 +32,6 @@ interface Props {
 
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-  const { t: tAi } = useTranslation(AI_CHAT_NS);
   const { darkMode } = useContext(CommonStateContext);
   const { tabKey, disabled, defaultFormValuesControl, renderCommonSettings } = props;
   const form = Form.useFormInstance();
@@ -74,52 +43,8 @@ export default function index(props: Props) {
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
   const syntax = Form.useWatch(['query', 'syntax']);
-  const [aiOpen, setAiOpen] = useState(false);
-  const queryBoxRef = useRef<HTMLDivElement>(null);
-  const queryButtonRef = useRef<HTMLButtonElement>(null);
-  const undoRef = useRef<() => void>();
-  const inSQL = () => form.getFieldValue(['query', 'syntax']) === 'sql';
-  // The dock's control: SQL mode delivers a statement, search mode a filter
-  // plus the table it runs against; the sidebar's choice stays unless the
-  // action names another.
-  const formControl = useFormQueryControl({
-    form,
-    datasourceValue,
-    paths: () => ({
-      statement: inSQL() ? ['query', 'sql'] : ['query', 'query'],
-      range: ['query', 'range'],
-      settings: { database: ['query', 'database'], table: ['query', 'table'], time_field: ['query', 'time_field'] },
-      extra: { syntax: ['query', 'syntax'] },
-    }),
-    // Rows are the honest view of a statement; the time series view needs
-    // value columns the assistant never chose.
-    fillExtras: () => (inSQL() ? { query: { sqlVizType: 'table' } } : undefined),
-    guard: (statement, values) => {
-      const query = (values.query ?? {}) as { syntax?: string; database?: string; table?: string; time_field?: string };
-      // The page refuses to run an unbounded scan; say so instead of popping its modal.
-      if (query.syntax === 'sql' && !statement.includes('$__time') && !statement.includes('$__unixEpoch')) {
-        return 'The statement must bound time with $__timeFilter(<time column>) or $__unixEpochFilter(<time column>)';
-      }
-      if (query.syntax !== 'sql' && !(query.database && query.table && query.time_field)) {
-        return 'Search mode needs a database, a table and a time column: pass them with the expression';
-      }
-      return undefined;
-    },
-    validate: () => form.validateFields(),
-    commit: (values) => commitQuery(values),
-    refresh: () => form.setFieldsValue({ refreshFlag: _.uniqueId('refreshFlag_') }),
-    queryInput: () => queryBoxRef.current,
-    queryButton: () => queryButtonRef.current,
-    onInvalidate: () => undoRef.current?.(),
-  });
-  const aiActions = useQueryDockActions({
-    enabled: IS_ENT && aiOpen,
-    datasourceValue,
-    getControl: formControl.getControl,
-    action: syntax === 'sql' ? LOG_SQL_ACTION : LOG_SEARCH_ACTION,
-  });
-  undoRef.current = aiActions.invalidateUndo;
-  const invalidate = formControl.invalidate;
+  const ai = useDorisAiDock({ form, datasourceValue, syntax, indexData, commit: (values) => commitQuery(values) });
+  const invalidate = ai.invalidate;
 
   // What a validated query does once it may run: remember it, then refresh.
   function commitQuery(values) {
@@ -167,66 +92,6 @@ export default function index(props: Props) {
       });
     }, 0);
   };
-
-  // What the dock sends with each message: the data source, the statement in
-  // the box, the window, and the table the sidebar has picked.
-  const readAiPageFrom = useCallback(() => {
-    const snapshot = formControl.getControl()?.snapshot();
-    const range = snapshot?.range?.start && snapshot.range.end ? timeRangeUnix(snapshot.range) : undefined;
-    const query = form.getFieldValue('query') || {};
-    return buildPageFrom({
-      param: {
-        datasource_type: 'doris',
-        datasource_id: datasourceValue,
-        query: snapshot?.query?.trim() || undefined,
-        start: range ? String(range.start) : undefined,
-        end: range ? String(range.end) : undefined,
-        query_parameters: _.pickBy(
-          {
-            syntax: query.syntax,
-            database: query.database,
-            table: query.table,
-            time_field: query.time_field,
-            // The sidebar's loaded columns, so the assistant need not probe the
-            // table it is looking at; capped, with the true count beside it.
-            fields: indexData
-              .slice(0, 100)
-              .map((field) => `${field.field}:${field.type}`)
-              .join(', '),
-            fields_total: indexData.length ? String(indexData.length) : '',
-          },
-          (value) => typeof value === 'string' && value !== '',
-        ),
-      },
-    });
-  }, [datasourceValue, indexData, formControl]);
-  // SQL mode suggests statements, search mode suggests filters.
-  const aiPromptList = useMemo(
-    () =>
-      syntax === 'sql'
-        ? ['errors', 'per_minute', 'group'].map((topic) => ({ label: tAi(`dock.prompt_log_${topic}`), value: tAi(`dock.prompt_log_${topic}_query`) }))
-        : ['errors', 'service', 'timeout'].map((topic) => ({ label: tAi(`dock.prompt_search_${topic}`), value: tAi(`dock.prompt_search_${topic}_query`) })),
-    [tAi, syntax],
-  );
-
-  const dock = IS_ENT ? (
-    <AiQueryDock
-      open={aiOpen}
-      pageFrom={readAiPageFrom}
-      progress={aiActions.progress}
-      prepareTurn={aiActions.prepareTurn}
-      canUndo={aiActions.canUndo}
-      onUndo={aiActions.undo}
-      promptList={aiPromptList}
-      resultNoun='rows'
-      placeholder={tAi('dock.placeholder_first_sql')}
-      onNewConversation={aiActions.reset}
-      onClose={() => {
-        aiActions.cancel();
-        setAiOpen(false);
-      }}
-    />
-  ) : undefined;
 
   const handleSetStackByField = (index?: string) => {
     form.setFieldsValue({
@@ -394,23 +259,13 @@ export default function index(props: Props) {
               setStackByField={handleSetStackByField}
               defaultSearchField={defaultSearchField}
               setDefaultSearchField={handleSetDefaultSearchField}
-              queryExtra={
-                IS_ENT ? (
-                  <AiQueryDockTrigger
-                    open={aiOpen}
-                    onClick={() => {
-                      if (aiOpen) aiActions.cancel();
-                      setAiOpen((previous) => !previous);
-                    }}
-                  />
-                ) : undefined
-              }
-              noticeBanner={dock}
-              queryBoxRef={queryBoxRef}
-              queryButtonRef={queryButtonRef}
-              queryRequest={formControl.queryRequest}
-              dockOpen={aiOpen}
-              onQueryEdit={formControl.onUserEdit}
+              queryExtra={ai.trigger}
+              noticeBanner={ai.dock}
+              queryBoxRef={ai.queryBoxRef}
+              queryButtonRef={ai.queryButtonRef}
+              queryRequest={ai.queryRequest}
+              keepEditorInFlow={ai.open}
+              onQueryEdit={ai.onQueryEdit}
             />
           </div>
         </div>

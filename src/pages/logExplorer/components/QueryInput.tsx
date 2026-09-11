@@ -40,8 +40,9 @@ export default function QueryInput(props: Props) {
       key={!props.value ? props.placeholder : undefined} // reset when placeholder changes
       ref={props.inputRef}
       className={classNames('doris-log-explorer-query-input', {
-        'pl-[32px]': props.enableAddonBefore !== props.leadingExtra,
-        'pl-[60px]': props.enableAddonBefore && props.leadingExtra,
+        // Booleans compared, so a caller that passes enableAddonBefore={false} and no leadingExtra keeps its padding.
+        'pl-[32px]': !!props.enableAddonBefore !== !!props.leadingExtra,
+        'pl-[60px]': !!props.enableAddonBefore && !!props.leadingExtra,
       })}
       autoSize={{ minRows: 1, maxRows: 10 }}
       disabled={props.disabled}
