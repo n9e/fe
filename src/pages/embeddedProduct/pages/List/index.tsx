@@ -66,7 +66,7 @@ export default function Index() {
         width: 40,
         className: 'embedded-product-sort-col',
         render: () => {
-          return <DragHandle disabled={saving || pendingIds.size > 0} />;
+          return <DragHandle disabled={saving} />;
         },
       },
       {
@@ -202,13 +202,11 @@ export default function Index() {
                   Modal.confirm({
                     title: t('common:confirm.delete'),
                     onOk: () => {
-                      return runMutation([record.id], () =>
-                        deleteEmbeddedProducts(String(record.id)).then(() => {
-                          message.success(t('common:success.delete'));
-                          fetchData();
-                          eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
-                        }),
-                      );
+                      return deleteEmbeddedProducts(String(record.id)).then(() => {
+                        message.success(t('common:success.delete'));
+                        fetchData();
+                        eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                      });
                     },
                   });
                 },
@@ -234,21 +232,17 @@ export default function Index() {
                     helperClass='n9e-embedded-products-row-dragging'
                     hideSortableGhost
                     onSortEnd={async ({ oldIndex, newIndex }) => {
-                      if (saving || pendingIds.size > 0 || oldIndex === newIndex) return;
+                      if (saving || oldIndex === newIndex) return;
                       const oldData = data;
                       const newData = arrayMoveImmutable(oldData, oldIndex, newIndex);
                       setData(newData);
                       setSaving(true);
                       try {
-                        await runMutation(
-                          newData.map((item) => item.id),
-                          () =>
-                            putEmbeddedProductsWeights(
-                              newData.map((item, idx) => ({
-                                id: item.id,
-                                weight: idx,
-                              })),
-                            ),
+                        await putEmbeddedProductsWeights(
+                          newData.map((item, idx) => ({
+                            id: item.id,
+                            weight: idx,
+                          })),
                         );
                         message.success(t('common:success.save'));
                         fetchData();

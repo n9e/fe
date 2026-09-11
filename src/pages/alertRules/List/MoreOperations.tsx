@@ -107,13 +107,11 @@ export default function MoreOperations(props: MoreOperationsProps) {
                     Modal.confirm({
                       title: t('batch.delete_confirm'),
                       onOk: () => {
-                        return runMutation(selectRowKeys as number[], () =>
-                          deleteStrategy(selectRowKeys as number[], bgid!).then(() => {
-                            message.success(t('batch.delete_success'));
-                            clearSelection?.();
-                            getAlertRules();
-                          }),
-                        );
+                        deleteStrategy(selectRowKeys as number[], bgid!).then(() => {
+                          message.success(t('batch.delete_success'));
+                          clearSelection?.();
+                          getAlertRules();
+                        });
                       },
                     });
                   } else {

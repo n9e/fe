@@ -509,16 +509,14 @@ const Subscribe = (props: Props) => {
                         title: t('common:confirm.delete'),
                         icon: <ExclamationCircleOutlined />,
                         onOk: () => {
-                          return runMutation([record.id], () =>
-                            deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
-                              refreshList();
-                              if (res.err) {
-                                message.success(res.err);
-                              } else {
-                                message.success(t('common:success.delete'));
-                              }
-                            }),
-                          );
+                          deleteSubscribes({ ids: [record.id] }, record.group_id).then((res) => {
+                            refreshList();
+                            if (res.err) {
+                              message.success(res.err);
+                            } else {
+                              message.success(t('common:success.delete'));
+                            }
+                          });
                         },
                         onCancel() {},
                       });

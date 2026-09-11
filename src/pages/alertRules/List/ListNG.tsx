@@ -601,12 +601,10 @@ export default function AlertRules(props: Props) {
                         Modal.confirm({
                           title: t('common:confirm.delete'),
                           onOk: () => {
-                            return runMutation([record.id], () =>
-                              deleteStrategy([record.id], record.group_id).then(() => {
-                                message.success(t('common:success.delete'));
-                                fetchData();
-                              }),
-                            );
+                            deleteStrategy([record.id], record.group_id).then(() => {
+                              message.success(t('common:success.delete'));
+                              fetchData();
+                            });
                           },
                           onCancel() {},
                         });
