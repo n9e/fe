@@ -214,7 +214,7 @@ export default function index(props: Props) {
               : undefined,
           ]) as any,
         })}
-        actionColumn={{ title: t('common:table.operations'), width: 64 }}
+        actionColumn={{ title: t('common:table.operations'), width: 100 }}
       />
     </>
   );
