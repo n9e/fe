@@ -69,12 +69,12 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                         {...restField}
                         name={[field.name, 'query', 'query']}
                         validateTrigger={['onBlur']}
-                          rules={[
-                            {
-                              required: true,
-                              message: t('db_iotdb:query.query_msg'),
-                            },
-                          ]}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('db_iotdb:query.query_msg'),
+                          },
+                        ]}
                         style={{ flex: 1 }}
                       >
                         <Input />
@@ -103,6 +103,13 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                           }}
                         />
                       </div>
+                    </Col>
+                  </Row>
+                  <Row gutter={10}>
+                    <Col flex='auto'>
+                      <Form.Item label='Database' {...restField} name={[field.name, 'query', 'database']}>
+                        <Input placeholder='Optional; uses datasource default database' />
+                      </Form.Item>
                     </Col>
                   </Row>
                   <Row gutter={10}>
