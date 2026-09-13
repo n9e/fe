@@ -11,7 +11,7 @@ const ru_RU = {
   name_placeholder: 'Введите название правила',
   group_id_placeholder: 'Выберите бизнес-группу',
   note_placeholder: 'Укажите рекомендации по обработке, ссылки на документацию или информацию о дежурстве',
-  search_placeholder: 'Поиск по названию, тегам или запросу',
+  search_placeholder: 'Название, теги или запрос',
   status_triggered: 'Сработало',
   status_normal: 'Нет срабатываний',
   notify_rule_not_found: 'Соответствующее правило уведомления не найдено',

@@ -12,7 +12,7 @@ const pt_BR = {
   "name_placeholder": "Informe o nome da regra",
   "group_id_placeholder": "Selecione o grupo de negócio",
   "note_placeholder": "Use este campo para orientações de resposta ao alerta, links de documentação, escala de plantão e outras informações complementares",
-  "search_placeholder": "Buscar por nome, rótulo ou consulta",
+  "search_placeholder": "Nome, rótulo ou consulta",
   "status_triggered": "Em alerta",
   "status_normal": "Sem alertas",
   "notify_rule_not_found": "Nenhuma regra de notificação correspondente foi encontrada",

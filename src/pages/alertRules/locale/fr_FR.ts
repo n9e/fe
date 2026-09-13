@@ -12,7 +12,7 @@ const fr_FR = {
   "name_placeholder": "Saisissez le nom de la règle",
   "group_id_placeholder": "Sélectionnez un groupe métier",
   "note_placeholder": "Notez ici les consignes de traitement, les liens vers la documentation, le planning d'astreinte et toute autre information utile",
-  "search_placeholder": "Rechercher par nom, étiquette ou requête",
+  "search_placeholder": "Nom, étiquette ou requête",
   "status_triggered": "En alerte",
   "status_normal": "Aucune alerte",
   "notify_rule_not_found": "Aucune règle de notification correspondante",

@@ -42,8 +42,8 @@ export function matchTriggerType(rule: Pick<AlertRuleType<any>, 'rule_config'> |
   }
 }
 
-// 查询语句所在字段：prom_ql（Prometheus 普通模式、Loki）、query（Prometheus 高级模式及多数数据源）、sql（SQL 类数据源）、filter（Elasticsearch 的 Lucene 查询条件）
-const QUERY_TEXT_KEYS = ['prom_ql', 'query', 'sql', 'filter'];
+// 查询语句所在字段：与规则摘要（FormNG/components/Sidebar/ruleConditionSummary.ts）的 QUERY_TEXT_KEYS 一致，另加 Elasticsearch/OpenSearch 的 filter
+const QUERY_TEXT_KEYS = ['prom_ql', 'query', 'sql', 'promql', 'query_string', 'expression', 'filter'];
 
 // 判断告警规则的名称、附加标签或查询语句是否包含搜索词（不区分大小写的子串匹配）
 export function matchSearch(rule: Pick<AlertRuleType<any>, 'name' | 'append_tags' | 'rule_config'>, search?: string): boolean {

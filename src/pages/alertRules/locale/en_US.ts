@@ -11,7 +11,7 @@ const en_US = {
   name_placeholder: 'Please enter rule name',
   group_id_placeholder: 'Please select business group',
   note_placeholder: 'Provide handling suggestions, related docs, or on-call info when alert triggers',
-  search_placeholder: 'Search by name, tags or query',
+  search_placeholder: 'Name, tags or query',
   status_triggered: 'Triggered',
   status_normal: 'Normal',
   notify_rule_not_found: 'Corresponding notification rule not found',

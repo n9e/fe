@@ -453,7 +453,7 @@ export default function AlertRules(props: Props) {
           </Select>
           <Input
             placeholder={t('search_placeholder')}
-            style={{ width: 200 }}
+            style={{ width: 220 }}
             value={queryValue}
             onChange={(e) => {
               setQueryValue(e.target.value);
@@ -536,7 +536,8 @@ export default function AlertRules(props: Props) {
         }}
         loading={loading}
         dataSource={filterData()}
-        locale={emptyGuide ? { emptyText: emptyGuide } : undefined}
+        // 创建引导只在确实没有规则时展示；筛选无结果时使用默认空状态，避免误导为「尚未创建规则」
+        locale={emptyGuide && _.isEmpty(data) ? { emptyText: emptyGuide } : undefined}
         rowSelection={
           showRowSelection
             ? {

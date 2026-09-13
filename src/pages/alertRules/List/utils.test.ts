@@ -97,6 +97,12 @@ describe('matchSearch', () => {
     expect(matchSearch(target, 'status:500')).toBe(true);
   });
 
+  it('命中其他数据源统一查询字段 query_string、promql、expression 中的片段', () => {
+    expect(matchSearch(searchRule({ queries: [{ query_string: 'fields @message | filter qa_es_unique' }] }), 'qa_es_unique')).toBe(true);
+    expect(matchSearch(searchRule({ queries: [{ query_type: 'promql', promql: 'sum(gcm_request_count)' }] }), 'gcm_request_count')).toBe(true);
+    expect(matchSearch(searchRule({ queries: [{ expression: 'SUM(METRICS())' }] }), 'metrics()')).toBe(true);
+  });
+
   it('没有查询语句的规则只按名称和标签匹配', () => {
     expect(matchSearch(searchRule(), 'node_')).toBe(false);
     expect(matchSearch(searchRule({}), 'node_')).toBe(false);
