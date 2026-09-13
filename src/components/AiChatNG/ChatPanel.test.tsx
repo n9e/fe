@@ -106,7 +106,7 @@ describe('ChatPanel 页面动作', () => {
 
     // The page's actions ride along with the message.
     await waitFor(() =>
-      expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ manifest: [{ name: 'set_metric_query', description: 'fill', inputSchema: {} }] })),
+      expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ page_actions: [{ name: 'set_metric_query', description: 'fill', inputSchema: {} }] })),
     );
     await waitFor(() => expect(execute).toHaveBeenCalledWith({ callId: 'call-7', name: 'set_metric_query', args: { promql: 'up' } }));
     expect(execute).toHaveBeenCalledTimes(1);
