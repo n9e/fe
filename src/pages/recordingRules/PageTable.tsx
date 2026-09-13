@@ -323,14 +323,15 @@ const PageTable: React.FC<Props> = ({ gids, groupSwitchCount = 0 }) => {
   }, [selectRowKeys, t, businessGroup.id]);
 
   const editModalFinish = async (isOk, fieldsData?) => {
-    if (isOk && businessGroup.id) {
+    const groupId = businessGroup.id;
+    if (isOk && groupId) {
       return runMutation(selectRowKeys, async () => {
         const res = await updateRecordingRules(
           {
             ids: selectRowKeys,
             fields: fieldsData,
           },
-          businessGroup.id,
+          groupId,
         );
         if (!res.err) {
           message.success(t('common:success.edit'));
