@@ -2,7 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button, Input, Space, Select, Dropdown, Menu, Table, Divider, Tooltip, Modal, message } from 'antd';
-import { ReloadOutlined, SearchOutlined, DownOutlined, QuestionCircleOutlined, CopyOutlined, ApartmentOutlined, DownloadOutlined, AppstoreAddOutlined } from '@ant-design/icons';
+import {
+  ReloadOutlined,
+  SearchOutlined,
+  DownOutlined,
+  QuestionCircleOutlined,
+  CopyOutlined,
+  DownloadOutlined,
+  AppstoreAddOutlined,
+  DeploymentUnitOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 import semver from 'semver';
 import { useAntdTable } from 'ahooks';
@@ -25,7 +35,10 @@ import TargetMetaDrawer from '@/pages/targets/TargetMetaDrawer';
 import { timeFormatter } from '@/pages/dashboard/Renderer/utils/valueFormatter';
 
 // @ts-ignore
-import CollectsDrawer from 'plus:/pages/collects/CollectsDrawer';
+import CollectsPanel from 'plus:/pages/collects/CollectsPanel';
+import HostFilters from './HostFilters';
+// @ts-ignore — 主机拓扑页签（plus parcel；开源构建下解析成空组件）
+import { HostTopoDrawerTab } from 'plus:/parcels/Targets';
 // @ts-ignore
 import UpgradeAgent from 'plus:/parcels/Targets/UpgradeAgent';
 // @ts-ignore
@@ -115,6 +128,9 @@ interface Props {
   editable?: boolean;
   explorable?: boolean;
   gids?: string;
+  /** 筛选条件由外层持有（与拓扑视图共用）。不传则组件自己管。 */
+  filters?: Record<string, any>;
+  setFilters?: (next: Record<string, any>) => void;
   selectedRows: Item[];
   setSelectedRows: (selectedRowKeys: Item[]) => void;
   refreshFlag?: string;
@@ -142,18 +158,17 @@ export default function List(props: Props) {
   const { allCollapseNode, editable = true, explorable = true, gids, selectedRows, setSelectedRows, refreshFlag, setRefreshFlag, setOperateType, aiTaskMode = false } = props;
   const selectedIdents = _.map(selectedRows, 'ident');
 
-  const [collectsDrawerVisible, setCollectsDrawerVisible] = useState(false);
-  const [collectsDrawerIdent, setCollectsDrawerIdent] = useState('');
   const [metaDrawerOpen, setMetaDrawerOpen] = useState(false);
   const [metaDrawerIdent, setMetaDrawerIdent] = useState('');
+  // 从哪个入口进来就落在哪个页签：整行点击看概览，两个图标各自直达拓扑 / 采集配置
+  const [metaDrawerTab, setMetaDrawerTab] = useState('meta');
   const [upgradeTargetIdent, setUpgradeTargetIdent] = useState<string | null>(null);
   // null 表示后端不支持一键安装（老版本 / 企业版），此时不展示入口，避免死按钮
   const [installMeta, setInstallMeta] = useState<CategrafInstallMeta | null>(null);
   const [installVisible, setInstallVisible] = useState(false);
   const [collectVisible, setCollectVisible] = useState(false);
 
-  const [searchValue, setSearchValue] = useState('');
-  const [params, setParams] = useState<{
+  const [innerParams, setInnerParams] = useState<{
     limit: number;
     p: number;
     gids?: string;
@@ -166,6 +181,15 @@ export default function List(props: Props) {
     limit: pagination.pageSize,
     p: 1,
   });
+
+  // 筛选条件可以由外层持有：机器列表和拓扑视图是同一批机器的两种看法，
+  // 切换视图时筛选不该丢。外层不传就自己管，AI 任务页那类复用方不用改。
+  const params = props.filters ? { ...innerParams, ...props.filters } : innerParams;
+  const setParams = (updater: any) => {
+    const next = typeof updater === 'function' ? updater(params) : updater;
+    if (props.setFilters) props.setFilters(_.omit(next, ['limit', 'p']));
+    setInnerParams((prev) => ({ ...prev, ...next }));
+  };
 
   const featchData = ({ current, pageSize }: { current: number; pageSize: number }): Promise<any> => {
     return getList({
@@ -296,84 +320,7 @@ export default function List(props: Props) {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
               }}
             />
-            <Input
-              // 唯一可伸缩的控件：宽屏顶到 300px，窄屏最多收到 140px，把余量让给筛选控件和右侧动作区
-              className='min-w-[140px] max-w-[300px] flex-1'
-              prefix={<SearchOutlined />}
-              placeholder={t('search_placeholder')}
-              allowClear
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onPressEnter={() => {
-                setParams((p) => ({ ...p, query: searchValue }));
-              }}
-              onBlur={() => {
-                setParams((p) => ({ ...p, query: searchValue }));
-              }}
-            />
-            {!aiTaskMode && (
-              <HostsSelect
-                value={params.hosts}
-                onChange={(newHosts) => {
-                  setParams((p) => ({ ...p, hosts: newHosts }));
-                }}
-              />
-            )}
-            <Select
-              allowClear
-              placeholder={t('filterDowntime')}
-              style={{ minWidth: 120 }}
-              dropdownMatchSelectWidth={false}
-              options={[
-                {
-                  label: t('filterDowntimeNegative'),
-                  options: _.map(downtimeOptions, (item) => {
-                    return {
-                      label: t('filterDowntimeNegativeMin', { count: item }),
-                      value: -(item * 60),
-                    };
-                  }),
-                },
-                {
-                  label: t('filterDowntimePositive'),
-                  options: _.map(downtimeOptions, (item) => {
-                    return {
-                      label: t('filterDowntimePositiveMin', { count: item }),
-                      value: item * 60,
-                    };
-                  }),
-                },
-              ]}
-              value={params.downtime}
-              onChange={(val) => {
-                setParams((p) => ({ ...p, downtime: val }));
-              }}
-            />
-            <VersionSelect
-              value={params.agent_versions}
-              onChange={(val) => {
-                setParams((p) => ({ ...p, agent_versions: val }));
-              }}
-            />
-            {aiTaskMode && (
-              <Select
-                style={{ minWidth: 120 }}
-                allowClear
-                showArrow
-                mode='multiple'
-                placeholder={t('auth_level')}
-                dropdownMatchSelectWidth={false}
-                options={[
-                  { label: t('auth_level_1'), value: 1 },
-                  { label: t('auth_level_2'), value: 2 },
-                  { label: t('auth_level_3'), value: 3 },
-                ]}
-                value={params.auth_level ? params.auth_level.split(',').map(Number) : undefined}
-                onChange={(val: number[]) => {
-                  setParams((p) => ({ ...p, auth_level: val.length > 0 ? val.join(',') : undefined }));
-                }}
-              />
-            )}
+            <HostFilters value={params} onChange={(next) => setParams((p) => ({ ...p, ...next }))} aiTaskMode={aiTaskMode} />
           </div>
           <Space wrap className='ml-auto'>
             {/* 接入类动作与「批量操作」同属操作区，放右侧，左侧留给筛选控件 */}
@@ -474,6 +421,7 @@ export default function List(props: Props) {
                 return;
               }
               setMetaDrawerIdent(record.ident);
+              setMetaDrawerTab('meta');
               setMetaDrawerOpen(true);
             },
           })}
@@ -584,20 +532,43 @@ export default function List(props: Props) {
                               {ident}
                             </span>
                           </Tooltip>
+                          {/* 两个图标各自直达详情抽屉的一个页签，顺序跟着页签走：
+                              概览 · 拓扑 · 采集配置，所以拓扑在左、采集配置在右。
+                              常驻而不是 hover 才显形：这是「从机器出发看/配采集」的入口，
+                              藏在 hover 里新用户不可能找到。这一列已经在算 identIpWidth 排版，
+                              所以只放开可见性、不加文字，免得把这列撑变形 */}
                           {IS_PLUS && (
-                            // 常驻而不是 hover 才显形：这是「从机器出发看/配采集」的入口，
-                            // 藏在 hover 里新用户不可能找到。这一列已经在算 identIpWidth 排版，
-                            // 所以只放开可见性、不加文字，免得把这列撑变形
+                            // 连通图用 DeploymentUnit（中心节点连着几个卫星节点），不用 ShareAlt ——
+                            // 后者在本仓库各处都是「分享」，也不用 Apartment，那是层级树，
+                            // 而且在数据探索里已经是「下钻」的意思
+                            <Tooltip title={t('host_topology')}>
+                              <Button
+                                className='ml-2'
+                                size='small'
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMetaDrawerIdent(ident);
+                                  setMetaDrawerTab('topology');
+                                  setMetaDrawerOpen(true);
+                                }}
+                                icon={<DeploymentUnitOutlined />}
+                              />
+                            </Tooltip>
+                          )}
+                          {IS_PLUS && (
+                            // 齿轮与「采集规则」页自己的页面图标一致，也与拓扑工具条上那个
+                            // 「配置采集」按钮一致——同一件事在三处用同一个字形
                             <Tooltip title={t('view_collects')}>
                               <Button
                                 className='ml-2'
                                 size='small'
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setCollectsDrawerVisible(true);
-                                  setCollectsDrawerIdent(ident);
+                                  setMetaDrawerIdent(ident);
+                                  setMetaDrawerTab('collects');
+                                  setMetaDrawerOpen(true);
                                 }}
-                                icon={<ApartmentOutlined />}
+                                icon={<SettingOutlined />}
                               />
                             </Tooltip>
                           )}
@@ -780,8 +751,8 @@ export default function List(props: Props) {
                           onTagClick={(tag) => {
                             if (!_.includes(params.query, tag)) {
                               const val = params.query ? `${params.query.trim()} ${tag}` : tag;
+                              // 只改 params：搜索框的显示值由 HostFilters 跟着 value.query 同步
                               setParams((p) => ({ ...p, query: val }));
-                              setSearchValue(val);
                             }
                           }}
                         />
@@ -813,8 +784,8 @@ export default function List(props: Props) {
                           onTagClick={(tag) => {
                             if (!_.includes(params.query, tag)) {
                               const val = params.query ? `${params.query.trim()} ${tag}` : tag;
+                              // 只改 params：搜索框的显示值由 HostFilters 跟着 value.query 同步
                               setParams((p) => ({ ...p, query: val }));
-                              setSearchValue(val);
                             }
                           }}
                         />
@@ -1033,29 +1004,32 @@ export default function List(props: Props) {
         ident={metaDrawerIdent}
         drawerOnly
         drawerOpen={metaDrawerOpen}
+        defaultActiveTab={metaDrawerTab}
         onDrawerOpenChange={(open) => {
           setMetaDrawerOpen(open);
           if (!open) setMetaDrawerIdent('');
         }}
-        extraActions={
-          IS_PLUS && metaDrawerIdent ? (
-            // 元信息抽屉本身是个死胡同，至少让「这台机器配了什么采集 / 要不要配一个」有条出路
-            <Button
-              size='small'
-              type='link'
-              className='p-0'
-              icon={<ApartmentOutlined />}
-              onClick={() => {
-                setCollectsDrawerVisible(true);
-                setCollectsDrawerIdent(metaDrawerIdent);
-              }}
-            >
-              {t('view_collects')}
-            </Button>
-          ) : undefined
+        extraTabs={
+          // 概览 / 拓扑 / 采集配置：一台机器的三件事各占一个页签。
+          // 「在跟谁说话」和「配了什么采集」过去一个在别的抽屉里、一个是死胡同里的链接，
+          // 现在收在同一个抽屉里，切页签就能来回看。
+          // 开源构建下这两个组件都解析成空，所以那边给空数组，抽屉照旧不套 Tabs
+          IS_PLUS && metaDrawerIdent
+            ? [
+                {
+                  key: 'topology',
+                  label: t('host_topology'),
+                  children: <HostTopoDrawerTab ident={metaDrawerIdent} height='calc(100vh - 220px)' />,
+                },
+                {
+                  key: 'collects',
+                  label: t('collects_tab'),
+                  children: <CollectsPanel ident={metaDrawerIdent} />,
+                },
+              ]
+            : []
         }
       />
-      <CollectsDrawer visible={collectsDrawerVisible} setVisible={setCollectsDrawerVisible} ident={collectsDrawerIdent} />
       {installVisible && installMeta && (
         <InstallCategraf
           meta={installMeta}

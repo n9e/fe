@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Drawer, Tag } from 'antd';
+import { Drawer, Tabs, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, Space } from 'antd';
 import { DownOutlined, RightOutlined, CopyOutlined } from '@ant-design/icons';
@@ -22,6 +22,20 @@ interface IProps {
    * 采集配置」，是因为那个抽屉在 plus 里，本组件不该知道它的存在。
    */
   extraActions?: React.ReactNode;
+  /**
+   * 额外的页签。不传时抽屉与过去渲染得一模一样（不套 Tabs），
+   * 传了才把现有的元信息收成「概览」页签、其余接在后面。
+   *
+   * 与 extraActions 同一个道理：具体有哪些页签由调用方决定。机器列表能给
+   * 「这台机器的拓扑」，是因为那个视图在 plus 里，本组件不该知道它的存在。
+   */
+  extraTabs?: { key: string; label: React.ReactNode; children: React.ReactNode }[];
+  /**
+   * 打开时落在哪个页签上（'meta' 是概览，其余取 extraTabs 的 key）。
+   * 机器列表那几个图标各自对应一个页签：点「拓扑」图标该直接看到拓扑，
+   * 而不是打开抽屉后再找一次。给的 key 不存在时回落到概览，不留白屏。
+   */
+  defaultActiveTab?: string;
 }
 
 function bytesToSize(bytes, precision) {
@@ -181,12 +195,21 @@ function Group({ name, data }) {
 
 export default function TargetMetaDrawer(props: IProps) {
   const { t } = useTranslation('targets');
-  const { ident, targetNode, drawerOnly, drawerOpen, onDrawerOpenChange, extraActions } = props;
+  const { ident, targetNode, drawerOnly, drawerOpen, onDrawerOpenChange, extraActions, extraTabs, defaultActiveTab } = props;
   const [visible, setVisible] = useState(false);
   const groupsName = ['platform', 'cpu', 'memory', 'network', 'filesystem'];
   const [information, setInformation] = useState({});
+  const [activeTab, setActiveTab] = useState('meta');
 
   const drawerVisible = drawerOnly ? !!drawerOpen : visible;
+  // 页签是受控的：每次打开都回到调用方指定的那个，用户在抽屉里手动切过的不算数。
+  // 不靠 defaultActiveKey + destroyOnClose，那是把正确性押在别处的一个属性上
+  const tabKeys = ['meta', ..._.map(extraTabs, 'key')];
+  const currentTab = _.includes(tabKeys, activeTab) ? activeTab : 'meta';
+
+  useEffect(() => {
+    if (drawerVisible) setActiveTab(defaultActiveTab || 'meta');
+  }, [drawerVisible, defaultActiveTab]);
 
   useEffect(() => {
     if (!drawerOnly || !drawerOpen || !ident) return;
@@ -210,6 +233,10 @@ export default function TargetMetaDrawer(props: IProps) {
     });
   };
 
+  // 元信息本体。抽成变量是为了让它既能直接渲染（没有额外页签时），
+  // 又能作为「概览」页签的内容，两条路径共用同一段。
+  const meta = _.map(groupsName, (groupName) => <Group key={groupName} name={groupName} data={information[groupName]} />);
+
   return (
     <>
       {!drawerOnly && (
@@ -219,9 +246,24 @@ export default function TargetMetaDrawer(props: IProps) {
       )}
       <Drawer destroyOnClose title={t('meta_title')} width={800} placement='right' onClose={handleClose} visible={drawerVisible} className='n9e-antd-drawer'>
         {extraActions && <div className='mb-3 flex flex-wrap items-center gap-3'>{extraActions}</div>}
-        {_.map(groupsName, (groupName) => {
-          return <Group key={groupName} name={groupName} data={information[groupName]} />;
-        })}
+        {/* 没有额外页签时不套 Tabs：抽屉要和过去长得一模一样，开源构建下
+            plus 的页签解析成空，走的就是这条分支。
+            用 TabPane 子元素而不是 items：本仓库的 antd 版本还不支持 items，
+            网设详情抽屉也是这个写法 */}
+        {_.isEmpty(extraTabs) ? (
+          meta
+        ) : (
+          <Tabs destroyInactiveTabPane activeKey={currentTab} onChange={setActiveTab}>
+            <Tabs.TabPane key='meta' tab={t('meta_tab_overview')}>
+              {meta}
+            </Tabs.TabPane>
+            {_.map(extraTabs, (tab) => (
+              <Tabs.TabPane key={tab.key} tab={tab.label}>
+                {tab.children}
+              </Tabs.TabPane>
+            ))}
+          </Tabs>
+        )}
       </Drawer>
     </>
   );

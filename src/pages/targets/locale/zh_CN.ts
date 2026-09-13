@@ -89,6 +89,7 @@ const zh_CN = {
   },
   meta_tip: '查看元信息',
   meta_title: '元信息',
+  meta_tab_overview: '概览',
   meta_desc_key: '元信息名称',
   meta_desc_value: '元信息值',
   meta_value_click_to_copy: '点击复制',

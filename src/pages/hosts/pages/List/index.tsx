@@ -1,21 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'lodash';
 import { Button, Tooltip } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import PageLayout from '@/components/pageLayout';
 import BusinessGroup2, { getCleanBusinessGroupIds } from '@/components/BusinessGroup';
 import { getTargetsCompatibleGids } from '@/components/BusinessGroup/presetFilters';
-import { IS_ENT } from '@/utils/constant';
+import { IS_ENT, IS_PLUS } from '@/utils/constant';
 
 // @ts-ignore — ObsLoop HostEntry（srm-fe parcel；开源/plus 源仓不挂此依赖）
 import ObsLoopHostEntry from 'plus:/parcels/ObsLoop/HostEntry';
+
+// @ts-ignore — 主机拓扑（plus parcel；开源构建下解析成空组件）
+import { HostTopoViewSwitch, HostTopoGlobalGraph, HostTopoCenterSelect, HostTopoCollectSetup, readHostTopoViewMode } from 'plus:/parcels/Targets';
 
 import { NS, STATS_COLLAPSED_KEY } from '../../constants';
 import { Item, OperateType } from '../../types';
 import { PanelLeftCloseIcon, PanelRightCloseIcon } from './panelCloseIcon';
 import StatsCards from './StatsCards';
+import HostFilters, { HostFilterValues } from './HostFilters';
 import OperationModal from './OperationModal';
 import List from './List';
 
@@ -27,11 +33,70 @@ export default function index() {
   const [operateType, setOperateType] = useState<OperateType>(OperateType.None);
   const [selectedRows, setSelectedRows] = useState<Item[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>();
+  // 筛选条件提到这一层：列表和拓扑是同一批机器的两种看法，切视图时筛选不该丢
+  const [hostFilters, setHostFilters] = useState<HostFilterValues>({});
 
+  // 列表 / 拓扑两种视图。开源构建下 readHostTopoViewMode 解析成空，恒为 list
+  const [viewMode, setViewMode] = useState<'list' | 'topology'>(() => (IS_PLUS ? readHostTopoViewMode() : 'list'));
   const [statsCollapsed, setStatsCollapsed] = useState(window.localStorage.getItem(STATS_COLLAPSED_KEY) === 'true');
   const [allCollapsed, setAllCollapsed] = useState(false);
 
   const businessGroupRef = React.useRef<{ getCollapse: () => boolean; setCollapse: (collapse: boolean) => void }>(null);
+
+  /**
+   * 切到拓扑视图时自动收起上面那排统计卡片。
+   *
+   * 那几张图讲的是「这批机器的心跳、内存、CPU 分布」，是列表的注解；图上用不到，
+   * 而它们占掉的两百来像素正是画布最缺的。回到列表时还原用户自己的选择 ——
+   * 用 ref 记住进拓扑之前的值，而不是一律展开。
+   *
+   * 这里只改 state 不写 localStorage：那份持久化的是用户在列表视图下的偏好，
+   * 由 StatsCards 上那个把手负责，自动折叠不该把它覆盖掉。
+   */
+  const statsCollapsedBeforeTopoRef = React.useRef<boolean | null>(null);
+  useEffect(() => {
+    if (viewMode === 'topology') {
+      if (statsCollapsedBeforeTopoRef.current === null) {
+        statsCollapsedBeforeTopoRef.current = statsCollapsed;
+        setStatsCollapsed(true);
+      }
+    } else if (statsCollapsedBeforeTopoRef.current !== null) {
+      setStatsCollapsed(statsCollapsedBeforeTopoRef.current);
+      statsCollapsedBeforeTopoRef.current = null;
+    }
+    // 只跟着视图变，statsCollapsed 不进依赖：用户在拓扑里手动展开时不该被立刻收回去
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode]);
+
+  // 换视图的唯一入口：视图开关和「保存的视图」都走这里。
+  // 视图写进 URL 好分享，也让刷新之后还停在同一种看法上。
+  const history = useHistory();
+  const location = useLocation();
+  const changeViewMode = React.useCallback(
+    (mode: 'list' | 'topology') => {
+      setViewMode(mode);
+      const sp = new URLSearchParams(location.search);
+      if (mode === 'list') sp.delete('view');
+      else sp.set('view', mode);
+      history.replace({ pathname: location.pathname, search: sp.toString() });
+    },
+    [history, location.pathname, location.search],
+  );
+
+  // 拓扑图的筛选条件。必须 memo：它进了 GlobalGraph 的 effect 依赖，
+  // 写成内联字面量的话每次父组件 render 都是新对象，折叠统计栏这种
+  // 跟图毫无关系的状态变化也会触发一次重新取图。
+  const selectedIdentsKey = _.join(_.map(selectedRows, 'ident'), ',');
+  const hostFilter = React.useMemo(
+    () => ({
+      idents: selectedIdentsKey ? _.split(selectedIdentsKey, ',') : [],
+      query: hostFilters.query,
+      hosts: hostFilters.hosts,
+      downtime: hostFilters.downtime,
+      agent_versions: hostFilters.agent_versions,
+    }),
+    [selectedIdentsKey, hostFilters.query, hostFilters.hosts, hostFilters.downtime, hostFilters.agent_versions],
+  );
 
   useEffect(() => {
     // 如果 businessGroup 和 stats 都是折叠的则 allCollapsed 也设置成折叠
@@ -45,6 +110,24 @@ export default function index() {
   useEffect(() => {
     setGids(getTargetsCompatibleGids(businessGroup.ids));
   }, [businessGroup.ids]);
+
+  // 折叠与刷新两个视图都要：折叠是给主区域腾地方——图比表格更吃空间，
+  // 拓扑视图下反而更需要；刷新对一张实时的图更是必需（服务端还有 30 秒缓存，
+  // 所以刷新会带一个随机串把那层缓存也绕过去，见 hostTopoGraph 的缓存键）。
+  const allCollapseNode = (
+    <Tooltip title={allCollapsed ? t('expand_busi_and_overview') : t('collapse_busi_and_overview')}>
+      <Button
+        icon={allCollapsed ? <PanelRightCloseIcon /> : <PanelLeftCloseIcon />}
+        onClick={() => {
+          const newCollapsed = !allCollapsed;
+          setAllCollapsed(newCollapsed);
+          businessGroupRef.current?.setCollapse(newCollapsed);
+          setStatsCollapsed(newCollapsed);
+          window.localStorage.setItem(STATS_COLLAPSED_KEY, newCollapsed.toString());
+        }}
+      />
+    </Tooltip>
+  );
 
   return (
     <PageLayout
@@ -70,29 +153,54 @@ export default function index() {
             }}
           />
           <div className='w-full min-w-0 flex flex-col'>
+            {/* 视图开关摆在统计卡片上面：它决定下面整块内容是什么，
+                夹在卡片和筛选条中间的话，用户得先看完一屏图表才找得到「换一种看法」 */}
+            {IS_PLUS && (
+              <div className='mb-2'>
+                <HostTopoViewSwitch value={viewMode} onChange={changeViewMode} filters={hostFilters} onFiltersChange={setHostFilters} />
+              </div>
+            )}
             <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
-            <List
-              allCollapseNode={
-                <Tooltip title={allCollapsed ? t('expand_busi_and_overview') : t('collapse_busi_and_overview')}>
-                  <Button
-                    icon={allCollapsed ? <PanelRightCloseIcon /> : <PanelLeftCloseIcon />}
-                    onClick={() => {
-                      const newCollapsed = !allCollapsed;
-                      setAllCollapsed(newCollapsed);
-                      businessGroupRef.current?.setCollapse(newCollapsed);
-                      setStatsCollapsed(newCollapsed);
-                      window.localStorage.setItem(STATS_COLLAPSED_KEY, newCollapsed.toString());
-                    }}
-                  />
-                </Tooltip>
-              }
-              gids={gids}
-              selectedRows={selectedRows}
-              setSelectedRows={setSelectedRows}
-              refreshFlag={refreshFlag}
-              setRefreshFlag={setRefreshFlag}
-              setOperateType={setOperateType}
-            />
+            {viewMode === 'topology' && IS_PLUS ? (
+              <div className='flex-1 min-h-0 flex flex-col gap-2'>
+                {/* 拓扑视图下 <List/> 整个不渲染，它那条工具栏也跟着没了。
+                    这里挂同一个 HostFilters、共用同一份状态，切视图筛选不丢。
+                    批量操作不搬过来：那是选中表格行之后的动作，图上没有对应语义。 */}
+                {/* 容器样式与 List.tsx 的工具栏逐字一致（bg + 边框 + p-4 + 内层 flex 行）：
+                    两个视图的筛选条切换时不该跳动，差一档 padding 就是 16px 的位移 */}
+                <div className='flex-shrink-0 bg-fc-100 fc-border rounded-lg p-4'>
+                  <div className='flex flex-wrap items-start justify-between gap-2'>
+                    <div className='flex min-w-0 flex-1 flex-wrap items-center gap-2'>
+                      {allCollapseNode}
+                      <Button icon={<ReloadOutlined />} onClick={() => setRefreshFlag(_.uniqueId('refreshFlag_'))} />
+                      <HostFilters value={hostFilters} onChange={setHostFilters} />
+                      {/* 中心主机紧跟在筛选控件后面：它和前面几项一样都在回答「画哪些机器」 */}
+                      <HostTopoCenterSelect gids={gids} />
+                    </div>
+                    {/* 「配置采集」摆在筛选条右端：它不是筛选，是这张图空着时唯一该做的动作。
+                        图上没有连线，最常见的原因就是这批机器还没配 servicemap 采集规则 */}
+                    <div className='self-center'>
+                      <HostTopoCollectSetup gids={gids} />
+                    </div>
+                  </div>
+                </div>
+                <div className='flex-1 min-h-0'>
+                  <HostTopoGlobalGraph gids={gids} hostFilter={hostFilter} refreshFlag={refreshFlag} />
+                </div>
+              </div>
+            ) : (
+              <List
+                allCollapseNode={allCollapseNode}
+                gids={gids}
+                filters={hostFilters}
+                setFilters={setHostFilters}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                refreshFlag={refreshFlag}
+                setRefreshFlag={setRefreshFlag}
+                setOperateType={setOperateType}
+              />
+            )}
           </div>
         </div>
       </div>
