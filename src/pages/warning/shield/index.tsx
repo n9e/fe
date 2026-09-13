@@ -254,9 +254,9 @@ const Shield: React.FC = () => {
         disabledValue: 1,
       }),
       width: 80,
-      render: (disabled, record) => (
+      render: (disabled, record: any) => (
         <Switch
-          loading={pendingIds.has(record.id as React.Key)}
+          loading={pendingIds.has(record.id)}
           checked={disabled === strategyStatus.Enable}
           size='small'
           onChange={() => {
