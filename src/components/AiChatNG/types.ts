@@ -131,9 +131,9 @@ export interface IAiChatCreateChatRequest extends IAiChatPageInfo {}
 export interface IAiChatSendMessageRequest {
   chat_id: string;
   query: IAiChatMessageQuery;
-  /** What the page behind the chat can do right now; each entry becomes a
-   *  tool the model can call. Forwarded from the action runtime as is. */
-  manifest?: ActionManifestEntry[];
+  /** The actions the page behind the chat can run right now; the model
+   *  requests one through page_action. Forwarded from the action runtime as is. */
+  page_actions?: ActionManifestEntry[];
 }
 
 export interface IAiChatSendMessageResponse {

@@ -550,11 +550,11 @@ export default function ChatPanel(props: IAiChatProps) {
         // What the page can do right now. Read at send time: registrations
         // come and go with the page, and this is also what closes a confirm
         // scope of 'turn' in the runtime.
-        const manifest = uiActionRuntime.manifest();
+        const pageActions = uiActionRuntime.manifest();
         const result = await sendMessage({
           chat_id: chat.chat_id,
           query,
-          manifest: manifest.length ? manifest : undefined,
+          page_actions: pageActions.length ? pageActions : undefined,
         });
         if (generation !== turnGenerationRef.current || !activeRef.current) {
           void cancelMessage({ chat_id: result.chat_id, seq_id: result.seq_id }).catch(handleError);

@@ -47,11 +47,11 @@ export const sendMessage = (data: IAiChatSendMessageRequest): Promise<IAiChatSen
     data: {
       ...data,
       // The backend reads the page's actions off the query, not the envelope.
-      manifest: undefined,
+      page_actions: undefined,
       query: {
         ...data.query,
         action: _.omit(data.query.action, 'key'), // 不再需要传入 action key
-        manifest: data.manifest,
+        page_actions: data.page_actions,
       },
     },
   }).then((res) => res?.[dataPathName]);
