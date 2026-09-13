@@ -55,6 +55,10 @@ const TableSource = (props: IPropsType) => {
   const isAdmin = !!profile.roles?.includes('Admin');
   const [tableData, setTableData] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
+  // 行内编辑成功后按 id 原位更新，避免整表刷新后因 updated_at 变最新而重排。
+  const updateRowInPlace = (id: unknown, patch: Record<string, unknown>) => {
+    setTableData((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  };
   const [loading, setLoading] = useState<boolean>(false);
   const pagination = usePagination({ PAGESIZE_KEY: 'datasource' });
   const [searchVal, setSearchVal] = useState<string | undefined>(debouncedSearchValue);
@@ -121,8 +125,8 @@ const TableSource = (props: IPropsType) => {
           <Rename
             values={record}
             text={text}
-            callback={() => {
-              setRefresh((oldVal) => !oldVal);
+            callback={(newName: string) => {
+              updateRowInPlace(record.id, { name: newName });
             }}
           >
             <a
@@ -188,7 +192,7 @@ const TableSource = (props: IPropsType) => {
                 status: checked ? 'enabled' : 'disabled',
               }).then(() => {
                 message.success(checked ? t('success.enable') : t('success.disable'));
-                setRefresh((oldVal) => !oldVal);
+                updateRowInPlace(record.id, { status: checked ? 'enabled' : 'disabled' });
               });
             if (checked) {
               doUpdate();
