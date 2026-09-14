@@ -1,5 +1,6 @@
 import i18next from 'i18next';
 
+// @ts-ignore
 import * as plusNotificationChannels from 'plus:/parcels/NotificationChannels';
 
 export const NS = 'notification-channels';
