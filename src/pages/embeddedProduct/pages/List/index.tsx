@@ -1,3 +1,4 @@
+import { useMemoizedFn, useRequest } from 'ahooks';
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import { Button, Modal, message, Switch } from 'antd';
@@ -8,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { arrayMoveImmutable } from 'array-move';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { getTeamInfoList } from '@/services/manage';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable from '@/components/EnhancedTable';
@@ -37,13 +39,24 @@ export default function Index() {
   const [currentRecord, setCurrentRecord] = useState<EmbeddedProductResponse | null>(null);
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
-  const [hideSavingId, setHideSavingId] = useState<number | null>(null);
+  const { run: runMutation, pendingIds } = useRowMutation();
   const pagination = usePagination({ PAGESIZE_KEY: NS });
 
-  const fetchData = async (): Promise<any> => {
-    const res = await getEmbeddedProducts();
-    if (res) setData(_.orderBy(res, ['weight', 'id'], ['asc', 'asc']));
-  };
+  const {
+    run: fetchData,
+    cancel,
+    loading,
+  } = useRequest(getEmbeddedProducts, {
+    manual: true,
+    onSuccess: (res) => {
+      if (res) setData(_.orderBy(res, ['weight', 'id'], ['asc', 'asc']));
+    },
+  });
+  const updateHide = useMemoizedFn((id: number, hide: boolean) => {
+    cancel();
+    setData((rows) => rows.map((row) => (row.id === id ? { ...row, hide } : row)));
+    if (loading) fetchData();
+  });
 
   const columns: ColumnType<EmbeddedProductResponse>[] = useMemo(() => {
     return [
@@ -84,28 +97,24 @@ export default function Index() {
         render: (_val, record: EmbeddedProductResponse) => {
           const hide = record.hide ?? true;
           const checked = !hide;
-          const disabled = saving || hideSavingId === record.id;
+          const disabled = saving || pendingIds.has(record.id);
           return (
             <Switch
               size='small'
               checked={checked}
               disabled={disabled}
+              loading={pendingIds.has(record.id)}
               onChange={async (nextChecked) => {
-                if (disabled) return;
-                const prevHide = record.hide ?? true;
                 const nextHide = !nextChecked;
-                setHideSavingId(record.id);
-                setData((prev) => prev.map((item) => (item.id === record.id ? { ...item, hide: nextHide } : item)));
                 try {
-                  await putEmbeddedProductHide(String(record.id), { hide: nextHide });
-                  message.success(t('common:success.save'));
-                  fetchData();
-                  eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                  await runMutation([record.id], async () => {
+                    await putEmbeddedProductHide(String(record.id), { hide: nextHide });
+                    updateHide(record.id, nextHide);
+                    message.success(t('common:success.save'));
+                    eventBus.emit(EVENT_KEYS.EMBEDDED_PRODUCT_UPDATED);
+                  });
                 } catch (e) {
-                  setData((prev) => prev.map((item) => (item.id === record.id ? { ...item, hide: prevHide } : item)));
                   message.error(t('common:error.save'));
-                } finally {
-                  setHideSavingId(null);
                 }
               }}
             />
@@ -115,7 +124,7 @@ export default function Index() {
       dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }) as any,
       updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }) as any,
     ];
-  }, [t, userGroups, saving, hideSavingId]);
+  }, [t, userGroups, saving, pendingIds]);
 
   useEffect(() => {
     fetchData();
@@ -127,7 +136,7 @@ export default function Index() {
   const handleModalOk = async (values: EmbeddedProductParams) => {
     try {
       if (currentRecord) {
-        await updateEmbeddedProducts(currentRecord.id.toString(), values);
+        await runMutation([currentRecord.id], () => updateEmbeddedProducts(currentRecord.id.toString(), values));
         message.success(t('common:success.edit'));
       } else {
         await addEmbeddedProducts([values]);
