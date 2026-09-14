@@ -1,6 +1,7 @@
 import React, { useContext, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Input, Checkbox, Collapse, Segmented, Button, Space, Tooltip } from 'antd';
-import { AlertOutlined, FullscreenOutlined, SearchOutlined } from '@ant-design/icons';
+import { FullscreenOutlined, SearchOutlined } from '@ant-design/icons';
+import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -234,7 +235,11 @@ const AlertCurEvent: React.FC = () => {
   }, [JSON.stringify(filter)]);
 
   return (
-    <PageLayout icon={<AlertOutlined />} title={t('title')} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/events/cur-events/'>
+    <PageLayout
+      icon={<IconFont type='icon-nav_alerts_light' />}
+      title={t('title')}
+      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/events/cur-events/'
+    >
       <div ref={fullscreenRef} className={`n9e ${NS} h-full`}>
         {isFullscreen ? (
           <FullscreenList

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Space } from 'antd';
-import { AlertOutlined } from '@ant-design/icons';
+import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 
 import PageLayout, { HelpLink } from '@/components/pageLayout';
@@ -72,7 +72,7 @@ export default function List() {
 
   return (
     <PageLayout
-      icon={<AlertOutlined />}
+      icon={<IconFont type='icon-Time' />}
       title={<Space>{t('title')}</Space>}
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/events/alert-history/'
     >

@@ -74,7 +74,7 @@ export const getMenuList = (t) => {
     },
     {
       key: 'alarm',
-      icon: <IconFont type='icon-Menu_AlarmManagement' />,
+      icon: <IconFont type='icon-nav_alerts_light' />,
       label: t('告警管理'),
       children: [
         {

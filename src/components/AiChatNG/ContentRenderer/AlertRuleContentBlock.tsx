@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tooltip, message as antdMessage } from 'antd';
-import { AlertOutlined, CopyOutlined, ExportOutlined } from '@ant-design/icons';
+import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
+import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 
 import { copy2ClipBoard } from '@/utils';
@@ -115,7 +116,7 @@ export default function AlertRuleContentBlock(props: { responseContent: string }
   );
 
   return (
-    <ContentCard icon={<AlertOutlined />} title={t('alert_rule.title')} bodyClassName='px-4 py-2'>
+    <ContentCard icon={<IconFont type='icon-nav_alerts_light' />} title={t('alert_rule.title')} bodyClassName='px-4 py-2'>
       <RowItem label={t('alert_rule.field.id')} value={idNode} />
       <RowItem label={t('alert_rule.field.name')} value={nameNode} />
       <RowItem label={t('alert_rule.field.group')} value={groupText} />

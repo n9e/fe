@@ -53,8 +53,8 @@ const getMenuList = (t) => {
     },
     {
       key: 'alarm',
-      icon: <IconFont type='icon-Menu_AlarmManagement' />,
-      activeIcon: <Icon component={menuIcon.AlarmManagement as any} />,
+      icon: <IconFont type='icon-nav_alerts_light' />,
+      activeIcon: <IconFont type='icon-nav_alerts_light' />,
       label: t('告警管理'),
       children: [
         {

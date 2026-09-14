@@ -16,7 +16,8 @@
  */
 import React, { useContext, useState } from 'react';
 import { Button, Input, message, Modal, Select, Space, Row, Col, Dropdown, Menu } from 'antd';
-import { AlertOutlined, ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, SearchOutlined, AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 import { getAlertSeverityName } from '@/utils/alertSeverity';
 import _ from 'lodash';
@@ -260,7 +261,7 @@ const Event: React.FC = () => {
   );
 
   return (
-    <PageLayout icon={<AlertOutlined />} title={t('title')}>
+    <PageLayout icon={<IconFont type='icon-nav_alerts_light' />} title={t('title')}>
       {view === 'card' ? (
         <Card header={renderLeftHeader()} filter={filterObj} refreshFlag={refreshFlag} />
       ) : (
