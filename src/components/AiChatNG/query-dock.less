@@ -1,0 +1,249 @@
+/**
+ * Styles scoped to ChatPanel variant="slim" (the metric-explorer query dock).
+ * Marked with data-ai-surface="query-dock" on the panel root — full AiChat
+ * drawer and other ContentCard call sites keep their default elevation.
+ *
+ * Hierarchy: the conversation sheet is the only elevated surface; blocks
+ * inside it (page action, etc.) stay flat so they do not read as nested cards.
+ */
+[data-ai-surface='query-dock'] {
+  .ai-query-dock-sheet {
+    /* A panel floating just under the bar: slightly see-through over the
+       table, blurred so the rows behind never compete with the text. */
+    background-color: color-mix(in srgb, var(--fc-fill-1, #fff) 82%, transparent);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-query-dock-input {
+    box-shadow: none;
+    background-color: var(--fc-fill-1, #fff);
+  }
+
+  /* While the assistant works, a thin indeterminate line runs under the
+     status slot, on the bar's bottom edge, inset so it never meets the
+     bar's own border. */
+  .ai-query-dock-progress {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    /* 3px bar padding + 1px border: the 2px line covers the border from inside. */
+    bottom: -4px;
+    height: 2px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ai-query-dock-progress::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 30%;
+    border-radius: 1px;
+    background: var(--fc-fill-primary);
+    animation: ai-query-dock-slide 1.4s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ai-query-dock-progress::before {
+      animation: none;
+      width: 100%;
+      opacity: 0.4;
+    }
+  }
+
+  /* Same border as the antd query box right above. */
+  .ai-query-dock-input,
+  .ai-query-dock-sheet {
+    border-color: var(--fc-antd-border-color);
+  }
+
+  .ai-chat-content-card {
+    /* Flat block inside the sheet: hairline only — no fill / shadow card. */
+    background-color: transparent !important;
+    border: 1px solid var(--fc-border-color, #e5e5e5) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .ai-chat-content-card > div:first-child {
+    border-bottom: 1px solid var(--fc-border-color, #e5e5e5) !important;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .ai-chat-content-card > div:last-child {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .ai-chat-message-item {
+    box-shadow: none;
+  }
+
+  /* Action id is for the model; the dock user already sees the query land. */
+  .ai-chat-page-action-name {
+    display: none;
+  }
+
+  /* Suggestion row: full width, one per line, the highlighted one tinted. */
+  .ai-query-dock-prompt {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 6px 12px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--fc-text-1);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .ai-query-dock-prompt.is-active {
+    color: var(--fc-fill-primary, #6c53b1);
+    background: color-mix(in srgb, var(--fc-fill-primary, #6c53b1) 8%, transparent);
+  }
+
+  /* Footer: the same key legend the RUM natural-language box uses. */
+  .ai-query-dock-keys {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px 12px;
+    background: var(--fc-fill-2);
+    font-size: 12px;
+    color: var(--fc-text-2);
+
+    kbd {
+      display: inline-flex;
+      align-items: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      border: 1px solid var(--fc-border-color);
+      border-radius: 3px;
+      background: var(--fc-fill-1);
+      font-family: inherit;
+      font-size: 11px;
+      line-height: 1;
+      justify-content: center;
+    }
+
+    span {
+      margin-left: 4px;
+    }
+
+    i {
+      width: 1px;
+      height: 12px;
+      margin: 0 8px;
+      background: var(--fc-border-color);
+    }
+  }
+}
+
+[data-ai-surface='query-dock'] {
+  container-name: ai-query-dock;
+  container-type: inline-size;
+
+  .ai-query-dock-status {
+    position: relative;
+    flex: 0 0 auto;
+    /* Full bar height, so the progress line under it lands on the bar's edge. */
+    align-self: stretch;
+  }
+
+  /* A fixed slot just wide enough for "正在执行脚本… 16s"; longer states
+     ellipsize and carry the full text in their title. */
+  .ai-query-dock-status-copy {
+    width: 10em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-query-dock-composer {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+    padding-left: 8px;
+    border-left: 1px solid var(--fc-border-color);
+
+    /* Pages that give every textarea a 32px floor would push the bar to 39;
+       the composer's height is its own line count. */
+    textarea.ant-input {
+      min-height: 0;
+    }
+    /* The divider runs the bar's full height, like an input group's addon
+       seam: stretch past the bar's 3px padding and take it back inside. */
+    align-self: stretch;
+    margin-top: -3px;
+    margin-bottom: -3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+
+    > button,
+    > .ant-tooltip-open {
+      flex-shrink: 0;
+    }
+  }
+
+  .ai-query-dock-draft-hint {
+    padding: 4px 8px;
+    color: var(--fc-text-2);
+    font-size: 12px;
+  }
+
+  .ai-query-dock-prompt:focus-visible {
+    outline: 2px solid var(--fc-fill-primary);
+    outline-offset: 1px;
+  }
+}
+
+@container ai-query-dock (max-width: 640px) {
+  [data-ai-surface='query-dock'] {
+    .ai-query-dock-input {
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .ai-query-dock-status {
+      flex: 1 0 100%;
+      max-width: 100%;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--fc-border-color);
+    }
+
+    /* Stacked: the status has its own bottom rule; the line sits on that. */
+    .ai-query-dock-progress {
+      bottom: -1px;
+    }
+
+    .ai-query-dock-composer {
+      flex-basis: 100%;
+      padding-left: 0;
+      border-left: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+}
+
+@keyframes ai-query-dock-slide {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
+}

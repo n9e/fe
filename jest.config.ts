@@ -92,6 +92,9 @@ const config: Config = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    // ai-kit only exposes its entry through package `exports`, which this jest
+    // resolver does not read; point straight at the file.
+    '^@flashcatcloud/ai-kit/actions$': '<rootDir>/node_modules/@flashcatcloud/ai-kit/dist/actions/index.js',
     // plus: 虚拟模块（vite 插件解析），jest 下统一映射到单一存根；
     // 需要真实行为的测试用 jest.mock('plus:...', factory, { virtual: true }) 覆盖
     '^plus:(.*)$': '<rootDir>/src/test/mocks/plusStub.tsx',
@@ -112,7 +115,10 @@ const config: Config = {
   preset: 'ts-jest',
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
+    // ai-kit ships ESM only; it is the one dependency compiled for jest.
+    '^.+\\.js$': ['ts-jest', { tsconfig: 'tsconfig.jest-deps.json' }],
   },
+  transformIgnorePatterns: ['/node_modules/(?!@flashcatcloud/ai-kit/)'],
 
   // Run tests from one or more projects
   // projects: undefined,
