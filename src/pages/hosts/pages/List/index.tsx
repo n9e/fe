@@ -157,7 +157,7 @@ export default function index() {
                 夹在卡片和筛选条中间的话，用户得先看完一屏图表才找得到「换一种看法」 */}
             {IS_PLUS && (
               <div className='mb-2'>
-                <HostTopoViewSwitch value={viewMode} onChange={changeViewMode} filters={hostFilters} onFiltersChange={setHostFilters} />
+                <HostTopoViewSwitch value={viewMode} onChange={changeViewMode} gids={gids} filters={hostFilters} onFiltersChange={setHostFilters} />
               </div>
             )}
             <StatsCards gids={gids} collapsed={statsCollapsed} setCollapsed={setStatsCollapsed} refreshFlag={refreshFlag} />
