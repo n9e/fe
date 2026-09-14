@@ -737,7 +737,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                 return (
                   <>
                     <Form.Item label={changetoText}>
-                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} initialValue={[{ service_cal_ids: [] }]} />
+                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} initialValue={[{ service_cal_ids: [] }]} required />
                     </Form.Item>
                   </>
                 );

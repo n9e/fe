@@ -232,6 +232,7 @@ export const updateServiceCal = function (
         end: string;
       };
     }[];
+    service_cal_ids?: number[]; // 传 [] 可一并清掉更早的 extra_config.service_cal_ids
   },
   busiId: number,
 ) {
