@@ -23,6 +23,7 @@ import { getTLSProject, getTLSTopic } from 'plus:/datasource/volcTLS/services';
 import { getProject as getLTSProject, getTopic as getLTSTopic } from 'plus:/datasource/huaweiLTS/services';
 
 import { useFormNGData } from '../../context';
+import { isFullDayTimeRange } from '../../../Form/serviceCalConfigs';
 import { getDatasourcesByQueries } from '../DatasourceValueSelect/services';
 import { buildHostMachinePreviewSummary, buildRuleConditionSummary } from './ruleConditionSummary';
 import type { ConditionSummaryItem, QueryPreviewType } from './ruleConditionSummary';
@@ -596,7 +597,7 @@ function EffectiveSummary() {
   const serviceCalConfigs = Form.useWatch(['extra_config', 'service_cal_configs']);
   const timeZone = Form.useWatch('time_zone');
 
-  const hasServiceCal = _.isArray(serviceCalConfigs) && serviceCalConfigs.length > 0;
+  const hasServiceCal = _.some(serviceCalConfigs, (item: any) => !_.isEmpty(item?.service_cal_ids));
 
   const weekdays = useMemo(() => t('form_ng.weekdays_short', { returnObjects: true }) as string[], []);
 
@@ -651,12 +652,13 @@ function EffectiveSummary() {
               {serviceCalConfigs.map((item: any, idx: number) => {
                 const calIds = _.isArray(item?.service_cal_ids) ? item.service_cal_ids : [];
                 const timeRange = item?.time_range;
-                const rangeLabel =
-                  timeRange?.start && timeRange?.end
-                    ? `${timeRange.start.format ? timeRange.start.format('HH:mm') : timeRange.start} ~ ${timeRange.end.format ? timeRange.end.format('HH:mm') : timeRange.end}`
-                    : '';
+                // 规则级时段已废弃，只有存量的非全天配置才展示
+                const showRange = !isFullDayTimeRange(timeRange);
+                const rangeLabel = showRange
+                  ? `${timeRange.start.format ? timeRange.start.format('HH:mm') : timeRange.start} ~ ${timeRange.end.format ? timeRange.end.format('HH:mm') : timeRange.end}`
+                  : '';
                 const rangeLocalText =
-                  timeZone && timeZone !== 'Local' && timeRange?.start && timeRange?.end
+                  showRange && timeZone && timeZone !== 'Local'
                     ? `${moment
                         .tz(timeRange.start.format ? timeRange.start.format('HH:mm') : timeRange.start, 'HH:mm', timeZone)
                         .local()

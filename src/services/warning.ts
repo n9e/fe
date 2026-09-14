@@ -227,11 +227,11 @@ export const updateServiceCal = function (
     ids: React.Key[];
     service_cal_configs: {
       service_cal_ids: number[];
-      time_range: {
+      time_range?: {
         start: string;
         end: string;
       };
-    };
+    }[];
   },
   busiId: number,
 ) {

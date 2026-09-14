@@ -21,7 +21,6 @@ import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
-import moment from 'moment';
 
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
@@ -36,6 +35,7 @@ import { getTimezones } from '../services';
 
 // @ts-ignore
 import ServiceCalendarWithTimeSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarWithTimeSelect';
+import { formatServiceCalConfigs } from '../Form/serviceCalConfigs';
 // @ts-ignore
 import BatchEditNotifyChannels from 'plus:/parcels/AlertRule/BatchEditNotifyChannels';
 
@@ -224,15 +224,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
           }
           break;
         case 'service_cal_ids':
-          data.service_cal_configs = _.map(data.service_cal_configs, (item) => {
-            return {
-              ...item,
-              time_range: {
-                start: item.time_range.start.format('HH:mm'),
-                end: item.time_range.end.format('HH:mm'),
-              },
-            };
-          });
+          data.service_cal_configs = formatServiceCalConfigs(data.service_cal_configs);
           break;
         default:
           break;
@@ -745,17 +737,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                 return (
                   <>
                     <Form.Item label={changetoText}>
-                      <ServiceCalendarWithTimeSelect
-                        namePath={['service_cal_configs']}
-                        initialValue={[
-                          {
-                            time_range: {
-                              start: moment('00:00', 'HH:mm'),
-                              end: moment('00:00', 'HH:mm'),
-                            },
-                          },
-                        ]}
-                      />
+                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} initialValue={[{ service_cal_ids: [] }]} />
                     </Form.Item>
                   </>
                 );
