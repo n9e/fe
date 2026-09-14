@@ -188,6 +188,28 @@ test('query variable reports a removed dependency and skips its datasource reque
   errorSpy.mockRestore();
 });
 
+test('SQL macros are passed to the datasource instead of being treated as missing variables', async () => {
+  queryMock.mockResolvedValue(projects);
+  mountRuntime([
+    projectVariable({
+      name: 'doris_var',
+      definition:
+        'SELECT service FROM logs WHERE $__timeFilter(timestamp) AND timestamp >= $__timeFrom() AND timestamp <= $__timeTo() GROUP BY $__timeGroup(timestamp, $__interval)',
+      datasource: { cate: 'doris', value: 1 },
+    }),
+  ]);
+
+  await waitFor(() => expect(queryMock).toHaveBeenCalled());
+  expect(queryMock).toHaveBeenCalledWith(
+    expect.objectContaining({
+      query: expect.objectContaining({
+        query: expect.stringContaining('$__timeFilter(timestamp)'),
+      }),
+    }),
+  );
+  expect(document.querySelector('.anticon-warning')).not.toBeInTheDocument();
+});
+
 test('real dependency chain receives the project value, not its display label', async () => {
   queryMock.mockImplementation(async ({ query }) => (query.project_id ? [{ label: `Metric for ${query.project_id}`, value: `metric/${query.project_id}` }] : projects));
   mountRuntime([projectVariable(), projectVariable({ name: 'metric', query: { project_id: '${project}' } })]);

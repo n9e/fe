@@ -17,6 +17,7 @@ import datasource, { VariableDatasourceQuery } from '../datasource';
 import { Props } from './types';
 import { getErrorMessage } from '@/pages/dashboard/utils/json';
 import type { JsonObject } from '@/pages/dashboard/types';
+import collectSqlMacroNames from '../utils/collectSqlMacroNames';
 
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
@@ -61,7 +62,10 @@ export default function Query(props: Props) {
     }
 
     const availableVariableNames = new Set([...getVariables().map((item) => item.name), ...getBuiltInVariables(currentRange).map((item) => item.name)]);
-    const missingDependencies = collectVariableDependencies(currentVariable).filter((dependencyName) => !availableVariableNames.has(dependencyName));
+    const sqlMacroNames = collectSqlMacroNames({ definition: currentVariable.definition, query: currentVariable.query });
+    const missingDependencies = collectVariableDependencies(currentVariable).filter(
+      (dependencyName) => !availableVariableNames.has(dependencyName) && !sqlMacroNames.has(dependencyName),
+    );
     if (missingDependencies.length > 0) {
       const errMsg = `Variable ${currentVariable.name} references missing variable(s): ${missingDependencies.join(', ')}`;
       setErrorMsg(errMsg);

@@ -37,6 +37,5 @@ export default async function datasource(props: Props): Promise<QueryOptionInput
   if (datasourceCate === DatasourceCateEnum.ck) {
     return clickHouse(props);
   }
-
   return await variableDatasourcePro(props);
 }
