@@ -106,11 +106,13 @@ function getDorisSqlFormatValues(variable: IVariable): string[] | string | undef
     );
   }
 
-  if (_.isArray(value)) {
-    return _.map(value, (item) => _.find(options, { value: item })?.value || item);
+  if (Array.isArray(value)) {
+    return value
+      .filter((item): item is string => typeof item === 'string')
+      .map((item) => _.find(options, { value: item })?.value || item);
   }
 
-  if (_.isString(value)) return [value];
+  if (typeof value === 'string') return [value];
 
   return undefined;
 }
@@ -193,11 +195,11 @@ export default function adjustData(
       // 高级 SQL 格式由查询目标是否为 Doris 决定，变量本身可以是 query、custom、textbox 等任意仪表盘变量。
       if (enableDorisSqlFormats && type) {
         const formatValues = getDorisSqlFormatValues(variable);
-        if (_.isString(formatValues)) {
+        if (typeof formatValues === 'string') {
           result[`${variable.name}:sql_like_or`] = formatValues;
           result[`${variable.name}:sql_like_and`] = formatValues;
         } else {
-          const values = formatValues || [];
+          const values = formatValues ?? [];
           result[`${variable.name}:sql_like_or`] = getDorisSqlLikeExpression(variable.name, values, 'OR');
           result[`${variable.name}:sql_like_and`] = getDorisSqlLikeExpression(variable.name, values, 'AND');
         }
