@@ -587,13 +587,65 @@ function PipelineSummary() {
   );
 }
 
+/**
+ * 服务日历摘要里的值部分。
+ *
+ * 这里不能用 Form.useWatch 取 service_cal_configs：rc-field-form 的 useWatch 无论初值还是后续更新，
+ * 拿到的都是 getFieldsValue() 的结果，也就是「只含已注册字段」的投影（useForm.js 的 notifyWatch 同理）。
+ * 服务日历控件在新形态下只注册 service_cal_configs[n].service_cal_ids，兄弟键 time_range 没有 Field，
+ * 用 useWatch 读它恒为 undefined，存量规则的规则级时段就永远显示不出来。
+ * shouldUpdate 的比较函数拿到的是原始 store，getFieldValue 也直接读 store，两者都不受注册表裁剪。
+ */
+function ServiceCalSummaryValue() {
+  const { t } = useTranslation('alertRules');
+  const { serviceCalMap } = useFormNGData();
+  const timeZone = Form.useWatch('time_zone');
+
+  return (
+    <Form.Item noStyle shouldUpdate={(prevValues, curValues) => !_.isEqual(prevValues?.extra_config?.service_cal_configs, curValues?.extra_config?.service_cal_configs)}>
+      {({ getFieldValue }) => (
+        <FieldValue>
+          {_.map(getFieldValue(['extra_config', 'service_cal_configs']), (item: any, idx: number) => {
+            const calIds = _.isArray(item?.service_cal_ids) ? item.service_cal_ids : [];
+            const timeRange = item?.time_range;
+            // 规则级时段已废弃，只有存量的非全天配置才展示
+            const showRange = !isFullDayTimeRange(timeRange);
+            const formatHm = (v: any) => (v?.format ? v.format('HH:mm') : v);
+            const rangeLabel = showRange ? `${formatHm(timeRange.start)} ~ ${formatHm(timeRange.end)}` : '';
+            const rangeLocalText =
+              showRange && timeZone && timeZone !== 'Local'
+                ? `${moment.tz(formatHm(timeRange.start), 'HH:mm', timeZone).local().format('HH:mm')} ~ ${moment
+                    .tz(formatHm(timeRange.end), 'HH:mm', timeZone)
+                    .local()
+                    .format('HH:mm')}`
+                : '';
+            return (
+              <div key={idx} className='flex items-center gap-1 flex-wrap mb-0.5'>
+                {calIds.map((id: number) => (
+                  <ThemeTag key={id}>{serviceCalMap[id]?.name ?? `#${id}`}</ThemeTag>
+                ))}
+                {rangeLabel && (
+                  <Tooltip title={rangeLocalText ? `${t('local_time')}: ${rangeLocalText}` : undefined}>
+                    <span className='text-foreground text-[11px]'>{rangeLabel}</span>
+                  </Tooltip>
+                )}
+              </div>
+            );
+          })}
+        </FieldValue>
+      )}
+    </Form.Item>
+  );
+}
+
 // ---- 生效配置卡片 ----
 function EffectiveSummary() {
   const { t } = useTranslation('alertRules');
-  const { serviceCalMap } = useFormNGData();
   const enableStatus = Form.useWatch('enable_status');
   const effectiveTime = Form.useWatch('effective_time');
   const enableInBg = Form.useWatch('enable_in_bg');
+  // 只用来判断有没有配日历：service_cal_ids 有对应的 Form.Item，useWatch 读得到。
+  // 存量的规则级时段（time_range）没有注册字段，useWatch 看不见，展示交给 ServiceCalSummaryValue
   const serviceCalConfigs = Form.useWatch(['extra_config', 'service_cal_configs']);
   const timeZone = Form.useWatch('time_zone');
 
@@ -648,39 +700,7 @@ function EffectiveSummary() {
         {hasServiceCal && (
           <Field>
             <FieldLabel>{t('form_ng.service_calendar')}</FieldLabel>
-            <FieldValue>
-              {serviceCalConfigs.map((item: any, idx: number) => {
-                const calIds = _.isArray(item?.service_cal_ids) ? item.service_cal_ids : [];
-                const timeRange = item?.time_range;
-                // 规则级时段已废弃，只有存量的非全天配置才展示
-                const showRange = !isFullDayTimeRange(timeRange);
-                const rangeLabel = showRange
-                  ? `${timeRange.start.format ? timeRange.start.format('HH:mm') : timeRange.start} ~ ${timeRange.end.format ? timeRange.end.format('HH:mm') : timeRange.end}`
-                  : '';
-                const rangeLocalText =
-                  showRange && timeZone && timeZone !== 'Local'
-                    ? `${moment
-                        .tz(timeRange.start.format ? timeRange.start.format('HH:mm') : timeRange.start, 'HH:mm', timeZone)
-                        .local()
-                        .format('HH:mm')} ~ ${moment
-                        .tz(timeRange.end.format ? timeRange.end.format('HH:mm') : timeRange.end, 'HH:mm', timeZone)
-                        .local()
-                        .format('HH:mm')}`
-                    : '';
-                return (
-                  <div key={idx} className='flex items-center gap-1 flex-wrap mb-0.5'>
-                    {calIds.map((id: number) => (
-                      <ThemeTag key={id}>{serviceCalMap[id]?.name ?? `#${id}`}</ThemeTag>
-                    ))}
-                    {rangeLabel && (
-                      <Tooltip title={rangeLocalText ? `${t('local_time')}: ${rangeLocalText}` : undefined}>
-                        <span className='text-foreground text-[11px]'>{rangeLabel}</span>
-                      </Tooltip>
-                    )}
-                  </div>
-                );
-              })}
-            </FieldValue>
+            <ServiceCalSummaryValue />
           </Field>
         )}
         <SwitchField label={t('enable_in_bg')} value={enableInBg} />
