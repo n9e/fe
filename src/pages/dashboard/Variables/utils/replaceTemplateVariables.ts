@@ -7,7 +7,7 @@ import { getGlobalState } from '@/pages/dashboard/globalState';
 
 import { IVariable } from '../types';
 import adjustData from './ajustData';
-import { formatString, formatDatasource } from './formatString';
+import { formatDorisSqlString, formatString, formatDatasource } from './formatString';
 
 export type { IVariable } from '../types';
 
@@ -21,6 +21,7 @@ export default function replaceTemplateVariables(
       maxDataPoints?: number;
     };
     scopedVars?: { [key: string]: any };
+    enableDorisSqlFormats?: boolean;
   },
 ) {
   // 如果 str 为空，如果没有包含变量则直接返回
@@ -31,7 +32,7 @@ export default function replaceTemplateVariables(
 
   const variablesWithOptions = getGlobalState('variablesWithOptions');
   const globalRange = getGlobalState('range');
-  const { scopedVars } = params || {};
+  const { scopedVars, enableDorisSqlFormats } = params || {};
   const range = params?.range ?? globalRange;
 
   let extVariables: IVariable[] = getBuiltInVariables(range, params);
@@ -50,8 +51,9 @@ export default function replaceTemplateVariables(
 
   const data = adjustData(_.concat(variablesWithOptions ?? [], extVariables), {
     datasourceList: [],
+    enableDorisSqlFormats,
   });
-  const result = formatString(str, data);
+  const result = enableDorisSqlFormats ? formatDorisSqlString(str, data) : formatString(str, data);
   return result;
 }
 

@@ -19,10 +19,10 @@ function adjustValue(
     datasourceCate: DatasourceCateEnum;
     isPlaceholderQuoted?: boolean;
     isEscapeJsonString?: boolean;
-    isMysqlMulti?: boolean;
+    isSqlMulti?: boolean;
   },
 ) {
-  const { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isMysqlMulti } = params;
+  const { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isSqlMulti } = params;
   if (datasourceCate === DatasourceCateEnum.prometheus) {
     value = escapePromQLString(value);
   } else if (datasourceCate === DatasourceCateEnum.elasticsearch) {
@@ -34,7 +34,7 @@ function adjustValue(
     if (isEscapeJsonString) {
       value = escapeJsonString(value);
     }
-  } else if (datasourceCate === DatasourceCateEnum.mysql && isMysqlMulti) {
+  } else if ((datasourceCate === DatasourceCateEnum.mysql || datasourceCate === DatasourceCateEnum.doris) && isSqlMulti) {
     // Grafana sqlstring 风格：对每个值加单引号并转义内部单引号
     value = escapeSqlString(value);
   }
@@ -58,8 +58,15 @@ function joinValues(
   // mysql 多值：按 Grafana sqlstring 风格输出 'val1','val2'
   if (datasourceCate === DatasourceCateEnum.mysql) {
     return _.join(
-      _.map(values, (item) => adjustValue(item.value, { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isMysqlMulti: true })),
+      _.map(values, (item) => adjustValue(item.value, { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isSqlMulti: true })),
       ',',
+    );
+  }
+  // Doris 多值使用 SQL 字符串列表，逗号后保留空格以便阅读。
+  if (datasourceCate === DatasourceCateEnum.doris) {
+    return _.join(
+      _.map(values, (item) => adjustValue(item.value, { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isSqlMulti: true })),
+      ', ',
     );
   }
   // 如果只有一个值时，不需要使用分隔符连接和外包裹（括号）
@@ -88,11 +95,36 @@ function joinValues(
   }
 }
 
+function getDorisSqlFormatValues(variable: IVariable): string[] | string | undefined {
+  const { value, options = [], reg, allValue } = variable;
+
+  if (_.isEqual(value, ['all']) || _.isEqual(value, ['__all__'])) {
+    if (allValue) return allValue;
+    return _.map(
+      _.filter(options, (option) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(option.value)),
+      'value',
+    );
+  }
+
+  if (_.isArray(value)) {
+    return _.map(value, (item) => _.find(options, { value: item })?.value || item);
+  }
+
+  if (_.isString(value)) return [value];
+
+  return undefined;
+}
+
+function getDorisSqlLikeExpression(variableName: string, values: string[], separator: 'OR' | 'AND'): string {
+  return _.join(_.map(values, (value) => `${variableName} LIKE ${escapeSqlString(`%${value}%`)}`), ` ${separator} `);
+}
+
 export default function adjustData(
   variables: IVariable[],
   options: {
     isEscapeJsonString?: boolean; // only for ES
     isPlaceholderQuoted?: boolean; // only for ES
+    enableDorisSqlFormats?: boolean;
     datasourceList: {
       identifier?: string;
       id: number;
@@ -102,7 +134,7 @@ export default function adjustData(
 ): {
   [key: string]: string | number;
 } {
-  const { isEscapeJsonString, isPlaceholderQuoted, datasourceList } = options;
+  const { isEscapeJsonString, isPlaceholderQuoted, enableDorisSqlFormats, datasourceList } = options;
   if (_.isEmpty(variables)) {
     return {};
   }
@@ -157,6 +189,19 @@ export default function adjustData(
         }
       }
       result[variable.name] = joinedValue;
+
+      // 高级 SQL 格式由查询目标是否为 Doris 决定，变量本身可以是 query、custom、textbox 等任意仪表盘变量。
+      if (enableDorisSqlFormats && type) {
+        const formatValues = getDorisSqlFormatValues(variable);
+        if (_.isString(formatValues)) {
+          result[`${variable.name}:sql_like_or`] = formatValues;
+          result[`${variable.name}:sql_like_and`] = formatValues;
+        } else {
+          const values = formatValues || [];
+          result[`${variable.name}:sql_like_or`] = getDorisSqlLikeExpression(variable.name, values, 'OR');
+          result[`${variable.name}:sql_like_and`] = getDorisSqlLikeExpression(variable.name, values, 'AND');
+        }
+      }
       return result;
     },
     {},
@@ -164,7 +209,19 @@ export default function adjustData(
   return data;
 }
 
-export function buildVariableInterpolations({ variable, variables, datasourceList, range }: { variable: IVariable; variables: IVariable[]; datasourceList: any[]; range: any }) {
+export function buildVariableInterpolations({
+  variable,
+  variables,
+  datasourceList,
+  range,
+  enableDorisSqlFormats,
+}: {
+  variable: IVariable;
+  variables: IVariable[];
+  datasourceList: any[];
+  range: any;
+  enableDorisSqlFormats?: boolean;
+}) {
   const builtInVariables = getBuiltInVariables({
     range,
   });
@@ -172,6 +229,7 @@ export function buildVariableInterpolations({ variable, variables, datasourceLis
     datasourceList: datasourceList,
     isPlaceholderQuoted: isPlaceholderQuoted(variable.definition, variable.name), // only for ES
     isEscapeJsonString: true, // only for ES
+    enableDorisSqlFormats,
   });
   return data;
 }

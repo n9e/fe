@@ -33,6 +33,23 @@ const ja_JP = {
     time_field_msg: '日付フィールドを選択してください',
     time_field_tip: '<span>このタイムピッカーをリンクするには、クエリ条件で時間マクロを使用する必要があります</span><br/>時間マクロの使用方法の紹介: <a>詳細</a>',
     query: 'クエリ',
+    dashboard_variable_tip: `
+      ダッシュボード変数の使用方法
+      <1 />
+      \${variable_name}: 現在のダッシュボード変数値
+      <1 />
+      複数選択の変数は、単一引用符で囲まれたカンマ区切りの SQL 値リストになります。例：\${host} は 'host01', 'host02' となり、IN (\${host}) で使用できます。
+      <1 />
+      SQL LIKE 形式：\${host:sql_like_or} は host LIKE '%server%' OR host LIKE '%web%' となり、\${host:sql_like_and} は AND で条件を連結します。
+      <1 />
+      SQL フィールド名が変数名と異なる場合は、\${host:sql_like_or:description} のように指定します。\${host:sql_like_and:t.description} のようなテーブル別名も使用できます。
+      <1 />
+      対象フィールドを省略した場合は変数名を使用します。
+      <1 />
+      $__timeFilter(...)、$__timeFrom()、$__timeTo() などのバックエンド時間マクロを使用できます。詳細は<a>クエリ条件</a>ドキュメントを参照してください。
+    `,
+    variable_sql: 'SQL',
+    variable_documentation: 'ドキュメント',
     query_required: 'クエリは必須です',
     advancedSettings: {
       title: '高度な設定',

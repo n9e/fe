@@ -68,7 +68,16 @@ export default defineConfig(({ mode }) => {
       prefixPlugin(baseName),
     ],
     define: {
-      // 'process.env.NODE_ENV': JSON.stringify(mode), // 如确实需要兼容旧代码 NODE_ENV=production , 放开这个
+      // react-draggable 在浏览器端读取 process.env.DRAGGABLE_DEBUG；Vite 不会默认注入 Node 的 process。
+      'process.env': JSON.stringify({ NODE_ENV: mode }),
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        // 顶层 define 不会应用到依赖预构建，需要在 esbuild 中单独注入。
+        define: {
+          'process.env': JSON.stringify({ NODE_ENV: mode }),
+        },
+      },
     },
     resolve: {
       alias: [

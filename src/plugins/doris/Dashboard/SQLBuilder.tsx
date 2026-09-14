@@ -38,7 +38,27 @@ export default function SQLBuilder(props: Props) {
               overlayClassName='ant-tooltip-auto-width ant-tooltip-with-link'
               title={
                 <div>
-                  <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />
+                  <Trans
+                    ns={NAME_SPACE}
+                    i18nKey='query.dashboard_variable_tip'
+                    components={{
+                      1: <br />,
+                      a: (
+                        <a
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                              darkMode,
+                              title: t('common:document_link'),
+                              type: 'iframe',
+                              documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-doris-discover/',
+                              anchor: '#2-时间宏',
+                            });
+                          }}
+                        />
+                      ),
+                    }}
+                  />
                   <div className='mt-2'>
                     <Trans
                       ns={NAME_SPACE}

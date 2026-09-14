@@ -32,6 +32,23 @@ const zh_HK = {
     time_field_msg: '請選擇日期字段',
     time_field_tip: '<span>需在查詢條件中使用時間宏才能聯動此時間選擇器</span><br/>時間宏使用介紹: <a>詳情</a>',
     query: '查詢條件',
+    dashboard_variable_tip: `
+      儀表板變量使用說明
+      <1 />
+      \${variable_name}: 當前儀表板變量值
+      <1 />
+      多選變量會轉換為單引號包裹、逗號分隔的 SQL 值列表。例如 \${host} 會轉換為 'host01', 'host02'，可用於 IN (\${host})。
+      <1 />
+      SQL LIKE 高級格式：\${host:sql_like_or} 會轉換為 host LIKE '%server%' OR host LIKE '%web%'；\${host:sql_like_and} 會使用 AND 連接。
+      <1 />
+      字段名與變量名不同時，可指定目標字段：\${host:sql_like_or:description}。支持表別名，例如 \${host:sql_like_and:t.description}。
+      <1 />
+      未指定目標字段時，預設使用變量名作為字段名。
+      <1 />
+      可使用後端時間宏，例如 $__timeFilter(...)、$__timeFrom()、$__timeTo()。詳情請查看 <a>查詢條件</a> 文件。
+    `,
+    variable_sql: 'SQL',
+    variable_documentation: '說明文件',
     query_required: '查詢條件不能為空',
     advancedSettings: {
       title: '輔助配置',

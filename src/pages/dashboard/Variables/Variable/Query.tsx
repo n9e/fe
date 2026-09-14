@@ -6,10 +6,11 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 import { buildVariableInterpolations } from '../utils/ajustData';
 import { useVariableManager } from '../VariableManagerContext';
-import { formatString, formatDatasource } from '../utils/formatString';
+import { formatDorisSqlString, formatString, formatDatasource } from '../utils/formatString';
 import filterOptionsByReg from '../utils/filterOptionsByReg';
 import getValueByOptions from '../utils/getValueByOptions';
 import datasource from '../datasource';
@@ -55,11 +56,13 @@ export default function Query(props: Props) {
       variables: getVariables(),
       datasourceList,
       range: currentRange,
+      enableDorisSqlFormats: currentVariable.datasource?.cate === DatasourceCateEnum.doris,
     });
+    const formatQueryString = currentVariable.datasource?.cate === DatasourceCateEnum.doris ? formatDorisSqlString : formatString;
 
     const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
-    const formatedDefinition = formatString(currentVariable.definition, variableInterpolations);
-    const formatedQuery = currentVariable.query?.query ? formatString(currentVariable.query.query, variableInterpolations) : undefined;
+    const formatedDefinition = formatQueryString(currentVariable.definition, variableInterpolations);
+    const formatedQuery = currentVariable.query?.query ? formatQueryString(currentVariable.query.query, variableInterpolations) : undefined;
     const datasourceCate = currentVariable.datasource?.cate;
     const datasourceValue = formatDatasource(currentVariable.datasource?.value as any, variableInterpolations);
 
@@ -76,7 +79,7 @@ export default function Query(props: Props) {
       const interpolatedQuery: any = {};
       if (currentVariable.query) {
         Object.entries(currentVariable.query).forEach(([key, val]) => {
-          interpolatedQuery[key] = typeof val === 'string' ? formatString(val, variableInterpolations) : val;
+          interpolatedQuery[key] = typeof val === 'string' ? formatQueryString(val, variableInterpolations) : val;
         });
       }
       const options = await datasource({

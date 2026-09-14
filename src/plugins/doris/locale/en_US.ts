@@ -33,6 +33,23 @@ const en_US = {
     time_field_msg: 'Please select date field',
     time_field_tip: '<span>To link this time picker, you need to use a time macro in the query condition</span><br/>Introduction to time macro usage: <a>Details</a>',
     query: 'Query',
+    dashboard_variable_tip: `
+      Dashboard variable usage
+      <1 />
+      \${variable_name}: current dashboard variable value
+      <1 />
+      Multi-value variables are rendered as single-quoted, comma-separated SQL values. For example, \${host} becomes 'host01', 'host02' and can be used in IN (\${host}).
+      <1 />
+      SQL LIKE formats: \${host:sql_like_or} becomes host LIKE '%server%' OR host LIKE '%web%'; \${host:sql_like_and} joins conditions with AND.
+      <1 />
+      When the SQL field differs from the variable name, specify it explicitly: \${host:sql_like_or:description} becomes description LIKE '%server%' OR description LIKE '%web%'. Table aliases such as \${host:sql_like_and:t.description} are supported.
+      <1 />
+      If the target field is omitted, the variable name is used as the field name.
+      <1 />
+      You can use backend time macros such as $__timeFilter(...), $__timeFrom(), and $__timeTo(). See the <a>query condition</a> documentation for details.
+    `,
+    variable_sql: 'SQL',
+    variable_documentation: 'Documentation',
     query_required: 'Query is required',
     advancedSettings: {
       title: 'Auxiliary Configuration',

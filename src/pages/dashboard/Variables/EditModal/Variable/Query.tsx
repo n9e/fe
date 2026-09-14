@@ -14,7 +14,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import { IVariable } from '../../types';
 import adjustData from '../../utils/ajustData';
 import isPlaceholderQuoted from '../../utils/isPlaceholderQuoted';
-import { formatString, formatDatasource } from '../../utils/formatString';
+import { formatDorisSqlString, formatString, formatDatasource } from '../../utils/formatString';
 import filterOptionsByReg from '../../utils/filterOptionsByReg';
 import { getBuiltInVariables } from '../../utils/replaceTemplateVariables';
 import Querybuilder from '../Querybuilder';
@@ -53,9 +53,11 @@ export default function Query(props: Props) {
         datasourceList: datasourceList,
         isPlaceholderQuoted: isPlaceholderQuoted(item.definition, item.name),
         isEscapeJsonString: true,
+        enableDorisSqlFormats: datasourceCate === DatasourceCateEnum.doris,
       });
-      const formatedDefinition = formatString(item.definition, data);
-      const formatedQuery = item.query?.query ? formatString(item.query.query, data) : undefined;
+      const formatQueryString = datasourceCate === DatasourceCateEnum.doris ? formatDorisSqlString : formatString;
+      const formatedDefinition = formatQueryString(item.definition, data);
+      const formatedQuery = item.query?.query ? formatQueryString(item.query.query, data) : undefined;
       const datasourceValue = formatDatasource(item.datasource.value as any, data);
 
       if (!item.datasource) {
@@ -197,7 +199,7 @@ export default function Query(props: Props) {
       <Form.Item label={t('var.width')} name='width' tooltip={t('var.width_tip')}>
         <InputNumber min={120} placeholder='180' style={{ width: '100%' }} />
       </Form.Item>
-      {_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql], datasourceCate) && (
+      {_.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql, DatasourceCateEnum.doris], datasourceCate) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
@@ -214,7 +216,7 @@ export default function Query(props: Props) {
           {item?.multi && item?.allOption ? (
             <Col flex='auto'>
               <Form.Item label={t('var.allValue')} name='allValue'>
-                <Input placeholder={datasourceCate === DatasourceCateEnum.mysql ? '' : '.*'} />
+                <Input placeholder={_.includes([DatasourceCateEnum.mysql, DatasourceCateEnum.doris], datasourceCate) ? '' : '.*'} />
               </Form.Item>
             </Col>
           ) : null}

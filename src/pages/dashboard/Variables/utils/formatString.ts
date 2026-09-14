@@ -64,6 +64,30 @@ export function formatString(str: string, data: Record<string, any>): string {
   }
 }
 
+const DORIS_SQL_LIKE_FORMAT_PATTERN = /\$\{([a-zA-Z0-9_]+):(sql_like_or|sql_like_and):([^}]+)\}/g;
+const DORIS_SQL_FIELD_PATTERN = /^(?:`[^`]+`|[a-zA-Z_][a-zA-Z0-9_]*)(?:\.(?:`[^`]+`|[a-zA-Z_][a-zA-Z0-9_]*))*$/;
+
+/**
+ * Interpolates Doris-only SQL LIKE formats with an optional target field.
+ * `${host:sql_like_or:description}` keeps `host` as the variable name while
+ * generating predicates for the `description` column.
+ */
+export function formatDorisSqlString(str: string, data: Record<string, any>): string {
+  if (!str || typeof str !== 'string') return str;
+
+  const processedStr = str.replace(DORIS_SQL_LIKE_FORMAT_PATTERN, (match, variableName, format, fieldName) => {
+    if (!DORIS_SQL_FIELD_PATTERN.test(fieldName)) return match;
+
+    const formattedValue = data[`${variableName}:${format}`];
+    if (formattedValue === undefined) return match;
+
+    const variableFieldPattern = new RegExp(`\\b${variableName}\\s+LIKE\\s+`, 'g');
+    return String(formattedValue).replace(variableFieldPattern, `${fieldName} LIKE `);
+  });
+
+  return formatString(processedStr, data);
+}
+
 export function formatDatasource(str: string, data: Record<string, any>): number | undefined {
   const result = formatString(str, data);
   if (!result) {

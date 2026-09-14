@@ -45,6 +45,7 @@ export default async function dorisQuery(options: IOptions): Promise<Result> {
       const queryStr = replaceTemplateVariables(query.query, {
         range: time,
         scopedVars,
+        enableDorisSqlFormats: true,
       });
       const mode = query.mode;
       if (target.__mode__ === '__expr__') {
