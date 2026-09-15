@@ -298,15 +298,20 @@ it('uses the explorer skill for each new dock conversation', () => {
   expect(panelProps!.initialSkill).toBe('explorer-query');
 });
 
-it('shares the current conversation through the overflow menu without collapsing', async () => {
+it('keeps icon-only sharing behind the more menu without collapsing', async () => {
   renderDock();
   expect(screen.queryByRole('button', { name: 'history.more_actions' })).toBeNull();
   act(() => panelProps!.onChatChange!({ chat_id: 'share-chat', title: '', last_update: 0 }));
   act(() => panelProps!.onTurn!(turn({})));
+  expect(screen.queryByRole('button', { name: 'history.share' })).toBeNull();
+  expect(screen.queryByRole('menuitem', { name: 'history.share' })).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: 'history.more_actions' }));
   const share = await screen.findByRole('menuitem', { name: 'history.share' });
+  expect(share.textContent).toBe('');
+  expect(screen.getByTestId('list').hidden).toBe(false);
+  fireEvent.mouseEnter(screen.getByLabelText('history.share'));
+  expect(await screen.findByRole('tooltip')).toHaveTextContent('history.share');
   fireEvent.click(share);
   expect(screen.getByTestId('list').hidden).toBe(false);
-  fireEvent.click(share);
   await waitFor(() => expect(jest.requireMock('@/utils').copy2ClipBoard).toHaveBeenCalledWith(expect.stringContaining('ai_chat_share_id=share-chat&ai_chat_readonly=1'), true));
 });
