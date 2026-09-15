@@ -341,7 +341,18 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                 getPopupContainer={(trigger) => trigger.parentElement!}
                 overlay={
                   <Menu
-                    items={[{ key: 'share', icon: <Share2 size={ICON} />, label: t('history.share') }]}
+                    items={[
+                      {
+                        key: 'share',
+                        label: (
+                          <Tooltip title={t('history.share')}>
+                            <span className='flex items-center justify-center' aria-label={t('history.share')}>
+                              <Share2 size={ICON} strokeWidth={STROKE} />
+                            </span>
+                          </Tooltip>
+                        ),
+                      },
+                    ]}
                     onClick={() => copyAiChatShareUrl(buildAiChatShareUrl(chatId), t('toolbar.share_copied'))}
                   />
                 }
