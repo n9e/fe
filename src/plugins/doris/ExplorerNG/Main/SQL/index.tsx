@@ -2,6 +2,8 @@ import React, { useRef } from 'react';
 import { Form } from 'antd';
 import { useSize } from 'ahooks';
 
+import useKeepMountedAfterFirstMeasure from '@/pages/logExplorer/utils/useKeepMountedAfterFirstMeasure';
+
 import Table from './Table';
 import Timeseries from './Timeseries';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
@@ -28,6 +30,7 @@ export default function index(props: Props) {
   const sqlVizType = Form.useWatch(['query', 'sqlVizType']);
   const timeSeriesEleRef = useRef<HTMLDivElement>(null);
   const timeSeriesEleSize = useSize(timeSeriesEleRef);
+  const shouldMountTimeseries = useKeepMountedAfterFirstMeasure(timeSeriesEleSize?.width, sqlVizType === 'timeseries');
 
   return (
     <>
@@ -39,7 +42,9 @@ export default function index(props: Props) {
       )}
       {sqlVizType === 'timeseries' && (
         <div ref={timeSeriesEleRef} className='w-full h-full min-h-0 flex flex-col'>
-          {timeSeriesEleSize?.width && <Timeseries width={timeSeriesEleSize.width} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} timeseriesKeys={timeseriesKeys} />}
+          {shouldMountTimeseries && (
+            <Timeseries width={timeSeriesEleSize?.width ?? 0} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} timeseriesKeys={timeseriesKeys} />
+          )}
         </div>
       )}
     </>
