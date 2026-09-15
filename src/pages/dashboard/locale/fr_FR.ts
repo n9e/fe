@@ -161,6 +161,8 @@ const fr_FR = {
     reg_tip:
       "Facultatif : une expression régulière filtre les valeurs proposées. Saisissez un <a>littéral d'expression régulière</a>, c'est-à-dire un motif encadré par des barres obliques",
     reg_tip2: "Pour n'extraire qu'une partie d'une valeur, <a>les groupes de capture nommés séparent le texte affiché de la valeur</a>",
+    reg_object_tip:
+      'Pour les options avec un nom distinct, la regex porte sur la valeur. Une correspondance ordinaire conserve les deux champs ; les groupes text/value remplacent uniquement le champ correspondant.',
     multi: 'Sélection multiple',
     allOption: "Inclure l'option Tout",
     allValue: 'Valeur personnalisée pour Tout',

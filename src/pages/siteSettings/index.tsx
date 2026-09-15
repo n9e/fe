@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Card, Form, Input, Button, message, Row, Col, Space, Select, Switch } from 'antd';
+import { Card, Form, Input, Button, message, Row, Col, Space, Select, Switch, Tabs } from 'antd';
 import PageLayout, { HelpLink } from '@/components/pageLayout';
 import { IS_ENT } from '@/utils/constant';
 import { getN9eConfig, putN9eConfig } from './services';
 import './locale';
+import { languages, languageLabels } from '@/i18n';
+import { getDefaultAlertSeverityName } from '@/utils/alertSeverity';
 
 // @ts-ignore
 import SiteSettingsPlus from 'plus:/parcels/SiteSettings';
@@ -22,6 +24,7 @@ export default function index() {
         try {
           const result = JSON.parse(res);
           if (_.isPlainObject(result)) {
+            form.resetFields();
             form.setFieldsValue(result);
           }
         } catch (e) {
@@ -57,6 +60,23 @@ export default function index() {
               }}
             >
               <SiteSettingsPlus />
+              <Form.Item label={t('alert_severity_names')}>
+                <Tabs>
+                  {languages.map((language) => (
+                    <Tabs.TabPane tab={languageLabels[language]} key={language} forceRender>
+                      <Row gutter={16}>
+                        {[1, 2, 3].map((severity) => (
+                          <Col span={8} key={severity}>
+                            <Form.Item name={['alert_severity_names', language, String(severity)]} label={`S${severity}`}>
+                              <Input placeholder={getDefaultAlertSeverityName(severity, language)} />
+                            </Form.Item>
+                          </Col>
+                        ))}
+                      </Row>
+                    </Tabs.TabPane>
+                  ))}
+                </Tabs>
+              </Form.Item>
               <Form.Item name={['site_url']} label={t('site_url')} tooltip={t('site_url_tip')}>
                 <Input />
               </Form.Item>

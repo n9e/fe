@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { getIndices } from '@/pages/explorer/Elasticsearch/services';
 import { generateQueryName } from '@/components/QueryName';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
+import { IS_PLUS, DatasourceCateEnum } from '@/utils/constant';
+import { getESClusterInfo } from '@/plugins/elasticsearch/services';
 import Query from './Query';
 
 interface IProps {
@@ -19,8 +21,11 @@ export default function index(props: IProps) {
   const { t } = useTranslation('alertRules');
   const { hideIndexPattern, datasourceValue, form, disabled } = props;
   const [indexOptions, setIndexOptions] = useState<any[]>([]);
+  const [supportsSQL, setSupportsSQL] = useState(false);
   const names = ['rule_config', 'queries'];
   const queries = Form.useWatch(names);
+  const datasourceCate = Form.useWatch('cate', form);
+  const esDatasourceCate = datasourceCate === DatasourceCateEnum.opensearch ? DatasourceCateEnum.opensearch : DatasourceCateEnum.elasticsearch;
 
   useEffect(() => {
     if (datasourceValue !== undefined) {
@@ -35,6 +40,14 @@ export default function index(props: IProps) {
       });
     }
   }, [datasourceValue]);
+
+  useEffect(() => {
+    setSupportsSQL(false);
+    if (!IS_PLUS || !datasourceValue) return;
+    getESClusterInfo({ cate: esDatasourceCate, datasource_id: datasourceValue })
+      .then((info) => setSupportsSQL(info?.is_sql_supported ?? false))
+      .catch(() => setSupportsSQL(false));
+  }, [datasourceValue, esDatasourceCate]);
 
   return (
     <Form.List
@@ -56,6 +69,7 @@ export default function index(props: IProps) {
                 hideIndexPattern={hideIndexPattern}
                 datasourceValue={datasourceValue}
                 indexOptions={indexOptions}
+                supportsSQL={supportsSQL}
                 disabled={disabled}
                 onClose={fields.length > 1 ? () => remove(field.name) : undefined}
               />

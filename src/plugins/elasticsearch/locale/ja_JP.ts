@@ -1,5 +1,7 @@
 const ja_JP = {
   query: {
+    range: 'Query range',
+    sql_required: 'SQL is required',
     mode: '検索モード',
     mode_indices: 'Indices',
     mode_index_patterns: 'Index patterns',
@@ -37,6 +39,12 @@ const ja_JP = {
       table: '表',
       timeseries: '時系列',
     },
+    dashboard: {
+      mode: {
+        timeSeries: '時系列データ',
+        table: '非時系列データ',
+      },
+    },
     add_to: {
       btn: '追加先...',
       recording_rule: '記録ルールに追加',
@@ -44,6 +52,11 @@ const ja_JP = {
     },
   },
   builder: {
+    title: 'Builder',
+    code: 'Code',
+    open_builder: 'Open builder',
+    switch_to_builder_confirm_title: 'Switch to Builder',
+    switch_to_builder_confirm_content: 'Switching will clear the current SQL and builder configuration.',
     to_pinned_btn: '固定',
     to_unpinned_btn: '固定解除',
     filters: {

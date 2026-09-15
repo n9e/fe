@@ -150,6 +150,7 @@ const en_US = {
   invalid_datasource_tip_1: 'Data sources',
   invalid_datasource_tip_2: 'are not associated with any alerting engine cluster',
   invalid_datasource_reload: 'Reload',
+  all_datasources: 'All data sources',
   advanced_settings: 'Advanced settings',
   host: {
     query: {
@@ -209,6 +210,7 @@ const en_US = {
       copy: 'Copy JSON content to clipboard',
     },
     update: {
+      service_cal_legacy_cleared: '{{num}} of the selected rules still use the deprecated rule-level effective time. This operation will clear it.',
       title: 'Update alert rules',
       name: 'Update alert rules',
       field: 'Field',

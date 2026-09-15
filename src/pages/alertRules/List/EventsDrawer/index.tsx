@@ -5,6 +5,7 @@ import { useAntdTable } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import { useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 
@@ -291,9 +292,9 @@ export default function index(props: Props) {
             }}
             dropdownMatchSelectWidth={false}
           >
-            <Select.Option value={1}>S1（Critical）</Select.Option>
-            <Select.Option value={2}>S2（Warning）</Select.Option>
-            <Select.Option value={3}>S3（Info）</Select.Option>
+            <Select.Option value={1}>{getAlertSeverityName(1)}</Select.Option>
+            <Select.Option value={2}>{getAlertSeverityName(2)}</Select.Option>
+            <Select.Option value={3}>{getAlertSeverityName(3)}</Select.Option>
           </Select>
           <Input
             style={{ width: 300 }}

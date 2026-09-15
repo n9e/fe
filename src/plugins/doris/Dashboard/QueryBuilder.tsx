@@ -101,6 +101,9 @@ export default function DorisQueryBuilder({ datasourceValue }) {
                                 ]}
                                 value={editMode}
                                 onChange={(value) => {
+                                  // 切到 Builder 时清空已生成的 sql(query) 和 builderConfig：
+                                  // Builder 配置是纯编辑态，重新进入需从空白生成，
+                                  // 避免残留配置生成的 SQL 与当前 SQL 不一致。
                                   if (value === 'builder' && editMode === 'code') {
                                     const sqlValue = _.get(targets, [field.name, 'query', 'query']);
                                     if (sqlValue) {

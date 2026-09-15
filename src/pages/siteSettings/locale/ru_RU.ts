@@ -32,6 +32,7 @@ const ru_RU = {
   print_access_log: 'Включить журнал доступа',
   print_body_paths: 'Отображать пути элементов тела запроса',
   font_family: 'Шрифт',
+  alert_severity_names: 'Настраиваемые названия уровней тревоги',
 };
 
 export default ru_RU;

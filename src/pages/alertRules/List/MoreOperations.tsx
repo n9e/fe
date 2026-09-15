@@ -214,6 +214,9 @@ export default function MoreOperations(props: MoreOperationsProps) {
                 {
                   ids: selectRowKeys,
                   service_cal_configs: fieldsData?.service_cal_configs || [],
+                  // 更早的 extra_config.service_cal_ids 后端只在请求带该键时才覆盖；
+                  // 不带的话清空 configs 后引擎会回落到老字段继续屏蔽，这里一并清掉
+                  service_cal_ids: [],
                 },
                 bgid,
               );

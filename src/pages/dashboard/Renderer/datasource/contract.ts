@@ -5,13 +5,16 @@ import type { IRawTimeRange } from '@/components/TimeRangePicker/types';
 import { parseRange } from '@/components/TimeRangePicker/utils';
 import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
 import flatten from '@/utils/flatten';
-import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import replaceTemplateVariables, { getBuiltInVariables, replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { getDashboardQueryStep } from './queryStep';
 import { normalizeInterval } from './elasticsearch/utils';
 import type { DashboardQueryRequest, DashboardQueryResponse, DatasourceQuery, ExpressionQuery, NormalizedDashboardQueryResponse, DashboardSeries } from './types';
 import { getTargetRefId, inferTargetResultType, isExpressionTarget } from './target';
 import { DASHBOARD_TARGET_META_FIELDS, getDashboardDatasourceDefinition } from './registry';
+
+import { getGlobalState } from '@/pages/dashboard/globalState';
+import { getDashboardVariablePlugin } from '@/pages/dashboard/Variables/plugins';
 
 export { inferTargetResultType, isExpressionTarget } from './target';
 
@@ -78,6 +81,15 @@ function getDatasourceQueryPayload(target: ITarget, cate: string, options: Build
     delete payload.interval_unit;
   }
 
+  const plugin = getDashboardVariablePlugin(cate);
+  if (plugin) {
+    return plugin.transformQuery(payload, {
+      variables: [...getGlobalState('variablesWithOptions'), ...getBuiltInVariables(options.effectiveRange, { step })],
+      range: options.effectiveRange,
+      step,
+      scopedVars: options.scopedVars,
+    });
+  }
   return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars);
 }
 
@@ -144,19 +156,27 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     const values = target.query?.values;
     const isElasticsearchQuery = _.includes(['elasticsearch', 'opensearch'], datasource.cate);
     if (isElasticsearchQuery && Array.isArray(values)) {
-      return values.map((value, valueIndex) => ({
-        kind: 'query' as const,
-        // 保留首个指标的 RefID，兼容表达式对该 target 的已有引用；其余指标使用唯一子 RefID。
-        ref_id: valueIndex === 0 ? refId : getValueRefId(refId, valueIndex),
-        datasource: {
-          cate: datasource.cate,
-          id: resolvedDatasourceId,
-        },
-        result_type: inferTargetResultType(target),
-        query: getDatasourceQueryPayload(target, datasource.cate, buildOptions, value),
-      }));
+      return values.flatMap((value, valueIndex) => {
+        const queryPayload = getDatasourceQueryPayload(target, datasource.cate, buildOptions, value);
+        if (queryPayload === undefined) return [];
+        return [
+          {
+            kind: 'query' as const,
+            // 保留首个指标的 RefID，兼容表达式对该 target 的已有引用；其余指标使用唯一子 RefID。
+            ref_id: valueIndex === 0 ? refId : getValueRefId(refId, valueIndex),
+            datasource: {
+              cate: datasource.cate,
+              id: resolvedDatasourceId,
+            },
+            result_type: inferTargetResultType(target),
+            query: queryPayload,
+          },
+        ];
+      });
     }
 
+    const queryPayload = getDatasourceQueryPayload(target, datasource.cate, buildOptions);
+    if (queryPayload === undefined) return [];
     return [
       {
         kind: 'query',
@@ -166,7 +186,7 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
           id: resolvedDatasourceId,
         },
         result_type: inferTargetResultType(target),
-        query: getDatasourceQueryPayload(target, datasource.cate, buildOptions),
+        query: queryPayload,
       },
     ];
   });

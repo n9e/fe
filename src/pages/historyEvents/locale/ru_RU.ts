@@ -2,6 +2,7 @@ const ru_RU = {
   title: 'История оповещений',
   event_name: 'Событие',
   search_placeholder: 'Поиск по правилам и меткам (разделяйте ключевые слова пробелами)',
+  hash_placeholder: 'Точный поиск по хешу события',
   first_trigger_time: 'Время первого срабатывания',
   trigger_time: 'Время срабатывания',
   last_eval_time: 'Время проверки',

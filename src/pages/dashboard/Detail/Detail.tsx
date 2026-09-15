@@ -372,6 +372,8 @@ export default function DetailV2(props: IProps) {
     });
   }, [_.map(variablesWithOptions, (item) => _.pick(item, ['name', 'value'])), range]);
 
+  const shouldHideIframeHeader = dashboard.configs?.mode === 'iframe' && dashboard.configs?.hideHeader === true;
+
   return (
     <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
@@ -385,7 +387,7 @@ export default function DetailV2(props: IProps) {
             <div
               className='dashboard-detail-content-header-container'
               style={{
-                display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
+                display: query.viewMode !== 'fullscreen' && !shouldHideIframeHeader ? 'block' : 'none',
                 paddingBottom: dashboard.configs?.mode === 'iframe' ? 0 : 16,
               }}
             >

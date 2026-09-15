@@ -25,13 +25,14 @@ export default forwardRef(function OriginSettings(
     showPageLoadMode?: boolean;
     showJSONSettings?: boolean;
     showTopNSettings?: boolean;
+    showFlattenSettings?: boolean;
     organizeFields?: string[];
     setOrganizeFields?: (value?: string[]) => void;
   },
   ref,
 ) {
   const { t } = useTranslation(NAME_SPACE);
-  const { options, updateOptions, fields, showDateField, showMoreSettings, showJSONSettings, showPageLoadMode, showTopNSettings } = props;
+  const { options, updateOptions, fields, showDateField, showMoreSettings, showJSONSettings, showPageLoadMode, showTopNSettings, showFlattenSettings } = props;
 
   const [organizeFieldsModalVisible, setOrganizeFieldsModalVisible] = useState(false);
   const [organizeFields, setOrganizeFields] = useState<string[] | undefined>(props.organizeFields);
@@ -48,6 +49,9 @@ export default forwardRef(function OriginSettings(
   const [topNSettingsModalVisible, setTopNSettingsModalVisible] = useState(false);
   const [topNumber, setTopNumber] = useState(options.topNumber ?? 5);
 
+  const [flattenSettingsModalVisible, setFlattenSettingsModalVisible] = useState(false);
+  const [flattenDepth, setFlattenDepth] = useState<number>(options.flattenDepth ?? 1);
+
   useEffect(() => {
     setJsonSettings({
       jsonDisplaType: options.jsonDisplaType,
@@ -55,6 +59,7 @@ export default forwardRef(function OriginSettings(
     });
     setPageLoadMode(options.pageLoadMode || 'pagination');
     setTopNumber(options.topNumber || 5);
+    setFlattenDepth(options.flattenDepth ?? 1);
   }, [JSON.stringify(options)]);
 
   useEffect(() => {
@@ -179,6 +184,22 @@ export default forwardRef(function OriginSettings(
                                 }}
                               >
                                 {t('logs.settings.topNSettings.title')}
+                              </a>
+                            ),
+                          },
+                        ]
+                      : [],
+                    showFlattenSettings
+                      ? [
+                          {
+                            key: 'flattenSettings',
+                            label: (
+                              <a
+                                onClick={() => {
+                                  setFlattenSettingsModalVisible(true);
+                                }}
+                              >
+                                {t('logs.settings.flattenSettings.title')}
                               </a>
                             ),
                           },
@@ -329,6 +350,40 @@ export default forwardRef(function OriginSettings(
               onChange={(val) => {
                 if (val) {
                   setTopNumber(val);
+                }
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title={t('logs.settings.flattenSettings.title')}
+        visible={flattenSettingsModalVisible}
+        onOk={() => {
+          updateOptions(
+            {
+              flattenDepth,
+            },
+            true,
+          );
+          setFlattenSettingsModalVisible(false);
+        }}
+        onCancel={() => {
+          setFlattenDepth(options.flattenDepth ?? 1);
+          setFlattenSettingsModalVisible(false);
+        }}
+      >
+        <Form>
+          <Form.Item label={t('logs.settings.flattenSettings.title')} extra={<span style={{ whiteSpace: 'pre-line' }}>{t('logs.settings.flattenSettings.extra')}</span>}>
+            <InputNumber
+              className='w-full'
+              min={0}
+              max={10}
+              precision={0}
+              value={flattenDepth}
+              onChange={(val) => {
+                if (typeof val === 'number') {
+                  setFlattenDepth(val);
                 }
               }}
             />

@@ -85,6 +85,7 @@ const ru_RU = {
   },
   meta_tip: 'Просмотр метаинформации',
   meta_title: 'Метаинформация',
+  meta_tab_overview: 'Обзор',
   meta_desc_key: 'Ключ метаинформации',
   meta_desc_value: 'Значение метаинформации',
   meta_value_click_to_copy: 'Нажмите, чтобы скопировать',

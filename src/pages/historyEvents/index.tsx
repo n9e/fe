@@ -35,6 +35,7 @@ const getFilter = (query) => {
     bgid: query.bgid ? Number(query.bgid) : undefined,
     severity: query.severity ? Number(query.severity) : undefined,
     query: query.query,
+    hash: query.hash,
     is_recovered: query.is_recovered ? Number(query.is_recovered) : undefined,
     rule_prods: query.rule_prods ? _.split(query.rule_prods, ',') : [],
   };
@@ -79,6 +80,7 @@ export default function List() {
       <div className='event-content'>
         <div className='table-area fc-border rounded-lg'>
           <ListNG
+            showHashFilter
             filter={filter}
             setFilter={setFilter}
             fetchData={({ current, pageSize }, filterObj) => {
