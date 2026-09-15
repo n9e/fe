@@ -91,6 +91,12 @@ test('sorts current query results by value, not display name', () => {
   ).toEqual(['a', 'z']);
 });
 
+test('keeps GCM metric metadata after regex filtering and renaming', () => {
+  expect(
+    processQueryOptions([{ label: 'CPU utilization', value: 'compute.googleapis.com/cpu', metricDescription: 'CPU usage ratio' }], '/compute\\.googleapis\\.com\\/(?<value>cpu)/'),
+  ).toEqual([{ label: 'CPU utilization', value: 'cpu', metricDescription: 'CPU usage ratio' }]);
+});
+
 test('selects and interpolates actual project IDs while retaining display names', () => {
   const options = processQueryOptions([
     { label: 'Production', value: 'project-1' },

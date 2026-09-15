@@ -212,6 +212,7 @@ const zh_HK = {
       copy: '複製 JSON 內容到剪貼簿',
     },
     update: {
+      service_cal_legacy_cleared: '所選規則中有 {{num}} 條配置了已廢棄的規則級生效時段，本次操作會將其一併清除',
       title: '更新告警規則',
       name: '批量更新',
       field: '字段',

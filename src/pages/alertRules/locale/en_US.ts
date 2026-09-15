@@ -210,6 +210,7 @@ const en_US = {
       copy: 'Copy JSON content to clipboard',
     },
     update: {
+      service_cal_legacy_cleared: '{{num}} of the selected rules still use the deprecated rule-level effective time. This operation will clear it.',
       title: 'Update alert rules',
       name: 'Update alert rules',
       field: 'Field',

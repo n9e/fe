@@ -13,11 +13,18 @@ function isScalar(value: unknown): value is ScalarOption {
 
 function isObjectOption(value: unknown): value is ObjectOption {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
-  return 'label' in value && typeof value.label === 'string' && 'value' in value && (typeof value.value === 'string' || typeof value.value === 'number');
+  return (
+    'label' in value &&
+    typeof value.label === 'string' &&
+    'value' in value &&
+    (typeof value.value === 'string' || typeof value.value === 'number') &&
+    (!('metricDescription' in value) || typeof value.metricDescription === 'string')
+  );
 }
 
 function processObjectOption(option: ObjectOption, regex: RegExp | null): QueryOption | undefined {
-  const original = { label: option.label, value: String(option.value) };
+  const metadata = option.metricDescription === undefined ? {} : { metricDescription: option.metricDescription };
+  const original = { label: option.label, value: String(option.value), ...metadata };
   if (!regex) return original;
 
   regex.lastIndex = 0;
@@ -34,7 +41,7 @@ function processObjectOption(option: ObjectOption, regex: RegExp | null): QueryO
     match = regex.exec(original.value);
   } while (match);
 
-  return { label: label ?? original.label, value: value ?? original.value };
+  return { label: label ?? original.label, value: value ?? original.value, ...metadata };
 }
 
 /** 新旧入口共用对象协议，但分别保留各自的字符串正则语义和排序策略。 */

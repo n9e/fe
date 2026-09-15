@@ -2,6 +2,7 @@ const ja_JP = {
   title: '履歴アラート',
   event_name: 'イベント',
   search_placeholder: 'ルールとラベルを模糊検索（複数のキーワードはスペースで区切ってください）',
+  hash_placeholder: 'イベント Hash で完全一致検索',
   first_trigger_time: '初回トリガ時間',
   trigger_time: 'トリガ時間',
   last_eval_time: '検出時間',

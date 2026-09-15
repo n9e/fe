@@ -18,12 +18,14 @@ import { Props } from './types';
 import { getErrorMessage } from '@/pages/dashboard/utils/json';
 import type { JsonObject } from '@/pages/dashboard/types';
 import collectSqlMacroNames from '../utils/collectSqlMacroNames';
+import { getDashboardVariablePlugin } from '../plugins';
 
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
   const { hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options, width } = variable;
+  const selectPresentation = getDashboardVariablePlugin(variable.datasource?.cate)?.selectPresentation?.(variable.query);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -236,6 +238,8 @@ export default function Query(props: Props) {
           }}
           defaultActiveFirstOption={false}
           showSearch
+          optionFilterProp={selectPresentation?.optionFilterProp}
+          optionLabelProp={selectPresentation?.optionLabelProp}
           searchValue={searchValue}
           onSearch={(v) => {
             setSearchValue(v);
@@ -277,7 +281,8 @@ export default function Query(props: Props) {
           dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
           loading={loading}
           value={value}
-          dropdownClassName='overflow-586'
+          dropdownStyle={selectPresentation?.dropdownStyle}
+          dropdownClassName={['overflow-586', selectPresentation?.dropdownClassName].filter(Boolean).join(' ')}
           maxTagPlaceholder={(omittedValues) => {
             return (
               <Tooltip
@@ -299,11 +304,20 @@ export default function Query(props: Props) {
               All
             </Select.Option>
           )}
-          {_.map(options, (item) => (
-            <Select.Option key={item.value} value={item.value} style={{ maxWidth: 500 }}>
-              {item.label}
-            </Select.Option>
-          ))}
+          {_.map(options, (item) => {
+            const renderedOption = selectPresentation?.renderOption?.(item);
+            return (
+              <Select.Option
+                key={item.value}
+                value={item.value}
+                label_original={renderedOption?.labelOriginal}
+                label_search={renderedOption?.labelSearch}
+                style={{ maxWidth: 500 }}
+              >
+                {renderedOption?.content ?? item.label}
+              </Select.Option>
+            );
+          })}
         </Select>
       </InputGroupWithFormItem>
     </div>

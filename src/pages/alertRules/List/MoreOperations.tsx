@@ -21,7 +21,6 @@ import { Dropdown, Button, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { json2csv } from 'json-2-csv';
-import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { deleteStrategy, updateAlertRules, updateServiceCal, updateNotifyChannels } from '@/services/warning';
 import { CommonStateContext } from '@/App';
 import Export from './Export';
@@ -31,14 +30,11 @@ import CloneToBgids from './CloneToBgids';
 import { downloadFile } from './utils';
 
 interface MoreOperationsProps {
-  runMutation: ReturnType<typeof useRowMutation>['run'];
-  pendingIds: ReadonlySet<React.Key>;
   bgid?: number; // 如果 isLeaf 为 true，则 bgid 必须存在
   isLeaf: boolean;
   selectRowKeys: React.Key[];
   selectedRows: any[];
   getAlertRules: () => void;
-  onStatusChange?: (ids: React.Key[], disabled: 0 | 1) => void;
   clearSelection?: () => void;
 }
 
@@ -73,7 +69,6 @@ const ignoreFields = [
 export default function MoreOperations(props: MoreOperationsProps) {
   const { t } = useTranslation('alertRules');
   const { bgid, isLeaf, selectRowKeys, selectedRows, getAlertRules, clearSelection } = props;
-  const { runMutation, pendingIds } = props;
   const [isModalVisible, setisModalVisible] = useState<boolean>(false);
   const { isPlus, busiGroups } = useContext(CommonStateContext);
 
@@ -201,7 +196,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
         }
         trigger={['click']}
       >
-        <Button disabled={selectRowKeys.some((id) => pendingIds.has(id))} onClick={(e) => e.stopPropagation()}>
+        <Button onClick={(e) => e.stopPropagation()}>
           {t('common:btn.more')}
           <DownOutlined
             style={{
@@ -214,65 +209,62 @@ export default function MoreOperations(props: MoreOperationsProps) {
         isModalVisible={isModalVisible}
         editModalFinish={async (isOk, fieldsData) => {
           if (isOk && bgid) {
-            return runMutation(selectRowKeys, async () => {
-              if (isPlus && fieldsData?.service_cal_configs) {
-                const res = await updateServiceCal(
-                  {
-                    ids: selectRowKeys,
-                    service_cal_configs: fieldsData?.service_cal_configs || [],
-                  },
-                  bgid,
-                );
-                if (!res.err) {
-                  message.success(t('common:success.modify'));
-                  clearSelection?.();
-                  getAlertRules();
-                  setisModalVisible(false);
-                } else {
-                  message.error(res.err);
-                }
-              } else if (isPlus && fieldsData?.notify_channels) {
-                const res = await updateNotifyChannels(
-                  {
-                    ids: selectRowKeys,
-                    notify_channels: _.split(fieldsData?.notify_channels, ' ') || [],
-                    custom_notify_tpl: fieldsData?.custom_notify_tpl || {},
-                  },
-                  bgid,
-                );
-                if (!res.err) {
-                  message.success(t('common:success.modify'));
-                  clearSelection?.();
-                  getAlertRules();
-                  setisModalVisible(false);
-                } else {
-                  message.error(res.err);
-                }
+            if (isPlus && fieldsData?.service_cal_configs) {
+              const res = await updateServiceCal(
+                {
+                  ids: selectRowKeys,
+                  service_cal_configs: fieldsData?.service_cal_configs || [],
+                  // 更早的 extra_config.service_cal_ids 后端只在请求带该键时才覆盖；
+                  // 不带的话清空 configs 后引擎会回落到老字段继续屏蔽，这里一并清掉
+                  service_cal_ids: [],
+                },
+                bgid,
+              );
+              if (!res.err) {
+                message.success(t('common:success.modify'));
+                clearSelection?.();
+                getAlertRules();
+                setisModalVisible(false);
               } else {
-                const action = fieldsData.action;
-                delete fieldsData.action;
-                const res = await updateAlertRules(
-                  {
-                    ids: selectRowKeys,
-                    fields: fieldsData,
-                    action,
-                  },
-                  bgid,
-                );
-                if (!res.err) {
-                  message.success(t('common:success.modify'));
-                  clearSelection?.();
-                  if (Object.keys(fieldsData).length === 1 && (fieldsData.disabled === 0 || fieldsData.disabled === 1)) {
-                    props.onStatusChange?.(selectRowKeys, fieldsData.disabled);
-                  } else {
-                    getAlertRules();
-                  }
-                  setisModalVisible(false);
-                } else {
-                  message.error(res.err);
-                }
+                message.error(res.err);
               }
-            });
+            } else if (isPlus && fieldsData?.notify_channels) {
+              const res = await updateNotifyChannels(
+                {
+                  ids: selectRowKeys,
+                  notify_channels: _.split(fieldsData?.notify_channels, ' ') || [],
+                  custom_notify_tpl: fieldsData?.custom_notify_tpl || {},
+                },
+                bgid,
+              );
+              if (!res.err) {
+                message.success(t('common:success.modify'));
+                clearSelection?.();
+                getAlertRules();
+                setisModalVisible(false);
+              } else {
+                message.error(res.err);
+              }
+            } else {
+              const action = fieldsData.action;
+              delete fieldsData.action;
+              const res = await updateAlertRules(
+                {
+                  ids: selectRowKeys,
+                  fields: fieldsData,
+                  action,
+                },
+                bgid,
+              );
+              if (!res.err) {
+                message.success(t('common:success.modify'));
+                clearSelection?.();
+                getAlertRules();
+                setisModalVisible(false);
+              } else {
+                message.error(res.err);
+              }
+            }
           } else {
             setisModalVisible(false);
           }
