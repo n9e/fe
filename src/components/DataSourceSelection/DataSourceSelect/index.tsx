@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useId, useRef, useState } from 'react';
-import { Button, Checkbox, Empty, Select, Spin, Tooltip, message } from 'antd';
+import { Button, Empty, Select, Spin, Tooltip, message } from 'antd';
 import DisabledContext from 'antd/es/config-provider/DisabledContext';
 import { ExportOutlined, ReloadOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
 import DataSourceSelectOption from './DataSourceSelectOption';
-import DataSourceSelectTag from './DataSourceSelectTag';
 import { getDataSourceSelectOptions } from './model';
 import type { DataSourceSelectProps, DataSourceSelectSource, DataSourceSelectValue } from './types';
 
@@ -40,6 +39,7 @@ export default function DataSourceSelect<T = unknown>(props: DataSourceSelectPro
   const isRefreshing = refreshing || internalRefreshing;
   const loadError = error || (refreshError ? t('refreshFailed') : undefined);
   const selectedValues = props.value === undefined ? [] : Array.isArray(props.value) ? props.value : [props.value];
+  const selectedValueSet = new Set(selectedValues);
   const typeByValue = new Map(types.map((type) => [type.value, type]));
   const sourceById = new Map(sources.map((source) => [source.id, source]));
   const options = getDataSourceSelectOptions(sources, selectedValues, !loading && !isRefreshing && !loadError).map((option) => {
@@ -52,17 +52,14 @@ export default function DataSourceSelect<T = unknown>(props: DataSourceSelectPro
     return {
       key: `${typeof option.value}:${String(option.value)}`,
       value: option.value,
-      disabled: option.disabled,
+      // 多选已选失效项允许取消；移除后恢复禁用，不能再次选入。
+      disabled: option.disabled && !(props.mode === 'multiple' && selectedValueSet.has(option.value)),
       title: status ? `${name} · ${status}` : name,
       searchText: [name, String(option.value), option.source?.type, typeof typeLabel === 'string' ? typeLabel : ''].join(' ').toLocaleLowerCase(),
       label: <DataSourceSelectOption option={option} icon={icon} typeLabel={typeLabel} />,
       selectedLabel: <DataSourceSelectOption option={option} icon={icon} compact />,
     };
   });
-  const selectableValues = new Set(options.filter((option) => !option.disabled).map((option) => option.value));
-  const selectedValueSet = new Set(selectedValues);
-  const selectedSelectableCount = [...selectableValues].filter((value) => selectedValueSet.has(value)).length;
-  const selectAllDisabled = disabled || loading || isRefreshing || Boolean(loadError) || selectableValues.size === 0;
 
   // 新失败可能与父组件 finally 结束 loading 同批发生，后续外部恢复才清除该错误。
   useEffect(() => {
@@ -150,6 +147,7 @@ export default function DataSourceSelect<T = unknown>(props: DataSourceSelectPro
         dropdownClassName='data-source-selection-select-dropdown-box'
         mode={props.mode === 'multiple' ? 'multiple' : undefined}
         maxTagCount='responsive'
+        menuItemSelectedIcon={null}
         value={props.value}
         onChange={handleChange}
         options={options}
@@ -162,25 +160,8 @@ export default function DataSourceSelect<T = unknown>(props: DataSourceSelectPro
         placeholder={placeholder ?? t('placeholder')}
         aria-label={placeholder ?? t('placeholder')}
         filterOption={(query, option) => Boolean(option?.searchText?.includes(query.trim().toLocaleLowerCase()))}
-        listHeight={288}
-        listItemHeight={36}
         dropdownRender={(menu) => (
           <>
-            {props.mode === 'multiple' && props.showSelectAll ? (
-              <div className='data-source-selection-select-all' onMouseDown={(event) => event.preventDefault()}>
-                <Checkbox
-                  checked={selectableValues.size > 0 && selectedSelectableCount === selectableValues.size}
-                  indeterminate={selectedSelectableCount > 0 && selectedSelectableCount < selectableValues.size}
-                  disabled={selectAllDisabled}
-                  onChange={(event) => {
-                    if (selectAllDisabled) return;
-                    handleChange(event.target.checked ? [...new Set([...selectedValues, ...selectableValues])] : []);
-                  }}
-                >
-                  {t('selectAll')}
-                </Checkbox>
-              </div>
-            ) : null}
             {loadError ? (
               <div className='data-source-selection-select-feedback' role='alert'>
                 {React.isValidElement(loadError) || typeof loadError === 'string' ? loadError : t('loadFailed')}
@@ -190,11 +171,6 @@ export default function DataSourceSelect<T = unknown>(props: DataSourceSelectPro
           </>
         )}
         notFoundContent={loading ? <Spin size='small' /> : loadError ? <></> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('empty')} />}
-        tagRender={({ value, label, onClose }) => (
-          <DataSourceSelectTag name={sourceById.get(value)?.name ?? `ID: ${String(value)}`} disabled={disabled || loading} onRemove={onClose}>
-            {label}
-          </DataSourceSelectTag>
-        )}
       />
     </div>
   );
