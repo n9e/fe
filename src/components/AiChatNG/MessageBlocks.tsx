@@ -162,7 +162,7 @@ export const MarkdownBlock = React.memo(
 
 export function CurStepBlock({ curStep }: { curStep: string }) {
   return (
-    <div className='mt-1 flex items-center gap-2 py-1.5 text-base text-title'>
+    <div className='ai-chat-cur-step mt-1 flex items-center gap-2 py-1.5 text-base text-title'>
       <img src='/image/ai-chat/ai_loading.svg' alt='' aria-hidden='true' className='h-5 w-5 shrink-0 animate-spin' />
       <span className='truncate'>{curStep}</span>
     </div>
@@ -397,14 +397,14 @@ function MessageItemComponent({
   const showBottomRunningStatus = shouldShowRunningStatusAtMessageBottom(message.is_finish, message.response);
 
   return (
-    <div className='ai-chat-message-item w-full space-y-3 shadow-sm'>
+    <div className='ai-chat-message-item w-full space-y-3'>
       <div className={cn('flex', slim ? 'items-start gap-2' : 'justify-end')}>
         {slim && (
-          <span className='mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-fc-300 text-hint' aria-hidden='true'>
+          <span className='mt-[5px] flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-fc-300 text-hint' aria-hidden='true'>
             <User size={12} strokeWidth={1.75} />
           </span>
         )}
-        <div className={cn('max-w-[85%] rounded-lg px-2 py-1 text-sm', slim ? 'bg-fc-200' : 'bg-primary/10')}>
+        <div className={cn('max-w-[85%] rounded-lg px-2 py-1', slim ? 'bg-fc-200 text-[13px] leading-[1.72]' : 'bg-primary/10 text-sm')}>
           <div className='whitespace-pre-wrap break-words'>
             {message.query.content.replace(/<@([^>]+)>/g, (token, id: string) => {
               const reference = message.query.references?.find((item) => item.id === id);

@@ -12,7 +12,7 @@ export default function ToolGroupBlock({ group, isFinish }: { group?: IAiChatToo
   const names = (group?.items ?? []).map((item) => item.content?.trim()).filter((name): name is string => !!name);
   if (!names.length) return null;
   return (
-    <ol className='m-0 list-none space-y-1 p-0 text-sm text-main'>
+    <ol className='ai-chat-tool-group m-0 list-none space-y-1 p-0 text-sm text-main'>
       {names.map((name, index) => {
         const running = !isFinish && index === names.length - 1;
         return (

@@ -86,6 +86,29 @@
     box-shadow: none;
   }
 
+  /* Keep user and assistant body copy on one rhythm. Removing the outer
+     paragraph margins also centres the assistant mark on the first line. */
+  .ai-chat-streamdown p:first-child {
+    margin-top: 0;
+  }
+
+  .ai-chat-streamdown p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* The assistant mark follows the first 22px line box. Compact running and
+     tool rows need the same baseline instead of their default extra offset. */
+  .ai-chat-cur-step {
+    margin-top: 1px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .ai-chat-tool-group {
+    padding-top: 1px !important;
+    line-height: 22px !important;
+  }
+
   /* Action id is for the model; the dock user already sees the query land. */
   .ai-chat-page-action-name {
     display: none;
@@ -200,8 +223,15 @@
 
   .ai-query-dock-draft-hint {
     padding: 4px 8px;
-    color: var(--fc-text-2);
     font-size: 12px;
+    line-height: 16px;
+  }
+
+  .ai-query-dock-draft-hint-bridge {
+    border-top: 1px solid var(--fc-antd-border-color);
+    border-right: 1px solid var(--fc-antd-border-color);
+    border-left: 1px solid var(--fc-antd-border-color);
+    background-color: var(--fc-fill-1, #fff);
   }
 
   .ai-query-dock-prompt:focus-visible {
