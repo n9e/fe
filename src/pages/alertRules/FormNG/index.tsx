@@ -7,8 +7,9 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import AffixWrapper from '@/components/AffixWrapper';
+import DataSourceTypeList from '@/components/DataSourceSelection/DataSourceTypeList';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
-import { DatasourceCateSelectV2 } from '@/components/DatasourceSelect';
+import { getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import { addStrategy, EditStrategy } from '@/services/warning';
 import { scrollToFirstError } from '@/utils';
 import { IS_PLUS } from '@/utils/constant';
@@ -86,6 +87,59 @@ export default function FormNG(props: IProps) {
   const notifyVersion = Form.useWatch('notify_version', form);
   const showAdvanced = shouldShowAdvancedSettings(notifyVersion, cate);
   const [sidebarVisible, setSidebarVisible] = useState(() => localStorage.getItem('alert_rule_form_ng_sidebar_visible') !== 'false');
+
+  const alertDatasourceCates = useMemo(() => {
+    const filteredCates = datasourceCateOptions.filter((item) => !!item.alertRule && (item.alertPro ? IS_PLUS : true));
+    const sortedCateValues = [
+      'prometheus',
+      'ck',
+      'influxdb',
+      'loki',
+      'doris',
+      'mysql',
+      'oracle',
+      'redshift',
+      'pgsql',
+      'victorialogs',
+      'elasticsearch',
+      'opensearch',
+      'aliyun-sls',
+      'tencent-cls',
+      'volc-tls',
+      'huawei-lts',
+      'bce-bls',
+      'tdengine',
+      'cloudwatch',
+      'cloudwatchlogs',
+      'gcm',
+    ];
+    const sortedCates = _.sortBy(filteredCates, (item) => {
+      const index = sortedCateValues.indexOf(item.value);
+      return index === -1 ? 999 : index;
+    });
+
+    return [
+      ...sortedCates,
+      {
+        value: 'host',
+        label: 'Host',
+        type: ['host'],
+        alertRule: true,
+        alertPro: false,
+        logo: '/image/logos/host.png',
+      },
+    ];
+  }, [datasourceCateOptions]);
+
+  const alertDatasourceTypes = useMemo(
+    () =>
+      alertDatasourceCates.map((item) => ({
+        value: item.value,
+        label: getCateDisplayLabel(item, i18n.language),
+        icon: <img src={item.logo} alt='' className='h-[18px] w-[18px] object-contain' />,
+      })),
+    [alertDatasourceCates, i18n.language],
+  );
 
   useEffect(() => {
     localStorage.setItem('alert_rule_form_ng_sidebar_visible', String(sidebarVisible));
@@ -430,48 +484,13 @@ export default function FormNG(props: IProps) {
                   }}
                 >
                   <Form.Item label={t('form_ng.cate')} name='cate' rules={[{ required: true }]}>
-                    <DatasourceCateSelectV2
-                      filterCates={(cates) => {
-                        const filtedCates = _.filter(cates, (item) => {
-                          return !!item.alertRule && (item.alertPro ? IS_PLUS : true);
-                        });
-                        const sortedCateValues = [
-                          'prometheus',
-                          'ck',
-                          'influxdb',
-                          'loki',
-                          'doris',
-                          'mysql',
-                          'oracle',
-                          'redshift',
-                          'pgsql',
-                          'victorialogs',
-                          'elasticsearch',
-                          'opensearch',
-                          'aliyun-sls',
-                          'tencent-cls',
-                          'volc-tls',
-                          'huawei-lts',
-                          'bce-bls',
-                          'tdengine',
-                          'cloudwatch',
-                          'cloudwatchlogs',
-                          'gcm',
-                        ];
-                        const sorted = _.sortBy(filtedCates, (cate) => {
-                          const idx = _.indexOf(sortedCateValues, cate.value);
-                          return idx === -1 ? 999 : idx;
-                        });
-                        return _.concat(sorted, {
-                          value: 'host',
-                          label: 'Host',
-                          type: ['host'],
-                          alertRule: true,
-                          alertPro: false,
-                          logo: '/image/logos/host.png',
-                        } as any);
-                      }}
-                      onChange={(val, record) => {
+                    <DataSourceTypeList
+                      types={alertDatasourceTypes}
+                      disabled={disabled}
+                      showLabel={false}
+                      onChange={(val) => {
+                        const record = _.find(alertDatasourceCates, { value: val });
+                        if (!record) return;
                         const { type } = record;
                         const curProd = type[0];
                         const prevCate = cateRef.current || cate;
