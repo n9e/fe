@@ -48,6 +48,11 @@ export default function QueryBuilder(props: Props) {
             />
           </Form.Item>
         </InputGroupWithFormItem>
+        <InputGroupWithFormItem label='Database'>
+          <Form.Item name={['query', 'database']}>
+            <Input placeholder='Optional; uses datasource default database' />
+          </Form.Item>
+        </InputGroupWithFormItem>
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>
           <TimeRangePicker />
         </Form.Item>
