@@ -276,7 +276,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
         onChatChange={(chat) => setChatId(chat?.chat_id)}
         onTurn={handleTurn}
         inputPrefix={
-          <div className={cn('ai-query-dock-status flex min-w-0 items-center gap-1.5 text-xs text-main', turn && 'cursor-pointer')} onClick={turn ? toggleExpanded : undefined}>
+          <div className={cn('ai-query-dock-status flex min-w-0 items-center gap-1.5 text-sm text-main', turn && 'cursor-pointer')} onClick={turn ? toggleExpanded : undefined}>
             <span
               aria-hidden='true'
               className={cn(

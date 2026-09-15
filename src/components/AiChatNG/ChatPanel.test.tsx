@@ -307,7 +307,7 @@ describe('ChatPanel turn cancellation and completion', () => {
     const sent = pending<{ chat_id: string; seq_id: number }>();
     services.sendMessage.mockReturnValueOnce(sent.promise);
     const onBusyChange = jest.fn();
-    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} onBusyChange={onBusyChange} />);
+    const { rerender } = render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} onBusyChange={onBusyChange} />);
     send();
     await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
     const box = screen.getByRole('textbox') as HTMLTextAreaElement;
@@ -315,7 +315,11 @@ describe('ChatPanel turn cancellation and completion', () => {
     expect(box.placeholder).toBe('dock.placeholder_draft');
     fireEvent.change(box, { target: { value: 'Group by service instead' } });
     fireEvent.keyDown(box, { key: 'Enter' });
-    expect(screen.getByText('dock.wait_to_send')).toBeTruthy();
+    const draftHint = screen.getByText('dock.wait_to_send');
+    expect(draftHint).toHaveClass('text-hint', 'opacity-70', 'ai-query-dock-draft-hint-bridge');
+    expect(draftHint.previousElementSibling).toHaveClass('ai-query-dock-input');
+    rerender(<ChatPanel variant='slim' collapsed queryPageFrom={{ url: '/metric/explorer' }} onBusyChange={onBusyChange} />);
+    expect(draftHint).not.toHaveClass('ai-query-dock-draft-hint-bridge');
     expect(services.sendMessage).toHaveBeenCalledTimes(1);
     await act(async () => {
       sent.resolve({ chat_id: 'chat-1', seq_id: 2 });

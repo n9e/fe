@@ -798,7 +798,10 @@ export default function ChatPanel(props: IAiChatProps) {
           className={cn(
             'min-h-0 w-full best-looking-scroll',
             slim
-              ? cn('ai-query-dock-sheet absolute left-0 right-0 top-full z-20 max-h-[52vh] overflow-y-auto overscroll-contain rounded-b-lg rounded-t-none border p-3')
+              ? cn(
+                  'ai-query-dock-sheet ai-query-dock-conversation absolute left-0 right-0 top-full z-20 max-h-[52vh] overflow-y-auto overscroll-contain rounded-b-lg rounded-t-none border p-3',
+                  draftHint && !listHidden && 'ai-query-dock-conversation-with-draft-hint',
+                )
               : 'h-full flex-1',
             listHidden && 'hidden',
           )}
@@ -908,7 +911,7 @@ export default function ChatPanel(props: IAiChatProps) {
           </div>
         </div>
         {slim && draftHint && (
-          <div className='ai-query-dock-draft-hint' role='status'>
+          <div className={cn('ai-query-dock-draft-hint text-hint opacity-70', !listHidden && 'ai-query-dock-draft-hint-bridge')} role='status'>
             {t('dock.wait_to_send')}
           </div>
         )}
