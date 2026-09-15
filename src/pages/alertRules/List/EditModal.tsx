@@ -744,7 +744,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                       <Alert className='mb-2' type='warning' showIcon message={t('batch.update.service_cal_legacy_cleared', { num: legacyTimeRangeCount })} />
                     )}
                     <Form.Item label={changetoText}>
-                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} initialValue={[{ service_cal_ids: [] }]} required />
+                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} initialValue={[{ service_cal_ids: [] }]} />
                     </Form.Item>
                   </>
                 );
