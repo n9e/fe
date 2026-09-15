@@ -212,6 +212,7 @@ const zh_CN = {
       copy: '复制 JSON 内容到剪贴板',
     },
     update: {
+      service_cal_legacy_cleared: '所选规则中有 {{num}} 条配置了已废弃的规则级生效时段，本次操作会将其一并清除',
       title: '更新告警规则',
       name: '批量更新',
       field: '字段',

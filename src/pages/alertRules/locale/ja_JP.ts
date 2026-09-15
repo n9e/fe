@@ -214,6 +214,7 @@ const ja_JP = {
       copy: 'JSONコンテンツをクリップボードにコピー',
     },
     update: {
+      service_cal_legacy_cleared: '選択したルールのうち {{num}} 件に廃止予定のルール単位の有効時間が設定されています。この操作で削除されます。',
       title: 'アラートルールを更新',
       name: 'バッチ更新',
       field: 'フィールド',
