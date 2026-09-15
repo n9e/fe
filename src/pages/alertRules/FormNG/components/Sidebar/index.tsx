@@ -14,12 +14,14 @@
  * limitations under the License.
  *
  */
-import React from 'react';
+import React, { useContext } from 'react';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Divider } from 'antd';
 
-import { SectionItem, tagClassesMap, tagI18nKeys } from '../SectionCard';
+import { CommonStateContext } from '@/App';
+
+import { getTagClassName, SectionItem, tagI18nKeys } from '../SectionCard';
 import RuleSummary from './RuleSummary';
 
 interface IProps {
@@ -32,6 +34,7 @@ interface IProps {
 export default function Sidebar(props: IProps) {
   const { sections, activeSection, onSectionClick, datasourceList } = props;
   const { t } = useTranslation('alertRules');
+  const { darkMode } = useContext(CommonStateContext);
 
   return (
     <aside className='w-[260px] bg-fc-100 flex-none h-full p-4 pl-3 border-l border-[var(--fc-border-color)] flex flex-col overflow-hidden'>
@@ -59,7 +62,7 @@ export default function Sidebar(props: IProps) {
                 {index + 1}
               </span>
               <span className='truncate text-sm leading-5 flex-1 text-left'>{item.title}</span>
-              <span className={'ml-auto text-[10px] px-1.5 py-0.5 rounded leading-none ' + tagClassesMap[item.tag]}>{t(tagI18nKeys[item.tag])}</span>
+              <span className={'ml-auto text-[10px] px-1.5 py-0.5 rounded leading-none ' + getTagClassName(item.tag, darkMode)}>{t(tagI18nKeys[item.tag])}</span>
             </button>
           ))}
         </div>
