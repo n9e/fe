@@ -37,8 +37,6 @@ interface SingleDataSourceSelectProps<T> extends DataSourceSelectBaseProps<T> {
 interface MultipleDataSourceSelectProps<T> extends DataSourceSelectBaseProps<T> {
   mode: 'multiple';
   value?: DataSourceSelectValue[];
-  /** 默认不显示；全选范围为传入 sources 中全部可用项，不受搜索影响。 */
-  showSelectAll?: boolean;
   /** 已删除项保留在 value 中；selectedSources 只包含当前列表内能找到的实例。 */
   onChange?: (value: DataSourceSelectValue[], selectedSources: DataSourceSelectSource<T>[]) => void;
 }

@@ -75,7 +75,7 @@ const currentSources = sources.filter((source) => source.type === selectedType);
 
 - 类型列表作用域是 `.data-source-type-list-box`，实例卡片列表作用域是 `.data-source-list-box`；各自导入所在目录的 `style.less`。
 - 保留 36px 卡片高度、8px 圆角、选中边框、禁用与删除状态、名称省略、168px 滚动区域及底部渐变。实例按容器宽度使用 6 / 4 / 2 / 1 列。
-- 下拉框使用独立的 `.data-source-selection-select-box` 等作用域，包含选择框、下拉 portal、选项、标签和提示的样式。
+- 下拉框的选择框、标签和菜单使用 AntD 默认样式；保留选项内容布局、状态提示及操作栏的独立作用域，移除全选和选中对号。
 - 颜色沿用项目的 `--fc-*` 主题变量，滚动条样式由实例列表自己提供。
 - 仍依赖 React、Ant Design、图标库、`classnames`、`react-i18next`；卡片提示使用 Ant Design Tooltip，不依赖 SRM 专用 Tooltip。类型和卡片列表使用 `dataSourceSelection` namespace，下拉框使用 `dataSourceSelectionSelect` namespace，由项目的国际化扫描机制注册。
 - 卡片名称显式继承卡片颜色，避免融合后旧选择器的裸样式覆盖整体禁用颜色。卡片 Tooltip 保留长名称才显示、150ms 延时和独立样式作用域。缺失提示参与布局，避免长文案覆盖 ID。
@@ -86,7 +86,6 @@ const currentSources = sources.filter((source) => source.type === selectedType);
 
 ```sh
 npx jest --runInBand --runTestsByPath \
-  src/components/DataSourceSelection/integration.test.tsx \
   src/plus/pages/DiallAnalysis/pages/AddDial/BaseInfo.test.tsx \
   src/plus/pages/DiallAnalysis/pages/AddDial/index.test.tsx \
   src/plus/pages/DiallAnalysis/services/index.test.ts

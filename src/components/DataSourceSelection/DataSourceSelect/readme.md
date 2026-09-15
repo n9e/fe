@@ -31,7 +31,6 @@ const [sourceIds, setSourceIds] = useState<DataSourceSelectValue[]>([]);
 
 <DataSourceSelect
   mode='multiple'
-  showSelectAll
   sources={sources}
   types={types}
   value={sourceIds}
@@ -41,7 +40,7 @@ const [sourceIds, setSourceIds] = useState<DataSourceSelectValue[]>([]);
 />;
 ```
 
-`showSelectAll` 仅支持多选，默认不显示。开启后，下拉顶部提供全选复选框和半选状态，范围始终为传入 `sources` 中全部可用项，不受本地搜索影响。全选追加尚未选中的可用项；取消全选清空全部已选项，包括禁用项和已删除 ID。禁用项和已删除项可以通过已选标签的关闭按钮移除，但不能重新勾选。组件禁用、加载、刷新、出错或没有可用项时，全选不可操作。
+多选使用 Ant Design 默认的选择框和标签样式，通过 `maxTagCount="responsive"` 保持单行，超出的已选项由 Ant Design 自动折叠。下拉列表不提供全选，也不显示选中项右侧的对号。禁用项和已删除项可以通过已选标签的关闭按钮移除，但不能重新选择。
 
 也可直接放在 `<Form.Item name='data_source_id'>` 或 `<Form.Item name='data_source_ids'>` 内，由 Form 注入 `value`、`onChange`。组件不主动调用业务接口。
 
@@ -90,7 +89,7 @@ ID 保留原始类型，数字 `0` 是有效值，数字 `1` 与字符串 `'1'` 
 - 内部刷新失败后，父组件提供新的 `sources` 数组，或结束 `loading`／`refreshing` 且没有 `error` 时，会清除内部失败状态；父组件仍需准确传入加载和错误状态。
 - 刷新、新增后的列表由父组件通过 `sources` 更新。新增回调可以打开新增弹窗或跳转到接入页面。
 - `disabled` 会禁止选择、清空、标签移除和两个操作按钮。
-- 组件自带独立样式作用域，选择框、下拉 portal、选项、标签和提示分别隔离，使用项目 `--fc-*` 主题变量。
+- 选择框、标签和下拉菜单沿用 Ant Design 默认样式；自定义内容保留图标、左右文案、状态提示及上方操作栏，并通过独立作用域隔离。
 - 文案位于当前目录的 `locales`，使用 `dataSourceSelectionSelect` namespace。
 
 ## 验证
