@@ -687,6 +687,10 @@ const id_ID = {
       default: 'Bawaan',
       updateTimeRange: 'Perbarui rentang waktu',
     },
+    hideHeader: {
+      label: 'Sembunyikan judul dasbor',
+      tip: 'Saat diaktifkan, hanya judul di bagian atas halaman detail dasbor yang disembunyikan.',
+    },
     save: 'Simpan dasbor',
   },
   visualizations: {
