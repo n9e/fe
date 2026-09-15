@@ -1,18 +1,20 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import AiQueryDock from './index';
 import type { IAiChatProps, IAiChatTurn } from '@/components/AiChatNG/types';
 
 // The dock is a shell around ChatPanel; the stub exposes what the shell
 // passes in and lets a test drive turns the way the panel would.
+jest.mock('@/utils', () => ({ copy2ClipBoard: jest.fn(() => true) }));
 let panelProps: IAiChatProps | undefined;
 jest.mock('@/components/AiChatNG', () => {
   const actual = jest.requireActual('@/components/AiChatNG/types');
   return {
     ...actual,
     ChatPanel: (props: IAiChatProps) => {
+      if (!props) return null;
       panelProps = props;
       return (
         <div>
@@ -273,4 +275,38 @@ it('names close as stop before the first message has arrived', () => {
   expect(screen.getByRole('button', { name: 'dock.close_and_stop' })).toBeTruthy();
   act(() => panelProps!.onBusyChange!(false));
   expect(screen.getByRole('button', { name: 'dock.close' })).toBeTruthy();
+});
+
+it('folds on an outside click without closing or stopping the conversation', () => {
+  const { onClose } = renderDock();
+  act(() => panelProps!.onTurn!(turn({ is_finish: false }, { phase: 'running' })));
+  fireEvent.click(screen.getByLabelText('ask'));
+  expect(screen.getByTestId('list').hidden).toBe(false);
+  fireEvent.click(document.body);
+  expect(screen.getByTestId('list').hidden).toBe(true);
+  expect(onClose).not.toHaveBeenCalled();
+  expect(panelProps!.active).toBe(true);
+  act(() => panelProps!.onTurn!(turn({ is_finish: false }, { phase: 'running' })));
+  expect(screen.getByTestId('list').hidden).toBe(true);
+});
+
+it('uses the explorer skill for each new dock conversation', () => {
+  renderDock();
+  expect(panelProps!.initialSkill).toBe('explorer-query');
+  act(() => panelProps!.onTurn!(turn({})));
+  fireEvent.click(screen.getByRole('button', { name: 'dock.new_conversation' }));
+  expect(panelProps!.initialSkill).toBe('explorer-query');
+});
+
+it('shares the current conversation through the overflow menu without collapsing', async () => {
+  renderDock();
+  expect(screen.queryByRole('button', { name: 'history.more_actions' })).toBeNull();
+  act(() => panelProps!.onChatChange!({ chat_id: 'share-chat', title: '', last_update: 0 }));
+  act(() => panelProps!.onTurn!(turn({})));
+  fireEvent.click(screen.getByRole('button', { name: 'history.more_actions' }));
+  const share = await screen.findByRole('menuitem', { name: 'history.share' });
+  fireEvent.click(share);
+  expect(screen.getByTestId('list').hidden).toBe(false);
+  fireEvent.click(share);
+  await waitFor(() => expect(jest.requireMock('@/utils').copy2ClipBoard).toHaveBeenCalledWith(expect.stringContaining('ai_chat_share_id=share-chat&ai_chat_readonly=1'), true));
 });

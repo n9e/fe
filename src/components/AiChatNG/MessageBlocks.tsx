@@ -405,7 +405,12 @@ function MessageItemComponent({
           </span>
         )}
         <div className={cn('max-w-[85%] rounded-lg px-2 py-1 text-sm', slim ? 'bg-fc-200' : 'bg-primary/10')}>
-          <div className='whitespace-pre-wrap break-words'>{message.query.content}</div>
+          <div className='whitespace-pre-wrap break-words'>
+            {message.query.content.replace(/<@([^>]+)>/g, (token, id: string) => {
+              const reference = message.query.references?.find((item) => item.id === id);
+              return reference ? `@${reference.name || reference.skill.name}` : token;
+            })}
+          </div>
         </div>
       </div>
       <div className={cn(slim && 'flex items-start gap-2')}>

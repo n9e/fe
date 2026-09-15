@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, Dropdown, Menu, Tooltip } from 'antd';
 import type { AiChatPageFromSource, IAiChatProps, IAiChatInputRequest, IAiQueryProgress } from '@/components/AiChatNG/types';
-import { ChevronsDownUp, ChevronsUpDown, SquarePen, Undo2, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, MoreHorizontal, Share2, SquarePen, Undo2, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { ChatPanel, EAiChatContentType, IAiChatMessage, IAiChatTurn } from '@/components/AiChatNG';
 import { NAME_SPACE } from '@/components/AiChatNG/constants';
 import { cn } from '@/components/AiChatNG/utils';
+import { buildAiChatShareUrl, copyAiChatShareUrl } from '@/components/AiChatNG/share';
 
 /**
  * The assistant docked under a page's own input box.
@@ -152,6 +153,17 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     rootRef.current?.querySelector('textarea')?.focus();
   }, [open]);
 
+  useEffect(() => {
+    if (!open || !expanded || (!turn && !busy)) return;
+    const collapseOutside = (event: MouseEvent) => {
+      if (!(event.target instanceof Node) || rootRef.current?.contains(event.target)) return;
+      readingRef.current = false;
+      setExpanded(false);
+    };
+    document.addEventListener('click', collapseOutside, true);
+    return () => document.removeEventListener('click', collapseOutside, true);
+  }, [open, expanded, !!turn, busy]);
+
   const running = progress?.phase === 'applying' || progress?.phase === 'querying' || (turn?.phase === 'running' && (!progress || progress.phase === 'idle'));
   const message = turn?.message;
   let tone: 'idle' | 'running' | 'ok' | 'warn' | 'error' = 'idle';
@@ -244,6 +256,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       <ChatPanel
         key={generation}
         variant='slim'
+        initialSkill='explorer-query'
         active={open}
         onBusyChange={setBusy}
         prepareTurn={() => {
@@ -306,7 +319,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                   aria-label={expanded ? t('dock.collapse') : t('dock.expand')}
                   aria-expanded={expanded}
                   onClick={toggleExpanded}
-                  icon={expanded ? <ChevronsDownUp size={ICON} strokeWidth={STROKE} /> : <ChevronsUpDown size={ICON} strokeWidth={STROKE} />}
+                  icon={expanded ? <ChevronUp size={ICON} strokeWidth={STROKE} /> : <ChevronDown size={ICON} strokeWidth={STROKE} />}
                 />
               </Tooltip>
             )}
@@ -321,6 +334,20 @@ export default function AiQueryDock(props: AiQueryDockProps) {
                   onClick={startNewConversation}
                 />
               </Tooltip>
+            )}
+            {chatId && (
+              <Dropdown
+                trigger={['click']}
+                getPopupContainer={(trigger) => trigger.parentElement!}
+                overlay={
+                  <Menu
+                    items={[{ key: 'share', icon: <Share2 size={ICON} />, label: t('history.share') }]}
+                    onClick={() => copyAiChatShareUrl(buildAiChatShareUrl(chatId), t('toolbar.share_copied'))}
+                  />
+                }
+              >
+                <Button type='text' size='small' className={ICON_BUTTON} icon={<MoreHorizontal size={ICON} strokeWidth={STROKE} />} aria-label={t('history.more_actions')} />
+              </Dropdown>
             )}
             <Tooltip title={closeLabel}>
               <Button type='text' size='small' className={ICON_BUTTON} icon={<X size={ICON} strokeWidth={STROKE} />} aria-label={closeLabel} onClick={onClose} />

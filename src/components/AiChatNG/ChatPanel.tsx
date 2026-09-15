@@ -44,6 +44,7 @@ export default function ChatPanel(props: IAiChatProps) {
     queryAction,
     promptList,
     initialMessage,
+    initialSkill,
     onExecuteQueryForQueryContent,
     onChatChange,
     onError,
@@ -488,6 +489,7 @@ export default function ChatPanel(props: IAiChatProps) {
   }, [cancelScheduledStreamRender, cleanupPolling, stopStream, slim]);
 
   const initialMessageSentRef = useRef(false);
+  const acceptedChatIdsRef = useRef(new Set<string>());
 
   const createNewChat = useCallback(
     async (generation: number) => {
@@ -541,8 +543,13 @@ export default function ChatPanel(props: IAiChatProps) {
           onChatChange?.(chat);
         }
 
+        const references =
+          initialSkill && messagesRef.current.length === 0 && !acceptedChatIdsRef.current.has(chat.chat_id)
+            ? [{ id: initialSkill, name: initialSkill, type: 'skill' as const, skill: { name: initialSkill } }]
+            : undefined;
         const query = {
-          content,
+          content: references ? `<@${references[0].id}> ${content}` : content,
+          references,
           action: action || queryAction,
           page_from: pageFrom || chat.page_from,
         };
@@ -556,6 +563,8 @@ export default function ChatPanel(props: IAiChatProps) {
           query,
           page_actions: pageActions.length ? pageActions : undefined,
         });
+        // Acceptance survives closing the dock before the response arrives.
+        acceptedChatIdsRef.current.add(chat.chat_id);
         if (generation !== turnGenerationRef.current || !activeRef.current) {
           void cancelMessage({ chat_id: result.chat_id, seq_id: result.seq_id }).catch(handleError);
           return;
@@ -612,6 +621,7 @@ export default function ChatPanel(props: IAiChatProps) {
       createNewChat,
       handleError,
       inputValue,
+      initialSkill,
       mergeMessage,
       onChatChange,
       queryAction,
