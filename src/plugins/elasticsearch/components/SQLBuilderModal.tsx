@@ -41,6 +41,7 @@ export default function SQLBuilderModal({ visible, datasourceValue, interval, bu
   const [confirmLoading, setConfirmLoading] = useState(false);
   const { esIndexMode } = useContext(CommonStateContext);
   const [indices, setIndices] = useState<string[]>([]);
+  const [indexSearch, setIndexSearch] = useState('');
   const [indexPatterns, setIndexPatterns] = useState<any[]>([]);
   const [fields, setFields] = useState<any[]>([]);
   const index = Form.useWatch('index', form);
@@ -57,16 +58,21 @@ export default function SQLBuilderModal({ visible, datasourceValue, interval, bu
       search_mode: esIndexMode !== 'all' ? esIndexMode : 'indices',
       query: { range },
     });
+    setIndexSearch('');
   }, [visible, builderConfig, range, form]);
 
   useEffect(() => {
     if (!visible || !datasourceValue) return;
-    getIndices(datasourceValue).then(setIndices).catch(() => setIndices([]));
+    getIndices(datasourceValue)
+      .then(setIndices)
+      .catch(() => setIndices([]));
   }, [visible, datasourceValue]);
 
   useEffect(() => {
     if (!visible || !datasourceValue) return;
-    getESIndexPatterns(datasourceValue).then(setIndexPatterns).catch(() => setIndexPatterns([]));
+    getESIndexPatterns(datasourceValue)
+      .then(setIndexPatterns)
+      .catch(() => setIndexPatterns([]));
   }, [visible, datasourceValue]);
 
   useEffect(() => {
@@ -101,7 +107,8 @@ export default function SQLBuilderModal({ visible, datasourceValue, interval, bu
   };
 
   const handleOk = () => {
-    form.validateFields()
+    form
+      .validateFields()
       .then((values) => {
         setConfirmLoading(true);
         return build(values);
@@ -120,61 +127,80 @@ export default function SQLBuilderModal({ visible, datasourceValue, interval, bu
     <Modal width={960} visible={visible} title={t('builder.title')} confirmLoading={confirmLoading} onCancel={onCancel} onOk={handleOk} destroyOnClose>
       <QueryBuilderCommonStateContext.Provider value={{ ignoreNextOutsideClick: () => {} }}>
         <Form form={form} layout='vertical'>
-          <Form.Item name={['query', 'range']} hidden><input type='hidden' /></Form.Item>
-        <Row gutter={10}>
-          <Col span={8}>
-            <Form.Item name='search_mode' label={t('query.mode')} hidden={esIndexMode !== 'all'}>
-              <Select
-                options={[{ label: t('query.mode_indices'), value: 'indices' }, { label: t('query.mode_index_patterns'), value: 'index-patterns' }]}
-                onChange={() => form.setFieldsValue({ index: undefined, date_field: undefined })}
-              />
-            </Form.Item>
-          </Col>
-          {searchMode === 'indices' ? (
-            <>
-              <Col span={8}>
-              <Form.Item name='index' label={t('query.index')} rules={[{ required: true, message: t('query.index_required') }]}>
-                <AutoComplete options={indices.map((item) => ({ label: item, value: item }))} />
-              </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item name='date_field' label={t('query.date_field')} rules={[{ required: true, message: t('query.date_field_required') }]}>
-                  <Select showSearch optionFilterProp='label' options={fields.map((item) => ({ label: typeof item === 'string' ? item : item.field || item.name, value: typeof item === 'string' ? item : item.field || item.name }))} />
-                </Form.Item>
-              </Col>
-            </>
-          ) : (
-            <Col span={16}>
-              <Form.Item name='index' label={t('query.index_pattern')} rules={[{ required: true, message: t('query.index_pattern_required') }]}>
+          <Form.Item name={['query', 'range']} hidden>
+            <input type='hidden' />
+          </Form.Item>
+          <Row gutter={10}>
+            <Col span={8}>
+              <Form.Item name='search_mode' label={t('query.mode')} hidden={esIndexMode !== 'all'}>
                 <Select
-                  showSearch
-                  optionFilterProp='label'
-                  options={indexPatterns.map((item) => ({ label: item.name, value: item.name }))}
-                  onChange={(value) => {
-                    const pattern = indexPatterns.find((item) => item.name === value);
-                    if (pattern?.time_field) form.setFieldsValue({ date_field: pattern.time_field });
-                  }}
+                  options={[
+                    { label: t('query.mode_indices'), value: 'indices' },
+                    { label: t('query.mode_index_patterns'), value: 'index-patterns' },
+                  ]}
+                  onChange={() => form.setFieldsValue({ index: undefined, date_field: undefined })}
                 />
               </Form.Item>
             </Col>
-          )}
-          {searchMode === 'index-patterns' && <Form.Item name='date_field' hidden><input type='hidden' /></Form.Item>}
-        </Row>
-        <QueryBuilder
-          explorerForm={form}
-          datasourceValue={datasourceValue}
-          index={index}
-          date_field={dateField}
-          range={range}
-          builderConfig={builderConfig}
-          hideActions
-          form={form}
-          embedded
-          contentClassName='mt-[-12px]'
-          visible={visible}
-          onExecute={build}
-          onPreviewSQL={build}
-        />
+            {searchMode === 'indices' ? (
+              <>
+                <Col span={8}>
+                  <Form.Item name='index' label={t('query.index')} rules={[{ required: true, message: t('query.index_required') }]}>
+                    <AutoComplete
+                      options={indices.filter((item) => !indexSearch || item.includes(indexSearch)).map((item) => ({ label: item, value: item }))}
+                      onSearch={setIndexSearch}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item name='date_field' label={t('query.date_field')} rules={[{ required: true, message: t('query.date_field_required') }]}>
+                    <Select
+                      showSearch
+                      optionFilterProp='label'
+                      options={fields.map((item) => ({
+                        label: typeof item === 'string' ? item : item.field || item.name,
+                        value: typeof item === 'string' ? item : item.field || item.name,
+                      }))}
+                    />
+                  </Form.Item>
+                </Col>
+              </>
+            ) : (
+              <Col span={16}>
+                <Form.Item name='index' label={t('query.index_pattern')} rules={[{ required: true, message: t('query.index_pattern_required') }]}>
+                  <Select
+                    showSearch
+                    optionFilterProp='label'
+                    options={indexPatterns.map((item) => ({ label: item.name, value: item.name }))}
+                    onChange={(value) => {
+                      const pattern = indexPatterns.find((item) => item.name === value);
+                      if (pattern?.time_field) form.setFieldsValue({ date_field: pattern.time_field });
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            )}
+            {searchMode === 'index-patterns' && (
+              <Form.Item name='date_field' hidden>
+                <input type='hidden' />
+              </Form.Item>
+            )}
+          </Row>
+          <QueryBuilder
+            explorerForm={form}
+            datasourceValue={datasourceValue}
+            index={index}
+            date_field={dateField}
+            range={range}
+            builderConfig={builderConfig}
+            hideActions
+            form={form}
+            embedded
+            contentClassName='mt-[-12px]'
+            visible={visible}
+            onExecute={build}
+            onPreviewSQL={build}
+          />
         </Form>
       </QueryBuilderCommonStateContext.Provider>
     </Modal>

@@ -113,22 +113,36 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
         <div className='mb-3 flex items-center justify-between'>
           <Space size={8}>
             <Form.Item {...restField} name={[field.name, 'query', 'syntax']} initialValue='dsl' noStyle>
-              <Segmented size='small' options={[{ label: 'DSL', value: 'dsl' }, { label: 'SQL', value: 'sql' }]} />
+              <Segmented
+                size='small'
+                options={[
+                  { label: 'DSL', value: 'dsl' },
+                  { label: 'SQL', value: 'sql' },
+                ]}
+              />
             </Form.Item>
             {querySyntax === 'sql' && (
               <Segmented
                 size='small'
                 value={editMode}
-                options={[{ label: 'Builder', value: 'builder' }, { label: 'Code', value: 'code' }]}
+                options={[
+                  { label: 'Builder', value: 'builder' },
+                  { label: 'Code', value: 'code' },
+                ]}
                 onChange={(value) => {
                   // 从 Code 切到 Builder 且已有 SQL 时需确认丢弃：清空 sql 和 builderConfig，
                   // 强制用 Builder 重新生成，避免残留配置生成的 SQL 与当前手写 SQL 不一致。
                   if (value === 'builder' && editMode === 'code' && targetQuery?.sql) {
-                    Modal.confirm({ title: tES('builder.switch_to_builder_confirm_title'), content: tES('builder.switch_to_builder_confirm_content'), onOk: () => form.setFields([
-                      { name: [...prefixName, 'query', 'editMode'], value: 'builder' },
-                      { name: [...prefixName, 'query', 'sql'], value: undefined },
-                      { name: [...prefixName, 'query', 'builderConfig'], value: undefined },
-                    ]) });
+                    Modal.confirm({
+                      title: tES('builder.switch_to_builder_confirm_title'),
+                      content: tES('builder.switch_to_builder_confirm_content'),
+                      onOk: () =>
+                        form.setFields([
+                          { name: [...prefixName, 'query', 'editMode'], value: 'builder' },
+                          { name: [...prefixName, 'query', 'sql'], value: undefined },
+                          { name: [...prefixName, 'query', 'builderConfig'], value: undefined },
+                        ]),
+                    });
                     return;
                   }
                   form.setFields([{ name: [...prefixName, 'query', 'editMode'], value }]);
@@ -148,35 +162,56 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
       )}
       {querySyntax === 'sql' ? (
         <>
-          <Form.Item {...restField} name={[field.name, 'query', 'editMode']} initialValue='code' hidden><input type='hidden' /></Form.Item>
-          {editMode === 'builder' && targetQuery?.sql && <div className={`p-3 rounded max-h-[160px] overflow-y-auto mb-4 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}><SqlMonacoPreview theme={darkMode ? 'dark' : 'light'} value={targetQuery.sql} /></div>}
-          {editMode === 'builder' && <Button className='mb-3' disabled={!datasourceValue} onClick={() => setBuilderModalVisible(true)}>{tES('builder.open_builder')}</Button>}
-          {editMode === 'code' && <Form.Item {...restField} name={[field.name, 'query', 'sql']} label='SQL' rules={[{ required: true, message: tES('query.sql_required') }]}>
-            <SqlMonacoEditor maxHeight={200} enableAutocomplete enableFormat />
-          </Form.Item>}
-          {editMode === 'builder' && <SQLBuilderModal
-            visible={builderModalVisible}
-            datasourceValue={datasourceValue}
-            interval={DEFAULT_SQL_BUILDER_INTERVAL_SECONDS}
-            builderConfig={targetQuery?.builderConfig}
-            onCancel={() => setBuilderModalVisible(false)}
-            onConfirm={(builderConfig, result) => {
-              form.setFields([
-                { name: [...prefixName, 'query', 'sql'], value: result.sql, errors: [] },
-                { name: [...prefixName, 'query', 'builderConfig'], value: builderConfig, errors: [] },
-                { name: [...prefixName, 'query', 'mode'], value: result.mode === 'timeseries' ? 'timeSeries' : 'raw' },
-                { name: [...prefixName, 'query', 'keys', 'valueKey'], value: result.value_key },
-                { name: [...prefixName, 'query', 'keys', 'labelKey'], value: result.label_key },
-              ]);
-              setBuilderModalVisible(false);
-            }}
-          />}
+          <Form.Item {...restField} name={[field.name, 'query', 'editMode']} initialValue='code' hidden>
+            <input type='hidden' />
+          </Form.Item>
+          {editMode === 'builder' && targetQuery?.sql && (
+            <div className={`p-3 rounded max-h-[160px] overflow-y-auto mb-4 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+              <SqlMonacoPreview theme={darkMode ? 'dark' : 'light'} value={targetQuery.sql} />
+            </div>
+          )}
+          {editMode === 'builder' && (
+            <Button className='mb-3' disabled={!datasourceValue} onClick={() => setBuilderModalVisible(true)}>
+              {tES('builder.open_builder')}
+            </Button>
+          )}
+          {editMode === 'code' && (
+            <Form.Item {...restField} name={[field.name, 'query', 'sql']} label='SQL' rules={[{ required: true, message: tES('query.sql_required') }]}>
+              <SqlMonacoEditor maxHeight={200} enableAutocomplete enableFormat theme={darkMode ? 'dark' : 'light'} />
+            </Form.Item>
+          )}
+          {editMode === 'builder' && (
+            <SQLBuilderModal
+              visible={builderModalVisible}
+              datasourceValue={datasourceValue}
+              interval={DEFAULT_SQL_BUILDER_INTERVAL_SECONDS}
+              builderConfig={targetQuery?.builderConfig}
+              onCancel={() => setBuilderModalVisible(false)}
+              onConfirm={(builderConfig, result) => {
+                form.setFields([
+                  { name: [...prefixName, 'query', 'sql'], value: result.sql, errors: [] },
+                  { name: [...prefixName, 'query', 'builderConfig'], value: builderConfig, errors: [] },
+                  { name: [...prefixName, 'query', 'mode'], value: result.mode === 'timeseries' ? 'timeSeries' : 'raw' },
+                  { name: [...prefixName, 'query', 'keys', 'valueKey'], value: result.value_key },
+                  { name: [...prefixName, 'query', 'keys', 'labelKey'], value: result.label_key },
+                ]);
+                setBuilderModalVisible(false);
+              }}
+            />
+          )}
           <Row gutter={10}>
             <Col span={12}>
               <Form.Item
                 {...restField}
                 name={[field.name, 'query', 'keys', 'valueKey']}
-                label={<Space>{tES('query.advancedSettings.valueKey')}<Tooltip title={tES('query.advancedSettings.valueKey_tip')}><QuestionCircleOutlined /></Tooltip></Space>}
+                label={
+                  <Space>
+                    {tES('query.advancedSettings.valueKey')}
+                    <Tooltip title={tES('query.advancedSettings.valueKey_tip')}>
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  </Space>
+                }
                 rules={[{ required: true, message: tES('query.advancedSettings.valueKey_required') }]}
               >
                 <Select mode='tags' tokenSeparators={[' ']} placeholder={tES('query.advancedSettings.tags_placeholder')} />
@@ -186,7 +221,14 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
               <Form.Item
                 {...restField}
                 name={[field.name, 'query', 'keys', 'labelKey']}
-                label={<Space>{tES('query.advancedSettings.labelKey')}<Tooltip title={tES('query.advancedSettings.labelKey_tip')}><QuestionCircleOutlined /></Tooltip></Space>}
+                label={
+                  <Space>
+                    {tES('query.advancedSettings.labelKey')}
+                    <Tooltip title={tES('query.advancedSettings.labelKey_tip')}>
+                      <QuestionCircleOutlined />
+                    </Tooltip>
+                  </Space>
+                }
               >
                 <Select mode='tags' tokenSeparators={[' ']} placeholder={tES('query.advancedSettings.tags_placeholder')} />
               </Form.Item>
@@ -198,121 +240,123 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
             </Form.Item>
           )}
         </>
-      ) : <>
-      <Form.Item {...restField} name={[field.name, 'query', 'index_type']} initialValue='index'>
-        <Radio.Group>
-          <Radio value='index'>{t('datasource:es.index')}</Radio>
-          <Radio value='index_pattern'>{t('datasource:es.indexPatterns')}</Radio>
-        </Radio.Group>
-      </Form.Item>
-      {indexType === 'index' && <IndexSelect prefixField={field} prefixName={[field.name]} cate={datasourceCate} datasourceValue={datasourceValue} />}
-      {indexType === 'index_pattern' && <IndexPatternSelect field={field} name={['query']} indexPatterns={indexPatterns} />}
-      <Form.Item
-        label={
-          <Space>
-            {t('datasource:es.filter')}
-            <a
-              href={
-                filterLanguage === 'lucene'
-                  ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
-                  : 'https://www.elastic.co/docs/reference/query-languages/kql'
-              }
-              target='_blank'
-            >
-              <QuestionCircleOutlined />
-            </a>
-          </Space>
-        }
-      >
-        <InputGroupWithFormItem
-          label={
-            <Form.Item {...restField} name={[field.name, 'query', 'filter_language']} noStyle initialValue='lucene'>
-              <Select
-                bordered={false}
-                options={[
-                  {
-                    label: 'Lucene',
-                    value: 'lucene',
-                  },
-                  {
-                    label: 'KQL',
-                    value: 'kql',
-                  },
-                ]}
-                dropdownMatchSelectWidth={false}
-              />
-            </Form.Item>
-          }
-        >
-          <Form.Item {...restField} name={[field.name, 'query', 'filter']} noStyle>
-            <Input />
+      ) : (
+        <>
+          <Form.Item {...restField} name={[field.name, 'query', 'index_type']} initialValue='index'>
+            <Radio.Group>
+              <Radio value='index'>{t('datasource:es.index')}</Radio>
+              <Radio value='index_pattern'>{t('datasource:es.indexPatterns')}</Radio>
+            </Radio.Group>
           </Form.Item>
-        </InputGroupWithFormItem>
-      </Form.Item>
-      <Values
-        prefixField={field}
-        prefixFields={['targets']}
-        prefixNameField={[field.name]}
-        datasourceValue={datasourceValue}
-        index={curIndexValues.index}
-        valueRefVisible={false}
-      />
-      {!isRawData && (
-        <GroupBy parentNames={['targets']} prefixField={field} prefixFieldNames={[field.name, 'query']} datasourceValue={datasourceValue} index={curIndexValues.index} />
-      )}
-      {isRawData ? (
-        <Row gutter={10}>
-          <Col
-            span={8}
-            style={{
-              display: indexType === 'index_pattern' ? 'none' : 'block',
-            }}
+          {indexType === 'index' && <IndexSelect prefixField={field} prefixName={[field.name]} cate={datasourceCate} datasourceValue={datasourceValue} />}
+          {indexType === 'index_pattern' && <IndexPatternSelect field={field} name={['query']} indexPatterns={indexPatterns} />}
+          <Form.Item
+            label={
+              <Space>
+                {t('datasource:es.filter')}
+                <a
+                  href={
+                    filterLanguage === 'lucene'
+                      ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
+                      : 'https://www.elastic.co/docs/reference/query-languages/kql'
+                  }
+                  target='_blank'
+                >
+                  <QuestionCircleOutlined />
+                </a>
+              </Space>
+            }
           >
-            <DateField datasourceValue={datasourceValue} index={curIndexValues.index} prefixField={field} prefixNames={[field.name, 'query']} />
-          </Col>
-          <Col span={8}>
             <InputGroupWithFormItem
               label={
-                <Space>
-                  {t('datasource:es.raw.date_format')}
-                  <Tooltip title={t('datasource:es.raw.date_format_tip')}>
-                    <InfoCircleOutlined />
-                  </Tooltip>
-                </Space>
+                <Form.Item {...restField} name={[field.name, 'query', 'filter_language']} noStyle initialValue='lucene'>
+                  <Select
+                    bordered={false}
+                    options={[
+                      {
+                        label: 'Lucene',
+                        value: 'lucene',
+                      },
+                      {
+                        label: 'KQL',
+                        value: 'kql',
+                      },
+                    ]}
+                    dropdownMatchSelectWidth={false}
+                  />
+                </Form.Item>
               }
             >
-              <Form.Item {...restField} name={[field.name, 'query', 'date_format']}>
+              <Form.Item {...restField} name={[field.name, 'query', 'filter']} noStyle>
                 <Input />
               </Form.Item>
             </InputGroupWithFormItem>
-          </Col>
-          <Col span={8}>
-            <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
-              <Form.Item {...restField} name={[field.name, 'query', 'limit']}>
-                <InputNumber style={{ width: '100%' }} />
-              </Form.Item>
-            </InputGroupWithFormItem>
-          </Col>
-        </Row>
-      ) : (
-        <Time prefixField={field} prefixNameField={[field.name]} datasourceValue={datasourceValue} />
+          </Form.Item>
+          <Values
+            prefixField={field}
+            prefixFields={['targets']}
+            prefixNameField={[field.name]}
+            datasourceValue={datasourceValue}
+            index={curIndexValues.index}
+            valueRefVisible={false}
+          />
+          {!isRawData && (
+            <GroupBy parentNames={['targets']} prefixField={field} prefixFieldNames={[field.name, 'query']} datasourceValue={datasourceValue} index={curIndexValues.index} />
+          )}
+          {isRawData ? (
+            <Row gutter={10}>
+              <Col
+                span={8}
+                style={{
+                  display: indexType === 'index_pattern' ? 'none' : 'block',
+                }}
+              >
+                <DateField datasourceValue={datasourceValue} index={curIndexValues.index} prefixField={field} prefixNames={[field.name, 'query']} />
+              </Col>
+              <Col span={8}>
+                <InputGroupWithFormItem
+                  label={
+                    <Space>
+                      {t('datasource:es.raw.date_format')}
+                      <Tooltip title={t('datasource:es.raw.date_format_tip')}>
+                        <InfoCircleOutlined />
+                      </Tooltip>
+                    </Space>
+                  }
+                >
+                  <Form.Item {...restField} name={[field.name, 'query', 'date_format']}>
+                    <Input />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </Col>
+              <Col span={8}>
+                <InputGroupWithFormItem label={t('datasource:es.raw.limit')}>
+                  <Form.Item {...restField} name={[field.name, 'query', 'limit']}>
+                    <InputNumber style={{ width: '100%' }} />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </Col>
+            </Row>
+          ) : (
+            <Time prefixField={field} prefixNameField={[field.name]} datasourceValue={datasourceValue} />
+          )}
+          {IS_PLUS && (
+            <Form.Item
+              label='Legend'
+              {...restField}
+              name={[field.name, 'legend']}
+              tooltip={{
+                getPopupContainer: () => document.body,
+                title: t('query.legendTip2', {
+                  interpolation: { skipOnVariables: true },
+                }),
+              }}
+            >
+              <LegendInput />
+            </Form.Item>
+          )}
+        </>
       )}
-      {IS_PLUS && (
-        <Form.Item
-          label='Legend'
-          {...restField}
-          name={[field.name, 'legend']}
-          tooltip={{
-            getPopupContainer: () => document.body,
-            title: t('query.legendTip2', {
-              interpolation: { skipOnVariables: true },
-            }),
-          }}
-        >
-          <LegendInput />
-        </Form.Item>
-      )}
-      </>}
     </Panel>
   );
 }
