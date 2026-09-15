@@ -184,10 +184,11 @@
     align-self: stretch;
   }
 
-  /* A fixed slot just wide enough for "正在执行脚本… 16s"; longer states
-     ellipsize and carry the full text in their title. */
+  /* Short states shrink to their content; long ones stop at the former
+     10em slot, then ellipsize and expose the full text in their title. */
   .ai-query-dock-status-copy {
-    width: 10em;
+    width: auto;
+    max-width: 10em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
