@@ -26,6 +26,7 @@ const zh_HK = {
     'Last 15 minutes': '最近 15 分鐘',
     'Last 30 minutes': '最近 30 分鐘',
     'Last 1 hour': '最近 1 小時',
+    'Last 2 hours': '最近 2 小時',
     'Last 3 hours': '最近 3 小時',
     'Last 6 hours': '最近 6 小時',
     'Last 12 hours': '最近 12 小時',

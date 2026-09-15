@@ -45,6 +45,14 @@
   }
 }
 
+// lucide 图标是原生 svg，不具备 antd Icon 的基线偏移；图标按钮采用 flex 居中，
+// 以便模板详情扩展操作与仪表盘头部的其他按钮保持垂直对齐。
+.builtin-dashboard-detail-header-action.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dashboard-detail-container {
   padding: 0 !important;
   margin-right: 0 !important;

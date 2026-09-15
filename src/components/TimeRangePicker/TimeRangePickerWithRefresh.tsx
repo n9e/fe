@@ -49,6 +49,7 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
             }
           }}
           intervalSeconds={props.intervalSeconds}
+          intervalOptions={props.intervalOptions}
           onIntervalSecondsChange={props.onIntervalSecondsChange}
         />
       )}
@@ -56,7 +57,7 @@ export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRe
         <span style={{ display: 'inline-flex' }} onClickCapture={() => setTimeRangeTooltipVisible(false)}>
           <TimeRangePicker
             limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
-            {..._.omit(props, ['style', 'refreshTooltip', 'intervalTooltip', 'timeRangeTooltip', 'showRefreshButton', 'intervalSeconds', 'onIntervalSecondsChange', 'onRefresh'])}
+            {..._.omit(props, ['style', 'refreshTooltip', 'intervalTooltip', 'timeRangeTooltip', 'showRefreshButton', 'intervalSeconds', 'intervalOptions', 'onIntervalSecondsChange', 'onRefresh'])}
             onChange={(val) => {
               if (localKey) {
                 localStorage.setItem(

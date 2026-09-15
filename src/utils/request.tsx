@@ -8,6 +8,8 @@ import { N9E_PATHNAME, AccessTokenKey } from '@/utils/constant';
 import i18next from 'i18next';
 import { basePrefix } from '@/App';
 import ErrorWithDetail from '@/components/ErrorWithDetail';
+import { normalizeError } from '@/utils/appError';
+import { reportPageError } from '@/utils/pageError';
 export interface RequestWorkspaceOptions {
   workspaceId?: number | string;
 }
@@ -67,13 +69,32 @@ const processError = (res: any): string => {
   return JSON.stringify(res);
 };
 
-const redirectTo403 = _.debounce(
-  () => {
-    location.href = `${basePrefix}/403`;
-  },
-  1000,
-  { leading: true, trailing: false },
-);
+/**
+ * 把 403 交给页面就地渲染，而不是整页跳到 /403。
+ *
+ * 跳转会把当前 URL 一起丢掉：用户既说不清自己要哪个页面的权限，点后退还会再次触发
+ * 403 被弹回来，形成死循环。就地渲染则保住 URL，后退也能真的退出去。
+ *
+ * 声明了 silence 的请求自己处理错误（比如渲染成局部占位），不进这个通道。
+ */
+const reportForbidden = (data: any, options: any) => {
+  if (options?.silence) return;
+  // 请求发出后用户可能已经翻到别的页面了。这种迟到的 403 属于上一页，不能拿来
+  // 顶掉当前这一屏 —— errorHandler 里对通知也是同一套判断。
+  const sourcePathname = options?.sourcePathname;
+  if (sourcePathname && sourcePathname !== location.pathname) return;
+  reportPageError(
+    normalizeError({
+      status: 403,
+      message: processError(data),
+      data,
+      action: options?.action,
+      // 用发起请求时的路径，而不是响应回来时的 location：后者可能已经变了，
+      // 那样诊断信息里的「访问路径」会指向一个没出错的页面
+      path: sourcePathname,
+    }),
+  );
+};
 
 const combineLoginURL = () => {
   return `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + encodeURIComponent(location.pathname + location.search) : ''}`;
@@ -221,6 +242,10 @@ request.interceptors.response.use(
       }
     } else if (
       status === 403 &&
+      // 只有这两组接口的 403 才接管整页。这正是改造前会整页跳 /403 的那一组，
+      // 范围保持不变：其余接口（/api/n9e/* 等）里混着不少可选请求，
+      // 比如仪表盘的标注 getAnnotations 没权限也不该把整个大盘顶掉。
+      // 放宽覆盖面要先逐个 call site 审一遍谁是「页面主请求」，那是另一件事。
       (response.url.includes('/api/v1') || response.url.includes('/api/v2')) &&
       // 排除掉 proxy 的接口
       !_.includes(response.url, '/api/n9e-plus/proxy') &&
@@ -228,10 +253,25 @@ request.interceptors.response.use(
     ) {
       return response
         .clone()
-        .json()
-        .then((data) => {
-          redirectTo403();
-          if (data.error && data.error.message) throw new Error(data.error.message);
+        .text()
+        .then((text) => {
+          let data: any = {};
+          try {
+            data = JSON.parse(text);
+          } catch (error) {
+            // 403 的响应体不一定是 JSON（网关直接挡下时常是 HTML），走统一文案
+            data = { error: { message: i18next.t('common:auth.403') } };
+          }
+          reportForbidden(data, options);
+          throw {
+            name: processError(data),
+            message: processError(data),
+            // 403 已经由 PageError 就地渲染，再弹一条全局通知是重复打扰
+            silence: true,
+            data,
+            response,
+            status,
+          };
         });
     } else if (status === 598) {
       if (location.pathname !== '/system/license-management') {

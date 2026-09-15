@@ -11,7 +11,7 @@ import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import { normalizeTime } from '@/pages/alertRules/Form/utils';
-import { FormStateContext } from '@/pages/alertRules/Form';
+import { FormStateContext } from '@/pages/alertRules/FormNG';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../constants';
@@ -42,8 +42,17 @@ export default function Query(props: Props) {
   const sql = query?.sql;
   const database = query?.database;
 
-  // 新增/查看规则时隐藏数据库字段；编辑/克隆规则时仅当已有数据库配置时才显示, 且仅在代码模式下显示
-  const showDatabase = editMode === 'code' && (type === 1 || type === 2) ? !!database : false;
+  const isExistingRule = type === 1 || type === 2 || type === 3;
+  const [hasDatabaseConfig, setHasDatabaseConfig] = useState(() => !!form.getFieldValue(['rule_config', 'queries', field.name, 'database']));
+
+  // 兼容表单异步回填；当前查询一旦已有数据库配置，清空值后仍保留选择器。
+  useEffect(() => {
+    if (isExistingRule && database) {
+      setHasDatabaseConfig(true);
+    }
+  }, [isExistingRule, database]);
+
+  const showDatabase = editMode === 'code' && isExistingRule && (hasDatabaseConfig || !!database);
 
   useEffect(() => {
     if (!sql) {
@@ -84,6 +93,9 @@ export default function Query(props: Props) {
                   { label: 'Code', value: 'code' },
                 ]}
                 onChange={(value) => {
+                  // 从 Code 切到 Builder 时清空已生成的 sql 和 builderConfig：
+                  // Builder 配置是纯编辑态，重新进入需从空白生成，
+                  // 避免残留配置生成的 SQL 与当前手写 SQL 不一致。
                   if (value === 'builder' && editMode === 'code') {
                     const sqlValue = _.get(queries, [field.name, 'sql']);
                     if (sqlValue) {
@@ -123,7 +135,7 @@ export default function Query(props: Props) {
           {showDatabase && (
             <InputGroupWithFormItem label={t('query.database')}>
               <Form.Item {...field} name={[field.name, 'database']}>
-                <Select style={{ width: 200 }} disabled={disabled}>
+                <Select style={{ width: 200 }} disabled={disabled} allowClear>
                   {dbList.map((db) => (
                     <Select.Option key={db} value={db}>
                       {db}

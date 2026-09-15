@@ -32,6 +32,7 @@ const ja_JP = {
   print_access_log: 'アクセスログを印刷',
   print_body_paths: 'リクエストボディパスを印刷',
   font_family: 'フォント',
+  alert_severity_names: 'アラートレベル名をカスタマイズ',
 };
 
 export default ja_JP;

@@ -11,7 +11,8 @@ import { subscribeItem } from '@/store/warningInterface/subscribe';
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { priorityColor } from '@/utils/constant';
-import { DatasourceSelect } from '@/components/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import { strategyStatus } from '@/store/warningInterface';
 import Tags from '@/components/TableTags/Tags';
 import EmptyGuide from '@/components/EmptyGuide';
@@ -62,7 +63,7 @@ const Subscribe = (props: Props) => {
   const { t, i18n } = useTranslation('alertSubscribes');
   const history = useHistory();
   const location = useLocation();
-  const { datasourceList, busiGroups, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, datasourceCateOptions, busiGroups, darkMode } = useContext(CommonStateContext);
   const { hideBusinessGroupColumn, readonly, canCreate, headerExtra, data, loading, setRefreshFlag, linkTarget, gids, groupSwitchCount } = props;
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
@@ -160,14 +161,18 @@ const Subscribe = (props: Props) => {
             <Tags
               type='fill'
               borderRadius={6}
-              data={_.map(data, (severity) => `S${severity}`)}
-              bgColor={(tagname) => {
-                const bgColorMap = { S1: 'var(--fc-red-3)', S2: 'var(--fc-orange-3)', S3: 'var(--fc-yellow-3)' };
-                return bgColorMap[tagname as string] || 'var(--fc-gray-3)';
+              data={data}
+              getLabel={(severity) => `S${severity}`}
+              getTooltipTitle={(severity) => (typeof severity === 'number' ? getAlertSeverityName(severity) : undefined)}
+              bgColor={(severity) => {
+                const level = Number(severity);
+                const bgColorMap: Record<number, string> = { 1: 'var(--fc-red-3)', 2: 'var(--fc-orange-3)', 3: 'var(--fc-yellow-3)' };
+                return bgColorMap[level] || 'var(--fc-gray-3)';
               }}
-              fontColor={(tagname) => {
-                const fontColorMap = { S1: 'var(--fc-red-11)', S2: 'var(--fc-orange-11)', S3: 'var(--fc-yellow-11)' };
-                return fontColorMap[tagname as string] || 'var(--fc-gray-11)';
+              fontColor={(severity) => {
+                const level = Number(severity);
+                const fontColorMap: Record<number, string> = { 1: 'var(--fc-red-11)', 2: 'var(--fc-orange-11)', 3: 'var(--fc-yellow-11)' };
+                return fontColorMap[level] || 'var(--fc-gray-11)';
               }}
             />
           );
@@ -361,14 +366,24 @@ const Subscribe = (props: Props) => {
               refreshList();
             }}
           />
-          <DatasourceSelect
+          <DatasourceSelectV3
             style={{ width: 100 }}
             filterKey='alertRule'
+            mode='multiple'
+            maxTagCount='responsive'
+            placeholder={t('common:datasource.name')}
+            datasourceCateList={datasourceCateOptions}
             value={datasourceIds}
             onChange={(val) => {
               setDatasourceIds(val);
               setCurrent(1);
               saveState({ datasourceIds: val });
+              history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
+            }}
+            onClear={() => {
+              setDatasourceIds(undefined);
+              setCurrent(1);
+              saveState({ datasourceIds: undefined });
               history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, 1) });
             }}
           />

@@ -61,6 +61,7 @@ export default function TimeSeriesDetail(props: Props) {
           </Button>
         </Space>
       }
+      className='n9e-antd-drawer'
     >
       <div>
         <div className='page-title'>{t('id')}</div>

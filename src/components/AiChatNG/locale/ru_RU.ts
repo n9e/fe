@@ -22,6 +22,7 @@ const ru_RU = {
     more_actions: 'Другие действия с диалогом',
   },
   nightingale: {
+    share_fallback_notice: 'У вас нет доступа к исходной странице, здесь показан только диалог',
     title: 'Nightingale AI',
     new_chat: 'Новый чат',
     sessions: 'Диалоги',

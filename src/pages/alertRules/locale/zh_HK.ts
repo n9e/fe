@@ -152,6 +152,7 @@ const zh_HK = {
   invalid_datasource_tip_1: '數據源',
   invalid_datasource_tip_2: '未配置關聯告警引擎集群',
   invalid_datasource_reload: '刷新數據源',
+  all_datasources: '全部數據源',
   advanced_settings: '輔助配置',
   host: {
     query: {
@@ -211,6 +212,7 @@ const zh_HK = {
       copy: '複製 JSON 內容到剪貼簿',
     },
     update: {
+      service_cal_legacy_cleared: '所選規則中有 {{num}} 條配置了已廢棄的規則級生效時段，本次操作會將其一併清除',
       title: '更新告警規則',
       name: '批量更新',
       field: '字段',

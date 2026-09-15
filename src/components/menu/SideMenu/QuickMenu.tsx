@@ -101,7 +101,7 @@ export default forwardRef(function QuickMenu(props: Props, ref) {
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       setLockMouseHover(true);
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'k' && (isMac ? e.metaKey : e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       } else if (e.key === 'ArrowDown') {

@@ -5,6 +5,7 @@ import { Button, List, Input, Modal, Space } from 'antd';
 import { SafetyCertificateOutlined, SearchOutlined, EditOutlined, DeleteOutlined, PlusSquareOutlined } from '@ant-design/icons';
 
 import PageLayout, { HelpLink } from '@/components/pageLayout';
+import { IS_ENT } from '@/utils/constant';
 
 import { RoleType, OperationType } from './types';
 import { getRoles, deleteRoles, getOperations } from './services';
@@ -42,7 +43,11 @@ export default function index() {
     <PageLayout
       title={<Space>{t('title')}</Space>}
       icon={<SafetyCertificateOutlined />}
-      doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/personnel-permissions/permissions-management/'
+      doc={
+        IS_ENT
+          ? '/docs/content/flashcat/permission/what-is-permission-design/'
+          : 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/personnel-permissions/permissions-management/'
+      }
     >
       <div className='user-manage-content'>
         <div style={{ display: 'flex', gap: 10, height: '100%', background: 'unset' }}>

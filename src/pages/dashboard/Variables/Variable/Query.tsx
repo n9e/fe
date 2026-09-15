@@ -8,23 +8,28 @@ import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { buildVariableInterpolations } from '../utils/ajustData';
-import { useVariableManager } from '../VariableManagerContext';
+import { collectVariableDependencies, useVariableManager } from '../VariableManagerContext';
 import { formatString, formatDatasource } from '../utils/formatString';
-import filterOptionsByReg from '../utils/filterOptionsByReg';
+import { getBuiltInVariables } from '../utils/replaceTemplateVariables';
+import processQueryOptions from '../utils/processQueryOptions';
 import getValueByOptions from '../utils/getValueByOptions';
 import datasource, { VariableDatasourceQuery } from '../datasource';
 import { Props } from './types';
 import { getErrorMessage } from '@/pages/dashboard/utils/json';
 import type { JsonObject } from '@/pages/dashboard/types';
+import collectSqlMacroNames from '../utils/collectSqlMacroNames';
+import { getDashboardVariablePlugin } from '../plugins';
 
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
   const { hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options, width } = variable;
+  const selectPresentation = getDashboardVariablePlugin(variable.datasource?.cate)?.selectPresentation?.(variable.query);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
   const variableRef = useRef(variable);
@@ -45,10 +50,28 @@ export default function Query(props: Props) {
     const currentVariable = variableRef.current;
     const currentRange = rangeRef.current;
     const requestId = ++requestIdRef.current;
+    const clearLoadingIfLatestRequest = () => {
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+      }
+    };
 
     if (!currentVariable.datasource) {
       const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
       setErrorMsg(errMsg);
+      clearLoadingIfLatestRequest();
+      return Promise.reject(errMsg);
+    }
+
+    const availableVariableNames = new Set([...getVariables().map((item) => item.name), ...getBuiltInVariables(currentRange).map((item) => item.name)]);
+    const sqlMacroNames = collectSqlMacroNames({ definition: currentVariable.definition, query: currentVariable.query });
+    const missingDependencies = collectVariableDependencies(currentVariable).filter(
+      (dependencyName) => !availableVariableNames.has(dependencyName) && !sqlMacroNames.has(dependencyName),
+    );
+    if (missingDependencies.length > 0) {
+      const errMsg = `Variable ${currentVariable.name} references missing variable(s): ${missingDependencies.join(', ')}`;
+      setErrorMsg(errMsg);
+      clearLoadingIfLatestRequest();
       return Promise.reject(errMsg);
     }
 
@@ -69,19 +92,27 @@ export default function Query(props: Props) {
     if (!datasourceValue) {
       const errMsg = 'Variable ' + currentVariable.name + ' datasource not found';
       setErrorMsg(errMsg);
+      clearLoadingIfLatestRequest();
       return Promise.reject(errMsg);
     }
 
     setErrorMsg('');
+    setLoading(true);
     try {
-      // 对 query 对象中所有字符串字段执行变量替换，确保依赖链执行时使用最新变量值
-      // 部分数据源（如 CloudWatch query.region）的变量引用在此处提前解析
-      const interpolatedQuery: JsonObject = {};
-      if (currentVariable.query) {
-        Object.entries(currentVariable.query).forEach(([key, val]) => {
-          interpolatedQuery[key] = typeof val === 'string' ? formatString(val, variableInterpolations) : val;
-        });
-      }
+      // 递归替换 query 树中的变量引用，覆盖 GCM filters、group_bys 等嵌套字段。
+      // currentVariable.query 来源于可序列化的表单配置，不含循环引用，故不设 visited 防护。
+      const interpolateQueryValue = (value: unknown): unknown => {
+        if (typeof value === 'string') return formatString(value, variableInterpolations);
+        if (Array.isArray(value)) return value.map(interpolateQueryValue);
+        if (value && typeof value === 'object') {
+          return Object.entries(value).reduce<Record<string, unknown>>((result, [key, item]) => {
+            result[key] = interpolateQueryValue(item);
+            return result;
+          }, {});
+        }
+        return value;
+      };
+      const interpolatedQuery = (interpolateQueryValue(currentVariable.query) ?? {}) as JsonObject;
       const query: VariableDatasourceQuery = {
         ...interpolatedQuery,
         query: formatedDefinition || formatedQuery, // query 是标准写法
@@ -93,11 +124,12 @@ export default function Query(props: Props) {
         datasourceValue,
         datasourceList,
         query,
+        variableContext: { variables: getVariables(), query: { ...currentVariable.query, range: currentRange } },
       });
       if (requestId !== requestIdRef.current) {
         return;
       }
-      const filteredOptions = _.sortBy(filterOptionsByReg(_.map(options, _.toString), formatedReg), 'value');
+      const filteredOptions = processQueryOptions(options, formatedReg);
       updateVariable(name, {
         options: filteredOptions,
         value: getValueByOptions({
@@ -115,6 +147,8 @@ export default function Query(props: Props) {
         options: [],
         // value: variableValueFixed ? value : undefined, // TODO 如果查询失败暂时不清除变量值
       });
+    } finally {
+      clearLoadingIfLatestRequest();
     }
   };
 
@@ -204,6 +238,8 @@ export default function Query(props: Props) {
           }}
           defaultActiveFirstOption={false}
           showSearch
+          optionFilterProp={selectPresentation?.optionFilterProp}
+          optionLabelProp={selectPresentation?.optionLabelProp}
           searchValue={searchValue}
           onSearch={(v) => {
             setSearchValue(v);
@@ -243,8 +279,10 @@ export default function Query(props: Props) {
             }
           }}
           dropdownMatchSelectWidth={_.toNumber(options?.length) > 100}
+          loading={loading}
           value={value}
-          dropdownClassName='overflow-586'
+          dropdownStyle={selectPresentation?.dropdownStyle}
+          dropdownClassName={['overflow-586', selectPresentation?.dropdownClassName].filter(Boolean).join(' ')}
           maxTagPlaceholder={(omittedValues) => {
             return (
               <Tooltip
@@ -266,11 +304,20 @@ export default function Query(props: Props) {
               All
             </Select.Option>
           )}
-          {_.map(options, (item) => (
-            <Select.Option key={item.value} value={item.value} style={{ maxWidth: 500 }}>
-              {item.label}
-            </Select.Option>
-          ))}
+          {_.map(options, (item) => {
+            const renderedOption = selectPresentation?.renderOption?.(item);
+            return (
+              <Select.Option
+                key={item.value}
+                value={item.value}
+                label_original={renderedOption?.labelOriginal}
+                label_search={renderedOption?.labelSearch}
+                style={{ maxWidth: 500 }}
+              >
+                {renderedOption?.content ?? item.label}
+              </Select.Option>
+            );
+          })}
         </Select>
       </InputGroupWithFormItem>
     </div>

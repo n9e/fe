@@ -125,6 +125,10 @@ const zh_CN = {
       topNSettings: {
         title: '前 N 个值设置',
       },
+      flattenSettings: {
+        title: '字段拍平层级',
+        extra: '0: 不解析、不拍平,字段值按日志原始字符串展示\nN(≥1):  嵌套 JSON 最多展开 N 层，超出部分整体展示',
+      },
     },
     fieldLabelTip: '字段未开启统计，无法进行统计分析',
     filterAnd: '添加 "{{token}}" 到本次检索',

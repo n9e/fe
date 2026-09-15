@@ -41,9 +41,11 @@ export default function replaceTemplateVariables(
     extVariables = _.concat(
       extVariables,
       _.map(scopedVars, (value, key) => {
+        // scopedVars 的值有两种形态：{ value } 对象（ScopedVariable）或原始值（扁平映射），统一在这里归一化
+        const normalizedValue = _.isPlainObject(value) ? value.value : (value as IVariable['value']);
         return {
           name: key,
-          value: value.value,
+          value: normalizedValue,
         } as IVariable;
       }),
     );

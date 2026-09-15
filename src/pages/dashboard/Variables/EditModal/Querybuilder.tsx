@@ -13,7 +13,7 @@ import { replaceDatasourceVariables } from '../utils/replaceTemplateVariables';
 // @ts-ignore
 import VariableQuerybuilderPro from 'plus:/parcels/Dashboard/VariableQuerybuilder';
 
-export default function Querybuilder() {
+export default function Querybuilder({ variables }: { variables?: import('../types').IVariable[] }) {
   const { datasourceList } = useContext(CommonStateContext);
   const datasourceCate = Form.useWatch(['datasource', 'cate']);
   const datasourceValue = Form.useWatch(['datasource', 'value']);
@@ -31,7 +31,7 @@ export default function Querybuilder() {
         {datasourceCate === DatasourceCateEnum.prometheus && <Prometheus />}
         {datasourceCate === DatasourceCateEnum.elasticsearch && <Elasticsearch />}
         {datasourceCate === DatasourceCateEnum.ck && <ClickHouse />}
-        <VariableQuerybuilderPro {...subProps} datasourceValue={currentdatasourceValue!} />
+        <VariableQuerybuilderPro variables={variables} {...subProps} datasourceValue={currentdatasourceValue!} />
       </div>
     </>
   );

@@ -1,5 +1,7 @@
 const en_US = {
   query: {
+    range: 'Query range',
+    sql_required: 'SQL is required',
     mode: 'Mode',
     mode_indices: 'Indices',
     mode_index_patterns: 'Index patterns',
@@ -37,6 +39,12 @@ const en_US = {
       table: 'Table',
       timeseries: 'Time series',
     },
+    dashboard: {
+      mode: {
+        timeSeries: 'Time series data',
+        table: 'Non-time-series data',
+      },
+    },
     add_to: {
       btn: 'Add To',
       recording_rule: 'Recording rule',
@@ -44,6 +52,11 @@ const en_US = {
     },
   },
   builder: {
+    title: 'Builder',
+    code: 'Code',
+    open_builder: 'Open builder',
+    switch_to_builder_confirm_title: 'Switch to Builder',
+    switch_to_builder_confirm_content: 'Switching will clear the current SQL and builder configuration.',
     to_pinned_btn: 'Pin',
     to_unpinned_btn: 'Unpin',
     filters: {

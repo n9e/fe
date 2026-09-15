@@ -25,7 +25,6 @@ import { useDeepCompareEffect } from 'ahooks';
 import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 
-import { DASHBOARD_VERSION } from '../config';
 import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
 import FormCpt, { EditorFormHandle } from './Form';
 import { IPanel } from '../types';
@@ -102,9 +101,7 @@ function index(props: IProps) {
         if (values.type === 'hexbin' && typeof values.custom.colorRange === 'string') {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
-        let formData = Object.assign(values, {
-          version: DASHBOARD_VERSION,
-        });
+        const formData = values;
         if (values && values.id) {
           formData.id = values.id;
         } else {

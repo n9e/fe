@@ -127,7 +127,6 @@ export const defaultOptionsValues = {
 };
 
 export const defaultValues = {
-  version: '1.0.0',
   type: 'timeseries',
   options: defaultOptionsValues,
   custom: {},
@@ -176,6 +175,13 @@ export const defaultCustomValuesMap = {
     tableLayout: 'auto',
     nowrap: true,
   },
+  tableNG: {
+    showHeader: true,
+    filterable: false,
+    cellOptions: {
+      type: 'none',
+    },
+  },
   hexbin: {
     textMode: 'valueAndName',
     calc: 'lastNotNull',
@@ -213,6 +219,7 @@ export const defaultCustomValuesMap = {
     valueField: 'Value',
     scheme: 'Blues',
   },
+  iframe: {},
   barchart: {
     calc: 'lastNotNull',
     valueField: 'Value',
@@ -224,9 +231,13 @@ export const defaultOptionsValuesMap = {
   stat: defaultOptionsValues,
   pie: defaultOptionsValues,
   table: defaultOptionsValues,
+  tableNG: defaultOptionsValues,
   hexbin: defaultOptionsValues,
   barGauge: defaultOptionsValues,
   text: defaultOptionsValues,
+  heatmap: defaultOptionsValues,
+  iframe: defaultOptionsValues,
+  barchart: defaultOptionsValues,
   gauge: {
     ...defaultOptionsValues,
     thresholds: {

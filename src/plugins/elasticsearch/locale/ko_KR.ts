@@ -1,5 +1,7 @@
 const ko_KR = {
   "query": {
+    "range": "Query range",
+    "sql_required": "SQL is required",
     "mode": "검색 방식",
     "mode_indices": "Indices",
     "mode_index_patterns": "Index patterns",
@@ -37,6 +39,12 @@ const ko_KR = {
       "table": "표",
       "timeseries": "시계열 그래프"
     },
+    "dashboard": {
+      "mode": {
+        "timeSeries": "시계열 데이터",
+        "table": "비시계열 데이터"
+      }
+    },
     "add_to": {
       "btn": "추가할 곳",
       "recording_rule": "레코딩 규칙",
@@ -44,6 +52,11 @@ const ko_KR = {
     }
   },
   "builder": {
+    "title": "Builder",
+    "code": "Code",
+    "open_builder": "Open builder",
+    "switch_to_builder_confirm_title": "Switch to Builder",
+    "switch_to_builder_confirm_content": "Switching will clear the current SQL and builder configuration.",
     "to_pinned_btn": "고정",
     "to_unpinned_btn": "고정 해제",
     "filters": {

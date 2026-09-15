@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Form, Space, Input } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
@@ -11,7 +11,7 @@ import { VariableQuerybuilder as ClickHouse } from '@/plugins/clickHouse';
 
 import { IVariable } from './definition';
 import ElasticsearchSettings from './datasource/elasticsearch';
-import { replaceExpressionVars } from './constant';
+import { replaceExpressionVars, getVaraiableSelected } from './constant';
 
 // @ts-ignore
 import VariableQuerybuilderPro from 'plus:/parcels/Dashboard/VariableQuerybuilder';
@@ -37,6 +37,7 @@ export default function Querybuilder(props: Props) {
       datasourceList,
     }),
   );
+  const variablesWithSelectedValue = useMemo(() => variables.map((variable) => ({ ...variable, value: getVaraiableSelected(variable, dashboardId) })), [dashboardId, variables]);
 
   if (_.includes(['prometheus', 'elasticsearch', 'pgsql'], datasourceCate)) {
     return (
@@ -94,5 +95,5 @@ export default function Querybuilder(props: Props) {
   if (datasourceCate === DatasourceCateEnum.ck) {
     return <ClickHouse />;
   }
-  return <VariableQuerybuilderPro {...props} datasourceCate={datasourceCate} datasourceValue={currentdatasourceValue} />;
+  return <VariableQuerybuilderPro {...props} variables={variablesWithSelectedValue} datasourceCate={datasourceCate} datasourceValue={currentdatasourceValue} />;
 }

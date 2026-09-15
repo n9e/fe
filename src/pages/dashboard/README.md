@@ -1,6 +1,6 @@
 # 仪表盘（Dashboard）
 
-仪表盘模块：负责仪表盘的列表、详情、编辑、面板渲染与查询，以及数据转换（transformations）。当前配置版本 `4.0.0`（多数据源查询）。
+仪表盘模块：负责仪表盘的列表、详情、编辑、面板渲染与查询，以及数据转换（transformations）。当前配置版本 `4.1.0`（多数据源查询）。
 
 ## 目录结构
 
@@ -8,6 +8,7 @@
 src/pages/dashboard/
 ├── CHANGELOG.md                     # 版本变更记录（含各版本无法兼容的更新说明）
 ├── LLMs.txt
+├── VARIABLES.md                     # 变量子系统架构（含架构图与关键约束）
 ├── config.tsx                       # 仪表盘模块配置
 ├── external-modules.d.ts
 ├── globalState.ts                   # 仪表盘全局状态
@@ -18,7 +19,7 @@ src/pages/dashboard/
 ├── DashboardLinks/                  # 仪表盘链接
 ├── Detail/                          # 仪表盘详情页
 │   └── utils/
-│       ├── dashboardMigrator.ts     # 老版本(3.x)配置迁移到 v4.0.0
+│       ├── dashboardMigrator.ts     # 旧版配置迁移到当前版本
 │       └── index.ts                 # 详情页工具（getDatasourceValue 等）
 ├── Editor/                          # 仪表盘编辑器
 │   ├── QueryEditor/                 # 查询编辑器（按数据源 cate 分发 QueryBuilder）
@@ -40,7 +41,7 @@ src/pages/dashboard/
 │   └── utils/                       # 渲染工具（valueFormatter 等）
 ├── Share/                           # 分享
 ├── VariableConfig/                  # 变量配置（v3.2 起废弃，由 Variables 取代）
-├── Variables/                       # 变量（v3.2 重构）
+├── Variables/                       # 变量（v3.2 重构），架构见 VARIABLES.md
 ├── hooks/                           # 模块内 Hook
 ├── locale/                          # 国际化资源
 ├── test/fixtures/                   # 仪表盘专属测试数据
@@ -50,6 +51,16 @@ src/pages/dashboard/
 ├── transformations/                 # 数据转换器（Organize / Merge / GroupBy / Reduce 等 20+ 个）
 └── utils/                           # 工具函数（upgradeTableToNG、json、validateDashboardConfig 等）
 ```
+
+## 版本约定
+
+`dashboard.version` 是唯一的持久化 schema 版本。仪表盘及其全部面板结构迁移均由该版本驱动，面板不单独保存版本字段。
+
+## 运行时状态与多实例限制
+
+`globalState.ts` 基于 `react-hooks-global-state` 创建模块级单例。它保存的并不只是本次变量联动的 `variableExecution`，还包括 `dashboardMeta`、`variablesWithOptions`、`range`、`series`、表格字段和图例编辑状态等。因此，同一个 React 树内并存多个仪表盘运行时实例目前**不受支持**：后挂载实例会覆盖前一个实例的变量、时间范围、元数据和编辑辅助状态，面板查询也可能使用错误的变量值。
+
+当前路由使用方式是一页只挂载一个仪表盘实例。变量执行状态通过会话 ID 防止已卸载实例的异步链回调覆盖新页面的暂停/恢复状态，但这不是多实例隔离方案。若产品需要在同一 React 树内并列展示多个仪表盘，应将上述全局状态迁移为以仪表盘实例为边界的 `DashboardRuntimeContext`，并让变量、面板渲染与编辑器共享该 Context。
 
 ## 测试
 

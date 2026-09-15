@@ -1,4 +1,5 @@
 const pt_BR = {
+  "all_datasources": "Todas as fontes de dados",
   "step_title": "Etapas de configuração",
   "validate_metric_msg": "Valide a métrica primeiro",
   "smart_rule_limit_msg": "O limite de regras de alerta inteligentes foi atingido. Fale com o suporte",

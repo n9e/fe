@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { IS_PLUS } from '@/utils/constant';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import { FormStateContext } from '@/pages/alertRules/Form';
+import { FormStateContext } from '@/pages/alertRules/FormNG';
 import QueryName, { generateQueryName } from '@/components/QueryName';
 import PromQLInputNG from '@/components/PromQLInputNG';
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';

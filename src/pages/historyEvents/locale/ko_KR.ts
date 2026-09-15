@@ -2,6 +2,7 @@ const ko_KR = {
   "title": "지난 알림",
   "event_name": "이벤트",
   "search_placeholder": "규칙과 레이블을 부분 일치로 검색합니다 (키워드가 여러 개면 공백으로 구분)",
+  "hash_placeholder": "이벤트 Hash 정확히 일치 검색",
   "first_trigger_time": "최초 발생 시각",
   "trigger_time": "발생 시각",
   "last_eval_time": "점검 시각",

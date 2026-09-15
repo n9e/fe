@@ -33,6 +33,7 @@ interface IProps {
   setRefreshFlag: (refreshFlag: string) => void;
   tagDisplayMode: AlertEventTagsDisplayMode;
   alertEscalationEnable: boolean;
+  isFullscreen: boolean;
 }
 
 function formatDuration(ms: number) {
@@ -59,7 +60,7 @@ function formatDuration(ms: number) {
 }
 
 export default function AlertTable(props: IProps) {
-  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, tagDisplayMode, alertEscalationEnable } = props;
+  const { filter, setFilter, selectedRowKeys, setSelectedRowKeys, params, setRefreshFlag, tagDisplayMode, alertEscalationEnable, isFullscreen } = props;
   const history = useHistory();
   const { t } = useTranslation(NS);
   const { datasourceList } = useContext(CommonStateContext);
@@ -73,6 +74,18 @@ export default function AlertTable(props: IProps) {
   const lastInitiatedViewIdRef = useRef<number | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [tableHeaderHeight, setTableHeaderHeight] = useState<number>();
+  const [newFullscreenEventKeys, setNewFullscreenEventKeys] = useState<Set<string>>(new Set());
+  const previousFullscreenPageRef = useRef<{ queryKey: string; eventKeys: Set<string> }>();
+  // TimeRangePicker 会在刷新时向 range 写入 refreshFlag；它不参与接口筛选，不能让它重置新增事件的对比基准。
+  const fullscreenQueryKey = JSON.stringify({
+    ...params,
+    range: params.range ? _.omit(params.range, ['refreshFlag']) : params.range,
+  });
+
+  useEffect(() => {
+    previousFullscreenPageRef.current = undefined;
+    setNewFullscreenEventKeys(new Set());
+  }, [fullscreenQueryKey, isFullscreen]);
 
   useEffect(() => {
     const parsed = queryString.parse(location.search);
@@ -236,9 +249,13 @@ export default function AlertTable(props: IProps) {
     } as any);
   }
 
+  const getEventIdentity = (event: { hash: string }) => event.hash;
+
   const fetchData = ({ current, pageSize }) => {
+    const requestQueryKey = fullscreenQueryKey;
+    const isFullscreenRequest = isFullscreen;
     const requestParams: any = {
-      p: current,
+      p: isFullscreen ? 1 : current,
       limit: pageSize,
       my_groups: String(params.my_groups) === 'true',
       ..._.omit(params, ['range', 'my_groups']),
@@ -250,16 +267,29 @@ export default function AlertTable(props: IProps) {
       requestParams.etime = moment(parsedRange.end).unix();
     }
     return getEvents(requestParams).then((res) => {
+      const list = res.dat.list ?? [];
       return {
         total: res.dat.total,
-        list: res.dat.list,
+        list,
+        requestQueryKey,
+        isFullscreenRequest,
       };
     });
   };
   const { tableProps } = useAntdTable(fetchData, {
-    refreshDeps: [JSON.stringify(params), props.refreshFlag],
+    refreshDeps: [fullscreenQueryKey, props.refreshFlag, isFullscreen],
     defaultPageSize: 30,
     debounceWait: 500,
+    onSuccess: (data: { list: Array<{ hash: string }>; requestQueryKey: string; isFullscreenRequest: boolean }) => {
+      if (!data.isFullscreenRequest) return;
+
+      const eventKeys = new Set(data.list.map(getEventIdentity));
+      const previousPage = previousFullscreenPageRef.current;
+      const nextNewEventKeys = previousPage?.queryKey === data.requestQueryKey ? new Set([...eventKeys].filter((key) => !previousPage.eventKeys.has(key))) : new Set<string>();
+
+      previousFullscreenPageRef.current = { queryKey: data.requestQueryKey, eventKeys };
+      setNewFullscreenEventKeys(nextNewEventKeys);
+    },
   });
 
   const pagination = usePagination({ PAGESIZE_KEY: EVENTS_TABLE_PAGESIZE_CACHE_KEY });
@@ -293,71 +323,86 @@ export default function AlertTable(props: IProps) {
         rowKey={(record) => record.id}
         columns={columns}
         {...tableProps}
-        rowClassName={(record: { severity: number; is_recovered: number }) => {
-          return SEVERITY_COLORS[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+        rowClassName={(record: { hash: string; severity: number; is_recovered: number }) => {
+          const severityClassName = SEVERITY_COLORS[record.is_recovered ? 3 : record.severity - 1] + '-left-border';
+          const shouldHighlight = isFullscreen && newFullscreenEventKeys.has(getEventIdentity(record));
+          // 复用主题 violet-3（--fc-violet-3），明暗模式各自取值，避免硬编码色值。
+          return shouldHighlight ? `${severityClassName} children:!bg-violet-300` : severityClassName;
         }}
-        rowSelection={{
-          selectedRowKeys: selectedRowKeys,
-          onChange(selectedRowKeys: number[]) {
-            setSelectedRowKeys(selectedRowKeys);
-          },
-        }}
-        pagination={{
-          ...pagination,
-          ...tableProps.pagination,
-          pageSizeOptions: ['30', '100', '200', '500'],
-        }}
-        rowActions={(record) => ({
-          inline: _.compact([
-            IS_PLUS && alertEscalationEnable
-              ? {
-                  key: 'ack',
-                  icon: record.status === 0 ? 'claim' : 'unclaim',
-                  text: record.status === 0 ? t('claim') : t('unclaim'),
-                  onClick: () => {
-                    ackEvents([record.id], record.status === 0 ? 'ack' : 'unack').then(() => {
-                      setRefreshFlag(_.uniqueId('refresh_'));
-                    });
+        rowSelection={
+          isFullscreen
+            ? undefined
+            : {
+                selectedRowKeys: selectedRowKeys,
+                onChange(selectedRowKeys: number[]) {
+                  setSelectedRowKeys(selectedRowKeys);
+                },
+              }
+        }
+        pagination={
+          isFullscreen
+            ? false
+            : {
+                ...pagination,
+                ...tableProps.pagination,
+                pageSizeOptions: ['30', '100', '200', '500'],
+              }
+        }
+        rowActions={
+          isFullscreen
+            ? undefined
+            : (record) => ({
+                inline: _.compact([
+                  IS_PLUS && alertEscalationEnable
+                    ? {
+                        key: 'ack',
+                        icon: record.status === 0 ? 'claim' : 'unclaim',
+                        text: record.status === 0 ? t('claim') : t('unclaim'),
+                        onClick: () => {
+                          ackEvents([record.id], record.status === 0 ? 'ack' : 'unack').then(() => {
+                            setRefreshFlag(_.uniqueId('refresh_'));
+                          });
+                        },
+                      }
+                    : undefined,
+                  !_.includes(['firemap', 'northstar'], record?.rule_prod)
+                    ? {
+                        key: 'shield',
+                        icon: 'shield',
+                        text: t('shield'),
+                        onClick: () => {
+                          history.push({
+                            pathname: '/alert-mutes/add',
+                            search: queryString.stringify({
+                              busiGroup: record.group_id,
+                              prod: record.rule_prod,
+                              cate: record.cate,
+                              datasource_ids: [record.datasource_id],
+                              tags: record.tags,
+                            }),
+                          });
+                        },
+                      }
+                    : undefined,
+                  {
+                    key: 'delete',
+                    icon: 'delete',
+                    text: t('common:btn.delete'),
+                    danger: true,
+                    onClick: () =>
+                      deleteAlertEventsModal(
+                        [record.id],
+                        () => {
+                          setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
+                          setRefreshFlag(_.uniqueId('refresh_'));
+                        },
+                        t,
+                      ),
                   },
-                }
-              : undefined,
-            !_.includes(['firemap', 'northstar'], record?.rule_prod)
-              ? {
-                  key: 'shield',
-                  icon: 'shield',
-                  text: t('shield'),
-                  onClick: () => {
-                    history.push({
-                      pathname: '/alert-mutes/add',
-                      search: queryString.stringify({
-                        busiGroup: record.group_id,
-                        prod: record.rule_prod,
-                        cate: record.cate,
-                        datasource_ids: [record.datasource_id],
-                        tags: record.tags,
-                      }),
-                    });
-                  },
-                }
-              : undefined,
-            {
-              key: 'delete',
-              icon: 'delete',
-              text: t('common:btn.delete'),
-              danger: true,
-              onClick: () =>
-                deleteAlertEventsModal(
-                  [record.id],
-                  () => {
-                    setSelectedRowKeys(selectedRowKeys.filter((key) => key !== record.id));
-                    setRefreshFlag(_.uniqueId('refresh_'));
-                  },
-                  t,
-                ),
-            },
-          ]) as any,
-        })}
-        actionColumn={{ title: t('common:table.operations'), width: 100 }}
+                ]) as any,
+              })
+        }
+        actionColumn={isFullscreen ? undefined : { title: t('common:table.operations'), width: 100 }}
       />
       <EventDetailDrawer
         showAckBtn

@@ -72,7 +72,7 @@ function index(props: IProps & ModalWrapProps) {
   }, [id, JSON.stringify(range), limit]);
 
   return (
-    <Drawer title={t('es.event.logs.title')} width={960} placement='right' onClose={destroy} visible={visible}>
+    <Drawer title={t('es.event.logs.title')} width={960} placement='right' onClose={destroy} visible={visible} className='n9e-antd-drawer'>
       <div style={{ marginBottom: 10 }}>
         <Space>
           <TimeRangePicker dateFormat='YYYY-MM-DD HH:mm:ss' value={range} onChange={setRange} />

@@ -15,10 +15,11 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
+import { Modal, Form, Input, Select, Space, Switch, message } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
+import { HelpLink } from '@/components/pageLayout';
 import { updateDashboard, getDashboard, updateDashboardConfigs } from '@/services/dashboardV2';
 import { IDashboard, IDashboardConfig } from '../types';
 import { JSONParse } from '../utils';
@@ -32,8 +33,13 @@ function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
   const { visible, destroy, initialValues, onOk } = props;
   const [form] = Form.useForm();
+  const handleClose = () => {
+    form.resetFields();
+    destroy();
+  };
 
   useEffect(() => {
+    let cancelled = false;
     if (initialValues?.id) {
       getDashboard(initialValues.id).then((res) => {
         let configs = {} as IDashboardConfig;
@@ -42,12 +48,20 @@ function index(props: Props & ModalWrapProps) {
         } catch (e) {
           console.warn(e);
         }
+        if (cancelled) return;
+        form.resetFields();
         form.setFieldsValue({
+          iframe_url: configs.iframe_url,
+          showTimePicker: configs.showTimePicker ?? false,
+          hideHeader: configs.hideHeader ?? false,
           graphTooltip: configs.graphTooltip,
           graphZoom: configs.graphZoom,
         });
       });
     }
+    return () => {
+      cancelled = true;
+    };
   }, [initialValues?.id]);
 
   return (
@@ -55,7 +69,7 @@ function index(props: Props & ModalWrapProps) {
       destroyOnClose
       title={t('edit_title')}
       visible={visible}
-      onCancel={destroy}
+      onCancel={handleClose}
       onOk={() => {
         if (initialValues?.id) {
           form.validateFields().then(async (values) => {
@@ -72,13 +86,15 @@ function index(props: Props & ModalWrapProps) {
                 configs: JSON.stringify({
                   ...configs,
                   iframe_url: values.iframe_url,
+                  hideHeader: values.hideHeader,
+                  showTimePicker: values.showTimePicker,
                 }),
               });
             }
             if (onOk) {
               onOk();
             }
-            destroy();
+            handleClose();
           });
         }
       }}
@@ -92,6 +108,8 @@ function index(props: Props & ModalWrapProps) {
           tags: initialValues?.tags ? _.split(initialValues.tags, ' ') : undefined,
           note: initialValues?.note,
           iframe_url: initialValues?.configs?.iframe_url,
+          hideHeader: initialValues?.configs?.hideHeader ?? false,
+          showTimePicker: initialValues?.configs?.showTimePicker ?? false,
         }}
       >
         <Form.Item
@@ -124,7 +142,12 @@ function index(props: Props & ModalWrapProps) {
           <Input.TextArea autoSize={{ minRows: 1 }} />
         </Form.Item>
         <Form.Item
-          label={t('batch.import_grafana_url_label')}
+          label={
+            <Space>
+              {t('batch.import_grafana_url_label')}
+              <HelpLink src='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/dashboard/integrated-dashboard/' />
+            </Space>
+          }
           name='iframe_url'
           rules={[
             {
@@ -133,6 +156,12 @@ function index(props: Props & ModalWrapProps) {
           ]}
         >
           <Input.TextArea autoSize={{ minRows: 2 }} />
+        </Form.Item>
+        <Form.Item label={t('settings.hideHeader.label')} name='hideHeader' valuePropName='checked' tooltip={t('settings.hideHeader.tip')}>
+          <Switch />
+        </Form.Item>
+        <Form.Item label={t('batch.show_time_picker')} name='showTimePicker' initialValue={false} valuePropName='checked' tooltip={t('batch.show_time_picker_tip')}>
+          <Switch />
         </Form.Item>
       </Form>
     </Modal>

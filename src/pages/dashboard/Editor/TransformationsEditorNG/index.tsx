@@ -95,6 +95,7 @@ export default function index() {
                 width='50%'
                 visible={addTransformationDrawerVisible}
                 onClose={() => setAddTransformationDrawerVisible(false)}
+                className='n9e-antd-drawer'
               >
                 <Row gutter={[SIZE, SIZE]}>
                   {_.map(transformationsOptions, (item) => {

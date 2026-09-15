@@ -35,10 +35,10 @@ const baseProps = {
   quickMenuRef: { current: { open: () => {} } },
 };
 
-const renderGroup = (item: IMenuItem, collapsed: boolean) => {
+const renderGroup = (item: IMenuItem, collapsed: boolean, overrides: Partial<typeof baseProps> & { isLight?: boolean } = {}) => {
   const { container } = render(
     <MemoryRouter initialEntries={['/elsewhere']}>
-      <MenuGroup item={item} collapsed={collapsed} {...baseProps} />
+      <MenuGroup item={item} collapsed={collapsed} {...baseProps} {...overrides} />
     </MemoryRouter>,
   );
   // The group row is the first child of MenuGroup's root; the submenu container is its sibling.
@@ -101,6 +101,23 @@ describe('collapsed MenuGroup row', () => {
     expect(groupRow?.tagName).toBe('DIV');
     const hrefs = Array.from(container.querySelectorAll('a')).map((a) => a.getAttribute('href'));
     expect(hrefs).toEqual(['/log/explorer']);
+  });
+
+  // A bare <a> takes the global link color, which on the theme-color sidebar is the same
+  // purple as the background - the collapsed icon then renders invisible against it.
+  it('spells out the sidebar text color on the collapsed link row', () => {
+    const item = {
+      key: 'explorer',
+      label: 'menu.explorer',
+      children: [{ key: '/log/explorer', label: 'menu.logs_explorer' }],
+    } satisfies IMenuItem;
+
+    const onCustomBg = renderGroup(item, true, { isCustomBg: true }).groupRow;
+    expect(onCustomBg?.tagName).toBe('A');
+    expect(onCustomBg).toHaveClass('text-[#e6e6e8]');
+
+    const onLightBg = renderGroup(item, true, { isLight: true }).groupRow;
+    expect(onLightBg).toHaveClass('text-[var(--fc-sidemenu-item-text)]');
   });
 });
 

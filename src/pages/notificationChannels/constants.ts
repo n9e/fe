@@ -1,5 +1,8 @@
 import i18next from 'i18next';
 
+// @ts-ignore
+import * as plusNotificationChannels from 'plus:/parcels/NotificationChannels';
+
 export const NS = 'notification-channels';
 export const PERM = `/${NS}`;
 export const FILTER_SESSION_STORAGE_KEY = 'notification-channels-filter';
@@ -57,7 +60,7 @@ export function getChannelTypeMeta(ident?: string): { logo?: string; label: stri
 
 export const getNotificationChannelTypes = () => {
   const dt = (key: string) => i18next.t(`${NS}:default_values.${key}`);
-  return {
+  const types = {
     flashduty: {
       logo: '/image/logos/flashduty.png',
       type: 'flashduty',
@@ -980,4 +983,6 @@ export const getNotificationChannelTypes = () => {
       },
     },
   };
+  // 商业版会在这里覆盖部分媒介的默认请求体（灭火图截图与详情/AI 链接），开源版原样返回
+  return typeof plusNotificationChannels.applyChannelDefaultValues === 'function' ? plusNotificationChannels.applyChannelDefaultValues(types) : types;
 };

@@ -38,6 +38,7 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   style,
   width,
   extra,
+  className,
   ...restProps
 }) => {
   const { t } = useTranslation('navigableDrawer');
@@ -95,7 +96,7 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   }, [open, hasPrev, hasNext, onPrev, onNext]);
 
   return (
-    <Drawer {...restProps} {...inlineProps} title={title}>
+    <Drawer {...restProps} {...inlineProps} title={title} className={['n9e-antd-drawer', className].filter(Boolean).join(' ')}>
       {children}
 
       {/* 底部浮动提示 */}

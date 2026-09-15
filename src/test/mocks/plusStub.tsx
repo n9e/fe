@@ -9,3 +9,5 @@ import React from 'react';
 export default function PlusModuleStub() {
   return <div data-testid='plus-module-stub' />;
 }
+
+export const dashboardVariablePlugins = {};

@@ -7,7 +7,7 @@ import _ from 'lodash';
 import PromQLInputNG from '@/components/PromQLInputNG';
 import Severity from '@/pages/alertRules/Form/components/Severity';
 import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
-import { FormStateContext } from '@/pages/alertRules/Form';
+import { FormStateContext } from '@/pages/alertRules/FormNG';
 import RadioCard from '@/pages/alertRules/FormNG/components/RadioCard';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';

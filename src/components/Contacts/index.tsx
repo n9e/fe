@@ -27,7 +27,16 @@ export default function ContactDrawer(props: Props) {
   }, []);
 
   return (
-    <Drawer width={960} closable={false} title={t('title')} destroyOnClose extra={<CloseOutlined onClick={onCloseDrawer} />} onClose={onCloseDrawer} visible={open}>
+    <Drawer
+      width={960}
+      closable={false}
+      title={t('title')}
+      destroyOnClose
+      extra={<CloseOutlined onClick={onCloseDrawer} />}
+      onClose={onCloseDrawer}
+      visible={open}
+      className='n9e-antd-drawer'
+    >
       <div className='n9e'>
         <div className={CN}>
           <div className='mb-4 flex justify-between'>

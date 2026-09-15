@@ -21,6 +21,7 @@ import { Modal, Form, Input, Select, Space, message } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { getLabels } from '@/services/metricViews';
 import { CommonStateContext } from '@/App';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { getTeamInfoList } from '@/services/manage';
 import { postFilter, putFilter } from '../../services';
 import Filter from './Filter';
@@ -35,7 +36,7 @@ interface IProps {
 
 export default function FormModal(props: IProps) {
   const { t } = useTranslation('metricsBuiltin');
-  const { groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceCateOptions } = useContext(CommonStateContext);
   const { visible, onClose, action, initialValues, onOk } = props;
   const range = {
     start: 'now-12h',
@@ -114,16 +115,7 @@ export default function FormModal(props: IProps) {
           <Input />
         </Form.Item>
         <Form.Item label={t('filter.datasource')} name='datasourceValue' tooltip={t('filter.datasource_tip')}>
-          <Select
-            showSearch
-            optionFilterProp='label'
-            options={_.map(groupedDatasourceList?.prometheus, (item) => {
-              return {
-                label: item.name,
-                value: item.id,
-              };
-            })}
-          />
+          <DatasourceSelectV3 datasourceCateList={datasourceCateOptions} ajustDatasourceList={(list) => _.filter(list, { plugin_type: 'prometheus' })} />
         </Form.Item>
         <Form.List name='configs'>
           {(fields, { add, remove }) => (

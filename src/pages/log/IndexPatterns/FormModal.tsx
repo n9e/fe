@@ -144,6 +144,7 @@ function FormModal(props: Props & ModalWrapProps) {
           destroy();
         }
       }}
+      className='n9e-antd-drawer'
     >
       <Row gutter={32}>
         <Col span={12}>

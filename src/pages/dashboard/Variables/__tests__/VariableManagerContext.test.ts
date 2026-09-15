@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 
-import { extractDependencies, getQueryVariableExecutionOrderForRangeChange } from '../VariableManagerContext';
+import { buildDependencyGraph, collectVariableDependencies, extractDependencies, getQueryVariableExecutionOrderForRangeChange } from '../VariableManagerContext';
 import { IVariable, VariableExecutionMeta, DependencyGraph } from '../types';
 
 describe('extractDependencies', () => {
@@ -43,6 +43,186 @@ describe('extractDependencies', () => {
 
   test('should extract dependencies with trailing text', () => {
     expect(extractDependencies('${region}-suffix')).toEqual(['region']);
+  });
+});
+
+describe('collectVariableDependencies', () => {
+  test('should ignore non-query variables even when they reference other variables', () => {
+    const variable = {
+      name: 'db',
+      type: 'datasource',
+      definition: 'gcm',
+      regex: '/$env/',
+      datasource: { cate: 'gcm' },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['db', 'env']))).toEqual([]);
+  });
+
+  test('should not treat a self reference as a dependency', () => {
+    const variable = {
+      name: 'a',
+      type: 'query',
+      definition: 'label_values(up{a="$a"}, a)',
+      datasource: { cate: 'prometheus' },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['a']))).toEqual([]);
+  });
+
+  test('should collect from definition and datasource.value together', () => {
+    const variable = {
+      name: 'metric',
+      type: 'query',
+      definition: 'label_values(up{region="$region"}, metric)',
+      datasource: { cate: 'prometheus', value: '${db}' },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['metric', 'region', 'db']))).toEqual(['region', 'db']);
+  });
+
+  test('should collect references from nested query filters and arrays', () => {
+    const variable = {
+      name: 'metric',
+      type: 'query',
+      definition: '',
+      datasource: { cate: 'gcm' },
+      query: {
+        filters: [{ key: 'zone', value: '${zone}' }],
+        group_bys: ['[[project]]', 'literal'],
+      },
+    } as IVariable;
+
+    expect(collectVariableDependencies(variable, new Set(['metric', 'project', 'zone']))).toEqual(['zone', 'project']);
+  });
+});
+
+describe('buildDependencyGraph', () => {
+  test('should link a query variable to the datasource variable used by datasource.value', () => {
+    const variables = [
+      {
+        name: 'db',
+        type: 'datasource',
+        definition: 'gcm',
+        datasource: { cate: 'gcm' },
+      },
+      {
+        name: 'project',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: { db: ['project'] },
+      dependenciesByName: { db: [], project: ['db'] },
+    });
+  });
+
+  test('should collect dependencies from query sub-fields', () => {
+    const variables = [
+      {
+        name: 'region',
+        type: 'query',
+        definition: 'regions',
+        datasource: { cate: 'cloudwatch' },
+        query: { type: 'regions' },
+      },
+      {
+        name: 'namespace',
+        type: 'query',
+        definition: 'namespaces',
+        datasource: { cate: 'cloudwatch' },
+      },
+      {
+        name: 'metric',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'cloudwatch' },
+        query: { region: '${region}', namespace: '[[namespace]]' },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: { region: ['metric'], namespace: ['metric'] },
+      dependenciesByName: { region: [], namespace: [], metric: ['region', 'namespace'] },
+    });
+  });
+
+  test('should drop references to variables that do not exist', () => {
+    const variables = [
+      {
+        name: 'instance',
+        type: 'query',
+        definition: 'label_values(up{region="$region"}, instance)',
+        datasource: { cate: 'prometheus' },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: {},
+      dependenciesByName: { instance: [] },
+    });
+  });
+
+  test('should build the complete GCM dependency chain from datasource and query fields', () => {
+    const variables = [
+      { name: 'db', type: 'datasource', definition: 'gcm', datasource: { cate: 'gcm' } },
+      { name: 'project', type: 'query', definition: '', datasource: { cate: 'gcm', value: '${db}' }, query: { query_type: 'projects' } },
+      {
+        name: 'service',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: { query_type: 'services', project_id: '${project}' },
+      },
+      {
+        name: 'metric',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: { query_type: 'metricTypes', project_id: '${project}', service: '${service}' },
+      },
+      {
+        name: 'label_key',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: { query_type: 'labelKeys', project_id: '${project}', service: '${service}', metric_type: '${metric}' },
+      },
+      {
+        name: 'label_values',
+        type: 'query',
+        definition: '',
+        datasource: { cate: 'gcm', value: '${db}' },
+        query: {
+          query_type: 'labelValues',
+          project_id: '${project}',
+          service: '${service}',
+          metric_type: '${metric}',
+          label_key: '${label_key}',
+        },
+      },
+    ] as IVariable[];
+
+    expect(buildDependencyGraph(variables)).toEqual({
+      graph: {
+        db: ['project', 'service', 'metric', 'label_key', 'label_values'],
+        project: ['service', 'metric', 'label_key', 'label_values'],
+        service: ['metric', 'label_key', 'label_values'],
+        metric: ['label_key', 'label_values'],
+        label_key: ['label_values'],
+      },
+      dependenciesByName: {
+        db: [],
+        project: ['db'],
+        service: ['db', 'project'],
+        metric: ['db', 'project', 'service'],
+        label_key: ['db', 'project', 'service', 'metric'],
+        label_values: ['db', 'project', 'service', 'metric', 'label_key'],
+      },
+    });
   });
 });
 

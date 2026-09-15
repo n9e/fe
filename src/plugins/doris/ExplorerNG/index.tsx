@@ -184,6 +184,9 @@ export default function index(props: Props) {
         <Form.Item name={['query', 'defaultSearchField']} hidden>
           <div />
         </Form.Item>
+        <Form.Item name={['query', 'flattenDepth']} hidden>
+          <div />
+        </Form.Item>
         <div className='h-full flex'>
           <SideBar ns={NAME_SPACE}>
             {renderCommonSettings({

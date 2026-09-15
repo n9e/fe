@@ -248,6 +248,7 @@ export default function index() {
             </AuthorizationWrapper>
           ))
         }
+        className='n9e-antd-drawer'
       >
         {activeComponent && (
           <ComponentSteps

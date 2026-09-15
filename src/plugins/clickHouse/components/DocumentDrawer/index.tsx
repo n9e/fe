@@ -24,7 +24,7 @@ function index(props: Props & ModalWrapProps) {
   }[i18n.language];
 
   return (
-    <Drawer width='60%' title={i18next.t(`${NAME_SPACE}:query.document`)} placement='right' onClose={destroy} visible={visible}>
+    <Drawer width='60%' title={i18next.t(`${NAME_SPACE}:query.document`)} placement='right' onClose={destroy} visible={visible} className='n9e-antd-drawer'>
       <div className='builtin-w-md-editor' data-color-mode={darkMode ? 'dark' : 'light'}>
         <MDEditor.Markdown
           source={document}

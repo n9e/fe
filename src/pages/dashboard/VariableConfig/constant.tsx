@@ -24,6 +24,7 @@ import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 
 import { getDefaultStepByTime } from '../utils';
 import { IVariable } from './definition';
+import processLegacyQueryOptions from './processQueryOptions';
 import { normalizeESQueryRequestBody, ajustVarSingleValue, escapeJsonString, escapePromQLString } from './utils';
 
 // https://grafana.com/docs/grafana/latest/datasources/prometheus/#query-variable 根据文档解析表达式
@@ -471,53 +472,12 @@ export const getOptionsList = (options: { variableConfigWithOptions?: any; time:
   ];
 };
 
-export function filterOptionsByReg(options: string[], reg, formData: IVariable[], limit: number, id: string) {
+export function filterOptionsByReg(options: unknown, reg: string | undefined, formData: IVariable[], limit: number, id: string) {
   reg = replaceExpressionVars({
-    text: reg,
+    text: reg ?? '',
     variables: formData,
     limit,
     dashboardId: id,
   });
-  const regex = stringToRegex(reg);
-
-  if (reg && regex) {
-    const regFilterOptions: {
-      label: string;
-      value: string;
-    }[] = [];
-    _.forEach(options, (option) => {
-      if (!!option) {
-        const matchResult = option.match(regex);
-        if (matchResult) {
-          if (matchResult.groups) {
-            regFilterOptions.push({
-              label: matchResult.groups?.text,
-              value: matchResult.groups?.value,
-            });
-          } else if (matchResult.length > 0) {
-            if (matchResult[1]) {
-              regFilterOptions.push({
-                label: matchResult[1],
-                value: matchResult[1],
-              });
-            } else {
-              regFilterOptions.push({
-                label: option,
-                value: option,
-              });
-            }
-          }
-        }
-      }
-    });
-    return _.unionBy(regFilterOptions, (item) => {
-      return `${item.label}-${item.value}`;
-    });
-  }
-  return _.map(options, (item) => {
-    return {
-      label: item,
-      value: item,
-    };
-  });
+  return processLegacyQueryOptions(options, reg);
 }

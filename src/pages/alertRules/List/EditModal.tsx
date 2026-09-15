@@ -17,11 +17,10 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import _ from 'lodash';
 import { debounce, join } from 'lodash';
-import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, AutoComplete, Space, Switch, Tooltip, Modal, Button } from 'antd';
+import { Form, Input, InputNumber, Radio, Select, Row, Col, TimePicker, Checkbox, AutoComplete, Space, Switch, Tooltip, Modal, Button, Alert } from 'antd';
 import { QuestionCircleFilled, MinusCircleOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
-import moment from 'moment';
 
 import { getTeamInfoList, getNotifiesList } from '@/services/manage';
 import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/DatasourceValueSelect/V2';
@@ -36,6 +35,7 @@ import { getTimezones } from '../services';
 
 // @ts-ignore
 import ServiceCalendarWithTimeSelect from 'plus:/pages/ServiceCalendar/ServiceCalendarWithTimeSelect';
+import { formatServiceCalConfigs, hasLegacyTimeRange } from '../Form/serviceCalConfigs';
 // @ts-ignore
 import BatchEditNotifyChannels from 'plus:/parcels/AlertRule/BatchEditNotifyChannels';
 
@@ -129,6 +129,10 @@ interface Props {
 
 const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedRows }) => {
   const { t } = useTranslation('alertRules');
+  // 批量改服务日历是整体覆盖：弹窗给的是一组不带时段的新选择，落库时会把存量的规则级
+  // time_range 一并清掉。这个时段已废弃、本来就该清，但不能悄悄清，所以先数出来提示。
+  // 列表接口对每行调过 DB2FE，extra_config 已经是解析好的对象，不用额外请求。
+  const legacyTimeRangeCount = _.filter(selectedRows, (row) => hasLegacyTimeRange(row?.extra_config?.service_cal_configs)).length;
   const [form] = Form.useForm();
   const { groupedDatasourceList, reloadGroupedDatasourceList, isPlus } = useContext(CommonStateContext);
   const [contactList, setInitContactList] = useState([]);
@@ -224,15 +228,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
           }
           break;
         case 'service_cal_ids':
-          data.service_cal_configs = _.map(data.service_cal_configs, (item) => {
-            return {
-              ...item,
-              time_range: {
-                start: item.time_range.start.format('HH:mm'),
-                end: item.time_range.end.format('HH:mm'),
-              },
-            };
-          });
+          data.service_cal_configs = formatServiceCalConfigs(data.service_cal_configs);
           break;
         default:
           break;
@@ -744,18 +740,11 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
               case 'service_cal_ids':
                 return (
                   <>
+                    {legacyTimeRangeCount > 0 && (
+                      <Alert className='mb-2' type='warning' showIcon message={t('batch.update.service_cal_legacy_cleared', { num: legacyTimeRangeCount })} />
+                    )}
                     <Form.Item label={changetoText}>
-                      <ServiceCalendarWithTimeSelect
-                        namePath={['service_cal_configs']}
-                        initialValue={[
-                          {
-                            time_range: {
-                              start: moment('00:00', 'HH:mm'),
-                              end: moment('00:00', 'HH:mm'),
-                            },
-                          },
-                        ]}
-                      />
+                      <ServiceCalendarWithTimeSelect namePath={['service_cal_configs']} initialValue={[{ service_cal_ids: [] }]} />
                     </Form.Item>
                   </>
                 );

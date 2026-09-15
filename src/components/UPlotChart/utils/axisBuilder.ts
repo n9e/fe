@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 import getTextWidth from '@/pages/dashboard/Renderer/utils/getTextWidth';
 import { FONT_FAMILY, THEME } from '@/utils/constant';
-import { dateTimeFormat } from '@/utils/datetime/formatter';
+import { toTz } from '@/utils/datetime/formatter';
 
 enum ScaleDistribution {
   Linear = 'linear',
@@ -20,26 +20,47 @@ const Y_TICK_SPACING_SMALL = 15;
 const X_TICK_SPACING_NORMAL = 40;
 const X_TICK_VALUE_GAP = 18;
 const LABEL_PADDING = 8;
+const YEAR_IN_SECONDS = 300 * 86400;
+const AXIS_LABEL_LINE_GAP = 1.5;
 
-function formatTime(self: uPlot, splits: number[], axisIdx: number, foundSpace: number, foundIncr: number): string[] {
+export function formatTime(self: uPlot, splits: number[], axisIdx: number, foundSpace: number, foundIncr: number): string[] {
   const axis = self.axes[axisIdx];
   const timeZone = 'timeZone' in axis && typeof axis.timeZone === 'string' ? axis.timeZone : undefined;
+  const tz = timeZone ?? 'browser';
+  const rotate = typeof axis.rotate === 'function' ? axis.rotate(self, splits, axisIdx, foundSpace) : axis.rotate;
+  const canWrapYearLine = !rotate;
 
-  return splits.map((v) => {
-    const d = new Date(v * 1000);
+  const dates = splits.map((v) => (v == null ? null : toTz(moment.unix(v), tz)));
+  const years = dates.map((d) => d?.year());
+  const crossesYear = new Set(years.filter((y) => y != null)).size > 1;
+
+  return splits.map((v, i) => {
+    if (v == null) {
+      return '';
+    }
+    const d = dates[i]!;
+    const year = years[i]!;
     let format = 'HH:mm';
-    if (d.getSeconds() !== 0) {
+    if (d.seconds() !== 0) {
       format = 'HH:mm:ss';
     }
-    if (d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0) {
+    const isDayBoundary = d.hours() === 0 && d.minutes() === 0 && d.seconds() === 0;
+    if (isDayBoundary) {
       format = 'MM-DD';
     }
-    return v == null
-      ? ''
-      : dateTimeFormat(moment.unix(v), {
-          timeZone,
-          format,
-        });
+    if (foundIncr >= YEAR_IN_SECONDS) {
+      return d.format('YYYY');
+    }
+    let text = d.format(format);
+    if (canWrapYearLine) {
+      const prevYear = i > 0 ? years[i - 1] : undefined;
+      const isYearRollover = prevYear != null && prevYear !== year;
+      const isFirstCrossYearTick = crossesYear && isDayBoundary && years.slice(0, i).every((y) => y == null);
+      if (isYearRollover || isFirstCrossYearTick) {
+        text = `${text}\n${year}`;
+      }
+    }
+    return text;
   });
 }
 
@@ -62,7 +83,7 @@ function calculateSpace(self: uPlot, axisIdx: number, scaleMin: number, scaleMax
   let sample = '';
 
   if (scale.time) {
-    sample = formatTime(self, [bigValue], axisIdx, X_TICK_SPACING_NORMAL, increment)[0];
+    sample = formatTime(self, [bigValue], axisIdx, X_TICK_SPACING_NORMAL, increment)[0]?.split('\n')[0] ?? '';
   } else if (formatValue != null) {
     sample = formatValue(bigValue);
   } else {
@@ -74,13 +95,15 @@ function calculateSpace(self: uPlot, axisIdx: number, scaleMin: number, scaleMax
   return valueWidth + X_TICK_VALUE_GAP;
 }
 
-function calculateAxisSize(self: uPlot, values: string[], axisIdx: number) {
+export function calculateAxisSize(self: uPlot, values: string[] | null, axisIdx: number) {
   const axis = self.axes[axisIdx];
 
   let axisSize = axis.ticks!.size!;
 
   if (axis.side === 2) {
-    axisSize += axis!.gap! + UPLOT_AXIS_FONT_SIZE;
+    const maxLines = Math.max(1, ...(values ?? []).map((v) => v?.split('\n')?.length ?? 1));
+    const lineHeight = UPLOT_AXIS_FONT_SIZE * AXIS_LABEL_LINE_GAP;
+    axisSize += axis.gap! + UPLOT_AXIS_FONT_SIZE * maxLines + (maxLines - 1) * (lineHeight - UPLOT_AXIS_FONT_SIZE);
   } else if (values?.length) {
     let maxTextWidth = values.reduce((acc, value) => Math.max(acc, getTextWidth(value)), 0);
     // limit y tick label width to 40% of visualization

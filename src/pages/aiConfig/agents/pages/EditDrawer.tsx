@@ -60,6 +60,7 @@ export default function EditDrawer(props: Props) {
           </Button>
         </Space>
       }
+      className='n9e-antd-drawer'
     >
       <Spin spinning={loading}>
         <FormCpt form={form} />

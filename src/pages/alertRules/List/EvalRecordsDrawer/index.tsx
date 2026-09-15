@@ -11,6 +11,7 @@ import { CommonStateContext, basePrefix } from '@/App';
 import TimeRangePicker, { parseRange, IRawTimeRange } from '@/components/TimeRangePicker';
 import RefreshIcon from '@/components/RefreshIcon';
 import { getAlertRuleEvalRecords, EvalRecord, EvalQueryRecord, EvalRecordsNodeErr } from '@/pages/alertRules/services';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 
 import './style.less';
 
@@ -145,7 +146,7 @@ function RecordDetail({ record, t }: { record: EvalRecord; t: TFunction }) {
                 dataIndex: 'key',
                 render: (val, r: any) => (
                   <Space size={4}>
-                    <Tag color={SeverityColor[r.severity - 1]}>S{r.severity}</Tag>
+                    <Tag color={SeverityColor[r.severity - 1]}>{getAlertSeverityName(r.severity)}</Tag>
                     {r.recover && <Tag color='green'>{t('eval_records.recover')}</Tag>}
                     {r.trigger_type === 'nodata' && <Tag>nodata</Tag>}
                     <span className='eval-records-anomaly-key'>{val}</span>
@@ -195,7 +196,7 @@ function RecordDetail({ record, t }: { record: EvalRecord; t: TFunction }) {
                 dataIndex: 'tags',
                 render: (tags: string | undefined, r: any) => (
                   <Space size={4} wrap>
-                    {!!r.severity && <Tag color={SeverityColor[r.severity - 1]}>S{r.severity}</Tag>}
+                    {!!r.severity && <Tag color={SeverityColor[r.severity - 1]}>{getAlertSeverityName(r.severity)}</Tag>}
                     {_.map(_.compact(_.split(tags || '', ',,')), (tag, i) => (
                       <Tag key={i}>{tag}</Tag>
                     ))}
@@ -206,9 +207,7 @@ function RecordDetail({ record, t }: { record: EvalRecord; t: TFunction }) {
                 title: t('eval_records.stage'),
                 dataIndex: 'stage',
                 width: 120,
-                render: (stage: string) => (
-                  <Tag color={STAGE_COLOR[stage]}>{t(`eval_records.stage_${stage}`, { defaultValue: stage })}</Tag>
-                ),
+                render: (stage: string) => <Tag color={STAGE_COLOR[stage]}>{t(`eval_records.stage_${stage}`, { defaultValue: stage })}</Tag>,
               },
               {
                 title: t('eval_records.stage_detail'),
@@ -324,7 +323,9 @@ export default function EvalRecordsDrawer(props: Props) {
               if (q.error) {
                 return (
                   <Tooltip key={i} title={q.error}>
-                    <Tag color='red'>{q.ref || i}: {t('eval_records.query_error')}</Tag>
+                    <Tag color='red'>
+                      {q.ref || i}: {t('eval_records.query_error')}
+                    </Tag>
                   </Tooltip>
                 );
               }
@@ -396,6 +397,7 @@ export default function EvalRecordsDrawer(props: Props) {
       visible={visible}
       onClose={onClose}
       destroyOnClose
+      className='n9e-antd-drawer'
     >
       <div className='mb-2 flex justify-between'>
         <Space>

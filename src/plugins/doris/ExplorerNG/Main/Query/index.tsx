@@ -7,7 +7,7 @@ import { useRequest, useGetState } from 'ahooks';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
-import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
+import { NAME_SPACE as logExplorerNS, DEFAULT_FLATTEN_DEPTH } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
 import calcColWidthByData from '@/pages/logExplorer/components/LogsViewer/utils/calcColWidthByData';
 import flatten from '@/pages/logExplorer/components/LogsViewer/utils/flatten';
@@ -100,6 +100,12 @@ export default function index(props: Props) {
     };
     setOptions(mergedOptions);
     setOptionsToLocalstorage(NG_QUERY_LOGS_OPTIONS_CACHE_KEY, mergedOptions);
+    // flattenDepth 需随视图保存,同步写入表单隐藏字段
+    form.setFieldsValue({
+      query: {
+        flattenDepth: mergedOptions.flattenDepth,
+      },
+    });
     // 只有在修改了 pageLoadMode 时才重置分页参数
     if (reload) {
       setServiceParams({
@@ -111,6 +117,16 @@ export default function index(props: Props) {
     }
   };
 
+  // 视图恢复时 form 中的 flattenDepth 即时最新,同步回 options(不触发重查,重查由 refreshFlag 自身触发)
+  useEffect(() => {
+    if (typeof queryValues?.flattenDepth === 'number' && queryValues.flattenDepth !== options.flattenDepth) {
+      setOptions({
+        ...options,
+        flattenDepth: queryValues.flattenDepth,
+      });
+    }
+  }, [queryValues?.flattenDepth, options.flattenDepth]);
+
   // 分页时的时间范围不变
   const fixedRangeRef = useRef<boolean>(false);
   const loadTimeRef = useRef<number | null>(null);
@@ -119,6 +135,8 @@ export default function index(props: Props) {
 
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
+    // 优先 form(视图恢复时 form 即时最新),其次 options,最后默认值
+    const flattenDepth = typeof queryValues?.flattenDepth === 'number' ? queryValues.flattenDepth : options.flattenDepth ?? DEFAULT_FLATTEN_DEPTH;
     if (refreshFlag && datasourceValue && queryValues?.database && queryValues?.table && queryValues?.time_field && queryValues.range) {
       const range = parseRange(queryValues.range);
       let timeParams =
@@ -160,9 +178,19 @@ export default function index(props: Props) {
             loadTimeRef.current = Date.now() - queryStart;
           }
           const newLogs = _.map(res.list, (item) => {
+            if (flattenDepth === 0) {
+              // 不 parse、不拍平,行数据 = 原始字段值(剔除内部高亮字段,与 depth>0 的 ___raw___ 语义一致)
+              const rawItem = _.omit(item, [HIGHLIGHT_FIELD]);
+              return {
+                ...rawItem,
+                ___raw___: rawItem,
+                ___id___: _.uniqueId('log_id_'),
+              };
+            }
             const normalizedItem = normalizeLogStructures(_.omit(item, [HIGHLIGHT_FIELD]));
             return {
-              ...(flatten(normalizedItem) || {}),
+              // 层级语义:flattenDepth = N 表示嵌套 JSON 展开 N 层,对应 flatten 的 maxDepth = N + 1
+              ...(flatten(normalizedItem, { maxDepth: flattenDepth + 1 }) || {}),
               ___raw___: normalizedItem,
               ___id___: _.uniqueId('log_id_'),
             };
@@ -474,6 +502,7 @@ export default function index(props: Props) {
                 </Space>
               }
               showPageLoadMode
+              showFlattenSettings
               onOptionsChange={updateOptions}
               onAddToQuery={handleValueFilter}
               onRangeChange={(range) => {

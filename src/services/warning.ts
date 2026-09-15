@@ -227,11 +227,12 @@ export const updateServiceCal = function (
     ids: React.Key[];
     service_cal_configs: {
       service_cal_ids: number[];
-      time_range: {
+      time_range?: {
         start: string;
         end: string;
       };
-    };
+    }[];
+    service_cal_ids?: number[]; // 传 [] 可一并清掉更早的 extra_config.service_cal_ids
   },
   busiId: number,
 ) {

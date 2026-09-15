@@ -501,7 +501,7 @@ export default function ContextViewer(props: Props) {
     <>
       <Button onClick={() => setOpen(true)}>{t('context.title')}</Button>
       <Drawer
-        className='log-explorer-ignore-click-away'
+        className='n9e-antd-drawer log-explorer-ignore-click-away'
         title={t('context.title')}
         extra={
           <CloseOutlined

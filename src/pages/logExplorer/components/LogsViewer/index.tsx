@@ -73,6 +73,7 @@ interface Props {
   showPageLoadMode?: boolean;
   showJSONSettings?: boolean;
   showTopNSettings?: boolean;
+  showFlattenSettings?: boolean;
   showLogMode?: boolean;
   addonBefore?: React.ReactNode;
   timeColumnWidth?: number;
@@ -166,6 +167,7 @@ export default function LogsViewer(props: Props) {
     showPageLoadMode,
     showJSONSettings,
     showTopNSettings,
+    showFlattenSettings,
     showLogMode = true,
     addonBefore,
     timeColumnWidth,
@@ -378,6 +380,7 @@ export default function LogsViewer(props: Props) {
                 showPageLoadMode={showPageLoadMode}
                 showJSONSettings={showJSONSettings}
                 showTopNSettings={showTopNSettings}
+                showFlattenSettings={showFlattenSettings}
                 organizeFields={organizeFields}
                 setOrganizeFields={setOrganizeFields}
               />

@@ -44,6 +44,12 @@ function PublicForm(props: IProps & ModalWrapProps) {
   // 配置了机器标识变量」，而实际只是接口抖了一下，且用户无从分辨、也没有重试入口
   const [configState, setConfigState] = useState<'checking' | 'loaded' | 'failed'>('checking');
   const [submitting, setSubmitting] = useState(false);
+  // 库里【已保存】的公开设置。表单值会随用户点单选框实时变化，但 SharingLinkSection
+  // 要判断的是「签发这条链接时板在库里到底公不公开」，两者不能混用
+  const [savedPublic, setSavedPublic] = useState<PublicDashboardValues>({
+    public: initialValues.public,
+    public_cate: initialValues.public_cate,
+  });
   const hasHostIdentVariable = _.some(dashboardConfig.var, (item) => {
     return item.type === 'hostIdent';
   });
@@ -216,7 +222,17 @@ function PublicForm(props: IProps & ModalWrapProps) {
           <div className='mb-2'>
             <Typography.Text type='secondary'>{t('sharing_link.recommend_tip')}</Typography.Text>
           </div>
-          <SharingLinkSection boardId={boardId} hostIdentState={hostIdentState} alwaysAnonymous />
+          <SharingLinkSection
+            boardId={boardId}
+            hostIdentState={hostIdentState}
+            alwaysAnonymous
+            savedPublic={savedPublic}
+            onPublicUpdated={() => {
+              setSavedPublic({ public: 1, public_cate: 0 });
+              // 刷新列表页让「公开」列立刻反映出来，但不关弹窗——用户还要复制链接
+              onOk();
+            }}
+          />
         </>
       )}
     </Modal>
