@@ -85,6 +85,7 @@ const id_ID = {
   },
   "meta_tip": "Lihat metadata",
   "meta_title": "Metadata",
+  "meta_tab_overview": "Ringkasan",
   "meta_desc_key": "Nama metadata",
   "meta_desc_value": "Nilai metadata",
   "meta_value_click_to_copy": "Klik untuk menyalin",

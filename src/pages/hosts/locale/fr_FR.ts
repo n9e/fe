@@ -17,6 +17,8 @@ const fr_FR = {
   "cores": "Cores",
   "tags_popover_title": "{{count}}",
   "view_collects": "Voir la configuration de collecte associée",
+  "host_topology": "Topologie",
+  "collects_tab": "Collecte",
   "host_no_heartbeat_tip": "Machines sans battement",
   "expand_busi_and_overview": "Déplier les groupes métier et la vue d'ensemble",
   "collapse_busi_and_overview": "Replier les groupes métier et la vue d'ensemble",
