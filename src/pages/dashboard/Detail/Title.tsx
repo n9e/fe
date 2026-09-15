@@ -72,6 +72,7 @@ interface IProps {
   routerPromptRef: React.MutableRefObject<{ showPrompt: () => void }>;
   hideGoBack?: boolean;
   hideGoList?: boolean;
+  hideTitle?: boolean;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
@@ -104,6 +105,7 @@ export default function Title(props: IProps) {
     routerPromptRef,
     hideGoBack,
     hideGoList,
+    hideTitle,
   } = props;
   const history = useHistory();
   const location = useLocation();
@@ -252,53 +254,54 @@ export default function Title(props: IProps) {
                   <Link to={goListPath} style={{ fontSize: 14 }}>
                     {isBuiltin ? t('builtInComponents:title') : t('list')}
                   </Link>
-                  {'/'}
+                  {!hideTitle && '/'}
                 </Space>
               )}
             </Space>
           )}
-          {isPreview === true || __public__ === 'true' ? (
-            // 公开仪表盘不显示下拉
-            <div className='title'>{dashboard.name}</div>
-          ) : (
-            <Dropdown
-              trigger={['click']}
-              visible={dashboardListDropdownVisible}
-              onVisibleChange={(visible) => {
-                setDashboardListDropdownVisible(visible);
-              }}
-              overlay={
-                <div className='collects-payloads-dropdown-overlay p-4 bg-fc-100 fc-border rounded-[2px] n9e-base-shadow'>
-                  <Input
-                    className='mb-2'
-                    placeholder={t('common:search_placeholder')}
-                    value={dashboardListDropdownSearch}
-                    onChange={(e) => {
-                      setDashboardListDropdownSearch(e.target.value);
-                    }}
-                  />
-                  <Menu
-                    items={_.map(
-                      _.filter(dashboardList, (item) => _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch))),
-                      (item) => ({
-                        key: item.id,
-                        label: item.name,
-                        onClick: () => {
-                          history.push(`/dashboards/${item.ident || item.id}`);
-                          setDashboardListDropdownVisible(false);
-                          setDashboardListDropdownSearch('');
-                        },
-                      }),
-                    )}
-                  />
-                </div>
-              }
-            >
-              <span style={{ cursor: 'pointer' }}>
-                <span className='title'>{dashboard.name}</span> <DownOutlined />
-              </span>
-            </Dropdown>
-          )}
+          {!hideTitle &&
+            (isPreview === true || __public__ === 'true' ? (
+              // 公开仪表盘不显示下拉
+              <div className='title'>{dashboard.name}</div>
+            ) : (
+              <Dropdown
+                trigger={['click']}
+                visible={dashboardListDropdownVisible}
+                onVisibleChange={(visible) => {
+                  setDashboardListDropdownVisible(visible);
+                }}
+                overlay={
+                  <div className='collects-payloads-dropdown-overlay p-4 bg-fc-100 fc-border rounded-[2px] n9e-base-shadow'>
+                    <Input
+                      className='mb-2'
+                      placeholder={t('common:search_placeholder')}
+                      value={dashboardListDropdownSearch}
+                      onChange={(e) => {
+                        setDashboardListDropdownSearch(e.target.value);
+                      }}
+                    />
+                    <Menu
+                      items={_.map(
+                        _.filter(dashboardList, (item) => _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch))),
+                        (item) => ({
+                          key: item.id,
+                          label: item.name,
+                          onClick: () => {
+                            history.push(`/dashboards/${item.ident || item.id}`);
+                            setDashboardListDropdownVisible(false);
+                            setDashboardListDropdownSearch('');
+                          },
+                        }),
+                      )}
+                    />
+                  </div>
+                }
+              >
+                <span style={{ cursor: 'pointer' }}>
+                  <span className='title'>{dashboard.name}</span> <DownOutlined />
+                </span>
+              </Dropdown>
+            ))}
           {showAiAnalysis && (
             <span className='ml-2 inline-flex'>
               <AiButton

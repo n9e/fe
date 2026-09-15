@@ -681,6 +681,10 @@ const ko_KR = {
       default: '기본',
       updateTimeRange: '시간 범위 갱신',
     },
+    hideHeader: {
+      label: '대시보드 제목 숨기기',
+      tip: '활성화하면 대시보드 상세 페이지 상단의 제목만 숨깁니다.',
+    },
     save: '대시보드 저장',
   },
   visualizations: {
