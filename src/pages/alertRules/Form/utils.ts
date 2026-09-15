@@ -113,7 +113,7 @@ export function processFormValues(values) {
         item.keys.metricKey = _.join(item.keys.metricKey, ' ');
       }
       const normalizedItem = {
-        ..._.omit(item, ['interval_unit', 'range']),
+        ..._.omit(item, ['interval_unit', 'range', 'builderConfig']),
         interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
         from: parsedRange?.start,
         to: parsedRange?.end,
