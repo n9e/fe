@@ -332,4 +332,26 @@ describe('processFormValues', () => {
     expect(query.editMode).toBeUndefined();
     expect(query.builderConfig).toBeUndefined();
   });
+
+  it('非 ES 查询也应剥离临时 builderConfig', () => {
+    const result = processFormValues({
+      cate: 'doris',
+      rule_config: {
+        queries: [
+          {
+            ref: 'A',
+            sql: 'SELECT count(*) AS value FROM logs',
+            builderConfig: { database: 'observability', table: 'logs' },
+            interval: 5,
+            interval_unit: 'min',
+          },
+        ],
+      },
+      ...baseFormValues,
+    });
+    const query = result.rule_config.queries[0];
+    expect(query.builderConfig).toBeUndefined();
+    expect(query.sql).toBe('SELECT count(*) AS value FROM logs');
+    expect(query.interval).toBe(300);
+  });
 });
