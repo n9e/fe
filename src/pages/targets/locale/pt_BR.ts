@@ -85,6 +85,7 @@ const pt_BR = {
   },
   "meta_tip": "Ver metadados",
   "meta_title": "Metadados",
+  "meta_tab_overview": "Visão geral",
   "meta_desc_key": "Nome do metadado",
   "meta_desc_value": "Valor do metadado",
   "meta_value_click_to_copy": "Clique para copiar",

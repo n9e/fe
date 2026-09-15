@@ -85,6 +85,7 @@ const fr_FR = {
   },
   "meta_tip": "Voir les métadonnées",
   "meta_title": "Métadonnées",
+  "meta_tab_overview": "Aperçu",
   "meta_desc_key": "Nom de la métadonnée",
   "meta_desc_value": "Valeur de la métadonnée",
   "meta_value_click_to_copy": "Cliquez pour copier",

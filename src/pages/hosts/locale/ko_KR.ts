@@ -17,6 +17,8 @@ const ko_KR = {
   "cores": "Cores",
   "tags_popover_title": "{{count}}개",
   "view_collects": "연결된 수집 설정 보기",
+  "host_topology": "토폴로지",
+  "collects_tab": "수집 설정",
   "host_no_heartbeat_tip": "하트비트가 없는 머신",
   "expand_busi_and_overview": "비즈니스 그룹과 개요 펼치기",
   "collapse_busi_and_overview": "비즈니스 그룹과 개요 접기",
