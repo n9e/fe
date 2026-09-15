@@ -28,6 +28,7 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en_US' } }),
   Trans: ({ i18nKey }: { i18nKey: string }) => <span>{i18nKey}</span>,
 }));
+jest.mock('plus:/parcels/Dashboard/variablePlugins', () => jest.requireActual('@/plus/parcels/Dashboard/variablePlugins'), { virtual: true });
 // 只隔离外部查询与无关编辑器；保留真实的 Form、Select、Modal、Table、状态和依赖管理。
 jest.mock('../datasource', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('@/components/DatasourceSelect', () => ({ DatasourceSelectV3: () => null }));
@@ -218,6 +219,34 @@ test('real dependency chain receives the project value, not its display label', 
   await waitFor(() => expect(state('metric').value).toBe('metric/project-2'));
   expect(queryMock).toHaveBeenLastCalledWith(expect.objectContaining({ query: expect.objectContaining({ project_id: 'project-2' }) }));
   expect(screen.getByText('Metric for project-2')).toBeInTheDocument();
+});
+
+test('GCM metric type variables render the chart-panel option content and search metadata', async () => {
+  const metricOption = {
+    label: 'CPU utilization',
+    value: 'compute.googleapis.com/instance/cpu/utilization',
+    metricDescription: 'Fraction of allocated CPU currently in use.',
+  };
+  const otherMetricOption = {
+    label: 'Network utilization',
+    value: 'compute.googleapis.com/instance/network/utilization',
+    metricDescription: 'Network throughput currently in use.',
+  };
+  queryMock.mockResolvedValue([metricOption, otherMetricOption]);
+  mountRuntime([projectVariable({ name: 'metric', query: { query_type: 'metricTypes' } })]);
+
+  await waitFor(() => expect(state('metric').options).toEqual([metricOption, otherMetricOption]));
+  fireEvent.mouseDown(screen.getByRole('combobox'));
+  expect(await screen.findByText(metricOption.label, { selector: '.ant-select-item-option-content .font-bold' })).toBeInTheDocument();
+  expect(screen.getByText(metricOption.value, { selector: '.ant-select-item-option-content .italic' })).toBeInTheDocument();
+  expect(screen.queryByText(metricOption.metricDescription)).not.toBeInTheDocument();
+  expect(document.querySelector('.n9e-gcm-metric-dropdown')).toBeInTheDocument();
+
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'allocated CPU' } });
+  await waitFor(() => {
+    expect(screen.getByText(metricOption.label, { selector: '.ant-select-item-option-content .font-bold' })).toBeInTheDocument();
+    expect(screen.queryByText(otherMetricOption.label, { selector: '.ant-select-item-option-content .font-bold' })).not.toBeInTheDocument();
+  });
 });
 
 test('multiple selection and All persist values and interpolate values only', async () => {
