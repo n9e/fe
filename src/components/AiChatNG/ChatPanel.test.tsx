@@ -430,3 +430,74 @@ describe('ChatPanel turn cancellation and completion', () => {
     expect(box.value).toBe('Group by env instead');
   });
 });
+
+describe('ChatPanel initial skill reference', () => {
+  const services = jest.requireMock('./services');
+  beforeEach(() => {
+    services.createChat.mockReset().mockResolvedValue({ chat_id: 'new-chat', title: '', last_update: 0 });
+    services.getMessageHistory.mockReset().mockResolvedValue([]);
+    let sequence = 0;
+    services.sendMessage.mockReset().mockImplementation(() => Promise.resolve({ chat_id: 'new-chat', seq_id: ++sequence }));
+    getMessageDetail.mockReset().mockImplementation((locator) => Promise.resolve({ ...inProgress, ...locator, is_finish: true, response: [] }));
+    manifest.mockReturnValue([]);
+  });
+
+  const send = async (content: string, count: number) => {
+    const box = screen.getByPlaceholderText('input.placeholder');
+    fireEvent.change(box, { target: { value: content } });
+    fireEvent.keyDown(box, { key: 'Enter' });
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(count));
+    await waitFor(() => expect(screen.queryByLabelText('input.stop')).toBeNull());
+  };
+
+  it('references the skill on the first message and not on follow-ups', async () => {
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} initialSkill='explorer-query' />);
+    await send('show memory usage', 1);
+    expect(services.sendMessage.mock.calls[0][0].query).toMatchObject({
+      content: '<@explorer-query> show memory usage',
+      references: [{ id: 'explorer-query', name: 'explorer-query', type: 'skill', skill: { name: 'explorer-query' } }],
+    });
+    await send('group by host', 2);
+    expect(services.sendMessage.mock.calls[1][0].query.content).toBe('group by host');
+    expect(services.sendMessage.mock.calls[1][0].query.references).toBeUndefined();
+  });
+
+  it('keeps the first-message reference when sending fails and is retried', async () => {
+    services.sendMessage.mockRejectedValueOnce(new Error('unavailable'));
+    const onError = jest.fn();
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} initialSkill='explorer-query' onError={onError} />);
+    await send('show memory usage', 1);
+    await waitFor(() => expect(onError).toHaveBeenCalled());
+    await send('show memory usage', 2);
+    expect(services.sendMessage.mock.calls[1][0].query.references).toHaveLength(1);
+  });
+
+  it('remembers acceptance when a stopped send resolves after the dock closes', async () => {
+    let accept: (value: { chat_id: string; seq_id: number }) => void = () => {};
+    services.sendMessage.mockReturnValueOnce(
+      new Promise((resolve) => {
+        accept = resolve;
+      }),
+    );
+    services.cancelMessage.mockResolvedValue(undefined);
+    const { rerender } = render(<ChatPanel variant='slim' active queryPageFrom={{ url: '/metric/explorer' }} initialSkill='explorer-query' />);
+    const box = screen.getByPlaceholderText('input.placeholder');
+    fireEvent.change(box, { target: { value: 'show memory usage' } });
+    fireEvent.keyDown(box, { key: 'Enter' });
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+    rerender(<ChatPanel variant='slim' active={false} queryPageFrom={{ url: '/metric/explorer' }} initialSkill='explorer-query' />);
+    await act(async () => {
+      accept({ chat_id: 'new-chat', seq_id: 1 });
+    });
+    rerender(<ChatPanel variant='slim' active queryPageFrom={{ url: '/metric/explorer' }} initialSkill='explorer-query' />);
+    await send('group by host', 2);
+    expect(services.sendMessage.mock.calls[1][0].query.references).toBeUndefined();
+  });
+
+  it('does not inject a skill into ordinary chat', async () => {
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} />);
+    await send('show memory usage', 1);
+    expect(services.sendMessage.mock.calls[0][0].query.content).toBe('show memory usage');
+    expect(services.sendMessage.mock.calls[0][0].query.references).toBeUndefined();
+  });
+});

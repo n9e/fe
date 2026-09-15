@@ -35,8 +35,16 @@ export interface IAiChatAction {
   param?: IAiChatActionParam;
 }
 
+export interface IAiChatSkillReference {
+  id: string;
+  name: string;
+  type: 'skill';
+  skill: { name: string };
+}
+
 export interface IAiChatMessageQuery {
   content: string;
+  references?: IAiChatSkillReference[];
   action?: IAiChatAction;
   page_from: IAiChatPageInfo;
 }
@@ -236,6 +244,8 @@ export interface IAiChatProps {
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);
   promptList?: Array<string | { label: string; value: string }>;
   initialMessage?: string;
+  /** Reference this skill in the first accepted message of a conversation. */
+  initialSkill?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;
   onError?: (error: Error) => void;
