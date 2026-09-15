@@ -73,7 +73,7 @@ const currentSources = sources.filter((source) => source.type === selectedType);
 
 ## 样式与依赖
 
-- 类型列表作用域是 `.data-source-type-list-box`，实例卡片列表作用域是 `.data-source-list-box`；各自导入所在目录的 `style.less`。
+- 类型列表使用 Tailwind className，实例卡片列表作用域是 `.data-source-list-box` 并导入所在目录的 `style.less`。
 - 保留 36px 卡片高度、8px 圆角、选中边框、禁用与删除状态、名称省略、168px 滚动区域及底部渐变。实例按容器宽度使用 6 / 4 / 2 / 1 列。
 - 下拉框的选择框、标签和菜单使用 AntD 默认样式；保留选项内容布局、状态提示及操作栏的独立作用域，移除全选和选中对号。
 - 颜色沿用项目的 `--fc-*` 主题变量，滚动条样式由实例列表自己提供。

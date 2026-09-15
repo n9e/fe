@@ -22,6 +22,7 @@ export interface DataSourceTypeListProps {
   types: DataSourcePickerType[];
   value?: string;
   disabled?: boolean;
+  showLabel?: boolean;
   className?: string;
   typeFilter?: (type: DataSourcePickerType) => boolean;
   onChange: (type: string) => void;
