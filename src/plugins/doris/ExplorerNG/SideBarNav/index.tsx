@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { Form, Segmented } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import moment from 'moment';
 import { useRequest } from 'ahooks';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 import Meta from '@/components/Meta';
+import { parseRange } from '@/components/TimeRangePicker';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
 import { getDorisIndex, getDorisTableConfig } from '../../services';
@@ -53,6 +55,7 @@ export default function index(props: Props) {
   // const navMode = Form.useWatch(['query', 'navMode']);
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
+  const range = Form.useWatch(['query', 'range']);
 
   const navMode = 'fields';
 
@@ -61,9 +64,19 @@ export default function index(props: Props) {
       if (!datasourceValue || !database || !table) return [];
 
       // 1. 先获取 index 字段
+      // 带上时间范围，后端据此把 DESC 裁到覆盖该范围的分区；不传则 DESC 整张表，大表上要几十秒。
+      const parsedRange = range ? parseRange(range) : undefined;
+
       let fields: Field[] = [];
       try {
-        fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table });
+        fields = await getDorisIndex({
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          database,
+          table,
+          from: parsedRange ? moment(parsedRange.start).valueOf() : undefined,
+          to: parsedRange ? moment(parsedRange.end).valueOf() : undefined,
+        });
       } catch {
         // getDorisIndex 失败时继续执行，fields 保持空数组
       }
@@ -116,7 +129,9 @@ export default function index(props: Props) {
       return fields;
     },
     {
-      refreshDeps: [table],
+      // 时间范围变了要重新取：不同范围命中的分区不同，VARIANT 子字段也就不同。
+      // 相对范围（如"最近 1 小时"）的 range 对象不变，自动刷新不会触发重取。
+      refreshDeps: [table, JSON.stringify(range)],
       onError: () => {
         onIndexDataChange([]);
       },

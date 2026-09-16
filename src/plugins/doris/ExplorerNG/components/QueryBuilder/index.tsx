@@ -40,6 +40,7 @@ export default function index(props: Props) {
   const { explorerForm, datasourceValue, database, table, time_field, sqlValue, visible, onExecute, onPreviewSQL } = props;
 
   const [form] = Form.useForm();
+  const explorerRange = Form.useWatch(['query', 'range'], explorerForm);
   const filters = Form.useWatch(['filters'], form);
   const aggregates = Form.useWatch(['aggregates'], form);
   const group_by = Form.useWatch(['group_by'], form);
@@ -63,7 +64,17 @@ export default function index(props: Props) {
 
   const indexDataService = () => {
     if (datasourceValue && database && table) {
-      return getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table })
+      // 带上时间范围，后端据此把 DESC 裁到覆盖该范围的分区；不传则 DESC 整张表。
+      const range = explorerForm.getFieldValue(['query', 'range']);
+      const parsedRange = range ? parseRange(range) : undefined;
+      return getDorisIndex({
+        cate: DatasourceCateEnum.doris,
+        datasource_id: datasourceValue,
+        database,
+        table,
+        from: parsedRange ? moment(parsedRange.start).valueOf() : undefined,
+        to: parsedRange ? moment(parsedRange.end).valueOf() : undefined,
+      })
         .then((res) => {
           const timeField = form.getFieldValue('time_field');
           const fieldExists = _.some(res, (item) => item.field === timeField);
@@ -87,7 +98,8 @@ export default function index(props: Props) {
   };
 
   const { data: indexData = [] } = useRequest<Field[] | undefined, any>(indexDataService, {
-    refreshDeps: [datasourceValue, database, table],
+    // 时间范围变了要重新取：不同范围命中的分区不同，VARIANT 子字段也就不同。
+    refreshDeps: [datasourceValue, database, table, JSON.stringify(explorerRange)],
   });
 
   const validIndexData = useMemo(() => {
