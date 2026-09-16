@@ -354,7 +354,7 @@ export default function FormNG(props: IProps) {
       }}
     >
       <Form form={form} layout='vertical' disabled={disabled} className='h-full n9e-alert-rule-form-ng-container' onValuesChange={onValuesChange}>
-        <FormNGDataProvider>
+        <FormNGDataProvider configuredTeams={initialValues?.notify_groups_obj}>
           <div className='flex h-full min-h-0 overflow-hidden bg-fc-50'>
             <div
               className='flex-1 min-w-0 h-full best-looking-scroll'
