@@ -125,6 +125,7 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     return valueRefId;
   };
 
+  const skippedQueryRefIds = new Set<string>();
   const queries = _.flatMap(options.targets, (target, index): Array<DatasourceQuery | ExpressionQuery> => {
     const refId = target.refId || getTargetRefId(index);
     if (isExpressionTarget(target)) {
@@ -143,20 +144,23 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
       datasourceList: options.datasourceList,
     });
     if (typeof resolvedDatasourceId !== 'number') {
+      skippedQueryRefIds.add(refId);
       return [];
     }
     const datasourceDefinition = getDashboardDatasourceDefinition(datasource.cate);
     if (datasource.cate === 'prometheus' && !target.expr?.trim()) {
+      skippedQueryRefIds.add(refId);
       return [];
     }
     if (datasourceDefinition && !datasourceDefinition.isQueryReady(target)) {
+      skippedQueryRefIds.add(refId);
       return [];
     }
 
     const values = target.query?.values;
     const isElasticsearchQuery = _.includes(['elasticsearch', 'opensearch'], datasource.cate);
     if (isElasticsearchQuery && Array.isArray(values)) {
-      return values.flatMap((value, valueIndex) => {
+      const datasourceQueries = values.flatMap((value, valueIndex) => {
         const queryPayload = getDatasourceQueryPayload(target, datasource.cate, buildOptions, value);
         if (queryPayload === undefined) return [];
         return [
@@ -173,10 +177,17 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
           },
         ];
       });
+      if (!datasourceQueries.length) {
+        skippedQueryRefIds.add(refId);
+      }
+      return datasourceQueries;
     }
 
     const queryPayload = getDatasourceQueryPayload(target, datasource.cate, buildOptions);
-    if (queryPayload === undefined) return [];
+    if (queryPayload === undefined) {
+      skippedQueryRefIds.add(refId);
+      return [];
+    }
     return [
       {
         kind: 'query',
@@ -191,10 +202,28 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     ];
   });
 
+  // 空查询条件会让对应的 source target 被静默跳过。表达式若继续引用它，
+  // validateDashboardQueryRequest 会将整个面板视为非法，反而阻塞其他已就绪
+  // 的混合数据源查询。仅移除这类受跳过 target 影响的表达式；真正拼错的
+  // RefID、日志表达式和循环依赖仍保留给校验函数显式报错。
+  let executableQueries = queries;
+  let removedExpression = true;
+  while (removedExpression) {
+    removedExpression = false;
+    executableQueries = executableQueries.filter((query) => {
+      if (query.kind !== 'expression' || !getExpressionReferences(query.expression).some((refId) => skippedQueryRefIds.has(refId))) {
+        return true;
+      }
+      skippedQueryRefIds.add(query.ref_id);
+      removedExpression = true;
+      return false;
+    });
+  }
+
   const request = {
     from: moment(parsedRange.start).unix(),
     to: moment(parsedRange.end).unix(),
-    queries,
+    queries: executableQueries,
   };
   validateDashboardQueryRequest(request);
   return request;

@@ -19,12 +19,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { IPanel, IDashboardConfig } from '../types';
 import { IVariable } from '../Variables/types';
 
-export function buildLayout(panels: IPanel[]) {
+/** 布局变更会持久化到仪表盘，因此必须同时具备权限且处于可编辑状态。 */
+export function canEditPanelLayout(editable: boolean, isAuthorized: boolean) {
+  return editable && isAuthorized;
+}
+
+export function buildLayout(panels: IPanel[], disableResize = false) {
   return _.map(panels, (item: IPanel) => {
     return {
       ...item.layout,
       i: _.toString(item.layout.i),
-      isResizable: item.type !== 'row',
+      isResizable: !disableResize && item.type !== 'row',
     };
   });
 }

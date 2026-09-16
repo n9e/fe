@@ -110,9 +110,9 @@ export const LEGACY_TARGET_BY_CATE = {
   sqlserver: [{ query: { sql: 'SELECT ts, value FROM service_qps' } }],
   redshift: [{ query: { sql: 'SELECT ts, value FROM service_qps' } }],
   influxdb: [{ query: { sql: 'SELECT mean("value") FROM "cpu" GROUP BY time(1m)' } }],
-  zabbix: [{ query: { mode: 'timeseries', subMode: 'metrics' } }],
-  cloudwatch: [{ queries: [CLOUDWATCH_QUERY_ITEM] }],
-  gcm: [{ query: { query_type: 'builder' } }],
+  zabbix: [{ query: { mode: 'timeseries', subMode: 'metrics', group: { filter: 'group-1' }, host: { filter: 'host-1' }, item: { filter: 'cpu.util' } } }],
+  cloudwatch: [{ queries: [{ ...CLOUDWATCH_QUERY_ITEM, namespace: 'AWS/EC2', metric_name: 'CPUUtilization' }] }],
+  gcm: [{ query: { query_type: 'builder', project_id: 'project-1', service: 'compute.googleapis.com', metric_type: 'instance/cpu/utilization' } }],
 } as const;
 
 /**

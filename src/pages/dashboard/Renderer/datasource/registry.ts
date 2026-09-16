@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
-import { DatasourceCateEnum } from '@/utils/constant';
 
 import type { DashboardQueryResultType } from './types';
 
@@ -66,7 +65,7 @@ const LOG_CAPABLE_DATASOURCES = new Set<string>([
   'cloudwatchlogs',
 ]);
 
-const SQL_QUERY_DATASOURCE_CATES = new Set<DashboardDatasourceCate>([DatasourceCateEnum.ck, DatasourceCateEnum.mysql, DatasourceCateEnum.doris]);
+const SQL_QUERY_DATASOURCE_CATES = new Set<DashboardDatasourceCate>(['ck', 'mysql', 'doris']);
 
 export interface DashboardDatasourceDefinition {
   cate: string;
@@ -132,6 +131,17 @@ const hasQueryText = (target: ITarget, key: 'query' | 'sql' = 'query') => {
   return typeof value === 'string' && value.trim().length > 0;
 };
 
+const hasConfiguredValue = (value: unknown) => {
+  if (typeof value === 'string') return value.trim().length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  return Boolean(value);
+};
+
+const hasZabbixFilter = (target: ITarget, key: 'group' | 'host' | 'item') => {
+  const value = target.query?.[key];
+  return value !== null && typeof value === 'object' && !Array.isArray(value) && 'filter' in value && hasConfiguredValue(value.filter);
+};
+
 const hasESValueKey = (keys: unknown) => {
   if (!keys || typeof keys !== 'object' || Array.isArray(keys) || !('valueKey' in keys)) return false;
   const valueKey = keys.valueKey;
@@ -146,7 +156,7 @@ const hasESValueKey = (keys: unknown) => {
  * log-search query and its native field remains `query`.
  */
 function serializeSQLQuery(payload: JsonObject, cate: DashboardDatasourceCate) {
-  const isDorisLogQuery = cate === DatasourceCateEnum.doris && payload.queryStrategy === 'query';
+  const isDorisLogQuery = cate === 'doris' && payload.queryStrategy === 'query';
   if (!isDorisLogQuery && typeof payload.query === 'string') {
     payload.sql = payload.query;
     delete payload.query;
@@ -171,6 +181,9 @@ const QUERY_READINESS: Partial<Record<DashboardDatasourceCate, (target: ITarget)
   tdengine: (target) => hasQueryText(target),
   ck: (target) => hasQueryText(target),
   mysql: (target) => hasQueryText(target),
+  // Doris 的新旧面板分别把 SQL 保存到 query.query / query.sql；两者均为空时
+  // 不应触发 query-batch。queryStrategy === 'query' 的日志查询同样需要查询文本。
+  doris: (target) => hasQueryText(target) || hasQueryText(target, 'sql'),
   pgsql: (target) => hasQueryText(target, 'sql'),
   oracle: (target) => hasQueryText(target, 'sql'),
   sqlserver: (target) => hasQueryText(target, 'sql'),
@@ -178,6 +191,29 @@ const QUERY_READINESS: Partial<Record<DashboardDatasourceCate, (target: ITarget)
   influxdb: (target) => hasQueryText(target, 'sql'),
   cloudwatchlogs: (target) => Boolean(target.query?.region && target.query?.log_group_names && target.query?.query_string),
   'aliyun-sls': (target) => Boolean(target.query?.project && target.query?.logstore && target.query?.mode),
+  // 以下日志数据源的旧执行器均会在未选定日志主题/流时静默跳过；统一 query-batch
+  // 也保持相同前置条件，避免刚选择数据源即发送空查询。
+  'tencent-cls': (target) => Boolean(target.query?.topic_id),
+  'volc-tls': (target) => Boolean(target.query?.topic_id || target.query?.topic),
+  'huawei-lts': (target) => Boolean(target.query?.stream_id),
+  'bce-bls': (target) => Boolean(target.query?.logstore),
+  zabbix: (target) => {
+    const query = target.query ?? {};
+    if (query.mode === 'raw') return hasConfiguredValue(query.method);
+    if (query.mode === 'timeseries' && query.subMode === 'itemIDs') return hasConfiguredValue(query.itemids);
+    return hasZabbixFilter(target, 'group') && hasZabbixFilter(target, 'host') && hasZabbixFilter(target, 'item');
+  },
+  cloudwatch: (target) =>
+    Array.isArray(target.queries) &&
+    target.queries.some((query) => {
+      if (query.query_type === 'metric_insights' || query.metric_editor_mode === 1) return hasConfiguredValue(query.expression);
+      return hasConfiguredValue(query.namespace) && hasConfiguredValue(query.metric_name);
+    }),
+  gcm: (target) => {
+    const query = target.query ?? {};
+    if (query.query_type === 'promql') return hasConfiguredValue(query.promql);
+    return hasConfiguredValue(query.project_id) && hasConfiguredValue(query.service) && hasConfiguredValue(query.metric_type);
+  },
 };
 
 const serializeTarget = (target: ITarget, cate: DashboardDatasourceCate) => {
