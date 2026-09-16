@@ -29,6 +29,7 @@ src/
 - TypeScript + React Hooks；优先函数组件，避免 class 组件。
 - 组件 Props 使用 `interface` 显式声明，避免 `any`。
 - 遵循仓库既有格式与 Prettier 配置；改动保持最小范围，不重写无关模块。
+- 修改源码后，必须依据根目录 `.prettierrc.json` 对改动文件执行 `./node_modules/.bin/prettier --write`，并在交付前执行 `./node_modules/.bin/prettier --check`；不得遗留仅格式问题。
 - 不臆测接口或业务逻辑；上下文不足时说明缺口或反问。
 - 数据转换函数必须保持幂等性（相同输入多次调用产生相同输出），如果函数会修改入参对象，首行使用 `_.cloneDeep(values)` 保护原始引用不被污染。
 - 同一组件中应避免多次调用同一有副作用的转换函数，优先提取变量复用计算结果。
