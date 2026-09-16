@@ -319,7 +319,7 @@ export default function Table(props: IProps) {
         dataSource={filteredResult}
         columns={columns}
         pagination={false}
-        scroll={{ x: 'max-content' }}
+        scroll={filteredResult.length > 0 ? { x: 'max-content' } : undefined}
       />
     </div>
   );
