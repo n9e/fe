@@ -31,7 +31,9 @@ export default function DataSourceTypeList(props: DataSourceTypeListProps) {
               if (!disabled && type.value !== value) onChange(type.value);
             }}
           >
-            <span className='inline-flex h-5 w-5 flex-none items-center justify-center'>{type.icon}</span>
+            <span className='inline-flex h-5 w-5 flex-none items-center justify-center [&_img]:h-[18px] [&_img]:w-[18px] [&_img]:object-contain [&_svg]:h-[18px] [&_svg]:w-[18px] [&_svg]:object-contain'>
+              {type.icon}
+            </span>
             <span className='min-w-0 truncate whitespace-nowrap'>{type.label}</span>
             {type.value === value ? <CheckOutlined className='flex-none text-sm text-primary' /> : null}
           </button>
