@@ -85,6 +85,7 @@ const es_ES = {
   },
   "meta_tip": "Ver los metadatos",
   "meta_title": "Metadatos",
+  "meta_tab_overview": "Resumen",
   "meta_desc_key": "Nombre del metadato",
   "meta_desc_value": "Valor del metadato",
   "meta_value_click_to_copy": "Pulsa para copiar",

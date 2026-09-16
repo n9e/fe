@@ -772,8 +772,8 @@ const zh_CN = {
       updateTimeRange: '更新时间范围',
     },
     hideHeader: {
-      label: '隐藏仪表盘标题栏',
-      tip: '开启后，隐藏仪表盘详情页顶部的标题和操作栏。',
+      label: '隐藏仪表盘标题',
+      tip: '开启后，仅隐藏仪表盘详情页顶部的标题。',
     },
     save: '保存仪表盘',
   },

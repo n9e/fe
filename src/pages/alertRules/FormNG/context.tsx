@@ -15,6 +15,8 @@ import { Item as WorkflowItem } from '@/pages/eventPipeline/types';
 import { getWebhooks } from '@/pages/help/NotificationSettings/services';
 import { WebhookType } from '@/pages/help/NotificationSettings/types';
 
+import { mergeTeams, type TeamOption } from './utils/mergeTeams';
+
 type FormNGDataContextValue = {
   permissions: {
     notificationRules: boolean;
@@ -55,6 +57,7 @@ type FormNGDataContextValue = {
 };
 
 const noop = () => {};
+const EMPTY_TEAMS: TeamOption[] = [];
 
 function getServiceCals() {
   return request('/api/n9e-plus/service-cals', {
@@ -107,8 +110,8 @@ export function useFormNGData() {
   return useContext(FormNGDataContext);
 }
 
-export function FormNGDataProvider(props: { children: React.ReactNode }) {
-  const { children } = props;
+export function FormNGDataProvider(props: { children: React.ReactNode; configuredTeams?: TeamOption[] }) {
+  const { children, configuredTeams = EMPTY_TEAMS } = props;
   const { perms } = useContext(CommonStateContext);
   const groupId = Form.useWatch('group_id');
   const pipelineConfigs = Form.useWatch('pipeline_configs');
@@ -191,7 +194,10 @@ export function FormNGDataProvider(props: { children: React.ReactNode }) {
   const notificationRules = notificationRulesReq.data || [];
   const notifyChannels = notifyChannelsReq.data || [];
   const teamList = teamsReq.data;
-  const teams = (_.isArray(teamList) ? teamList : teamList?.dat) || [];
+  const teams = useMemo(() => {
+    const loadedTeams = Array.isArray(teamList) ? teamList : teamList?.dat;
+    return mergeTeams(Array.isArray(loadedTeams) ? loadedTeams : [], configuredTeams);
+  }, [teamList, configuredTeams]);
   const workflows = workflowsReq.data || [];
   const workflowItems = _.filter(workflowItemsReq.data || [], Boolean) as WorkflowItem[];
   const serviceCals = serviceCalsReq.data || [];

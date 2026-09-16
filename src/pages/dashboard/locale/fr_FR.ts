@@ -694,6 +694,10 @@ const fr_FR = {
       default: 'Par défaut',
       updateTimeRange: 'Mettre à jour la plage horaire',
     },
+    hideHeader: {
+      label: 'Masquer le titre du tableau de bord',
+      tip: 'Une fois activée, seul le titre en haut de la page de détails du tableau de bord est masqué.',
+    },
     save: 'Enregistrer le tableau de bord',
   },
   visualizations: {

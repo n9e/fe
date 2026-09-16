@@ -60,6 +60,11 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'disabled',
+    i18nKey: 'user.status',
+    visible: true,
+  },
+  {
     name: 'create_at',
     i18nKey: 'common:table.create_at',
     visible: true,

@@ -36,3 +36,21 @@ describe('account source placeholder', () => {
     });
   });
 });
+
+// 禁用/启用行操作的文案同样只走 user 命名空间，缺翻译时按钮上会直接显示 key。
+describe('user status actions', () => {
+  it('translates the disable/enable labels and confirmations in all locales', () => {
+    _.forEach(['status_normal', 'status_disabled', 'disable_action', 'enable_action', 'disable_confirm', 'enable_confirm', 'disable_success', 'enable_success'], (key) => {
+      _.forEach(locales, (locale, lang) => {
+        expect([lang, key, locale.user[key]]).toEqual([lang, key, expect.any(String)]);
+      });
+    });
+  });
+
+  it('keeps the username placeholder in the confirmation text', () => {
+    _.forEach(locales, (locale, lang) => {
+      expect([lang, _.includes(locale.user.disable_confirm, '{{username}}')]).toEqual([lang, true]);
+      expect([lang, _.includes(locale.user.enable_confirm, '{{username}}')]).toEqual([lang, true]);
+    });
+  });
+});

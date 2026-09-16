@@ -228,7 +228,20 @@ function FormModal(props: Props & ModalWrapProps) {
             >
               <Input ref={inputRef} />
             </Form.Item>
-            <Form.Item name='time_field' label={t('time_field')}>
+            <Form.Item
+              name='time_field'
+              label={t('time_field')}
+              rules={
+                mode === 'create'
+                  ? [
+                      {
+                        required: true,
+                        message: t('time_field_msg'),
+                      },
+                    ]
+                  : undefined
+              }
+            >
               <Select
                 allowClear
                 options={_.map(dateFields, (field) => {

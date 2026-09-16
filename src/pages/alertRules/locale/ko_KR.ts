@@ -12,7 +12,7 @@ const ko_KR = {
   "name_placeholder": "규칙 이름을 입력하세요",
   "group_id_placeholder": "비즈니스 그룹을 선택하세요",
   "note_placeholder": "알림이 발생했을 때의 대응 방법, 관련 문서 링크, 당직 일정 등 보충 정보를 적을 수 있습니다",
-  "search_placeholder": "이름이나 레이블 검색",
+  "search_placeholder": "이름, 레이블 또는 쿼리 검색",
   "status_triggered": "알림 발생 중",
   "status_normal": "알림 없음",
   "notify_rule_not_found": "해당하는 통지 규칙을 찾지 못했습니다",

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Col, Form, Row, Select } from 'antd';
 import { SqlMonacoEditor } from '@fc-components/monaco-editor';
 import { useTranslation } from 'react-i18next';
 
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import { getESClusterInfo } from '@/plugins/elasticsearch/services';
+import { CommonStateContext } from '@/App';
 
 interface Props {
   datasourceValue: number;
@@ -16,6 +17,7 @@ interface Props {
 // 执行仍走 n9e-plus recordx 的通用 QueryData 链路。
 export default function ElasticsearchRecordingRuleQuery({ datasourceValue, field, prefixPath }: Props) {
   const { t: tES } = useTranslation('elasticsearch');
+  const { darkMode } = useContext(CommonStateContext);
   const [supportsSQL, setSupportsSQL] = useState(false);
   const path = [field.name, 'config'];
 
@@ -32,11 +34,15 @@ export default function ElasticsearchRecordingRuleQuery({ datasourceValue, field
   return (
     <>
       <Form.Item name={[...prefixPath, ...path, 'sql']} label='SQL' rules={[{ required: true, message: tES('query.sql_required') }]}>
-        <SqlMonacoEditor maxHeight={200} enableAutocomplete enableFormat />
+        <SqlMonacoEditor maxHeight={200} enableAutocomplete enableFormat theme={darkMode ? 'dark' : 'light'} />
       </Form.Item>
       <Row gutter={8}>
         <Col span={12}>
-          <Form.Item name={[...prefixPath, ...path, 'keys', 'valueKey']} label={tES('query.advancedSettings.valueKey')} rules={[{ required: true, message: tES('query.advancedSettings.valueKey_required') }]}>
+          <Form.Item
+            name={[...prefixPath, ...path, 'keys', 'valueKey']}
+            label={tES('query.advancedSettings.valueKey')}
+            rules={[{ required: true, message: tES('query.advancedSettings.valueKey_required') }]}
+          >
             <Select mode='tags' tokenSeparators={[' ']} />
           </Form.Item>
         </Col>

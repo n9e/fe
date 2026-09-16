@@ -136,6 +136,17 @@ describe('valueFormatter', () => {
     });
   });
 
+  test('should use compact text as the display value for short unit', () => {
+    const result = valueFormatter({ unit: 'short', decimals: 2 }, 10000);
+
+    expect(result).toEqual({
+      value: '10K',
+      unit: '',
+      text: '10K',
+      stat: 10000,
+    });
+  });
+
   describe('unit: none', () => {
     test('should round value with specified decimals', () => {
       const result = valueFormatter({ unit: 'none', decimals: 2 }, 3.14159);

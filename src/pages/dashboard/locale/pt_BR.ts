@@ -687,6 +687,10 @@ const pt_BR = {
       default: 'Padrão',
       updateTimeRange: 'Atualizar o intervalo de tempo',
     },
+    hideHeader: {
+      label: 'Ocultar título do dashboard',
+      tip: 'Quando ativado, oculta apenas o título no topo da página de detalhes do dashboard.',
+    },
     save: 'Salvar dashboard',
   },
   visualizations: {

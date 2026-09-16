@@ -10,6 +10,15 @@ const pt_BR = {
     "busi_groups": "Grupo de negócio",
     "user_groups": "Equipe",
     "last_active_time": "Última atividade",
+    "status": "Status",
+    "status_normal": "Normal",
+    "status_disabled": "Desativado",
+    "disable_action": "Desativar",
+    "enable_action": "Ativar",
+    "disable_confirm": "Desativar o usuário {{username}}? O usuário não poderá entrar, as permissões serão mantidas",
+    "enable_confirm": "Ativar o usuário {{username}}?",
+    "disable_success": "Usuário desativado",
+    "enable_success": "Usuário ativado",
     "delete_success": "Usuário excluído com sucesso"
   },
   "team": {

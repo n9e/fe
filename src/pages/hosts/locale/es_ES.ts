@@ -17,6 +17,8 @@ const es_ES = {
   "cores": "Cores",
   "tags_popover_title": "{{count}}",
   "view_collects": "Ver las configuraciones de recolección asociadas",
+  "host_topology": "Topología",
+  "collects_tab": "Recopilación",
   "host_no_heartbeat_tip": "Máquina sin latido",
   "expand_busi_and_overview": "Expandir los grupos de negocio y el resumen",
   "collapse_busi_and_overview": "Contraer los grupos de negocio y el resumen",

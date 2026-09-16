@@ -290,6 +290,8 @@ describe('processFormValues', () => {
             editMode: 'builder',
             builderConfig: { index: 'logs', date_field: '@timestamp' },
             sql: 'SELECT count(*) FROM logs',
+            index: 'logs-*',
+            filter: 'service:web',
             interval: 5,
             interval_unit: 'min',
           },
@@ -301,6 +303,8 @@ describe('processFormValues', () => {
     expect(query.editMode).toBe('builder');
     expect(query.builderConfig).toBeUndefined();
     expect(query.sql).toBe('SELECT count(*) FROM logs');
+    expect(query.index).toBeUndefined();
+    expect(query.filter).toBeUndefined();
     expect(query.interval).toBe(300);
     expect(query.interval_unit).toBeUndefined();
   });
@@ -315,6 +319,8 @@ describe('processFormValues', () => {
             syntax: 'dsl',
             sql: 'SELECT 1',
             keys: { valueKey: 'count' },
+            editMode: 'builder',
+            builderConfig: { index: 'logs' },
           },
         ],
       },
@@ -323,5 +329,29 @@ describe('processFormValues', () => {
     const query = result.rule_config.queries[0];
     expect(query.sql).toBeUndefined();
     expect(query.keys).toBeUndefined();
+    expect(query.editMode).toBeUndefined();
+    expect(query.builderConfig).toBeUndefined();
+  });
+
+  it('非 ES 查询也应剥离临时 builderConfig', () => {
+    const result = processFormValues({
+      cate: 'doris',
+      rule_config: {
+        queries: [
+          {
+            ref: 'A',
+            sql: 'SELECT count(*) AS value FROM logs',
+            builderConfig: { database: 'observability', table: 'logs' },
+            interval: 5,
+            interval_unit: 'min',
+          },
+        ],
+      },
+      ...baseFormValues,
+    });
+    const query = result.rule_config.queries[0];
+    expect(query.builderConfig).toBeUndefined();
+    expect(query.sql).toBe('SELECT count(*) AS value FROM logs');
+    expect(query.interval).toBe(300);
   });
 });

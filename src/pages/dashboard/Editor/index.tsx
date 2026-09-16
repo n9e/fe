@@ -33,6 +33,7 @@ import getDefaultTargets from '../utils/getDefaultTargets';
 import { upgradeTableToNG } from '../utils/upgradeTableToNG';
 import { useGlobalState } from '../globalState';
 import normalizeData from '../Renderer/Renderer/TableNG/utils/normalizeData';
+import { normalizeDashboardPanelForPersist } from './normalization';
 
 import './style.less';
 
@@ -101,10 +102,8 @@ function index(props: IProps) {
         if (values.type === 'hexbin' && typeof values.custom.colorRange === 'string') {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
         }
-        const formData = values;
-        if (values && values.id) {
-          formData.id = values.id;
-        } else {
+        const formData = normalizeDashboardPanelForPersist(values);
+        if (!formData.id) {
           formData.id = uuidv4();
         }
         props.onOK(formData, mode);

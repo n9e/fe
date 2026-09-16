@@ -372,7 +372,8 @@ export default function DetailV2(props: IProps) {
     });
   }, [_.map(variablesWithOptions, (item) => _.pick(item, ['name', 'value'])), range]);
 
-  const shouldHideIframeHeader = dashboard.configs?.mode === 'iframe' && dashboard.configs?.hideHeader === true;
+  // `hideHeader` 为历史配置字段，现在仅控制仪表盘标题的显示。
+  const shouldHideIframeTitle = dashboard.configs?.mode === 'iframe' && dashboard.configs?.hideHeader === true;
 
   return (
     <PageLayout customArea={<div />}>
@@ -387,7 +388,7 @@ export default function DetailV2(props: IProps) {
             <div
               className='dashboard-detail-content-header-container'
               style={{
-                display: query.viewMode !== 'fullscreen' && !shouldHideIframeHeader ? 'block' : 'none',
+                display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
                 paddingBottom: dashboard.configs?.mode === 'iframe' ? 0 : 16,
               }}
             >
@@ -451,6 +452,7 @@ export default function DetailV2(props: IProps) {
                 routerPromptRef={routerPromptRef as unknown as React.MutableRefObject<{ showPrompt: () => void }>}
                 hideGoBack={hideGoBack}
                 hideGoList={hideGoList}
+                hideTitle={shouldHideIframeTitle}
               />
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
