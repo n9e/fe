@@ -5,8 +5,10 @@ import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/co
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 
 import { getDefaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
+import { normalizeServiceCalConfigs, formatServiceCalConfigs } from './serviceCalConfigs';
 import { DATASOURCE_ALL } from '../constants';
 import { DEFAULT_QUERY } from '@/plugins/victorialogs/constants';
+import { isElasticsearchLike, normalizeElasticsearchAlertRuleQueryForPersist } from '@/plugins/elasticsearch/queryNormalization';
 // @ts-ignore
 import * as alertUtils from 'plus:/parcels/AlertRule/utils';
 
@@ -110,14 +112,15 @@ export function processFormValues(values) {
       if (_.isArray(item?.keys?.metricKey)) {
         item.keys.metricKey = _.join(item.keys.metricKey, ' ');
       }
-      return {
-        ..._.omit(item, ['interval_unit', 'range']),
+      const normalizedItem = {
+        ..._.omit(item, ['interval_unit', 'range', 'builderConfig']),
         interval: item.interval_unit ? normalizeTime(item.interval, item.interval_unit) : undefined,
         from: parsedRange?.start,
         to: parsedRange?.end,
         cumulative_window_from: parsedRange?.cumulative_window_from,
         cumulative_window_to: parsedRange?.cumulative_window_to,
       };
+      return isElasticsearchLike(values.cate) ? normalizeElasticsearchAlertRuleQueryForPersist(normalizedItem) : normalizedItem;
     });
   }
   if (values?.rule_config?.triggers) {
@@ -163,16 +166,9 @@ export function processFormValues(values) {
     callbacks: _.map(values.callbacks, (item) => item.url),
     annotations: _.chain(values.annotations).keyBy('key').mapValues('value').value(),
     extra_config: {
-      ..._.omit(extra_config),
-      service_cal_configs: _.map(extra_config.service_cal_configs, (item) => {
-        return {
-          service_cal_ids: item.service_cal_ids,
-          time_range: {
-            start: item.time_range.start.format('HH:mm'),
-            end: item.time_range.end.format('HH:mm'),
-          },
-        };
-      }),
+      // service_cal_ids 是更早的字段，加载时已并入 service_cal_configs，不再回写
+      ..._.omit(extra_config, ['service_cal_ids']),
+      service_cal_configs: formatServiceCalConfigs(extra_config.service_cal_configs),
       enrich_queries,
     },
   };
@@ -258,15 +254,7 @@ export function processInitialValues(values) {
     })),
     extra_config: {
       ...extra_config,
-      service_cal_configs: _.map(values?.extra_config?.service_cal_configs, (item) => {
-        return {
-          service_cal_ids: item.service_cal_ids,
-          time_range: {
-            start: item.time_range.start ? moment(item.time_range.start, 'HH:mm') : undefined,
-            end: item.time_range.end ? moment(item.time_range.end, 'HH:mm') : undefined,
-          },
-        };
-      }),
+      service_cal_configs: normalizeServiceCalConfigs(values?.extra_config?.service_cal_configs, values?.extra_config?.service_cal_ids),
       enrich_queries,
     },
     pipeline_configs: values?.pipeline_configs ?? [{ enable: true }],

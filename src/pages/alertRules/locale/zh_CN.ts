@@ -152,6 +152,7 @@ const zh_CN = {
   invalid_datasource_tip_1: '数据源',
   invalid_datasource_tip_2: '存在未配置关联告警引擎集群的数据源',
   invalid_datasource_reload: '刷新数据源',
+  all_datasources: '全部数据源',
   advanced_settings: '辅助配置',
   host: {
     query: {
@@ -211,6 +212,7 @@ const zh_CN = {
       copy: '复制 JSON 内容到剪贴板',
     },
     update: {
+      service_cal_legacy_cleared: '所选规则中有 {{num}} 条配置了已废弃的规则级生效时段，本次操作会将其一并清除',
       title: '更新告警规则',
       name: '批量更新',
       field: '字段',

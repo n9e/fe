@@ -89,6 +89,7 @@ const en_US = {
   },
   meta_tip: 'View meta info',
   meta_title: 'Information',
+  meta_tab_overview: 'Overview',
   meta_desc_key: 'Key',
   meta_desc_value: 'Value',
   meta_value_click_to_copy: 'Click to copy',

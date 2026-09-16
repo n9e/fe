@@ -159,6 +159,8 @@ const es_ES = {
     reg: 'Expresión regular',
     reg_tip: 'Opcional: filtra las opciones mediante una expresión regular. Introduce un <a>literal de expresión regular</a>, es decir, un patrón entre barras',
     reg_tip2: 'Si quieres extraer solo una parte de una opción, <a>usa grupos de captura con nombre para separar el texto mostrado del valor</a>',
+    reg_object_tip:
+      'Para opciones con un nombre visible separado, la expresión regular compara el valor. Las coincidencias normales conservan ambos campos; los grupos text/value solo reemplazan el campo correspondiente.',
     multi: 'Selección múltiple',
     allOption: 'Incluir la opción «todos»',
     allValue: 'Valor personalizado para «todos»',
@@ -687,6 +689,10 @@ const es_ES = {
       tip: 'Controla el comportamiento del zoom en todos los gráficos',
       default: 'Predeterminado',
       updateTimeRange: 'Actualizar el intervalo de tiempo',
+    },
+    hideHeader: {
+      label: 'Ocultar el título del dashboard',
+      tip: 'Al activarlo, solo se oculta el título en la parte superior de la página de detalles del dashboard.',
     },
     save: 'Guardar el dashboard',
   },

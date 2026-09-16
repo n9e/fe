@@ -152,6 +152,7 @@ const ru_RU = {
   invalid_datasource_tip_1: 'Источник данных',
   invalid_datasource_tip_2: 'Не настроен связанный кластер движка оповещений',
   invalid_datasource_reload: 'Обновить источник данных',
+  all_datasources: 'Все источники данных',
   advanced_settings: 'Дополнительные настройки',
   host: {
     query: {
@@ -213,6 +214,7 @@ const ru_RU = {
       copy: 'Копировать содержимое JSON в буфер обмена',
     },
     update: {
+      service_cal_legacy_cleared: 'У {{num}} из выбранных правил задано устаревшее время действия на уровне правила. Эта операция удалит его.',
       title: 'Обновить правила оповещений',
       name: 'Массовое обновление',
       field: 'Поле',

@@ -107,7 +107,7 @@
   padding-bottom: 0;
   user-select: none;
 
-  &>.name {
+  & > .name {
     margin-bottom: 4px;
   }
 }
@@ -125,7 +125,6 @@
     background-color: fade(@primary-color, 10%);
   }
 }
-
 
 .n9e-biz-group-container {
   .n9e-list-item {
@@ -157,5 +156,16 @@
         background-color: rgba(204, 204, 220, 0.08) !important;
       }
     }
+  }
+}
+
+// 下拉按内容撑开，不跟触发器同宽；过长时截断
+.n9e-busi-group-select-dropdown {
+  max-width: min(400px, calc(100vw - 32px));
+
+  .ant-select-item-option-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

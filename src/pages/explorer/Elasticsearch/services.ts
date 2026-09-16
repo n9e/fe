@@ -308,3 +308,9 @@ export function delDownloadTask(data: { ids: number[] }) {
     data,
   }).then((res) => res.dat);
 }
+
+export function cancelDownloadTask(id: number | string) {
+  return request(`/api/${N9E_PATHNAME}/logs/download/task/${encodeURIComponent(id)}/cancel`, {
+    method: RequestMethod.Put,
+  }).then((res) => res.dat);
+}

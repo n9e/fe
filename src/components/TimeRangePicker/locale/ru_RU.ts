@@ -26,6 +26,7 @@ const ru_RU = {
     'Last 15 minutes': 'Последние 15 минут',
     'Last 30 minutes': 'Последние 30 минут',
     'Last 1 hour': 'Последний час',
+    'Last 2 hours': 'Последние 2 часа',
     'Last 3 hours': 'Последние 3 часа',
     'Last 6 hours': 'Последние 6 часов',
     'Last 12 hours': 'Последние 12 часов',

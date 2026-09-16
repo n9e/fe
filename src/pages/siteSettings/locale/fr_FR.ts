@@ -31,7 +31,8 @@ const fr_FR = {
   "explorer_timeseries_legend_columns_placeholder": "La valeur par défaut est Last",
   "print_access_log": "Activer le journal d'accès",
   "print_body_paths": "Chemins dont le corps de requête est journalisé",
-  "font_family": "Police"
+  "font_family": "Police",
+  "alert_severity_names": "Noms personnalisés des niveaux de gravité des alertes"
 };
 
 export default fr_FR;

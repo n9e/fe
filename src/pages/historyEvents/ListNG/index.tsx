@@ -1,6 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import moment from 'moment';
 import _ from 'lodash';
 import { useAntdTable } from 'ahooks';
@@ -12,7 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import RefreshIcon from '@/components/RefreshIcon';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
-import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
+import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import TimeRangePicker, { parseRange } from '@/components/TimeRangePicker';
 import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import getTextWidth from '@/utils/getTextWidth';
@@ -54,12 +55,14 @@ interface Props {
   filterAreaRight?: React.ReactNode;
   refreshFlag?: string;
   rowSelection?: any;
+  // 按事件 hash 精确筛选，仅历史告警页开启：复用本组件的其他页面走各自的接口，后端没接 hash
+  showHashFilter?: boolean;
 }
 
 const Event = (props: Props) => {
   const { t } = useTranslation('AlertHisEvents');
   const history = useHistory();
-  const { feats, datasourceList, profile } = useContext(CommonStateContext);
+  const { feats, datasourceList, datasourceCateOptions, profile } = useContext(CommonStateContext);
   const {
     hideHeader = false,
     hideTimeRangePicker = false,
@@ -72,8 +75,11 @@ const Event = (props: Props) => {
     filterAreaRight,
     rowSelection,
     showClaimant = false,
+    showHashFilter = false,
   } = props;
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
+  // hash 是精确匹配，输入过程中的半截值查出来必然为空，所以用本地 state 暂存、回车才提交
+  const [hashInput, setHashInput] = useState<string>(filter.hash ?? '');
   const [eventColumnExpanded, setEventColumnExpanded] = useState(() => readAlertEventTagsExpanded(HISTORY_EVENT_TAGS_EXPANDED_TABLE_KEY));
   const [eventDetailDrawerData, setEventDetailDrawerData] = useState<{
     visible: boolean;
@@ -97,6 +103,11 @@ const Event = (props: Props) => {
       });
     }
   }, [location.search]);
+
+  // filter.hash 来自 URL，直达链接和浏览器前进后退都要回填到输入框
+  useEffect(() => {
+    setHashInput(filter.hash ?? '');
+  }, [filter.hash]);
 
   let columns = [
     {
@@ -231,6 +242,7 @@ const Event = (props: Props) => {
     filter.datasource_ids?.length ? { datasource_ids: _.join(filter.datasource_ids, ',') } : {},
     filter.severity !== undefined ? { severity: filter.severity } : {},
     filter.query ? { query: filter.query } : {},
+    filter.hash ? { hash: filter.hash } : {},
     filter.is_recovered !== undefined ? { is_recovered: filter.is_recovered } : {},
     { bgid: filter.bgid },
     filter.rule_prods?.length ? { rule_prods: _.join(filter.rule_prods, ',') } : {},
@@ -294,14 +306,24 @@ const Event = (props: Props) => {
                 );
               })}
             </Select>
-            <DatasourceSelect
+            <DatasourceSelectV3
               style={{ width: 100 }}
               filterKey='alertRule'
+              mode='multiple'
+              maxTagCount='responsive'
+              placeholder={t('common:datasource.name')}
+              datasourceCateList={datasourceCateOptions}
               value={filter.datasource_ids}
               onChange={(val: number[]) => {
                 setFilter({
                   ...filter,
                   datasource_ids: val,
+                });
+              }}
+              onClear={() => {
+                setFilter({
+                  ...filter,
+                  datasource_ids: undefined,
                 });
               }}
             />
@@ -327,9 +349,9 @@ const Event = (props: Props) => {
               }}
               dropdownMatchSelectWidth={false}
             >
-              <Select.Option value={1}>S1（Critical）</Select.Option>
-              <Select.Option value={2}>S2（Warning）</Select.Option>
-              <Select.Option value={3}>S3（Info）</Select.Option>
+              <Select.Option value={1}>{getAlertSeverityName(1)}</Select.Option>
+              <Select.Option value={2}>{getAlertSeverityName(2)}</Select.Option>
+              <Select.Option value={3}>{getAlertSeverityName(3)}</Select.Option>
             </Select>
             <Select
               style={{ minWidth: 60 }}
@@ -361,6 +383,30 @@ const Event = (props: Props) => {
                 setRefreshFlag(_.uniqueId('refresh_'));
               }}
             />
+            {showHashFilter && (
+              <Input
+                className='min-w-[220px]'
+                allowClear
+                placeholder={t('hash_placeholder')}
+                value={hashInput}
+                onChange={(e) => {
+                  setHashInput(e.target.value);
+                  // allowClear 的清空按钮只触发 onChange，不触发 onPressEnter，这里直接提交
+                  if (!e.target.value) {
+                    setFilter({
+                      ...filter,
+                      hash: undefined,
+                    });
+                  }
+                }}
+                onPressEnter={() => {
+                  setFilter({
+                    ...filter,
+                    hash: hashInput.trim() || undefined,
+                  });
+                }}
+              />
+            )}
             {!hideExportButton && (
               <Button
                 loading={exportBtnLoadding}

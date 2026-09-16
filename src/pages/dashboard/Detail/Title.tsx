@@ -72,6 +72,7 @@ interface IProps {
   routerPromptRef: React.MutableRefObject<{ showPrompt: () => void }>;
   hideGoBack?: boolean;
   hideGoList?: boolean;
+  hideTitle?: boolean;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
@@ -104,6 +105,7 @@ export default function Title(props: IProps) {
     routerPromptRef,
     hideGoBack,
     hideGoList,
+    hideTitle,
   } = props;
   const history = useHistory();
   const location = useLocation();
@@ -111,8 +113,9 @@ export default function Title(props: IProps) {
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const query = querystring.parse(location.search);
   const { viewMode, __public__ } = query;
-  // 从列表进入详情时 URL 带 page 参数，返回列表时回到原页；其他入口回列表第一页
-  const goListPath = props.gobackPath || (getPageFromSearch(location.search) > 1 ? `/dashboards?page=${getPageFromSearch(location.search)}` : '/dashboards');
+  // 从列表进入详情时 URL 带 __page 参数，返回列表时回到原页；其他入口回列表第一页
+  const currentPage = getPageFromSearch(location.search, '__page');
+  const goListPath = props.gobackPath || (currentPage > 1 ? `/dashboards?__page=${currentPage}` : '/dashboards');
   // AI 分析仅在正常已保存的仪表盘下展示：匿名公开、模板预览、内置组件场景要么调不通 assistant 接口，要么没有真实 dashboard_id
   const showAiAnalysis = !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id;
   const isClickTrigger = useRef(false);
@@ -251,53 +254,54 @@ export default function Title(props: IProps) {
                   <Link to={goListPath} style={{ fontSize: 14 }}>
                     {isBuiltin ? t('builtInComponents:title') : t('list')}
                   </Link>
-                  {'/'}
+                  {!hideTitle && '/'}
                 </Space>
               )}
             </Space>
           )}
-          {isPreview === true || __public__ === 'true' ? (
-            // 公开仪表盘不显示下拉
-            <div className='title'>{dashboard.name}</div>
-          ) : (
-            <Dropdown
-              trigger={['click']}
-              visible={dashboardListDropdownVisible}
-              onVisibleChange={(visible) => {
-                setDashboardListDropdownVisible(visible);
-              }}
-              overlay={
-                <div className='collects-payloads-dropdown-overlay p-4 bg-fc-100 fc-border rounded-[2px] n9e-base-shadow'>
-                  <Input
-                    className='mb-2'
-                    placeholder={t('common:search_placeholder')}
-                    value={dashboardListDropdownSearch}
-                    onChange={(e) => {
-                      setDashboardListDropdownSearch(e.target.value);
-                    }}
-                  />
-                  <Menu
-                    items={_.map(
-                      _.filter(dashboardList, (item) => _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch))),
-                      (item) => ({
-                        key: item.id,
-                        label: item.name,
-                        onClick: () => {
-                          history.push(`/dashboards/${item.ident || item.id}`);
-                          setDashboardListDropdownVisible(false);
-                          setDashboardListDropdownSearch('');
-                        },
-                      }),
-                    )}
-                  />
-                </div>
-              }
-            >
-              <span style={{ cursor: 'pointer' }}>
-                <span className='title'>{dashboard.name}</span> <DownOutlined />
-              </span>
-            </Dropdown>
-          )}
+          {!hideTitle &&
+            (isPreview === true || __public__ === 'true' ? (
+              // 公开仪表盘不显示下拉
+              <div className='title'>{dashboard.name}</div>
+            ) : (
+              <Dropdown
+                trigger={['click']}
+                visible={dashboardListDropdownVisible}
+                onVisibleChange={(visible) => {
+                  setDashboardListDropdownVisible(visible);
+                }}
+                overlay={
+                  <div className='collects-payloads-dropdown-overlay p-4 bg-fc-100 fc-border rounded-[2px] n9e-base-shadow'>
+                    <Input
+                      className='mb-2'
+                      placeholder={t('common:search_placeholder')}
+                      value={dashboardListDropdownSearch}
+                      onChange={(e) => {
+                        setDashboardListDropdownSearch(e.target.value);
+                      }}
+                    />
+                    <Menu
+                      items={_.map(
+                        _.filter(dashboardList, (item) => _.includes(_.toLower(item.name), _.toLower(dashboardListDropdownSearch))),
+                        (item) => ({
+                          key: item.id,
+                          label: item.name,
+                          onClick: () => {
+                            history.push(`/dashboards/${item.ident || item.id}`);
+                            setDashboardListDropdownVisible(false);
+                            setDashboardListDropdownSearch('');
+                          },
+                        }),
+                      )}
+                    />
+                  </div>
+                }
+              >
+                <span style={{ cursor: 'pointer' }}>
+                  <span className='title'>{dashboard.name}</span> <DownOutlined />
+                </span>
+              </Dropdown>
+            ))}
           {showAiAnalysis && (
             <span className='ml-2 inline-flex'>
               <AiButton

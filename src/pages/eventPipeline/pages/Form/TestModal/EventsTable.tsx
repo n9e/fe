@@ -13,6 +13,7 @@ import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import { getEvents } from '@/pages/historyEvents/services';
 import { SEVERITY_COLORS } from '@/pages/alertCurEvent/constants';
+import { getAlertSeverityName } from '@/utils/alertSeverity';
 import '@/pages/event/index.less';
 
 interface Props {
@@ -126,9 +127,9 @@ export default function EventsTable(props: Props) {
             }}
             dropdownMatchSelectWidth={false}
           >
-            <Select.Option value={1}>S1（Critical）</Select.Option>
-            <Select.Option value={2}>S2（Warning）</Select.Option>
-            <Select.Option value={3}>S3（Info）</Select.Option>
+            <Select.Option value={1}>{getAlertSeverityName(1)}</Select.Option>
+            <Select.Option value={2}>{getAlertSeverityName(2)}</Select.Option>
+            <Select.Option value={3}>{getAlertSeverityName(3)}</Select.Option>
           </Select>
           <Select
             style={{ minWidth: 60 }}

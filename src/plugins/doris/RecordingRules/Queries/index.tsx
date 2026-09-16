@@ -78,6 +78,9 @@ export default function index(props: IProps) {
               { label: 'Code', value: 'code' },
             ]}
             onChange={(value) => {
+              // 从 Code 切到 Builder 时清空已生成的 sql 和 builderConfig：
+              // Builder 配置是纯编辑态，重新进入需从空白生成，
+              // 避免残留配置生成的 SQL 与当前手写 SQL 不一致。
               if (value === 'builder' && editMode === 'code') {
                 const sqlValue = _.get(query, 'sql');
                 if (sqlValue) {

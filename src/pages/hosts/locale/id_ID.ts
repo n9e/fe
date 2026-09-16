@@ -17,6 +17,8 @@ const id_ID = {
   "cores": "Cores",
   "tags_popover_title": "{{count}}",
   "view_collects": "Lihat konfigurasi pengumpulan terkait",
+  "host_topology": "Topologi",
+  "collects_tab": "Pengumpulan",
   "host_no_heartbeat_tip": "Mesin tanpa detak jantung",
   "expand_busi_and_overview": "Bentangkan grup bisnis dan ikhtisar",
   "collapse_busi_and_overview": "Ciutkan grup bisnis dan ikhtisar",

@@ -17,6 +17,8 @@ const pt_BR = {
   "cores": "Cores",
   "tags_popover_title": "{{count}}",
   "view_collects": "Ver as configurações de coleta associadas",
+  "host_topology": "Topologia",
+  "collects_tab": "Coleta",
   "host_no_heartbeat_tip": "Máquina sem heartbeat",
   "expand_busi_and_overview": "Expandir grupos de negócio e visão geral",
   "collapse_busi_and_overview": "Recolher grupos de negócio e visão geral",

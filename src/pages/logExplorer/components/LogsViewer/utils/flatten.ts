@@ -5,11 +5,11 @@ export default function flatten(target: object, opts?: { delimiter?: any; maxDep
   opts = opts || {};
 
   const delimiter = opts.delimiter || '.';
-  let maxDepth = opts.maxDepth || 3;
-  let currentDepth = 1;
+  // 未显式指定 maxDepth(含传 0 的 falsy 场景)时不限深;depth 随递归入参传递,回溯天然正确
+  const maxDepth = opts.maxDepth || Infinity;
   const output: any = {};
 
-  function step(object: any, prev: string | null) {
+  function step(object: any, prev: string | null, depth: number) {
     Object.keys(object).forEach((key) => {
       const value = object[key];
       const isarray = opts?.safe && Array.isArray(value);
@@ -18,13 +18,8 @@ export default function flatten(target: object, opts?: { delimiter?: any; maxDep
 
       const newKey = prev ? prev + delimiter + key : key;
 
-      if (!opts?.maxDepth) {
-        maxDepth = currentDepth + 1;
-      }
-
-      if (!isarray && isobject && Object.keys(value).length && currentDepth < maxDepth) {
-        ++currentDepth;
-        return step(value, newKey);
+      if (!isarray && isobject && Object.keys(value).length && depth < maxDepth) {
+        return step(value, newKey, depth + 1);
       }
 
       if (isobject && Object.keys(value).length === 0) {
@@ -35,7 +30,7 @@ export default function flatten(target: object, opts?: { delimiter?: any; maxDep
     });
   }
 
-  step(target, null);
+  step(target, null, 1);
 
   return output;
 }

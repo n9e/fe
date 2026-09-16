@@ -1,5 +1,7 @@
 const es_ES = {
   "query": {
+    "range": "Query range",
+    "sql_required": "SQL is required",
     "mode": "Forma de búsqueda",
     "mode_indices": "Indices",
     "mode_index_patterns": "Index patterns",
@@ -37,6 +39,12 @@ const es_ES = {
       "table": "Tabla",
       "timeseries": "Gráfico de series temporales"
     },
+    "dashboard": {
+      "mode": {
+        "timeSeries": "Datos de series temporales",
+        "table": "Datos no temporales"
+      }
+    },
     "add_to": {
       "btn": "Añadir a",
       "recording_rule": "Reglas de registro",
@@ -44,6 +52,11 @@ const es_ES = {
     }
   },
   "builder": {
+    "title": "Builder",
+    "code": "Code",
+    "open_builder": "Open builder",
+    "switch_to_builder_confirm_title": "Switch to Builder",
+    "switch_to_builder_confirm_content": "Switching will clear the current SQL and builder configuration.",
     "to_pinned_btn": "Fijo",
     "to_unpinned_btn": "Dejar de fijar",
     "filters": {

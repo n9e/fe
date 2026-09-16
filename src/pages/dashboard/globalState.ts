@@ -16,9 +16,16 @@ export interface DashboardMeta {
   public_cate: 0 | 1 | 2; // 0: 匿名访问，1: 需要登录, 2: 授权访问
 }
 
+export interface VariableExecutionState {
+  sessionId: number;
+  isExecuting: boolean;
+  revision: number;
+}
+
 export const { useGlobalState, getGlobalState, setGlobalState } = createGlobalState<{
   dashboardMeta: DashboardMeta; // 仪表盘的一些配置信息
   variablesWithOptions: IVariable[]; // 变量数据
+  variableExecution: VariableExecutionState; // 变量依赖链执行状态
   range: IRawTimeRange; // 仪表盘的时间范围
 
   statFields: string[];
@@ -29,6 +36,11 @@ export const { useGlobalState, getGlobalState, setGlobalState } = createGlobalSt
 }>({
   dashboardMeta: {} as DashboardMeta,
   variablesWithOptions: [],
+  variableExecution: {
+    sessionId: 0,
+    isExecuting: false,
+    revision: 0,
+  },
   range: {
     start: 'now-1h',
     end: 'now',

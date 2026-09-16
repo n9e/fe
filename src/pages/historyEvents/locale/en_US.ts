@@ -2,6 +2,7 @@ const en_US = {
   title: 'Historical events',
   event_name: 'Event',
   search_placeholder: 'Multiple keywords separated by spaces',
+  hash_placeholder: 'Exact search by event hash',
   first_trigger_time: 'First triggered',
   trigger_time: 'Triggered',
   last_eval_time: 'Last evaluated',

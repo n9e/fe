@@ -85,6 +85,7 @@ const ja_JP = {
   },
   meta_tip: 'メタ情報を見る',
   meta_title: 'メタ情報',
+  meta_tab_overview: '概要',
   meta_desc_key: 'メタ情報名',
   meta_desc_value: 'メタ情報値',
   meta_value_click_to_copy: 'クリックしてコピー',

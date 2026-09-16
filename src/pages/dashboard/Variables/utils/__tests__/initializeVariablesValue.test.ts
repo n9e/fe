@@ -30,6 +30,7 @@ import initializeVariablesValue from '../initializeVariablesValue';
 import getValueByOptions from '../getValueByOptions';
 import adjustData from '../ajustData';
 import { formatString } from '../formatString';
+import type { IVariable } from '../../types';
 
 const createLocalStorageMock = () => {
   let storage: Record<string, string> = {};
@@ -106,7 +107,7 @@ describe('textbox variable empty value', () => {
 
   test('should keep empty string textbox defaultValue in fallback selection', () => {
     const value = getValueByOptions({
-      variableValueFixed: undefined as any,
+      variableValueFixed: false,
       variable: {
         name: 'input',
         definition: '',
@@ -123,7 +124,7 @@ describe('textbox variable empty value', () => {
 
   test('should preserve textbox value from URL during initialization execution', () => {
     const value = getValueByOptions({
-      variableValueFixed: undefined as any,
+      variableValueFixed: false,
       variable: {
         name: 'input',
         definition: '',
@@ -216,5 +217,58 @@ describe('textbox variable empty value', () => {
     });
 
     expect(formatString('${db}', data)).toBe('');
+  });
+});
+
+describe('variable value initialization priority', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  const queryVariable = (partial: Partial<IVariable> = {}): IVariable => ({
+    name: 'project',
+    definition: '',
+    type: 'query',
+    datasource: { cate: 'prometheus' },
+    ...partial,
+  });
+
+  test('uses the URL value before the cached value', () => {
+    localStorage.setItem('dashboard_v6_42_project', 'from-cache');
+
+    const result = initializeVariablesValue([queryVariable()], { project: 'from-url' }, { dashboardId: 42 });
+
+    expect(result[0].value).toBe('from-url');
+  });
+
+  test('restores a cached multi-value when the URL has no value', () => {
+    localStorage.setItem('dashboard_v6_42_project', '["project-1","project-2"]');
+
+    const result = initializeVariablesValue([queryVariable({ multi: true })], {}, { dashboardId: 42 });
+
+    expect(result[0].value).toEqual(['project-1', 'project-2']);
+  });
+
+  test('normalizes a cached datasource id to a number', () => {
+    localStorage.setItem('dashboard_v6_42_db', '2');
+    const datasourceVariable = {
+      name: 'db',
+      definition: 'gcm',
+      type: 'datasource',
+      datasource: { cate: 'prometheus' },
+    } as IVariable;
+
+    const result = initializeVariablesValue([datasourceVariable], {}, { dashboardId: 42 });
+
+    expect(result[0].value).toBe(2);
+  });
+
+  test('does not read the cache when fixed URL values are enabled', () => {
+    localStorage.setItem('dashboard_v6_42_project', 'from-cache');
+    localStorage.setItem('dashboard_v6_42_service', 'cached-service');
+
+    const result = initializeVariablesValue([queryVariable(), queryVariable({ name: 'service' })], { __variable_value_fixed: 'true', project: 'from-url' }, { dashboardId: 42 });
+
+    expect(result.map((variable) => variable.value)).toEqual(['from-url', undefined]);
   });
 });

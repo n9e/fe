@@ -423,7 +423,7 @@ function index(
             </div>
           )}
         </div>
-        {loaded && (
+        {(loaded || values.type === 'text' || values.type === 'iframe') && (
           <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
             {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
               <PanelEmpty values={values} bodyWrapRef={bodyWrapRef} />

@@ -1,4 +1,5 @@
 const ko_KR = {
+  "all_datasources": "모든 데이터 소스",
   "step_title": "설정 단계",
   "validate_metric_msg": "먼저 지표를 확인하세요",
   "smart_rule_limit_msg": "추가할 수 있는 지능형 알림 규칙 수가 한도에 도달했습니다. 고객 지원에 문의하세요",

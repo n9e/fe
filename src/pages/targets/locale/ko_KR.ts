@@ -85,6 +85,7 @@ const ko_KR = {
   },
   "meta_tip": "메타데이터 보기",
   "meta_title": "메타데이터",
+  "meta_tab_overview": "개요",
   "meta_desc_key": "메타데이터 이름",
   "meta_desc_value": "메타데이터 값",
   "meta_value_click_to_copy": "클릭해서 복사",

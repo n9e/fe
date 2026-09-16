@@ -25,6 +25,10 @@ export const tagClassesMap: Record<SectionItem['tag'], string> = {
   recommended: 'bg-amber-100 text-amber-800 border border-amber-200',
 };
 
+export function getTagClassName(tag: SectionItem['tag'], darkMode: boolean) {
+  return darkMode && tag === 'recommended' ? 'bg-yellow-900/10 text-yellow-1100 border border-yellow-900/20' : tagClassesMap[tag];
+}
+
 export const tagI18nKeys: Record<SectionItem['tag'], string> = {
   default: 'tag_default',
   core: 'tag_core',
@@ -58,6 +62,7 @@ export default function SectionCard(props: {
   const { t, i18n } = useTranslation('alertRules');
   const { darkMode } = useContext(CommonStateContext);
   const [collapsed, setCollapsed] = useState(props.collapsed ?? item.tag === 'optional');
+  const tagClassName = getTagClassName(item.tag, darkMode);
 
   // Sync with externally controlled collapsed prop
   useEffect(() => {
@@ -89,7 +94,7 @@ export default function SectionCard(props: {
             <div className='flex items-center gap-2'>
               <span className={classnames('pt-1', !collapsed ? 'text-[var(--fc-violet-11)]' : 'text-soft')}>{item.icon ?? sectionIcons[item.key]}</span>
               <div className='text-l1 font-bold text-title'>{item.title}</div>
-              <span className={'text-[10px] px-1.5 py-0.5 rounded leading-none ' + tagClassesMap[item.tag]}>{t(tagI18nKeys[item.tag])}</span>
+              <span className={'text-[10px] px-1.5 py-0.5 rounded leading-none ' + tagClassName}>{t(tagI18nKeys[item.tag])}</span>
             </div>
             <div className='text-[12px] text-soft pl-[22px] mt-0.5 font-normal'>
               {item.description}

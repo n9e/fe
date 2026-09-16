@@ -33,6 +33,7 @@ import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { getN9eConfig } from '@/pages/siteSettings/services';
 import { getDarkMode, updateDarkMode } from '@/utils/darkMode';
 import { getAntdLocale } from '@/utils/antdLocale';
+import { AlertSeverityNames, normalizeAlertSeverityNames, setAlertSeverityNames } from '@/utils/alertSeverity';
 import { AiChatProvider, AiChatContainer } from '@/components/AiChatNG';
 import { OnboardingActionsProvider, OnboardingActionModals } from '@/components/OnboardingActions';
 import HocRenderer from './components/HocRenderer';
@@ -72,6 +73,27 @@ interface Datasource {
   plugin_type: string;
   is_default: boolean;
   identifier?: string;
+}
+
+interface SiteInfo {
+  alert_severity_names?: AlertSeverityNames;
+  businessGroupDisplayMode?: string;
+  businessGroupSeparator?: string;
+  document_url?: string;
+  explorer_timeseries_legend_columns?: string[];
+  favicon_url?: string;
+  font_family?: string;
+  home_page_url?: string;
+  light_menu_big_logo_url?: string;
+  light_menu_small_logo_url?: string;
+  login_page_logo_url?: string;
+  menu_big_logo_url?: string;
+  menu_small_logo_url?: string;
+  page_title?: string;
+  site_url?: string;
+  teamDisplayMode?: string;
+  teamSeparator?: string;
+  [key: string]: unknown;
 }
 
 export interface ICommonState {
@@ -115,7 +137,8 @@ export interface ICommonState {
     plugins: any[];
   };
   isPlus: boolean;
-  siteInfo?: { [index: string]: string };
+  siteInfo?: SiteInfo;
+  alertSeverityNames: AlertSeverityNames;
   sideMenuBgMode: string;
   setSideMenuBgMode: (color: string) => void;
   darkMode: boolean;
@@ -231,6 +254,7 @@ function App() {
     screenTemplates: [],
     installTs: 0,
     logsDefaultRange: { start: 'now-1h', end: 'now' },
+    alertSeverityNames: {},
   });
 
   const removePreloader = () => {
@@ -250,7 +274,7 @@ function App() {
     try {
       (async () => {
         const iconLink = document.querySelector("link[rel~='icon']") as any;
-        let siteInfo;
+        let siteInfo: SiteInfo | undefined;
         const siteInfoStr = await getN9eConfig('site_info');
         if (siteInfoStr) {
           try {
@@ -259,6 +283,8 @@ function App() {
             console.error(e);
           }
         }
+        const alertSeverityNames = normalizeAlertSeverityNames(siteInfo?.alert_severity_names);
+        setAlertSeverityNames(alertSeverityNames);
         document.title = siteInfo?.page_title || 'Nightingale';
         if (iconLink) {
           iconLink.href = siteInfo?.favicon_url || '/image/favicon.ico';
@@ -305,6 +331,7 @@ function App() {
               versions,
               feats,
               siteInfo,
+              alertSeverityNames,
               perms,
             };
           });
@@ -318,6 +345,7 @@ function App() {
               groupedDatasourceList: _.groupBy(datasourceList, 'plugin_type'),
               datasourceList: datasourceList,
               siteInfo,
+              alertSeverityNames,
             };
           });
         }
