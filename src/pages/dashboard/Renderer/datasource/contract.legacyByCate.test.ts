@@ -225,13 +225,21 @@ describe('legacy dashboard query contract by cate', () => {
     tdengine: [{ query: { query: '   ' } }],
     ck: [{ query: { query: '   ' } }],
     mysql: [{ query: { query: '   ' } }],
+    doris: [{ query: { queryStrategy: 'sql', query: '   ' } }],
     pgsql: [{ query: { sql: '   ' } }],
     oracle: [{ query: { sql: '   ' } }],
     sqlserver: [{ query: { sql: '   ' } }],
     redshift: [{ query: { sql: '   ' } }],
     influxdb: [{ query: { sql: '   ' } }],
     'aliyun-sls': [{ query: { mode: 'timeSeries' } }],
+    'tencent-cls': [{ query: { mode: 'timeSeries' } }],
+    'volc-tls': [{ query: { mode: 'timeSeries' } }],
+    'huawei-lts': [{ query: { mode: 'timeSeries' } }],
+    'bce-bls': [{ query: { mode: 'timeSeries' } }],
     cloudwatchlogs: [{ query: { region: 'us-east-1', log_group_names: ['app'] } }],
+    zabbix: [{ query: { mode: 'timeseries', subMode: 'metrics' } }],
+    cloudwatch: [{ queries: [{ query_type: 'metric_search', metric_editor_mode: 0 }] }],
+    gcm: [{ query: { query_type: 'builder' } }],
   };
 
   it.each(Object.keys(brokenLegacyTargetByCate))('silently skips an unready legacy %s target', (cate) => {

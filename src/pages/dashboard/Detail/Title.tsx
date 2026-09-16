@@ -73,6 +73,8 @@ interface IProps {
   hideGoBack?: boolean;
   hideGoList?: boolean;
   hideTitle?: boolean;
+  /** 全屏展示时只保留仪表盘标题与时间选择器。 */
+  fullscreenHeaderOnly?: boolean;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
@@ -106,6 +108,7 @@ export default function Title(props: IProps) {
     hideGoBack,
     hideGoList,
     hideTitle,
+    fullscreenHeaderOnly = false,
   } = props;
   const history = useHistory();
   const location = useLocation();
@@ -221,6 +224,17 @@ export default function Title(props: IProps) {
       });
     }
   }, [__public__, dashboard?.group_id]);
+
+  if (fullscreenHeaderOnly) {
+    return (
+      <div className='dashboard-detail-header n9e-page-header-content'>
+        <div className='dashboard-detail-header-left'>{!hideTitle && <div className='title'>{dashboard.name}</div>}</div>
+        <div className='dashboard-detail-header-right'>
+          <Space>{timeRangePicker}</Space>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

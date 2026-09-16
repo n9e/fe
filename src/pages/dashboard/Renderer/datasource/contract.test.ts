@@ -600,6 +600,37 @@ describe('dashboard unified query contract', () => {
     expect(request.queries).toEqual([]);
   });
 
+  it('keeps ready mixed-datasource queries when an expression depends on an unready target', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'prometheus', id: 1 },
+          expr: 'up',
+        },
+        {
+          refId: 'B',
+          kind: 'query',
+          datasource: { cate: 'doris', id: 2 },
+          query: { queryStrategy: 'sql', query: '  ' },
+        },
+        { refId: 'C', kind: 'expression', expression: '$B * 100' },
+        { refId: 'D', kind: 'expression', expression: '$C + 1' },
+      ],
+      datasourceList: [],
+    });
+
+    // B 为空时，C、D 都无法在服务端执行；但 A 仍应正常请求，不能因表达式
+    // 的悬空依赖让整个 batch 被本地校验阻塞。
+    expect(request.queries).toMatchObject([{ kind: 'query', ref_id: 'A', datasource: { cate: 'prometheus', id: 1 } }]);
+    expect(request.queries).toHaveLength(1);
+  });
+
   it('falls back to the legacy panel datasource and skips unresolved defaults', () => {
     const options = {
       time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },

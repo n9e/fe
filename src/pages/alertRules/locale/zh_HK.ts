@@ -11,7 +11,7 @@ const zh_HK = {
   name_placeholder: '請輸入規則名稱',
   group_id_placeholder: '請選擇業務組',
   note_placeholder: '可填寫告警觸發時的處理建議、關聯文檔鏈接或值班安排等補充信息',
-  search_placeholder: '搜尋名稱或標籤',
+  search_placeholder: '搜尋名稱、標籤或查詢語句',
   status_triggered: '告警中',
   status_normal: '無告警',
   notify_rule_not_found: '未找到對應的通知規則',

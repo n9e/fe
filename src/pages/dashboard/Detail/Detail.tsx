@@ -41,7 +41,7 @@ import initializeVariablesValue from '@/pages/dashboard/Variables/utils/initiali
 import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import Variables, { IVariable } from '../Variables';
-import { ILink, IDashboardConfig, DashboardAnnotation, IPanel, JsonObject, JsonValue, ScopedVariables } from '../types';
+import { ILink, IDashboardConfig, DashboardAnnotation, IPanel, ITarget, JsonObject, JsonValue, ScopedVariables } from '../types';
 import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
@@ -49,8 +49,17 @@ import Editor from '../Editor';
 import { validateDashboardConfig } from '../utils/validateDashboardConfig';
 import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
 import { useGlobalState, DashboardMeta } from '../globalState';
-import { scrollToLastPanel, getDefaultTimeRange, getDefaultIntervalSeconds, getDefaultTimezone, dashboardTimeCacheKey, dashboardTimezoneCacheKey } from './utils';
+import {
+  scrollToLastPanel,
+  getDefaultTimeRange,
+  getDefaultIntervalSeconds,
+  getDefaultTimezone,
+  dashboardTimeCacheKey,
+  dashboardTimezoneCacheKey,
+  getFullscreenDisplayOptions,
+} from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
+import { resolveSharedPanelDatasource } from './utils/resolveSharedPanelDatasource';
 import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
 import './style.less';
 
@@ -139,6 +148,9 @@ export default function DetailV2(props: IProps) {
   const [, setParamsAiAction] = useParamsAiAction();
   let { id } = useParams<URLParam>();
   const query = queryString.parse(location.search) as Record<string, string | string[] | null | undefined>;
+  const fullscreenDisplayOptions = getFullscreenDisplayOptions(query);
+  const effectiveIsPreview = isPreview || fullscreenDisplayOptions.readonly;
+  const effectiveIsAuthorized = isAuthorized && !fullscreenDisplayOptions.readonly;
   if (isBuiltin) {
     id = builtinParamsToID(query as Record<string, string | (string | null)[] | null>);
   }
@@ -191,7 +203,7 @@ export default function DetailV2(props: IProps) {
         if (!validationResult.valid) {
           console.warn('Dashboard panels/variables config warnings:', validationResult.errors);
         }
-        if (configs.mode !== 'iframe' && (!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams) {
+        if (configs.mode !== 'iframe' && (!configs.version || semver.lt(configs.version, '3.0.0')) && !builtinParams && !effectiveIsPreview) {
           setMigrationVisible(true);
         }
         setDashboardMeta({
@@ -374,6 +386,10 @@ export default function DetailV2(props: IProps) {
 
   // `hideHeader` 为历史配置字段，现在仅控制仪表盘标题的显示。
   const shouldHideIframeTitle = dashboard.configs?.mode === 'iframe' && dashboard.configs?.hideHeader === true;
+  const showContentHeader =
+    !fullscreenDisplayOptions.isFullscreen || fullscreenDisplayOptions.showHeader || (dashboard.configs?.mode !== 'iframe' && fullscreenDisplayOptions.showVariables);
+  const showVariables = !fullscreenDisplayOptions.isFullscreen || fullscreenDisplayOptions.showVariables;
+  const showVariablesOnly = fullscreenDisplayOptions.isFullscreen && !fullscreenDisplayOptions.showHeader && fullscreenDisplayOptions.showVariables;
 
   return (
     <PageLayout customArea={<div />}>
@@ -388,86 +404,92 @@ export default function DetailV2(props: IProps) {
             <div
               className='dashboard-detail-content-header-container'
               style={{
-                display: query.viewMode !== 'fullscreen' ? 'block' : 'none',
+                display: showContentHeader ? 'block' : 'none',
                 paddingBottom: dashboard.configs?.mode === 'iframe' ? 0 : 16,
+                paddingTop: showVariablesOnly ? 16 : undefined,
               }}
             >
-              <Title
-                isPreview={isPreview}
-                isBuiltin={isBuiltin}
-                headerLeadingActions={headerLeadingActions}
-                isAuthorized={isAuthorized}
-                editable={editable}
-                updateAtRef={updateAtRef}
-                allowedLeave={allowedLeave}
-                hasUnsavedChanges={hasUnsavedChanges}
-                setAllowedLeave={setAllowedLeave}
-                setHasUnsavedChanges={setHasUnsavedChanges}
-                gobackPath={gobackPath}
-                dashboard={dashboard}
-                dashboardLinks={dashboardLinks}
-                setDashboardLinks={setDashboardLinks}
-                handleUpdateDashboardConfigs={handleUpdateDashboardConfigs as unknown as (id: number, params: Record<string, unknown>) => void}
-                range={range}
-                setRange={(v) => {
-                  setRange(v);
-                }}
-                timezone={timezone}
-                setTimezone={(newTimezone) => {
-                  setTimezone(newTimezone);
-                  window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
-                }}
-                intervalSeconds={intervalSeconds}
-                setIntervalSeconds={setIntervalSeconds}
-                onAddPanel={(type) => {
-                  if (type === 'row') {
-                    const newPanels = updatePanelsInsertNewPanelToGlobal(
-                      panels,
-                      {
-                        type: 'row',
-                        id: uuidv4(),
-                        name: t('visualizations.row'),
-                        collapsed: false,
-                      } as IPanel,
-                      'row',
-                    );
+              {(!fullscreenDisplayOptions.isFullscreen || fullscreenDisplayOptions.showHeader) && (
+                <Title
+                  isPreview={effectiveIsPreview}
+                  isBuiltin={isBuiltin}
+                  headerLeadingActions={headerLeadingActions}
+                  isAuthorized={effectiveIsAuthorized}
+                  editable={editable && !fullscreenDisplayOptions.readonly}
+                  updateAtRef={updateAtRef}
+                  allowedLeave={allowedLeave}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                  setAllowedLeave={setAllowedLeave}
+                  setHasUnsavedChanges={setHasUnsavedChanges}
+                  gobackPath={gobackPath}
+                  dashboard={dashboard}
+                  dashboardLinks={dashboardLinks}
+                  setDashboardLinks={setDashboardLinks}
+                  handleUpdateDashboardConfigs={handleUpdateDashboardConfigs as unknown as (id: number, params: Record<string, unknown>) => void}
+                  range={range}
+                  setRange={(v) => {
+                    setRange(v);
+                  }}
+                  timezone={timezone}
+                  setTimezone={(newTimezone) => {
+                    setTimezone(newTimezone);
+                    window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+                  }}
+                  intervalSeconds={intervalSeconds}
+                  setIntervalSeconds={setIntervalSeconds}
+                  onAddPanel={(type) => {
+                    if (type === 'row') {
+                      const newPanels = updatePanelsInsertNewPanelToGlobal(
+                        panels,
+                        {
+                          type: 'row',
+                          id: uuidv4(),
+                          name: t('visualizations.row'),
+                          collapsed: false,
+                        } as IPanel,
+                        'row',
+                      );
+                      setPanels(newPanels);
+                      handleUpdateDashboardConfigs(dashboard.id, {
+                        ...dashboard,
+                        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
+                      });
+                    } else {
+                      setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
+                    }
+                  }}
+                  onImportPanel={(panelConfig) => {
+                    const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelConfig, id: uuidv4() }, 'chart', false);
                     setPanels(newPanels);
+                    scrollToLastPanel(newPanels);
                     handleUpdateDashboardConfigs(dashboard.id, {
                       ...dashboard,
                       configs: panelsMergeToConfigs(dashboard.configs, newPanels),
                     });
-                  } else {
-                    setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
-                  }
-                }}
-                onImportPanel={(panelConfig) => {
-                  const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelConfig, id: uuidv4() }, 'chart', false);
-                  setPanels(newPanels);
-                  scrollToLastPanel(newPanels);
-                  handleUpdateDashboardConfigs(dashboard.id, {
-                    ...dashboard,
-                    configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                  });
-                }}
-                routerPromptRef={routerPromptRef as unknown as React.MutableRefObject<{ showPrompt: () => void }>}
-                hideGoBack={hideGoBack}
-                hideGoList={hideGoList}
-                hideTitle={shouldHideIframeTitle}
-              />
+                  }}
+                  routerPromptRef={routerPromptRef as unknown as React.MutableRefObject<{ showPrompt: () => void }>}
+                  hideGoBack={hideGoBack}
+                  hideGoList={hideGoList}
+                  hideTitle={shouldHideIframeTitle}
+                  fullscreenHeaderOnly={fullscreenDisplayOptions.isFullscreen}
+                />
+              )}
               {!editable && (
                 <div style={{ padding: '0px 10px', marginBottom: 8 }}>
                   <Alert type='warning' message={t('detail.expired')} />
                 </div>
               )}
               {dashboard.configs?.mode !== 'iframe' && (
-                <Variables
-                  editable={editable && isAuthorized}
-                  queryParams={query}
-                  onChange={handleVariableChange}
-                  onInitialized={() => {
-                    setVariablesInitialized(true);
-                  }}
-                />
+                <div style={{ display: showVariables ? 'block' : 'none' }}>
+                  <Variables
+                    editable={editable && effectiveIsAuthorized}
+                    queryParams={query}
+                    onChange={handleVariableChange}
+                    onInitialized={() => {
+                      setVariablesInitialized(true);
+                    }}
+                  />
+                </div>
               )}
             </div>
           </Affix>
@@ -475,8 +497,8 @@ export default function DetailV2(props: IProps) {
             <>
               <Panels
                 dashboardId={id}
-                isPreview={isPreview}
-                editable={editable}
+                isPreview={effectiveIsPreview}
+                editable={editable && !fullscreenDisplayOptions.readonly}
                 panels={panels}
                 setPanels={setPanels}
                 dashboard={dashboard}
@@ -492,41 +514,45 @@ export default function DetailV2(props: IProps) {
                   window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
                 }}
                 onShareClick={(panel) => {
-                  const resolvedTargets = _.map(panel.targets, (target) => {
+                  const resolvedTargets: ITarget[] = _.map(panel.targets, (target): ITarget => {
                     if (target.kind === 'expression' || target.__mode__ === '__expr__') {
                       return target;
                     }
+                    const datasourceId = target.datasource
+                      ? replaceDatasourceVariables(target.datasource.id, {
+                          datasourceList,
+                        })
+                      : undefined;
                     return {
                       ...target,
                       datasource: target.datasource
-                        ? {
-                            ...target.datasource,
-                            id: replaceDatasourceVariables(target.datasource.id, {
-                              datasourceList,
-                            }),
-                          }
+                        ? typeof datasourceId === 'number'
+                          ? {
+                              ...target.datasource,
+                              id: datasourceId,
+                            }
+                          : target.datasource
                         : target.datasource,
-                      expr: replaceTemplateVariables(target.expr as string, {
-                        range,
-                        scopedVars: panel.scopedVars,
-                      }),
-                      query: replaceTargetQueryVariables(target.query as unknown as JsonValue, range, panel.scopedVars),
-                      queries: replaceTargetQueryVariables(target.queries as unknown as JsonValue, range, panel.scopedVars),
+                      expr: target.expr
+                        ? replaceTemplateVariables(target.expr, {
+                            range,
+                            scopedVars: panel.scopedVars,
+                          })
+                        : target.expr,
+                      query: target.query ? (replaceTargetQueryVariables(target.query, range, panel.scopedVars) as JsonObject) : target.query,
+                      queries: target.queries ? (replaceTargetQueryVariables(target.queries, range, panel.scopedVars) as JsonObject[]) : target.queries,
                     };
                   });
-                  const resolvedDatasources = _.compact(
-                    _.map(resolvedTargets, (target) => {
-                      if (!target.datasource || typeof target.datasource.id !== 'number') return undefined;
-                      return _.find(datasourceList, { id: target.datasource.id });
-                    }),
-                  );
-                  const datasourceCates = _.uniq(_.map(resolvedDatasources, 'plugin_type'));
+                  const sharedDatasource = resolveSharedPanelDatasource(panel, resolvedTargets, datasourceList);
                   const serielData = {
                     dataProps: {
                       ...panel,
+                      // 版本属于仪表盘配置而非单个面板；临时图页据此区分旧版配置。
+                      version: dashboard.configs.version,
                       targets: resolvedTargets,
-                      datasourceCate: datasourceCates.length === 1 ? datasourceCates[0] : 'mixed',
-                      datasourceName: _.join(_.uniq(_.map(resolvedDatasources, 'name')), ', '),
+                      datasourceCate: sharedDatasource.datasourceCate,
+                      datasourceValue: sharedDatasource.datasourceValue,
+                      datasourceName: sharedDatasource.datasourceName,
                       range,
                     },
                   };
