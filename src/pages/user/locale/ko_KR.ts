@@ -10,6 +10,15 @@ const ko_KR = {
     "busi_groups": "비즈니스 그룹",
     "user_groups": "팀",
     "last_active_time": "마지막 활동 시각",
+    "status": "상태",
+    "status_normal": "정상",
+    "status_disabled": "비활성화됨",
+    "disable_action": "비활성화",
+    "enable_action": "활성화",
+    "disable_confirm": "사용자 {{username}} 을(를) 비활성화하시겠습니까? 비활성화하면 로그인할 수 없지만 권한 설정은 유지됩니다",
+    "enable_confirm": "사용자 {{username}} 을(를) 활성화하시겠습니까?",
+    "disable_success": "사용자를 비활성화했습니다",
+    "enable_success": "사용자를 활성화했습니다",
     "delete_success": "사용자를 삭제했습니다"
   },
   "team": {

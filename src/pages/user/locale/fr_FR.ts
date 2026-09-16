@@ -10,6 +10,15 @@ const fr_FR = {
     "busi_groups": "Groupe métier",
     "user_groups": "Équipe",
     "last_active_time": "Dernière activité",
+    "status": "Statut",
+    "status_normal": "Normal",
+    "status_disabled": "Désactivé",
+    "disable_action": "Désactiver",
+    "enable_action": "Activer",
+    "disable_confirm": "Désactiver l’utilisateur {{username}} ? Il ne pourra plus se connecter, ses droits sont conservés",
+    "enable_confirm": "Activer l’utilisateur {{username}} ?",
+    "disable_success": "Utilisateur désactivé",
+    "enable_success": "Utilisateur activé",
     "delete_success": "Utilisateur supprimé"
   },
   "team": {

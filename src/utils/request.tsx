@@ -100,6 +100,23 @@ const combineLoginURL = () => {
   return `${basePrefix}/login${location.pathname != '/' ? '?redirect=' + encodeURIComponent(location.pathname + location.search) : ''}`;
 };
 
+/**
+ * 会话已经不可用（过期、账号被禁用或删除）时统一走这里：先把失效的 token 从
+ * localStorage 清掉再跳登录页。留着它们的话，后续请求还会带上这份凭证继续 401，
+ * 页面容易在「重试 → 401」之间空转。isRedirectingToLogin 保证只跳一次——
+ * 一个页面上常有多个并发请求同时 401。
+ */
+let isRedirectingToLogin = false;
+
+const redirectToLogin = () => {
+  if (isRedirectingToLogin) return;
+  isRedirectingToLogin = true;
+
+  localStorage.removeItem(AccessTokenKey);
+  localStorage.removeItem('refresh_token');
+  location.href = combineLoginURL();
+};
+
 /** UpdateAccessToken 请求锁，确保同时只有一个刷新token的请求 */
 let updateAccessTokenPromise: Promise<any> | null = null;
 
@@ -220,14 +237,14 @@ request.interceptors.response.use(
         });
     } else if (status === 401 && !_.includes(response.url, '/api/n9e-plus/proxy') && !_.includes(response.url, '/api/n9e/proxy')) {
       if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
-        location.href = combineLoginURL();
+        redirectToLogin();
       } else {
         localStorage.getItem('refresh_token')
           ? updateAccessTokenWithLock()
               .then((res) => {
                 console.log('401 err', res);
                 if (res.err) {
-                  location.href = combineLoginURL();
+                  redirectToLogin();
                 } else {
                   const { access_token, refresh_token } = res.dat;
                   localStorage.setItem(AccessTokenKey, access_token);
@@ -236,9 +253,9 @@ request.interceptors.response.use(
                 }
               })
               .catch(() => {
-                location.href = combineLoginURL();
+                redirectToLogin();
               })
-          : (location.href = combineLoginURL());
+          : redirectToLogin();
       }
     } else if (
       status === 403 &&
