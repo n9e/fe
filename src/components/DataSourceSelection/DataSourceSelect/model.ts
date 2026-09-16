@@ -14,5 +14,5 @@ export function getDataSourceSelectOptions<T>(sources: DataSourceSelectSource<T>
     existingIds.add(value);
     options.push({ value, disabled: true, deleted: settled });
   }
-  return options;
+  return options.sort((a, b) => Number(a.disabled) - Number(b.disabled));
 }
