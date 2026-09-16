@@ -6,6 +6,7 @@ import useKeepMountedAfterFirstMeasure from '@/pages/logExplorer/utils/useKeepMo
 
 import Table from './Table';
 import Timeseries from './Timeseries';
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 
 import './style.less';
 
@@ -20,10 +21,11 @@ interface Props {
     value: string[];
     label: string[];
   };
+  queryRequest?: QueryRequest;
 }
 
 export default function index(props: Props) {
-  const { tableSelector, setExecuteLoading, executeQuery, timeseriesKeys } = props;
+  const { tableSelector, setExecuteLoading, executeQuery, timeseriesKeys, queryRequest } = props;
 
   const sqlVizType = Form.useWatch(['query', 'sqlVizType']);
   const timeSeriesEleRef = useRef<HTMLDivElement>(null);
@@ -35,7 +37,9 @@ export default function index(props: Props) {
       <Form.Item name={['query', 'sqlVizType']} initialValue='table' hidden>
         <div />
       </Form.Item>
-      {sqlVizType === 'table' && <Table tableSelector={tableSelector} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} executeQuery={executeQuery} />}
+      {sqlVizType === 'table' && (
+        <Table tableSelector={tableSelector} setExecuteLoading={setExecuteLoading} sqlVizType={sqlVizType} executeQuery={executeQuery} queryRequest={queryRequest} />
+      )}
       {sqlVizType === 'timeseries' && (
         <div ref={timeSeriesEleRef} className='w-full h-full min-h-0 flex flex-col'>
           {shouldMountTimeseries && (

@@ -31,6 +31,7 @@ import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 
 import { getPromData, setTmpChartData } from './services';
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { QueryStats } from './components/QueryStatsView';
 import LineGraphStandardOptions from './components/GraphStandardOptions';
 
@@ -61,6 +62,9 @@ interface IProps {
   seriesFilterText?: string;
   onSeriesFilterTextChange?: (value: string) => void;
   onQueryRequest?: () => void;
+  queryRequest?: QueryRequest;
+  queryPaused?: boolean;
+  onQueryContextChange?: () => void;
 }
 
 enum ChartType {
@@ -108,11 +112,13 @@ export default function Graph(props: IProps) {
     seriesFilterText,
     onSeriesFilterTextChange,
     onQueryRequest,
+    queryRequest,
+    queryPaused,
+    onQueryContextChange,
   } = props;
   const [data, setData] = useState<any[]>([]);
   const [zoomRangeState, setZoomRangeState] = useState<{ range: IRawTimeRange; sourceKey: string }>();
   const [resetZoomVersion, setResetZoomVersion] = useState(0);
-  const querySeqRef = useRef(0);
   const rangeKey = JSON.stringify(range);
   const zoomSourceKey = JSON.stringify({ datasourceValue, promql, range });
   const activeZoomRange = refetchOnZoom && zoomRangeState?.sourceKey === zoomSourceKey ? zoomRangeState.range : undefined;
@@ -170,6 +176,7 @@ export default function Graph(props: IProps) {
   const handleZoomWithoutDefault = useCallback(
     (times?: Date[]) => {
       if (!refetchOnZoom) return;
+      onQueryContextChange?.();
       if (times?.length === 2) {
         setZoomRangeState({
           range: {
@@ -183,11 +190,25 @@ export default function Graph(props: IProps) {
         setResetZoomVersion((v) => v + 1);
       }
     },
-    [refetchOnZoom, zoomSourceKey],
+    [refetchOnZoom, zoomSourceKey, onQueryContextChange],
   );
 
   useEffect(() => {
+    if (queryPaused || queryRequest?.signal.aborted) return;
+    if (!promql) {
+      setData([]);
+      setLoading(false);
+      return;
+    }
     if (datasourceValue && promql) {
+      const controller = new AbortController();
+      let settled = false;
+      const abort = () => {
+        controller.abort();
+        setLoading(false);
+        if (!settled) queryRequest?.complete(new DOMException('Query stopped', 'AbortError'));
+      };
+      queryRequest?.signal.addEventListener('abort', abort, { once: true });
       onQueryRequest?.();
       const parsedRange = parseRange(effectiveRange);
       const start = moment(parsedRange.start).unix();
@@ -199,21 +220,24 @@ export default function Graph(props: IProps) {
         toUnix: end,
       });
       const queryStart = Date.now();
-      const querySeq = ++querySeqRef.current;
       setLoading(true);
-      getPromData(`${url}/${datasourceValue}/api/v1/query_range`, {
-        query: interpolateString({
-          query: promql,
-          range: effectiveRange,
-          minStep,
-          maxDataPoints: maxDataPoints || panelWidth,
-        }),
-        start: moment(parsedRange.start).unix(),
-        end: moment(parsedRange.end).unix(),
-        step: realStep,
-      })
+      getPromData(
+        `${url}/${datasourceValue}/api/v1/query_range`,
+        {
+          query: interpolateString({
+            query: promql,
+            range: effectiveRange,
+            minStep,
+            maxDataPoints: maxDataPoints || panelWidth,
+          }),
+          start: moment(parsedRange.start).unix(),
+          end: moment(parsedRange.end).unix(),
+          step: realStep,
+        },
+        controller.signal,
+      )
         .then((res) => {
-          if (querySeq !== querySeqRef.current) return;
+          if (controller.signal.aborted) return;
           const series = _.map(res?.result, (item) => {
             return {
               id: _.uniqueId('series_'),
@@ -230,18 +254,26 @@ export default function Graph(props: IProps) {
 
           setData(series);
           setErrorContent('');
+          settled = true;
+          queryRequest?.complete({ empty: series.length === 0, count: series.length });
         })
         .catch((err) => {
-          if (querySeq !== querySeqRef.current) return;
+          if (controller.signal.aborted) return;
           const msg = _.get(err, 'message');
           setErrorContent(`Error executing query: ${msg}`);
+          settled = true;
+          queryRequest?.complete(err instanceof Error ? err : new Error(String(msg || err)));
         })
         .finally(() => {
-          if (querySeq !== querySeqRef.current) return;
+          if (controller.signal.aborted) return;
           setLoading(false);
         });
+      return () => {
+        queryRequest?.signal.removeEventListener('abort', abort);
+        abort();
+      };
     }
-  }, [effectiveRangeKey, minStep, maxDataPoints, datasourceValue, promql, refreshFlag, onQueryRequest]);
+  }, [effectiveRangeKey, minStep, maxDataPoints, datasourceValue, promql, refreshFlag, onQueryRequest, url, queryRequest, queryPaused]);
 
   return (
     <div className={activeZoomRange ? 'prom-graph-graph-container prom-graph-graph-zoom-owner' : 'prom-graph-graph-container'}>
