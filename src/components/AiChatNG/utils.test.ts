@@ -1,4 +1,4 @@
-import { applyStreamChunk } from './utils';
+import { applyStreamChunk, parseStreamEntry } from './utils';
 import { IAiChatStreamChunk, IAiChatStreamSegment } from './types';
 
 function seg(kind: 'thinking' | 'text', content: string, done: boolean): IAiChatStreamSegment {
@@ -116,5 +116,19 @@ describe('applyStreamChunk', () => {
       const result = applyStreamChunk([], chunk('step'));
       expect(result).toEqual([]);
     });
+  });
+});
+
+describe('parseStreamEntry', () => {
+  it('renders only message frames and ends on finish', () => {
+    expect(parseStreamEntry('event: start\ndata: null')).toEqual({ finished: false });
+    expect(parseStreamEntry('event: not_found\ndata: null')).toEqual({ finished: false });
+    expect(parseStreamEntry('data: {"p":"content","v":"up"}')).toEqual({ finished: false, chunk: { type: 'text', delta: 'up', content: 'up' } });
+    expect(parseStreamEntry('event: finish\ndata: null')).toEqual({ finished: true });
+  });
+
+  it('skips empty and null payloads instead of failing the turn', () => {
+    expect(parseStreamEntry('data:')).toEqual({ finished: false });
+    expect(parseStreamEntry('data: null')).toEqual({ finished: false });
   });
 });

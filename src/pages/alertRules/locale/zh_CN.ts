@@ -11,7 +11,7 @@ const zh_CN = {
   name_placeholder: '请输入规则名称',
   group_id_placeholder: '请选择业务组',
   note_placeholder: '可填写告警触发时的处理建议、关联文档链接或值班安排等补充信息',
-  search_placeholder: '搜索名称或标签',
+  search_placeholder: '搜索名称、标签或查询语句',
   status_triggered: '告警中',
   status_normal: '无告警',
   notify_rule_not_found: '未找到对应的通知规则',

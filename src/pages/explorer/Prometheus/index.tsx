@@ -5,19 +5,16 @@ import moment from 'moment';
 import _ from 'lodash';
 import { Space } from 'antd';
 import { FormInstance } from 'antd/lib/form/Form';
-import { useTranslation } from 'react-i18next';
 
 import { SIZE } from '@/utils/constant';
 import PromGraph from '@/components/PromGraphCpt';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
 
-import { AiButton } from '@/components/AiChatNG/FlashAiButton';
-import { buildPageFrom, getExplorerPrompts } from '@/components/AiChatNG/recommend';
-
 import { queryStringOptions } from '../constants';
 import ProbeBanner from '../components/ProbeBanner';
 import HistoricalRecords, { setLocalQueryHistory } from './HistoricalRecords';
+import { usePrometheusAiDock } from './aiDock';
 
 const LOCAL_KEY = 'n9e-query-promql-history';
 
@@ -64,7 +61,6 @@ export default function Prometheus(props: IProps) {
     defaultTime,
     onDefaultTimeChange,
   } = props;
-  const { i18n } = useTranslation();
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search, queryStringOptions);
@@ -73,6 +69,12 @@ export default function Prometheus(props: IProps) {
   const [promql, setPromql] = useState<string>(defaultPromQL);
   // 体检落地横幅：仅 __from=ds_verify 进入且首个面板展示；用户接管（改查询/点查询）或点 × 后收起
   const [probeBannerVisible, setProbeBannerVisible] = useState<boolean>(query.__from === 'ds_verify' && panelIdx === 0);
+  const ai = usePrometheusAiDock({
+    datasourceValue,
+    // Reaching for the assistant is taking over, the onboarding banner steps aside.
+    onTakeOver: () => setProbeBannerVisible(false),
+    onQuery: setPromql,
+  });
 
   useEffect(() => {
     if (query.__event_id) {
@@ -106,6 +108,8 @@ export default function Prometheus(props: IProps) {
   return (
     <>
       <PromGraph
+        controlRef={ai.controlRef}
+        onUserContextChange={ai.onUserContextChange}
         // key={promql} // 当存在 query.__event_id 时需要异步获取 datasourceValue 和 prom_ql，这时需要强制重新渲染
         type={query.mode as IMode}
         defaultType={defaultType}
@@ -143,14 +147,17 @@ export default function Prometheus(props: IProps) {
         showGlobalMetrics={showGlobalMetrics}
         showBuilder={showBuilder}
         noticeBanner={
-          probeBannerVisible ? (
-            <ProbeBanner
-              datasourceId={datasourceValue}
-              onClose={() => {
-                setProbeBannerVisible(false);
-              }}
-            />
-          ) : undefined
+          <>
+            {ai.dock}
+            {probeBannerVisible ? (
+              <ProbeBanner
+                datasourceId={datasourceValue}
+                onClose={() => {
+                  setProbeBannerVisible(false);
+                }}
+              />
+            ) : undefined}
+          </>
         }
         onChange={(newPromQL) => {
           if (newPromQL && newPromQL !== defaultPromQL) {
@@ -168,27 +175,10 @@ export default function Prometheus(props: IProps) {
             onDefaultTypeChange(newType);
           }
         }}
+        queryExtra={ai.trigger}
         extra={
           <Space size={SIZE}>
-            <AiButton
-              queryPageFrom={buildPageFrom({
-                param: {
-                  datasource_type: 'prometheus',
-                  datasource_id: datasourceValue,
-                },
-              })}
-              queryAction={{
-                key: 'query_generator',
-                param: {
-                  datasource_type: 'prometheus',
-                  datasource_id: datasourceValue,
-                },
-              }}
-              promptList={getExplorerPrompts(i18n.language)}
-              onExecuteQueryForQueryContent={(nextPromql) => {
-                setPromql(nextPromql);
-              }}
-            />
+            {ai.chatButton}
             <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} onChange={setPromql} />
           </Space>
         }

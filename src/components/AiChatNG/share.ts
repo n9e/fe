@@ -1,11 +1,13 @@
 import { message } from 'antd';
 import { copy2ClipBoard } from '@/utils';
+import { IS_ENT } from '@/utils/constant';
 
 export const aiChatShareQueryKey = 'ai_chat_share_id';
 export const aiChatShareReadonlyQueryKey = 'ai_chat_readonly';
 
 export function buildAiChatShareUrl(chatId: string): string {
   const url = new URL(window.location.pathname + window.location.search, window.location.origin);
+  url.pathname = IS_ENT ? '/flashai' : '/nightingale-ai';
   url.searchParams.set(aiChatShareQueryKey, chatId);
   url.searchParams.set(aiChatShareReadonlyQueryKey, '1');
   return url.toString();
