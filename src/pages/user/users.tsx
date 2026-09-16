@@ -340,7 +340,7 @@ const Resource: React.FC = () => {
                 })
               : undefined
           }
-          actionColumn={{ title: t('common:table.operations'), width: 100 }}
+          actionColumn={{ title: t('common:table.operations'), width: 130 }}
           {...tableProps}
           pagination={{
             ...tableProps.pagination,
