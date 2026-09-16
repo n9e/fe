@@ -15,6 +15,7 @@ import { Field, FieldSampleParams } from '../../types';
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
 import { getDorisIndex, buildSql } from '../../../services';
 import getMaxLabelWidth from '../QueryBuilder/utils/getMaxLabelWidth';
+import { getRangeHourBucket } from '../../utils/rangeHourBucket';
 
 import Filters from './Filters';
 import Aggregates from './Aggregates';
@@ -41,6 +42,11 @@ export default function index(props: Props) {
 
   const [form] = Form.useForm();
   const explorerRange = Form.useWatch(['query', 'range'], explorerForm);
+  // 每次渲染重算：相对范围解析出来的绝对窗口一直在走，跨小时才需要重取字段。
+  const parsedExplorerRange = explorerRange ? parseRange(explorerRange) : undefined;
+  const indexFrom = parsedExplorerRange ? moment(parsedExplorerRange.start).valueOf() : undefined;
+  const indexTo = parsedExplorerRange ? moment(parsedExplorerRange.end).valueOf() : undefined;
+  const rangeBucket = getRangeHourBucket(indexFrom, indexTo);
   const filters = Form.useWatch(['filters'], form);
   const aggregates = Form.useWatch(['aggregates'], form);
   const group_by = Form.useWatch(['group_by'], form);
@@ -65,16 +71,7 @@ export default function index(props: Props) {
   const indexDataService = () => {
     if (datasourceValue && database && table) {
       // 带上时间范围，后端据此把 DESC 裁到覆盖该范围的分区；不传则 DESC 整张表。
-      const range = explorerForm.getFieldValue(['query', 'range']);
-      const parsedRange = range ? parseRange(range) : undefined;
-      return getDorisIndex({
-        cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        database,
-        table,
-        from: parsedRange ? moment(parsedRange.start).valueOf() : undefined,
-        to: parsedRange ? moment(parsedRange.end).valueOf() : undefined,
-      })
+      return getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table, from: indexFrom, to: indexTo })
         .then((res) => {
           const timeField = form.getFieldValue('time_field');
           const fieldExists = _.some(res, (item) => item.field === timeField);
@@ -98,8 +95,7 @@ export default function index(props: Props) {
   };
 
   const { data: indexData = [] } = useRequest<Field[] | undefined, any>(indexDataService, {
-    // 时间范围变了要重新取：不同范围命中的分区不同，VARIANT 子字段也就不同。
-    refreshDeps: [datasourceValue, database, table, JSON.stringify(explorerRange)],
+    refreshDeps: [datasourceValue, database, table, rangeBucket],
   });
 
   const validIndexData = useMemo(() => {
