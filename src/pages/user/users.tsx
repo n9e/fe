@@ -281,6 +281,7 @@ const Resource: React.FC = () => {
           className='mt-2'
           size='small'
           rowKey='id'
+          scroll={{ x: 'max-content' }}
           columns={userColumns.filter((col) => {
             if (!('dataIndex' in col)) return true;
             if (col.dataIndex === 'operator') return true;
