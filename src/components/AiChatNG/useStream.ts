@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import i18next from 'i18next';
 import { basePrefix } from '@/App';
-import { AccessTokenKey } from '@/utils/constant';
+import { AccessTokenKey, IS_ENT } from '@/utils/constant';
 import { IAiChatStreamChunk } from './types';
-import { normalizeStreamChunk } from './utils';
+import { parseStreamEntry } from './utils';
 
 interface IUseAiChatStreamOptions {
   onChunk?: (chunk: IAiChatStreamChunk) => void;
   onFinish?: () => void;
   onError?: (error: Error) => void;
+  /** The connection ended before the finish frame: a proxy's idle limit, a dropped network. The turn may still be running. */
+  onClose?: () => void;
 }
 
 export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
-  const { onChunk, onFinish, onError } = options;
+  const { onChunk, onFinish, onError, onClose } = options;
   const abortControllerRef = useRef<AbortController | null>(null);
   const [streaming, setStreaming] = useState(false);
 
@@ -31,7 +33,9 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
       setStreaming(true);
 
       try {
-        const response = await fetch(`${basePrefix}/api/n9e/stream`, {
+        // The enterprise build talks to fc-model directly, the same host the
+        // chat's other calls use; the open-source build streams through n9e.
+        const response = await fetch(`${basePrefix}${IS_ENT ? '/api/fc-model/stream' : '/api/n9e/stream'}`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -51,6 +55,7 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
         const reader = response.body.getReader();
         const decoder = new TextDecoder('utf-8');
         let buffer = '';
+        let finished = false;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -61,29 +66,12 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
           buffer = chunks.pop() || '';
 
           chunks.forEach((entry) => {
-            const lines = entry
-              .split('\n')
-              .map((line) => line.trim())
-              .filter(Boolean);
-            if (!lines.length) return;
-
-            const eventLine = lines.find((line) => line.startsWith('event:'));
-            if (eventLine?.slice(6).trim() === 'finish') {
-              onFinish?.();
-              stop();
-              return;
-            }
-
-            const dataLine = lines.find((line) => line.startsWith('data:'));
-            if (!dataLine) return;
-
-            const payload = dataLine.slice(5).trim();
-            if (!payload) return;
-
             try {
-              const parsed = normalizeStreamChunk(JSON.parse(payload) as IAiChatStreamChunk);
-              onChunk?.(parsed);
-              if (parsed.done || parsed.type === 'done') {
+              const parsed = parseStreamEntry(entry);
+              const { chunk } = parsed;
+              if (chunk) onChunk?.(chunk);
+              if (parsed.finished || chunk?.done || chunk?.type === 'done') {
+                finished = true;
                 onFinish?.();
                 stop();
               }
@@ -91,6 +79,10 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
               onError?.(error instanceof Error ? error : new Error('stream parse failed'));
             }
           });
+        }
+        if (!finished) {
+          stop();
+          onClose?.();
         }
       } catch (error) {
         if ((error as Error)?.name === 'AbortError') {
@@ -101,7 +93,7 @@ export function useAiChatStream(options: IUseAiChatStreamOptions = {}) {
         stop();
       }
     },
-    [onChunk, onError, onFinish, stop],
+    [onChunk, onClose, onError, onFinish, stop],
   );
 
   useEffect(() => {

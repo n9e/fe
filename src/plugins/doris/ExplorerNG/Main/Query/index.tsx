@@ -16,6 +16,7 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
 import filteredFields from '../../utils/filteredFields';
@@ -49,6 +50,8 @@ interface Props {
   setOrganizeFields: (value: string[]) => void;
   handleValueFilter: HandleValueFilterParams;
   setExecuteLoading: (loading: boolean) => void;
+  /** Whoever asked for this run, told what it returned. */
+  queryRequest?: QueryRequest;
   executeQuery: () => void;
 
   stackByField?: string;
@@ -73,6 +76,7 @@ export default function index(props: Props) {
     setOrganizeFields,
     handleValueFilter,
     setExecuteLoading,
+    queryRequest,
     executeQuery,
     stackByField,
     setStackByField,
@@ -195,6 +199,7 @@ export default function index(props: Props) {
               ___id___: _.uniqueId('log_id_'),
             };
           });
+          if (!queryRequest?.signal.aborted) queryRequest?.complete({ empty: newLogs.length === 0, count: res.total ?? newLogs.length });
           if (appendRef.current) {
             appendRef.current = false;
             const nextHighlights: HighlightMap[] = _.map(res.list, (item) => item[HIGHLIGHT_FIELD] || {});
@@ -220,7 +225,12 @@ export default function index(props: Props) {
             };
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          if (!queryRequest?.signal.aborted) {
+            const message = String(error?.message ?? error);
+            // An empty window comes back as an error, "no data"; to whoever asked for the run it is a result.
+            queryRequest?.complete(/no data/i.test(message) ? { empty: true, count: 0 } : error instanceof Error ? error : new Error(message));
+          }
           loadTimeRef.current = null;
           return {
             list: [],

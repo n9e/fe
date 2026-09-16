@@ -18,6 +18,7 @@ import SQLMain from './SQL';
 import SQLQueryInput from './SQL/QueryInput';
 import QueryQueryInput from './Query/QueryInput';
 import QueryBuilder from './SQL/QueryBuilder';
+import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 
 interface Props {
   tabKey: string;
@@ -33,6 +34,15 @@ interface Props {
   setStackByField: (field?: string) => void;
   defaultSearchField?: string;
   setDefaultSearchField: (field?: string) => void;
+
+  /** The AI dock, when this build hosts one: trigger in the SQL box, dock under it. */
+  queryExtra?: React.ReactNode;
+  noticeBanner?: React.ReactNode;
+  queryBoxRef?: React.Ref<HTMLDivElement>;
+  queryButtonRef?: React.Ref<HTMLButtonElement>;
+  queryRequest?: QueryRequest;
+  onQueryEdit?: (sql?: string) => void;
+  keepEditorInFlow?: boolean;
 }
 
 const queryBuilderPinnedCache = window.localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY);
@@ -53,6 +63,13 @@ export default function index(props: Props) {
     setStackByField,
     defaultSearchField,
     setDefaultSearchField,
+    queryExtra,
+    noticeBanner,
+    queryBoxRef,
+    queryButtonRef,
+    queryRequest,
+    onQueryEdit,
+    keepEditorInFlow,
   } = props;
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
   const logsRgdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table`;
@@ -126,7 +143,16 @@ export default function index(props: Props) {
               <div />
             </Form.Item>
             {syntax === 'query' && (
-              <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} defaultSearchField={defaultSearchField} setDefaultSearchField={setDefaultSearchField} />
+              <QueryQueryInput
+                snapRangeRef={snapRangeRef}
+                executeQuery={executeQuery}
+                defaultSearchField={defaultSearchField}
+                setDefaultSearchField={setDefaultSearchField}
+                queryExtra={queryExtra}
+                noticeBanner={noticeBanner}
+                queryBoxRef={queryBoxRef}
+                onQueryEdit={onQueryEdit}
+              />
             )}
             {syntax === 'sql' && (
               <SQLQueryInput
@@ -138,6 +164,11 @@ export default function index(props: Props) {
                 onLableClick={() => {
                   setQueryBuilderVisible(!queryBuilderVisible);
                 }}
+                queryExtra={queryExtra}
+                noticeBanner={noticeBanner}
+                queryBoxRef={queryBoxRef}
+                onQueryEdit={onQueryEdit}
+                keepEditorInFlow={keepEditorInFlow}
               />
             )}
           </Col>
@@ -177,6 +208,7 @@ export default function index(props: Props) {
           <Col flex='none'>
             <Badge dot={isContentChangedDotVisible}>
               <Button
+                ref={queryButtonRef}
                 type='primary'
                 onClick={() => {
                   setIsContentChangedDotVisible(false);
@@ -243,6 +275,7 @@ export default function index(props: Props) {
           stackByField={stackByField}
           setStackByField={setStackByField}
           defaultSearchField={defaultSearchField}
+          queryRequest={queryRequest}
         />
       )}
       {syntax === 'sql' && (
@@ -254,6 +287,7 @@ export default function index(props: Props) {
           setExecuteLoading={setExecuteLoading}
           executeQuery={executeQuery}
           timeseriesKeys={timeseriesKeys}
+          queryRequest={queryRequest}
         />
       )}
     </div>
