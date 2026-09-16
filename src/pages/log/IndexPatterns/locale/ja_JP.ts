@@ -7,7 +7,8 @@ const ja_JP = {
   name: '名前',
   name_msg1: '名前を入力してください',
   name_msg2: '同名の規則が既に存在します',
-  time_field: '時間フィールド',
+  time_field: '日付フィールド',
+  time_field_msg: '日付フィールドを選択してください',
   allow_hide_system_indices: 'システムインデックスを非表示にする',
   create_btn: 'インデックスパターンを作成',
   create_title: 'インデックスパターンを作成',
@@ -83,7 +84,8 @@ const ja_JP = {
   '可以对日志中字段通过正则提取生成新字段，跳转链接中可以使用新字段。': 'ログフィールドから正規表現を使用して新しいフィールドを抽出し、ジャンプリンクで使用できます。',
   '只会提取一次，如需多次提取可以配置多行': '一度だけ抽出されます。数回抽出する必要がある場合は、数行を設定できます。',
   'log-reg-extract': "例：address フィールド17:356:256291904:1740920581 が ':(d+)$' の抽出後、新しいフィールドphone 1740920581を生成",
-  'link-tip-time-format': 'デフォルトの単位はミリ秒です。フォーマットが必要な場合は$__time_format__を使用できます。フォーマットにはunix、utc、YYYY-MM-DD HH:mm:ssなどが含まれます。',
+  'link-tip-time-format':
+    'デフォルトの単位はミリ秒です。フォーマットが必要な場合は$__time_format__を使用できます。フォーマットにはunix、utc、YYYY-MM-DD HH:mm:ssなどが含まれます。',
   field: {
     alias1: 'リンク別名',
     fieldPlaceholder: 'フィールドを選択してください',
