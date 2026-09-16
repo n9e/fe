@@ -121,7 +121,7 @@ const valueFormatter = ({ unit, decimals = 6, dateFormat = 'YYYY-MM-DD HH:mm:ss'
         maximumFractionDigits: decimals,
       }).format(valNum);
       return {
-        value: valNum,
+        value: text,
         unit: '',
         text,
         stat: valNum,
