@@ -10,6 +10,15 @@ const id_ID = {
     "busi_groups": "Grup bisnis",
     "user_groups": "Tim",
     "last_active_time": "Terakhir aktif",
+    "status": "Status",
+    "status_normal": "Normal",
+    "status_disabled": "Dinonaktifkan",
+    "disable_action": "Nonaktifkan",
+    "enable_action": "Aktifkan",
+    "disable_confirm": "Nonaktifkan pengguna {{username}}? Pengguna tidak dapat masuk, hak akses tetap dipertahankan",
+    "enable_confirm": "Aktifkan pengguna {{username}}?",
+    "disable_success": "Pengguna dinonaktifkan",
+    "enable_success": "Pengguna diaktifkan",
     "delete_success": "Pengguna berhasil dihapus"
   },
   "team": {

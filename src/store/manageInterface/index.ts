@@ -37,6 +37,8 @@ export interface User {
   update_by: number;
   /** 账号来源，SSO 同步的账号为 ldap/oidc/cas/oauth2 等，本地创建的账号为空字符串 */
   belong: string;
+  /** 账号状态，0 正常、1 已禁用；已禁用的账号不能登录，也不能用已有凭证访问接口 */
+  disabled: number;
   busi_groups?: null | { id: number; name: string }[];
 }
 export interface Team {
