@@ -20,6 +20,29 @@ type LegacyDashboardDatasourceConfig = {
 
 const getQueryValue = (value: DashboardLocationQuery[string]): string | undefined => (typeof value === 'string' ? value : undefined);
 
+export interface FullscreenDisplayOptions {
+  isFullscreen: boolean;
+  showHeader: boolean;
+  showVariables: boolean;
+  readonly: boolean;
+}
+
+/**
+ * 解析全屏仪表盘的展示控制参数。
+ * 这些参数仅在 `viewMode=fullscreen` 时生效，且必须显式传入字符串 `true`。
+ */
+export const getFullscreenDisplayOptions = (query: DashboardLocationQuery): FullscreenDisplayOptions => {
+  const isFullscreen = getQueryValue(query.viewMode) === 'fullscreen';
+  const isEnabled = (name: '__show_header' | '__show_variables' | '__readonly') => getQueryValue(query[name]) === 'true';
+
+  return {
+    isFullscreen,
+    showHeader: isFullscreen && isEnabled('__show_header'),
+    showVariables: isFullscreen && isEnabled('__show_variables'),
+    readonly: isFullscreen && isEnabled('__readonly'),
+  };
+};
+
 export const getLocalDatasourceValue = (search: string, groupedDatasourceList: GroupedDatasourceList) => {
   const locationQuery = queryString.parse(search);
   const urlValue = _.get(locationQuery, '__datasourceValue');

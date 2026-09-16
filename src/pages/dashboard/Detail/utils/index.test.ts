@@ -13,11 +13,54 @@ jest.mock('@/components/TimeRangePicker', () => ({
   isValid: jest.fn(),
 }));
 
-import { getDatasourceValue } from './index';
+import { getDatasourceValue, getFullscreenDisplayOptions } from './index';
 
 describe('getDatasourceValue', () => {
   it('resolves v5 datasource names to IDs and leaves unknown names unresolved', () => {
     expect(getDatasourceValue({ version: '2.0.0', datasourceValue: 'prom-main' }, [{ id: 7, name: 'prom-main' }] as never)).toBe(7);
     expect(getDatasourceValue({ version: '2.0.0', datasourceValue: 'missing' }, [{ id: 7, name: 'prom-main' }] as never)).toBeUndefined();
+  });
+});
+
+describe('getFullscreenDisplayOptions', () => {
+  it('keeps the existing fullscreen defaults when no display parameters are provided', () => {
+    expect(getFullscreenDisplayOptions({ viewMode: 'fullscreen' })).toEqual({
+      isFullscreen: true,
+      showHeader: false,
+      showVariables: false,
+      readonly: false,
+    });
+  });
+
+  it('enables each explicit fullscreen display parameter', () => {
+    expect(
+      getFullscreenDisplayOptions({
+        viewMode: 'fullscreen',
+        __show_header: 'true',
+        __show_variables: 'true',
+        __readonly: 'true',
+      }),
+    ).toEqual({
+      isFullscreen: true,
+      showHeader: true,
+      showVariables: true,
+      readonly: true,
+    });
+  });
+
+  it('only accepts the exact string true and ignores the parameters outside fullscreen mode', () => {
+    expect(
+      getFullscreenDisplayOptions({
+        viewMode: 'normal',
+        __show_header: 'true',
+        __show_variables: 'TRUE',
+        __readonly: ['true'],
+      }),
+    ).toEqual({
+      isFullscreen: false,
+      showHeader: false,
+      showVariables: false,
+      readonly: false,
+    });
   });
 });

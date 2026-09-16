@@ -291,6 +291,82 @@ describe('dashboard useQuery', () => {
     }
   });
 
+  it('does not send an incomplete mixed-datasource target and requests once after it becomes ready', async () => {
+    jest.useFakeTimers();
+    try {
+      fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
+      const emptyDorisTarget = {
+        refId: 'B',
+        kind: 'query' as const,
+        datasource: { cate: 'doris', id: 2 },
+        query: { queryStrategy: 'sql', query: '' },
+      };
+      const { result, rerender } = renderUseQuery({
+        datasourceCate: 'mixed',
+        datasourceValue: 'mixed',
+        targets: [createMockTarget(), emptyDorisTarget],
+      });
+
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+
+      // A 可查询时仍发送 batch；未填写 SQL 的 Doris target 不得混入请求。
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+      expect(fetchDashboardQueryMock.mock.calls[0][0].queries).toMatchObject([{ ref_id: 'A' }]);
+      expect(fetchDashboardQueryMock.mock.calls[0][0].queries).toHaveLength(1);
+      expect(result.current.loaded).toBe(true);
+
+      rerender({
+        ...baseProps,
+        datasourceCate: 'mixed',
+        datasourceValue: 'mixed',
+        targets: [createMockTarget(), { ...emptyDorisTarget, query: { queryStrategy: 'sql', query: 'SELECT ts, value FROM metrics' } }],
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(2);
+      expect(fetchDashboardQueryMock.mock.calls[1][0].queries).toMatchObject([
+        { ref_id: 'A', datasource: { cate: 'prometheus', id: 1 } },
+        { ref_id: 'B', datasource: { cate: 'doris', id: 2 }, query: { sql: 'SELECT ts, value FROM metrics' } },
+      ]);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('settles an all-unready panel without issuing a batch request', async () => {
+    jest.useFakeTimers();
+    try {
+      const { result } = renderUseQuery({
+        datasourceCate: 'mixed',
+        datasourceValue: 'mixed',
+        targets: [
+          {
+            refId: 'B',
+            kind: 'query',
+            datasource: { cate: 'doris', id: 2 },
+            query: { queryStrategy: 'sql', query: '' },
+          },
+        ],
+      });
+
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+
+      expect(fetchDashboardQueryMock).not.toHaveBeenCalled();
+      expect(result.current).toMatchObject({ loading: false, loaded: true, series: [], error: '' });
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('defers the request while the panel is out of viewport', async () => {
     jest.useFakeTimers();
     try {

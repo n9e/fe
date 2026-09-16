@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import moment from 'moment';
 
 import Main from './Main';
@@ -74,4 +74,42 @@ test('text panel renders its body before the query state is loaded', () => {
 
   expect(screen.getByText('$project')).toBeInTheDocument();
   expect(document.querySelector('.renderer-body')).toBeInTheDocument();
+});
+
+test('anonymous-share-equivalent panels keep read-only actions but hide edit and delete', () => {
+  render(
+    <Main
+      id='readonly-panel'
+      panelWidth={400}
+      values={
+        {
+          id: 'readonly-panel',
+          type: 'text',
+          name: 'Read-only panel',
+          description: '',
+          layout: { h: 4, w: 12, x: 0, y: 0, i: 'readonly-panel' },
+          targets: [{ refId: 'A' }],
+          custom: { content: 'readonly' },
+          options: {},
+          overrides: [],
+        } satisfies IPanel
+      }
+      annotations={[]}
+      controllersVisible
+      isAuthorized={false}
+      queryResult={queryResult}
+      containerEleRef={{ current: document.body as HTMLDivElement }}
+      time={time}
+      inspect={false}
+      setInspect={jest.fn()}
+      setViewModalVisible={jest.fn()}
+    />,
+  );
+
+  fireEvent.click(document.querySelector('.renderer-header-controller')!);
+
+  expect(screen.getByText('common:btn.view')).toBeInTheDocument();
+  expect(screen.getByText('refresh_btn')).toBeInTheDocument();
+  expect(screen.queryByText('common:btn.edit')).not.toBeInTheDocument();
+  expect(screen.queryByText('common:btn.delete')).not.toBeInTheDocument();
 });

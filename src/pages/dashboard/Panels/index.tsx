@@ -40,6 +40,7 @@ import {
   panelsMergeToConfigs,
   getRowCollapsedPanels,
   getRowUnCollapsedPanels,
+  canEditPanelLayout,
 } from './utils';
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
@@ -102,6 +103,7 @@ function index(props: IProps) {
   } = props;
   const roles = _.get(profile, 'roles', []);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
+  const layoutEditable = canEditPanelLayout(editable, isAuthorized);
   const layoutInitialized = useRef(false);
   const allowUpdateDashboardConfigs = useRef(false);
   const reactGridLayoutDefaultProps = {
@@ -211,7 +213,8 @@ function index(props: IProps) {
   return (
     <div className='dashboards-panels'>
       <ReactGridLayout
-        layout={buildLayout(panels)}
+        layout={buildLayout(panels, !layoutEditable)}
+        isDraggable={layoutEditable}
         onLayoutChange={(layout: Layout[]) => {
           if (layoutInitialized.current) {
             const newPanels = sortPanelsByGridLayout(updatePanelsLayout(panels, layout));

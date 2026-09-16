@@ -122,9 +122,10 @@ export default function useQuery(props: IProps) {
             errorsByRef: {},
             error: '',
             loading: false,
-            loaded: false,
+            loaded: true,
             range: time,
           }));
+          loadedKeyRef.current = getQueryKey();
           return;
         }
         const response = await fetchDashboardQuery(requestData, controller.signal);
