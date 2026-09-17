@@ -25,29 +25,26 @@ AiChat 是一个 AI 对话组件，提供以下能力：
 
 AiChat 默认导出组件的入参如下：
 
-| 参数名                | 类型                        | 必填 | 说明                                                              |
-| --------------------- | --------------------------- | ---- | ----------------------------------------------------------------- |
-| className             | string                      | 否   | 外层容器 className                                                |
-| placeholder           | string                      | 否   | 输入框占位文案。未传时使用组件内置 i18n 文案                      |
-| chatId                | string                      | 否   | 当前会话 ID。传入时加载指定会话；不传时在首次发送消息时创建会话   |
-| queryPageFrom         | IAiChatPageInfo             | 是   | 消息查询请求里的 page_from 参数，同时用于创建会话时传递页面上下文 |
-| queryAction           | IAiChatAction               | 否   | 消息查询请求里的 action 参数，用于约束 AI 在当前场景的行为        |
-| welcomeSlot           | React.ReactNode \| `(onPromptClick) => React.ReactNode` | 否   | 自定义空态欢迎区；函数形式可通过 `onPromptClick` 发送推荐问题。未传时使用内置欢迎内容 |
-| promptList            | string[]                    | 否   | 空态下展示的推荐提示词                                            |
-| onExecuteQueryForQueryContent | (query, context) => void | 否   | 当 response 中出现 `content_type: "query"` 时，点击“执行查询”回调 |
-| onChatChange          | (chat?) => void             | 否   | 当前会话变化时触发                                                |
-| onError               | (error) => void             | 否   | 组件内部接口或流式异常回调                                        |
+| 参数名        | 类型                                                    | 必填 | 说明                                                                                  |
+| ------------- | ------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------- |
+| className     | string                                                  | 否   | 外层容器 className                                                                    |
+| placeholder   | string                                                  | 否   | 输入框占位文案。未传时使用组件内置 i18n 文案                                          |
+| chatId        | string                                                  | 否   | 当前会话 ID。传入时加载指定会话；不传时在首次发送消息时创建会话                       |
+| queryPageFrom | IAiChatPageInfo                                         | 是   | 消息查询请求里的 page_from 参数，同时用于创建会话时传递页面上下文                     |
+| queryAction   | IAiChatAction                                           | 否   | 消息查询请求里的 action 参数，用于约束 AI 在当前场景的行为                            |
+| welcomeSlot   | React.ReactNode \| `(onPromptClick) => React.ReactNode` | 否   | 自定义空态欢迎区；函数形式可通过 `onPromptClick` 发送推荐问题。未传时使用内置欢迎内容 |
+| promptList    | string[]                                                | 否   | 空态下展示的推荐提示词                                                                |
+| onChatChange  | (chat?) => void                                         | 否   | 当前会话变化时触发                                                                    |
+| onError       | (error) => void                                         | 否   | 组件内部接口或流式异常回调                                                            |
 
 ### 关键类型
 
-| 类型                        | 说明                                 |
-| --------------------------- | ------------------------------------ |
-| IAiChatPageInfo             | 页面来源信息，包含 url 和可选 param |
-| IAiChatAction               | AI 动作定义，包含 key 和 param       |
-| IAiChatHistoryItem          | 历史会话项结构                       |
-| IAiChatMessage              | 单条消息完整结构                     |
-| IAiChatQueryContentContext  | query 内容块回调接收到的上下文对象   |
-| AiChatExecuteQueryForQueryContent | query 内容块执行回调签名        |
+| 类型               | 说明                                |
+| ------------------ | ----------------------------------- |
+| IAiChatPageInfo    | 页面来源信息，包含 url 和可选 param |
+| IAiChatAction      | AI 动作定义，包含 key 和 param      |
+| IAiChatHistoryItem | 历史会话项结构                      |
+| IAiChatMessage     | 单条消息完整结构                    |
 
 ## 文件结构
 
@@ -75,20 +72,20 @@ src/components/AiChat/
 
 ## 文件说明
 
-| 文件                                 | 说明                                                                |
-| ------------------------------------ | ------------------------------------------------------------------- |
-| index.tsx                            | 组件入口壳层，负责工具栏、历史页与当前 ChatPanel 的视图切换         |
-| ChatPanel.tsx                        | 单会话聊天面板，负责消息发送、懒创建会话、轮询和流式更新            |
-| ChatHistory.tsx                      | 会话历史列表页，负责历史接口拉取、删除、选择会话                    |
-| ToolsBar.tsx                         | 顶部操作栏，提供当前会话、新建会话、历史会话切换                    |
-| MessageBlocks.tsx                    | 各类消息块渲染逻辑，包括 cur_step 状态、markdown、thinking、hint 等 |
-| QueryContentBlock.tsx               | 内置 query（PromQL）内容块渲染与执行回调入口                        |
-| services.ts                          | 与 AI 助手后端接口交互的 request 封装                               |
-| useStream.ts                         | 流式响应消费 Hook，负责处理 SSE 数据                                |
-| utils.ts                             | 通用工具方法，如 className 合并、时间格式化、消息合并               |
-| types.ts                             | 组件公开类型与内部数据结构定义                                      |
-| locale/\*                            | 组件命名空间 AiChat 的多语言文案                                    |
-| ai-chat.md                           | 前后端交互协议和接口说明                                            |
+| 文件                  | 说明                                                                |
+| --------------------- | ------------------------------------------------------------------- |
+| index.tsx             | 组件入口壳层，负责工具栏、历史页与当前 ChatPanel 的视图切换         |
+| ChatPanel.tsx         | 单会话聊天面板，负责消息发送、懒创建会话、轮询和流式更新            |
+| ChatHistory.tsx       | 会话历史列表页，负责历史接口拉取、删除、选择会话                    |
+| ToolsBar.tsx          | 顶部操作栏，提供当前会话、新建会话、历史会话切换                    |
+| MessageBlocks.tsx     | 各类消息块渲染逻辑，包括 cur_step 状态、markdown、thinking、hint 等 |
+| QueryContentBlock.tsx | 内置 query（PromQL）内容块渲染与复制                                |
+| services.ts           | 与 AI 助手后端接口交互的 request 封装                               |
+| useStream.ts          | 流式响应消费 Hook，负责处理 SSE 数据                                |
+| utils.ts              | 通用工具方法，如 className 合并、时间格式化、消息合并               |
+| types.ts              | 组件公开类型与内部数据结构定义                                      |
+| locale/\*             | 组件命名空间 AiChat 的多语言文案                                    |
+| ai-chat.md            | 前后端交互协议和接口说明                                            |
 
 ## i18n 说明
 
@@ -104,10 +101,10 @@ src/components/AiChat/
 - 当消息完成或进入错误态后，这一行状态提示会自动隐藏
 - 如果某条消息暂无 `response` 内容但仍在处理中，也会优先展示该状态行
 
-## Query 内容块回调
+## Query 内容块
 
 - 当后端返回的 `response` 中包含 `content_type: "query"` 时，组件会内置渲染 PromQL 卡片
-- 点击“执行查询”会触发 `onExecuteQueryForQueryContent(query, context)`，由业务侧决定如何回填/执行
+- 卡片支持复制查询语句
 
 ## FormSelect 内容块（form_select）
 
@@ -136,8 +133,5 @@ import AiChat from '@/components/AiChat';
     },
   }}
   promptList={['帮我生成一条 CPU 使用率查询']}
-  onExecuteQueryForQueryContent={(promql) => {
-    console.log(promql);
-  }}
 />;
 ```

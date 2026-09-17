@@ -176,13 +176,6 @@ export interface IAiChatHiddenFeature {
   header?: boolean;
 }
 
-export interface IAiChatQueryContentContext {
-  message: IAiChatMessage;
-  response: IAiChatMessageResponse;
-}
-
-export type AiChatExecuteQueryForQueryContent = (query: string, context: IAiChatQueryContentContext) => void;
-
 /** One user turn as the panel sees it: running from the moment the message is
  *  accepted, done once the backend marks it finished, stopped or failed. */
 export interface IAiChatTurn {
@@ -246,7 +239,6 @@ export interface IAiChatProps {
   initialMessage?: string;
   /** Reference this skill in the first accepted message of a conversation. */
   initialSkill?: string;
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;
   onError?: (error: Error) => void;
 }

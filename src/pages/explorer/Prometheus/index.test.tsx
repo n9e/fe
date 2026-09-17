@@ -5,25 +5,14 @@ import type { FormInstance } from 'antd/lib/form/Form';
 
 import type PromGraph from '@/components/PromGraphCpt';
 import type AiQueryDock from '@/components/AiQueryDock';
-import type { AiButton } from '@/components/AiChatNG/FlashAiButton';
-import type { IAiChatQueryContentContext } from '@/components/AiChatNG/types';
 import type { useQueryDockActions } from '@/components/AiQueryDock/useQueryDockActions';
 import Prometheus from './index';
 
 type PromGraphProps = React.ComponentProps<typeof PromGraph>;
 type AiQueryDockProps = React.ComponentProps<typeof AiQueryDock>;
-type AiButtonProps = React.ComponentProps<typeof AiButton>;
 type AiActionsOptions = Parameters<typeof useQueryDockActions>[0];
 
-// Which build we are: the page reads IS_ENT at render time, so a getter lets
-// each test pick the build without reloading the module.
-const mockMode = { isEnt: false };
-jest.mock('@/utils/constant', () => ({
-  SIZE: 8,
-  get IS_ENT() {
-    return mockMode.isEnt;
-  },
-}));
+jest.mock('@/utils/constant', () => ({ SIZE: 8, IS_ENT: false }));
 
 // The graph is the page's only child that matters here: it renders the three
 // slots the AI entry points live in, and echoes the query it was handed.
@@ -41,17 +30,6 @@ jest.mock('@/components/PromGraphCpt', () => ({
 jest.mock('@/components/AiQueryDock', () => ({
   __esModule: true,
   default: (props: AiQueryDockProps) => <div data-testid='ai-dock' data-open={String(props.open)} />,
-}));
-jest.mock('@/components/AiChatNG/FlashAiButton', () => ({
-  AiButton: (props: AiButtonProps) => (
-    <button
-      type='button'
-      data-testid='ai-button'
-      data-action={props.queryAction?.key}
-      // The page ignores the context; an empty one is enough to exercise the wiring.
-      onClick={() => props.onExecuteQueryForQueryContent?.('up', {} as unknown as IAiChatQueryContentContext)}
-    />
-  ),
 }));
 const mockActions = { enabled: [] as boolean[] };
 jest.mock('@/components/AiQueryDock/useQueryDockActions', () => ({
@@ -77,34 +55,9 @@ beforeEach(() => {
   mockActions.enabled = [];
 });
 
-describe('open-source and Nightingale commercial builds', () => {
-  beforeEach(() => {
-    mockMode.isEnt = false;
-  });
-
-  it('keeps the global chat button and never mounts the dock', () => {
+describe('ai dock', () => {
+  it('mounts the dock behind its trigger', () => {
     renderPage();
-    expect(screen.getByTestId('ai-button')).toHaveAttribute('data-action', 'query_generator');
-    expect(screen.queryByTestId('ai-dock')).toBeNull();
-    expect(screen.queryByRole('button', { name: 'dock.open' })).toBeNull();
-    expect(mockActions.enabled).not.toContain(true);
-  });
-
-  it('still lets the global chat write the query box', () => {
-    renderPage();
-    fireEvent.click(screen.getByTestId('ai-button'));
-    expect(screen.getByTestId('promql')).toHaveTextContent('up');
-  });
-});
-
-describe('Flashcat enterprise build', () => {
-  beforeEach(() => {
-    mockMode.isEnt = true;
-  });
-
-  it('replaces the chat button with the dock and its entry', () => {
-    renderPage();
-    expect(screen.queryByTestId('ai-button')).toBeNull();
     expect(screen.getByTestId('ai-dock')).toHaveAttribute('data-open', 'false');
     expect(mockActions.enabled).not.toContain(true);
 

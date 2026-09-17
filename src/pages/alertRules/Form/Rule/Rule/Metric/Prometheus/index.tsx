@@ -164,27 +164,6 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                             },
                           }}
                           promptList={getExplorerPrompts(i18n.language)}
-                          onExecuteQueryForQueryContent={(promql) => {
-                            const ruleConfig = form.getFieldValue('rule_config') || {};
-                            const queries = [...(ruleConfig.queries || [])];
-                            const queryFieldName = ruleConfigVersion === 'v2' ? 'query' : 'prom_ql';
-
-                            if (!queries[field.name]) {
-                              return;
-                            }
-
-                            queries[field.name] = {
-                              ...queries[field.name],
-                              [queryFieldName]: promql,
-                            };
-
-                            form.setFieldsValue({
-                              rule_config: {
-                                ...ruleConfig,
-                                queries,
-                              },
-                            });
-                          }}
                         />
                       </Col>
                     </Row>
