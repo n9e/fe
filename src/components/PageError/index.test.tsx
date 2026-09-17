@@ -6,11 +6,18 @@ import userEvent from '@testing-library/user-event';
 import { normalizeError } from '@/utils/appError';
 
 import PageError from './index';
+import OutOfService from '@/pages/notFound/OutOfService';
 
 const replace = jest.fn();
 const goBack = jest.fn();
 const getAdminList = jest.fn();
 let canGoBack = false;
+let basePrefix = '';
+jest.mock('@/App', () => ({
+  get basePrefix() {
+    return basePrefix;
+  },
+}));
 
 jest.mock('react-router', () => ({
   useHistory: () => ({ replace, goBack }),
@@ -136,6 +143,36 @@ describe('PageError', () => {
     expect(goBack).toHaveBeenCalled();
   });
 
+  it.each(['action.home', 'action.back'])('uses the home recovery handler for %s when there is no in-app history', async (action) => {
+    const onGoHome = jest.fn();
+    render(<PageError status={500} onGoHome={onGoHome} />);
+
+    await userEvent.click(screen.getByText(action));
+
+    expect(onGoHome).toHaveBeenCalledTimes(1);
+    expect(replace).not.toHaveBeenCalled();
+    expect(goBack).not.toHaveBeenCalled();
+  });
+
+  it('keeps in-app back navigation when a home recovery handler is provided', async () => {
+    canGoBack = true;
+    const onGoHome = jest.fn();
+    render(<PageError status={500} onGoHome={onGoHome} />);
+
+    await userEvent.click(screen.getByText('action.back'));
+
+    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(onGoHome).not.toHaveBeenCalled();
+  });
+
+  it('uses client-side navigation for the default home action', async () => {
+    render(<PageError status={404} />);
+
+    await userEvent.click(screen.getByText('action.home'));
+
+    expect(replace).toHaveBeenCalledWith('/');
+  });
+
   it('keeps diagnostics collapsed until asked', async () => {
     render(<PageError error={normalizeError({ status: 403, message: 'denied', path: '/dashboards/1024' })} />);
 
@@ -152,5 +189,39 @@ describe('PageError', () => {
 
     rerender(<PageError status={500} onRetry={jest.fn()} />);
     expect(screen.getByText('action.retry')).toBeTruthy();
+  });
+});
+
+describe('OutOfService recovery', () => {
+  const originalLocation = window.location;
+  const replaceLocation = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    canGoBack = false;
+    Object.defineProperty(window, 'location', { configurable: true, value: { ...originalLocation, replace: replaceLocation } });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', { configurable: true, value: originalLocation });
+    basePrefix = '';
+  });
+
+  it.each([
+    ['', 'action.home', '/'],
+    ['', 'action.back', '/'],
+    ['', 'action.retry', '/'],
+    ['/console', 'action.home', '/console/'],
+    ['/console', 'action.back', '/console/'],
+    ['/console', 'action.retry', '/console/'],
+  ])('reloads app initialization at prefix %s through %s', async (prefix, action, target) => {
+    basePrefix = prefix;
+    render(<OutOfService />);
+
+    await userEvent.click(screen.getByText(action));
+
+    expect(replaceLocation).toHaveBeenCalledWith(target);
+    expect(replace).not.toHaveBeenCalled();
+    expect(goBack).not.toHaveBeenCalled();
   });
 });
