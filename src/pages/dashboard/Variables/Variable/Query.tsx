@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { CommonStateContext } from '@/App';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { useGlobalState } from '@/pages/dashboard/globalState';
+import { DatasourceCateEnum } from '@/utils/constant';
 
 import { buildVariableInterpolations } from '../utils/ajustData';
 import { collectVariableDependencies, useVariableManager } from '../VariableManagerContext';
@@ -81,11 +82,14 @@ export default function Query(props: Props) {
       datasourceList,
       range: currentRange,
     });
+    const formatOptions = {
+      enableDorisSqlLike: currentVariable.datasource?.cate === DatasourceCateEnum.doris,
+    };
 
-    const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations) : '';
-    const formatedDefinition = formatString(currentVariable.definition, variableInterpolations);
+    const formatedReg = currentVariable.reg ? formatString(currentVariable.reg, variableInterpolations, formatOptions) : '';
+    const formatedDefinition = formatString(currentVariable.definition, variableInterpolations, formatOptions);
     const queryText = currentVariable.query?.query;
-    const formatedQuery = typeof queryText === 'string' ? formatString(queryText, variableInterpolations) : undefined;
+    const formatedQuery = typeof queryText === 'string' ? formatString(queryText, variableInterpolations, formatOptions) : undefined;
     const datasourceCate = currentVariable.datasource?.cate;
     const datasourceValue = formatDatasource(currentVariable.datasource?.value, variableInterpolations);
 
@@ -102,7 +106,7 @@ export default function Query(props: Props) {
       // 递归替换 query 树中的变量引用，覆盖 GCM filters、group_bys 等嵌套字段。
       // currentVariable.query 来源于可序列化的表单配置，不含循环引用，故不设 visited 防护。
       const interpolateQueryValue = (value: unknown): unknown => {
-        if (typeof value === 'string') return formatString(value, variableInterpolations);
+        if (typeof value === 'string') return formatString(value, variableInterpolations, formatOptions);
         if (Array.isArray(value)) return value.map(interpolateQueryValue);
         if (value && typeof value === 'object') {
           return Object.entries(value).reduce<Record<string, unknown>>((result, [key, item]) => {
