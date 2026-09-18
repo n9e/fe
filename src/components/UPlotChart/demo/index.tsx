@@ -29,7 +29,8 @@ import _ from 'lodash';
 import { AlignedData } from 'uplot';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, getStackedDataAndBands } from '@/components/UPlotChart';
-import getDataFrameAndBaseSeries from '@/pages/dashboard/Renderer/Renderer/TimeSeriesNG/utils/getDataFrameAndBaseSeries';
+import getDataFrameAndBaseSeries, { type DataFrameOptions, type OldSeriesItem } from '@/pages/dashboard/Renderer/Renderer/TimeSeriesNG/utils/getDataFrameAndBaseSeries';
+import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 import { hexPalette } from '@/pages/dashboard/config';
 
 const T1 = 1778293425;
@@ -60,6 +61,110 @@ const crossYearSeries = [
       }
       return points;
     })(),
+  },
+];
+
+// 2026-09-18 12:00:00 ~ 13:00:00（Asia/Shanghai）。两条 Prom 样本都不返回 null；
+// completeBreakpoints 仅根据各自 step 将真实缺口标记为 null。
+const DIFFERENT_STEPS_START = 1789704000;
+const DIFFERENT_STEPS_END = 1789707600;
+const dashboardDataFrameOptions: DataFrameOptions = {
+  getAlignmentPlaceholder: (series) => (series.target?.datasource?.cate === 'prometheus' ? null : undefined),
+};
+
+function createPrometheusMockSamples(step: number, gaps: Array<[startOffset: number, endOffset: number]>, base: number, amplitude: number, phase: number): Array<[number, number]> {
+  const samples: Array<[number, number]> = [];
+  for (let timestamp = DIFFERENT_STEPS_START; timestamp <= DIFFERENT_STEPS_END; timestamp += step) {
+    const offset = timestamp - DIFFERENT_STEPS_START;
+    if (gaps.some(([startOffset, endOffset]) => offset >= startOffset && offset < endOffset)) continue;
+    samples.push([timestamp, Number((base + Math.sin(offset / (step * 7) + phase) * amplitude).toFixed(2))]);
+  }
+  return samples;
+}
+
+const differentPrometheusStepsSeries: OldSeriesItem[] = [
+  {
+    id: 'series-prom-15s',
+    refId: 'A',
+    metric: { __name__: 'mock_cpu_usage_15s', instance: 'mock-prom-01', step: '15s' },
+    name: 'Prom 指标 A · step 15s',
+    target: { datasource: { cate: 'prometheus', id: 1 } },
+    data: completeBreakpoints(
+      15,
+      createPrometheusMockSamples(
+        15,
+        [
+          [540, 840], // 12:09:00 - 12:14:00
+          [2175, 2400], // 12:36:15 - 12:40:00
+        ],
+        62,
+        18,
+        0,
+      ),
+    ),
+  },
+  {
+    id: 'series-prom-30s',
+    refId: 'B',
+    metric: { __name__: 'mock_memory_usage_30s', instance: 'mock-prom-01', step: '30s' },
+    name: 'Prom 指标 B · step 30s',
+    target: { datasource: { cate: 'prometheus', id: 1 } },
+    data: completeBreakpoints(
+      30,
+      createPrometheusMockSamples(
+        30,
+        [
+          [1200, 1620], // 12:20:00 - 12:27:00
+          [2820, 3120], // 12:47:00 - 12:52:00
+        ],
+        48,
+        12,
+        Math.PI / 4,
+      ),
+    ),
+  },
+];
+
+function createDorisMockSamples(): Array<[number, number]> {
+  const samples: Array<[number, number]> = [];
+  for (let timestamp = DIFFERENT_STEPS_START + 7; timestamp <= DIFFERENT_STEPS_END; timestamp += 45) {
+    const offset = timestamp - DIFFERENT_STEPS_START;
+    // Doris 原始数据缺失一段样本，但没有返回 null；前端不从 SQL 推断 step。
+    if (offset >= 1800 && offset < 2070) continue;
+    samples.push([timestamp, Number((35 + Math.cos(offset / 310) * 9).toFixed(2))]);
+  }
+  return samples;
+}
+
+// Prom 用 step 识别缺口；Doris 保持原始稀疏样本，不推断缺点。
+const mixedPrometheusAndDorisSeries: OldSeriesItem[] = [
+  {
+    id: 'series-mixed-prom-15s',
+    refId: 'A',
+    metric: { __name__: 'mock_http_requests_15s', instance: 'mock-prom-02' },
+    name: 'Prom · step 15s',
+    target: { datasource: { cate: 'prometheus', id: 1 } },
+    data: completeBreakpoints(
+      15,
+      createPrometheusMockSamples(
+        15,
+        [
+          [1050, 1290], // 12:17:30 - 12:21:30
+          [2700, 2880], // 12:45:00 - 12:48:00
+        ],
+        70,
+        15,
+        Math.PI / 6,
+      ),
+    ),
+  },
+  {
+    id: 'series-mixed-doris-45s',
+    refId: 'B',
+    metric: { table: 'mock_doris_metrics', interval: '45s' },
+    name: 'Doris · 稀疏样本',
+    target: { datasource: { cate: 'doris', id: 2 } },
+    data: createDorisMockSamples(),
   },
 ];
 
@@ -129,10 +234,14 @@ export default function ChartDemo() {
   const nonStackedId = useMemo(() => _.uniqueId('demo_tooltip_'), []);
   const stackedId = useMemo(() => _.uniqueId('demo_tooltip_'), []);
   const crossYearId = useMemo(() => _.uniqueId('demo_crossyear_'), []);
+  const differentPrometheusStepsId = useMemo(() => _.uniqueId('demo_prometheus_steps_'), []);
+  const mixedPrometheusAndDorisId = useMemo(() => _.uniqueId('demo_prometheus_doris_'), []);
 
   // 对齐后的帧数据
   const { frames, baseSeries } = useMemo(() => getDataFrameAndBaseSeries(oldSeries), []);
   const crossYear = useMemo(() => getDataFrameAndBaseSeries(crossYearSeries), []);
+  const differentPrometheusSteps = useMemo(() => getDataFrameAndBaseSeries(differentPrometheusStepsSeries, dashboardDataFrameOptions), []);
+  const mixedPrometheusAndDoris = useMemo(() => getDataFrameAndBaseSeries(mixedPrometheusAndDorisSeries, dashboardDataFrameOptions), []);
 
   const { options: nonStackedOpts, data: nonStackedData } = useChartOptions({
     id: nonStackedId,
@@ -152,6 +261,19 @@ export default function ChartDemo() {
     id: crossYearId,
     baseSeries: crossYear.baseSeries,
     frames: crossYear.frames,
+    stacked: false,
+  });
+
+  const { options: differentPrometheusStepsOpts, data: differentPrometheusStepsData } = useChartOptions({
+    id: differentPrometheusStepsId,
+    baseSeries: differentPrometheusSteps.baseSeries,
+    frames: differentPrometheusSteps.frames,
+    stacked: false,
+  });
+  const { options: mixedPrometheusAndDorisOpts, data: mixedPrometheusAndDorisData } = useChartOptions({
+    id: mixedPrometheusAndDorisId,
+    baseSeries: mixedPrometheusAndDoris.baseSeries,
+    frames: mixedPrometheusAndDoris.frames,
     stacked: false,
   });
 
@@ -188,10 +310,26 @@ export default function ChartDemo() {
           '同时观察 X 轴高度是否为两行标签自动扩展、无截断。'
         }
       >
-        <div className='mb-2 text-xs text-gray-500'>
-          时间戳范围 [1767139200, 1767312000]（UTC），标签按浏览器时区渲染；非 UTC 时区下年份仍会出现在跨年的日界刻度上
-        </div>
+        <div className='mb-2 text-xs text-gray-500'>时间戳范围 [1767139200, 1767312000]（UTC），标签按浏览器时区渲染；非 UTC 时区下年份仍会出现在跨年的日界刻度上</div>
         <UPlotChart id={crossYearId} options={crossYearOpts} data={crossYearData} />
+      </ScenarioCard>
+
+      <ScenarioCard
+        title='场景 4：Prometheus 多指标 · 不同 step 与各自断点'
+        description='2026-09-18 12:00:00 至 13:00:00（Asia/Shanghai）。指标 A 的 step 为 15 秒，指标 B 的 step 为 30 秒；原始样本均不含 null，但两条曲线各有两段缺失时间。Prometheus 在共同横轴上的对齐占位按旧语义填 null。'
+      >
+        <div className='mb-2 text-xs text-gray-500'>A 缺口：12:09–12:14、12:36:15–12:40；B 缺口：12:20–12:27、12:47–12:52。可在 tooltip 中确认两条曲线的采样点不同。</div>
+        <UPlotChart id={differentPrometheusStepsId} options={differentPrometheusStepsOpts} data={differentPrometheusStepsData} />
+      </ScenarioCard>
+
+      <ScenarioCard
+        title='场景 5：Prometheus + Doris · 各自原始缺口'
+        description='2026-09-18 12:00:00 至 13:00:00（Asia/Shanghai）。Prom 每 15 秒采样，缺失区间由 step 补为 null；Doris 每 45 秒返回一个偏移 7 秒的样本，缺少一段原始样本但不返回 null。Doris 因 Prom 横轴产生的位置均为 undefined，因此会跨过自身的稀疏缺口保持连线。'
+      >
+        <div className='mb-2 text-xs text-gray-500'>
+          Prom 缺口：12:17:30–12:21:30、12:45–12:48；Doris 缺样本：12:30:07–12:33:52（无 null）。可观察 Doris 不会被 Prom 的 15 秒横轴额外断开，也不会根据缺样本自行断线。
+        </div>
+        <UPlotChart id={mixedPrometheusAndDorisId} options={mixedPrometheusAndDorisOpts} data={mixedPrometheusAndDorisData} />
       </ScenarioCard>
     </div>
   );

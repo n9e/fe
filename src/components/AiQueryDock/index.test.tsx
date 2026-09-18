@@ -210,6 +210,20 @@ it('keeps the list open when a delivered action has not completed', () => {
   expect(screen.getByTestId('list').hidden).toBe(false);
   expect(screen.queryByText('dock.success')).toBeNull();
 });
+it('collapses after a successful action that returns no data', () => {
+  renderDock();
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] }, { actionOutcome: { ok: true, status: 'ok', action: 'set_metric_query', result: { empty: true } } })));
+  expect(screen.getByTestId('list').hidden).toBe(true);
+});
+it.each([
+  ['failed', { actionOutcome: { ok: false, status: 'failed' as const, action: 'set_metric_query', message: 'query unavailable' } }],
+  ['declined', { actionOutcome: { ok: false, status: 'declined' as const, action: 'set_metric_query', message: 'context changed' } }],
+  ['stopped', { actionOutcome: undefined, reason: 'stopped' as const }],
+])('keeps the list open when a delivered action is %s', (_label, extra) => {
+  renderDock();
+  act(() => panelProps!.onTurn!(turn({ response: [pageAction] }, extra)));
+  expect(screen.getByTestId('list').hidden).toBe(false);
+});
 it('shows the actual question while preserving a collapsed list', () => {
   renderDock();
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
@@ -230,13 +244,13 @@ it('runs a progress line under the status only while working with the conversati
   expect(container.querySelector('.ai-query-dock-progress')).toBeNull();
 });
 
-it('does not collapse a conversation the user opened to read while working', () => {
+it('collapses a successful action even when the user opened the conversation while it was working', () => {
   renderDock();
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
   act(() => panelProps!.onTurn!(turn({ is_finish: false }, { phase: 'running' })));
   fireEvent.click(screen.getByRole('button', { name: 'dock.expand' }));
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
-  expect(screen.getByTestId('list').hidden).toBe(false);
+  expect(screen.getByTestId('list').hidden).toBe(true);
 });
 it('shows query failure details without collapsing', () => {
   render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'failed', message: 'Backend unavailable' }} />);
@@ -251,7 +265,7 @@ it('offers undo after a partial write and explains that no query ran', () => {
   expect(undo).toHaveBeenCalled();
 });
 
-it('preserves an explicitly expanded conversation across a follow-up send', () => {
+it('collapses an explicitly expanded conversation after a successful follow-up action', () => {
   renderDock();
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
   fireEvent.click(screen.getByRole('button', { name: 'dock.expand' }));
@@ -259,7 +273,7 @@ it('preserves an explicitly expanded conversation across a follow-up send', () =
     panelProps!.prepareTurn?.();
   });
   act(() => panelProps!.onTurn!(turn({ response: [pageAction] })));
-  expect(screen.getByTestId('list').hidden).toBe(false);
+  expect(screen.getByTestId('list').hidden).toBe(true);
 });
 it('clears a recoverable transport error when the turn subsequently succeeds', () => {
   renderDock();

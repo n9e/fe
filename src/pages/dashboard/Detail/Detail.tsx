@@ -322,6 +322,20 @@ export default function DetailV2(props: IProps) {
   }, [range, setGlobalRange]);
 
   useEffect(() => {
+    if (query.viewMode !== 'fullscreen') return;
+
+    const aiChatBtn = document.querySelector<HTMLElement>('.ai-chat-btn-box');
+    if (!aiChatBtn) return;
+
+    const originalDisplay = aiChatBtn.style.display;
+    aiChatBtn.style.display = 'none';
+
+    return () => {
+      aiChatBtn.style.display = originalDisplay;
+    };
+  }, [query.viewMode]);
+
+  useEffect(() => {
     // 切换仪表盘时，立即清空 variablesWithOptions，避免使用上一个仪表盘的变量
     setDashboardMeta({} as DashboardMeta);
     setVariablesWithOptions([]);
