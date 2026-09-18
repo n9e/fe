@@ -9,6 +9,7 @@ import replaceTemplateVariables, { getBuiltInVariables, replaceDatasourceVariabl
 
 import { getDashboardQueryStep } from './queryStep';
 import { normalizeInterval } from './elasticsearch/utils';
+import { completeBreakpoints } from './utils';
 import type { DashboardQueryRequest, DashboardQueryResponse, DatasourceQuery, ExpressionQuery, NormalizedDashboardQueryResponse, DashboardSeries } from './types';
 import { getTargetRefId, inferTargetResultType, isExpressionTarget } from './target';
 import { DASHBOARD_TARGET_META_FIELDS, getDashboardDatasourceDefinition } from './registry';
@@ -293,7 +294,56 @@ function getEsBucketInterval(refId: string, request?: DashboardQueryRequest) {
   return typeof interval === 'number' && interval > 0 ? interval : undefined;
 }
 
-export function normalizeDashboardQueryResponse(response: DashboardQueryResponse, targets: ITarget[], request?: DashboardQueryRequest): NormalizedDashboardQueryResponse {
+interface PrometheusLineage {
+  isPrometheus: boolean;
+  steps: number[];
+}
+
+function getPrometheusLineage(refId: string, request?: DashboardQueryRequest, visitingRefIds = new Set<string>()): PrometheusLineage | undefined {
+  if (!request || visitingRefIds.has(refId)) return undefined;
+  const query = request.queries.find((item) => item.ref_id === refId);
+  if (!query) return undefined;
+
+  if (query.kind === 'query') {
+    if (query.datasource.cate !== 'prometheus') return { isPrometheus: false, steps: [] };
+    const step = query.query && typeof query.query === 'object' ? (query.query as Record<string, unknown>).step : undefined;
+    return {
+      isPrometheus: true,
+      steps: typeof step === 'number' && step > 0 ? [step] : [],
+    };
+  }
+
+  const dependencyRefIds = getExpressionReferences(query.expression);
+  if (!dependencyRefIds.length) return undefined;
+  const nextVisitingRefIds = new Set(visitingRefIds);
+  nextVisitingRefIds.add(refId);
+  const dependencies = dependencyRefIds.map((dependencyRefId) => getPrometheusLineage(dependencyRefId, request, nextVisitingRefIds));
+  if (dependencies.some((dependency) => !dependency?.isPrometheus)) return { isPrometheus: false, steps: [] };
+  return {
+    isPrometheus: true,
+    steps: dependencies.flatMap((dependency) => dependency?.steps ?? []),
+  };
+}
+
+function getPrometheusStep(lineage: PrometheusLineage | undefined) {
+  if (!lineage?.isPrometheus) return undefined;
+  const steps = _.uniq(lineage.steps);
+  // 多个 Prom 依赖的 step 不同，不能安全地为表达式假定单一采样间隔。
+  return steps.length === 1 ? steps[0] : undefined;
+}
+
+function getAlignmentDatasourceCate(lineage: PrometheusLineage | undefined, target: ITarget | undefined) {
+  if (lineage?.isPrometheus) return 'prometheus';
+  // 表达式 target 不携带数据源，混合依赖不得回退为 Prometheus 对齐语义。
+  return isExpressionTarget(target) ? undefined : target?.datasource?.cate;
+}
+
+export function normalizeDashboardQueryResponse(
+  response: DashboardQueryResponse,
+  targets: ITarget[],
+  request?: DashboardQueryRequest,
+  options: { spanNulls?: boolean } = {},
+): NormalizedDashboardQueryResponse {
   const series: DashboardSeries[] = [];
   const errorsByRef: NormalizedDashboardQueryResponse['errorsByRef'] = {};
 
@@ -311,6 +361,10 @@ export function normalizeDashboardQueryResponse(response: DashboardQueryResponse
 
     if (result.result_type === 'time_series') {
       const bucketInterval = getEsBucketInterval(refId, request);
+      // 同一条 lineage 只解析一次：表达式依赖链可能较深，避免重复递归。
+      const prometheusLineage = getPrometheusLineage(refId, request);
+      const prometheusStep = options.spanNulls ? undefined : getPrometheusStep(prometheusLineage);
+      const datasourceCate = getAlignmentDatasourceCate(prometheusLineage, target);
       result.series.forEach((item) => {
         const labels = item.labels ?? {};
         series.push({
@@ -318,9 +372,11 @@ export function normalizeDashboardQueryResponse(response: DashboardQueryResponse
           refId,
           name: item.name,
           metric: labels,
-          data: item.samples,
+          // 仅在唯一 Prom step 可推导时补缺点；非 Prom 与多 step 表达式保持原样。
+          data: prometheusStep ? completeBreakpoints(prometheusStep, item.samples) : item.samples,
           mode: 'timeSeries',
           target,
+          datasourceCate,
           isExp: isExpressionTarget(target),
           bucketInterval,
         });

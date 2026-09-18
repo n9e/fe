@@ -9,11 +9,11 @@ jest.mock('lodash', () => {
   };
 });
 
-import getDataFrameAndBaseSeries from './getDataFrameAndBaseSeries';
+import getDataFrameAndBaseSeries, { getDataFrameAndBaseSeriesByResult } from './getDataFrameAndBaseSeries';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils/index';
 
 describe('getDataFrameAndBaseSeries', () => {
-  it('should align series with non-overlapping timestamps, filling missing with null', () => {
+  it('keeps null as the default alignment placeholder for generic callers', () => {
     const oldSeries = [
       {
         id: 'series-01',
@@ -36,10 +36,10 @@ describe('getDataFrameAndBaseSeries', () => {
     // 时间轴包含两个时间戳，已排序
     expect(frames[0]).toEqual([1000, 2000]);
 
-    // Series A: 在 t=1000 有值 10，在 t=2000 为 null（初始值从 undefined 改为 null 以便 uPlot findGaps 检测缺口）
+    // Series A: 在 t=1000 有值 10，t=2000 仅由另一序列提供，默认保留旧版 null。
     expect(frames[1]).toEqual([10, null]);
 
-    // Series B: 在 t=1000 为 null，在 t=2000 有值 20
+    // Series B: 在 t=1000 仅由另一序列提供，默认保留旧版 null。
     expect(frames[2]).toEqual([null, 20]);
 
     expect(baseSeries).toHaveLength(2);
@@ -70,10 +70,10 @@ describe('getDataFrameAndBaseSeries', () => {
     // 时间轴包含三个时间戳，排序后为 [1000, 2000, 3000]
     expect(frames[0]).toEqual([1000, 2000, 3000]);
 
-    // Series A: 在 t=1000 有值 10, t=2000 为 null, t=3000 有值 30
+    // Series A: 在 t=1000 有值 10, t=2000 是对齐占位, t=3000 有值 30
     expect(frames[1]).toEqual([10, null, 30]);
 
-    // Series B: 在 t=1000 为 null, t=2000 有值 20, t=3000 有值 300
+    // Series B: 在 t=1000 是对齐占位, t=2000 有值 20, t=3000 有值 300
     expect(frames[2]).toEqual([null, 20, 300]);
   });
 
@@ -100,6 +100,87 @@ describe('getDataFrameAndBaseSeries', () => {
     expect(frames[0]).toEqual([1000]);
     expect(frames[1]).toEqual([10]);
     expect(frames[2]).toEqual([20]);
+  });
+
+  it('uses null for Prometheus alignment positions and undefined for non-Prometheus positions', () => {
+    const { frames } = getDataFrameAndBaseSeriesByResult(
+      [
+        {
+          ref: 'A',
+          data: [
+            {
+              ref: 'A',
+              refId: 'A',
+              name: 'Prometheus',
+              metric: {},
+              values: [
+                [1000, 1],
+                [1015, null],
+                [1030, 3],
+              ] as Array<[number, number | null]>,
+              target: { legend: '', datasource: { cate: 'prometheus', id: 1 } },
+              isExp: false,
+            },
+          ],
+        },
+        {
+          ref: 'B',
+          data: [
+            {
+              ref: 'B',
+              refId: 'B',
+              name: 'Doris',
+              metric: {},
+              values: [[1020, 100]] as Array<[number, number | null]>,
+              target: { legend: '', datasource: { cate: 'doris', id: 2 } },
+              isExp: false,
+            },
+          ],
+        },
+      ],
+      {
+        getAlignmentPlaceholder: (series) => (series.target?.datasource?.cate === 'prometheus' ? null : undefined),
+      },
+    );
+
+    expect(frames).toEqual([
+      [1000, 1015, 1020, 1030],
+      [1, null, null, 3],
+      [undefined, undefined, 100, undefined],
+    ]);
+  });
+
+  it('uses the derived Prometheus category for expression alignment', () => {
+    const { frames } = getDataFrameAndBaseSeries(
+      [
+        {
+          id: 'expression',
+          refId: 'B',
+          datasourceCate: 'prometheus',
+          metric: {},
+          data: [
+            [1000, 2],
+            [1030, 6],
+          ],
+        },
+        {
+          id: 'doris',
+          refId: 'C',
+          datasourceCate: 'doris',
+          metric: {},
+          data: [[1015, 100]],
+        },
+      ],
+      {
+        getAlignmentPlaceholder: (series) => (series.datasourceCate === 'prometheus' ? null : undefined),
+      },
+    );
+
+    expect(frames).toEqual([
+      [1000, 1015, 1030],
+      [2, null, 6],
+      [undefined, 100, undefined],
+    ]);
   });
 
   it('should handle empty data gracefully', () => {
@@ -179,6 +260,7 @@ describe('getDataFrameAndBaseSeries', () => {
         refId: 'A',
         metric: { deployment: 'iam-oss-az01', namespace: 'cloudpath', uri: '/**' },
         name: '/**',
+        target: { datasource: { cate: 'prometheus', id: 1 } },
         data: series1Data,
       },
       {
@@ -186,6 +268,7 @@ describe('getDataFrameAndBaseSeries', () => {
         refId: 'A',
         metric: { deployment: 'iam-oss-az01', namespace: 'cloudpath', uri: '/iam-oss/api/health/check' },
         name: '/health/check',
+        target: { datasource: { cate: 'prometheus', id: 1 } },
         data: series2Data,
       },
     ];
@@ -278,6 +361,7 @@ describe('getDataFrameAndBaseSeries', () => {
         refId: 'A',
         metric: { deployment: 'iam-oss-az01', namespace: 'cloudpath', uri: '/iam-oss/api/health/check' },
         name: 'az01 health/check',
+        target: { datasource: { cate: 'prometheus', id: 1 } },
         data: gappedData,
       },
       {
@@ -285,6 +369,7 @@ describe('getDataFrameAndBaseSeries', () => {
         refId: 'A',
         metric: { deployment: 'iam-oss-az02', namespace: 'cloudpath', uri: '/iam-oss/api/health/check' },
         name: 'az02 health/check',
+        target: { datasource: { cate: 'prometheus', id: 1 } },
         data: continuousData,
       },
     ];
@@ -300,8 +385,7 @@ describe('getDataFrameAndBaseSeries', () => {
       expect(continuousFrame[idx]).toEqual(expect.any(Number));
     }
 
-    // verify: gapped series has null at all timestamps within the gap
-    // (undefined values were converted to null by detectGapRanges, so uPlot's findGaps clips the region)
+    // verify: Prometheus 保持旧版语义，连续序列提供的对齐时间戳也为 null。
     const gapStart = 1781699160;
     const gapEnd = 1781701950;
     for (let i = 0; i < timestamps.length; i++) {
