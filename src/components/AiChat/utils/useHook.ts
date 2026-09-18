@@ -5,12 +5,6 @@ export const useAiChatVisible = createGlobalState<boolean>(false);
 export const useChatData = createGlobalState<{ chatDetail?: IMessageDetail; messageList: IMessageDetail[] }>({ chatDetail: undefined, messageList: [] });
 
 /**
- * 只用来处理某些页面的独立事件
- * 例如：点击某个按钮，需要在ai消息内触发交互
- */
-export const useAiHandleEvent = createGlobalState<{ onExecuteQueryForQueryContent?: Function } | undefined>();
-
-/**
  * 后续一些用户偏好，放在这个state里
  * 例如：云端助理是否开启、当前选中的模型
  */

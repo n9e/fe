@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AiChatMode, AiChatExecuteQueryForQueryContent, IAiChatPageInfo, IAiChatAction } from './types';
+import { AiChatMode, IAiChatPageInfo, IAiChatAction } from './types';
 import { buildPageFrom } from './recommend';
 import { cleanShareParamsFromUrl } from './share';
 
@@ -24,7 +24,6 @@ interface IAiChatContextValue {
   visible: boolean;
   mode: AiChatMode;
   promptList?: string[];
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   queryPageFrom?: IAiChatPageInfo;
   queryAction?: IAiChatAction;
   shareReadonly: boolean;
@@ -32,7 +31,6 @@ interface IAiChatContextValue {
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setMode: React.Dispatch<React.SetStateAction<AiChatMode>>;
   setPromptList: React.Dispatch<React.SetStateAction<string[] | undefined>>;
-  setOnExecuteQueryForQueryContent: React.Dispatch<React.SetStateAction<AiChatExecuteQueryForQueryContent | undefined>>;
   setQueryPageFrom: React.Dispatch<React.SetStateAction<IAiChatPageInfo | undefined>>;
   setQueryAction: React.Dispatch<React.SetStateAction<IAiChatAction | undefined>>;
   setShareReadonly: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,7 +46,6 @@ interface IAiChatContextValue {
     chatId?: string;
     promptList?: string[];
     initialMessage?: string;
-    onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
     queryPageFrom?: IAiChatPageInfo;
     queryAction?: IAiChatAction;
   }) => void;
@@ -66,7 +63,6 @@ export const AiChatContext = React.createContext<IAiChatContextValue>({
   mode: 'drawer',
   promptList: undefined,
   initialMessage: undefined,
-  onExecuteQueryForQueryContent: undefined,
   queryPageFrom: undefined,
   queryAction: undefined,
   shareReadonly: false,
@@ -75,7 +71,6 @@ export const AiChatContext = React.createContext<IAiChatContextValue>({
   setMode: noop as React.Dispatch<React.SetStateAction<AiChatMode>>,
   setPromptList: noop as React.Dispatch<React.SetStateAction<string[] | undefined>>,
   setInitialMessage: noop as React.Dispatch<React.SetStateAction<string | undefined>>,
-  setOnExecuteQueryForQueryContent: noop as React.Dispatch<React.SetStateAction<AiChatExecuteQueryForQueryContent | undefined>>,
   setQueryPageFrom: noop as React.Dispatch<React.SetStateAction<IAiChatPageInfo | undefined>>,
   setQueryAction: noop as React.Dispatch<React.SetStateAction<IAiChatAction | undefined>>,
   setShareReadonly: noop as React.Dispatch<React.SetStateAction<boolean>>,
@@ -96,7 +91,6 @@ export function AiChatProvider(props: IAiChatProviderProps) {
   const [shareReadonly, setShareReadonly] = React.useState(false);
   const [shareChatId, setShareChatId] = React.useState<string | undefined>(undefined);
   const [initialMessage, setInitialMessage] = React.useState<string | undefined>(undefined);
-  const [onExecuteQueryForQueryContent, setOnExecuteQueryForQueryContent] = React.useState<AiChatExecuteQueryForQueryContent | undefined>(undefined);
   const [queryPageFrom, setQueryPageFrom] = React.useState<IAiChatPageInfo | undefined>(undefined);
   const [queryAction, setQueryAction] = React.useState<IAiChatAction | undefined>(undefined);
   const [cachedSessionId, setCachedSessionId] = React.useState<string | undefined>(() => {
@@ -123,23 +117,10 @@ export function AiChatProvider(props: IAiChatProviderProps) {
   }, [cachedSessionId]);
 
   const openAiChat = React.useCallback(
-    (options?: {
-      mode?: AiChatMode;
-      chatId?: string;
-      promptList?: string[];
-      initialMessage?: string;
-      onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
-      queryPageFrom?: IAiChatPageInfo;
-      queryAction?: IAiChatAction;
-    }) => {
+    (options?: { mode?: AiChatMode; chatId?: string; promptList?: string[]; initialMessage?: string; queryPageFrom?: IAiChatPageInfo; queryAction?: IAiChatAction }) => {
       const ensuredPageFrom = options?.queryPageFrom?.url ? options.queryPageFrom : buildPageFrom();
       if (options?.mode !== undefined) {
         setMode(options.mode);
-      }
-      if (options?.onExecuteQueryForQueryContent !== undefined) {
-        setOnExecuteQueryForQueryContent(() => options.onExecuteQueryForQueryContent);
-      } else {
-        setOnExecuteQueryForQueryContent(undefined);
       }
       setQueryPageFrom(ensuredPageFrom);
       if (options?.queryAction !== undefined) {
@@ -158,7 +139,7 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       }
       setVisible(true);
     },
-    [setMode, setOnExecuteQueryForQueryContent, setQueryPageFrom, setQueryAction, setPromptList, setInitialMessage, setVisible],
+    [setMode, setQueryPageFrom, setQueryAction, setPromptList, setInitialMessage, setVisible],
   );
 
   const closeAiChat = React.useCallback(() => {
@@ -176,14 +157,12 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       shareReadonly,
       shareChatId,
       initialMessage,
-      onExecuteQueryForQueryContent,
       queryPageFrom,
       queryAction,
       setVisible,
       setMode,
       setPromptList,
       setInitialMessage,
-      setOnExecuteQueryForQueryContent,
       setQueryPageFrom,
       setQueryAction,
       setShareReadonly,
@@ -200,7 +179,6 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       mode,
       promptList,
       initialMessage,
-      onExecuteQueryForQueryContent,
       queryPageFrom,
       queryAction,
       shareReadonly,
