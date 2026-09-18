@@ -2,15 +2,18 @@ import React, { useEffect } from 'react';
 import { Form, Segmented } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import moment from 'moment';
 import { useRequest } from 'ahooks';
 
 import { DatasourceCateEnum } from '@/utils/constant';
 import Meta from '@/components/Meta';
+import { parseRange } from '@/components/TimeRangePicker';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
 import { getDorisIndex, getDorisTableConfig } from '../../services';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
+import { getRangeHourBucket } from '../utils/rangeHourBucket';
 import DatabaseSelect from './DatabaseSelect';
 import TableSelect from './TableSelect';
 import DateFieldSelect from './DateFieldSelect';
@@ -53,6 +56,13 @@ export default function index(props: Props) {
   // const navMode = Form.useWatch(['query', 'navMode']);
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
+  const range = Form.useWatch(['query', 'range']);
+
+  // 每次渲染重算：相对范围解析出来的绝对窗口一直在走，跨小时才需要重取字段。
+  const parsedRange = range ? parseRange(range) : undefined;
+  const from = parsedRange ? moment(parsedRange.start).valueOf() : undefined;
+  const to = parsedRange ? moment(parsedRange.end).valueOf() : undefined;
+  const rangeBucket = getRangeHourBucket(from, to);
 
   const navMode = 'fields';
 
@@ -61,9 +71,10 @@ export default function index(props: Props) {
       if (!datasourceValue || !database || !table) return [];
 
       // 1. 先获取 index 字段
+      // 带上时间范围，后端据此把 DESC 裁到覆盖该范围的分区；不传则 DESC 整张表，大表上要几十秒。
       let fields: Field[] = [];
       try {
-        fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table });
+        fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table, from, to });
       } catch {
         // getDorisIndex 失败时继续执行，fields 保持空数组
       }
@@ -116,7 +127,7 @@ export default function index(props: Props) {
       return fields;
     },
     {
-      refreshDeps: [table],
+      refreshDeps: [table, rangeBucket],
       onError: () => {
         onIndexDataChange([]);
       },
