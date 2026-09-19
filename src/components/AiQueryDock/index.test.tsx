@@ -126,10 +126,12 @@ describe('AiQueryDock', () => {
   });
 
   it('stays open when the assistant asks something back instead', () => {
-    renderDock();
+    const { view } = renderDock();
     act(() => panelProps!.onTurn!(turn({ response: [{ content_type: 'input_request', content: '哪个数据源？' }] })));
     expect(screen.getByTestId('list').hidden).toBe(false);
     expect(screen.getByText('dock.asked')).toBeTruthy();
+    // Waiting on the user is not idle: the dot asks for attention.
+    expect(view.container.querySelector('.ai-query-dock-status .bg-warning')).not.toBeNull();
     expect(screen.getByPlaceholderText('dock.placeholder_answer')).toBeTruthy();
   });
 
