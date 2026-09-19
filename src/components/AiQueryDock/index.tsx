@@ -194,6 +194,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     } else if (lastResponseType(message) === 'input_request') {
       const response = message.response?.[message.response.length - 1];
       const question = (response?.param as IAiChatInputRequest | undefined)?.question?.trim() || response?.content?.trim();
+      // The model is waiting on the user: the dot asks for attention, not idle gray.
+      tone = 'warn';
       status = t('dock.asked');
       detail = question || undefined;
     } else {
