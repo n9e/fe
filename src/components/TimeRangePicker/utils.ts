@@ -232,6 +232,12 @@ export const valueAsString = (value: Moment | string, dateFormat: string) => {
   return value;
 };
 
+/**
+ * 在构造请求时解析时间范围。
+ *
+ * 相对范围（如 `now-1h` 到 `now`）的原始值不会随时间流逝改变；请求由 `refreshFlag`
+ * 等执行信号触发时，应在服务函数中重新调用本方法取得当前绝对时间，不能只依赖原始 range 作为刷新依据。
+ */
 export const parseRange = (range: IRawTimeRange) => {
   return {
     start: parse(range.start),
