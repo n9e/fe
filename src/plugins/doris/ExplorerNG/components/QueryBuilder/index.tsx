@@ -15,6 +15,7 @@ import { Field, FieldSampleParams } from '../../types';
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
 import { getDorisIndex, buildSql } from '../../../services';
 import getMaxLabelWidth from '../QueryBuilder/utils/getMaxLabelWidth';
+import getIndexTimeRange from '../../utils/getIndexTimeRange';
 
 import Filters from './Filters';
 import Aggregates from './Aggregates';
@@ -40,6 +41,7 @@ export default function index(props: Props) {
   const { explorerForm, datasourceValue, database, table, time_field, sqlValue, visible, onExecute, onPreviewSQL } = props;
 
   const [form] = Form.useForm();
+  const refreshFlag = Form.useWatch('refreshFlag', explorerForm);
   const filters = Form.useWatch(['filters'], form);
   const aggregates = Form.useWatch(['aggregates'], form);
   const group_by = Form.useWatch(['group_by'], form);
@@ -59,11 +61,17 @@ export default function index(props: Props) {
       to: moment(parsedRange.end).valueOf(),
       limit: 100,
     };
-  }, [datasourceValue, database, table, time_field, JSON.stringify(filters)]);
+  }, [datasourceValue, database, table, time_field, JSON.stringify(filters), refreshFlag]);
 
   const indexDataService = () => {
     if (datasourceValue && database && table) {
-      return getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table })
+      return getDorisIndex({
+        cate: DatasourceCateEnum.doris,
+        datasource_id: datasourceValue,
+        database,
+        table,
+        ...getIndexTimeRange(explorerForm),
+      })
         .then((res) => {
           const timeField = form.getFieldValue('time_field');
           const fieldExists = _.some(res, (item) => item.field === timeField);
@@ -87,7 +95,7 @@ export default function index(props: Props) {
   };
 
   const { data: indexData = [] } = useRequest<Field[] | undefined, any>(indexDataService, {
-    refreshDeps: [datasourceValue, database, table],
+    refreshDeps: [datasourceValue, database, table, refreshFlag],
   });
 
   const validIndexData = useMemo(() => {

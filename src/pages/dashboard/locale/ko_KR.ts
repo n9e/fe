@@ -648,6 +648,20 @@ const ko_KR = {
     deletePanel_confirm: '그래프 {{name}}을(를) 삭제할까요?',
     invalidPanelType: '잘못된 그래프 유형입니다',
     fullscreen: {
+      parameters: {
+        tooltip: `내장 URL 매개변수:
+viewMode=fullscreen: 전체 화면 보기로 전환합니다.
+__show_header=true: 전체 화면에서 헤더와 시간 선택기를 표시합니다.
+__show_variables=true: 전체 화면에서 대시보드 변수를 표시합니다.
+__readonly=true: 전체 화면을 읽기 전용으로 만들며 편집, 드래그/크기 조절 및 마이그레이션 알림을 비활성화합니다.
+__disable_fullscreen_exit=true: Esc 종료 안내 및 Esc 종료를 비활성화합니다.
+__disable_variables=region,host: 지정한 이름의 변수 컨트롤을 비활성화합니다.
+__from=...&__to=...: 전역 시간 범위를 설정합니다.
+__refresh=30: 자동 새로 고침 간격을 초 단위로 설정합니다.
+__timezone=Asia/Shanghai: 시간대를 설정합니다.
+themeMode=light|dark: 테마를 설정합니다.
+__variable_value_fixed=true: 로컬 저장소 또는 옵션 기본값으로 대체하지 않고 URL의 변수 값을 유지합니다.`,
+      },
       notification: {
         esc: 'ESC를 누르면 전체 화면이 끝납니다',
         theme: '테마 전환',

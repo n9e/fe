@@ -19,12 +19,12 @@ import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
 import { useTranslation } from 'react-i18next';
-import { useDeepCompareEffect, useInterval } from 'ahooks';
+import { useDeepCompareEffect, useInterval, useKeyPress } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useBeforeunload } from 'react-beforeunload';
 import queryString from 'query-string';
-import { Alert, Modal, Button, Affix, message, Spin } from 'antd';
+import { Alert, Modal, Button, Affix, message, notification, Spin } from 'antd';
 
 import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 import PageLayout from '@/components/pageLayout';
@@ -57,6 +57,7 @@ import {
   dashboardTimeCacheKey,
   dashboardTimezoneCacheKey,
   getFullscreenDisplayOptions,
+  isFullscreenExitDisabled,
 } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import { resolveSharedPanelDatasource } from './utils/resolveSharedPanelDatasource';
@@ -149,6 +150,9 @@ export default function DetailV2(props: IProps) {
   let { id } = useParams<URLParam>();
   const query = queryString.parse(location.search) as Record<string, string | string[] | null | undefined>;
   const fullscreenDisplayOptions = getFullscreenDisplayOptions(query);
+  // 点击按钮准备进入全屏时 viewMode 尚未变成 fullscreen，此时 fullscreenDisplayOptions.disableExit 恒为 false，
+  // 提示是否展示必须读原始 URL 参数，不能复用 disableExit
+  const fullscreenExitDisabled = isFullscreenExitDisabled(query);
   const effectiveIsPreview = isPreview || fullscreenDisplayOptions.readonly;
   const effectiveIsAuthorized = isAuthorized && !fullscreenDisplayOptions.readonly;
   if (isBuiltin) {
@@ -405,6 +409,35 @@ export default function DetailV2(props: IProps) {
   const showVariables = !fullscreenDisplayOptions.isFullscreen || fullscreenDisplayOptions.showVariables;
   const showVariablesOnly = fullscreenDisplayOptions.isFullscreen && !fullscreenDisplayOptions.showHeader && fullscreenDisplayOptions.showVariables;
 
+  const toggleFullscreen = () => {
+    const enteringFullscreen = !fullscreenDisplayOptions.isFullscreen;
+    const newQuery = _.omit(queryString.parse(location.search), ['viewMode', 'themeMode']);
+    if (enteringFullscreen) {
+      newQuery.viewMode = 'fullscreen';
+    }
+    history.replace({
+      pathname: location.pathname,
+      search: queryString.stringify(newQuery),
+    });
+    if (enteringFullscreen && !fullscreenExitDisabled) {
+      notification.info({
+        key: 'dashboard_fullscreen',
+        message: t('detail.fullscreen.notification.esc'),
+        duration: 3,
+      });
+    }
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 500);
+  };
+
+  useKeyPress('esc', () => {
+    if (fullscreenDisplayOptions.isFullscreen && !fullscreenDisplayOptions.disableExit) {
+      toggleFullscreen();
+      notification.close('dashboard_fullscreen');
+    }
+  });
+
   return (
     <PageLayout customArea={<div />}>
       <div className='dashboard-detail-container'>
@@ -486,6 +519,8 @@ export default function DetailV2(props: IProps) {
                   hideGoList={hideGoList}
                   hideTitle={shouldHideIframeTitle}
                   fullscreenHeaderOnly={fullscreenDisplayOptions.isFullscreen}
+                  loadDashboardList={!fullscreenDisplayOptions.isFullscreen}
+                  onToggleFullscreen={toggleFullscreen}
                 />
               )}
               {!editable && (

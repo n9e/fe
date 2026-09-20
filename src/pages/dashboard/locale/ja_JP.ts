@@ -733,6 +733,20 @@ const ja_JP = {
     deletePanel_confirm: 'チャート {{name}} を削除してもよろしいですか？',
     invalidPanelType: '無効なチャートタイプ',
     fullscreen: {
+      parameters: {
+        tooltip: `組み込み URL パラメータ：
+viewMode=fullscreen：全画面表示にします。
+__show_header=true：全画面でヘッダーと時間選択を表示します。
+__show_variables=true：全画面でダッシュボード変数を表示します。
+__readonly=true：全画面を読み取り専用にし、編集、ドラッグ/リサイズ、移行通知を無効にします。
+__disable_fullscreen_exit=true：「ESC で終了」のヒントと Esc による終了を無効にします。
+__disable_variables=region,host：指定した名前の変数コントロールを無効にします。
+__from=...&__to=...：グローバルな時間範囲を設定します。
+__refresh=30：自動更新間隔を秒単位で設定します。
+__timezone=Asia/Shanghai：タイムゾーンを設定します。
+themeMode=light|dark：テーマを設定します。
+__variable_value_fixed=true：ローカルストレージや選択肢の既定値で置き換えず、URL の変数値を保持します。`,
+      },
       notification: {
         esc: '全画面モードを終了するにはESCキーを押してください',
         theme: 'テーマの切り替え',

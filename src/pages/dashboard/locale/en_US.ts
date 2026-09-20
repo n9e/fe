@@ -735,6 +735,20 @@ const en_US = {
     deletePanel_confirm: 'Are you sure you want to delete the panel: {{name}}?',
     invalidPanelType: 'Invalid panel type',
     fullscreen: {
+      parameters: {
+        tooltip: `Built-in URL parameters:
+viewMode=fullscreen: enter fullscreen view.
+__show_header=true: show the header and time picker in fullscreen.
+__show_variables=true: show dashboard variables in fullscreen.
+__readonly=true: make fullscreen read-only; disables editing, drag/resize, and migration prompts.
+__disable_fullscreen_exit=true: disable the ESC exit hint and ESC exit.
+__disable_variables=region,host: disable controls for the named variables.
+__from=...&__to=...: set the global time range.
+__refresh=30: set the auto-refresh interval in seconds.
+__timezone=Asia/Shanghai: set the timezone.
+themeMode=light|dark: set the theme.
+__variable_value_fixed=true: preserve variable values from the URL without replacing them from local storage or option defaults.`,
+      },
       notification: {
         esc: 'Press ESC to exit full screen mode',
         theme: 'Switch theme',

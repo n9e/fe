@@ -13,7 +13,7 @@ jest.mock('@/components/TimeRangePicker', () => ({
   isValid: jest.fn(),
 }));
 
-import { getDatasourceValue, getFullscreenDisplayOptions } from './index';
+import { getDatasourceValue, getFullscreenDisplayOptions, isFullscreenExitDisabled } from './index';
 
 describe('getDatasourceValue', () => {
   it('resolves v5 datasource names to IDs and leaves unknown names unresolved', () => {
@@ -29,6 +29,7 @@ describe('getFullscreenDisplayOptions', () => {
       showHeader: false,
       showVariables: false,
       readonly: false,
+      disableExit: false,
     });
   });
 
@@ -39,12 +40,14 @@ describe('getFullscreenDisplayOptions', () => {
         __show_header: 'true',
         __show_variables: 'true',
         __readonly: 'true',
+        __disable_fullscreen_exit: 'true',
       }),
     ).toEqual({
       isFullscreen: true,
       showHeader: true,
       showVariables: true,
       readonly: true,
+      disableExit: true,
     });
   });
 
@@ -61,6 +64,14 @@ describe('getFullscreenDisplayOptions', () => {
       showHeader: false,
       showVariables: false,
       readonly: false,
+      disableExit: false,
     });
+  });
+});
+
+describe('isFullscreenExitDisabled', () => {
+  it('reads the exit setting before entering fullscreen', () => {
+    expect(isFullscreenExitDisabled({ __disable_fullscreen_exit: 'true' })).toBe(true);
+    expect(isFullscreenExitDisabled({ __disable_fullscreen_exit: ['true'] })).toBe(false);
   });
 });
