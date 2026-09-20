@@ -11,6 +11,7 @@ import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
 import { getDorisIndex, getDorisTableConfig } from '../../services';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
+import getIndexTimeRange from '../utils/getIndexTimeRange';
 import DatabaseSelect from './DatabaseSelect';
 import TableSelect from './TableSelect';
 import DateFieldSelect from './DateFieldSelect';
@@ -53,6 +54,7 @@ export default function index(props: Props) {
   // const navMode = Form.useWatch(['query', 'navMode']);
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
+  const refreshFlag = Form.useWatch('refreshFlag');
 
   const navMode = 'fields';
 
@@ -63,7 +65,7 @@ export default function index(props: Props) {
       // 1. 先获取 index 字段
       let fields: Field[] = [];
       try {
-        fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table });
+        fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table, ...getIndexTimeRange(form) });
       } catch {
         // getDorisIndex 失败时继续执行，fields 保持空数组
       }
@@ -116,7 +118,8 @@ export default function index(props: Props) {
       return fields;
     },
     {
-      refreshDeps: [table],
+      // 选中库表后必须立即获取字段以填充 time_field；refreshFlag 仅用于查询提交后按当前时间范围重新获取字段。
+      refreshDeps: [datasourceValue, database, table, refreshFlag],
       onError: () => {
         onIndexDataChange([]);
       },
