@@ -89,14 +89,23 @@ export function getLogsQuery(data: {
   });
 }
 
-export function getDorisFields(data: BaseParams & { database: string; table: string }): Promise<string[]> {
+/**
+ * 当前检索的时间范围（毫秒）。后端据此把 DESC 裁到覆盖该范围的分区 —— 不传则 DESC 整张表，
+ * 大表上要几十秒。字段集随时间范围变化，所以时间范围变了要重新取。
+ */
+export interface IndexTimeRange {
+  from?: number;
+  to?: number;
+}
+
+export function getDorisFields(data: BaseParams & { database: string; table: string } & IndexTimeRange): Promise<string[]> {
   return request('/api/n9e-plus/doris-fields', {
     method: RequestMethod.Post,
     data,
   }).then((res) => res.dat || []);
 }
 
-export function getDorisIndex(data: BaseParams & { database: string; table: string }): Promise<Field[]> {
+export function getDorisIndex(data: BaseParams & { database: string; table: string } & IndexTimeRange): Promise<Field[]> {
   return request('/api/n9e-plus/doris-index', {
     method: RequestMethod.Post,
     data,
