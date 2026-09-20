@@ -9,7 +9,7 @@ import { useVariableManager } from '../VariableManagerContext';
 import { Props } from './types';
 
 export default function Textbox(props: Props) {
-  const { item: variable, variableValueFixed, value, setValue } = props;
+  const { disabled, item: variable, variableValueFixed, value, setValue } = props;
   const { hide, name, label } = variable;
 
   const { updateVariable, registerVariable, registeredVariables } = useVariableManager();
@@ -58,6 +58,7 @@ export default function Textbox(props: Props) {
     <div className={hide ? 'hidden' : ''}>
       <InputGroupWithFormItem label={label || name}>
         <Input
+          disabled={disabled}
           value={value as string}
           onBlur={(e) => {
             let val = e.currentTarget.value;

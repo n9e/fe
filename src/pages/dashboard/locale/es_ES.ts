@@ -657,6 +657,20 @@ const es_ES = {
     deletePanel_confirm: '¿Eliminar el gráfico {{name}}?',
     invalidPanelType: 'Tipo de gráfico no válido',
     fullscreen: {
+      parameters: {
+        tooltip: `Parámetros de URL integrados:
+viewMode=fullscreen: abrir la vista a pantalla completa.
+__show_header=true: mostrar el encabezado y el selector de tiempo a pantalla completa.
+__show_variables=true: mostrar las variables del dashboard a pantalla completa.
+__readonly=true: hacer que la pantalla completa sea de solo lectura; desactiva la edición, el arrastre/cambio de tamaño y los avisos de migración.
+__disable_fullscreen_exit=true: desactivar el aviso y la salida con Esc.
+__disable_variables=region,host: desactivar los controles de las variables indicadas.
+__from=...&__to=...: establecer el intervalo de tiempo global.
+__refresh=30: establecer el intervalo de actualización automática en segundos.
+__timezone=Asia/Shanghai: establecer la zona horaria.
+themeMode=light|dark: establecer el tema.
+__variable_value_fixed=true: conservar los valores de variables de la URL sin sustituirlos por el almacenamiento local ni por valores predeterminados.`,
+      },
       notification: {
         esc: 'Pulsa ESC para salir de la pantalla completa',
         theme: 'Cambiar de tema',
