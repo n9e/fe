@@ -10,7 +10,7 @@ import { useVariableManager } from '../VariableManagerContext';
 import { Props } from './types';
 
 export default function Custom(props: Props) {
-  const { hide, item: variable, variableValueFixed, value, setValue } = props;
+  const { disabled, hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options } = variable;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -67,6 +67,7 @@ export default function Custom(props: Props) {
       <InputGroupWithFormItem label={label || name}>
         <Select
           allowClear
+          disabled={disabled}
           mode={multi ? 'multiple' : undefined}
           style={{
             width: '180px',

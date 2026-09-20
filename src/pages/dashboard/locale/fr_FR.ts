@@ -661,6 +661,20 @@ const fr_FR = {
     deletePanel_confirm: 'Supprimer le graphique {{name}} ?',
     invalidPanelType: 'Type de graphique invalide',
     fullscreen: {
+      parameters: {
+        tooltip: `Paramètres URL intégrés :
+viewMode=fullscreen : ouvrir la vue plein écran.
+__show_header=true : afficher l’en-tête et le sélecteur de temps en plein écran.
+__show_variables=true : afficher les variables du tableau de bord en plein écran.
+__readonly=true : rendre le plein écran en lecture seule ; désactive l’édition, le glisser-redimensionner et les notifications de migration.
+__disable_fullscreen_exit=true : désactiver l’indication et la sortie par Échap.
+__disable_variables=region,host : désactiver les contrôles des variables indiquées.
+__from=...&__to=... : définir la plage temporelle globale.
+__refresh=30 : définir l’intervalle de rafraîchissement automatique en secondes.
+__timezone=Asia/Shanghai : définir le fuseau horaire.
+themeMode=light|dark : définir le thème.
+__variable_value_fixed=true : conserver les valeurs de variables de l’URL sans les remplacer par le stockage local ou les valeurs par défaut.`,
+      },
       notification: {
         esc: 'Appuyez sur Échap pour quitter le plein écran',
         theme: 'Changer de thème',

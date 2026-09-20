@@ -17,7 +17,7 @@ export default function Datasource(props: Props) {
   const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
 
-  const { hide, item: variable, variableValueFixed, value, setValue } = props;
+  const { disabled, hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, options } = variable;
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
@@ -93,6 +93,7 @@ export default function Datasource(props: Props) {
     <div className={hide ? 'hidden' : ''}>
       <InputGroupWithFormItem label={label || name}>
         <Select
+          disabled={disabled}
           style={{
             width: '180px',
           }}
