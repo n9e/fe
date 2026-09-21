@@ -32,7 +32,7 @@ jest.mock('@fc-components/monaco-editor', () => ({
 }));
 jest.mock('antd', () => ({
   ...jest.requireActual('antd'),
-  Table: ({ dataSource }: any) => <div>{JSON.stringify(dataSource)}</div>,
+  Table: ({ dataSource, scroll }: any) => <div data-scroll-y={scroll?.y}>{JSON.stringify(dataSource)}</div>,
 }));
 
 const response = (name: string) => ({ resultType: 'vector', result: [{ metric: { __name__: name }, value: [1, '1'], values: [[1, '1']] }] });
@@ -72,6 +72,12 @@ it.each(['table', 'graph'] as const)('waits for the actual %s response and does 
   expect((getPromData as jest.Mock).mock.calls[1][1].query).toBe('sum(up)');
   await act(async () => requests[1].resolve({ resultType: 'vector', result: [] }));
   await expect(run!).resolves.toMatchObject({ empty: true });
+});
+
+it('places vertical scrolling in the table body', async () => {
+  render(<PromGraph datasourceValue={1} promQL='up' defaultType='table' />);
+  await act(async () => requests[0].resolve(response('up')));
+  expect(document.querySelector('[data-scroll-y="400"]')).toBeTruthy();
 });
 
 it('rejects failed queries instead of reporting success', async () => {
