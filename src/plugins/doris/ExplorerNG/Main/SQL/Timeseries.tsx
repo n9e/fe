@@ -41,12 +41,13 @@ function Graph(props: {
   height: number;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
+  xRange: [number, number];
   showResetZoomBtn: boolean;
   unit: string;
   setShowResetZoomBtn: (show: boolean) => void;
 }) {
   const { darkMode } = useContext(CommonStateContext);
-  const { width, height, frames, baseSeries, showResetZoomBtn, unit, setShowResetZoomBtn } = props;
+  const { width, height, frames, baseSeries, xRange, showResetZoomBtn, unit, setShowResetZoomBtn } = props;
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const uplotRef = useRef<any>();
@@ -73,7 +74,8 @@ function Graph(props: {
         }),
       ],
       cursor: cursorBuider({}),
-      scales: scalesBuilder({}),
+      // ds-query 的 values 时间戳为秒级，固定 X 轴到本次查询范围，避免单点数据触发 uPlot 的自动扩展。
+      scales: scalesBuilder({ xRange }),
       series: seriesBuider({
         baseSeries,
         colors: hexPalette,
@@ -127,7 +129,7 @@ function Graph(props: {
         ],
       },
     };
-  }, [width, height, darkMode, JSON.stringify(baseSeries), unit]);
+  }, [width, height, darkMode, JSON.stringify(baseSeries), JSON.stringify(xRange), unit]);
 
   return (
     <div className='relative'>
@@ -165,15 +167,22 @@ export default function TimeseriesCpt(props: Props) {
   const [activeLegend, setActiveLegend] = useState<string>();
   const [dataRefresh, setDataRefresh] = useState(_.uniqueId('dataRefresh_'));
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<{ frames: AlignedData; baseSeries: BaseSeriesItem[] }>({
+  const [data, setData] = useState<{ frames: AlignedData; baseSeries: BaseSeriesItem[]; xRange: [number, number] }>({
     frames: [],
     baseSeries: [],
+    xRange: [0, 0],
   });
 
   useEffect(() => {
     if (refreshFlag) {
       form.validateFields().then((values) => {
         const query = values.query;
+        const range = parseRange(query.range);
+        const from = moment(range.start).valueOf();
+        const to = moment(range.end).valueOf();
+        // 请求参数使用毫秒，而 uPlot 的当前时间序列数据使用秒级时间戳。
+        // 向外对齐到秒边界，避免后端按秒取整后的端点落在图表范围外。
+        const xRange: [number, number] = [Math.floor(from / 1000), Math.ceil(to / 1000)];
         if (query.keys.valueKey) {
           query.keys.valueKey = _.join(query.keys.valueKey, ' ');
         }
@@ -185,8 +194,8 @@ export default function TimeseriesCpt(props: Props) {
           datasource_id: values.datasourceValue,
           query: [
             {
-              from: moment(parseRange(query.range).start).valueOf(),
-              to: moment(parseRange(query.range).end).valueOf(),
+              from,
+              to,
               sql: replaceTemplateVariables(_.trim(query.sql), query.range, width),
               keys: query.keys,
             },
@@ -206,11 +215,11 @@ export default function TimeseriesCpt(props: Props) {
               };
             });
             const { frames, baseSeries } = getDataFrameAndBaseSeries(series);
-            setData({ frames, baseSeries });
+            setData({ frames, baseSeries, xRange });
             setDataRefresh(_.uniqueId('dataRefresh_'));
           })
           .catch(() => {
-            setData({ frames: [[]], baseSeries: [] });
+            setData({ frames: [[]], baseSeries: [], xRange });
             setDataRefresh(_.uniqueId('dataRefresh_'));
           })
           .finally(() => {
@@ -368,6 +377,7 @@ export default function TimeseriesCpt(props: Props) {
                       height={eleSize.height}
                       frames={data.frames}
                       baseSeries={seriesData}
+                      xRange={data.xRange}
                       showResetZoomBtn={showResetZoomBtn}
                       unit={unit}
                       setShowResetZoomBtn={setShowResetZoomBtn}
