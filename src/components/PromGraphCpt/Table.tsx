@@ -347,16 +347,13 @@ export default function Table(props: IProps) {
       {controlsPortalDomNode ? createPortal(controls, controlsPortalDomNode) : controls}
       <AntdTable
         className='prom-graph-table-list'
-        style={{
-          maxHeight: contentMaxHeight,
-        }}
         size='small'
         loading={loading}
         rowKey={(_record, index) => index!}
         dataSource={filteredResult}
         columns={columns}
         pagination={false}
-        scroll={filteredResult.length > 0 ? { x: 'max-content' } : undefined}
+        scroll={filteredResult.length > 0 ? { x: 'max-content', y: contentMaxHeight } : undefined}
       />
     </div>
   );
