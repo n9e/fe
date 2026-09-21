@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Button, Segmented, Alert, Select, Input, Form, FormInstance, Space, Result } from 'antd';
+import { Modal, Button, Segmented, Alert, Select, Input, Form, FormInstance, Space, Result, Checkbox } from 'antd';
 import { ExperimentOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -42,12 +42,17 @@ export default function TestModal(props: Props) {
   // "pagerduty requires at least one routing key in sendtos" 必然失败——
   // 报错还指向一个用户在本页面看不到的概念。
   const [pagerdutyKeys, setPagerdutyKeys] = useState<string[]>([]);
+  // Jira 的项目和工作类型在通知规则里是下拉选的，那份下拉要已保存的媒介 id 才能拉到，这里让用户手填
+  const [jiraProject, setJiraProject] = useState('');
+  const [jiraIssueType, setJiraIssueType] = useState('');
+  // 默认连恢复一起测：一次验证建单、评论和关单
+  const [withRecovery, setWithRecovery] = useState(true);
   const [userIds, setUserIds] = useState<number[]>([]);
   const [userGroupIds, setUserGroupIds] = useState<number[]>([]);
   const [userOptions, setUserOptions] = useState<{ label: string; value: number }[]>([]);
   const [teamOptions, setTeamOptions] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; error_message: string }>();
+  const [result, setResult] = useState<{ success: boolean; error_message: string; detail?: string }>();
 
   // 必须用 useWatch 订阅：在 render 里裸调 getFieldsValue 拿到的是「上一次因别的原因重渲染时」
   // 的快照，首屏可能为空——表现为参数输入框不渲染、script 媒介的测试按钮没被禁用
@@ -59,6 +64,7 @@ export default function TestModal(props: Props) {
   // 等于从请求体直取任意代码执行，必须先保存（保存动作有权限门与 create_by 审计）
   const scriptBlocked = requestType === 'script';
   const isPagerduty = requestType === 'pagerduty';
+  const isJira = requestType === 'jira';
 
   const starterTexts: StarterTexts = {
     ruleName: tt('starter.rule_name'),
@@ -103,6 +109,9 @@ export default function TestModal(props: Props) {
     setSelectedEventIds([]);
     setParams({});
     setPagerdutyKeys([]);
+    setJiraProject('');
+    setJiraIssueType('');
+    setWithRecovery(true);
     setUserIds([]);
     setUserGroupIds([]);
     setResult(undefined);
@@ -127,10 +136,12 @@ export default function TestModal(props: Props) {
           // 后端按 []string 反序列化（GetNotifyConfigParams 的 pagerduty_integration_keys 分支），
           // 传裸字符串会反序列化失败并静默退化成「没有 routing key」
           ...(isPagerduty && pagerdutyKeys.length ? { pagerduty_integration_keys: pagerdutyKeys } : {}),
+          ...(isJira ? { project_key: _.trim(jiraProject), issue_type: _.trim(jiraIssueType) } : {}),
         },
         severities: [mockEvent.severity],
       },
       tpl_content: tplContent,
+      ...(isJira && withRecovery ? { with_recovery: true } : {}),
     })
       .then((res) => {
         setResult(res);
@@ -146,7 +157,8 @@ export default function TestModal(props: Props) {
 
   // PagerDuty 没有 routing key 就一定失败，与其发一个必败请求再展示一句用户看不懂的
   // 英文报错，不如先把按钮拦住
-  const testDisabled = (mode === 'history' && _.isEmpty(selectedEventIds)) || (isPagerduty && _.isEmpty(pagerdutyKeys));
+  const testDisabled =
+    (mode === 'history' && _.isEmpty(selectedEventIds)) || (isPagerduty && _.isEmpty(pagerdutyKeys)) || (isJira && (!_.trim(jiraProject) || !_.trim(jiraIssueType)));
 
   return (
     <>
@@ -241,6 +253,19 @@ export default function TestModal(props: Props) {
                 />
               </div>
             )}
+            {isJira && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.jira_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.jira_tip')}</div>
+                <div className='grid grid-cols-2 gap-3'>
+                  <Input value={jiraProject} placeholder={t('test.jira_project_placeholder')} onChange={(e) => setJiraProject(e.target.value)} />
+                  <Input value={jiraIssueType} placeholder={t('test.jira_issue_type_placeholder')} onChange={(e) => setJiraIssueType(e.target.value)} />
+                </div>
+                <Checkbox className='mt-2' checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
+                  {t('test.with_recovery')}
+                </Checkbox>
+              </div>
+            )}
             {contactKey && (
               <div className='mb-4'>
                 <div className='mb-2 font-bold'>{t('test.receivers_title')}</div>
@@ -313,7 +338,22 @@ export default function TestModal(props: Props) {
             title={result?.success ? t('test.result_success') : t('test.result_failed')}
             subTitle={
               result?.success ? (
-                t('test.result_success_desc')
+                result?.detail ? (
+                  // 原生媒介回填的动作说明（如 Jira 工单链接），链接可点
+                  <pre className='mt-2 mb-0 whitespace-pre-wrap break-all text-left text-[12px]'>
+                    {_.map(_.split(result.detail, /(https?:\/\/\S+)/), (part, i) =>
+                      /^https?:\/\//.test(part) ? (
+                        <a key={i} href={part} target='_blank' rel='noreferrer'>
+                          {part}
+                        </a>
+                      ) : (
+                        <React.Fragment key={i}>{part}</React.Fragment>
+                      ),
+                    )}
+                  </pre>
+                ) : (
+                  t('test.result_success_desc')
+                )
               ) : (
                 // 第三方的报错原文对排障最有用，完整展示、不截断
                 <pre className='mt-2 mb-0 whitespace-pre-wrap break-all text-left text-[12px]'>{result?.error_message}</pre>

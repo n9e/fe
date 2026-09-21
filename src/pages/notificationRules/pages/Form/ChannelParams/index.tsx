@@ -9,6 +9,7 @@ import Flashduty from './Flashduty';
 import Custom from './Custom';
 import PagerDuty from './Pagerduty';
 import FeishuApp from './FeishuApp';
+import Jira from './Jira';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -28,6 +29,8 @@ export default function index(props: Props) {
     return <PagerDuty field={field} channelItem={channelItem} />;
   } else if (request_type === 'feishuapp') {
     return <FeishuApp field={field} channelItem={channelItem} />;
+  } else if (request_type === 'jira') {
+    return <Jira prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
   }
 
   return (

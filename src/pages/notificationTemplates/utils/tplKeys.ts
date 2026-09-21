@@ -41,6 +41,14 @@ export interface ChannelLike {
 /** 邮件类媒介的字段是固定的一对，不从 body 推导（smtp 压根没有 HTTP body） */
 export const SMTP_TPL_KEYS = ['subject', 'content'];
 
+/**
+ * 原生对接的媒介（后端 provider 自己组包，没有 HTTP body）的字段也是固定的：
+ * Jira 的 title 是工单标题，content 是描述（恢复时的评论也用它渲染）
+ */
+export const NATIVE_TPL_KEYS: Record<string, string[]> = {
+  jira: ['title', 'content'],
+};
+
 // 同时兼容 {{$tpl.title}} 与 {{ $tpl.title }}
 const TPL_REF_REGEXP = /\{\{-?\s*\$tpl\.([a-zA-Z0-9_]+)\s*-?\}\}/g;
 
@@ -72,9 +80,7 @@ export function extractTplKeysFromBody(body?: string): string[] {
 function collectTplTexts(channel?: ChannelLike): string[] {
   const http = channel?.request_config?.http_request_config;
   if (!http) return [];
-  return [http.request?.body, http.url, ...pairValues(http.headers), ...pairValues(http.request?.parameters)].filter(
-    (text): text is string => typeof text === 'string',
-  );
+  return [http.request?.body, http.url, ...pairValues(http.headers), ...pairValues(http.request?.parameters)].filter((text): text is string => typeof text === 'string');
 }
 
 /** 取出 map / {key,value}[] 两种形态里的值 */
@@ -95,6 +101,10 @@ export function getExpectedTplKeys(channel?: ChannelLike): ExpectedTplKeys {
 
   if (requestType === 'smtp') {
     return { keys: [...SMTP_TPL_KEYS], source: 'fixed' };
+  }
+
+  if (requestType && NATIVE_TPL_KEYS[requestType]) {
+    return { keys: [...NATIVE_TPL_KEYS[requestType]], source: 'fixed' };
   }
 
   // 这两类直接用 event 字段构造 payload，后端跳过模板渲染

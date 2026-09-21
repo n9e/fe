@@ -1,24 +1,30 @@
 import React, { useState } from 'react';
-import { Modal, Button, Space, Tooltip, Form, Alert, Segmented, Tag } from 'antd';
+import { Modal, Button, Space, Tooltip, Form, Alert, Segmented, Tag, Checkbox } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import EventsTable from '@/pages/eventPipeline/pages/Form/TestModal/EventsTable';
+import { ChannelItem } from '@/pages/notificationChannels/types';
+import { isNativeRequestType } from '@/pages/notificationChannels/utils/native';
 
 import { NS } from '../../constants';
 import { notifyRuleTest } from '../../services';
 
 interface Props {
   field: FormListFieldData;
+  channelItem?: ChannelItem;
 }
 
 type TestMode = 'history' | 'mock';
 
 export default function TestButton(props: Props) {
   const { t } = useTranslation(NS);
-  const { field } = props;
+  const { field, channelItem } = props;
+  // 原生媒介（如 Jira）默认连恢复一起测：先按告警、再按恢复各发一次，一次验证建单与关单
+  const supportsRecoveryTest = isNativeRequestType(channelItem?.request_type);
+  const [withRecovery, setWithRecovery] = useState(true);
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState<TestMode>('history');
   const [historyTotal, setHistoryTotal] = useState<number>();
@@ -47,6 +53,7 @@ export default function TestButton(props: Props) {
     notifyRuleTest({
       ...(mode === 'mock' ? { use_mock_event: true } : { event_ids: selectedEventIds }),
       notify_config: buildNotifyConfigPayload(),
+      ...(supportsRecoveryTest && withRecovery ? { with_recovery: true } : {}),
     }).then((res) => {
       let msg = res.dat;
       try {
@@ -66,6 +73,7 @@ export default function TestButton(props: Props) {
     setSelectedEventIds([]);
     setMode('history');
     setHistoryTotal(undefined);
+    setWithRecovery(true);
   };
 
   return (
@@ -94,6 +102,13 @@ export default function TestButton(props: Props) {
         }}
         onOk={handleTest}
       >
+        {supportsRecoveryTest && (
+          <div className='mb-4'>
+            <Checkbox checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
+              {t('notification_configuration.test_with_recovery')}
+            </Checkbox>
+          </div>
+        )}
         <Segmented
           className='mb-4'
           value={mode}

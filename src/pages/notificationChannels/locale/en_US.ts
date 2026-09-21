@@ -37,6 +37,7 @@ const en_US = {
     },
   },
   request_configuration: {
+    jira: 'Jira configuration',
     http: 'HTTP configuration',
     smtp: 'SMTP configuration',
     script: 'Script configuration',
@@ -110,6 +111,37 @@ const en_US = {
     timeout: 'Timeout (unit: ms)',
     retry_times: 'Retry times',
   },
+  jira_request_config: {
+    top_tip:
+      'Recommended: create a service account in admin.atlassian.com → Directory → Service accounts, give it the User role for Jira, and create an API token for it. Issues are reported by this account. Jira Cloud API tokens expire after at most 1 year; notifications fail once the token expires.',
+    site_url: 'Site URL',
+    site_url_tip:
+      'The address you open Jira with in the browser, e.g. https://your-domain.atlassian.net, without /rest/api. Fill in the site URL even with a scoped token; Nightingale converts it to the Atlassian gateway address automatically.',
+    site_url_invalid: 'Must start with http:// or https://, e.g. https://your-domain.atlassian.net',
+    token_type: 'Token type',
+    token_type_tip:
+      'Choose the first option for service-account tokens and tokens created with Create API token with scopes: they must go through the Atlassian gateway (api.atlassian.com), and the Cloud ID is fetched from the site URL automatically. Choose the second option for tokens created with Create API token; they are sent to the site URL directly.',
+    token_scoped: 'Scoped API token (incl. service accounts, recommended)',
+    token_classic: 'Classic API token',
+    email: 'Email',
+    email_tip:
+      "The email of the account that owns the token. For a service account, copy it from the service account's detail page (it looks like xxx@serviceaccount.atlassian.com).",
+    api_token: 'API Token',
+    api_token_tip:
+      'Service account: open Credentials on the service account page and create an API token (grant read:jira-work and write:jira-work; read:jira-user is optional). Personal account: https://id.atlassian.com/manage-profile/security/api-tokens. The token is shown only once. You can reference Variable Settings with {{.variable_name}}. Check credentials tells you exactly which permission is missing.',
+    cloud_id: 'Cloud ID',
+    cloud_id_tip:
+      'Usually leave it empty: it is fetched from the site URL automatically. If that fails, open admin.atlassian.com and copy the segment after /s/ in the address bar (not the Organization ID).',
+    cloud_id_placeholder: 'Leave empty to fetch automatically',
+    proxy_tip: 'Fill in when Jira can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+    insecure_skip_verify: 'Skip TLS certificate verification',
+  },
+  check: {
+    btn: 'Check credentials',
+    passed: 'Credentials work',
+    failed: 'Some required checks failed',
+    optional: 'optional',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -174,6 +206,11 @@ const en_US = {
     script: 'Script',
   },
   test: {
+    jira_title: 'Jira project and issue type',
+    jira_tip: 'A real issue will be created in this project. After saving, you pick the project and issue type from dropdowns in a notification rule; enter them manually here.',
+    jira_project_placeholder: 'Project key, e.g. OPS',
+    jira_issue_type_placeholder: 'Issue type, e.g. Bug',
+    with_recovery: 'Also test recovery (comment on and close the issue)',
     btn: 'Test',
     run: 'Send test',
     back: 'Back to edit',
@@ -182,7 +219,8 @@ const en_US = {
     params_title: 'Media parameters',
     receivers_title: 'Recipients',
     pagerduty_keys_title: 'Integration key',
-    pagerduty_keys_tip: 'PagerDuty routes by integration key. After saving you can pick one by service/integration in a notification rule; enter it manually here. Multiple keys are allowed.',
+    pagerduty_keys_tip:
+      'PagerDuty routes by integration key. After saving you can pick one by service/integration in a notification rule; enter it manually here. Multiple keys are allowed.',
     pagerduty_keys_placeholder: 'Type an integration key and press Enter',
     user_ids: 'Select users',
     user_group_ids: 'Select teams',

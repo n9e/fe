@@ -13,6 +13,7 @@ import Splitter from '@/components/Splitter';
 
 import { NS, getChannelTypeMeta } from '../../constants';
 import { ChannelItem } from '../../types';
+import { isNativeRequestType } from '../../utils/native';
 import ContactKeysSelect from './ContactKeysSelect';
 import HTTP from './HTTP';
 import SMTP from './SMTP';
@@ -22,6 +23,7 @@ import Pagerduty from './Pagerduty';
 import DingtalkApp from './DingtalkApp';
 import WecomApp from './WecomApp';
 import FeishuApp from './FeishuApp';
+import Jira from './Jira';
 import TestModal from './TestModal';
 
 interface Props {
@@ -159,6 +161,7 @@ export default function FormCpt(props: Props) {
                   <DingtalkApp />
                   <WecomApp />
                   <FeishuApp />
+                  <Jira />
                 </div>
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>
@@ -208,10 +211,11 @@ export default function FormCpt(props: Props) {
               {/* 未知 ident（历史数据、自建 script 媒介）在官网上没有对应文档页，
                   直接拼 URL 会让整个右栏渲染一张带营销 banner 的 404 页。
                   这类回落到仓库内按 request_type 组织的本地文档。 */}
-              {requestType && isKnownType && (
+              {/* 原生对接的媒介（Jira 等）官网还没有文档页，同样走本地文档 */}
+              {requestType && isKnownType && !isNativeRequestType(requestType) && (
                 <Document type='iframe' documentPath={`https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/${ident}/`} />
               )}
-              {requestType && !isKnownType && <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />}
+              {requestType && (!isKnownType || isNativeRequestType(requestType)) && <Document documentPath={`/n9e-docs/notification-channel/${requestType}-request`} />}
             </div>
           </Splitter.Panel>
         </Splitter>

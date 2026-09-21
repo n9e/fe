@@ -37,6 +37,7 @@ const ja_JP = {
     },
   },
   request_configuration: {
+    jira: 'Jira 設定',
     http: 'HTTP 設定',
     smtp: 'SMTP 設定',
     script: 'Script 設定',
@@ -109,6 +110,36 @@ const ja_JP = {
     timeout: 'タイムアウト (単位: ミリ秒)',
     retry_times: 'リトライ回数',
   },
+  jira_request_config: {
+    top_tip:
+      '推奨：admin.atlassian.com → ディレクトリ → サービスアカウント でサービスアカウントを作成し、Jira の User ロールを付与してから API トークンを作成してください。課題の報告者はこのアカウントになります。Jira Cloud の API トークンの有効期限は最長 1 年で、期限切れ後は通知が失敗します。',
+    site_url: 'サイト URL',
+    site_url_tip:
+      'ブラウザで Jira を開くときのアドレス（例：https://your-domain.atlassian.net）。/rest/api は含めないでください。スコープ付きトークンを使う場合もサイト URL を入力してください。Atlassian ゲートウェイのアドレスに自動変換されます。',
+    site_url_invalid: 'http:// または https:// で始まる必要があります（例：https://your-domain.atlassian.net）',
+    token_type: 'トークン種別',
+    token_type_tip:
+      'サービスアカウントのトークンと、Create API token with scopes で作成したトークンは 1 つ目を選択してください。Atlassian ゲートウェイ（api.atlassian.com）経由でアクセスし、Cloud ID はサイト URL から自動取得します。Create API token で作成した通常のトークンは 2 つ目を選択し、サイト URL に直接アクセスします。',
+    token_scoped: 'スコープ付き API トークン（サービスアカウントを含む・推奨）',
+    token_classic: 'クラシック API トークン',
+    email: 'メールアドレス',
+    email_tip: 'トークンを所有するアカウントのメールアドレス。サービスアカウントの場合は詳細ページからコピーしてください（xxx@serviceaccount.atlassian.com の形式）。',
+    api_token: 'API トークン',
+    api_token_tip:
+      'サービスアカウント：サービスアカウントページの Credentials で API トークンを作成します（read:jira-work と write:jira-work を付与、read:jira-user は任意）。個人アカウント：https://id.atlassian.com/manage-profile/security/api-tokens。トークンは一度しか表示されません。{{.変数名}} で変数設定を参照できます。不足している権限は「認証情報を検証」の結果で確認してください。',
+    cloud_id: 'Cloud ID',
+    cloud_id_tip:
+      '通常は空欄のままで、サイト URL から自動取得します。失敗した場合は admin.atlassian.com を開き、アドレスバーの /s/ の後ろの部分をコピーしてください（Organization ID ではありません）。',
+    cloud_id_placeholder: '空欄で自動取得',
+    proxy_tip: 'Jira へのアクセスにプロキシが必要な場合に入力します（例：http://127.0.0.1:7890）',
+    insecure_skip_verify: 'TLS 証明書の検証をスキップ',
+  },
+  check: {
+    btn: '認証情報を検証',
+    passed: '検証に成功しました',
+    failed: '必須項目に失敗があります',
+    optional: '任意',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API キー',
@@ -173,6 +204,11 @@ const ja_JP = {
     script: 'Script',
   },
   test: {
+    jira_title: 'Jira プロジェクトと課題タイプ',
+    jira_tip: 'このプロジェクトに実際の課題が作成されます。保存後は通知ルールでプロジェクトと課題タイプをドロップダウンから選びますが、ここでは手入力してください。',
+    jira_project_placeholder: 'プロジェクトキー（例：OPS）',
+    jira_issue_type_placeholder: '課題タイプ（例：Bug）',
+    with_recovery: '復旧もあわせてテスト（課題にコメントしてクローズ）',
     btn: 'テスト',
     run: 'テスト送信',
     back: '編集に戻る',

@@ -35,6 +35,7 @@ const zh_HK = {
     },
   },
   request_configuration: {
+    jira: 'Jira 配置',
     http: 'HTTP 配置',
     smtp: 'SMTP 配置',
     script: 'Script 配置',
@@ -106,6 +107,35 @@ const zh_HK = {
     timeout: '超時時間 (單位: 毫秒)',
     retry_times: '重試次數',
   },
+  jira_request_config: {
+    top_tip:
+      '推薦使用服務帳號：在 admin.atlassian.com → 目錄 → 服務帳戶 建立，給 Jira 分配 User 角色，再為它建立 API Token。工單的報告人會顯示為這個服務帳號。Jira Cloud 的 API Token 最長有效期 1 年，到期後通知會失敗，請留意更換。',
+    site_url: '站點地址',
+    site_url_tip:
+      '和瀏覽器裡開啟 Jira 的地址一致，如 https://your-domain.atlassian.net，不要帶 /rest/api。使用帶權限範圍的權杖時也填站點地址，夜鶯會自動換算成 Atlassian 閘道地址。',
+    site_url_invalid: '須以 http:// 或 https:// 開頭，如 https://your-domain.atlassian.net',
+    token_type: '權杖類型',
+    token_type_tip:
+      '服務帳號的權杖、以及點 Create API token with scopes 建立的權杖選第一項：它們必須經 Atlassian 閘道（api.atlassian.com）存取，夜鶯會根據站點地址自動取得 Cloud ID。點 Create API token 建立的一般權杖選第二項，直接存取站點地址。',
+    token_scoped: '帶權限範圍的 API Token（含服務帳號，推薦）',
+    token_classic: '一般 API Token',
+    email: '信箱',
+    email_tip: '權杖所屬帳號的信箱。使用服務帳號時，在服務帳號詳情頁複製它的信箱（形如 xxx@serviceaccount.atlassian.com）。',
+    api_token: 'API Token',
+    api_token_tip:
+      '服務帳號：在服務帳號詳情頁的 Credentials 裡建立 API Token（授予 read:jira-work、write:jira-work，read:jira-user 可選）。個人帳號：https://id.atlassian.com/manage-profile/security/api-tokens。權杖只顯示一次。支援用 {{.變數名}} 引用變數設定。缺哪項權限以「校驗憑證」的結果為準。',
+    cloud_id: 'Cloud ID',
+    cloud_id_tip: '一般留空，夜鶯會根據站點地址自動取得。自動取得失敗時手填：開啟 admin.atlassian.com，網址列裡 /s/ 後面那一段就是（注意不是 Organization ID）。',
+    cloud_id_placeholder: '留空自動取得',
+    proxy_tip: '存取 Jira 需要經過代理時填寫，如 http://127.0.0.1:7890',
+    insecure_skip_verify: '略過憑證校驗',
+  },
+  check: {
+    btn: '校驗憑證',
+    passed: '校驗通過',
+    failed: '有必需項未通過',
+    optional: '可選',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -170,6 +200,11 @@ const zh_HK = {
     script: 'Script',
   },
   test: {
+    jira_title: 'Jira 專案與工作類型',
+    jira_tip: '將在所填專案裡建立一張真實工單。儲存後在通知規則裡是下拉選擇專案和工作類型，這裡請手動填寫。',
+    jira_project_placeholder: '專案 key，如 OPS',
+    jira_issue_type_placeholder: '工作類型，如 Bug',
+    with_recovery: '同時測試恢復（評論並關閉工單）',
     btn: '測試',
     run: '發送測試',
     back: '返回修改',

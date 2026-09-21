@@ -914,43 +914,34 @@ export const getNotificationChannelTypes = () => {
     //     },
     //   },
     // },
-    // jira: {
-    //   logo: '/image/logos/jira.png',
-    //   type: 'http',
-    //   default_values: {
-    //     param_config: {
-    //       custom: {
-    //         params: [
-    //           {
-    //             key: 'project_key',
-    //             cname: 'Project Key',
-    //             type: 'string',
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     request_type: 'http',
-    //     request_config: {
-    //       http_request_config: {
-    //         url: 'https://{JIRA Service Account Email}:{API Token}@api.atlassian.com/ex/jira/{CloudID}/rest/api/3/issue',
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         proxy: '',
-    //         timeout: 10000,
-    //         concurrency: 5,
-    //         retry_times: 3,
-    //         retry_interval: 100,
-    //         request: {
-    //           parameters: null,
-    //           form: '',
-    //           body: '{"fields":{"project":{"key":"{{$params.project_key}}"},"issuetype":{"name":"{{if $event.IsRecovered}}Recovery{{else}}Alert{{end}}"},"summary":"{{$event.RuleName}}","description":{"type":"doc","version":1,"content":[{"type":"paragraph","content":[{"type":"text","text":"{{$tpl.content}}"}]}]},"labels":["{{join $event.TagsJSON "\\",\\""}}", "eventHash={{$event.Hash}}"]}}',
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
+    jira: {
+      logo: '/image/logos/jira.png',
+      type: 'jira',
+      default_values: {
+        request_type: 'jira',
+        // 显式给出 param_config：浅合并 DEFAULT_VALUES 时会继承 contact_key: 'phone'，Jira 不需要收件人
+        param_config: {
+          custom: {
+            params: [],
+          },
+        },
+        request_config: {
+          jira_request_config: {
+            deployment_type: 'cloud',
+            token_type: 'scoped',
+            site_url: '',
+            email: '',
+            api_token: '',
+            cloud_id: '',
+            proxy: '',
+            timeout: 10000,
+            retry_times: 3,
+            retry_sleep: 1000,
+            insecure_skip_verify: false,
+          },
+        },
+      },
+    },
     pagerduty: {
       logo: '/image/logos/pagerduty.png',
       type: 'pagerduty',

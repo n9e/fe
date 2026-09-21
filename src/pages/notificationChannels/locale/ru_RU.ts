@@ -37,6 +37,7 @@ const ru_RU = {
     },
   },
   request_configuration: {
+    jira: 'Настройки Jira',
     http: 'Настройка HTTP',
     smtp: 'Настройка SMTP',
     script: 'Настройка Script',
@@ -111,6 +112,36 @@ const ru_RU = {
     timeout: 'Тайм-аут (мс)',
     retry_times: 'Количество повторных попыток',
   },
+  jira_request_config: {
+    top_tip:
+      'Рекомендуется сервисный аккаунт: создайте его в admin.atlassian.com → Directory → Service accounts, выдайте роль User для Jira и создайте для него API-токен. Автором задач будет этот аккаунт. API-токены Jira Cloud действуют не более 1 года, после истечения уведомления перестанут отправляться.',
+    site_url: 'Адрес сайта',
+    site_url_tip:
+      'Адрес, по которому Jira открывается в браузере, например https://your-domain.atlassian.net, без /rest/api. Для токена с областями тоже укажите адрес сайта — Nightingale сам преобразует его в адрес шлюза Atlassian.',
+    site_url_invalid: 'Должен начинаться с http:// или https://, например https://your-domain.atlassian.net',
+    token_type: 'Тип токена',
+    token_type_tip:
+      'Для токенов сервисных аккаунтов и токенов, созданных через Create API token with scopes, выберите первый вариант: они работают только через шлюз Atlassian (api.atlassian.com), Cloud ID определяется по адресу сайта автоматически. Для обычных токенов (Create API token) выберите второй вариант — запросы идут напрямую на адрес сайта.',
+    token_scoped: 'API-токен с областями (включая сервисные аккаунты, рекомендуется)',
+    token_classic: 'Обычный API-токен',
+    email: 'Email',
+    email_tip: 'Email аккаунта, которому принадлежит токен. Для сервисного аккаунта скопируйте его со страницы аккаунта (вида xxx@serviceaccount.atlassian.com).',
+    api_token: 'API-токен',
+    api_token_tip:
+      'Сервисный аккаунт: на странице аккаунта откройте Credentials и создайте API-токен (права read:jira-work и write:jira-work, read:jira-user — по желанию). Личный аккаунт: https://id.atlassian.com/manage-profile/security/api-tokens. Токен показывается один раз. Можно сослаться на переменную из настроек через {{.имя_переменной}}. Каких прав не хватает, покажет «Проверить учётные данные».',
+    cloud_id: 'Cloud ID',
+    cloud_id_tip:
+      'Обычно оставьте пустым — он определяется по адресу сайта автоматически. Если не получилось, откройте admin.atlassian.com и скопируйте часть адреса после /s/ (это не Organization ID).',
+    cloud_id_placeholder: 'Оставьте пустым для автоопределения',
+    proxy_tip: 'Укажите, если Jira доступна только через прокси, например http://127.0.0.1:7890',
+    insecure_skip_verify: 'Пропустить проверку TLS-сертификата',
+  },
+  check: {
+    btn: 'Проверить учётные данные',
+    passed: 'Проверка пройдена',
+    failed: 'Не пройдены обязательные проверки',
+    optional: 'необязательно',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -175,6 +206,11 @@ const ru_RU = {
     script: 'Script',
   },
   test: {
+    jira_title: 'Проект и тип задачи Jira',
+    jira_tip: 'В этом проекте будет создана настоящая задача. После сохранения проект и тип задачи выбираются из списков в правиле уведомлений, здесь введите их вручную.',
+    jira_project_placeholder: 'Ключ проекта, например OPS',
+    jira_issue_type_placeholder: 'Тип задачи, например Bug',
+    with_recovery: 'Также проверить восстановление (комментарий и закрытие задачи)',
     btn: 'Тест',
     run: 'Отправить тест',
     back: 'Вернуться к редактированию',
@@ -183,7 +219,8 @@ const ru_RU = {
     params_title: 'Параметры медиа',
     receivers_title: 'Получатели',
     pagerduty_keys_title: 'Integration key',
-    pagerduty_keys_tip: 'PagerDuty доставляет по integration key. После сохранения его можно выбрать по сервису/интеграции в правиле уведомлений; здесь введите вручную. Можно указать несколько.',
+    pagerduty_keys_tip:
+      'PagerDuty доставляет по integration key. После сохранения его можно выбрать по сервису/интеграции в правиле уведомлений; здесь введите вручную. Можно указать несколько.',
     pagerduty_keys_placeholder: 'Введите integration key и нажмите Enter',
     user_ids: 'Выбрать пользователей',
     user_group_ids: 'Выбрать команды',
