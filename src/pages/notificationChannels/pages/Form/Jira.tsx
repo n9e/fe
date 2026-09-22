@@ -58,7 +58,8 @@ export default function Jira() {
         </Radio.Group>
       </Form.Item>
       <Form.Item label={label('email')} name={[...names, 'email']} rules={[{ required: isJira }]}>
-        <Input placeholder='alerts-xxxx@serviceaccount.atlassian.com' />
+        {/* 服务账号只能建带权限范围的令牌；普通令牌一定属于个人账号，占位符别再给服务账号的示例 */}
+        <Input placeholder={tokenType === 'classic' ? 'you@company.com' : 'alerts-xxxx@serviceaccount.atlassian.com'} />
       </Form.Item>
       <Form.Item label={label('api_token')} name={[...names, 'api_token']} rules={[{ required: isJira }]}>
         <Input.Password autoComplete='new-password' />
