@@ -144,13 +144,6 @@ const id_ID = {
         'Selama alert masih aktif, notifikasi berulang tidak membuat issue baru. Pilih Tambah komentar untuk menambahkan komentar setiap kali (pengamat akan diberi tahu).',
       on_repeat_none: 'Abaikan',
       on_repeat_comment: 'Tambah komentar',
-      reopen_transition: 'Transisi buka ulang',
-      reopen_transition_tip:
-        'Jika alert terpicu lagi setelah issue ditutup, issue dibuka ulang dengan transisi ini bila masih dalam jendela waktu; jika tidak, issue baru dibuat. Kosong = selalu buat baru.',
-      reopen_duration: 'Jendela buka ulang (menit)',
-      reopen_duration_tip: 'Default 1440 menit (24 jam).',
-      wont_fix_resolution: 'Resolusi yang diabaikan',
-      wont_fix_resolution_tip: 'Issue yang ditutup dengan resolusi ini tidak dibuka ulang; issue baru akan dibuat.',
       priority_map: 'Pemetaan prioritas',
       priority_map_tip:
         'Petakan tingkat keparahan alert ke prioritas Jira. Kosongkan jika tidak ingin menetapkan prioritas; wajib kosong jika layar tipe issue tidak memiliki field prioritas.',

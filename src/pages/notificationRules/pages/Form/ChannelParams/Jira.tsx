@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Col, Collapse, Form, Input, InputNumber, Radio, Row, Select, Space, Spin, Switch, Tooltip } from 'antd';
+import { Alert, Button, Col, Collapse, Form, Input, Radio, Row, Select, Space, Spin, Switch, Tooltip } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
@@ -219,27 +219,6 @@ export default function Jira(props: Props) {
                   <Radio value='none'>{t('notification_configuration.jira.on_repeat_none')}</Radio>
                   <Radio value='comment'>{t('notification_configuration.jira.on_repeat_comment')}</Radio>
                 </Radio.Group>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item {...field} label={label('reopen_transition')} name={[field.name, 'params', 'reopen_transition']}>
-                <Input placeholder='Reopen' />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item
-                {...field}
-                label={label('reopen_duration')}
-                name={[field.name, 'params', 'reopen_duration']}
-                getValueProps={(v) => ({ value: v ? _.toNumber(v) : undefined })}
-                normalize={(v) => (v === null || v === undefined ? undefined : String(v))}
-              >
-                <InputNumber min={1} className='w-full' placeholder='1440' />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item {...field} label={label('wont_fix_resolution')} name={[field.name, 'params', 'wont_fix_resolution']}>
-                <Input placeholder="Won't Fix" />
               </Form.Item>
             </Col>
           </Row>

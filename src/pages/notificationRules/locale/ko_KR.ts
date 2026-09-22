@@ -140,13 +140,6 @@ const ko_KR = {
       on_repeat_tip: '알림이 계속되는 동안 반복 알림은 새 이슈를 만들지 않습니다. 「댓글 추가」를 고르면 매번 댓글을 남깁니다(지켜보는 사람에게 알림이 갑니다).',
       on_repeat_none: '처리 안 함',
       on_repeat_comment: '댓글 추가',
-      reopen_transition: '다시 열기 전환',
-      reopen_transition_tip:
-        '이슈 종료 후 같은 알림이 다시 발생하면 다시 열기 기간 안에서는 이 전환으로 원래 이슈를 다시 열고, 기간을 넘으면 새 이슈를 만듭니다. 비워 두면 항상 새로 만듭니다.',
-      reopen_duration: '다시 열기 기간(분)',
-      reopen_duration_tip: '기본값 1440분(24시간).',
-      wont_fix_resolution: '무시할 해결 결과',
-      wont_fix_resolution_tip: '이 해결 결과로 종료된 이슈는 다시 열지 않고 새 이슈를 만듭니다.',
       priority_map: '우선순위 매핑',
       priority_map_tip: '알림 심각도를 Jira 우선순위에 대응시킵니다. 비워 두면 우선순위를 설정하지 않으며, 이슈 유형 화면에 우선순위 필드가 없으면 반드시 비워 두어야 합니다.',
       priority_unset: '설정 안 함',

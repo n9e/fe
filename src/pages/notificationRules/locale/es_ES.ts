@@ -143,13 +143,6 @@ const es_ES = {
         'Mientras la alerta sigue activa, las notificaciones repetidas nunca crean una incidencia nueva. Elige Añadir comentario para agregar un comentario cada vez (se notifica a los observadores).',
       on_repeat_none: 'No hacer nada',
       on_repeat_comment: 'Añadir comentario',
-      reopen_transition: 'Transición de reapertura',
-      reopen_transition_tip:
-        'Si la alerta vuelve a dispararse tras cerrar la incidencia, se reabre con esta transición si está dentro de la ventana; si no, se crea una nueva. Vacío = crear siempre una nueva.',
-      reopen_duration: 'Ventana de reapertura (min)',
-      reopen_duration_tip: 'Por defecto 1440 minutos (24 horas).',
-      wont_fix_resolution: 'Resolución ignorada',
-      wont_fix_resolution_tip: 'Las incidencias cerradas con esta resolución no se reabren; se crea una nueva.',
       priority_map: 'Asignación de prioridad',
       priority_map_tip:
         'Asigna las severidades de la alerta a prioridades de Jira. Déjalo vacío para no fijar prioridad; debe quedar vacío si la pantalla del tipo de incidencia no tiene el campo de prioridad.',

@@ -34,7 +34,9 @@ Select this media type in a notification rule, then:
 
 - **Project** and **Issue type**: pick from the dropdowns; any existing issue type of the project works
 - **On recovery**: defaults to "Close issue", i.e. comment and move the issue to a Done status automatically, no transition name needed
-- **Advanced**: reopen, priority mapping, labels, custom fields and so on, as needed
+- **Advanced**: close transition name, comment on repeat, priority mapping, labels, custom fields and so on, as needed
+
+While an alert is not recovered it has exactly one issue; after the issue is closed, the same alert firing again creates a new issue.
 
 **Test** in the rule creates a real issue and, by default, tests the recovery too.
 

@@ -146,13 +146,6 @@ const fr_FR = {
         "Tant que l'alerte persiste, les notifications répétées ne créent jamais de nouveau ticket. Choisissez Ajouter un commentaire pour en ajouter un à chaque fois (les observateurs sont notifiés).",
       on_repeat_none: 'Ne rien faire',
       on_repeat_comment: 'Ajouter un commentaire',
-      reopen_transition: 'Transition de réouverture',
-      reopen_transition_tip:
-        "Si l'alerte se redéclenche après la fermeture du ticket, il est rouvert avec cette transition dans la fenêtre de réouverture ; sinon, un nouveau ticket est créé. Vide = toujours en créer un nouveau.",
-      reopen_duration: 'Fenêtre de réouverture (min)',
-      reopen_duration_tip: 'Par défaut 1440 minutes (24 heures).',
-      wont_fix_resolution: 'Résolution ignorée',
-      wont_fix_resolution_tip: 'Les tickets fermés avec cette résolution ne sont pas rouverts ; un nouveau ticket est créé.',
       priority_map: 'Correspondance des priorités',
       priority_map_tip:
         "Associez les niveaux d'alerte aux priorités Jira. Laissez vide pour ne pas définir de priorité ; obligatoire si l'écran du type de ticket n'a pas de champ priorité.",

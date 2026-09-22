@@ -144,13 +144,6 @@ const en_US = {
       on_repeat_tip: 'While the alert keeps firing, repeated notifications never create a new issue. Choose Add comment to append a comment each time (watchers get notified).',
       on_repeat_none: 'Do nothing',
       on_repeat_comment: 'Add comment',
-      reopen_transition: 'Reopen transition',
-      reopen_transition_tip:
-        'When the alert fires again after the issue was closed, reopen the issue with this transition if it is within the reopen window; otherwise a new issue is created. Empty = always create a new issue.',
-      reopen_duration: 'Reopen window (min)',
-      reopen_duration_tip: 'Default 1440 minutes (24 hours).',
-      wont_fix_resolution: 'Ignored resolution',
-      wont_fix_resolution_tip: 'Issues closed with this resolution are not reopened; a new issue is created instead.',
       priority_map: 'Priority mapping',
       priority_map_tip: 'Map alert severities to Jira priorities. Leave empty to not set a priority; it must be empty when the issue type screen has no priority field.',
       priority_unset: 'Not set',

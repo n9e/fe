@@ -144,13 +144,6 @@ const pt_BR = {
         'Enquanto o alerta continua ativo, notificações repetidas nunca criam uma nova issue. Escolha Adicionar comentário para acrescentar um comentário a cada vez (os observadores são notificados).',
       on_repeat_none: 'Não fazer nada',
       on_repeat_comment: 'Adicionar comentário',
-      reopen_transition: 'Transição de reabertura',
-      reopen_transition_tip:
-        'Quando o alerta dispara de novo depois que a issue foi fechada, ela é reaberta com esta transição se estiver dentro da janela; caso contrário, uma nova issue é criada. Vazio = sempre criar uma nova.',
-      reopen_duration: 'Janela de reabertura (min)',
-      reopen_duration_tip: 'Padrão: 1440 minutos (24 horas).',
-      wont_fix_resolution: 'Resolução ignorada',
-      wont_fix_resolution_tip: 'Issues fechadas com esta resolução não são reabertas; uma nova issue é criada.',
       priority_map: 'Mapeamento de prioridade',
       priority_map_tip:
         'Mapeie severidades do alerta para prioridades do Jira. Deixe vazio para não definir prioridade; deve ficar vazio se a tela do tipo de issue não tiver o campo de prioridade.',
