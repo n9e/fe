@@ -26,6 +26,7 @@ The API URL defaults to `https://api.atlassian.com` and rarely needs changing; s
 
 ## FAQ
 
-- **401 / 403**: wrong API key, or the integration is turned off
+- **401 / 403**: wrong API key
+- **Integration is disabled**: the API integration is turned off in JSM. JSM still accepts the request but creates no alert; Nightingale reads the processing result and records the send as failed. Turn the integration on in the team's Integrations
 - **422**: JSM rejected a field; the error names it
 - **Test sends** wait until JSM has processed the request and show the alert id; by default the recovery is tested too, i.e. the alert is created and then closed
