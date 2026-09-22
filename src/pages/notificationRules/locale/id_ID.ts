@@ -166,6 +166,34 @@ const id_ID = {
       field_value_placeholder: 'Nilai, misalnya {"value":"prod"}',
       field_add: 'Tambah field',
     },
+    webhook_history: {
+      label: 'Pakai ulang webhook',
+      tip: 'Webhook yang sudah dipakai dengan media ini di aturan tim Anda; memilih satu akan mengisi semua parameternya',
+      placeholder: 'Pilih webhook yang pernah dipakai',
+    },
+    discord: {
+      webhook_url: 'URL webhook',
+      webhook_url_tip:
+        'Di Discord buka Server Settings → Integrations → Webhooks → New Webhook, pilih channel lalu klik Copy Webhook URL. URL ini adalah kredensial dan disamarkan di catatan notifikasi. Anda dapat merujuk variabel dengan {{.nama_variabel}}.',
+      webhook_url_invalid: 'Harus berbentuk https://discord.com/api/webhooks/<id>/<token>',
+      bot_name: 'Nama',
+      bot_name_tip: 'Nama yang mudah dikenali: tampil sebagai tujuan di catatan notifikasi dan memungkinkan aturan lain memakai ulang webhook ini',
+      target: 'Kirim ke',
+      target_tip: 'Jika webhook milik channel forum, pilih Postingan forum baru (satu per notifikasi) atau Thread yang ada',
+      target_channel: 'Channel',
+      target_forum_post: 'Postingan forum baru',
+      target_thread: 'Thread / postingan yang ada',
+      thread_name: 'Judul postingan',
+      thread_name_tip:
+        'Setiap notifikasi membuat postingan baru dengan judul ini (mendukung variabel seperti {{$event.RuleName}}, maks 100 karakter). Untuk mengirim ke postingan yang ada, pilih Thread yang ada',
+      thread_id: 'ID thread',
+      thread_id_tip: 'Aktifkan User Settings → Advanced → Developer Mode, lalu klik kanan thread atau postingan → Copy ID',
+      thread_id_invalid: 'Harus berupa ID angka',
+      mentions: 'Sebut peran / pengguna',
+      mentions_tip:
+        'Peran atau pengguna yang disebut saat alert terpicu, dipisah spasi: peran ditulis <@&ID>, pengguna <@ID> (aktifkan Developer Mode lalu klik kanan → Copy ID). Hanya ini yang disebut; @everyone di teks alert diabaikan',
+      mentions_invalid: 'Gunakan <@id_pengguna> atau <@&id_peran>, dipisah spasi',
+    },
     pagerduty: {
       services: 'Layanan/integrasi',
     },

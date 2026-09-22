@@ -7,7 +7,7 @@ import _ from 'lodash';
  * 这类媒介在官网还没有文档页，右侧文档面板走仓库内的本地文档（按 request_type 组织），
  * 否则 iframe 会渲染一张带营销 banner 的 404 页。
  */
-export const NATIVE_REQUEST_TYPES = ['jira'];
+export const NATIVE_REQUEST_TYPES = ['jira', 'discord'];
 
 export function isNativeRequestType(requestType?: string): boolean {
   return _.includes(NATIVE_REQUEST_TYPES, requestType);

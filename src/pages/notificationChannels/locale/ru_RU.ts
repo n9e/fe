@@ -37,6 +37,7 @@ const ru_RU = {
     },
   },
   request_configuration: {
+    discord: 'Настройки Discord',
     jira: 'Настройки Jira',
     http: 'Настройка HTTP',
     smtp: 'Настройка SMTP',
@@ -142,6 +143,18 @@ const ru_RU = {
     failed: 'Не пройдены обязательные проверки',
     optional: 'необязательно',
   },
+  discord_request_config: {
+    top_tip:
+      'Один адрес Webhook соответствует одному каналу, поэтому адрес указывается в каждом правиле уведомлений — так этот канал уведомлений может отправлять в любое число каналов Discord. Настройки здесь — значения по умолчанию для всех правил. Для создания Webhook нужно право Manage Webhooks на сервере.',
+    username: 'Отображаемое имя',
+    username_tip: 'Переопределяет имя Webhook в канале; пусто — имя, заданное при создании',
+    avatar_url: 'Адрес аватара',
+    avatar_url_tip: 'Переопределяет аватар Webhook; нужен публично доступный адрес изображения',
+    avatar_url_invalid: 'Должен начинаться с http:// или https://',
+    silent: 'Тихая отправка',
+    silent_tip: 'Сообщения публикуются в канал, но без push- и desktop-уведомлений',
+    proxy_tip: 'Укажите, если Discord доступен только через прокси, например http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -206,6 +219,13 @@ const ru_RU = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Discord Webhook',
+    discord_tip: 'После сохранения адрес Webhook указывается в правиле уведомлений; для проверки введите его здесь.',
+    discord_target_channel: 'Канал',
+    discord_target_forum_post: 'Новый пост форума',
+    discord_target_thread: 'Существующая ветка / пост форума',
+    discord_thread_name_placeholder: 'Заголовок поста, например {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'ID ветки, число',
     jira_title: 'Проект и тип задачи Jira',
     jira_tip: 'В этом проекте будет создана настоящая задача. После сохранения проект и тип задачи выбираются из списков в правиле уведомлений, здесь введите их вручную.',
     jira_project_placeholder: 'Ключ проекта, например OPS',

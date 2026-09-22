@@ -35,6 +35,7 @@ const zh_HK = {
     },
   },
   request_configuration: {
+    discord: 'Discord 配置',
     jira: 'Jira 配置',
     http: 'HTTP 配置',
     smtp: 'SMTP 配置',
@@ -136,6 +137,18 @@ const zh_HK = {
     failed: '有必需項未通過',
     optional: '可選',
   },
+  discord_request_config: {
+    top_tip:
+      '一個 Webhook 地址對應一個頻道，所以地址在通知規則裡填寫，這個媒介可以發到任意多個頻道。這裡的設定是所有規則共用的預設值。建立 Webhook 需要伺服器的 Manage Webhooks 權限。',
+    username: '顯示名稱',
+    username_tip: '覆蓋 Webhook 在頻道裡顯示的名字，留空則用建立 Webhook 時設定的名字',
+    avatar_url: '頭像地址',
+    avatar_url_tip: '覆蓋 Webhook 的頭像，需要是公網可存取的圖片地址',
+    avatar_url_invalid: '須以 http:// 或 https:// 開頭',
+    silent: '靜默推送',
+    silent_tip: '開啟後訊息照常發到頻道，但不觸發接收者的推送和桌面通知',
+    proxy_tip: '存取 Discord 需要經過代理時填寫，如 http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -200,6 +213,13 @@ const zh_HK = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Discord Webhook',
+    discord_tip: '儲存後 Webhook 地址在通知規則裡填寫，這裡臨時填一個用於測試。',
+    discord_target_channel: '頻道',
+    discord_target_forum_post: '新建論壇貼文',
+    discord_target_thread: '已有討論串或論壇貼文',
+    discord_thread_name_placeholder: '貼文標題，如 {{$event.RuleName}}',
+    discord_thread_id_placeholder: '討論串 ID，純數字',
     jira_title: 'Jira 專案與工作類型',
     jira_tip: '將在所填專案裡建立一張真實工單。儲存後在通知規則裡是下拉選擇專案和工作類型，這裡請手動填寫。',
     jira_project_placeholder: '專案 key，如 OPS',

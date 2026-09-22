@@ -839,43 +839,33 @@ export const getNotificationChannelTypes = () => {
     //     },
     //   },
     // },
-    // discord: {
-    //   logo: '/image/logos/discord.png',
-    //   type: 'http',
-    //   default_values: {
-    //     param_config: {
-    //       custom: {
-    //         params: [
-    //           {
-    //             key: 'webhook_url',
-    //             cname: 'Webhook Url',
-    //             type: 'string',
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     request_type: 'http',
-    //     request_config: {
-    //       http_request_config: {
-    //         url: '{{$params.webhook_url}}',
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         proxy: '',
-    //         timeout: 10000,
-    //         concurrency: 5,
-    //         retry_times: 3,
-    //         retry_interval: 100,
-    //         request: {
-    //           parameters: null,
-    //           form: '',
-    //           body: '{"content": "{{$tpl.content}}"}',
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
+    discord: {
+      logo: '/image/logos/discord.png',
+      type: 'discord',
+      default_values: {
+        request_type: 'discord',
+        // 规则侧参数与后端内置 Discord 媒介（models.DiscordRuleParams）一致，规则页的历史参数复用按这些 key 回显
+        param_config: {
+          custom: {
+            params: [
+              { key: 'webhook_url', cname: 'Webhook URL', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+              { key: 'target', cname: 'Send to', type: 'string' },
+              { key: 'thread_name', cname: 'Post title', type: 'string' },
+              { key: 'thread_id', cname: 'Thread ID', type: 'string' },
+              { key: 'mentions', cname: 'Mentions', type: 'string' },
+            ],
+          },
+        },
+        request_config: {
+          discord_request_config: {
+            timeout: 10000,
+            retry_times: 3,
+            retry_sleep: 1000,
+          },
+        },
+      },
+    },
     // jsm_alert: {
     //   logo: '/image/logos/jira.png',
     //   type: 'http',

@@ -37,6 +37,7 @@ const pt_BR = {
     },
   },
   request_configuration: {
+    discord: 'Configuração do Discord',
     jira: 'Configuração do Jira',
     http: 'Configuração HTTP',
     smtp: 'Configuração SMTP',
@@ -140,6 +141,18 @@ const pt_BR = {
     failed: 'Algumas verificações obrigatórias falharam',
     optional: 'opcional',
   },
+  discord_request_config: {
+    top_tip:
+      'Um URL de webhook publica em um canal, por isso o URL é informado em cada regra de notificação; este meio pode publicar em quantos canais quiser. As configurações aqui são padrões para todas as regras. Criar um webhook exige a permissão Manage Webhooks no servidor.',
+    username: 'Nome de exibição',
+    username_tip: 'Substitui o nome exibido pelo webhook no canal; deixe vazio para usar o nome definido ao criá-lo',
+    avatar_url: 'URL do avatar',
+    avatar_url_tip: 'Substitui o avatar do webhook; precisa ser uma URL de imagem pública',
+    avatar_url_invalid: 'Deve começar com http:// ou https://',
+    silent: 'Envio silencioso',
+    silent_tip: 'As mensagens continuam sendo publicadas, mas sem notificações push ou de desktop',
+    proxy_tip: 'Preencha quando o Discord só for acessível por proxy, por exemplo http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -204,6 +217,13 @@ const pt_BR = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Webhook do Discord',
+    discord_tip: 'Depois de salvar, o URL do webhook é informado na regra de notificação; informe um aqui para testar.',
+    discord_target_channel: 'Canal',
+    discord_target_forum_post: 'Nova postagem no fórum',
+    discord_target_thread: 'Thread / postagem existente',
+    discord_thread_name_placeholder: 'Título da postagem, por exemplo {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'ID do thread, numérico',
     jira_title: 'Projeto e tipo de issue do Jira',
     jira_tip:
       'Uma issue real será criada neste projeto. Depois de salvar, o projeto e o tipo de issue são escolhidos em listas na regra de notificação; aqui, informe-os manualmente.',

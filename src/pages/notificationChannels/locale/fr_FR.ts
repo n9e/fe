@@ -37,6 +37,7 @@ const fr_FR = {
     },
   },
   request_configuration: {
+    discord: 'Configuration Discord',
     jira: 'Configuration Jira',
     http: 'Configuration HTTP',
     smtp: 'Configuration SMTP',
@@ -140,6 +141,18 @@ const fr_FR = {
     failed: 'Certaines vérifications obligatoires ont échoué',
     optional: 'facultatif',
   },
+  discord_request_config: {
+    top_tip:
+      "Une URL de webhook publie dans un salon, donc l'URL se renseigne dans chaque règle de notification ; ce média peut publier dans autant de salons que nécessaire. Les réglages ici sont les valeurs par défaut de toutes les règles. Créer un webhook nécessite l'autorisation Manage Webhooks sur le serveur.",
+    username: "Nom d'affichage",
+    username_tip: 'Remplace le nom affiché par le webhook dans le salon ; vide = nom défini à la création',
+    avatar_url: "URL de l'avatar",
+    avatar_url_tip: "Remplace l'avatar du webhook ; doit être une URL d'image accessible publiquement",
+    avatar_url_invalid: 'Doit commencer par http:// ou https://',
+    silent: 'Envoi silencieux',
+    silent_tip: 'Les messages sont publiés sans déclencher de notifications push ou de bureau',
+    proxy_tip: "À renseigner si Discord n'est joignable que via un proxy, par exemple http://127.0.0.1:7890",
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -204,6 +217,13 @@ const fr_FR = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Webhook Discord',
+    discord_tip: "Après enregistrement, l'URL du webhook se renseigne dans la règle de notification ; saisissez-en une ici pour tester.",
+    discord_target_channel: 'Salon',
+    discord_target_forum_post: 'Nouvelle publication de forum',
+    discord_target_thread: 'Fil / publication existant',
+    discord_thread_name_placeholder: 'Titre de la publication, par exemple {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'ID du fil, numérique',
     jira_title: 'Projet et type de ticket Jira',
     jira_tip:
       'Un vrai ticket sera créé dans ce projet. Après enregistrement, le projet et le type de ticket se choisissent dans des listes dans la règle de notification ; ici, saisissez-les à la main.',

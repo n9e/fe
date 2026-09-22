@@ -166,6 +166,34 @@ const es_ES = {
       field_value_placeholder: 'Valor, por ejemplo {"value":"prod"}',
       field_add: 'Añadir campo',
     },
+    webhook_history: {
+      label: 'Reutilizar un webhook',
+      tip: 'Webhooks ya usados con este medio en reglas de tus equipos; elegir uno rellena todos sus parámetros',
+      placeholder: 'Elige un webhook usado antes',
+    },
+    discord: {
+      webhook_url: 'URL del webhook',
+      webhook_url_tip:
+        'En Discord abre Server Settings → Integrations → Webhooks → New Webhook, elige el canal y pulsa Copy Webhook URL. La URL es una credencial y se enmascara en los registros de notificación. Puedes referenciar variables con {{.nombre_variable}}.',
+      webhook_url_invalid: 'Debe tener el formato https://discord.com/api/webhooks/<id>/<token>',
+      bot_name: 'Nombre',
+      bot_name_tip: 'Un nombre reconocible: aparece como destino en los registros de notificación y permite reutilizar el webhook en otras reglas',
+      target: 'Enviar a',
+      target_tip: 'Si el webhook pertenece a un canal de foro, elige Nueva publicación (una por notificación) o Hilo existente',
+      target_channel: 'Canal',
+      target_forum_post: 'Nueva publicación en el foro',
+      target_thread: 'Hilo / publicación existente',
+      thread_name: 'Título de la publicación',
+      thread_name_tip:
+        'Cada notificación crea una publicación nueva con este título (admite variables como {{$event.RuleName}}, máximo 100 caracteres). Para publicar en una existente, elige Hilo existente',
+      thread_id: 'ID del hilo',
+      thread_id_tip: 'Activa User Settings → Advanced → Developer Mode y haz clic derecho en el hilo o publicación → Copy ID',
+      thread_id_invalid: 'Debe ser un ID numérico',
+      mentions: 'Mencionar roles / usuarios',
+      mentions_tip:
+        'Roles o usuarios a mencionar cuando salta la alerta, separados por espacios: un rol es <@&ID>, un usuario <@ID> (activa Developer Mode y clic derecho → Copy ID). Solo se menciona a estos; @everyone en el texto de la alerta se ignora',
+      mentions_invalid: 'Usa <@id_usuario> o <@&id_rol>, separados por espacios',
+    },
     pagerduty: {
       services: 'Servicio/integración',
     },

@@ -37,6 +37,7 @@ const id_ID = {
     },
   },
   request_configuration: {
+    discord: 'Konfigurasi Discord',
     jira: 'Konfigurasi Jira',
     http: 'Konfigurasi HTTP',
     smtp: 'Konfigurasi SMTP',
@@ -139,6 +140,18 @@ const id_ID = {
     failed: 'Beberapa pemeriksaan wajib gagal',
     optional: 'opsional',
   },
+  discord_request_config: {
+    top_tip:
+      'Satu URL webhook mengirim ke satu channel, jadi URL diisi di setiap aturan notifikasi; media ini dapat mengirim ke berapa pun channel. Pengaturan di sini adalah default untuk semua aturan. Membuat webhook memerlukan izin Manage Webhooks di server.',
+    username: 'Nama tampilan',
+    username_tip: 'Menimpa nama webhook yang tampil di channel; kosongkan untuk memakai nama saat webhook dibuat',
+    avatar_url: 'URL avatar',
+    avatar_url_tip: 'Menimpa avatar webhook; harus URL gambar yang dapat diakses publik',
+    avatar_url_invalid: 'Harus diawali http:// atau https://',
+    silent: 'Kirim senyap',
+    silent_tip: 'Pesan tetap dikirim ke channel tetapi tanpa notifikasi push atau desktop',
+    proxy_tip: 'Isi jika Discord hanya dapat dijangkau melalui proxy, misalnya http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -203,6 +216,13 @@ const id_ID = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Webhook Discord',
+    discord_tip: 'Setelah disimpan, URL webhook diisi di aturan notifikasi; isi satu di sini untuk menguji.',
+    discord_target_channel: 'Channel',
+    discord_target_forum_post: 'Postingan forum baru',
+    discord_target_thread: 'Thread / postingan yang ada',
+    discord_thread_name_placeholder: 'Judul postingan, misalnya {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'ID thread, angka',
     jira_title: 'Proyek dan tipe issue Jira',
     jira_tip: 'Issue sungguhan akan dibuat di proyek ini. Setelah disimpan, proyek dan tipe issue dipilih dari dropdown di aturan notifikasi; di sini isi secara manual.',
     jira_project_placeholder: 'Kunci proyek, misalnya OPS',

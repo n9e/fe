@@ -47,6 +47,7 @@ export const SMTP_TPL_KEYS = ['subject', 'content'];
  */
 export const NATIVE_TPL_KEYS: Record<string, string[]> = {
   jira: ['title', 'content'],
+  discord: ['content'],
 };
 
 // 同时兼容 {{$tpl.title}} 与 {{ $tpl.title }}

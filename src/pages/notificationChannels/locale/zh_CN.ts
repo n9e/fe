@@ -35,6 +35,7 @@ const zh_CN = {
     },
   },
   request_configuration: {
+    discord: 'Discord 配置',
     jira: 'Jira 配置',
     http: 'HTTP 配置',
     smtp: 'SMTP 配置',
@@ -136,6 +137,18 @@ const zh_CN = {
     failed: '有必需项未通过',
     optional: '可选',
   },
+  discord_request_config: {
+    top_tip:
+      '一个 Webhook 地址对应一个频道，所以地址在通知规则里填写，这个媒介可以发到任意多个频道。这里的设置是所有规则共用的默认值。创建 Webhook 需要服务器的 Manage Webhooks 权限。',
+    username: '显示名称',
+    username_tip: '覆盖 Webhook 在频道里显示的名字，留空则用创建 Webhook 时设置的名字',
+    avatar_url: '头像地址',
+    avatar_url_tip: '覆盖 Webhook 的头像，需要是公网可访问的图片地址',
+    avatar_url_invalid: '须以 http:// 或 https:// 开头',
+    silent: '静默推送',
+    silent_tip: '开启后消息照常发到频道，但不触发接收者的推送和桌面通知',
+    proxy_tip: '访问 Discord 需要经过代理时填写，如 http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -201,6 +214,13 @@ const zh_CN = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Discord Webhook',
+    discord_tip: '保存后 Webhook 地址在通知规则里填写，这里临时填一个用于测试。',
+    discord_target_channel: '频道',
+    discord_target_forum_post: '新建论坛帖子',
+    discord_target_thread: '已有线程或论坛帖子',
+    discord_thread_name_placeholder: '帖子标题，如 {{$event.RuleName}}',
+    discord_thread_id_placeholder: '线程 ID，纯数字',
     jira_title: 'Jira 项目与工作类型',
     jira_tip: '将在所填项目里创建一张真实工单。保存后在通知规则里是下拉选择项目和工作类型，这里请手动填写。',
     jira_project_placeholder: '项目 key，如 OPS',

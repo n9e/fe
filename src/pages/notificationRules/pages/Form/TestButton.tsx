@@ -7,7 +7,6 @@ import _ from 'lodash';
 
 import EventsTable from '@/pages/eventPipeline/pages/Form/TestModal/EventsTable';
 import { ChannelItem } from '@/pages/notificationChannels/types';
-import { isNativeRequestType } from '@/pages/notificationChannels/utils/native';
 
 import { NS } from '../../constants';
 import { notifyRuleTest } from '../../services';
@@ -22,8 +21,8 @@ type TestMode = 'history' | 'mock';
 export default function TestButton(props: Props) {
   const { t } = useTranslation(NS);
   const { field, channelItem } = props;
-  // 原生媒介（如 Jira）默认连恢复一起测：先按告警、再按恢复各发一次，一次验证建单与关单
-  const supportsRecoveryTest = isNativeRequestType(channelItem?.request_type);
+  // Jira 默认连恢复一起测：先按告警、再按恢复各发一次，一次验证建单与关单
+  const supportsRecoveryTest = channelItem?.request_type === 'jira';
   const [withRecovery, setWithRecovery] = useState(true);
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState<TestMode>('history');

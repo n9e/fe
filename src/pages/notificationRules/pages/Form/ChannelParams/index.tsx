@@ -10,6 +10,7 @@ import Custom from './Custom';
 import PagerDuty from './Pagerduty';
 import FeishuApp from './FeishuApp';
 import Jira from './Jira';
+import Discord from './Discord';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -31,6 +32,8 @@ export default function index(props: Props) {
     return <FeishuApp field={field} channelItem={channelItem} />;
   } else if (request_type === 'jira') {
     return <Jira prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
+  } else if (request_type === 'discord') {
+    return <Discord prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
   }
 
   return (

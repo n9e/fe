@@ -165,6 +165,34 @@ const en_US = {
       field_value_placeholder: 'Value, e.g. {"value":"prod"}',
       field_add: 'Add field',
     },
+    webhook_history: {
+      label: 'Reuse a webhook',
+      tip: 'Webhooks already used with this media type in rules of your teams; picking one fills in all its parameters',
+      placeholder: 'Pick a previously used webhook',
+    },
+    discord: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'In Discord open Server Settings → Integrations → Webhooks → New Webhook, pick the channel and click Copy Webhook URL. The URL is a credential and is masked in notification records. You can reference Variable Settings with {{.variable_name}}.',
+      webhook_url_invalid: 'Should look like https://discord.com/api/webhooks/<id>/<token>',
+      bot_name: 'Name',
+      bot_name_tip: 'A recognizable name for this webhook. It is shown as the target in notification records and lets other rules reuse the webhook by name',
+      target: 'Send to',
+      target_tip: 'When the webhook belongs to a forum channel, choose New forum post (one post per notification) or Existing thread',
+      target_channel: 'Channel',
+      target_forum_post: 'New forum post',
+      target_thread: 'Existing thread / forum post',
+      thread_name: 'Post title',
+      thread_name_tip:
+        'Each notification creates a new post with this title (template variables such as {{$event.RuleName}} are supported, at most 100 characters). To post into one existing post, choose Existing thread',
+      thread_id: 'Thread ID',
+      thread_id_tip: 'Turn on User Settings → Advanced → Developer Mode, then right-click the thread or post → Copy ID',
+      thread_id_invalid: 'Must be a numeric ID',
+      mentions: 'Mention roles / users',
+      mentions_tip:
+        'Roles or users to ping when the alert fires, separated by spaces: a role is <@&ID>, a user is <@ID> (turn on Developer Mode and right-click → Copy ID). Only these are pinged; @everyone in the alert text is ignored',
+      mentions_invalid: 'Use <@user_id> or <@&role_id>, separated by spaces',
+    },
     pagerduty: {
       services: 'Service/Integration',
     },

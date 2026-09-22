@@ -37,6 +37,7 @@ const en_US = {
     },
   },
   request_configuration: {
+    discord: 'Discord configuration',
     jira: 'Jira configuration',
     http: 'HTTP configuration',
     smtp: 'SMTP configuration',
@@ -142,6 +143,18 @@ const en_US = {
     failed: 'Some required checks failed',
     optional: 'optional',
   },
+  discord_request_config: {
+    top_tip:
+      'One webhook URL posts to one channel, so the URL is filled in each notification rule; this media type can post to any number of channels. The settings here are defaults for all rules. Creating a webhook needs the Manage Webhooks permission on the server.',
+    username: 'Display name',
+    username_tip: 'Overrides the name the webhook shows in the channel; leave empty to use the name set when the webhook was created',
+    avatar_url: 'Avatar URL',
+    avatar_url_tip: 'Overrides the webhook avatar; must be a publicly reachable image URL',
+    avatar_url_invalid: 'Must start with http:// or https://',
+    silent: 'Silent push',
+    silent_tip: 'Messages are still posted to the channel but do not trigger push or desktop notifications',
+    proxy_tip: 'Fill in when Discord can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -206,6 +219,13 @@ const en_US = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Discord webhook',
+    discord_tip: 'The webhook URL is filled in the notification rule after saving; enter one here to test.',
+    discord_target_channel: 'Channel',
+    discord_target_forum_post: 'New forum post',
+    discord_target_thread: 'Existing thread / forum post',
+    discord_thread_name_placeholder: 'Post title, e.g. {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'Thread ID, numeric',
     jira_title: 'Jira project and issue type',
     jira_tip: 'A real issue will be created in this project. After saving, you pick the project and issue type from dropdowns in a notification rule; enter them manually here.',
     jira_project_placeholder: 'Project key, e.g. OPS',

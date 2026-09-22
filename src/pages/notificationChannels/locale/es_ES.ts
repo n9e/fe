@@ -37,6 +37,7 @@ const es_ES = {
     },
   },
   request_configuration: {
+    discord: 'Configuración de Discord',
     jira: 'Configuración de Jira',
     http: 'Configuración HTTP',
     smtp: 'Configuración SMTP',
@@ -141,6 +142,18 @@ const es_ES = {
     failed: 'Algunas comprobaciones obligatorias fallaron',
     optional: 'opcional',
   },
+  discord_request_config: {
+    top_tip:
+      'Una URL de webhook publica en un canal, por eso la URL se indica en cada regla de notificación; este medio puede publicar en cualquier número de canales. Los ajustes de aquí son valores por defecto para todas las reglas. Crear un webhook requiere el permiso Manage Webhooks en el servidor.',
+    username: 'Nombre visible',
+    username_tip: 'Sustituye el nombre que muestra el webhook en el canal; vacío usa el nombre definido al crearlo',
+    avatar_url: 'URL del avatar',
+    avatar_url_tip: 'Sustituye el avatar del webhook; debe ser una URL de imagen accesible públicamente',
+    avatar_url_invalid: 'Debe empezar por http:// o https://',
+    silent: 'Envío silencioso',
+    silent_tip: 'Los mensajes se publican igual, pero sin notificaciones push ni de escritorio',
+    proxy_tip: 'Rellénalo cuando Discord solo sea accesible a través de un proxy, por ejemplo http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -205,6 +218,13 @@ const es_ES = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Webhook de Discord',
+    discord_tip: 'Tras guardar, la URL del webhook se indica en la regla de notificación; introduce una aquí para probar.',
+    discord_target_channel: 'Canal',
+    discord_target_forum_post: 'Nueva publicación en el foro',
+    discord_target_thread: 'Hilo / publicación existente',
+    discord_thread_name_placeholder: 'Título de la publicación, por ejemplo {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'ID del hilo, numérico',
     jira_title: 'Proyecto y tipo de incidencia de Jira',
     jira_tip:
       'Se creará una incidencia real en este proyecto. Tras guardar, el proyecto y el tipo de incidencia se eligen en listas desplegables en la regla de notificación; aquí introdúcelos a mano.',

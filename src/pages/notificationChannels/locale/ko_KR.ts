@@ -36,6 +36,7 @@ const ko_KR = {
     },
   },
   request_configuration: {
+    discord: 'Discord 설정',
     jira: 'Jira 설정',
     http: 'HTTP 설정',
     smtp: 'SMTP 설정',
@@ -137,6 +138,18 @@ const ko_KR = {
     failed: '필수 항목 중 실패한 항목이 있습니다',
     optional: '선택',
   },
+  discord_request_config: {
+    top_tip:
+      'Webhook URL 하나가 채널 하나에 대응하므로 URL은 알림 규칙마다 입력하며, 이 매체로 여러 채널에 보낼 수 있습니다. 여기 설정은 모든 규칙의 기본값입니다. Webhook을 만들려면 서버의 Manage Webhooks 권한이 필요합니다.',
+    username: '표시 이름',
+    username_tip: 'Webhook이 채널에 표시하는 이름을 덮어씁니다. 비워 두면 생성 시 이름을 사용합니다',
+    avatar_url: '아바타 URL',
+    avatar_url_tip: 'Webhook 아바타를 덮어씁니다. 공개적으로 접근 가능한 이미지 URL이어야 합니다',
+    avatar_url_invalid: 'http:// 또는 https://로 시작해야 합니다',
+    silent: '무음 전송',
+    silent_tip: '메시지는 채널에 올라가지만 푸시·데스크톱 알림은 발생하지 않습니다',
+    proxy_tip: 'Discord에 프록시를 거쳐야만 접속할 수 있을 때 입력합니다(예: http://127.0.0.1:7890)',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -201,6 +214,13 @@ const ko_KR = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Discord Webhook',
+    discord_tip: '저장 후에는 알림 규칙에서 Webhook URL을 입력합니다. 여기서는 테스트용으로 입력하세요.',
+    discord_target_channel: '채널',
+    discord_target_forum_post: '새 포럼 게시물',
+    discord_target_thread: '기존 스레드 / 포럼 게시물',
+    discord_thread_name_placeholder: '게시물 제목(예: {{$event.RuleName}})',
+    discord_thread_id_placeholder: '스레드 ID(숫자)',
     jira_title: 'Jira 프로젝트와 이슈 유형',
     jira_tip: '이 프로젝트에 실제 이슈가 생성됩니다. 저장 후에는 알림 규칙에서 드롭다운으로 프로젝트와 이슈 유형을 고르지만, 여기서는 직접 입력하세요.',
     jira_project_placeholder: '프로젝트 키(예: OPS)',

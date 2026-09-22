@@ -166,6 +166,34 @@ const pt_BR = {
       field_value_placeholder: 'Valor, por exemplo {"value":"prod"}',
       field_add: 'Adicionar campo',
     },
+    webhook_history: {
+      label: 'Reutilizar um webhook',
+      tip: 'Webhooks já usados com este meio em regras das suas equipes; escolher um preenche todos os parâmetros',
+      placeholder: 'Escolha um webhook usado antes',
+    },
+    discord: {
+      webhook_url: 'URL do webhook',
+      webhook_url_tip:
+        'No Discord, abra Server Settings → Integrations → Webhooks → New Webhook, escolha o canal e clique em Copy Webhook URL. O URL é uma credencial e aparece mascarado nos registros de notificação. Você pode referenciar variáveis com {{.nome_da_variavel}}.',
+      webhook_url_invalid: 'Deve ter o formato https://discord.com/api/webhooks/<id>/<token>',
+      bot_name: 'Nome',
+      bot_name_tip: 'Um nome fácil de reconhecer: aparece como destino nos registros de notificação e permite reutilizar o webhook em outras regras',
+      target: 'Enviar para',
+      target_tip: 'Quando o webhook pertence a um canal de fórum, escolha Nova postagem (uma por notificação) ou Thread existente',
+      target_channel: 'Canal',
+      target_forum_post: 'Nova postagem no fórum',
+      target_thread: 'Thread / postagem existente',
+      thread_name: 'Título da postagem',
+      thread_name_tip:
+        'Cada notificação cria uma nova postagem com este título (aceita variáveis como {{$event.RuleName}}, até 100 caracteres). Para publicar em uma postagem existente, escolha Thread existente',
+      thread_id: 'ID do thread',
+      thread_id_tip: 'Ative User Settings → Advanced → Developer Mode e clique com o botão direito no thread ou postagem → Copy ID',
+      thread_id_invalid: 'Deve ser um ID numérico',
+      mentions: 'Mencionar cargos / usuários',
+      mentions_tip:
+        'Cargos ou usuários a mencionar quando o alerta dispara, separados por espaço: cargo é <@&ID>, usuário é <@ID> (ative o Developer Mode e clique com o botão direito → Copy ID). Só esses são mencionados; @everyone no texto do alerta é ignorado',
+      mentions_invalid: 'Use <@id_usuario> ou <@&id_cargo>, separados por espaço',
+    },
     pagerduty: {
       services: 'Serviço/integração',
     },

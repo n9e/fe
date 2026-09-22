@@ -168,6 +168,34 @@ const ja_JP = {
       field_value_placeholder: '値（例：{"value":"prod"}）',
       field_add: 'フィールドを追加',
     },
+    webhook_history: {
+      label: '入力済みの Webhook を再利用',
+      tip: '所属チームのルールでこのメディアに入力済みの Webhook です。選ぶとパラメータ一式が入力されます',
+      placeholder: '以前に入力した Webhook を選択',
+    },
+    discord: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Discord で Server Settings → Integrations → Webhooks → New Webhook を開き、チャンネルを選んで Copy Webhook URL をクリックします。URL 自体が認証情報のため、通知記録ではマスク表示されます。{{.変数名}} で変数設定を参照できます。',
+      webhook_url_invalid: 'https://discord.com/api/webhooks/<id>/<token> の形式にしてください',
+      bot_name: '名前',
+      bot_name_tip: 'この Webhook の分かりやすい名前です。通知記録の送信先に表示され、他のルールで名前から再利用できます',
+      target: '送信先',
+      target_tip: 'Webhook がフォーラムチャンネルの場合は、新しいフォーラム投稿（通知ごとに作成）か既存のスレッドを選んでください',
+      target_channel: 'チャンネル',
+      target_forum_post: '新しいフォーラム投稿',
+      target_thread: '既存のスレッド / フォーラム投稿',
+      thread_name: '投稿タイトル',
+      thread_name_tip:
+        '通知ごとにこのタイトルで新しい投稿を作成します（{{$event.RuleName}} などのテンプレート変数可、最大 100 文字）。既存の投稿に送るには「既存のスレッド」を選んでください',
+      thread_id: 'スレッド ID',
+      thread_id_tip: 'User Settings → Advanced で Developer Mode をオンにし、スレッドまたは投稿を右クリック → Copy ID',
+      thread_id_invalid: '数値の ID を入力してください',
+      mentions: 'メンションするロール / ユーザー',
+      mentions_tip:
+        'アラート発生時にメンションするロールまたはユーザー（空白区切り）。ロールは <@&ID>、ユーザーは <@ID>（Developer Mode をオンにして右クリック → Copy ID）。ここに入力した対象だけがメンションされ、アラート本文の @everyone は無視されます',
+      mentions_invalid: '<@ユーザーID> または <@&ロールID> を空白区切りで入力してください',
+    },
     pagerduty: {
       services: 'サービス/統合',
     },

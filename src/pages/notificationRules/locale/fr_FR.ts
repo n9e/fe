@@ -169,6 +169,35 @@ const fr_FR = {
       field_value_placeholder: 'Valeur, par exemple {"value":"prod"}',
       field_add: 'Ajouter un champ',
     },
+    webhook_history: {
+      label: 'Réutiliser un webhook',
+      tip: 'Webhooks déjà utilisés avec ce média dans les règles de vos équipes ; en choisir un remplit tous ses paramètres',
+      placeholder: 'Choisir un webhook déjà utilisé',
+    },
+    discord: {
+      webhook_url: 'URL du webhook',
+      webhook_url_tip:
+        "Dans Discord, ouvrez Server Settings → Integrations → Webhooks → New Webhook, choisissez le salon puis cliquez sur Copy Webhook URL. L'URL est un identifiant et apparaît masquée dans les enregistrements de notification. Vous pouvez référencer une variable avec {{.nom_variable}}.",
+      webhook_url_invalid: 'Doit être de la forme https://discord.com/api/webhooks/<id>/<token>',
+      bot_name: 'Nom',
+      bot_name_tip:
+        "Un nom facile à reconnaître : il s'affiche comme destinataire dans les enregistrements de notification et permet de réutiliser le webhook dans d'autres règles",
+      target: 'Envoyer vers',
+      target_tip: 'Si le webhook appartient à un salon forum, choisissez Nouvelle publication (une par notification) ou Fil existant',
+      target_channel: 'Salon',
+      target_forum_post: 'Nouvelle publication de forum',
+      target_thread: 'Fil / publication existant',
+      thread_name: 'Titre de la publication',
+      thread_name_tip:
+        'Chaque notification crée une nouvelle publication avec ce titre (variables de modèle comme {{$event.RuleName}} acceptées, 100 caractères max). Pour publier dans une publication existante, choisissez Fil existant',
+      thread_id: 'ID du fil',
+      thread_id_tip: 'Activez User Settings → Advanced → Developer Mode, puis clic droit sur le fil ou la publication → Copy ID',
+      thread_id_invalid: 'Doit être un ID numérique',
+      mentions: 'Mentionner des rôles / utilisateurs',
+      mentions_tip:
+        "Rôles ou utilisateurs à mentionner quand l'alerte se déclenche, séparés par des espaces : un rôle s'écrit <@&ID>, un utilisateur <@ID> (activez Developer Mode puis clic droit → Copy ID). Seuls ceux-ci sont notifiés ; @everyone dans le texte de l'alerte est ignoré",
+      mentions_invalid: 'Utilisez <@id_utilisateur> ou <@&id_rôle>, séparés par des espaces',
+    },
     pagerduty: {
       services: 'Service / intégration',
     },

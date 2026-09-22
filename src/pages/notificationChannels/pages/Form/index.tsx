@@ -24,6 +24,7 @@ import DingtalkApp from './DingtalkApp';
 import WecomApp from './WecomApp';
 import FeishuApp from './FeishuApp';
 import Jira from './Jira';
+import Discord from './Discord';
 import TestModal from './TestModal';
 
 interface Props {
@@ -162,6 +163,7 @@ export default function FormCpt(props: Props) {
                   <WecomApp />
                   <FeishuApp />
                   <Jira />
+                  <Discord />
                 </div>
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>

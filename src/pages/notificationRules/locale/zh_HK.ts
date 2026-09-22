@@ -159,6 +159,33 @@ const zh_HK = {
       field_value_placeholder: '值，如 {"value":"生產"}',
       field_add: '新增欄位',
     },
+    webhook_history: {
+      label: '複用填過的地址',
+      tip: '本人所在團隊的規則裡這個媒介填過的地址，選一條會把整組參數填回來',
+      placeholder: '選擇之前填過的地址',
+    },
+    discord: {
+      webhook_url: 'Webhook 地址',
+      webhook_url_tip:
+        '在 Discord 裡開啟 Server Settings → Integrations → Webhooks → New Webhook，選擇頻道後點 Copy Webhook URL。地址本身就是憑證，通知記錄裡會遮罩顯示。支援用 {{.變數名}} 引用變數設定。',
+      webhook_url_invalid: '應形如 https://discord.com/api/webhooks/<id>/<token>',
+      bot_name: '名稱',
+      bot_name_tip: '給這個 Webhook 起個好認的名字：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個地址',
+      target: '發送到',
+      target_tip: 'Webhook 綁定的是論壇頻道時，必須選新建論壇貼文（每次通知新建一篇）或已有討論串',
+      target_channel: '頻道',
+      target_forum_post: '新建論壇貼文',
+      target_thread: '已有討論串或論壇貼文',
+      thread_name: '貼文標題',
+      thread_name_tip: '每次通知都會新建一篇貼文，標題支援模板變數（如 {{$event.RuleName}}，最多 100 字元）。要發到同一篇已有貼文，請選「已有討論串或論壇貼文」',
+      thread_id: '討論串 ID',
+      thread_id_tip: '在 User Settings → Advanced 開啟 Developer Mode，然後右鍵討論串或貼文 → Copy ID',
+      thread_id_invalid: '必須是純數字 ID',
+      mentions: '提醒角色 / 使用者',
+      mentions_tip:
+        '告警觸發時要 @ 的角色或使用者，多個用空格分隔：角色寫成 <@&ID>，使用者寫成 <@ID>（開啟 Developer Mode 後右鍵 → Copy ID）。只有這裡填的對象會被提醒，告警內容裡的 @everyone 不會生效',
+      mentions_invalid: '請用 <@使用者ID> 或 <@&角色ID>，多個用空格分隔',
+    },
     pagerduty: {
       services: '服務/集成',
     },

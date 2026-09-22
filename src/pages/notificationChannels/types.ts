@@ -108,6 +108,12 @@ export interface JiraRequestConfig extends NativeNetworkConfig {
   cloud_id?: string;
 }
 
+export interface DiscordRequestConfig extends NativeNetworkConfig {
+  username?: string;
+  avatar_url?: string;
+  silent?: boolean;
+}
+
 export interface ChannelItem {
   id: number;
   name: string;
@@ -129,7 +135,8 @@ export interface ChannelItem {
     | 'lark'
     | 'larkcard'
     | 'dingtalk'
-    | 'jira';
+    | 'jira'
+    | 'discord';
   request_config: {
     http_request_config: HttpRequestConfig;
     smtp_request_config: SmtpRequestConfig;
@@ -140,6 +147,7 @@ export interface ChannelItem {
     wecomapp_request_config: WecomAppRequestConfig;
     feishuapp_request_config: FeishuAppRequestConfig;
     jira_request_config?: JiraRequestConfig;
+    discord_request_config?: DiscordRequestConfig;
     // 群机器人（webhook）类渠道只有上传告警截图用的应用凭证，字段名与后端 models.RequestConfig 一一对应：
     // feishu / feishucard / lark / larkcard 共用 feishu_request_config，dingtalk 用 dingtalk_request_config
     feishu_request_config: Pick<FeishuAppRequestConfig, 'app_id' | 'app_secret'>;

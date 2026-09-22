@@ -37,6 +37,7 @@ const ja_JP = {
     },
   },
   request_configuration: {
+    discord: 'Discord 設定',
     jira: 'Jira 設定',
     http: 'HTTP 設定',
     smtp: 'SMTP 設定',
@@ -140,6 +141,18 @@ const ja_JP = {
     failed: '必須項目に失敗があります',
     optional: '任意',
   },
+  discord_request_config: {
+    top_tip:
+      '1 つの Webhook URL は 1 つのチャンネルに対応するため、URL は通知ルールごとに入力します。このメディアで任意の数のチャンネルに送信できます。ここの設定は全ルール共通の既定値です。Webhook の作成にはサーバーの Manage Webhooks 権限が必要です。',
+    username: '表示名',
+    username_tip: 'Webhook がチャンネルに表示する名前を上書きします。空欄なら作成時の名前を使います',
+    avatar_url: 'アバター URL',
+    avatar_url_tip: 'Webhook のアバターを上書きします。公開アクセス可能な画像 URL が必要です',
+    avatar_url_invalid: 'http:// または https:// で始まる必要があります',
+    silent: 'サイレント通知',
+    silent_tip: 'メッセージはチャンネルに投稿されますが、プッシュやデスクトップ通知は発生しません',
+    proxy_tip: 'Discord へのアクセスにプロキシが必要な場合に入力します（例：http://127.0.0.1:7890）',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API キー',
@@ -204,6 +217,13 @@ const ja_JP = {
     script: 'Script',
   },
   test: {
+    discord_title: 'Discord Webhook',
+    discord_tip: '保存後は通知ルールで Webhook URL を入力します。ここではテスト用に一時的に入力してください。',
+    discord_target_channel: 'チャンネル',
+    discord_target_forum_post: '新しいフォーラム投稿',
+    discord_target_thread: '既存のスレッド / フォーラム投稿',
+    discord_thread_name_placeholder: '投稿タイトル（例：{{$event.RuleName}}）',
+    discord_thread_id_placeholder: 'スレッド ID（数字）',
     jira_title: 'Jira プロジェクトと課題タイプ',
     jira_tip: 'このプロジェクトに実際の課題が作成されます。保存後は通知ルールでプロジェクトと課題タイプをドロップダウンから選びますが、ここでは手入力してください。',
     jira_project_placeholder: 'プロジェクトキー（例：OPS）',

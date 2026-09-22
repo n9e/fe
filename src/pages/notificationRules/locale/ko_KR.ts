@@ -160,6 +160,33 @@ const ko_KR = {
       field_value_placeholder: '값(예: {"value":"prod"})',
       field_add: '필드 추가',
     },
+    webhook_history: {
+      label: '입력했던 Webhook 재사용',
+      tip: '소속 팀 규칙에서 이 매체로 입력했던 Webhook입니다. 선택하면 매개변수 전체가 채워집니다',
+      placeholder: '이전에 입력한 Webhook 선택',
+    },
+    discord: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Discord에서 Server Settings → Integrations → Webhooks → New Webhook을 열고 채널을 고른 뒤 Copy Webhook URL을 누르세요. URL 자체가 자격 증명이라 알림 기록에는 마스킹되어 표시됩니다. {{.변수명}}으로 변수 설정을 참조할 수 있습니다.',
+      webhook_url_invalid: 'https://discord.com/api/webhooks/<id>/<token> 형식이어야 합니다',
+      bot_name: '이름',
+      bot_name_tip: '알아보기 쉬운 이름입니다. 알림 기록의 대상에 표시되며 다른 규칙에서 이름으로 재사용할 수 있습니다',
+      target: '보낼 위치',
+      target_tip: 'Webhook이 포럼 채널이면 새 포럼 게시물(알림마다 생성) 또는 기존 스레드를 선택해야 합니다',
+      target_channel: '채널',
+      target_forum_post: '새 포럼 게시물',
+      target_thread: '기존 스레드 / 포럼 게시물',
+      thread_name: '게시물 제목',
+      thread_name_tip: '알림마다 이 제목으로 새 게시물을 만듭니다({{$event.RuleName}} 같은 템플릿 변수 지원, 최대 100자). 기존 게시물에 보내려면 「기존 스레드」를 선택하세요',
+      thread_id: '스레드 ID',
+      thread_id_tip: 'User Settings → Advanced에서 Developer Mode를 켠 뒤 스레드나 게시물을 우클릭 → Copy ID',
+      thread_id_invalid: '숫자 ID여야 합니다',
+      mentions: '멘션할 역할 / 사용자',
+      mentions_tip:
+        '알림 발생 시 멘션할 역할 또는 사용자(공백 구분): 역할은 <@&ID>, 사용자는 <@ID>(Developer Mode를 켜고 우클릭 → Copy ID). 여기 입력한 대상만 멘션되며 알림 본문의 @everyone은 무시됩니다',
+      mentions_invalid: '<@사용자ID> 또는 <@&역할ID>를 공백으로 구분해 입력하세요',
+    },
     pagerduty: {
       services: '서비스/통합',
     },

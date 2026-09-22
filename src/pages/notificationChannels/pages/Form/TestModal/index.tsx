@@ -13,6 +13,7 @@ import { NS } from '../../../constants';
 import { testItem } from '../../../services';
 import { ChannelItem } from '../../../types';
 import { normalizeFormValues } from '../../../utils/normalizeValues';
+import { isNativeRequestType } from '../../../utils/native';
 
 interface Props {
   form: FormInstance;
@@ -45,6 +46,8 @@ export default function TestModal(props: Props) {
   // Jira 的项目和工作类型在通知规则里是下拉选的，那份下拉要已保存的媒介 id 才能拉到，这里让用户手填
   const [jiraProject, setJiraProject] = useState('');
   const [jiraIssueType, setJiraIssueType] = useState('');
+  // Discord 的 Webhook 地址在通知规则里填，未保存的媒介在这里临时填一个
+  const [discordParams, setDiscordParams] = useState<Record<string, string>>({ target: 'channel' });
   // 默认连恢复一起测：一次验证建单、评论和关单
   const [withRecovery, setWithRecovery] = useState(true);
   const [userIds, setUserIds] = useState<number[]>([]);
@@ -65,6 +68,7 @@ export default function TestModal(props: Props) {
   const scriptBlocked = requestType === 'script';
   const isPagerduty = requestType === 'pagerduty';
   const isJira = requestType === 'jira';
+  const isDiscord = requestType === 'discord';
 
   const starterTexts: StarterTexts = {
     ruleName: tt('starter.rule_name'),
@@ -111,6 +115,7 @@ export default function TestModal(props: Props) {
     setPagerdutyKeys([]);
     setJiraProject('');
     setJiraIssueType('');
+    setDiscordParams({ target: 'channel' });
     setWithRecovery(true);
     setUserIds([]);
     setUserGroupIds([]);
@@ -130,13 +135,14 @@ export default function TestModal(props: Props) {
       config,
       notify_config: {
         params: {
-          ...params,
+          ...(isNativeRequestType(requestType) ? {} : params),
           ...(userIds.length ? { user_ids: userIds } : {}),
           ...(userGroupIds.length ? { user_group_ids: userGroupIds } : {}),
           // 后端按 []string 反序列化（GetNotifyConfigParams 的 pagerduty_integration_keys 分支），
           // 传裸字符串会反序列化失败并静默退化成「没有 routing key」
           ...(isPagerduty && pagerdutyKeys.length ? { pagerduty_integration_keys: pagerdutyKeys } : {}),
           ...(isJira ? { project_key: _.trim(jiraProject), issue_type: _.trim(jiraIssueType) } : {}),
+          ...(isDiscord ? _.omitBy(_.mapValues(discordParams, _.trim), _.isEmpty) : {}),
         },
         severities: [mockEvent.severity],
       },
@@ -158,7 +164,10 @@ export default function TestModal(props: Props) {
   // PagerDuty 没有 routing key 就一定失败，与其发一个必败请求再展示一句用户看不懂的
   // 英文报错，不如先把按钮拦住
   const testDisabled =
-    (mode === 'history' && _.isEmpty(selectedEventIds)) || (isPagerduty && _.isEmpty(pagerdutyKeys)) || (isJira && (!_.trim(jiraProject) || !_.trim(jiraIssueType)));
+    (mode === 'history' && _.isEmpty(selectedEventIds)) ||
+    (isPagerduty && _.isEmpty(pagerdutyKeys)) ||
+    (isJira && (!_.trim(jiraProject) || !_.trim(jiraIssueType))) ||
+    (isDiscord && !_.trim(discordParams.webhook_url));
 
   return (
     <>
@@ -214,7 +223,8 @@ export default function TestModal(props: Props) {
         {view === 'settings' && (
           <>
             <Alert className='mb-4' type='info' showIcon message={t('test.desc')} />
-            {!_.isEmpty(customParams) && (
+            {/* 原生媒介（Discord 等）声明的规则参数由下面的专用输入负责，不再重复显示通用输入框 */}
+            {!_.isEmpty(customParams) && !isNativeRequestType(requestType) && (
               <div className='mb-4'>
                 <div className='mb-2 font-bold'>{t('test.params_title')}</div>
                 <div className='grid grid-cols-2 gap-3'>
@@ -264,6 +274,43 @@ export default function TestModal(props: Props) {
                 <Checkbox className='mt-2' checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
                   {t('test.with_recovery')}
                 </Checkbox>
+              </div>
+            )}
+            {isDiscord && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.discord_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.discord_tip')}</div>
+                <div className='grid grid-cols-2 gap-3'>
+                  <Input.Password
+                    autoComplete='new-password'
+                    value={discordParams.webhook_url}
+                    placeholder='https://discord.com/api/webhooks/<id>/<token>'
+                    onChange={(e) => setDiscordParams((prev) => ({ ...prev, webhook_url: e.target.value }))}
+                  />
+                  <Select
+                    value={discordParams.target}
+                    options={[
+                      { label: t('test.discord_target_channel'), value: 'channel' },
+                      { label: t('test.discord_target_forum_post'), value: 'forum_post' },
+                      { label: t('test.discord_target_thread'), value: 'thread' },
+                    ]}
+                    onChange={(v) => setDiscordParams((prev) => ({ ...prev, target: v }))}
+                  />
+                  {discordParams.target === 'forum_post' && (
+                    <Input
+                      value={discordParams.thread_name}
+                      placeholder={t('test.discord_thread_name_placeholder')}
+                      onChange={(e) => setDiscordParams((prev) => ({ ...prev, thread_name: e.target.value }))}
+                    />
+                  )}
+                  {discordParams.target === 'thread' && (
+                    <Input
+                      value={discordParams.thread_id}
+                      placeholder={t('test.discord_thread_id_placeholder')}
+                      onChange={(e) => setDiscordParams((prev) => ({ ...prev, thread_id: e.target.value }))}
+                    />
+                  )}
+                </div>
               </div>
             )}
             {contactKey && (
