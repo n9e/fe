@@ -194,6 +194,26 @@ const fr_FR = {
       bot_name_tip:
         "Un nom reconnaissable pour cette clé, par exemple le nom de l'équipe : affiché comme cible dans les enregistrements, les autres règles peuvent réutiliser la clé par ce nom",
     },
+    slackwebhook: {
+      webhook_url: 'URL du webhook',
+      webhook_url_tip:
+        "Ouvrez votre app sur https://api.slack.com/apps → Incoming Webhooks → activez Activate Incoming Webhooks → Add New Webhook, choisissez un salon et copiez l'URL générée. L'URL est un identifiant secret et apparaît masquée dans les enregistrements de notification. Accepte les références {{.nom_variable}} aux paramètres de variables.",
+      webhook_url_invalid: 'Doit ressembler à https://hooks.slack.com/services/T.../B.../...',
+      webhook_url_history_placeholder: 'Collez une URL de webhook, ou cliquez pour choisir une URL déjà utilisée',
+      bot_name: 'Nom',
+      bot_name_tip:
+        "Un nom facile à reconnaître pour ce webhook (le nom du salon convient bien) : les enregistrements de notification l'affichent comme cible, et les autres règles peuvent réutiliser l'URL en choisissant ce nom",
+    },
+    mattermostwebhook: {
+      webhook_url: 'URL du webhook',
+      webhook_url_tip:
+        "Dans Mattermost, ouvrez le menu en haut à gauche → Integrations → Incoming Webhooks → Add Incoming Webhook, choisissez un canal, enregistrez et copiez l'URL générée. L'URL est un identifiant secret et apparaît masquée dans les enregistrements de notification. Accepte les références {{.nom_variable}} aux paramètres de variables.",
+      webhook_url_invalid: 'Doit ressembler à https://mattermost.example.com/hooks/<id>',
+      webhook_url_history_placeholder: 'Collez une URL de webhook, ou cliquez pour choisir une URL déjà utilisée',
+      bot_name: 'Nom',
+      bot_name_tip:
+        "Un nom facile à reconnaître pour ce webhook (le nom du salon convient bien) : les enregistrements de notification l'affichent comme cible, et les autres règles peuvent réutiliser l'URL en choisissant ce nom",
+    },
     pagerduty: {
       services: 'Service / intégration',
     },

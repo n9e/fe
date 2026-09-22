@@ -39,6 +39,8 @@ const pt_BR = {
   request_configuration: {
     jsm_alert: 'Configuração do JSM Alert',
     discord: 'Configuração do Discord',
+    slackwebhook: 'Configuração do Slack Webhook',
+    mattermostwebhook: 'Configuração do Mattermost Webhook',
     jira: 'Configuração do Jira',
     http: 'Configuração HTTP',
     smtp: 'Configuração SMTP',
@@ -154,6 +156,23 @@ const pt_BR = {
     silent_tip: 'As mensagens continuam sendo publicadas, mas sem notificações push ou de desktop',
     proxy_tip: 'Preencha quando o Discord só for acessível por proxy, por exemplo http://127.0.0.1:7890',
   },
+  slackwebhook_request_config: {
+    top_tip:
+      'Uma URL de webhook corresponde a um canal do Slack, por isso ela é preenchida na regra de notificação e este meio pode enviar para quantos canais precisar. Estas configurações são padrões compartilhados por todas as regras. Obtenha a URL criando um app em https://api.slack.com/apps e ativando Incoming Webhooks.',
+    proxy_tip: 'Preencha se o Slack só puder ser acessado por um proxy, ex.: http://127.0.0.1:7890',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      'Uma URL de webhook corresponde a um canal do Mattermost, por isso ela é preenchida na regra de notificação e este meio pode enviar para quantos canais precisar. Estas configurações são padrões compartilhados por todas as regras. Um administrador precisa ativar Enable incoming webhooks em System Console → Integrations → Integration Management (ativado por padrão).',
+    username: 'Nome exibido',
+    username_tip: 'Substitui o nome do remetente. Exige que um administrador ative Enable integrations to override usernames; caso contrário, é ignorado',
+    icon: 'Ícone',
+    icon_tip:
+      'Substitui o avatar do remetente: uma URL de imagem ou um código de emoji como :bell:. Exige que um administrador ative Enable integrations to override profile picture icons; caso contrário, é ignorado',
+    icon_invalid: 'Use uma URL de imagem começando com http:// ou https://, ou um código de emoji como :bell:',
+    proxy_tip: 'Preencha se o Mattermost só puder ser acessado por um proxy, ex.: http://127.0.0.1:7890',
+    insecure_skip_verify_tip: 'Ative para um Mattermost auto-hospedado com certificado autoassinado. Vale para todas as URLs de webhook deste meio',
+  },
   jsm_alert_request_config: {
     top_tip:
       'Os alertas vão para o Operations do Jira Service Management. A chave de uma integração de API define qual equipe recebe o alerta, por isso é informada em cada regra de notificação; este meio pode enviar para quantas equipes quiser. Crie a chave no JSM: equipe → Integrations → Add integration → API.',
@@ -240,6 +259,8 @@ const pt_BR = {
     discord_target_thread: 'Thread / postagem existente',
     discord_thread_name_placeholder: 'Título da postagem, por exemplo {{$event.RuleName}}',
     discord_thread_id_placeholder: 'ID do thread, numérico',
+    webhook_title: 'URL do webhook',
+    webhook_tip: 'Depois de salvar, a URL do webhook é preenchida na regra de notificação; informe uma aqui apenas para testar.',
     jira_title: 'Projeto e tipo de issue do Jira',
     jira_tip:
       'Uma issue real será criada neste projeto. Depois de salvar, o projeto e o tipo de issue são escolhidos em listas na regra de notificação; aqui, informe-os manualmente.',

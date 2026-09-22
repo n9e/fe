@@ -191,6 +191,24 @@ const ja_JP = {
       bot_name: '名前',
       bot_name_tip: 'このキーの分かりやすい名前（チーム名など）。通知記録の宛先に表示され、他のルールでも名前でキーを再利用できます',
     },
+    slackwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'https://api.slack.com/apps でアプリを開き → Incoming Webhooks → Activate Incoming Webhooks を有効化 → Add New Webhook でチャンネルを選び、生成された URL をコピーします。URL 自体が認証情報のため、通知記録ではマスク表示されます。{{.変数名}} で変数設定を参照できます。',
+      webhook_url_invalid: 'https://hooks.slack.com/services/T.../B.../... の形式で入力してください',
+      webhook_url_history_placeholder: 'Webhook URL を貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'この Webhook のわかりやすい名前（チャンネル名がおすすめ）。通知記録の送信先に表示され、他のルールでも名前を選ぶだけでこの URL を再利用できます',
+    },
+    mattermostwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Mattermost の左上のメニュー → Integrations → Incoming Webhooks → Add Incoming Webhook でチャンネルを選んで保存し、生成された URL をコピーします。URL 自体が認証情報のため、通知記録ではマスク表示されます。{{.変数名}} で変数設定を参照できます。',
+      webhook_url_invalid: 'https://mattermost.example.com/hooks/<id> の形式で入力してください',
+      webhook_url_history_placeholder: 'Webhook URL を貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'この Webhook のわかりやすい名前（チャンネル名がおすすめ）。通知記録の送信先に表示され、他のルールでも名前を選ぶだけでこの URL を再利用できます',
+    },
     pagerduty: {
       services: 'サービス/統合',
     },

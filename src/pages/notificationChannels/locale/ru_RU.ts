@@ -39,6 +39,8 @@ const ru_RU = {
   request_configuration: {
     jsm_alert: 'Настройки JSM Alert',
     discord: 'Настройки Discord',
+    slackwebhook: 'Настройки Slack Webhook',
+    mattermostwebhook: 'Настройки Mattermost Webhook',
     jira: 'Настройки Jira',
     http: 'Настройка HTTP',
     smtp: 'Настройка SMTP',
@@ -156,6 +158,23 @@ const ru_RU = {
     silent_tip: 'Сообщения публикуются в канал, но без push- и desktop-уведомлений',
     proxy_tip: 'Укажите, если Discord доступен только через прокси, например http://127.0.0.1:7890',
   },
+  slackwebhook_request_config: {
+    top_tip:
+      'Один адрес Webhook соответствует одному каналу Slack, поэтому адрес указывается в правиле уведомлений, а этот канал уведомлений может отправлять в любое число каналов. Здесь задаются значения по умолчанию для всех правил. Адрес можно получить, создав приложение на https://api.slack.com/apps и включив Incoming Webhooks.',
+    proxy_tip: 'Укажите, если Slack доступен только через прокси, например http://127.0.0.1:7890',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      'Один адрес Webhook соответствует одному каналу Mattermost, поэтому адрес указывается в правиле уведомлений, а этот канал уведомлений может отправлять в любое число каналов. Здесь задаются значения по умолчанию для всех правил. Администратор должен включить Enable incoming webhooks в System Console → Integrations → Integration Management (включено по умолчанию).',
+    username: 'Отображаемое имя',
+    username_tip: 'Заменяет имя отправителя. Работает, только если администратор включил Enable integrations to override usernames, иначе игнорируется',
+    icon: 'Значок',
+    icon_tip:
+      'Заменяет аватар отправителя: адрес изображения или код эмодзи, например :bell:. Работает, только если администратор включил Enable integrations to override profile picture icons, иначе игнорируется',
+    icon_invalid: 'Укажите адрес изображения, начинающийся с http:// или https://, или код эмодзи, например :bell:',
+    proxy_tip: 'Укажите, если Mattermost доступен только через прокси, например http://127.0.0.1:7890',
+    insecure_skip_verify_tip: 'Включите для собственного Mattermost с самоподписанным сертификатом. Действует для всех адресов Webhook этого канала уведомлений',
+  },
   jsm_alert_request_config: {
     top_tip:
       'Оповещения отправляются в Operations Jira Service Management. Ключ API-интеграции определяет, какая команда получит оповещение, поэтому он указывается в каждом правиле уведомлений — так этот канал может отправлять любому числу команд. Создайте ключ в JSM: команда → Integrations → Add integration → API.',
@@ -242,6 +261,8 @@ const ru_RU = {
     discord_target_thread: 'Существующая ветка / пост форума',
     discord_thread_name_placeholder: 'Заголовок поста, например {{$event.RuleName}}',
     discord_thread_id_placeholder: 'ID ветки, число',
+    webhook_title: 'Адрес Webhook',
+    webhook_tip: 'После сохранения адрес Webhook указывается в правиле уведомлений; здесь введите его только для проверки.',
     jira_title: 'Проект и тип задачи Jira',
     jira_tip: 'В этом проекте будет создана настоящая задача. После сохранения проект и тип задачи выбираются из списков в правиле уведомлений, здесь введите их вручную.',
     jira_project_placeholder: 'Ключ проекта, например OPS',

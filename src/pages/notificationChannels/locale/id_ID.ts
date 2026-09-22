@@ -39,6 +39,8 @@ const id_ID = {
   request_configuration: {
     jsm_alert: 'Konfigurasi JSM Alert',
     discord: 'Konfigurasi Discord',
+    slackwebhook: 'Konfigurasi Slack Webhook',
+    mattermostwebhook: 'Konfigurasi Mattermost Webhook',
     jira: 'Konfigurasi Jira',
     http: 'Konfigurasi HTTP',
     smtp: 'Konfigurasi SMTP',
@@ -153,6 +155,23 @@ const id_ID = {
     silent_tip: 'Pesan tetap dikirim ke channel tetapi tanpa notifikasi push atau desktop',
     proxy_tip: 'Isi jika Discord hanya dapat dijangkau melalui proxy, misalnya http://127.0.0.1:7890',
   },
+  slackwebhook_request_config: {
+    top_tip:
+      'Satu URL webhook mengarah ke satu channel Slack, jadi URL diisi di aturan notifikasi dan media ini bisa mengirim ke banyak channel. Pengaturan di sini adalah nilai default untuk semua aturan. Dapatkan URL dengan membuat app di https://api.slack.com/apps lalu mengaktifkan Incoming Webhooks.',
+    proxy_tip: 'Isi jika Slack hanya bisa diakses lewat proxy, mis. http://127.0.0.1:7890',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      'Satu URL webhook mengarah ke satu channel Mattermost, jadi URL diisi di aturan notifikasi dan media ini bisa mengirim ke banyak channel. Pengaturan di sini adalah nilai default untuk semua aturan. Admin harus mengaktifkan Enable incoming webhooks di System Console → Integrations → Integration Management (aktif secara default).',
+    username: 'Nama tampilan',
+    username_tip: 'Menimpa nama pengirim. Admin harus mengaktifkan Enable integrations to override usernames, jika tidak akan diabaikan',
+    icon: 'Ikon',
+    icon_tip:
+      'Menimpa avatar pengirim: URL gambar atau kode emoji seperti :bell:. Admin harus mengaktifkan Enable integrations to override profile picture icons, jika tidak akan diabaikan',
+    icon_invalid: 'Gunakan URL gambar yang diawali http:// atau https://, atau kode emoji seperti :bell:',
+    proxy_tip: 'Isi jika Mattermost hanya bisa diakses lewat proxy, mis. http://127.0.0.1:7890',
+    insecure_skip_verify_tip: 'Aktifkan untuk Mattermost self-hosted dengan sertifikat self-signed. Berlaku untuk semua URL webhook di media ini',
+  },
   jsm_alert_request_config: {
     top_tip:
       'Alert dikirim ke Operations Jira Service Management. Kunci integrasi API menentukan tim penerima alert, jadi kunci diisi di setiap aturan notifikasi; media ini dapat mengirim ke berapa pun tim. Buat kunci di JSM: tim → Integrations → Add integration → API.',
@@ -239,6 +258,8 @@ const id_ID = {
     discord_target_thread: 'Thread / postingan yang ada',
     discord_thread_name_placeholder: 'Judul postingan, misalnya {{$event.RuleName}}',
     discord_thread_id_placeholder: 'ID thread, angka',
+    webhook_title: 'URL webhook',
+    webhook_tip: 'Setelah disimpan, URL webhook diisi di aturan notifikasi; isi di sini hanya untuk pengujian.',
     jira_title: 'Proyek dan tipe issue Jira',
     jira_tip: 'Issue sungguhan akan dibuat di proyek ini. Setelah disimpan, proyek dan tipe issue dipilih dari dropdown di aturan notifikasi; di sini isi secara manual.',
     jira_project_placeholder: 'Kunci proyek, misalnya OPS',

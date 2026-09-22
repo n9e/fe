@@ -190,6 +190,26 @@ const id_ID = {
       bot_name_tip:
         'Nama yang mudah dikenali untuk kunci ini, misalnya nama tim: tampil sebagai target di catatan notifikasi, aturan lain dapat memakai ulang kunci lewat nama ini',
     },
+    slackwebhook: {
+      webhook_url: 'URL webhook',
+      webhook_url_tip:
+        'Buka app Anda di https://api.slack.com/apps → Incoming Webhooks → aktifkan Activate Incoming Webhooks → Add New Webhook, pilih channel lalu salin URL yang dibuat. URL ini adalah kredensial dan ditampilkan tersamar di catatan notifikasi. Mendukung referensi {{.nama_variabel}} ke pengaturan variabel.',
+      webhook_url_invalid: 'Harus berbentuk https://hooks.slack.com/services/T.../B.../...',
+      webhook_url_history_placeholder: 'Tempel URL webhook, atau klik untuk memilih yang pernah diisi',
+      bot_name: 'Nama',
+      bot_name_tip:
+        'Nama yang mudah dikenali untuk webhook ini (nama channel cocok): catatan notifikasi menampilkannya sebagai target, dan aturan lain bisa memakai ulang URL dengan memilih nama ini',
+    },
+    mattermostwebhook: {
+      webhook_url: 'URL webhook',
+      webhook_url_tip:
+        'Di Mattermost, buka menu kiri atas → Integrations → Incoming Webhooks → Add Incoming Webhook, pilih channel, simpan lalu salin URL yang dibuat. URL ini adalah kredensial dan ditampilkan tersamar di catatan notifikasi. Mendukung referensi {{.nama_variabel}} ke pengaturan variabel.',
+      webhook_url_invalid: 'Harus berbentuk https://mattermost.example.com/hooks/<id>',
+      webhook_url_history_placeholder: 'Tempel URL webhook, atau klik untuk memilih yang pernah diisi',
+      bot_name: 'Nama',
+      bot_name_tip:
+        'Nama yang mudah dikenali untuk webhook ini (nama channel cocok): catatan notifikasi menampilkannya sebagai target, dan aturan lain bisa memakai ulang URL dengan memilih nama ini',
+    },
     pagerduty: {
       services: 'Layanan/integrasi',
     },

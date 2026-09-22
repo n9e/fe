@@ -181,6 +181,24 @@ const zh_HK = {
       bot_name: '名稱',
       bot_name_tip: '給這個 key 起個好認的名字（如團隊名）：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個 key',
     },
+    slackwebhook: {
+      webhook_url: 'Webhook 地址',
+      webhook_url_tip:
+        '在 https://api.slack.com/apps 打開你的應用 → Incoming Webhooks → 開啟 Activate Incoming Webhooks → Add New Webhook，選擇頻道後複製生成的地址。地址本身就是憑證，通知記錄裡會遮罩顯示。支援用 {{.變數名}} 引用變數設定。',
+      webhook_url_invalid: '應形如 https://hooks.slack.com/services/T.../B.../...',
+      webhook_url_history_placeholder: '貼上 Webhook 地址，或點擊選擇之前填過的',
+      bot_name: '名稱',
+      bot_name_tip: '給這個 Webhook 取個好認的名字（建議用頻道名）：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個地址',
+    },
+    mattermostwebhook: {
+      webhook_url: 'Webhook 地址',
+      webhook_url_tip:
+        '在 Mattermost 左上角選單 → Integrations → Incoming Webhooks → Add Incoming Webhook，選擇頻道並儲存後複製生成的地址。地址本身就是憑證，通知記錄裡會遮罩顯示。支援用 {{.變數名}} 引用變數設定。',
+      webhook_url_invalid: '應形如 https://mattermost.example.com/hooks/<id>',
+      webhook_url_history_placeholder: '貼上 Webhook 地址，或點擊選擇之前填過的',
+      bot_name: '名稱',
+      bot_name_tip: '給這個 Webhook 取個好認的名字（建議用頻道名）：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個地址',
+    },
     pagerduty: {
       services: '服務/集成',
     },

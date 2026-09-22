@@ -114,6 +114,14 @@ export interface DiscordRequestConfig extends NativeNetworkConfig {
   silent?: boolean;
 }
 
+export type SlackWebhookRequestConfig = NativeNetworkConfig;
+
+export interface MattermostWebhookRequestConfig extends NativeNetworkConfig {
+  username?: string;
+  /** 图片地址或 emoji 代码（如 :bell:） */
+  icon?: string;
+}
+
 export interface JSMAlertRequestConfig extends NativeNetworkConfig {
   api_url?: string;
   /** 告警级别 '1'/'2'/'3' → JSM 优先级 P1–P5 */
@@ -143,7 +151,9 @@ export interface ChannelItem {
     | 'dingtalk'
     | 'jira'
     | 'discord'
-    | 'jsm_alert';
+    | 'jsm_alert'
+    | 'slackwebhook'
+    | 'mattermostwebhook';
   request_config: {
     http_request_config: HttpRequestConfig;
     smtp_request_config: SmtpRequestConfig;
@@ -156,6 +166,8 @@ export interface ChannelItem {
     jira_request_config?: JiraRequestConfig;
     discord_request_config?: DiscordRequestConfig;
     jsm_alert_request_config?: JSMAlertRequestConfig;
+    slackwebhook_request_config?: SlackWebhookRequestConfig;
+    mattermostwebhook_request_config?: MattermostWebhookRequestConfig;
     // 群机器人（webhook）类渠道只有上传告警截图用的应用凭证，字段名与后端 models.RequestConfig 一一对应：
     // feishu / feishucard / lark / larkcard 共用 feishu_request_config，dingtalk 用 dingtalk_request_config
     feishu_request_config: Pick<FeishuAppRequestConfig, 'app_id' | 'app_secret'>;

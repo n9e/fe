@@ -38,6 +38,8 @@ const ko_KR = {
   request_configuration: {
     jsm_alert: 'JSM Alert 설정',
     discord: 'Discord 설정',
+    slackwebhook: 'Slack Webhook 설정',
+    mattermostwebhook: 'Mattermost Webhook 설정',
     jira: 'Jira 설정',
     http: 'HTTP 설정',
     smtp: 'SMTP 설정',
@@ -151,6 +153,23 @@ const ko_KR = {
     silent_tip: '메시지는 채널에 올라가지만 푸시·데스크톱 알림은 발생하지 않습니다',
     proxy_tip: 'Discord에 프록시를 거쳐야만 접속할 수 있을 때 입력합니다(예: http://127.0.0.1:7890)',
   },
+  slackwebhook_request_config: {
+    top_tip:
+      'Webhook URL 하나는 Slack 채널 하나에 대응하므로 URL은 알림 규칙에서 입력하며, 이 미디어로 여러 채널에 보낼 수 있습니다. 여기 설정은 모든 규칙이 공유하는 기본값입니다. https://api.slack.com/apps 에서 앱을 만들고 Incoming Webhooks를 켜면 URL을 받을 수 있습니다.',
+    proxy_tip: 'Slack에 프록시를 통해서만 접속할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      'Webhook URL 하나는 Mattermost 채널 하나에 대응하므로 URL은 알림 규칙에서 입력하며, 이 미디어로 여러 채널에 보낼 수 있습니다. 여기 설정은 모든 규칙이 공유하는 기본값입니다. 관리자가 System Console → Integrations → Integration Management에서 Enable incoming webhooks를 켜 두어야 합니다(기본값: 켜짐).',
+    username: '표시 이름',
+    username_tip: '보낸 사람 이름을 덮어씁니다. 관리자가 Enable integrations to override usernames를 켜지 않으면 무시됩니다',
+    icon: '아이콘',
+    icon_tip:
+      '보낸 사람 아바타를 덮어씁니다. 이미지 URL 또는 :bell: 같은 이모지 코드를 입력합니다. 관리자가 Enable integrations to override profile picture icons를 켜지 않으면 무시됩니다',
+    icon_invalid: 'http:// 또는 https:// 로 시작하는 이미지 URL이나 :bell: 같은 이모지 코드를 입력하세요',
+    proxy_tip: 'Mattermost에 프록시를 통해서만 접속할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
+    insecure_skip_verify_tip: '자체 서명 인증서를 쓰는 자체 호스팅 Mattermost에서 켭니다. 이 미디어를 쓰는 모든 규칙의 Webhook URL에 적용됩니다',
+  },
   jsm_alert_request_config: {
     top_tip:
       '알림은 Jira Service Management의 Operations로 전송됩니다. API 통합의 키가 알림을 받을 팀을 결정하므로 키는 알림 규칙마다 입력하며, 이 매체로 여러 팀에 보낼 수 있습니다. JSM에서 생성: 팀 → Integrations → Add integration → API.',
@@ -237,6 +256,8 @@ const ko_KR = {
     discord_target_thread: '기존 스레드 / 포럼 게시물',
     discord_thread_name_placeholder: '게시물 제목(예: {{$event.RuleName}})',
     discord_thread_id_placeholder: '스레드 ID(숫자)',
+    webhook_title: 'Webhook URL',
+    webhook_tip: '저장 후 Webhook URL은 알림 규칙에서 입력합니다. 여기서는 테스트용으로 임시 입력하세요.',
     jira_title: 'Jira 프로젝트와 이슈 유형',
     jira_tip: '이 프로젝트에 실제 이슈가 생성됩니다. 저장 후에는 알림 규칙에서 드롭다운으로 프로젝트와 이슈 유형을 고르지만, 여기서는 직접 입력하세요.',
     jira_project_placeholder: '프로젝트 키(예: OPS)',

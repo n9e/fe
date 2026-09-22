@@ -182,6 +182,24 @@ const ko_KR = {
       bot_name: '이름',
       bot_name_tip: '이 키를 알아보기 쉬운 이름(예: 팀 이름). 알림 기록의 대상으로 표시되며 다른 규칙에서도 이 이름으로 키를 재사용할 수 있습니다',
     },
+    slackwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'https://api.slack.com/apps 에서 앱을 열고 → Incoming Webhooks → Activate Incoming Webhooks 켜기 → Add New Webhook에서 채널을 고른 뒤 생성된 URL을 복사합니다. URL 자체가 자격 증명이므로 알림 기록에서는 마스킹되어 표시됩니다. {{.변수명}}으로 변수 설정을 참조할 수 있습니다.',
+      webhook_url_invalid: 'https://hooks.slack.com/services/T.../B.../... 형식이어야 합니다',
+      webhook_url_history_placeholder: 'Webhook URL을 붙여 넣거나, 클릭해서 이전에 입력한 것을 선택',
+      bot_name: '이름',
+      bot_name_tip: '이 Webhook을 알아보기 쉬운 이름(채널 이름 권장). 알림 기록의 대상에 표시되며, 다른 규칙에서도 이름으로 이 URL을 재사용할 수 있습니다',
+    },
+    mattermostwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Mattermost 왼쪽 위 메뉴 → Integrations → Incoming Webhooks → Add Incoming Webhook에서 채널을 고르고 저장한 뒤 생성된 URL을 복사합니다. URL 자체가 자격 증명이므로 알림 기록에서는 마스킹되어 표시됩니다. {{.변수명}}으로 변수 설정을 참조할 수 있습니다.',
+      webhook_url_invalid: 'https://mattermost.example.com/hooks/<id> 형식이어야 합니다',
+      webhook_url_history_placeholder: 'Webhook URL을 붙여 넣거나, 클릭해서 이전에 입력한 것을 선택',
+      bot_name: '이름',
+      bot_name_tip: '이 Webhook을 알아보기 쉬운 이름(채널 이름 권장). 알림 기록의 대상에 표시되며, 다른 규칙에서도 이름으로 이 URL을 재사용할 수 있습니다',
+    },
     pagerduty: {
       services: '서비스/통합',
     },

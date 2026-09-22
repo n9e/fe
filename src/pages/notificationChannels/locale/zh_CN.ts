@@ -37,6 +37,8 @@ const zh_CN = {
   request_configuration: {
     jsm_alert: 'JSM 告警配置',
     discord: 'Discord 配置',
+    slackwebhook: 'Slack Webhook 配置',
+    mattermostwebhook: 'Mattermost Webhook 配置',
     jira: 'Jira 配置',
     http: 'HTTP 配置',
     smtp: 'SMTP 配置',
@@ -150,6 +152,22 @@ const zh_CN = {
     silent_tip: '开启后消息照常发到频道，但不触发接收者的推送和桌面通知',
     proxy_tip: '访问 Discord 需要经过代理时填写，如 http://127.0.0.1:7890',
   },
+  slackwebhook_request_config: {
+    top_tip:
+      '一个 Webhook 地址对应一个 Slack 频道，所以地址在通知规则里填写，这个媒介可以发到任意多个频道。这里的设置是所有规则共用的默认值。在 https://api.slack.com/apps 创建应用并开启 Incoming Webhooks 后获取地址。',
+    proxy_tip: '访问 Slack 需要经过代理时填写，如 http://127.0.0.1:7890',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      '一个 Webhook 地址对应一个 Mattermost 频道，所以地址在通知规则里填写，这个媒介可以发到任意多个频道。这里的设置是所有规则共用的默认值。需要管理员在 System Console → Integrations → Integration Management 开启 Enable incoming webhooks（默认已开）。',
+    username: '显示名称',
+    username_tip: '覆盖消息发送者的名字。需要管理员开启 Enable integrations to override usernames，没开时会被忽略',
+    icon: '图标',
+    icon_tip: '覆盖发送者的头像：填图片地址，或 emoji 代码（如 :bell:）。需要管理员开启 Enable integrations to override profile picture icons，没开时会被忽略',
+    icon_invalid: '请填以 http:// 或 https:// 开头的图片地址，或 :bell: 这样的 emoji 代码',
+    proxy_tip: '访问 Mattermost 需要经过代理时填写，如 http://127.0.0.1:7890',
+    insecure_skip_verify_tip: '自建 Mattermost 使用自签名证书时开启，对这个媒介下所有规则填的 Webhook 地址生效',
+  },
   jsm_alert_request_config: {
     top_tip:
       '告警发到 Jira Service Management 的 Operations。API 集成的 key 决定告警归哪个团队，所以 key 在通知规则里填写，这个媒介可以发给任意多个团队。在 JSM 里创建：团队 → Integrations → Add integration → API。',
@@ -236,6 +254,8 @@ const zh_CN = {
     discord_target_thread: '已有线程或论坛帖子',
     discord_thread_name_placeholder: '帖子标题，如 {{$event.RuleName}}',
     discord_thread_id_placeholder: '线程 ID，纯数字',
+    webhook_title: 'Webhook 地址',
+    webhook_tip: '保存后 Webhook 地址在通知规则里填写，这里临时填一个用于测试。',
     jira_title: 'Jira 项目与工作类型',
     jira_tip: '将在所填项目里创建一张真实工单。保存后在通知规则里是下拉选择项目和工作类型，这里请手动填写。',
     jira_project_placeholder: '项目 key，如 OPS',

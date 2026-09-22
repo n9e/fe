@@ -188,6 +188,26 @@ const en_US = {
       bot_name: 'Name',
       bot_name_tip: 'A recognizable name for this key, e.g. the team name: notification records show it as the target, and other rules can reuse the key by this name',
     },
+    slackwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Open your app at https://api.slack.com/apps → Incoming Webhooks → turn on Activate Incoming Webhooks → Add New Webhook, pick a channel and copy the generated URL. The URL is a credential and is masked in notification records. Supports {{.variable_name}} references to variable settings.',
+      webhook_url_invalid: 'Should look like https://hooks.slack.com/services/T.../B.../...',
+      webhook_url_history_placeholder: 'Paste a webhook URL, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip:
+        'A recognizable name for this webhook (the channel name works well): notification records show it as the target, and other rules can reuse the URL by picking this name',
+    },
+    mattermostwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'In Mattermost, open the top-left menu → Integrations → Incoming Webhooks → Add Incoming Webhook, pick a channel, save and copy the generated URL. The URL is a credential and is masked in notification records. Supports {{.variable_name}} references to variable settings.',
+      webhook_url_invalid: 'Should look like https://mattermost.example.com/hooks/<id>',
+      webhook_url_history_placeholder: 'Paste a webhook URL, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip:
+        'A recognizable name for this webhook (the channel name works well): notification records show it as the target, and other rules can reuse the URL by picking this name',
+    },
     pagerduty: {
       services: 'Service/Integration',
     },

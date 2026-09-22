@@ -712,48 +712,6 @@ export const getNotificationChannelTypes = () => {
     //     },
     //   },
     // },
-    // slackwebhook: {
-    //   logo: '/image/logos/slack.png',
-    //   type: 'http',
-    //   default_values: {
-    //     param_config: {
-    //       custom: {
-    //         params: [
-    //           {
-    //             key: 'webhook_url',
-    //             cname: 'Webhook Url',
-    //             type: 'string',
-    //           },
-    //           {
-    //             key: 'bot_name',
-    //             cname: 'Bot Name',
-    //             type: 'string',
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     request_type: 'http',
-    //     request_config: {
-    //       http_request_config: {
-    //         url: '{{$params.webhook_url}}',
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         proxy: '',
-    //         timeout: 10000,
-    //         concurrency: 5,
-    //         retry_times: 3,
-    //         retry_interval: 100,
-    //         request: {
-    //           parameters: null,
-    //           form: '',
-    //           body: '{"text":  "{{$tpl.content}}", "mrkdwn": true}',
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
     // mattermostbot: {
     //   logo: '/image/logos/mattermost.png',
     //   type: 'http',
@@ -797,48 +755,6 @@ export const getNotificationChannelTypes = () => {
     //     },
     //   },
     // },
-    // mattermostwebhook: {
-    //   logo: '/image/logos/mattermost.png',
-    //   type: 'http',
-    //   default_values: {
-    //     param_config: {
-    //       custom: {
-    //         params: [
-    //           {
-    //             key: 'webhook_url',
-    //             cname: 'Webhook Url',
-    //             type: 'string',
-    //           },
-    //           {
-    //             key: 'bot_name',
-    //             cname: 'Bot Name',
-    //             type: 'string',
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     request_type: 'http',
-    //     request_config: {
-    //       http_request_config: {
-    //         url: '{{$params.webhook_url}}',
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         proxy: '',
-    //         timeout: 10000,
-    //         concurrency: 5,
-    //         retry_times: 3,
-    //         retry_interval: 100,
-    //         request: {
-    //           parameters: null,
-    //           form: '',
-    //           body: '{"text":  "{{$tpl.content}}"}',
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
     discord: {
       logo: '/image/logos/discord.png',
       type: 'discord',
@@ -858,6 +774,52 @@ export const getNotificationChannelTypes = () => {
         },
         request_config: {
           discord_request_config: {
+            timeout: 10000,
+            retry_times: 3,
+            retry_sleep: 1000,
+          },
+        },
+      },
+    },
+    slackwebhook: {
+      logo: '/image/logos/slack.png',
+      type: 'slackwebhook',
+      default_values: {
+        request_type: 'slackwebhook',
+        // 规则侧参数与后端内置媒介（models.SlackWebhookRuleParams）一致，规则页的历史参数复用按这些 key 回显
+        param_config: {
+          custom: {
+            params: [
+              { key: 'webhook_url', cname: 'Webhook URL', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+            ],
+          },
+        },
+        request_config: {
+          slackwebhook_request_config: {
+            timeout: 10000,
+            retry_times: 3,
+            retry_sleep: 1000,
+          },
+        },
+      },
+    },
+    mattermostwebhook: {
+      logo: '/image/logos/mattermost.png',
+      type: 'mattermostwebhook',
+      default_values: {
+        request_type: 'mattermostwebhook',
+        // 规则侧参数与后端内置媒介（models.MattermostWebhookRuleParams）一致，规则页的历史参数复用按这些 key 回显
+        param_config: {
+          custom: {
+            params: [
+              { key: 'webhook_url', cname: 'Webhook URL', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+            ],
+          },
+        },
+        request_config: {
+          mattermostwebhook_request_config: {
             timeout: 10000,
             retry_times: 3,
             retry_sleep: 1000,

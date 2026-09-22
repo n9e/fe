@@ -50,6 +50,8 @@ export default function TestModal(props: Props) {
   const [discordParams, setDiscordParams] = useState<Record<string, string>>({ target: 'channel' });
   // JSM 的 API 集成 key 也在通知规则里填，这里临时填一个
   const [jsmApiKey, setJsmApiKey] = useState('');
+  // Slack / Mattermost 的 Webhook 地址同样在通知规则里填
+  const [webhookUrl, setWebhookUrl] = useState('');
   // 默认连恢复一起测：一次验证建单、评论和关单
   const [withRecovery, setWithRecovery] = useState(true);
   const [userIds, setUserIds] = useState<number[]>([]);
@@ -72,6 +74,7 @@ export default function TestModal(props: Props) {
   const isJira = requestType === 'jira';
   const isDiscord = requestType === 'discord';
   const isJSMAlert = requestType === 'jsm_alert';
+  const isChatWebhook = requestType === 'slackwebhook' || requestType === 'mattermostwebhook';
   // 支持「同时测试恢复」的媒介：恢复时有独立动作（Jira 关单、JSM 关告警）
   const supportsRecoveryTest = isJira || isJSMAlert;
 
@@ -150,6 +153,7 @@ export default function TestModal(props: Props) {
           ...(isJira ? { project_key: _.trim(jiraProject), issue_type: _.trim(jiraIssueType) } : {}),
           ...(isDiscord ? _.omitBy(_.mapValues(discordParams, _.trim), _.isEmpty) : {}),
           ...(isJSMAlert ? { api_key: _.trim(jsmApiKey) } : {}),
+          ...(isChatWebhook ? { webhook_url: _.trim(webhookUrl) } : {}),
         },
         severities: [mockEvent.severity],
       },
@@ -175,7 +179,8 @@ export default function TestModal(props: Props) {
     (isPagerduty && _.isEmpty(pagerdutyKeys)) ||
     (isJira && (!_.trim(jiraProject) || !_.trim(jiraIssueType))) ||
     (isDiscord && !_.trim(discordParams.webhook_url)) ||
-    (isJSMAlert && !_.trim(jsmApiKey));
+    (isJSMAlert && !_.trim(jsmApiKey)) ||
+    (isChatWebhook && !_.trim(webhookUrl));
 
   return (
     <>
@@ -319,6 +324,18 @@ export default function TestModal(props: Props) {
                     />
                   )}
                 </div>
+              </div>
+            )}
+            {isChatWebhook && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.webhook_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.webhook_tip')}</div>
+                <Input.Password
+                  autoComplete='new-password'
+                  value={webhookUrl}
+                  placeholder={requestType === 'slackwebhook' ? 'https://hooks.slack.com/services/T.../B.../...' : 'https://mattermost.example.com/hooks/<id>'}
+                  onChange={(e) => setWebhookUrl(e.target.value)}
+                />
               </div>
             )}
             {isJSMAlert && (

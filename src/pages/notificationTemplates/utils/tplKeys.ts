@@ -48,6 +48,8 @@ export const SMTP_TPL_KEYS = ['subject', 'content'];
 export const NATIVE_TPL_KEYS: Record<string, string[]> = {
   jira: ['title', 'content'],
   discord: ['content'],
+  slackwebhook: ['content'],
+  mattermostwebhook: ['content'],
   jsm_alert: ['title', 'content'],
 };
 

@@ -39,6 +39,8 @@ const ja_JP = {
   request_configuration: {
     jsm_alert: 'JSM アラート設定',
     discord: 'Discord 設定',
+    slackwebhook: 'Slack Webhook 設定',
+    mattermostwebhook: 'Mattermost Webhook 設定',
     jira: 'Jira 設定',
     http: 'HTTP 設定',
     smtp: 'SMTP 設定',
@@ -154,6 +156,23 @@ const ja_JP = {
     silent_tip: 'メッセージはチャンネルに投稿されますが、プッシュやデスクトップ通知は発生しません',
     proxy_tip: 'Discord へのアクセスにプロキシが必要な場合に入力します（例：http://127.0.0.1:7890）',
   },
+  slackwebhook_request_config: {
+    top_tip:
+      'Webhook URL は 1 つの Slack チャンネルに対応するため、URL は通知ルールで入力します。このメディアで任意の数のチャンネルに送信できます。ここの設定はすべてのルールで共有されるデフォルト値です。https://api.slack.com/apps でアプリを作成し、Incoming Webhooks を有効にすると URL を取得できます。',
+    proxy_tip: 'Slack へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      'Webhook URL は 1 つの Mattermost チャンネルに対応するため、URL は通知ルールで入力します。このメディアで任意の数のチャンネルに送信できます。ここの設定はすべてのルールで共有されるデフォルト値です。管理者が System Console → Integrations → Integration Management で Enable incoming webhooks を有効にしておく必要があります（デフォルトで有効）。',
+    username: '表示名',
+    username_tip: '送信者名を上書きします。管理者が Enable integrations to override usernames を有効にしていない場合は無視されます',
+    icon: 'アイコン',
+    icon_tip:
+      '送信者のアイコンを上書きします。画像 URL か :bell: のような絵文字コードを入力します。管理者が Enable integrations to override profile picture icons を有効にしていない場合は無視されます',
+    icon_invalid: 'http:// または https:// で始まる画像 URL か、:bell: のような絵文字コードを入力してください',
+    proxy_tip: 'Mattermost へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
+    insecure_skip_verify_tip: '自己署名証明書を使うセルフホストの Mattermost で有効にします。このメディアのすべてのルールの Webhook URL に適用されます',
+  },
   jsm_alert_request_config: {
     top_tip:
       'アラートは Jira Service Management の Operations に送信されます。API 連携のキーがアラートの担当チームを決めるため、キーは通知ルールごとに入力します。このメディアで任意の数のチームに送信できます。JSM で作成：チーム → Integrations → Add integration → API。',
@@ -239,6 +258,8 @@ const ja_JP = {
     discord_target_thread: '既存のスレッド / フォーラム投稿',
     discord_thread_name_placeholder: '投稿タイトル（例：{{$event.RuleName}}）',
     discord_thread_id_placeholder: 'スレッド ID（数字）',
+    webhook_title: 'Webhook URL',
+    webhook_tip: '保存後、Webhook URL は通知ルールで入力します。ここではテスト用に一時的に入力してください。',
     jira_title: 'Jira プロジェクトと課題タイプ',
     jira_tip: 'このプロジェクトに実際の課題が作成されます。保存後は通知ルールでプロジェクトと課題タイプをドロップダウンから選びますが、ここでは手入力してください。',
     jira_project_placeholder: 'プロジェクトキー（例：OPS）',

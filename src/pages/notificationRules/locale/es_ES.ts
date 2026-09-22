@@ -189,6 +189,26 @@ const es_ES = {
       bot_name: 'Nombre',
       bot_name_tip: 'Un nombre reconocible para la clave, como el del equipo: aparece como destino en los registros y otras reglas pueden reutilizar la clave por este nombre',
     },
+    slackwebhook: {
+      webhook_url: 'URL del webhook',
+      webhook_url_tip:
+        'Abre tu app en https://api.slack.com/apps → Incoming Webhooks → activa Activate Incoming Webhooks → Add New Webhook, elige un canal y copia la URL generada. La URL es una credencial y se enmascara en los registros de notificación. Admite referencias {{.nombre_variable}} a la configuración de variables.',
+      webhook_url_invalid: 'Debe tener la forma https://hooks.slack.com/services/T.../B.../...',
+      webhook_url_history_placeholder: 'Pega una URL de webhook o haz clic para elegir una usada antes',
+      bot_name: 'Nombre',
+      bot_name_tip:
+        'Un nombre reconocible para este webhook (el nombre del canal funciona bien): los registros de notificación lo muestran como destino y otras reglas pueden reutilizar la URL eligiendo este nombre',
+    },
+    mattermostwebhook: {
+      webhook_url: 'URL del webhook',
+      webhook_url_tip:
+        'En Mattermost, abre el menú superior izquierdo → Integrations → Incoming Webhooks → Add Incoming Webhook, elige un canal, guarda y copia la URL generada. La URL es una credencial y se enmascara en los registros de notificación. Admite referencias {{.nombre_variable}} a la configuración de variables.',
+      webhook_url_invalid: 'Debe tener la forma https://mattermost.example.com/hooks/<id>',
+      webhook_url_history_placeholder: 'Pega una URL de webhook o haz clic para elegir una usada antes',
+      bot_name: 'Nombre',
+      bot_name_tip:
+        'Un nombre reconocible para este webhook (el nombre del canal funciona bien): los registros de notificación lo muestran como destino y otras reglas pueden reutilizar la URL eligiendo este nombre',
+    },
     pagerduty: {
       services: 'Servicio/integración',
     },
