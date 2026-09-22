@@ -26,7 +26,7 @@ import '@fc-components/use-antd-resizable-header/dist/style.css';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel, IStandardOptions, IValueMapping, ILink } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
@@ -89,6 +89,7 @@ const getColor = (color, colorMode, themeMode) => {
 
 function TableCpt(props: IProps, ref: any) {
   const { t } = useTranslation('dashboard');
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const eleRef = useRef<HTMLDivElement>(null);
   const size = useSize(eleRef);
   const { values, themeMode, isPreview, series } = props;

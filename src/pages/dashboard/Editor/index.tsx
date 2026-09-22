@@ -25,7 +25,9 @@ import { useDeepCompareEffect } from 'ahooks';
 import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 
-import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
+import { defaultValues } from './config';
+import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Renderer/registry/defaults';
+import { visualizations } from '../Renderer/registry/panelTypes';
 import FormCpt, { EditorFormHandle } from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';

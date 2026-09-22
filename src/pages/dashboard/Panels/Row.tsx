@@ -21,7 +21,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { AddPanelIcon } from '../config';
 import { useGlobalState } from '../globalState';
@@ -38,8 +38,10 @@ interface IProps {
   onDeleteClick: (mode: 'self' | 'withPanels') => void;
 }
 
+/** 渲染仪表盘行标题及其操作，并从所属仪表盘运行时读取可插入的变量。 */
 export default function Row(props: IProps) {
   const { t } = useTranslation('dashboard');
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const { isAuthorized, name, row, onToggle, onAddClick, onPasteClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);

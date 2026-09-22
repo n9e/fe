@@ -5,8 +5,11 @@ import { act } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
 import Main from './Main';
-import { getGlobalState, setGlobalState } from '../../../globalState';
+import { DashboardRuntimeProvider } from '../../../globalState';
 import type { DashboardMeta } from '../../../globalState';
+import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
+
+const { getGlobalState, setGlobalState } = dashboardTestRuntimeStore;
 
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (value: string) => value }) }));
@@ -22,7 +25,7 @@ jest.mock('@/components/TimeRangePicker', () => ({
   parseRange: () => ({ start: 0, end: 0 }),
   timeRangeUnix: () => ({}),
 }));
-jest.mock('../../../Editor/config', () => ({ defaultOptionsValues: { thresholds: { mode: 'absolute' } }, calcsOptions: [] }));
+jest.mock('../../registry/defaults', () => ({ defaultOptionsValues: { thresholds: { mode: 'absolute' } }, calcsOptions: [] }));
 jest.mock('./components/ResetZoomButton', () => () => null);
 jest.mock('./components/Annotation/AddButton', () => () => null);
 jest.mock('./components/Annotation/annotationsPlugin', () => ({
@@ -59,19 +62,21 @@ const baseMeta = {
 
 function setup() {
   return render(
-    <MemoryRouter>
-      <Main
-        id='test-panel'
-        frames={[[1000, 2000]] as never}
-        baseSeries={[]}
-        darkMode={false}
-        width={400}
-        height={200}
-        panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
-        series={[]}
-        annotations={[]}
-      />
-    </MemoryRouter>,
+    <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+      <MemoryRouter>
+        <Main
+          id='test-panel'
+          frames={[[1000, 2000]] as never}
+          baseSeries={[]}
+          darkMode={false}
+          width={400}
+          height={200}
+          panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
+          series={[]}
+          annotations={[]}
+        />
+      </MemoryRouter>
+    </DashboardRuntimeProvider>,
   );
 }
 
@@ -92,19 +97,21 @@ describe('graphTooltip runtime propagation to timeseries charts', () => {
       setGlobalState('dashboardMeta', { ...(getGlobalState('dashboardMeta') as DashboardMeta), graphTooltip: 'sharedTooltip' });
     });
     utils.rerender(
-      <MemoryRouter>
-        <Main
-          id='test-panel'
-          frames={[[1000, 2000]] as never}
-          baseSeries={[]}
-          darkMode={false}
-          width={400}
-          height={200}
-          panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
-          series={[]}
-          annotations={[]}
-        />
-      </MemoryRouter>,
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <MemoryRouter>
+          <Main
+            id='test-panel'
+            frames={[[1000, 2000]] as never}
+            baseSeries={[]}
+            darkMode={false}
+            width={400}
+            height={200}
+            panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
+            series={[]}
+            annotations={[]}
+          />
+        </MemoryRouter>
+      </DashboardRuntimeProvider>,
     );
 
     expect(tooltipCalls[tooltipCalls.length - 1].graphTooltip).toBe('sharedTooltip');

@@ -3,7 +3,7 @@ import { Tooltip, Space } from 'antd';
 import _ from 'lodash';
 import Color from 'color';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../../types';
 import { getSerieTextObj } from '../../../utils/getCalculatedValuesBySeries';
@@ -25,6 +25,7 @@ const CELL_HEIGHT = 16;
 const CELL_SPACING = 2;
 
 export default function LCDBar(props: Props) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxBarWidth } = props;
   const { stat, metric } = item;
   const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;

@@ -5,7 +5,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import type { DashboardDatasource, IPanel } from '@/pages/dashboard/types';
 import { IVariable } from '@/pages/dashboard/Variables/types';
 
-import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../../Editor/config';
+import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../registry/defaults';
 import getDefaultTargets from '../../utils/getDefaultTargets';
 import { sortPanelsByGridLayout } from '../../Panels/utils';
 

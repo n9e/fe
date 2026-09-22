@@ -127,6 +127,8 @@ const es_ES = {
     dashboardIds_placeholder: 'Selecciona el dashboard',
   },
   var: {
+    reference_in_use: 'La variable {{name}} todavía está referenciada en {{total}} configuración(es). Reemplázalas primero.',
+    references_renamed: 'Se actualizaron {{total}} referencia(s) de variable',
     vars: 'Variable',
     btn: 'Añadir variable',
     title: {

@@ -116,4 +116,9 @@ export interface DashboardQueryState {
   revision: number;
 }
 
+/** Query state exposed to a renderer, including an explicit retry that bypasses viewport caching. */
+export interface DashboardQueryHookResult extends DashboardQueryState {
+  retry: () => void;
+}
+
 export type DashboardPanelTarget = ITarget;

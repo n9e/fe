@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Dropdown, Menu, Tooltip, Space, Drawer, message } from 'antd';
+import { Button, Dropdown, Menu, Tooltip, Space, Drawer, message } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   InfoCircleOutlined,
@@ -19,36 +19,72 @@ import {
   ClearOutlined,
   FieldTimeOutlined,
   EyeOutlined,
+  LineChartOutlined,
 } from '@ant-design/icons';
 
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
-import type { DashboardQueryState } from '../datasource/types';
+import { useGlobalState } from '@/pages/dashboard/globalState';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import type { DashboardQueryHookResult } from '../datasource/types';
 import type { CalculatedSeries } from '../utils/getCalculatedValuesBySeries';
 
 import PanelEmpty from '../components/PanelEmpty';
 import CloneIcon from '../components/CloneIcon';
-import Timeseries from './TimeSeriesNG';
-import Stat from './Stat';
-import Table from './Table';
-import TableNG from './TableNG';
-import Pie from './Pie';
-import Hexbin from './Hexbin';
-import BarGauge from './BarGauge';
-import Text from './Text';
-import Gauge from './Gauge';
-import Iframe from './Iframe';
-import Heatmap from './Heatmap';
-import BarChart from './BarChart';
-import Markdown from '../../Editor/Components/Markdown';
+import Markdown from '../../Components/Markdown';
 import getPanelCustomTimeDescribe from '../utils/getPanelCustomTimeDescribe';
 import Inspect from '../Inspect';
+import PanelRenderer from '../registry/PanelRenderer';
+import type { PanelChartProps } from '../registry/types';
 import { IProps } from './index';
 
+const LOADING_BAR_MILLISECONDS_PER_PIXEL = 2.4;
+const LOADING_BAR_MIN_DURATION_MS = 500;
+const LOADING_BAR_MAX_DURATION_MS = 4000;
+const LOADING_BAR_FALLBACK_WIDTH = 400;
+
+/**
+ * 渲染带图表图标的面板加载骨架，避免纯色背景难以辨认当前状态。
+ *
+ * 仅作为展示层占位，不会发起请求或修改面板查询状态。
+ */
+function PanelLoadingSkeleton({ label }: { label: string }) {
+  return (
+    <div className='flex h-full items-center justify-center rounded' aria-label={label}>
+      <LineChartOutlined data-testid='panel-loading-chart-icon' style={{ fontSize: 32, opacity: 0.18 }} />
+    </div>
+  );
+}
+
+/**
+ * 在面板顶部显示无进度语义的加载动画，反馈查询仍在执行且不占用标题栏操作区域。
+ *
+ * 该指示器只表示活动状态，不根据请求耗时推断完成比例。
+ */
+function PanelLoadingBar({ label, width }: { label: string; width?: number }) {
+  return (
+    <div className='renderer-loading-bar' role='progressbar' aria-label={label} data-testid='panel-loading-bar' style={{ animationDuration: `${getLoadingBarDuration(width)}ms` }}>
+      <div className='renderer-loading-bar-gradient' />
+    </div>
+  );
+}
+
+/**
+ * 根据面板宽度计算活动条时长，使不同尺寸的面板保持近似的横移速度。
+ *
+ * 未获得宽度时使用常见面板宽度作为回退，并限制时长以避免过快或过慢。
+ */
+function getLoadingBarDuration(width?: number) {
+  const panelWidth = width ?? LOADING_BAR_FALLBACK_WIDTH;
+  const calculatedDuration = Math.round(panelWidth * LOADING_BAR_MILLISECONDS_PER_PIXEL);
+
+  return Math.min(Math.max(calculatedDuration, LOADING_BAR_MIN_DURATION_MS), LOADING_BAR_MAX_DURATION_MS);
+}
+
+/** 渲染单个仪表盘面板的标题、查询状态、图表和操作入口。 */
 function index(
   props: IProps & {
     controllersVisible: boolean;
-    queryResult: DashboardQueryState;
+    queryResult: DashboardQueryHookResult;
     containerEleRef: React.RefObject<HTMLDivElement>;
     time: IRawTimeRange;
     setTime?: (time: IRawTimeRange) => void;
@@ -58,6 +94,8 @@ function index(
   },
 ) {
   const { t } = useTranslation('dashboard');
+  const replaceTemplateVariables = useReplaceTemplateVariables();
+  const [variableExecution] = useGlobalState('variableExecution');
   const {
     panelWidth,
     themeMode,
@@ -87,7 +125,13 @@ function index(
   const tableRef = useRef<{ exportCsv: () => void }>(null);
   const tableNGRef = useRef<{ exportCsv: () => void }>(null);
   const bodyWrapRef = useRef<HTMLDivElement>(null);
-  const { query, series, error, loading, loaded, range, revision } = queryResult;
+  const { query, series, errorsByRef, error, loading, loaded, range, revision, retry } = queryResult;
+  // 变量链会先暂停 useQuery，此时查询尚未置为 loading；首次结果前仍须展示面板加载态。
+  const waitingForVariables = variableExecution.isExecuting && !loaded && values.targets.length > 0;
+  const loadingSkeletonVisible = !loaded && (loading || waitingForVariables);
+  const loadingBarVisible = loading || waitingForVariables;
+  const failedRefIds = Object.keys(errorsByRef);
+  const hasPartialFailure = failedRefIds.length > 0 && series.length > 0;
   const name = replaceTemplateVariables(values.name, {
     scopedVars: values.scopedVars,
     range: time,
@@ -103,13 +147,25 @@ function index(
   if (typeof _.get(values, 'custom.colorRange') === 'string') {
     _.set(values, 'custom.colorRange', _.split(_.get(values, 'custom.colorRange') as string, ','));
   }
-  const subProps = {
+  const chartProps: PanelChartProps = {
     id,
     values,
     // DashboardSeries 含日志序列（metric 为 unknown），渲染器按 CalculatedSeries 消费，运行时结构兼容
     series: series as CalculatedSeries[],
+    // TableNG 消费原始 DashboardSeries，保留未转换的序列结构
+    rawSeries: series,
     dataRevision: revision,
     onOverridesChange,
+    themeMode,
+    isPreview,
+    time: range,
+    timezone,
+    setRange: props.setRange,
+    annotations,
+    setAnnotationsRefreshFlag: props.setAnnotationsRefreshFlag,
+    bodyWrapRef,
+    tableRef,
+    tableNGRef,
   };
   const menuItems: MenuProps['items'] = [
     {
@@ -284,33 +340,6 @@ function index(
       : []),
   ];
 
-  const RendererCptMap = {
-    timeseries: () => (
-      <Timeseries
-        {...subProps}
-        annotations={annotations}
-        setAnnotationsRefreshFlag={props.setAnnotationsRefreshFlag}
-        themeMode={themeMode}
-        time={range}
-        timezone={timezone}
-        setRange={props.setRange}
-        isPreview={isPreview}
-      />
-    ),
-    stat: () => <Stat {...subProps} bodyWrapRef={bodyWrapRef} themeMode={themeMode} isPreview={isPreview} />,
-    table: () => <Table {...subProps} themeMode={themeMode} isPreview={isPreview} ref={tableRef} />,
-    // TableNG 的 series 类型为 DashboardSeries[]，与其他渲染器（CalculatedSeries[]）不同
-    tableNG: () => <TableNG {...subProps} series={series} themeMode={themeMode} isPreview={isPreview} ref={tableNGRef} />,
-    pie: () => <Pie {...subProps} themeMode={themeMode} isPreview={isPreview} />,
-    hexbin: () => <Hexbin {...subProps} themeMode={themeMode} isPreview={isPreview} />,
-    barGauge: () => <BarGauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,
-    text: () => <Text {...subProps} themeMode={themeMode} />,
-    gauge: () => <Gauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,
-    iframe: () => <Iframe {...subProps} />,
-    heatmap: () => <Heatmap {...subProps} themeMode={themeMode} isPreview={isPreview} />,
-    barchart: () => <BarChart {...subProps} themeMode={themeMode} isPreview={isPreview} />,
-  };
-
   return (
     <div
       className={classNames({
@@ -318,6 +347,7 @@ function index(
         'renderer-container-no-title': !values.name,
       })}
     >
+      {loadingBarVisible && <PanelLoadingBar label={t('common:loading')} width={panelWidth} />}
       <div className='renderer-body-wrap' ref={bodyWrapRef}>
         <div className='renderer-header graph-header'>
           {error && (
@@ -335,10 +365,20 @@ function index(
               </div>
             </Tooltip>
           )}
+          {hasPartialFailure && (
+            <Tooltip
+              title={failedRefIds.map((refId) => `${refId}: ${errorsByRef[refId].message}`).join('\n')}
+              placement='leftTop'
+              getPopupContainer={() => containerEleRef.current!}
+            >
+              <span className='renderer-header-partial-error'>{t('detail.partialFailure', { defaultValue: '部分查询失败' })}</span>
+            </Tooltip>
+          )}
           <div
             className='renderer-header-content'
             style={{
-              width: error ? 'calc(100% - 58px)' : 'calc(100% - 32px)',
+              // 预留右侧错误图标（26px）与「部分查询失败」提示（84px）的宽度，避免标题被压缩
+              width: `calc(100% - ${32 + (error ? 26 : 0) + (hasPartialFailure ? 84 : 0)}px)`,
             }}
           >
             <Tooltip title={name} getPopupContainer={() => containerEleRef.current!}>
@@ -398,41 +438,46 @@ function index(
                 width: name ? 28 : 52,
               }}
             >
-              {loading ? (
-                <SyncOutlined spin style={{ marginRight: 8 }} />
-              ) : (
-                <Space size={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  {isAuthorized && !name && <DragOutlined className='renderer-header-controller dashboards-panels-item-drag-handle' />}
-                  <Dropdown
-                    trigger={['click']}
-                    placement='bottom'
-                    getPopupContainer={() => containerEleRef.current!}
-                    overlayStyle={{
-                      minWidth: '130px',
-                    }}
-                    visible={visible}
-                    onVisibleChange={(visible) => {
-                      setVisible(visible);
-                    }}
-                    overlay={<Menu items={menuItems} />}
-                  >
-                    <MoreOutlined className='renderer-header-controller' />
-                  </Dropdown>
-                </Space>
-              )}
+              <Space size={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                {isAuthorized && !name && <DragOutlined className='renderer-header-controller dashboards-panels-item-drag-handle' />}
+                <Dropdown
+                  trigger={['click']}
+                  placement='bottom'
+                  getPopupContainer={() => containerEleRef.current!}
+                  overlayStyle={{
+                    minWidth: '130px',
+                  }}
+                  visible={visible}
+                  onVisibleChange={(visible) => {
+                    setVisible(visible);
+                  }}
+                  overlay={<Menu items={menuItems} />}
+                >
+                  <MoreOutlined className='renderer-header-controller' />
+                </Dropdown>
+              </Space>
             </div>
           )}
         </div>
-        {(loaded || values.type === 'text' || values.type === 'iframe') && (
+        {(loaded || loading || waitingForVariables || values.type === 'text' || values.type === 'iframe') && (
           <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
-            {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
+            {loadingSkeletonVisible ? (
+              <PanelLoadingSkeleton label={t('common:loading')} />
+            ) : _.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
               <PanelEmpty values={values} bodyWrapRef={bodyWrapRef} />
             ) : (
-              <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`${t('detail.invalidPanelType')} ${values.type}`}</div>}</>
+              <PanelRenderer type={values.type} {...chartProps} />
             )}
           </div>
         )}
       </div>
+      {error && (
+        <div className='renderer-query-error-action'>
+          <Button type='link' size='small' onClick={retry}>
+            {t('refresh_btn')}
+          </Button>
+        </div>
+      )}
       <Drawer
         title={t('panel.inspect.title')}
         placement='right'

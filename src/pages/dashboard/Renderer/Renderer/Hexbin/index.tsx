@@ -22,14 +22,14 @@ import * as d3 from 'd3';
 import { useSize } from 'ahooks';
 
 import { IRawTimeRange } from '@/components/TimeRangePicker';
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { renderFn } from './render';
 import { IPanel, IHexbinStyles } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
-import { useGlobalState } from '../../../globalState';
+import { DashboardRuntimeProvider, useDashboardRuntimeStoreIfAvailable, useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
 
 import './style.less';
@@ -59,7 +59,8 @@ const getColumnsKeys = (data: Array<{ metric: Record<string, string | undefined>
   return _.uniq(keys);
 };
 
-const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
+const HexbinContent: FunctionComponent<HoneyCombProps> = (props) => {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { values, series, themeMode, isPreview } = props;
   const dataDependency = props.dataRevision ?? series;
   const { custom = {}, options } = values;
@@ -146,6 +147,26 @@ const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
       </svg>
     </div>
   );
+};
+
+/**
+ * Hexbin 面板。
+ *
+ * 指标视图等仪表盘外的调用方不会提供运行时容器，这里显式创建隔离实例，
+ * 避免读取 statFields 时因缺少 Provider 直接抛错。
+ */
+const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
+  const dashboardRuntimeStore = useDashboardRuntimeStoreIfAvailable();
+
+  if (!dashboardRuntimeStore) {
+    return (
+      <DashboardRuntimeProvider>
+        <HexbinContent {...props} />
+      </DashboardRuntimeProvider>
+    );
+  }
+
+  return <HexbinContent {...props} />;
 };
 
 export default Hexbin;

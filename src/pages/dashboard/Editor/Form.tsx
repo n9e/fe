@@ -9,7 +9,8 @@ import { useLocation } from 'react-router-dom';
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 
-import { defaultValues, defaultCustomValuesMap } from './config';
+import { defaultValues } from './config';
+import { defaultCustomValuesMap } from '../Renderer/registry/defaults';
 import Options from './Options';
 import Collapse, { Panel } from './Components/Collapse';
 import Renderer from '../Renderer/Renderer';

@@ -144,6 +144,8 @@ const ru_RU = {
     dashboardIds_placeholder: 'Пожалуйста, выберите панель',
   },
   var: {
+    reference_in_use: 'Переменная {{name}} всё ещё используется в {{total}} настройках. Сначала замените их.',
+    references_renamed: 'Обновлено ссылок на переменные: {{total}}',
     vars: 'Переменные',
     btn: 'Добавить переменную',
     title: {

@@ -11,8 +11,8 @@ you can deploy the front-end code independently, just replace the pub with the n
 ## Dependencies
 
 ```
-node: v16.x <= v16.15.0
-npm: 8.x <= 8.5.5
+node: 16.15.0 (the version pinned by CI, see .github/workflows/package.yml)
+npm: 8.x
 ```
 
 ## Installation
@@ -27,8 +27,7 @@ npm install
 npm run dev
 ```
 
-The back-end api proxy config is https://github.com/n9e/fe/blob/main/vite.config.ts#L41
-
+The back-end api proxy config is in [vite.config.ts](./vite.config.ts#L110). It targets `http://localhost:8080` by default and can be overridden with `PROXY` (or `PROXY_PRO` / `PROXY_ENT`) in `.env`.
 
 > **💡 Dev locale switching**  
 > To speed up the dev server, only **English (en_US)** locale files are loaded by default in development mode; other languages are replaced with empty objects to reduce unnecessary module requests.  
@@ -84,6 +83,6 @@ server {
 
 ## Notice
 
-- `vite.config.js` and `tsconfig.json` should both configure to make sure alias works
+- `vite.config.ts` and `tsconfig.json` should both configure the alias (`@/*` → `src/*`) so it works in both the dev server and the type checker
 - Add `"css.validate": false` in vscode setting.json to ignore the css warning
 - Install the Prettier plugin in vscode and set the format on save

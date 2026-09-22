@@ -38,7 +38,7 @@ export default function index({ panelWidth, type, variablesWithOptions, range }:
   const form = Form.useFormInstance();
   const targets = (Form.useWatch('targets') ?? []) as ITarget[];
   const datasourceCate = Form.useWatch('datasourceCate') || DatasourceCateEnum.prometheus;
-  const datasourceValue = replaceDatasourceVariables(Form.useWatch('datasourceValue'), { datasourceList });
+  const datasourceValue = replaceDatasourceVariables(Form.useWatch('datasourceValue'), { datasourceList, variables: variablesWithOptions });
   const isMixedDatasource = datasourceCate === 'mixed';
 
   return (
@@ -84,6 +84,7 @@ export default function index({ panelWidth, type, variablesWithOptions, range }:
 
                   const datasourceValue = replaceDatasourceVariables(target.datasource?.id as number | string, {
                     datasourceList,
+                    variables: variablesWithOptions,
                   });
                   // 数据源切换时必须保持组件身份稳定，否则 Select 的 Portal 下拉层会成为无法关闭的孤儿节点。
                   const queryEditorKey = field.key;

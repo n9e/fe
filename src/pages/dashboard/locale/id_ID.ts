@@ -127,6 +127,8 @@ const id_ID = {
     dashboardIds_placeholder: 'Pilih dasbor',
   },
   var: {
+    reference_in_use: 'Variabel {{name}} masih direferensikan oleh {{total}} konfigurasi. Ganti terlebih dahulu.',
+    references_renamed: '{{total}} referensi variabel diperbarui',
     vars: 'Variabel',
     btn: 'Tambah variabel',
     title: {

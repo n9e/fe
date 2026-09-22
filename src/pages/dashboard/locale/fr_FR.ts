@@ -128,6 +128,8 @@ const fr_FR = {
     dashboardIds_placeholder: 'Sélectionnez un tableau de bord',
   },
   var: {
+    reference_in_use: "La variable {{name}} est encore référencée par {{total}} configuration(s). Remplacez-les d'abord.",
+    references_renamed: '{{total}} référence(s) de variable mise(s) à jour',
     vars: 'Variables',
     btn: 'Ajouter une variable',
     title: {

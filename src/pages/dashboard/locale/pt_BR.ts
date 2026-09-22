@@ -126,6 +126,8 @@ const pt_BR = {
     dashboardIds_placeholder: 'Selecione o dashboard',
   },
   var: {
+    reference_in_use: 'A variável {{name}} ainda é referenciada por {{total}} configuração(ões). Substitua primeiro.',
+    references_renamed: '{{total}} referência(s) de variável atualizada(s)',
     vars: 'Variável',
     btn: 'Adicionar variável',
     title: {

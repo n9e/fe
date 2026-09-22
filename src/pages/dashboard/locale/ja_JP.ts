@@ -145,6 +145,8 @@ const ja_JP = {
     dashboardIds_placeholder: 'ダッシュボードを選択してください',
   },
   var: {
+    reference_in_use: '変数 {{name}} はまだ {{total}} 件の設定から参照されています。先に置換してください。',
+    references_renamed: '変数参照を {{total}} 件更新しました',
     vars: '変数',
     btn: '変数を追加',
     title: {

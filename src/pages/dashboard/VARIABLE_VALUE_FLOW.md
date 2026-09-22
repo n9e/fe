@@ -86,7 +86,7 @@ flowchart TD
 
 执行状态保存为 `{ sessionId, isExecuting, revision }`。每个 `VariableManagerProvider` 挂载时领取新的 `sessionId`；只有当前会话可以把状态从执行中切换为稳定。Provider 卸载时会复位自己仍持有的执行状态，旧页面的异步变量请求即使随后返回，也不能覆盖新页面会话。
 
-因此，页面切换期间不会因为旧变量链悬挂而让新页面的面板永久停止查询。不过变量、时间范围等仍是仪表盘模块级全局状态；同一 React 树内多个仪表盘实例并存尚不支持，详见同级 [README.md](./README.md)。
+因此，页面切换期间不会因为旧变量链悬挂而让新页面的面板永久停止查询。变量、时间范围等运行时状态由 `DashboardRuntimeProvider` 按仪表盘实例隔离（见同级 [README.md](./README.md) 的「运行时边界」）：同一 React 树内多个实例互不影响，各实例只读取自己 store 中的变量与时间范围。
 
 ## 示例
 

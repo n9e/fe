@@ -51,13 +51,16 @@ jest.mock('../Variable/Textbox', () => () => null);
 import Main from '../Main';
 import QueryEditor from '../EditModal/Variable/Query';
 import datasource from '../datasource';
-import { getGlobalState, setGlobalState } from '../../globalState';
+import { DashboardRuntimeProvider } from '../../globalState';
+import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
 import replaceTemplateVariables from '../utils/replaceTemplateVariables';
 import initializeVariablesValue from '../utils/initializeVariablesValue';
 import type { IVariable } from '../types';
 import processLegacyQueryOptions from '../../VariableConfig/processQueryOptions';
 import LegacyDisplayItem from '../../VariableConfig/DisplayItem';
 import type { IVariable as LegacyVariable } from '../../VariableConfig/definition';
+
+const { getGlobalState, setGlobalState } = dashboardTestRuntimeStore;
 
 const queryMock = datasource as jest.MockedFunction<typeof datasource>;
 const projects = [
@@ -77,9 +80,11 @@ function mountRuntime(variables: IVariable[], fixed?: boolean) {
   const history = createMemoryHistory({ initialEntries: ['/dashboard?keep=1'] });
   const view = render(
     <ConfigProvider virtual={false}>
-      <Router history={history}>
-        <Main variableValueFixed={fixed!} loading={false} />
-      </Router>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <Router history={history}>
+          <Main variableValueFixed={fixed!} loading={false} />
+        </Router>
+      </DashboardRuntimeProvider>
     </ConfigProvider>,
   );
   return { ...view, history };
@@ -96,6 +101,14 @@ async function selectOption(label: string, index = 0) {
 
 function state(name = 'project') {
   return getGlobalState('variablesWithOptions').find((item) => item.name === name)!;
+}
+
+/** 使用测试运行时的显式变量调用插值函数，避免测试依赖已删除的生产单例。 */
+function interpolate(value: string) {
+  return replaceTemplateVariables(value, {
+    variables: getGlobalState('variablesWithOptions'),
+    range: getGlobalState('range'),
+  });
 }
 
 beforeEach(() => {
@@ -123,7 +136,7 @@ test('query → real dropdown → selection → URL/cache → interpolation → 
   await waitFor(() => expect(history.location.search).toContain('project=project-2'));
   expect(history.location.search).toContain('keep=1');
   expect(localStorage.getItem('dashboard_v6_42_project')).toBe('project-2');
-  expect(replaceTemplateVariables('project=${project}')).toBe('project=project-2');
+  expect(interpolate('project=${project}')).toBe('project=project-2');
   expect(state().options).toEqual(projects);
   unmount();
   const restored = initializeVariablesValue([projectVariable()], {}, { dashboardId: 42 }) as IVariable[];
@@ -259,12 +272,12 @@ test('multiple selection and All persist values and interpolate values only', as
   expect(localStorage.getItem('dashboard_v6_42_project')).toBe('["project-1","project-2"]');
   expect(history.location.search).toContain('project=project-1');
   expect(history.location.search).toContain('project=project-2');
-  expect(replaceTemplateVariables('${project}')).toBe('project-1,project-2');
+  expect(interpolate('${project}')).toBe('project-1,project-2');
   await selectOption('All');
   fireEvent.blur(screen.getByRole('combobox'));
   await waitFor(() => expect(state().value).toEqual(['all']));
   expect(localStorage.getItem('dashboard_v6_42_project')).toBe('["all"]');
-  expect(replaceTemplateVariables('${project}')).toBe('project-1,project-2');
+  expect(interpolate('${project}')).toBe('project-1,project-2');
 });
 
 test('refresh preserves selection when only label changes, and falls back when value disappears', async () => {
@@ -286,7 +299,7 @@ test('fixed URL values survive an absent option', async () => {
   mountRuntime([projectVariable({ value: 'project-outside' })], true);
   await waitFor(() => expect(state().options).toEqual(projects));
   expect(state().value).toBe('project-outside');
-  expect(replaceTemplateVariables('${project}')).toBe('project-outside');
+  expect(interpolate('${project}')).toBe('project-outside');
 });
 
 test('non-fixed stale cache value falls back to the first available option', async () => {
@@ -350,7 +363,9 @@ test.each([
   const variable = projectVariable({ reg });
   const view = render(
     <ConfigProvider virtual={false}>
-      <EditorHarness variable={variable} />
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={variable} />
+      </DashboardRuntimeProvider>
     </ConfigProvider>,
   );
   fireEvent.click(screen.getByRole('button', { name: 'common:btn.data_preview' }));
@@ -391,7 +406,9 @@ test('preview failure can be retried and replaces the error with fresh label/val
   queryMock.mockRejectedValueOnce(new Error('preview unavailable')).mockResolvedValue(projects);
   render(
     <ConfigProvider virtual={false}>
-      <EditorHarness variable={projectVariable()} />
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={projectVariable()} />
+      </DashboardRuntimeProvider>
     </ConfigProvider>,
   );
   fireEvent.click(screen.getByRole('button', { name: 'common:btn.data_preview' }));

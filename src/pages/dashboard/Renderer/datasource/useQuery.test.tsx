@@ -4,9 +4,9 @@ import { act, renderHook } from '@testing-library/react';
 import moment from 'moment';
 
 import { createCommonStateWrapper } from '@/test/renderWithProviders';
-import { resetDashboardGlobalState } from '@/test/resetGlobalState';
+import { dashboardTestRuntimeStore, resetDashboardTestRuntime } from '@/test/dashboardRuntime';
 import { createMockQueryResponse, createMockTarget, createMockTimeSeriesResult } from '@/pages/dashboard/test/fixtures/dashboardQuery';
-import { setGlobalState } from '@/pages/dashboard/globalState';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
 import type { DashboardQueryResponse } from './types';
 import useQuery from './useQuery';
@@ -42,6 +42,7 @@ jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
 }));
 
 const fetchDashboardQueryMock = fetchDashboardQuery as unknown as jest.Mock;
+const { setGlobalState } = dashboardTestRuntimeStore;
 type UseQueryProps = Parameters<typeof useQuery>[0];
 
 const time = {
@@ -58,6 +59,15 @@ const baseProps: UseQueryProps = {
   targets: [],
 };
 
+/** Creates the minimal complete textbox variable used to verify variable-chain query pausing. */
+const variable = (value: string): IVariable => ({
+  name: 'metric',
+  value,
+  definition: '',
+  type: 'textbox',
+  datasource: { cate: 'prometheus' },
+});
+
 const wrapper = createCommonStateWrapper({ datasourceList: [] });
 
 const flushPromises = async () => {
@@ -73,7 +83,7 @@ const renderUseQuery = (props: Partial<UseQueryProps> = {}) => {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  resetDashboardGlobalState();
+  resetDashboardTestRuntime();
 });
 
 describe('dashboard useQuery', () => {
@@ -134,6 +144,59 @@ describe('dashboard useQuery', () => {
     }
   });
 
+  it('retries one panel without changing its time range or reusing its cached result', async () => {
+    jest.useFakeTimers();
+    try {
+      fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
+      const { result } = renderUseQuery({ targets: [createMockTarget()] });
+
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+
+      await act(async () => {
+        result.current.retry();
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(2);
+      expect(fetchDashboardQueryMock.mock.calls[1][0]).toMatchObject(fetchDashboardQueryMock.mock.calls[0][0]);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('keeps the latest successful data visible when a refresh fails', async () => {
+    jest.useFakeTimers();
+    try {
+      fetchDashboardQueryMock.mockResolvedValueOnce(createMockQueryResponse()).mockRejectedValueOnce(new Error('network unavailable'));
+      const { result, rerender } = renderUseQuery({ targets: [createMockTarget()] });
+
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+      expect(result.current.series).toHaveLength(1);
+
+      rerender({
+        ...baseProps,
+        targets: [createMockTarget()],
+        time: { ...time, refreshFlag: 'refresh-1' },
+      });
+      await act(async () => {
+        jest.advanceTimersByTime(600);
+        await flushPromises();
+      });
+
+      expect(result.current.error).toContain('network unavailable');
+      expect(result.current.series).toHaveLength(1);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
   it('waits for a variable execution chain to settle before requesting once', async () => {
     jest.useFakeTimers();
     try {
@@ -148,7 +211,7 @@ describe('dashboard useQuery', () => {
 
       await act(async () => {
         setGlobalState('variableExecution', { sessionId: 0, isExecuting: true, revision: 0 });
-        setGlobalState('variablesWithOptions', [{ name: 'metric', value: 'metric-a' }] as any);
+        setGlobalState('variablesWithOptions', [variable('metric-a')]);
       });
       await act(async () => {
         jest.advanceTimersByTime(600);
@@ -156,7 +219,7 @@ describe('dashboard useQuery', () => {
       });
 
       await act(async () => {
-        setGlobalState('variablesWithOptions', [{ name: 'metric', value: 'metric-b' }] as any);
+        setGlobalState('variablesWithOptions', [variable('metric-b')]);
       });
       await act(async () => {
         jest.advanceTimersByTime(600);

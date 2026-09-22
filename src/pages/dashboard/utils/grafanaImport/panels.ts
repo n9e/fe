@@ -9,7 +9,7 @@ import { generateQueryNameByIndex } from '@/components/QueryName/utils';
 import { normalizeCalc } from './units';
 import { buildSharedOptions, convertLinksGrafanaToN9E, convertOverridesGrafanaToN9E, type ReportFn } from './options';
 import { resolveDatasourceRef, type ResolveContext } from './datasource';
-import { DASHBOARD_VERSION, type GrafanaPanel } from './types';
+import type { GrafanaPanel } from './types';
 
 // @ts-ignore plus 包：postgres SQL 表名加前缀
 import addPrefixToTableNames from 'plus:/utils/convertDashboardGrafanaToN9E/addPrefixToTableNames';
@@ -85,14 +85,12 @@ function convertTarget(target: any, panel: GrafanaPanel, ctx: ResolveContext, re
 
 function convertTimeseriesCustom(panel: GrafanaPanel, report: ReportFn, path?: string): Record<string, unknown> {
   const custom = panel.fieldConfig?.defaults?.custom;
-  const version = DASHBOARD_VERSION;
   if (custom) {
     const stackingMode = custom.stacking?.mode;
     if (stackingMode === 'percent') {
       report({ scope: 'option', action: 'downgraded', path, reason: 'Grafana 百分比堆叠在 N9E 未实现，降级为 off' });
     }
     return {
-      version,
       drawStyle: panel.type === 'barchart' || custom.drawStyle === 'bars' ? 'bars' : 'lines',
       lineInterpolation: custom.lineInterpolation === 'smooth' ? 'smooth' : 'linear',
       fillOpacity: custom.fillOpacity ? custom.fillOpacity / 100 : 0,
@@ -107,7 +105,6 @@ function convertTimeseriesCustom(panel: GrafanaPanel, report: ReportFn, path?: s
   }
   // legacy graph：无 fieldConfig.custom，从面板级字段映射
   return {
-    version,
     drawStyle: panel.bars ? 'bars' : 'lines',
     lineInterpolation: 'linear',
     fillOpacity: panel.fill ? panel.fill / 10 : 0,
@@ -117,7 +114,6 @@ function convertTimeseriesCustom(panel: GrafanaPanel, report: ReportFn, path?: s
 
 function convertStatCustom(panel: GrafanaPanel): Record<string, unknown> {
   return {
-    version: DASHBOARD_VERSION,
     textMode: panel.options?.textMode ?? 'value',
     colorMode: panel.options?.colorMode ?? 'value',
     calc: normalizeCalc(panel.options?.reduceOptions?.calcs?.[0]),
@@ -126,7 +122,6 @@ function convertStatCustom(panel: GrafanaPanel): Record<string, unknown> {
 
 function convertGaugeCustom(panel: GrafanaPanel): Record<string, unknown> {
   return {
-    version: DASHBOARD_VERSION,
     textMode: panel.options?.textMode ?? 'value',
     colorMode: panel.options?.colorMode ?? 'value',
     calc: normalizeCalc(panel.options?.reduceOptions?.calcs?.[0]),
@@ -142,7 +137,6 @@ function convertPieCustom(panel: GrafanaPanel): Record<string, unknown> {
     legengPosition = legend.placement;
   }
   return {
-    version: DASHBOARD_VERSION,
     calc: normalizeCalc(panel.options?.reduceOptions?.calcs?.[0]),
     legengPosition,
     ...(panel.options?.pieType === 'donut' ? { donut: true } : {}),
@@ -155,7 +149,6 @@ function convertBarGaugeCustom(panel: GrafanaPanel, report: ReportFn, path?: str
     report({ scope: 'option', action: 'downgraded', path, reason: 'barGauge gradient 展示降级为 basic' });
   }
   return {
-    version: DASHBOARD_VERSION,
     calc: normalizeCalc(panel.options?.reduceOptions?.calcs?.[0]),
     ...(displayMode ? { displayMode: displayMode === 'gradient' ? 'basic' : displayMode } : {}),
   };
@@ -163,7 +156,6 @@ function convertBarGaugeCustom(panel: GrafanaPanel, report: ReportFn, path?: str
 
 function convertTextCustom(panel: GrafanaPanel): Record<string, unknown> {
   return {
-    version: DASHBOARD_VERSION,
     content: panel.options?.content ?? '',
   };
 }
@@ -183,7 +175,7 @@ function convertCustomByType(panel: GrafanaPanel, n9eType: string, report: Repor
     case 'text':
       return convertTextCustom(panel);
     default:
-      return { version: DASHBOARD_VERSION };
+      return {};
   }
 }
 
@@ -236,7 +228,6 @@ function convertNonRowPanel(panel: GrafanaPanel, ctx: ResolveContext, report: Re
   }
 
   return {
-    version: DASHBOARD_VERSION,
     id,
     type: n9eType,
     name: panel.title ?? '',
@@ -256,7 +247,9 @@ function convertNonRowPanel(panel: GrafanaPanel, ctx: ResolveContext, report: Re
 
 /**
  * 转换面板列表为扁平的 N9E panels 数组。
- * - row：N9E collapsed = !grafana collapsed；展开行子面板放顶层（row 之后），折叠行子面板缓存进 row.panels。
+ * - row：`collapsed` 与 Grafana 同向（true 表示折叠）；折叠行的子面板缓存进 row.panels，
+ *   展开行的子面板平铺到顶层。4.1.0 起 N9E 的 collapsed 语义就是 true=折叠，
+ *   因此这里不能再做取反（取反只用于迁移 4.1.0 之前的存量配置）。
  */
 export function convertPanelsGrafanaToN9E(panels: GrafanaPanel[] | undefined, ctx: ResolveContext, report: ReportFn): any[] {
   const out: any[] = [];
@@ -271,11 +264,10 @@ function appendPanels(panels: GrafanaPanel[] | undefined, ctx: ResolveContext, r
     if (panel.type === 'row') {
       const id = panel.id !== undefined && panel.id !== null ? String(panel.id) : `panel-${index}`;
       const row: any = {
-        version: DASHBOARD_VERSION,
         id,
         type: 'row',
         name: panel.title ?? '',
-        collapsed: !panel.collapsed,
+        collapsed: Boolean(panel.collapsed),
         layout: { ...(panel.gridPos ?? {}), i: id },
       };
       out.push(row);

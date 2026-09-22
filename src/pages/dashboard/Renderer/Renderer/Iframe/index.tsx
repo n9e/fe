@@ -1,6 +1,6 @@
 import React from 'react';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel, IIframeStyles } from '../../../types';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
@@ -12,6 +12,7 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { values } = props;
   const { custom } = values;
   const { src } = custom as unknown as IIframeStyles;

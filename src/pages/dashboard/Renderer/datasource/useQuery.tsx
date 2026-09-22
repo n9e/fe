@@ -26,7 +26,7 @@ import type { ITarget } from '../../types';
 import type { JsonObject, ScopedVariables } from '../../types';
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse } from './contract';
 import { fetchDashboardQuery } from './service';
-import type { DashboardQueryState } from './types';
+import type { DashboardQueryHookResult, DashboardQueryState } from './types';
 import { acceptDashboardQueryState, DashboardRequestSequence } from './requestState';
 
 interface IProps {
@@ -46,7 +46,7 @@ interface IProps {
   queryOptionsTime?: IRawTimeRange;
 }
 
-export default function useQuery(props: IProps) {
+export default function useQuery(props: IProps): DashboardQueryHookResult {
   const { time, targets, inViewPort, datasourceCate, datasourceValue, maxDataPoints, queryOptionsTime } = props;
   const { datasourceList } = React.useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
@@ -108,6 +108,7 @@ export default function useQuery(props: IProps) {
           panelWidth: props.panelWidth,
           maxDataPoints,
           scopedVars: props.scopedVars,
+          variables: variablesWithOptions,
           legacyDatasource: {
             cate: datasourceCate,
             id: datasourceValue,
@@ -164,9 +165,10 @@ export default function useQuery(props: IProps) {
         if (controller.signal.aborted || !mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
         setState((previous) =>
           acceptDashboardQueryState(previous, {
-            query: [],
-            series: [],
-            errorsByRef: {},
+            // Preserve a usable chart when a refresh fails; the error describes the latest attempt.
+            query: previous.query,
+            series: previous.series,
+            errorsByRef: previous.errorsByRef,
             error: getErrorMessage(error),
             loading: false,
             loaded: true,
@@ -262,5 +264,19 @@ export default function useQuery(props: IProps) {
     [cancelDebounce],
   );
 
-  return state;
+  /** Forces this panel to query again without changing the dashboard-wide time range. */
+  const retry = React.useCallback(() => {
+    if (!targets?.length || variableExecution.isExecuting || !inViewPort) return;
+    loadedKeyRef.current = undefined;
+    hasRequestedRef.current = true;
+    requestSequenceRef.current.invalidate();
+    cancelDebounce();
+    controllerRef.current?.abort();
+    fetchData();
+  }, [cancelDebounce, fetchData, inViewPort, targets, variableExecution.isExecuting]);
+
+  return {
+    ...state,
+    retry,
+  };
 }

@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import _ from 'lodash';
-import TsGraph from '@fc-plot/ts-graph';
 import { IOptions, IOverride, IStandardOptions, IValueMapping, IThresholds } from '../../../types';
 import { getSerieTextObj, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import getOverridePropertiesByName from '../../utils/getOverridePropertiesByName';
+import StatGraph from './StatGraph';
+import type { StatSparklinePoint } from './statGraphData';
 
 const UNIT_PADDING = 4;
 interface StatItemData {
@@ -33,7 +34,7 @@ interface Props {
   isFullSizeBackground: boolean;
   valueField: string;
   graphMode: string;
-  serie: unknown;
+  serie?: { data?: StatSparklinePoint[] };
   options: IOptions;
   style?: React.CSSProperties;
   // minFontSize 的键是 name/value（与 textSize 的 title/value 不同）
@@ -42,8 +43,6 @@ interface Props {
 }
 
 export default function StatItem(props: Props) {
-  const chartEleRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<TsGraph>(null);
   const { textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options, style, minFontSize, overrides } = props;
   let item = props.item;
 
@@ -87,49 +86,6 @@ export default function StatItem(props: Props) {
   const headerFontSize = textSize?.title ?? minFontSize?.name ?? 12;
   const valueAndUnitFontSize = textSize?.value ?? minFontSize?.value ?? 12;
 
-  useEffect(() => {
-    if (chartEleRef.current) {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-      chartRef.current = new TsGraph({
-        timestamp: 'X',
-        xkey: 0,
-        ykey: 1,
-        ykey2: 2,
-        ykeyFormatter: (value: number | string) => Number(value),
-        chart: {
-          renderTo: chartEleRef.current,
-          height: chartEleRef.current.clientHeight,
-          marginTop: 0,
-          marginRight: 0,
-          marginBottom: 0,
-          marginLeft: 0,
-          colors: [colorMode === 'background' ? 'rgba(255, 255, 255, 0.5)' : color],
-        },
-        series: [serie],
-        line: {
-          width: 1,
-        },
-        xAxis: {
-          visible: false,
-        },
-        yAxis: {
-          visible: false,
-        },
-        area: {
-          opacity: 0.2,
-        },
-      });
-    }
-    return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-        chartRef.current = null;
-      }
-    };
-  }, [colorMode, graphMode]);
-
   return (
     <div
       className='renderer-stat-item'
@@ -139,11 +95,7 @@ export default function StatItem(props: Props) {
       }}
     >
       <div style={{ width: '100%' }}>
-        {graphMode === 'area' && (
-          <div className='renderer-stat-item-graph'>
-            <div ref={chartEleRef} style={{ height: '100%', width: '100%' }} />
-          </div>
-        )}
+        <StatGraph serie={serie} color={color} colorMode={colorMode} graphMode={graphMode} />
         <div className='renderer-stat-item-content'>
           {item.name && (textMode === 'valueAndName' || textMode === 'name') && (
             <div

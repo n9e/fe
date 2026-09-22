@@ -144,6 +144,8 @@ const zh_CN = {
     dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
+    reference_in_use: '变量 {{name}} 仍被 {{total}} 处配置引用，请先完成替换。',
+    references_renamed: '已更新 {{total}} 处变量引用',
     vars: '变量',
     btn: '添加变量',
     title: {

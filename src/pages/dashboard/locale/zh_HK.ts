@@ -144,6 +144,8 @@ const zh_HK = {
     dashboardIds_placeholder: '請選擇儀表盤',
   },
   var: {
+    reference_in_use: '變數 {{name}} 仍被 {{total}} 處設定引用，請先完成替換。',
+    references_renamed: '已更新 {{total}} 處變數引用',
     vars: '變數',
     btn: '新增變數',
     title: {

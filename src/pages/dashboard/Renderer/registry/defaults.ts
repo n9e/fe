@@ -1,89 +1,15 @@
-/*
- * Copyright 2022 Nightingale Team
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
 import _ from 'lodash';
 
-import { colors } from '../Components/ColorRangeMenu/config';
-import getDefaultQuery from '../utils/getDefaultTargets';
-import { IThresholds } from '../types';
+import { colors } from '../../Components/ColorRangeMenu/config';
+import type { IThresholds } from '../../types';
+import type { PanelDefaultOptions, PanelVisualizationType } from './types';
 
-export const visualizations = [
-  {
-    type: 'timeseries',
-  },
-  {
-    type: 'barchart',
-  },
-  {
-    type: 'stat',
-  },
-  {
-    type: 'tableNG',
-  },
-  {
-    type: 'table',
-  },
-  {
-    type: 'pie',
-  },
-  {
-    type: 'hexbin',
-  },
-  {
-    type: 'barGauge',
-  },
-  {
-    type: 'text',
-  },
-  {
-    type: 'gauge',
-  },
-  {
-    type: 'heatmap',
-  },
-  {
-    type: 'iframe',
-  },
-];
-
-export const IRefreshMap = {
-  off: 'off',
-  '5s': 5,
-  '10s': 10,
-  '30s': 30,
-  '1m': 60,
-  '5m': 300,
-  '15m': 900,
-  '30m': 1800,
-  '1h': 3600,
-  '2h': 7200,
-  '1d': 86400,
-};
-
-export const calcsOptions = {
-  lastNotNull: {},
-  last: {},
-  firstNotNull: {},
-  first: {},
-  min: {},
-  max: {},
-  avg: {},
-  sum: {},
-  count: {},
-};
+/**
+ * 面板与编辑器共用的默认配置。
+ *
+ * 这里只放纯数据，不能引用编辑器组件：查看态渲染面板时需要读取默认值，
+ * 引入编辑器会把编辑代码带入查看链路。
+ */
 
 export const defaultThreshold: IThresholds['steps'][number] = {
   color: 'rgb(44, 157, 61)',
@@ -124,15 +50,9 @@ export const defaultOptionsValues = {
   thresholdsStyle: {
     mode: 'dashed',
   },
-};
+} satisfies PanelDefaultOptions;
 
-export const defaultValues = {
-  type: 'timeseries',
-  options: defaultOptionsValues,
-  custom: {},
-  overrides: [{}],
-};
-
+/** 各可视化类型的 custom 默认值，供新建面板与类型切换使用。 */
 export const defaultCustomValuesMap = {
   timeseries: {
     drawStyle: 'lines',
@@ -226,7 +146,8 @@ export const defaultCustomValuesMap = {
   },
 };
 
-export const defaultOptionsValuesMap = {
+/** 各可视化类型的 options 默认值；gauge 需要独立的阈值默认值。 */
+export const defaultOptionsValuesMap: Record<PanelVisualizationType, PanelDefaultOptions> = {
   timeseries: defaultOptionsValues,
   stat: defaultOptionsValues,
   pie: defaultOptionsValues,
@@ -245,5 +166,3 @@ export const defaultOptionsValuesMap = {
     },
   },
 };
-
-export const legendPostion = ['hidden', 'top', 'left', 'right', 'bottom'];

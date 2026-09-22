@@ -1,9 +1,9 @@
 import React from 'react';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel, ITextStyles } from '../../../types';
-import Markdown from '../../../Editor/Components/Markdown';
+import Markdown from '../../../Components/Markdown';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 
 interface IProps {
@@ -13,6 +13,7 @@ interface IProps {
 }
 
 export default function index(props: IProps) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { values, themeMode } = props;
   const { custom } = values;
   const { textColor, textDarkColor, bgColor, textSize, justifyContent, alignItems } = custom as unknown as ITextStyles;

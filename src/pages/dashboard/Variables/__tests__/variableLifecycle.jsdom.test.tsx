@@ -43,8 +43,11 @@ jest.mock('../Variable/Textbox', () => () => null);
 
 import Main from '../Main';
 import datasource from '../datasource';
-import { getGlobalState, setGlobalState } from '../../globalState';
+import { DashboardRuntimeProvider } from '../../globalState';
+import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
 import type { IVariable } from '../types';
+
+const { getGlobalState, setGlobalState } = dashboardTestRuntimeStore;
 
 const queryMock = datasource as jest.MockedFunction<typeof datasource>;
 const projects = [
@@ -69,13 +72,15 @@ const queryVariable = (name: string, partial: Partial<IVariable> = {}): IVariabl
 });
 
 function mountRuntime(variables: IVariable[]) {
-  act(() => setGlobalState('variablesWithOptions', variables));
+  act(() => dashboardTestRuntimeStore.setGlobalState('variablesWithOptions', variables));
   const history = createMemoryHistory({ initialEntries: ['/dashboard'] });
   return render(
     <ConfigProvider virtual={false}>
-      <Router history={history}>
-        <Main variableValueFixed={false} loading={false} />
-      </Router>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <Router history={history}>
+          <Main variableValueFixed={false} loading={false} />
+        </Router>
+      </DashboardRuntimeProvider>
     </ConfigProvider>,
   );
 }
@@ -83,7 +88,7 @@ function mountRuntime(variables: IVariable[]) {
 /** 模拟 EditModal 保存：整体替换 variablesWithOptions，组件不重新挂载。 */
 async function saveVariables(next: (prev: IVariable[]) => IVariable[]) {
   await act(async () => {
-    setGlobalState('variablesWithOptions', next(getGlobalState('variablesWithOptions')));
+    dashboardTestRuntimeStore.setGlobalState('variablesWithOptions', next(dashboardTestRuntimeStore.getGlobalState('variablesWithOptions')));
   });
 }
 
@@ -97,16 +102,16 @@ async function selectOption(label: string, comboboxIndex = 0) {
 }
 
 function state(name: string) {
-  return getGlobalState('variablesWithOptions').find((item) => item.name === name)!;
+  return dashboardTestRuntimeStore.getGlobalState('variablesWithOptions').find((item) => item.name === name)!;
 }
 
 beforeEach(() => {
   queryMock.mockReset();
   localStorage.clear();
-  setGlobalState('variablesWithOptions', []);
-  setGlobalState('variableExecution', { sessionId: 0, isExecuting: false, revision: 0 });
-  setGlobalState('dashboardMeta', { ...getGlobalState('dashboardMeta'), dashboardId: '42' });
-  setGlobalState('range', { start: 'now-1h', end: 'now' });
+  dashboardTestRuntimeStore.setGlobalState('variablesWithOptions', []);
+  dashboardTestRuntimeStore.setGlobalState('variableExecution', { sessionId: 0, isExecuting: false, revision: 0 });
+  dashboardTestRuntimeStore.setGlobalState('dashboardMeta', { ...dashboardTestRuntimeStore.getGlobalState('dashboardMeta'), dashboardId: '42' });
+  dashboardTestRuntimeStore.setGlobalState('range', { start: 'now-1h', end: 'now' });
 });
 afterEach(async () => {
   await act(async () => {
@@ -199,7 +204,7 @@ test('删除变量后其执行器不再被调度', async () => {
   await waitFor(() => expect(state('metric').options).toEqual(projects));
 
   await saveVariables((prev) => prev.filter((item) => item.name !== 'metric'));
-  await waitFor(() => expect(getGlobalState('variablesWithOptions')).toHaveLength(1));
+  await waitFor(() => expect(dashboardTestRuntimeStore.getGlobalState('variablesWithOptions')).toHaveLength(1));
 
   queryMock.mockClear();
   await act(async () => {

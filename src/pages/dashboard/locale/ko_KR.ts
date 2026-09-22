@@ -124,6 +124,8 @@ const ko_KR = {
     dashboardIds_placeholder: '대시보드를 선택하세요',
   },
   var: {
+    reference_in_use: '변수 {{name}} 이(가) 아직 {{total}}개 설정에서 참조되고 있습니다. 먼저 교체해 주세요.',
+    references_renamed: '변수 참조 {{total}}개를 업데이트했습니다',
     vars: '변수',
     btn: '변수 추가',
     title: {

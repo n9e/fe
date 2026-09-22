@@ -28,14 +28,14 @@ import { TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/comp
 import { GRAFANA_REFRESH_OPTIONS } from '@/components/TimeRangePicker/AutoRefresh';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
-import { updateDashboard, updateDashboardConfigs, getBusiGroupsDashboards } from '@/services/dashboardV2';
+import { getBusiGroupsDashboards } from '@/services/dashboardV2';
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';
 import { getDashboardDetailPrompts } from '@/components/AiChatNG/recommend';
 
 import { useGlobalState } from '../globalState';
 import DashboardLinks from '../DashboardLinks';
 import { AddPanelIcon } from '../config';
-import { visualizations } from '../Editor/config';
+import { visualizations } from '../Renderer/registry/panelTypes';
 import FormModal from '../List/FormModal';
 import ImportGrafanaURLFormModal from '../List/ImportGrafanaURLFormModal';
 import SharingLinkModal from '../List/SharingLinkModal';
@@ -63,11 +63,11 @@ interface IProps {
   isAuthorized: boolean;
   gobackPath?: string;
   editable: boolean;
-  updateAtRef: React.MutableRefObject<number | undefined>;
   allowedLeave: boolean;
   hasUnsavedChanges: boolean;
-  setAllowedLeave: (allowed: boolean) => void;
-  setHasUnsavedChanges: (changed: boolean) => void;
+  saving: boolean;
+  /** Persists the current page-local dashboard after an explicit Save click. */
+  onSave: () => void;
   routerPromptRef: React.MutableRefObject<{ showPrompt: () => void }>;
   hideGoBack?: boolean;
   hideGoList?: boolean;
@@ -101,11 +101,10 @@ export default function Title(props: IProps) {
     headerLeadingActions,
     isAuthorized,
     editable,
-    updateAtRef,
     allowedLeave,
     hasUnsavedChanges,
-    setAllowedLeave,
-    setHasUnsavedChanges,
+    saving,
+    onSave,
     routerPromptRef,
     hideGoBack,
     hideGoList,
@@ -116,7 +115,7 @@ export default function Title(props: IProps) {
   } = props;
   const history = useHistory();
   const location = useLocation();
-  const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
+  const { siteInfo } = useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const query = querystring.parse(location.search);
   const { __public__ } = query;
@@ -321,30 +320,8 @@ export default function Title(props: IProps) {
         <div className='dashboard-detail-header-right'>
           <Space>
             {headerLeadingActions}
-            {isAuthorized && dashboardSaveMode === 'manual' && hasUnsavedChanges && (
-              <Button
-                type={allowedLeave ? 'default' : 'primary'}
-                onClick={() => {
-                  if (editable) {
-                    updateDashboard(dashboard.id, {
-                      name: dashboard.name,
-                      ident: dashboard.ident,
-                      tags: dashboard.tags,
-                      note: dashboard.note,
-                    });
-                    updateDashboardConfigs(dashboard.id, {
-                      configs: JSON.stringify(dashboard.configs),
-                    }).then((res) => {
-                      updateAtRef.current = res.update_at;
-                      message.success(t('detail.saved'));
-                      setHasUnsavedChanges(false);
-                      setAllowedLeave(true);
-                    });
-                  } else {
-                    message.warning(t('detail.expired'));
-                  }
-                }}
-              >
+            {isAuthorized && hasUnsavedChanges && (
+              <Button type={allowedLeave ? 'default' : 'primary'} loading={saving} onClick={onSave} disabled={!editable}>
                 {t('settings.save')}
               </Button>
             )}
@@ -388,24 +365,21 @@ export default function Title(props: IProps) {
                       FormModal({
                         action: 'edit',
                         initialValues: dashboard,
-                        dashboardSaveMode,
+                        persistOnSubmit: false,
                         onOk: (values) => {
-                          if (dashboardSaveMode === 'manual') {
-                            const dashboardConfigs = {
-                              ...dashboard.configs,
-                              graphTooltip: values.graphTooltip,
-                              graphZoom: values.graphZoom,
-                            };
-                            handleUpdateDashboardConfigs(dashboard.id, {
-                              name: values.name,
-                              ident: values.ident,
-                              tags: _.join(values.tags, ' '),
-                              note: values.note,
-                              configs: JSON.stringify(dashboardConfigs),
-                            });
-                          } else {
-                            window.location.reload();
-                          }
+                          /** Settings form changes the local dashboard candidate; the header Save persists it. */
+                          const dashboardConfigs = {
+                            ...dashboard.configs,
+                            graphTooltip: values.graphTooltip,
+                            graphZoom: values.graphZoom,
+                          };
+                          handleUpdateDashboardConfigs(dashboard.id, {
+                            name: values.name,
+                            ident: values.ident,
+                            tags: _.join(values.tags, ' '),
+                            note: values.note,
+                            configs: JSON.stringify(dashboardConfigs),
+                          });
                         },
                       });
                     }}

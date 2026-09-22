@@ -146,6 +146,8 @@ const en_US = {
     dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
+    reference_in_use: 'Variable {{name}} is still referenced by {{total}} configuration(s). Replace them first.',
+    references_renamed: 'Updated {{total}} variable reference(s)',
     vars: 'Variables',
     btn: 'Add variable',
     title: {

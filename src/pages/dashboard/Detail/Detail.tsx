@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
@@ -39,16 +39,18 @@ import RouterPrompt from '@/components/RouterPrompt';
 import { adjustURL } from '@/pages/embeddedDashboards/utils';
 import initializeVariablesValue from '@/pages/dashboard/Variables/utils/initializeVariablesValue';
 import replaceTemplateVariables, { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { countVariableReferences, renameVariableReferences } from '@/pages/dashboard/Variables/utils/variableReferences';
 
 import Variables, { IVariable } from '../Variables';
 import { ILink, IDashboardConfig, DashboardAnnotation, IPanel, ITarget, JsonObject, JsonValue, ScopedVariables } from '../types';
 import Panels from '../Panels';
 import Title from './Title';
 import { JSONParse } from '../utils';
+import { getErrorMessage } from '../utils/json';
 import Editor from '../Editor';
 import { validateDashboardConfig } from '../utils/validateDashboardConfig';
-import { sortPanelsByGridLayout, panelsMergeToConfigs, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
-import { useGlobalState, DashboardMeta } from '../globalState';
+import { mergePanelsToConfig, sortPanelsByGridLayout, updatePanelsInsertNewPanelToGlobal, ajustPanels, processRepeats } from '../Panels/utils';
+import { DashboardMeta, DashboardRuntimeProvider, useGlobalState } from '../globalState';
 import {
   scrollToLastPanel,
   getDefaultTimeRange,
@@ -117,18 +119,19 @@ const builtinParamsToID = (params: Record<string, string | (string | null)[] | n
   return Array.isArray(value) ? `${value[0] ?? ''}` : `${value ?? ''}`;
 };
 
-const replaceTargetQueryVariables = (value: JsonValue, range: IRawTimeRange, scopedVars?: ScopedVariables): JsonValue => {
+/** 递归替换面板目标中的变量，变量列表由所属仪表盘实例显式提供。 */
+const replaceTargetQueryVariables = (value: JsonValue, range: IRawTimeRange, variables: IVariable[], scopedVars?: ScopedVariables): JsonValue => {
   if (typeof value === 'string') {
-    return replaceTemplateVariables(value, { range, scopedVars });
+    return replaceTemplateVariables(value, { range, scopedVars, variables });
   }
   if (Array.isArray(value)) {
-    return value.map((item) => replaceTargetQueryVariables(item, range, scopedVars));
+    return value.map((item) => replaceTargetQueryVariables(item, range, variables, scopedVars));
   }
   if (value && typeof value === 'object') {
     return Object.keys(value).reduce<Record<string, JsonValue>>((result, key) => {
       const nestedValue = value[key];
       if (nestedValue !== undefined) {
-        result[key] = replaceTargetQueryVariables(nestedValue, range, scopedVars);
+        result[key] = replaceTargetQueryVariables(nestedValue, range, variables, scopedVars);
       }
       return result;
     }, {});
@@ -136,12 +139,22 @@ const replaceTargetQueryVariables = (value: JsonValue, range: IRawTimeRange, sco
   return value;
 };
 
+/** 为详情、分享和嵌入入口创建独立运行时实例，防止同页仪表盘共享变量状态。 */
 export default function DetailV2(props: IProps) {
+  return (
+    <DashboardRuntimeProvider>
+      <DetailContent {...props} />
+    </DashboardRuntimeProvider>
+  );
+}
+
+/** 渲染单个仪表盘详情，并协调配置、变量和面板的页面内状态。 */
+function DetailContent(props: IProps) {
   const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, headerLeadingActions, hideGoBack, hideGoList } = props;
   const { t } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
-  const { dashboardDefaultRangeIndex, dashboardSaveMode, perms, groupedDatasourceList, darkMode, datasourceList } = useContext(CommonStateContext);
+  const { dashboardDefaultRangeIndex, perms, groupedDatasourceList, darkMode, datasourceList } = useContext(CommonStateContext);
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
@@ -179,17 +192,16 @@ export default function DetailV2(props: IProps) {
   const [migrationModalOpen, setMigrationModalOpen] = useState(false);
   const [allowedLeave, setAllowedLeave] = useState(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [variablesInitialized, setVariablesInitialized] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const editModalVariablecontainerRef = useRef<HTMLDivElement>(null);
-  let updateAtRef = useRef<number>();
+  const updateAtRef = useRef<number>();
+  const configRevisionRef = useRef(0);
   const routerPromptRef = useRef<RouterPromptHandle>(null);
   const refresh = async (cbk?: () => void) => {
-    // 自动保存模式下不显示 loading
-    if (dashboardSaveMode === 'manual') {
-      setLoading(true);
-    }
+    setLoading(true);
     fetchDashboard({
       id,
       builtinParams,
@@ -254,17 +266,16 @@ export default function DetailV2(props: IProps) {
         setLoading(false);
       });
   };
-  const handleUpdateDashboardConfigs = (id: number | string, updateData: DashboardUpdatePayload) => {
-    if (dashboardSaveMode === 'manual') {
-      let configs = {} as IDashboardConfig;
-      try {
-        configs = JSON.parse(updateData.configs);
-      } catch (e) {
-        console.error(e);
-      }
+  /**
+   * Applies a complete dashboard config to the page-local save candidate.
+   * This is deliberately side-effect free with respect to the server; only
+   * saveDashboard persists the dashboard after an explicit user action.
+   */
+  const updateLocalDashboardConfigs = useCallback(
+    (configs: IDashboardConfig, shouldConfirmLeave = true, updateData: Omit<DashboardUpdatePayload, 'configs'> = {}) => {
+      configRevisionRef.current += 1;
       setHasUnsavedChanges(true);
-      // 如果是手动保存模式，并且没有编辑权限则不触发 RouterPrompt 提示
-      if (isAuthorized) {
+      if (shouldConfirmLeave && isAuthorized) {
         setAllowedLeave(false);
       }
       if (configs.graphTooltip || configs.graphZoom) {
@@ -274,37 +285,79 @@ export default function DetailV2(props: IProps) {
           graphZoom: configs.graphZoom,
         });
       }
-      setDashboard({
-        ...dashboard,
-        name: updateData.name ?? dashboard.name,
-        ident: updateData.ident ?? dashboard.ident,
-        tags: updateData.tags ?? dashboard.tags,
-        note: updateData.note ?? dashboard.note,
+      setDashboard((current) => ({
+        ...current,
+        name: updateData.name ?? current.name,
+        ident: updateData.ident ?? current.ident,
+        tags: updateData.tags ?? current.tags,
+        note: updateData.note ?? current.note,
         configs,
-      });
-    } else {
-      updateDashboardConfigs(id, updateData).then((res) => {
-        updateAtRef.current = res.update_at;
-        refresh();
-      });
+      }));
+    },
+    [dashboardMeta, isAuthorized, setDashboardMeta],
+  );
+
+  /** Converts legacy string payloads from shared title controls into local config updates. */
+  const handleUpdateDashboardConfigs = useCallback(
+    (_id: number | string, updateData: DashboardUpdatePayload, shouldConfirmLeave = true) => {
+      try {
+        updateLocalDashboardConfigs(JSON.parse(updateData.configs) as IDashboardConfig, shouldConfirmLeave, updateData);
+      } catch (error) {
+        message.error(getErrorMessage(error));
+      }
+    },
+    [updateLocalDashboardConfigs],
+  );
+
+  /** Persists the dashboard only after Save and preserves edits made while the request is in flight. */
+  const saveDashboard = useCallback(async () => {
+    if (!dashboard.id || !editable || saving) return;
+    const revisionAtSubmit = configRevisionRef.current;
+    const snapshot = dashboard;
+    setSaving(true);
+    try {
+      const [, configResponse] = await Promise.all([
+        updateDashboard(snapshot.id, {
+          name: snapshot.name,
+          ident: snapshot.ident,
+          tags: snapshot.tags,
+          note: snapshot.note,
+        }),
+        updateDashboardConfigs(snapshot.id, {
+          configs: JSON.stringify(snapshot.configs),
+        }),
+      ]);
+      updateAtRef.current = (configResponse as { update_at?: number }).update_at;
+      message.success(t('detail.saved'));
+      if (configRevisionRef.current === revisionAtSubmit) {
+        setHasUnsavedChanges(false);
+        setAllowedLeave(true);
+      }
+    } catch (error) {
+      message.error(getErrorMessage(error));
+    } finally {
+      setSaving(false);
     }
-  };
+  }, [dashboard, editable, saving, t]);
   const handleVariableChange = (newValue: IVariable[]) => {
     const dashboardConfigs: IDashboardConfig = _.cloneDeep(dashboard.configs);
     dashboardConfigs.var = _.map(newValue, (item) => {
       return _.omit(item, ['value', 'options']); // 兼容性代码，去除掉 value, options
     });
-    // TODO: 手动模式需要在这里更新变量配置，自动模式会在获取大盘配置时更新
-    // if (dashboardSaveMode === 'manual') {
-    //   setVariablesWithOptions(newValue);
-    // }
     // 触发 dashboard configs 的更新
-    handleUpdateDashboardConfigs(dashboard.id, {
-      ...dashboard,
-      configs: JSON.stringify(dashboardConfigs),
-    });
+    updateLocalDashboardConfigs(dashboardConfigs);
     // 变量配置变更后，不需要手动调用 processRepeats
     // 因为 variablesWithOptions 的变化会自动触发 useEffect 重新处理 panels
+  };
+
+  /** Renames a variable and all saved dashboard references in the same page-local config update. */
+  const handleVariableRename = (oldName: string, newName: string, newVariables: IVariable[]) => {
+    const { configs, changes } = renameVariableReferences(dashboard.configs, oldName, newName);
+    configs.var = _.map(newVariables, (item) => _.omit(item, ['value', 'options']));
+    updateLocalDashboardConfigs(configs);
+    if (changes.length > 0) {
+      message.info(t('var.references_renamed', { total: changes.length }));
+    }
   };
 
   // 监听变量初始化完成和变量值变化，重新处理 repeat panels
@@ -355,7 +408,7 @@ export default function DetailV2(props: IProps) {
 
   useInterval(() => {
     // 2024-12-27 当手动保存模式时，只有仪表盘配置被更改后（!allowedLeave）才会触发 "持续查询" 的检测
-    if (import.meta.env.PROD && dashboard.id && (dashboardSaveMode === 'manual' ? !allowedLeave : true)) {
+    if (import.meta.env.PROD && dashboard.id && !allowedLeave) {
       getDashboardPure(_.toString(dashboard.id)).then((res) => {
         if (updateAtRef.current && res.update_at > updateAtRef.current) {
           if (editable) setEditable(false);
@@ -463,11 +516,13 @@ export default function DetailV2(props: IProps) {
                   headerLeadingActions={headerLeadingActions}
                   isAuthorized={effectiveIsAuthorized}
                   editable={editable && !fullscreenDisplayOptions.readonly}
-                  updateAtRef={updateAtRef}
                   allowedLeave={allowedLeave}
                   hasUnsavedChanges={hasUnsavedChanges}
-                  setAllowedLeave={setAllowedLeave}
-                  setHasUnsavedChanges={setHasUnsavedChanges}
+                  saving={saving}
+                  onSave={() => {
+                    /** Routes the header button through the single explicit dashboard save path. */
+                    void saveDashboard();
+                  }}
                   gobackPath={gobackPath}
                   dashboard={dashboard}
                   dashboardLinks={dashboardLinks}
@@ -497,10 +552,7 @@ export default function DetailV2(props: IProps) {
                         'row',
                       );
                       setPanels(newPanels);
-                      handleUpdateDashboardConfigs(dashboard.id, {
-                        ...dashboard,
-                        configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                      });
+                      updateLocalDashboardConfigs(mergePanelsToConfig(dashboard.configs, newPanels));
                     } else {
                       setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
                     }
@@ -509,10 +561,7 @@ export default function DetailV2(props: IProps) {
                     const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelConfig, id: uuidv4() }, 'chart', false);
                     setPanels(newPanels);
                     scrollToLastPanel(newPanels);
-                    handleUpdateDashboardConfigs(dashboard.id, {
-                      ...dashboard,
-                      configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-                    });
+                    updateLocalDashboardConfigs(mergePanelsToConfig(dashboard.configs, newPanels));
                   }}
                   routerPromptRef={routerPromptRef as unknown as React.MutableRefObject<{ showPrompt: () => void }>}
                   hideGoBack={hideGoBack}
@@ -534,6 +583,8 @@ export default function DetailV2(props: IProps) {
                     editable={editable && effectiveIsAuthorized}
                     queryParams={query}
                     onChange={handleVariableChange}
+                    onRename={handleVariableRename}
+                    getReferenceCount={(name) => countVariableReferences(dashboard.configs, name)}
                     onInitialized={() => {
                       setVariablesInitialized(true);
                     }}
@@ -551,10 +602,7 @@ export default function DetailV2(props: IProps) {
                 panels={panels}
                 setPanels={setPanels}
                 dashboard={dashboard}
-                setDashboard={setDashboard}
                 annotations={annotations}
-                setAllowedLeave={setAllowedLeave}
-                setHasUnsavedChanges={setHasUnsavedChanges}
                 range={range}
                 setRange={setRange}
                 timezone={timezone}
@@ -570,6 +618,7 @@ export default function DetailV2(props: IProps) {
                     const datasourceId = target.datasource
                       ? replaceDatasourceVariables(target.datasource.id, {
                           datasourceList,
+                          variables: variablesWithOptions,
                         })
                       : undefined;
                     return {
@@ -586,13 +635,14 @@ export default function DetailV2(props: IProps) {
                         ? replaceTemplateVariables(target.expr, {
                             range,
                             scopedVars: panel.scopedVars,
+                            variables: variablesWithOptions,
                           })
                         : target.expr,
-                      query: target.query ? (replaceTargetQueryVariables(target.query, range, panel.scopedVars) as JsonObject) : target.query,
-                      queries: target.queries ? (replaceTargetQueryVariables(target.queries, range, panel.scopedVars) as JsonObject[]) : target.queries,
+                      query: target.query ? (replaceTargetQueryVariables(target.query, range, variablesWithOptions, panel.scopedVars) as JsonObject) : target.query,
+                      queries: target.queries ? (replaceTargetQueryVariables(target.queries, range, variablesWithOptions, panel.scopedVars) as JsonObject[]) : target.queries,
                     };
                   });
-                  const sharedDatasource = resolveSharedPanelDatasource(panel, resolvedTargets, datasourceList);
+                  const sharedDatasource = resolveSharedPanelDatasource(panel, resolvedTargets, datasourceList, variablesWithOptions);
                   const serielData = {
                     dataProps: {
                       ...panel,
@@ -614,10 +664,7 @@ export default function DetailV2(props: IProps) {
                     window.open(basePrefix + '/chart/' + ids);
                   });
                 }}
-                onUpdated={(res) => {
-                  updateAtRef.current = (res as { update_at: number }).update_at;
-                  refresh();
-                }}
+                onConfigChange={updateLocalDashboardConfigs}
                 setAnnotationsRefreshFlag={setAnnotationsRefreshFlag}
                 editModalVariablecontainerRef={editModalVariablecontainerRef}
               />
@@ -661,10 +708,7 @@ export default function DetailV2(props: IProps) {
           if (mode === 'add') {
             scrollToLastPanel(newPanels);
           }
-          handleUpdateDashboardConfigs(dashboard.id, {
-            ...dashboard,
-            configs: panelsMergeToConfigs(dashboard.configs, newPanels),
-          });
+          updateLocalDashboardConfigs(mergePanelsToConfig(dashboard.configs, newPanels));
         }}
         editModalVariablecontainerRef={editModalVariablecontainerRef}
       />
@@ -681,12 +725,9 @@ export default function DetailV2(props: IProps) {
             danger
             onClick={() => {
               setMigrationVisible(false);
-              handleUpdateDashboardConfigs(dashboard.id, {
-                ...dashboard,
-                configs: JSON.stringify({
-                  ...dashboard.configs,
-                  version: '3.0.0',
-                }),
+              updateLocalDashboardConfigs({
+                ...dashboard.configs,
+                version: '3.0.0',
               });
             }}
           >
@@ -755,20 +796,7 @@ export default function DetailV2(props: IProps) {
             type='primary'
             onClick={() => {
               routerPromptRef.current?.hidePrompt();
-              updateDashboard(dashboard.id, {
-                name: dashboard.name,
-                ident: dashboard.ident,
-                tags: dashboard.tags,
-                note: dashboard.note,
-              });
-              updateDashboardConfigs(dashboard.id, {
-                configs: JSON.stringify(dashboard.configs),
-              }).then((res) => {
-                updateAtRef.current = res.update_at;
-                message.success(t('detail.saved'));
-                setHasUnsavedChanges(false);
-                setAllowedLeave(true);
-              });
+              void saveDashboard();
             }}
           >
             {t('detail.prompt.okText')}

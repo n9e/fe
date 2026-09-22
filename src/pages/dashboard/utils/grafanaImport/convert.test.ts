@@ -1,5 +1,6 @@
 import { convertDashboardGrafanaToN9E, convertDashboardGrafanaToN9EWithReport } from './convert';
 import { formatDatasource } from '../../Variables/utils/formatString';
+import { DASHBOARD_VERSION } from '../../constants';
 import { validateDashboardConfig } from '../validateDashboardConfig';
 import dashboardMigrator from '../../Detail/utils/dashboardMigrator';
 
@@ -21,7 +22,7 @@ jest.mock(
 );
 
 describe('convertDashboardGrafanaToN9EWithReport', () => {
-  it('converts a modern prometheus dashboard to true 4.0.0', () => {
+  it('converts a modern prometheus dashboard to the current schema version', () => {
     const input = {
       schemaVersion: 42,
       title: 'Prom Demo',
@@ -58,7 +59,7 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
 
     expect(dashboard.name).toBe('Prom Demo');
     expect(dashboard.tags).toBe('a b');
-    expect(dashboard.configs.version).toBe('4.0.0');
+    expect(dashboard.configs.version).toBe(DASHBOARD_VERSION);
     expect(dashboard.configs.graphTooltip).toBe('default');
     expect(dashboard.configs.graphZoom).toBe('default');
 
@@ -240,7 +241,7 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
       panels: [{ id: 1, type: 'timeseries', gridPos: { h: 4, w: 12, x: 0, y: 0 }, targets: [{ refId: 'A', expr: 'up' }] }],
     });
     expect(dashboard.name).toBe('T');
-    expect(dashboard.configs.version).toBe('4.0.0');
+    expect(dashboard.configs.version).toBe(DASHBOARD_VERSION);
     expect(dashboard.configs.panels[0].targets[0]).toMatchObject({ kind: 'query', resultType: 'time_series' });
   });
 
@@ -306,7 +307,7 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
 
     expect(dashboard.tags).toBe('ops schema42');
     expect(configs.graphTooltip).toBe('default');
-    expect(configs.version).toBe('4.0.0');
+    expect(configs.version).toBe(DASHBOARD_VERSION);
 
     const panel = configs.panels[0];
     expect(panel.id).toBe('7');
@@ -327,7 +328,7 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
     expect(report.unsupportedItems.some((i) => i.scope === 'custom' && i.path === '$.panels[id=7]')).toBe(true);
   });
 
-  it('output is valid 4.0.0 and needs no dashboardMigrator migration (no implicit fallback)', () => {
+  it('output is already at the current schema version and needs no dashboardMigrator migration (no implicit fallback)', () => {
     const input = {
       schemaVersion: 42,
       title: 'RT',
@@ -348,6 +349,14 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
           gridPos: { h: 1, w: 24, x: 0, y: 8 },
           panels: [{ id: 3, type: 'stat', title: 'S', gridPos: { h: 4, w: 6, x: 0, y: 9 }, targets: [{ refId: 'A', expr: 'down' }] }],
         },
+        {
+          id: 4,
+          type: 'row',
+          title: 'Expanded row',
+          collapsed: false,
+          gridPos: { h: 1, w: 24, x: 0, y: 13 },
+          panels: [{ id: 5, type: 'stat', title: 'S2', gridPos: { h: 4, w: 6, x: 0, y: 14 }, targets: [{ refId: 'A', expr: 'up' }] }],
+        },
       ],
       templating: { list: [{ name: 'DS_PROMETHEUS', type: 'datasource', query: 'prometheus', hide: 0 }] },
     };
@@ -358,9 +367,20 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
     expect(validation.valid).toBe(true);
 
     const migrated = dashboardMigrator(configs);
-    expect(migrated.version).toBe('4.0.0');
-    // 已是真正的 4.0.0（target 带 kind/resultType、非 mixed 面板级 datasource），不应再发生迁移
+    expect(migrated.version).toBe(DASHBOARD_VERSION);
+    // 已是当前 schema（target 带 kind/resultType、非 mixed 面板级 datasource、无面板版本字段），不应再发生迁移
     expect(migrated.panels).toEqual(configs.panels);
+    // 面板版本字段已随 dashboard.version 统一移除，导入输出不得再带 version
+    configs.panels.forEach((panel: { version?: unknown }) => expect(panel.version).toBeUndefined());
+
+    // row 折叠语义与 Grafana 同向：折叠行缓存子面板，展开行把子面板平铺到顶层
+    const collapsedRow = configs.panels.find((panel: { id: string }) => panel.id === '2');
+    expect(collapsedRow).toMatchObject({ type: 'row', collapsed: true });
+    expect(collapsedRow.panels).toHaveLength(1);
+    const expandedRow = configs.panels.find((panel: { id: string }) => panel.id === '4');
+    expect(expandedRow).toMatchObject({ type: 'row', collapsed: false });
+    expect(expandedRow.panels).toBeUndefined();
+    expect(configs.panels.filter((panel: { id: string }) => panel.id === '5')).toHaveLength(1);
   });
 
   it('keeps variables visible when hide is undefined or 1, hides only when hide === 2', () => {

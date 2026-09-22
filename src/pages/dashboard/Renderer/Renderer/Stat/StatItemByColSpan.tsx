@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
-import TsGraph from '@fc-plot/ts-graph';
 import { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import { getMaxFontSize } from '../../utils/getTextWidth';
+import StatGraph from './StatGraph';
+import type { StatSparklinePoint } from './statGraphData';
 import type { IOptions } from '../../../types';
 
 const MIN_SIZE = 12;
@@ -28,7 +29,7 @@ interface StatItemProps {
   isFullSizeBackground: boolean;
   valueField?: string;
   graphMode: string;
-  serie: unknown;
+  serie?: { data?: StatSparklinePoint[] };
   options: IOptions;
   style?: React.CSSProperties;
 }
@@ -36,8 +37,6 @@ interface StatItemProps {
 export default function StatItem(props: StatItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
-  const chartEleRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<TsGraph>(null);
   const { textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options, style } = props;
   let item = props.item;
 
@@ -76,49 +75,6 @@ export default function StatItem(props: StatItemProps) {
     }
   }
 
-  useEffect(() => {
-    if (chartEleRef.current) {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-      }
-      chartRef.current = new TsGraph({
-        timestamp: 'X',
-        xkey: 0,
-        ykey: 1,
-        ykey2: 2,
-        ykeyFormatter: (value: number | string) => Number(value),
-        chart: {
-          renderTo: chartEleRef.current,
-          height: chartEleRef.current.clientHeight,
-          marginTop: 0,
-          marginRight: 0,
-          marginBottom: 0,
-          marginLeft: 0,
-          colors: [colorMode === 'background' ? 'rgba(255, 255, 255, 0.5)' : color],
-        },
-        series: [serie],
-        line: {
-          width: 1,
-        },
-        xAxis: {
-          visible: false,
-        },
-        yAxis: {
-          visible: false,
-        },
-        area: {
-          opacity: 0.2,
-        },
-      });
-    }
-    return () => {
-      if (chartRef.current) {
-        chartRef.current.destroy();
-        chartRef.current = null;
-      }
-    };
-  }, [colorMode, graphMode]);
-
   return (
     <div
       className='renderer-stat-item'
@@ -129,11 +85,7 @@ export default function StatItem(props: StatItemProps) {
       }}
     >
       <div style={{ width: '100%' }}>
-        {graphMode === 'area' && (
-          <div className='renderer-stat-item-graph'>
-            <div ref={chartEleRef} style={{ height: '100%', width: '100%' }} />
-          </div>
-        )}
+        <StatGraph serie={serie} color={color} colorMode={colorMode} graphMode={graphMode} />
         <div className='renderer-stat-item-content'>
           {(textMode === 'valueAndName' || textMode === 'name') && (
             <div

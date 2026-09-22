@@ -4,7 +4,7 @@ import _ from 'lodash';
 import Color from 'color';
 import { useSize } from 'ahooks';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../types';
 import { BarGaugeValue, calculatePercentage } from './utils';
@@ -20,6 +20,7 @@ interface Props {
 }
 
 export default function BasicDisplayMode(props: Props) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth } = props;
   const metric = item.metric;
   const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;

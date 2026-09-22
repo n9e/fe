@@ -1,4 +1,6 @@
 .renderer-container {
+  position: relative;
+  overflow: hidden;
   height: 100%;
 
   background-color: var(--fc-fill-2);
@@ -11,7 +13,6 @@
 
   &:hover {
     .renderer-header-desc {
-
       .anticon-info-circle,
       .anticon-link {
         display: inline;
@@ -28,6 +29,43 @@
 
   .ant-tooltip-inner {
     min-height: 26px !important;
+  }
+}
+
+/** 以固定速度横移的渐变条仅表示查询活动，不表达实际进度。 */
+@keyframes renderer-loading-bar-slide {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.renderer-loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  pointer-events: none;
+  animation-name: renderer-loading-bar-slide;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.renderer-loading-bar-gradient {
+  width: 28%;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(var(--fc-primary-rgb) / 0) 0%, rgb(var(--fc-primary-rgb)) 80.75%, rgb(var(--fc-primary-rgb) / 0) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .renderer-loading-bar {
+    left: 36%;
+    animation: none;
   }
 }
 
@@ -102,6 +140,25 @@
 
 .renderer-body-wrap {
   height: 100%;
+}
+
+/* 重试入口悬浮在面板右下角：面板体占满高度，静态布局会被 .renderer-container 的 overflow 裁掉 */
+.renderer-query-error-action {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+}
+
+.renderer-header-partial-error {
+  flex-shrink: 0;
+  max-width: 84px;
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--fc-text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .renderer-body {

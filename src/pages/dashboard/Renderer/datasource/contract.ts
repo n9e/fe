@@ -14,7 +14,6 @@ import type { DashboardQueryRequest, DashboardQueryResponse, DatasourceQuery, Ex
 import { getTargetRefId, inferTargetResultType, isExpressionTarget } from './target';
 import { DASHBOARD_TARGET_META_FIELDS, getDashboardDatasourceDefinition } from './registry';
 
-import { getGlobalState } from '@/pages/dashboard/globalState';
 import { getDashboardVariablePlugin } from '@/pages/dashboard/Variables/plugins';
 
 export { inferTargetResultType, isExpressionTarget } from './target';
@@ -30,21 +29,29 @@ function getEsIntervalUnit(value: unknown): EsIntervalUnit {
   return ES_INTERVAL_UNITS.includes(value as EsIntervalUnit) ? (value as EsIntervalUnit) : 'min';
 }
 
-function interpolateQueryValue(value: unknown, range: IRawTimeRange, step: number | undefined, scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined): unknown {
+/** Recursively interpolates a datasource payload with the runtime variables supplied for this panel query. */
+function interpolateQueryValue(
+  value: unknown,
+  range: IRawTimeRange,
+  step: number | undefined,
+  scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined,
+  variables?: import('@/pages/dashboard/Variables/types').IVariable[],
+): unknown {
   if (typeof value === 'string') {
     return replaceTemplateVariables(value, {
       range,
       step,
       scopedVars,
+      variables,
     });
   }
   if (Array.isArray(value)) {
-    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars));
+    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars, variables));
   }
   if (value && typeof value === 'object') {
     return Object.keys(value).reduce<Record<string, unknown>>((result, key) => {
       if (!FORBIDDEN_REQUEST_FIELDS.has(key)) {
-        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars);
+        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars, variables);
       }
       return result;
     }, {});
@@ -85,13 +92,13 @@ function getDatasourceQueryPayload(target: ITarget, cate: string, options: Build
   const plugin = getDashboardVariablePlugin(cate);
   if (plugin) {
     return plugin.transformQuery(payload, {
-      variables: [...getGlobalState('variablesWithOptions'), ...getBuiltInVariables(options.effectiveRange, { step })],
+      variables: [...(options.variables ?? []), ...getBuiltInVariables(options.effectiveRange, { step })],
       range: options.effectiveRange,
       step,
       scopedVars: options.scopedVars,
     });
   }
-  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars);
+  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars, options.variables);
 }
 
 export interface BuildDashboardQueryRequestOptions {
@@ -102,6 +109,8 @@ export interface BuildDashboardQueryRequestOptions {
   panelWidth?: number;
   maxDataPoints?: number;
   scopedVars?: import('@/pages/dashboard/types').ScopedVariables;
+  /** Variables read from the owning runtime instance instead of the legacy module store. */
+  variables?: import('@/pages/dashboard/Variables/types').IVariable[];
   legacyDatasource?: {
     cate?: string;
     id?: number | string;
@@ -143,6 +152,7 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     };
     const resolvedDatasourceId = replaceDatasourceVariables(datasource.id as number | string, {
       datasourceList: options.datasourceList,
+      variables: options.variables,
     });
     if (typeof resolvedDatasourceId !== 'number') {
       skippedQueryRefIds.add(refId);

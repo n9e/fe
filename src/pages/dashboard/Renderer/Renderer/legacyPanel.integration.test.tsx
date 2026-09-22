@@ -7,7 +7,7 @@ import dashboardMigrator from '@/pages/dashboard/Detail/utils/dashboardMigrator'
 import { createCommonStateWrapper } from '@/test/renderWithProviders';
 import { legacyEsPanel, legacyPromTimeseries, mixedV4Dashboard } from '@/pages/dashboard/test/fixtures/legacyDashboards';
 import { createMockQueryResponse } from '@/pages/dashboard/test/fixtures/dashboardQuery';
-import { resetDashboardGlobalState } from '@/test/resetGlobalState';
+import { resetDashboardTestRuntime } from '@/test/dashboardRuntime';
 
 import Renderer from './index';
 import { fetchDashboardQuery } from '../datasource/service';
@@ -37,7 +37,7 @@ const time = { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-2
 describe('legacy dashboard panel rendering', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    resetDashboardGlobalState();
+    resetDashboardTestRuntime();
   });
 
   it.each([
