@@ -180,10 +180,6 @@ const pt_BR = {
       thread_id: 'ID do thread',
       thread_id_tip: 'Ative User Settings → Advanced → Developer Mode e clique com o botão direito no thread ou postagem → Copy ID',
       thread_id_invalid: 'Deve ser um ID numérico',
-      mentions: 'Mencionar cargos / usuários',
-      mentions_tip:
-        'Cargos ou usuários a mencionar quando o alerta dispara, separados por espaço: cargo é <@&ID>, usuário é <@ID> (ative o Developer Mode e clique com o botão direito → Copy ID). Só esses são mencionados; @everyone no texto do alerta é ignorado',
-      mentions_invalid: 'Use <@id_usuario> ou <@&id_cargo>, separados por espaço',
     },
     jsm_alert: {
       api_key: 'Chave de API',

@@ -184,10 +184,6 @@ const fr_FR = {
       thread_id: 'ID du fil',
       thread_id_tip: 'Activez User Settings → Advanced → Developer Mode, puis clic droit sur le fil ou la publication → Copy ID',
       thread_id_invalid: 'Doit être un ID numérique',
-      mentions: 'Mentionner des rôles / utilisateurs',
-      mentions_tip:
-        "Rôles ou utilisateurs à mentionner quand l'alerte se déclenche, séparés par des espaces : un rôle s'écrit <@&ID>, un utilisateur <@ID> (activez Developer Mode puis clic droit → Copy ID). Seuls ceux-ci sont notifiés ; @everyone dans le texte de l'alerte est ignoré",
-      mentions_invalid: 'Utilisez <@id_utilisateur> ou <@&id_rôle>, séparés par des espaces',
     },
     jsm_alert: {
       api_key: 'Clé API',

@@ -180,10 +180,6 @@ const id_ID = {
       thread_id: 'ID thread',
       thread_id_tip: 'Aktifkan User Settings → Advanced → Developer Mode, lalu klik kanan thread atau postingan → Copy ID',
       thread_id_invalid: 'Harus berupa ID angka',
-      mentions: 'Sebut peran / pengguna',
-      mentions_tip:
-        'Peran atau pengguna yang disebut saat alert terpicu, dipisah spasi: peran ditulis <@&ID>, pengguna <@ID> (aktifkan Developer Mode lalu klik kanan → Copy ID). Hanya ini yang disebut; @everyone di teks alert diabaikan',
-      mentions_invalid: 'Gunakan <@id_pengguna> atau <@&id_peran>, dipisah spasi',
     },
     jsm_alert: {
       api_key: 'Kunci API',

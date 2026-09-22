@@ -180,10 +180,6 @@ const es_ES = {
       thread_id: 'ID del hilo',
       thread_id_tip: 'Activa User Settings → Advanced → Developer Mode y haz clic derecho en el hilo o publicación → Copy ID',
       thread_id_invalid: 'Debe ser un ID numérico',
-      mentions: 'Mencionar roles / usuarios',
-      mentions_tip:
-        'Roles o usuarios a mencionar cuando salta la alerta, separados por espacios: un rol es <@&ID>, un usuario <@ID> (activa Developer Mode y clic derecho → Copy ID). Solo se menciona a estos; @everyone en el texto de la alerta se ignora',
-      mentions_invalid: 'Usa <@id_usuario> o <@&id_rol>, separados por espacios',
     },
     jsm_alert: {
       api_key: 'Clave de API',

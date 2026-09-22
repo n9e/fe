@@ -182,10 +182,6 @@ const ja_JP = {
       thread_id: 'スレッド ID',
       thread_id_tip: 'User Settings → Advanced で Developer Mode をオンにし、スレッドまたは投稿を右クリック → Copy ID',
       thread_id_invalid: '数値の ID を入力してください',
-      mentions: 'メンションするロール / ユーザー',
-      mentions_tip:
-        'アラート発生時にメンションするロールまたはユーザー（空白区切り）。ロールは <@&ID>、ユーザーは <@ID>（Developer Mode をオンにして右クリック → Copy ID）。ここに入力した対象だけがメンションされ、アラート本文の @everyone は無視されます',
-      mentions_invalid: '<@ユーザーID> または <@&ロールID> を空白区切りで入力してください',
     },
     jsm_alert: {
       api_key: 'API キー',

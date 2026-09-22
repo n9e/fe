@@ -179,10 +179,6 @@ const en_US = {
       thread_id: 'Thread ID',
       thread_id_tip: 'Turn on User Settings → Advanced → Developer Mode, then right-click the thread or post → Copy ID',
       thread_id_invalid: 'Must be a numeric ID',
-      mentions: 'Mention roles / users',
-      mentions_tip:
-        'Roles or users to ping when the alert fires, separated by spaces: a role is <@&ID>, a user is <@ID> (turn on Developer Mode and right-click → Copy ID). Only these are pinged; @everyone in the alert text is ignored',
-      mentions_invalid: 'Use <@user_id> or <@&role_id>, separated by spaces',
     },
     jsm_alert: {
       api_key: 'API key',

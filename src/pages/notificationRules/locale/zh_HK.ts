@@ -173,10 +173,6 @@ const zh_HK = {
       thread_id: '討論串 ID',
       thread_id_tip: '在 User Settings → Advanced 開啟 Developer Mode，然後右鍵討論串或貼文 → Copy ID',
       thread_id_invalid: '必須是純數字 ID',
-      mentions: '提醒角色 / 使用者',
-      mentions_tip:
-        '告警觸發時要 @ 的角色或使用者，多個用空格分隔：角色寫成 <@&ID>，使用者寫成 <@ID>（開啟 Developer Mode 後右鍵 → Copy ID）。只有這裡填的對象會被提醒，告警內容裡的 @everyone 不會生效',
-      mentions_invalid: '請用 <@使用者ID> 或 <@&角色ID>，多個用空格分隔',
     },
     jsm_alert: {
       api_key: 'API Key',

@@ -182,10 +182,6 @@ const ru_RU = {
       thread_id: 'ID ветки',
       thread_id_tip: 'Включите User Settings → Advanced → Developer Mode, затем щёлкните правой кнопкой по ветке или посту → Copy ID',
       thread_id_invalid: 'Должен быть числовой ID',
-      mentions: 'Упоминать роли / пользователей',
-      mentions_tip:
-        'Роли или пользователи для упоминания при срабатывании, через пробел: роль — <@&ID>, пользователь — <@ID> (включите Developer Mode и нажмите правой кнопкой → Copy ID). Упоминаются только они; @everyone в тексте алерта игнорируется',
-      mentions_invalid: 'Используйте <@id_пользователя> или <@&id_роли> через пробел',
     },
     jsm_alert: {
       api_key: 'API-ключ',

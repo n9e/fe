@@ -173,10 +173,6 @@ const ko_KR = {
       thread_id: '스레드 ID',
       thread_id_tip: 'User Settings → Advanced에서 Developer Mode를 켠 뒤 스레드나 게시물을 우클릭 → Copy ID',
       thread_id_invalid: '숫자 ID여야 합니다',
-      mentions: '멘션할 역할 / 사용자',
-      mentions_tip:
-        '알림 발생 시 멘션할 역할 또는 사용자(공백 구분): 역할은 <@&ID>, 사용자는 <@ID>(Developer Mode를 켜고 우클릭 → Copy ID). 여기 입력한 대상만 멘션되며 알림 본문의 @everyone은 무시됩니다',
-      mentions_invalid: '<@사용자ID> 또는 <@&역할ID>를 공백으로 구분해 입력하세요',
     },
     jsm_alert: {
       api_key: 'API 키',

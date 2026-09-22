@@ -853,7 +853,6 @@ export const getNotificationChannelTypes = () => {
               { key: 'target', cname: 'Send to', type: 'string' },
               { key: 'thread_name', cname: 'Post title', type: 'string' },
               { key: 'thread_id', cname: 'Thread ID', type: 'string' },
-              { key: 'mentions', cname: 'Mentions', type: 'string' },
             ],
           },
         },

@@ -173,10 +173,6 @@ const zh_CN = {
       thread_id: '线程 ID',
       thread_id_tip: '在 User Settings → Advanced 打开 Developer Mode，然后右键线程或帖子 → Copy ID',
       thread_id_invalid: '必须是纯数字 ID',
-      mentions: '提醒角色 / 用户',
-      mentions_tip:
-        '告警触发时要 @ 的角色或用户，多个用空格分隔：角色写成 <@&ID>，用户写成 <@ID>（打开 Developer Mode 后右键 → Copy ID）。只有这里填的对象会被提醒，告警内容里的 @everyone 不会生效',
-      mentions_invalid: '请用 <@用户ID> 或 <@&角色ID>，多个用空格分隔',
     },
     jsm_alert: {
       api_key: 'API Key',

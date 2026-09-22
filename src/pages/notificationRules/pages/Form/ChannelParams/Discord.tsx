@@ -18,11 +18,10 @@ interface Props {
 
 // 与后端校验一致：http(s) 且路径含 /webhooks/，允许经反向代理或网关转发的地址
 const DISCORD_WEBHOOK_RE = /^https?:\/\/[^/]+\/.*webhooks\/[^/]+\/[^/]+/i;
-const MENTION_RE = /^<@&?\d+>$/;
 const isVarRef = (v?: string) => !!v && v.includes('{{');
 
 /**
- * Discord 规则侧参数：Webhook 地址（一个地址对应一个频道）+ 名称 + 发送目标 + 提醒对象。
+ * Discord 规则侧参数：Webhook 地址（一个地址对应一个频道）+ 名称 + 发送目标。
  * 与钉钉机器人的 token 一样填在规则里，同一个媒介可以发到任意多个频道。
  */
 export default function Discord(props: Props) {
@@ -109,22 +108,6 @@ export default function Discord(props: Props) {
           </Col>
         )}
       </Row>
-      <Form.Item
-        {...field}
-        label={label('mentions')}
-        name={[field.name, 'params', 'mentions']}
-        validateTrigger='onBlur'
-        rules={[
-          {
-            validator: (_rule, value?: string) => {
-              if (!value || _.every(_.split(_.trim(value), /\s+/), (m) => MENTION_RE.test(m))) return Promise.resolve();
-              return Promise.reject(new Error(t('notification_configuration.discord.mentions_invalid')));
-            },
-          },
-        ]}
-      >
-        <Input placeholder='<@&165511591545143296> <@80351110224678912>' />
-      </Form.Item>
     </div>
   );
 }
