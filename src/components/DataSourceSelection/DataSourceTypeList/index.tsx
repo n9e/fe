@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import DisabledContext from 'antd/es/config-provider/DisabledContext';
 import { CheckOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +9,10 @@ import type { DataSourceTypeListProps } from '../types';
 import './style.less';
 
 export default function DataSourceTypeList(props: DataSourceTypeListProps) {
-  const { types, value, disabled = false, className, typeFilter, onChange } = props;
+  const { types, value, disabled: customDisabled, className, typeFilter, onChange } = props;
+  // 与当前 AntD 4.21 一致：组件或 Form / ConfigProvider 任一禁用时均不可选择。
+  const contextDisabled = useContext(DisabledContext);
+  const disabled = customDisabled || contextDisabled;
   const { t } = useTranslation('dataSourceSelection');
   const visibleTypes = typeFilter ? types.filter(typeFilter) : types;
 
