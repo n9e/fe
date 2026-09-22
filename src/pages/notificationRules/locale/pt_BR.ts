@@ -191,8 +191,6 @@ const pt_BR = {
       api_key_history_placeholder: 'Cole a chave de API ou clique para escolher uma usada antes',
       bot_name: 'Nome',
       bot_name_tip: 'Um nome fácil de reconhecer para a chave, como o nome da equipe: aparece como destino nos registros e outras regras podem reutilizar a chave por ele',
-      priority_map: 'Severidade e prioridade',
-      priority_map_tip: 'Prioridade do alerta no JSM para cada severidade do Nightingale; padrão S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: 'Serviço/integração',

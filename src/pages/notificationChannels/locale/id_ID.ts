@@ -37,7 +37,7 @@ const id_ID = {
     },
   },
   request_configuration: {
-    jsm_alert: "Konfigurasi JSM Alert",
+    jsm_alert: 'Konfigurasi JSM Alert',
     discord: 'Konfigurasi Discord',
     jira: 'Konfigurasi Jira',
     http: 'Konfigurasi HTTP',
@@ -154,11 +154,15 @@ const id_ID = {
     proxy_tip: 'Isi jika Discord hanya dapat dijangkau melalui proxy, misalnya http://127.0.0.1:7890',
   },
   jsm_alert_request_config: {
-    top_tip: "Alert dikirim ke Operations Jira Service Management. Kunci integrasi API menentukan tim penerima alert, jadi kunci diisi di setiap aturan notifikasi; media ini dapat mengirim ke berapa pun tim. Buat kunci di JSM: tim → Integrations → Add integration → API.",
-    api_url: "URL API",
-    api_url_tip: "Kosongkan untuk memakai https://api.atlassian.com; path /jsm/ops/integration/v2/alerts ditambahkan otomatis",
-    api_url_invalid: "Harus diawali http:// atau https://",
-    proxy_tip: "Isi jika api.atlassian.com hanya dapat dijangkau melalui proxy, misalnya http://127.0.0.1:7890",
+    top_tip:
+      'Alert dikirim ke Operations Jira Service Management. Kunci integrasi API menentukan tim penerima alert, jadi kunci diisi di setiap aturan notifikasi; media ini dapat mengirim ke berapa pun tim. Buat kunci di JSM: tim → Integrations → Add integration → API.',
+    api_url: 'URL API',
+    api_url_tip: 'Kosongkan untuk memakai https://api.atlassian.com; path /jsm/ops/integration/v2/alerts ditambahkan otomatis',
+    api_url_invalid: 'Harus diawali http:// atau https://',
+    priority_map: 'Tingkat dan prioritas',
+    priority_map_tip:
+      'Prioritas alert JSM untuk tiap tingkat Nightingale. Prioritas JSM sama di seluruh situs, jadi cukup diatur sekali di sini untuk semua aturan; default S1→P1, S2→P2, S3→P3',
+    proxy_tip: 'Isi jika api.atlassian.com hanya dapat dijangkau melalui proxy, misalnya http://127.0.0.1:7890',
   },
   pagerduty_request_config: {
     title: 'PagerDuty',
@@ -224,10 +228,10 @@ const id_ID = {
     script: 'Script',
   },
   test: {
-    jsm_title: "Kunci integrasi API JSM",
-    jsm_tip: "Setelah disimpan, kunci diisi di aturan notifikasi; isi satu di sini untuk menguji. Alert sungguhan dibuat di tim integrasi ini.",
-    jsm_api_key_placeholder: "Kunci API integrasi",
-    jsm_with_recovery: "Uji juga pemulihan (tutup alert)",
+    jsm_title: 'Kunci integrasi API JSM',
+    jsm_tip: 'Setelah disimpan, kunci diisi di aturan notifikasi; isi satu di sini untuk menguji. Alert sungguhan dibuat di tim integrasi ini.',
+    jsm_api_key_placeholder: 'Kunci API integrasi',
+    jsm_with_recovery: 'Uji juga pemulihan (tutup alert)',
     discord_title: 'Webhook Discord',
     discord_tip: 'Setelah disimpan, URL webhook diisi di aturan notifikasi; isi satu di sini untuk menguji.',
     discord_target_channel: 'Channel',

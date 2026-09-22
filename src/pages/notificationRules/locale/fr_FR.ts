@@ -196,8 +196,6 @@ const fr_FR = {
       bot_name: 'Nom',
       bot_name_tip:
         "Un nom reconnaissable pour cette clé, par exemple le nom de l'équipe : affiché comme cible dans les enregistrements, les autres règles peuvent réutiliser la clé par ce nom",
-      priority_map: 'Gravité et priorité',
-      priority_map_tip: "Priorité de l'alerte JSM pour chaque gravité Nightingale ; par défaut S1→P1, S2→P2, S3→P3",
     },
     pagerduty: {
       services: 'Service / intégration',

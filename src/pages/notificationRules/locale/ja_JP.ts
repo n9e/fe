@@ -193,8 +193,6 @@ const ja_JP = {
       api_key_history_placeholder: 'API キーを貼り付けるか、クリックして以前入力したものを選択',
       bot_name: '名前',
       bot_name_tip: 'このキーの分かりやすい名前（チーム名など）。通知記録の宛先に表示され、他のルールでも名前でキーを再利用できます',
-      priority_map: '重大度と優先度',
-      priority_map_tip: 'Nightingale の重大度ごとの JSM アラート優先度。既定は S1→P1、S2→P2、S3→P3',
     },
     pagerduty: {
       services: 'サービス/統合',

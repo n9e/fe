@@ -191,8 +191,6 @@ const es_ES = {
       api_key_history_placeholder: 'Pega la clave de API o haz clic para elegir una usada antes',
       bot_name: 'Nombre',
       bot_name_tip: 'Un nombre reconocible para la clave, como el del equipo: aparece como destino en los registros y otras reglas pueden reutilizar la clave por este nombre',
-      priority_map: 'Severidad y prioridad',
-      priority_map_tip: 'Prioridad de la alerta en JSM para cada severidad de Nightingale; por defecto S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: 'Servicio/integración',

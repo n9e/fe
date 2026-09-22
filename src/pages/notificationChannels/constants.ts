@@ -877,12 +877,12 @@ export const getNotificationChannelTypes = () => {
             params: [
               { key: 'api_key', cname: 'API Key', type: 'string' },
               { key: 'bot_name', cname: 'Name', type: 'string' },
-              { key: 'priority_map', cname: 'Priority', type: 'string' },
             ],
           },
         },
         request_config: {
           jsm_alert_request_config: {
+            priority_map: { '1': 'P1', '2': 'P2', '3': 'P3' },
             timeout: 10000,
             retry_times: 3,
             retry_sleep: 1000,

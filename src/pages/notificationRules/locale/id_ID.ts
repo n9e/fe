@@ -192,8 +192,6 @@ const id_ID = {
       bot_name: 'Nama',
       bot_name_tip:
         'Nama yang mudah dikenali untuk kunci ini, misalnya nama tim: tampil sebagai target di catatan notifikasi, aturan lain dapat memakai ulang kunci lewat nama ini',
-      priority_map: 'Tingkat dan prioritas',
-      priority_map_tip: 'Prioritas alert JSM untuk tiap tingkat Nightingale; default S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: 'Layanan/integrasi',

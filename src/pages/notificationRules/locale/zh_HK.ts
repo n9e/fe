@@ -183,8 +183,6 @@ const zh_HK = {
       api_key_history_placeholder: '貼上 API Key，或點擊選擇之前填過的',
       bot_name: '名稱',
       bot_name_tip: '給這個 key 起個好認的名字（如團隊名）：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個 key',
-      priority_map: '級別與優先級',
-      priority_map_tip: '夜鶯各告警級別對應的 JSM 告警優先級，預設 S1→P1、S2→P2、S3→P3',
     },
     pagerduty: {
       services: '服務/集成',

@@ -116,6 +116,8 @@ export interface DiscordRequestConfig extends NativeNetworkConfig {
 
 export interface JSMAlertRequestConfig extends NativeNetworkConfig {
   api_url?: string;
+  /** 告警级别 '1'/'2'/'3' → JSM 优先级 P1–P5 */
+  priority_map?: Record<string, string>;
 }
 
 export interface ChannelItem {

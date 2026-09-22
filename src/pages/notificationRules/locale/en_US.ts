@@ -190,8 +190,6 @@ const en_US = {
       api_key_history_placeholder: 'Paste the API key, or click to pick one used before',
       bot_name: 'Name',
       bot_name_tip: 'A recognizable name for this key, e.g. the team name: notification records show it as the target, and other rules can reuse the key by this name',
-      priority_map: 'Severity to priority',
-      priority_map_tip: 'JSM alert priority for each Nightingale severity; defaults are S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: 'Service/Integration',

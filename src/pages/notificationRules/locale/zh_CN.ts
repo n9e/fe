@@ -183,8 +183,6 @@ const zh_CN = {
       api_key_history_placeholder: '粘贴 API Key，或点击选择之前填过的',
       bot_name: '名称',
       bot_name_tip: '给这个 key 起个好认的名字（如团队名）：通知记录里的目标显示它，其他规则也可以按名称直接复用这个 key',
-      priority_map: '级别与优先级',
-      priority_map_tip: '夜莺各告警级别对应的 JSM 告警优先级，默认 S1→P1、S2→P2、S3→P3',
     },
     pagerduty: {
       services: '服务/集成',

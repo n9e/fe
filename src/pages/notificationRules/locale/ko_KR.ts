@@ -184,8 +184,6 @@ const ko_KR = {
       api_key_history_placeholder: 'API 키를 붙여 넣거나 클릭해 이전에 입력한 것을 선택하세요',
       bot_name: '이름',
       bot_name_tip: '이 키를 알아보기 쉬운 이름(예: 팀 이름). 알림 기록의 대상으로 표시되며 다른 규칙에서도 이 이름으로 키를 재사용할 수 있습니다',
-      priority_map: '심각도와 우선순위',
-      priority_map_tip: 'Nightingale 심각도별 JSM 알림 우선순위. 기본값은 S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: '서비스/통합',

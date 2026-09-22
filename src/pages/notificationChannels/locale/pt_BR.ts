@@ -37,7 +37,7 @@ const pt_BR = {
     },
   },
   request_configuration: {
-    jsm_alert: "Configuração do JSM Alert",
+    jsm_alert: 'Configuração do JSM Alert',
     discord: 'Configuração do Discord',
     jira: 'Configuração do Jira',
     http: 'Configuração HTTP',
@@ -155,11 +155,15 @@ const pt_BR = {
     proxy_tip: 'Preencha quando o Discord só for acessível por proxy, por exemplo http://127.0.0.1:7890',
   },
   jsm_alert_request_config: {
-    top_tip: "Os alertas vão para o Operations do Jira Service Management. A chave de uma integração de API define qual equipe recebe o alerta, por isso é informada em cada regra de notificação; este meio pode enviar para quantas equipes quiser. Crie a chave no JSM: equipe → Integrations → Add integration → API.",
-    api_url: "URL da API",
-    api_url_tip: "Deixe vazio para usar https://api.atlassian.com; o caminho /jsm/ops/integration/v2/alerts é adicionado automaticamente",
-    api_url_invalid: "Deve começar com http:// ou https://",
-    proxy_tip: "Preencha quando api.atlassian.com só for acessível por proxy, por exemplo http://127.0.0.1:7890",
+    top_tip:
+      'Os alertas vão para o Operations do Jira Service Management. A chave de uma integração de API define qual equipe recebe o alerta, por isso é informada em cada regra de notificação; este meio pode enviar para quantas equipes quiser. Crie a chave no JSM: equipe → Integrations → Add integration → API.',
+    api_url: 'URL da API',
+    api_url_tip: 'Deixe vazio para usar https://api.atlassian.com; o caminho /jsm/ops/integration/v2/alerts é adicionado automaticamente',
+    api_url_invalid: 'Deve começar com http:// ou https://',
+    priority_map: 'Severidade e prioridade',
+    priority_map_tip:
+      'Prioridade do alerta no JSM para cada severidade do Nightingale. As prioridades do JSM são as mesmas em todo o site, então isto é definido uma vez aqui para todas as regras; padrão S1→P1, S2→P2, S3→P3',
+    proxy_tip: 'Preencha quando api.atlassian.com só for acessível por proxy, por exemplo http://127.0.0.1:7890',
   },
   pagerduty_request_config: {
     title: 'PagerDuty',
@@ -225,10 +229,10 @@ const pt_BR = {
     script: 'Script',
   },
   test: {
-    jsm_title: "Chave da integração de API do JSM",
-    jsm_tip: "Depois de salvar, a chave é informada na regra de notificação; informe uma aqui para testar. Um alerta real é criado na equipe desta integração.",
-    jsm_api_key_placeholder: "Chave de API da integração",
-    jsm_with_recovery: "Testar também a recuperação (fechar o alerta)",
+    jsm_title: 'Chave da integração de API do JSM',
+    jsm_tip: 'Depois de salvar, a chave é informada na regra de notificação; informe uma aqui para testar. Um alerta real é criado na equipe desta integração.',
+    jsm_api_key_placeholder: 'Chave de API da integração',
+    jsm_with_recovery: 'Testar também a recuperação (fechar o alerta)',
     discord_title: 'Webhook do Discord',
     discord_tip: 'Depois de salvar, o URL do webhook é informado na regra de notificação; informe um aqui para testar.',
     discord_target_channel: 'Canal',

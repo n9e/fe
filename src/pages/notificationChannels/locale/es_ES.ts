@@ -37,7 +37,7 @@ const es_ES = {
     },
   },
   request_configuration: {
-    jsm_alert: "Configuración de JSM Alert",
+    jsm_alert: 'Configuración de JSM Alert',
     discord: 'Configuración de Discord',
     jira: 'Configuración de Jira',
     http: 'Configuración HTTP',
@@ -156,11 +156,15 @@ const es_ES = {
     proxy_tip: 'Rellénalo cuando Discord solo sea accesible a través de un proxy, por ejemplo http://127.0.0.1:7890',
   },
   jsm_alert_request_config: {
-    top_tip: "Las alertas van a Operations de Jira Service Management. La clave de una integración de API decide qué equipo recibe la alerta, por eso se indica en cada regla de notificación; este medio puede enviar a cualquier número de equipos. Créala en JSM: equipo → Integrations → Add integration → API.",
-    api_url: "URL de la API",
-    api_url_tip: "Déjalo vacío para usar https://api.atlassian.com; la ruta /jsm/ops/integration/v2/alerts se añade automáticamente",
-    api_url_invalid: "Debe empezar por http:// o https://",
-    proxy_tip: "Rellénalo cuando api.atlassian.com solo sea accesible a través de un proxy, por ejemplo http://127.0.0.1:7890",
+    top_tip:
+      'Las alertas van a Operations de Jira Service Management. La clave de una integración de API decide qué equipo recibe la alerta, por eso se indica en cada regla de notificación; este medio puede enviar a cualquier número de equipos. Créala en JSM: equipo → Integrations → Add integration → API.',
+    api_url: 'URL de la API',
+    api_url_tip: 'Déjalo vacío para usar https://api.atlassian.com; la ruta /jsm/ops/integration/v2/alerts se añade automáticamente',
+    api_url_invalid: 'Debe empezar por http:// o https://',
+    priority_map: 'Severidad y prioridad',
+    priority_map_tip:
+      'Prioridad de la alerta en JSM para cada severidad de Nightingale. Las prioridades de JSM son las mismas en todo el sitio, así que se configura una vez aquí para todas las reglas; por defecto S1→P1, S2→P2, S3→P3',
+    proxy_tip: 'Rellénalo cuando api.atlassian.com solo sea accesible a través de un proxy, por ejemplo http://127.0.0.1:7890',
   },
   pagerduty_request_config: {
     title: 'PagerDuty',
@@ -226,10 +230,10 @@ const es_ES = {
     script: 'Script',
   },
   test: {
-    jsm_title: "Clave de la integración de API de JSM",
-    jsm_tip: "Tras guardar, la clave se indica en la regla de notificación; introduce una aquí para probar. Se crea una alerta real en el equipo de esta integración.",
-    jsm_api_key_placeholder: "Clave de API de la integración",
-    jsm_with_recovery: "Probar también la recuperación (cerrar la alerta)",
+    jsm_title: 'Clave de la integración de API de JSM',
+    jsm_tip: 'Tras guardar, la clave se indica en la regla de notificación; introduce una aquí para probar. Se crea una alerta real en el equipo de esta integración.',
+    jsm_api_key_placeholder: 'Clave de API de la integración',
+    jsm_with_recovery: 'Probar también la recuperación (cerrar la alerta)',
     discord_title: 'Webhook de Discord',
     discord_tip: 'Tras guardar, la URL del webhook se indica en la regla de notificación; introduce una aquí para probar.',
     discord_target_channel: 'Canal',
