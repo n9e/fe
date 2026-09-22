@@ -130,6 +130,7 @@ export default function Jira(props: Props) {
           <Form.Item
             {...field}
             label={label('project')}
+            messageVariables={{ label: t('notification_configuration.jira.project') }}
             name={[field.name, 'params', 'project_key']}
             rules={[{ required: true }]}
             help={projectsError}
@@ -156,6 +157,7 @@ export default function Jira(props: Props) {
           <Form.Item
             {...field}
             label={label('issue_type')}
+            messageVariables={{ label: t('notification_configuration.jira.issue_type') }}
             name={[field.name, 'params', 'issue_type']}
             rules={[{ required: true }]}
             help={issueTypesError}

@@ -86,7 +86,10 @@ export default function CredentialInput(props: Props) {
   const handleChange = (next?: string) => {
     const idx = _.startsWith(next, OPTION_PREFIX) ? _.toNumber(String(next).slice(OPTION_PREFIX.length)) : NaN;
     if (!_.isNaN(idx) && items[idx]) {
-      form.setFields(_.map(items[idx], (p) => ({ name: [...paramsPath, p.name], value: p.value })));
+      const names = _.map(items[idx], (p) => [...paramsPath, p.name]);
+      form.setFields(_.map(items[idx], (p, i) => ({ name: names[i], value: p.value })));
+      // setFields 只改值不重新校验：换 key 要先清空输入框，那一下留下的「必填」报错会一直挂着，这里按新值重新校验
+      form.validateFields(names).catch(() => {});
       return;
     }
     onChange?.(next);

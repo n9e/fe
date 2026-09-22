@@ -37,7 +37,13 @@ export default function JSMAlert(props: Props) {
     <div>
       <Row gutter={16}>
         <Col span={16}>
-          <Form.Item {...field} label={label('api_key')} name={[field.name, 'params', 'api_key']} rules={[{ required: true }]}>
+          <Form.Item
+            {...field}
+            label={label('api_key')}
+            messageVariables={{ label: t('notification_configuration.jsm_alert.api_key') }}
+            name={[field.name, 'params', 'api_key']}
+            rules={[{ required: true }]}
+          >
             <CredentialInput
               channelId={channelItem?.id}
               paramsPath={paramsPath}

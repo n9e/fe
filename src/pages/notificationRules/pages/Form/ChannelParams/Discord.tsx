@@ -50,6 +50,7 @@ export default function Discord(props: Props) {
           <Form.Item
             {...field}
             label={label('webhook_url')}
+            messageVariables={{ label: t('notification_configuration.discord.webhook_url') }}
             name={[field.name, 'params', 'webhook_url']}
             validateTrigger='onBlur'
             rules={[
@@ -90,7 +91,13 @@ export default function Discord(props: Props) {
         </Col>
         {target === 'forum_post' && (
           <Col span={16}>
-            <Form.Item {...field} label={label('thread_name')} name={[field.name, 'params', 'thread_name']} rules={[{ required: true }]}>
+            <Form.Item
+              {...field}
+              label={label('thread_name')}
+              messageVariables={{ label: t('notification_configuration.discord.thread_name') }}
+              name={[field.name, 'params', 'thread_name']}
+              rules={[{ required: true }]}
+            >
               <Input placeholder='{{$event.RuleName}}' />
             </Form.Item>
           </Col>
@@ -100,6 +107,7 @@ export default function Discord(props: Props) {
             <Form.Item
               {...field}
               label={label('thread_id')}
+              messageVariables={{ label: t('notification_configuration.discord.thread_id') }}
               name={[field.name, 'params', 'thread_id']}
               rules={[{ required: true }, { pattern: /^\d+$/, message: t('notification_configuration.discord.thread_id_invalid') }]}
             >

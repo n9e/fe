@@ -37,6 +37,7 @@ export default function Jira() {
       </Form.Item>
       <Form.Item
         label={label('site_url')}
+        messageVariables={{ label: t('jira_request_config.site_url') }}
         name={[...names, 'site_url']}
         validateTrigger='onBlur'
         rules={[
@@ -51,17 +52,17 @@ export default function Jira() {
       >
         <Input placeholder='https://your-domain.atlassian.net' />
       </Form.Item>
-      <Form.Item label={label('token_type')} name={[...names, 'token_type']} rules={[{ required: isJira }]}>
+      <Form.Item label={label('token_type')} messageVariables={{ label: t('jira_request_config.token_type') }} name={[...names, 'token_type']} rules={[{ required: isJira }]}>
         <Radio.Group>
           <Radio value='scoped'>{t('jira_request_config.token_scoped')}</Radio>
           <Radio value='classic'>{t('jira_request_config.token_classic')}</Radio>
         </Radio.Group>
       </Form.Item>
-      <Form.Item label={label('email')} name={[...names, 'email']} rules={[{ required: isJira }]}>
+      <Form.Item label={label('email')} messageVariables={{ label: t('jira_request_config.email') }} name={[...names, 'email']} rules={[{ required: isJira }]}>
         {/* 服务账号只能建带权限范围的令牌；普通令牌一定属于个人账号，占位符别再给服务账号的示例 */}
         <Input placeholder={tokenType === 'classic' ? 'you@company.com' : 'alerts-xxxx@serviceaccount.atlassian.com'} />
       </Form.Item>
-      <Form.Item label={label('api_token')} name={[...names, 'api_token']} rules={[{ required: isJira }]}>
+      <Form.Item label={label('api_token')} messageVariables={{ label: t('jira_request_config.api_token') }} name={[...names, 'api_token']} rules={[{ required: isJira }]}>
         <Input.Password autoComplete='new-password' />
       </Form.Item>
       {tokenType !== 'classic' && (
