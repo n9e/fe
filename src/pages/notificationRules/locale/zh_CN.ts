@@ -49,7 +49,7 @@ const zh_CN = {
   enabled_tip: '是否启用此通知规则',
   note_tip: '可在此补充该通知规则的详细信息或说明，便于日后维护',
   notification_configuration: {
-    test_with_recovery_jsm: "同时测试恢复（关闭告警）",
+    test_with_recovery_jsm: '同时测试恢复（关闭告警）',
     title: '通知配置',
     section_desc: '决定告警发给谁、用什么媒介发：选择通知媒介、消息模板与接收对象，可添加多条',
     item_title: '通知配置',
@@ -160,16 +160,12 @@ const zh_CN = {
       field_value_placeholder: '值，如 {"value":"生产"}',
       field_add: '添加字段',
     },
-    webhook_history: {
-      label: '复用填过的地址',
-      tip: '本人所在团队的规则里这个媒介填过的地址，选一条会把整组参数填回来',
-      placeholder: '选择之前填过的地址',
-    },
     discord: {
       webhook_url: 'Webhook 地址',
       webhook_url_tip:
         '在 Discord 里打开 Server Settings → Integrations → Webhooks → New Webhook，选择频道后点 Copy Webhook URL。地址本身就是凭证，通知记录里会掩码显示。支持用 {{.变量名}} 引用变量配置。',
       webhook_url_invalid: '应形如 https://discord.com/api/webhooks/<id>/<token>',
+      webhook_url_history_placeholder: '粘贴 Webhook 地址，或点击选择之前填过的',
       bot_name: '名称',
       bot_name_tip: '给这个 Webhook 起个好认的名字：通知记录里的目标显示它，其他规则也可以按名称直接复用这个地址',
       target: '发送到',
@@ -187,18 +183,14 @@ const zh_CN = {
         '告警触发时要 @ 的角色或用户，多个用空格分隔：角色写成 <@&ID>，用户写成 <@ID>（打开 Developer Mode 后右键 → Copy ID）。只有这里填的对象会被提醒，告警内容里的 @everyone 不会生效',
       mentions_invalid: '请用 <@用户ID> 或 <@&角色ID>，多个用空格分隔',
     },
-    jsm_history: {
-      label: "复用填过的 key",
-      tip: "本人所在团队的规则里这个媒介填过的 key，选一条会把整组参数填回来",
-      placeholder: "选择之前填过的 key",
-    },
     jsm_alert: {
-      api_key: "API Key",
-      api_key_tip: "在 JSM 里打开团队 → Integrations → Add integration → API，复制 API Key。key 决定告警归哪个团队，通知记录里会掩码显示。支持用 {{.变量名}} 引用变量配置。",
-      bot_name: "名称",
-      bot_name_tip: "给这个 key 起个好认的名字（如团队名）：通知记录里的目标显示它，其他规则也可以按名称直接复用这个 key",
-      priority_map: "级别与优先级",
-      priority_map_tip: "夜莺各告警级别对应的 JSM 告警优先级，默认 S1→P1、S2→P2、S3→P3",
+      api_key: 'API Key',
+      api_key_tip: '在 JSM 里打开团队 → Integrations → Add integration → API，复制 API Key。key 决定告警归哪个团队，通知记录里会掩码显示。支持用 {{.变量名}} 引用变量配置。',
+      api_key_history_placeholder: '粘贴 API Key，或点击选择之前填过的',
+      bot_name: '名称',
+      bot_name_tip: '给这个 key 起个好认的名字（如团队名）：通知记录里的目标显示它，其他规则也可以按名称直接复用这个 key',
+      priority_map: '级别与优先级',
+      priority_map_tip: '夜莺各告警级别对应的 JSM 告警优先级，默认 S1→P1、S2→P2、S3→P3',
     },
     pagerduty: {
       services: '服务/集成',

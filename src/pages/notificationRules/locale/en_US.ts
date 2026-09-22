@@ -49,7 +49,7 @@ const en_US = {
   enabled_tip: 'Whether to enable this notification rule',
   note_tip: 'You can supplement the detailed information or explanation of this notification rule here for future maintenance',
   notification_configuration: {
-    test_with_recovery_jsm: "Also test recovery (close the alert)",
+    test_with_recovery_jsm: 'Also test recovery (close the alert)',
     title: 'Notification configuration',
     section_desc: 'Decide who receives alerts and via which channel: pick the media type, message template and recipients; multiple configurations can be added',
     item_title: 'Notification config',
@@ -166,16 +166,12 @@ const en_US = {
       field_value_placeholder: 'Value, e.g. {"value":"prod"}',
       field_add: 'Add field',
     },
-    webhook_history: {
-      label: 'Reuse a webhook',
-      tip: 'Webhooks already used with this media type in rules of your teams; picking one fills in all its parameters',
-      placeholder: 'Pick a previously used webhook',
-    },
     discord: {
       webhook_url: 'Webhook URL',
       webhook_url_tip:
         'In Discord open Server Settings → Integrations → Webhooks → New Webhook, pick the channel and click Copy Webhook URL. The URL is a credential and is masked in notification records. You can reference Variable Settings with {{.variable_name}}.',
       webhook_url_invalid: 'Should look like https://discord.com/api/webhooks/<id>/<token>',
+      webhook_url_history_placeholder: 'Paste the webhook URL, or click to pick one used before',
       bot_name: 'Name',
       bot_name_tip: 'A recognizable name for this webhook. It is shown as the target in notification records and lets other rules reuse the webhook by name',
       target: 'Send to',
@@ -194,18 +190,15 @@ const en_US = {
         'Roles or users to ping when the alert fires, separated by spaces: a role is <@&ID>, a user is <@ID> (turn on Developer Mode and right-click → Copy ID). Only these are pinged; @everyone in the alert text is ignored',
       mentions_invalid: 'Use <@user_id> or <@&role_id>, separated by spaces',
     },
-    jsm_history: {
-      label: "Reuse a key",
-      tip: "Keys this media type already has in rules of your teams; picking one fills in the whole group of params",
-      placeholder: "Pick a key used before",
-    },
     jsm_alert: {
-      api_key: "API key",
-      api_key_tip: "In JSM open the team → Integrations → Add integration → API, then copy the API key. The key decides which team gets the alert and is masked in notification records. Supports {{.variable_name}}.",
-      bot_name: "Name",
-      bot_name_tip: "A recognizable name for this key, e.g. the team name: notification records show it as the target, and other rules can reuse the key by this name",
-      priority_map: "Severity to priority",
-      priority_map_tip: "JSM alert priority for each Nightingale severity; defaults are S1→P1, S2→P2, S3→P3",
+      api_key: 'API key',
+      api_key_tip:
+        'In JSM open the team → Integrations → Add integration → API, then copy the API key. The key decides which team gets the alert and is masked in notification records. Supports {{.variable_name}}.',
+      api_key_history_placeholder: 'Paste the API key, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip: 'A recognizable name for this key, e.g. the team name: notification records show it as the target, and other rules can reuse the key by this name',
+      priority_map: 'Severity to priority',
+      priority_map_tip: 'JSM alert priority for each Nightingale severity; defaults are S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: 'Service/Integration',

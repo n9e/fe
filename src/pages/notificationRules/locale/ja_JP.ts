@@ -49,7 +49,7 @@ const ja_JP = {
   enabled_tip: 'このアラーム通知ルールを有効にするかどうか。有効にすると、このルールに一致するアラームイベントは、通知設定に従って通知されます',
   note_tip: '将来のメンテナンスのために、この通知ルールの詳細情報や説明を補足できます',
   notification_configuration: {
-    test_with_recovery_jsm: "復旧もテストする（アラートをクローズ）",
+    test_with_recovery_jsm: '復旧もテストする（アラートをクローズ）',
     title: '通知設定',
     section_desc: 'アラートを誰に、どのチャネルで送るかを決めます：通知チャネル・メッセージテンプレート・受信者を選択し、複数の設定を追加できます',
     item_title: '通知設定',
@@ -169,16 +169,12 @@ const ja_JP = {
       field_value_placeholder: '値（例：{"value":"prod"}）',
       field_add: 'フィールドを追加',
     },
-    webhook_history: {
-      label: '入力済みの Webhook を再利用',
-      tip: '所属チームのルールでこのメディアに入力済みの Webhook です。選ぶとパラメータ一式が入力されます',
-      placeholder: '以前に入力した Webhook を選択',
-    },
     discord: {
       webhook_url: 'Webhook URL',
       webhook_url_tip:
         'Discord で Server Settings → Integrations → Webhooks → New Webhook を開き、チャンネルを選んで Copy Webhook URL をクリックします。URL 自体が認証情報のため、通知記録ではマスク表示されます。{{.変数名}} で変数設定を参照できます。',
       webhook_url_invalid: 'https://discord.com/api/webhooks/<id>/<token> の形式にしてください',
+      webhook_url_history_placeholder: 'Webhook URL を貼り付けるか、クリックして以前入力したものを選択',
       bot_name: '名前',
       bot_name_tip: 'この Webhook の分かりやすい名前です。通知記録の送信先に表示され、他のルールで名前から再利用できます',
       target: '送信先',
@@ -197,18 +193,15 @@ const ja_JP = {
         'アラート発生時にメンションするロールまたはユーザー（空白区切り）。ロールは <@&ID>、ユーザーは <@ID>（Developer Mode をオンにして右クリック → Copy ID）。ここに入力した対象だけがメンションされ、アラート本文の @everyone は無視されます',
       mentions_invalid: '<@ユーザーID> または <@&ロールID> を空白区切りで入力してください',
     },
-    jsm_history: {
-      label: "入力済みのキーを再利用",
-      tip: "所属チームのルールでこのメディアに入力済みのキーです。選ぶとパラメータ一式が入力されます",
-      placeholder: "以前に入力したキーを選択",
-    },
     jsm_alert: {
-      api_key: "API キー",
-      api_key_tip: "JSM でチーム → Integrations → Add integration → API を開き、API キーをコピーします。キーがアラートの担当チームを決め、通知記録ではマスク表示されます。{{.変数名}} で変数を参照できます。",
-      bot_name: "名前",
-      bot_name_tip: "このキーの分かりやすい名前（チーム名など）。通知記録の宛先に表示され、他のルールでも名前でキーを再利用できます",
-      priority_map: "重大度と優先度",
-      priority_map_tip: "Nightingale の重大度ごとの JSM アラート優先度。既定は S1→P1、S2→P2、S3→P3",
+      api_key: 'API キー',
+      api_key_tip:
+        'JSM でチーム → Integrations → Add integration → API を開き、API キーをコピーします。キーがアラートの担当チームを決め、通知記録ではマスク表示されます。{{.変数名}} で変数を参照できます。',
+      api_key_history_placeholder: 'API キーを貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'このキーの分かりやすい名前（チーム名など）。通知記録の宛先に表示され、他のルールでも名前でキーを再利用できます',
+      priority_map: '重大度と優先度',
+      priority_map_tip: 'Nightingale の重大度ごとの JSM アラート優先度。既定は S1→P1、S2→P2、S3→P3',
     },
     pagerduty: {
       services: 'サービス/統合',

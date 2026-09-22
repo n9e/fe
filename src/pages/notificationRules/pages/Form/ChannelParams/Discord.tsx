@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { ChannelItem } from '@/pages/notificationChannels/types';
 
 import { NS } from '../../../constants';
-import WebhookHistory from './WebhookHistory';
+import CredentialInput, { maskWebhookURL } from './CredentialInput';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -42,7 +42,6 @@ export default function Discord(props: Props) {
 
   return (
     <div>
-      <WebhookHistory channelId={channelItem?.id} paramsPath={paramsPath} />
       <Row gutter={16}>
         <Col span={16}>
           <Form.Item
@@ -60,7 +59,14 @@ export default function Discord(props: Props) {
               },
             ]}
           >
-            <Input.Password autoComplete='new-password' placeholder='https://discord.com/api/webhooks/<id>/<token>' />
+            <CredentialInput
+              channelId={channelItem?.id}
+              paramsPath={paramsPath}
+              credentialKey='webhook_url'
+              mask={maskWebhookURL}
+              placeholder='https://discord.com/api/webhooks/<id>/<token>'
+              historyPlaceholder={t('notification_configuration.discord.webhook_url_history_placeholder')}
+            />
           </Form.Item>
         </Col>
         <Col span={8}>

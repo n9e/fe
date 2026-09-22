@@ -12,8 +12,8 @@ Alerts are posted through a Discord channel webhook. One webhook URL posts to on
 
 | Field | Description |
 |---|---|
-| Webhook URL | The URL copied above. It is a credential and is masked in notification records |
-| Name | A recognizable name; other rules can pick this webhook from "Reuse a webhook" |
+| Webhook URL | The URL copied above. It is a credential and is masked in notification records. Click the field to pick a URL other rules already use (shown as name and masked URL); the whole group of params is filled in |
+| Name | A recognizable name; notification records and the URL field's dropdown show it |
 | Send to | "Channel" for a normal channel. For a forum channel choose "New forum post" (one post per notification) or "Existing thread / forum post" |
 | Mention roles / users | A role is `<@&ID>`, a user is `<@ID>`, separated by spaces. Only these are pinged |
 

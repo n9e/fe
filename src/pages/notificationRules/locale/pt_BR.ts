@@ -49,7 +49,7 @@ const pt_BR = {
   enabled_tip: 'Define se esta regra de notificação está ativa',
   note_tip: 'Use este campo para detalhar a regra de notificação e facilitar a manutenção futura',
   notification_configuration: {
-    test_with_recovery_jsm: "Testar também a recuperação (fechar o alerta)",
+    test_with_recovery_jsm: 'Testar também a recuperação (fechar o alerta)',
     title: 'Configuração de notificação',
     section_desc: 'Define para quem o alerta vai e por qual meio: escolha o meio de notificação, o modelo de mensagem e os destinatários. É possível adicionar vários conjuntos',
     item_title: 'Configuração de notificação',
@@ -167,16 +167,12 @@ const pt_BR = {
       field_value_placeholder: 'Valor, por exemplo {"value":"prod"}',
       field_add: 'Adicionar campo',
     },
-    webhook_history: {
-      label: 'Reutilizar um webhook',
-      tip: 'Webhooks já usados com este meio em regras das suas equipes; escolher um preenche todos os parâmetros',
-      placeholder: 'Escolha um webhook usado antes',
-    },
     discord: {
       webhook_url: 'URL do webhook',
       webhook_url_tip:
         'No Discord, abra Server Settings → Integrations → Webhooks → New Webhook, escolha o canal e clique em Copy Webhook URL. O URL é uma credencial e aparece mascarado nos registros de notificação. Você pode referenciar variáveis com {{.nome_da_variavel}}.',
       webhook_url_invalid: 'Deve ter o formato https://discord.com/api/webhooks/<id>/<token>',
+      webhook_url_history_placeholder: 'Cole o URL do webhook ou clique para escolher um usado antes',
       bot_name: 'Nome',
       bot_name_tip: 'Um nome fácil de reconhecer: aparece como destino nos registros de notificação e permite reutilizar o webhook em outras regras',
       target: 'Enviar para',
@@ -195,18 +191,15 @@ const pt_BR = {
         'Cargos ou usuários a mencionar quando o alerta dispara, separados por espaço: cargo é <@&ID>, usuário é <@ID> (ative o Developer Mode e clique com o botão direito → Copy ID). Só esses são mencionados; @everyone no texto do alerta é ignorado',
       mentions_invalid: 'Use <@id_usuario> ou <@&id_cargo>, separados por espaço',
     },
-    jsm_history: {
-      label: "Reutilizar uma chave",
-      tip: "Chaves que este meio já tem nas regras das suas equipes; escolher uma preenche todo o grupo de parâmetros",
-      placeholder: "Escolha uma chave usada antes",
-    },
     jsm_alert: {
-      api_key: "Chave de API",
-      api_key_tip: "No JSM abra a equipe → Integrations → Add integration → API e copie a chave de API. A chave define qual equipe recebe o alerta e é mascarada nos registros de notificação. Suporta {{.nome_da_variavel}}.",
-      bot_name: "Nome",
-      bot_name_tip: "Um nome fácil de reconhecer para a chave, como o nome da equipe: aparece como destino nos registros e outras regras podem reutilizar a chave por ele",
-      priority_map: "Severidade e prioridade",
-      priority_map_tip: "Prioridade do alerta no JSM para cada severidade do Nightingale; padrão S1→P1, S2→P2, S3→P3",
+      api_key: 'Chave de API',
+      api_key_tip:
+        'No JSM abra a equipe → Integrations → Add integration → API e copie a chave de API. A chave define qual equipe recebe o alerta e é mascarada nos registros de notificação. Suporta {{.nome_da_variavel}}.',
+      api_key_history_placeholder: 'Cole a chave de API ou clique para escolher uma usada antes',
+      bot_name: 'Nome',
+      bot_name_tip: 'Um nome fácil de reconhecer para a chave, como o nome da equipe: aparece como destino nos registros e outras regras podem reutilizar a chave por ele',
+      priority_map: 'Severidade e prioridade',
+      priority_map_tip: 'Prioridade do alerta no JSM para cada severidade do Nightingale; padrão S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: 'Serviço/integração',

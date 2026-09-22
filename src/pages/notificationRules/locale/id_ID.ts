@@ -49,7 +49,7 @@ const id_ID = {
   enabled_tip: 'Menentukan apakah aturan notifikasi ini aktif',
   note_tip: 'Tempat menambahkan detail atau keterangan aturan notifikasi ini agar mudah dirawat kelak',
   notification_configuration: {
-    test_with_recovery_jsm: "Uji juga pemulihan (tutup alert)",
+    test_with_recovery_jsm: 'Uji juga pemulihan (tutup alert)',
     title: 'Konfigurasi notifikasi',
     section_desc: 'Menentukan kepada siapa alert dikirim dan lewat media apa: pilih media notifikasi, templat pesan, dan penerimanya; beberapa entri bisa ditambahkan',
     item_title: 'Konfigurasi notifikasi',
@@ -167,16 +167,12 @@ const id_ID = {
       field_value_placeholder: 'Nilai, misalnya {"value":"prod"}',
       field_add: 'Tambah field',
     },
-    webhook_history: {
-      label: 'Pakai ulang webhook',
-      tip: 'Webhook yang sudah dipakai dengan media ini di aturan tim Anda; memilih satu akan mengisi semua parameternya',
-      placeholder: 'Pilih webhook yang pernah dipakai',
-    },
     discord: {
       webhook_url: 'URL webhook',
       webhook_url_tip:
         'Di Discord buka Server Settings → Integrations → Webhooks → New Webhook, pilih channel lalu klik Copy Webhook URL. URL ini adalah kredensial dan disamarkan di catatan notifikasi. Anda dapat merujuk variabel dengan {{.nama_variabel}}.',
       webhook_url_invalid: 'Harus berbentuk https://discord.com/api/webhooks/<id>/<token>',
+      webhook_url_history_placeholder: 'Tempel URL webhook, atau klik untuk memilih yang pernah dipakai',
       bot_name: 'Nama',
       bot_name_tip: 'Nama yang mudah dikenali: tampil sebagai tujuan di catatan notifikasi dan memungkinkan aturan lain memakai ulang webhook ini',
       target: 'Kirim ke',
@@ -195,18 +191,16 @@ const id_ID = {
         'Peran atau pengguna yang disebut saat alert terpicu, dipisah spasi: peran ditulis <@&ID>, pengguna <@ID> (aktifkan Developer Mode lalu klik kanan → Copy ID). Hanya ini yang disebut; @everyone di teks alert diabaikan',
       mentions_invalid: 'Gunakan <@id_pengguna> atau <@&id_peran>, dipisah spasi',
     },
-    jsm_history: {
-      label: "Gunakan ulang kunci",
-      tip: "Kunci yang sudah dipakai media ini di aturan tim Anda; memilih satu mengisi semua parameternya",
-      placeholder: "Pilih kunci yang pernah dipakai",
-    },
     jsm_alert: {
-      api_key: "Kunci API",
-      api_key_tip: "Di JSM buka tim → Integrations → Add integration → API, lalu salin kunci API. Kunci menentukan tim penerima alert dan disamarkan di catatan notifikasi. Mendukung {{.nama_variabel}}.",
-      bot_name: "Nama",
-      bot_name_tip: "Nama yang mudah dikenali untuk kunci ini, misalnya nama tim: tampil sebagai target di catatan notifikasi, aturan lain dapat memakai ulang kunci lewat nama ini",
-      priority_map: "Tingkat dan prioritas",
-      priority_map_tip: "Prioritas alert JSM untuk tiap tingkat Nightingale; default S1→P1, S2→P2, S3→P3",
+      api_key: 'Kunci API',
+      api_key_tip:
+        'Di JSM buka tim → Integrations → Add integration → API, lalu salin kunci API. Kunci menentukan tim penerima alert dan disamarkan di catatan notifikasi. Mendukung {{.nama_variabel}}.',
+      api_key_history_placeholder: 'Tempel kunci API, atau klik untuk memilih yang pernah dipakai',
+      bot_name: 'Nama',
+      bot_name_tip:
+        'Nama yang mudah dikenali untuk kunci ini, misalnya nama tim: tampil sebagai target di catatan notifikasi, aturan lain dapat memakai ulang kunci lewat nama ini',
+      priority_map: 'Tingkat dan prioritas',
+      priority_map_tip: 'Prioritas alert JSM untuk tiap tingkat Nightingale; default S1→P1, S2→P2, S3→P3',
     },
     pagerduty: {
       services: 'Layanan/integrasi',

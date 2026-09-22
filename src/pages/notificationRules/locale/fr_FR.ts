@@ -49,7 +49,7 @@ const fr_FR = {
   enabled_tip: 'Détermine si cette règle de notification est active',
   note_tip: 'Ajoutez ici des précisions sur cette règle pour en faciliter la maintenance',
   notification_configuration: {
-    test_with_recovery_jsm: "Tester aussi la résolution (fermer l’alerte)",
+    test_with_recovery_jsm: 'Tester aussi la résolution (fermer l’alerte)',
     title: 'Configuration des notifications',
     section_desc: 'Détermine à qui et par quel média les alertes partent : choisissez le média, le modèle de message et les destinataires ; plusieurs entrées sont possibles',
     item_title: 'Configuration des notifications',
@@ -170,16 +170,12 @@ const fr_FR = {
       field_value_placeholder: 'Valeur, par exemple {"value":"prod"}',
       field_add: 'Ajouter un champ',
     },
-    webhook_history: {
-      label: 'Réutiliser un webhook',
-      tip: 'Webhooks déjà utilisés avec ce média dans les règles de vos équipes ; en choisir un remplit tous ses paramètres',
-      placeholder: 'Choisir un webhook déjà utilisé',
-    },
     discord: {
       webhook_url: 'URL du webhook',
       webhook_url_tip:
         "Dans Discord, ouvrez Server Settings → Integrations → Webhooks → New Webhook, choisissez le salon puis cliquez sur Copy Webhook URL. L'URL est un identifiant et apparaît masquée dans les enregistrements de notification. Vous pouvez référencer une variable avec {{.nom_variable}}.",
       webhook_url_invalid: 'Doit être de la forme https://discord.com/api/webhooks/<id>/<token>',
+      webhook_url_history_placeholder: "Collez l'URL du webhook ou cliquez pour en choisir une déjà utilisée",
       bot_name: 'Nom',
       bot_name_tip:
         "Un nom facile à reconnaître : il s'affiche comme destinataire dans les enregistrements de notification et permet de réutiliser le webhook dans d'autres règles",
@@ -199,17 +195,15 @@ const fr_FR = {
         "Rôles ou utilisateurs à mentionner quand l'alerte se déclenche, séparés par des espaces : un rôle s'écrit <@&ID>, un utilisateur <@ID> (activez Developer Mode puis clic droit → Copy ID). Seuls ceux-ci sont notifiés ; @everyone dans le texte de l'alerte est ignoré",
       mentions_invalid: 'Utilisez <@id_utilisateur> ou <@&id_rôle>, séparés par des espaces',
     },
-    jsm_history: {
-      label: "Réutiliser une clé",
-      tip: "Clés déjà utilisées par ce média dans les règles de vos équipes ; en choisir une remplit tout le groupe de paramètres",
-      placeholder: "Choisir une clé déjà utilisée",
-    },
     jsm_alert: {
-      api_key: "Clé API",
-      api_key_tip: "Dans JSM, ouvrez l'équipe → Integrations → Add integration → API, puis copiez la clé API. La clé détermine l'équipe destinataire et est masquée dans les enregistrements de notification. Prend en charge {{.nom_variable}}.",
-      bot_name: "Nom",
-      bot_name_tip: "Un nom reconnaissable pour cette clé, par exemple le nom de l'équipe : affiché comme cible dans les enregistrements, les autres règles peuvent réutiliser la clé par ce nom",
-      priority_map: "Gravité et priorité",
+      api_key: 'Clé API',
+      api_key_tip:
+        "Dans JSM, ouvrez l'équipe → Integrations → Add integration → API, puis copiez la clé API. La clé détermine l'équipe destinataire et est masquée dans les enregistrements de notification. Prend en charge {{.nom_variable}}.",
+      api_key_history_placeholder: 'Collez la clé API ou cliquez pour en choisir une déjà utilisée',
+      bot_name: 'Nom',
+      bot_name_tip:
+        "Un nom reconnaissable pour cette clé, par exemple le nom de l'équipe : affiché comme cible dans les enregistrements, les autres règles peuvent réutiliser la clé par ce nom",
+      priority_map: 'Gravité et priorité',
       priority_map_tip: "Priorité de l'alerte JSM pour chaque gravité Nightingale ; par défaut S1→P1, S2→P2, S3→P3",
     },
     pagerduty: {

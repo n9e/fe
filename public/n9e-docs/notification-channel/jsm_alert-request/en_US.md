@@ -14,8 +14,8 @@ An API integration belongs to one team and its key decides who gets the alert, s
 
 | Field | Description |
 |---|---|
-| API Key | The key copied above. It is a credential and is masked in notification records |
-| Name | A recognizable name (e.g. the team name); other rules can pick this key from "Reuse a key" |
+| API Key | The key copied above. It is a credential and is masked in notification records. Click the field to pick a key other rules already use (shown as name and last 4 characters); the whole group of params is filled in |
+| Name | A recognizable name (e.g. the team name); notification records and the key field's dropdown show it |
 | Severity to priority | JSM priority for each Nightingale severity, default S1→P1, S2→P2, S3→P3 |
 
 The alert message comes from the template field `title` (max 130 characters) and the description from `content`; alert labels become JSM tags, and labels plus annotations go into details.

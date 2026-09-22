@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { ChannelItem } from '@/pages/notificationChannels/types';
 
 import { NS } from '../../../constants';
-import WebhookHistory, { maskSecret } from './WebhookHistory';
+import CredentialInput, { maskSecret } from './CredentialInput';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -41,11 +41,17 @@ export default function JSMAlert(props: Props) {
 
   return (
     <div>
-      <WebhookHistory channelId={channelItem?.id} paramsPath={paramsPath} credentialKey='api_key' mask={maskSecret} i18nKey='jsm_history' />
       <Row gutter={16}>
         <Col span={16}>
           <Form.Item {...field} label={label('api_key')} name={[field.name, 'params', 'api_key']} rules={[{ required: true }]}>
-            <Input.Password autoComplete='new-password' placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' />
+            <CredentialInput
+              channelId={channelItem?.id}
+              paramsPath={paramsPath}
+              credentialKey='api_key'
+              mask={maskSecret}
+              placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+              historyPlaceholder={t('notification_configuration.jsm_alert.api_key_history_placeholder')}
+            />
           </Form.Item>
         </Col>
         <Col span={8}>
