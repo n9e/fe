@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import DisabledContext from 'antd/es/config-provider/DisabledContext';
 import { CheckOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 import type { DataSourceTypeListProps } from '../types';
 
 export default function DataSourceTypeList(props: DataSourceTypeListProps) {
-  const { types, value, disabled = false, showLabel = true, className, typeFilter, onChange } = props;
+  const { types, value, disabled: customDisabled, showLabel = true, className, typeFilter, onChange } = props;
+  // 与当前 AntD 4.21 一致：组件或 Form / ConfigProvider 任一禁用时均不可选择。
+  const contextDisabled = useContext(DisabledContext);
+  const disabled = customDisabled || contextDisabled;
   const { t } = useTranslation('dataSourceSelection');
   const visibleTypes = typeFilter ? types.filter(typeFilter) : types;
 
@@ -22,9 +26,10 @@ export default function DataSourceTypeList(props: DataSourceTypeListProps) {
             aria-checked={type.value === value}
             disabled={disabled}
             className={classNames(
-              'inline-flex h-9 max-w-[min(280px,100%)] cursor-pointer items-center gap-2 rounded-lg border border-[var(--fc-border-color)] bg-fc-100 px-2.5 py-1 text-[var(--fc-text-2)] transition-all hover:border-primary hover:bg-fc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:text-[var(--fc-text-5)] disabled:opacity-60',
+              'inline-flex h-9 max-w-[min(280px,100%)] cursor-pointer items-center gap-2 rounded-lg border border-[var(--fc-border-color)] bg-fc-100 px-2.5 py-1 text-[var(--fc-text-2)] transition-all enabled:hover:border-primary enabled:hover:bg-fc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:border-[var(--fc-antd-border-color)] disabled:text-[var(--fc-disabled-color)]',
               {
-                'border-primary bg-fc-200': type.value === value,
+                'border-primary bg-fc-200 disabled:bg-[var(--fc-disabled-checked-bg)]': type.value === value,
+                'disabled:bg-[var(--fc-disabled-bg)]': type.value !== value,
               },
             )}
             onClick={() => {
@@ -35,7 +40,7 @@ export default function DataSourceTypeList(props: DataSourceTypeListProps) {
               {type.icon}
             </span>
             <span className='min-w-0 truncate whitespace-nowrap'>{type.label}</span>
-            {type.value === value ? <CheckOutlined className='flex-none text-sm text-primary' /> : null}
+            {type.value === value ? <CheckOutlined className={classNames('flex-none text-sm', disabled ? 'text-inherit' : 'text-primary')} /> : null}
           </button>
         ))}
       </div>
