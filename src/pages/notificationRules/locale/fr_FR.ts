@@ -173,7 +173,8 @@ const fr_FR = {
       bot_name_tip:
         "Un nom facile à reconnaître : il s'affiche comme destinataire dans les enregistrements de notification et permet de réutiliser le webhook dans d'autres règles",
       target: 'Envoyer vers',
-      target_tip: 'Si le webhook appartient à un salon forum, choisissez Nouvelle publication (une par notification) ou Fil existant',
+      target_tip:
+        "Choisissez selon le type de salon du webhook :\n· Salon : publie dans le salon textuel du webhook (le cas le plus courant)\n· Nouvelle publication de forum : pour un webhook d'un salon forum ; chaque notification, rétablissement compris, ouvre une nouvelle publication\n· Fil / publication existant : publie dans un fil ou une publication existant du salon du webhook pour regrouper toutes les notifications ; nécessite l'ID du fil",
       target_channel: 'Salon',
       target_forum_post: 'Nouvelle publication de forum',
       target_thread: 'Fil / publication existant',

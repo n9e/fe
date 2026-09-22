@@ -169,7 +169,8 @@ const es_ES = {
       bot_name: 'Nombre',
       bot_name_tip: 'Un nombre reconocible: aparece como destino en los registros de notificación y permite reutilizar el webhook en otras reglas',
       target: 'Enviar a',
-      target_tip: 'Si el webhook pertenece a un canal de foro, elige Nueva publicación (una por notificación) o Hilo existente',
+      target_tip:
+        'Elige según el tipo de canal al que pertenece el webhook:\n· Canal: publica en el canal de texto del webhook (lo más habitual)\n· Nueva publicación en el foro: para un webhook de un canal de foro; cada notificación, incluida la recuperación, abre una publicación nueva\n· Hilo / publicación existente: publica en un hilo o publicación existente del canal del webhook para agrupar todas las notificaciones; requiere el ID del hilo',
       target_channel: 'Canal',
       target_forum_post: 'Nueva publicación en el foro',
       target_thread: 'Hilo / publicación existente',

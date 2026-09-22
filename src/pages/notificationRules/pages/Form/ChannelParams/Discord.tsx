@@ -34,7 +34,11 @@ export default function Discord(props: Props) {
   const label = (key: string) => (
     <Space size={4}>
       {t(`notification_configuration.discord.${key}`)}
-      <Tooltip className='n9e-ant-from-item-tooltip' overlayClassName='ant-tooltip-max-width-600' title={t(`notification_configuration.discord.${key}_tip`)}>
+      <Tooltip
+        className='n9e-ant-from-item-tooltip'
+        overlayClassName='ant-tooltip-max-width-600'
+        title={<div className='whitespace-pre-line'>{t(`notification_configuration.discord.${key}_tip`)}</div>}
+      >
         <QuestionCircleOutlined />
       </Tooltip>
     </Space>

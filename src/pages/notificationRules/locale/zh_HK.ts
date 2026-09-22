@@ -163,7 +163,8 @@ const zh_HK = {
       bot_name: '名稱',
       bot_name_tip: '給這個 Webhook 起個好認的名字：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個地址',
       target: '發送到',
-      target_tip: 'Webhook 綁定的是論壇頻道時，必須選新建論壇貼文（每次通知新建一篇）或已有討論串',
+      target_tip:
+        '按 Webhook 綁定的頻道類型選：\n· 頻道：發到 Webhook 綁定的文字頻道，最常用\n· 新建論壇貼文：Webhook 綁定的是論壇頻道時用，每條通知（包括恢復）都新開一篇貼文\n· 已有討論串或論壇貼文：發到 Webhook 所在頻道裏某個已有的討論串或論壇貼文，所有通知集中在一處，需要填討論串 ID',
       target_channel: '頻道',
       target_forum_post: '新建論壇貼文',
       target_thread: '已有討論串或論壇貼文',

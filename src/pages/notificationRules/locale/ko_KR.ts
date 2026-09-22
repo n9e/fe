@@ -163,7 +163,8 @@ const ko_KR = {
       bot_name: '이름',
       bot_name_tip: '알아보기 쉬운 이름입니다. 알림 기록의 대상에 표시되며 다른 규칙에서 이름으로 재사용할 수 있습니다',
       target: '보낼 위치',
-      target_tip: 'Webhook이 포럼 채널이면 새 포럼 게시물(알림마다 생성) 또는 기존 스레드를 선택해야 합니다',
+      target_tip:
+        'Webhook이 속한 채널 유형에 따라 선택하세요:\n· 채널: Webhook의 텍스트 채널에 게시(가장 일반적)\n· 새 포럼 게시물: Webhook이 포럼 채널에 있을 때 사용. 알림(복구 포함)마다 새 게시물 생성\n· 기존 스레드 / 포럼 게시물: Webhook 채널 안의 기존 스레드나 포럼 게시물 하나에 모든 알림을 모음. 스레드 ID 필요',
       target_channel: '채널',
       target_forum_post: '새 포럼 게시물',
       target_thread: '기존 스레드 / 포럼 게시물',

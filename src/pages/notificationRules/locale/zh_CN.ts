@@ -163,7 +163,8 @@ const zh_CN = {
       bot_name: '名称',
       bot_name_tip: '给这个 Webhook 起个好认的名字：通知记录里的目标显示它，其他规则也可以按名称直接复用这个地址',
       target: '发送到',
-      target_tip: 'Webhook 绑定的是论坛频道时，必须选新建论坛帖子（每次通知新建一个帖子）或已有线程',
+      target_tip:
+        '按 Webhook 绑定的频道类型选：\n· 频道：发到 Webhook 绑定的文字频道，最常用\n· 新建论坛帖子：Webhook 绑定的是论坛频道时用，每条通知（包括恢复）都新开一个帖子\n· 已有线程或论坛帖子：发到 Webhook 所在频道里某个已有的线程或论坛帖子，所有通知集中在一处，需要填线程 ID',
       target_channel: '频道',
       target_forum_post: '新建论坛帖子',
       target_thread: '已有线程或论坛帖子',

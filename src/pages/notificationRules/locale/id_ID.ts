@@ -169,7 +169,8 @@ const id_ID = {
       bot_name: 'Nama',
       bot_name_tip: 'Nama yang mudah dikenali: tampil sebagai tujuan di catatan notifikasi dan memungkinkan aturan lain memakai ulang webhook ini',
       target: 'Kirim ke',
-      target_tip: 'Jika webhook milik channel forum, pilih Postingan forum baru (satu per notifikasi) atau Thread yang ada',
+      target_tip:
+        'Pilih sesuai jenis channel tempat webhook berada:\n· Channel: kirim ke channel teks webhook (paling umum)\n· Postingan forum baru: untuk webhook di channel forum; setiap notifikasi, termasuk pemulihan, membuat postingan baru\n· Thread / postingan yang ada: kirim ke satu thread atau postingan yang ada di channel webhook agar semua notifikasi terkumpul; perlu ID thread',
       target_channel: 'Channel',
       target_forum_post: 'Postingan forum baru',
       target_thread: 'Thread / postingan yang ada',

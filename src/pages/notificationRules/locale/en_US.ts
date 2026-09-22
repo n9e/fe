@@ -168,7 +168,8 @@ const en_US = {
       bot_name: 'Name',
       bot_name_tip: 'A recognizable name for this webhook. It is shown as the target in notification records and lets other rules reuse the webhook by name',
       target: 'Send to',
-      target_tip: 'When the webhook belongs to a forum channel, choose New forum post (one post per notification) or Existing thread',
+      target_tip:
+        "Pick by the type of channel the webhook belongs to:\n· Channel: post to the webhook's text channel (most common)\n· New forum post: for a webhook on a forum channel; every notification, including recovery, opens a new post\n· Existing thread / forum post: post into one existing thread or forum post in the webhook's channel so all notifications stay together; needs the thread ID",
       target_channel: 'Channel',
       target_forum_post: 'New forum post',
       target_thread: 'Existing thread / forum post',
