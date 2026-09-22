@@ -37,6 +37,7 @@ const fr_FR = {
     },
   },
   request_configuration: {
+    jsm_alert: "Configuration JSM Alert",
     discord: 'Configuration Discord',
     jira: 'Configuration Jira',
     http: 'Configuration HTTP',
@@ -153,6 +154,13 @@ const fr_FR = {
     silent_tip: 'Les messages sont publiés sans déclencher de notifications push ou de bureau',
     proxy_tip: "À renseigner si Discord n'est joignable que via un proxy, par exemple http://127.0.0.1:7890",
   },
+  jsm_alert_request_config: {
+    top_tip: "Les alertes sont envoyées à Operations de Jira Service Management. La clé d'une intégration API détermine l'équipe destinataire, elle se renseigne donc dans chaque règle de notification ; ce média peut envoyer à autant d'équipes que nécessaire. Créez-la dans JSM : équipe → Integrations → Add integration → API.",
+    api_url: "URL de l'API",
+    api_url_tip: "Laissez vide pour utiliser https://api.atlassian.com ; le chemin /jsm/ops/integration/v2/alerts est ajouté automatiquement",
+    api_url_invalid: "Doit commencer par http:// ou https://",
+    proxy_tip: "À renseigner si api.atlassian.com n'est joignable que via un proxy, par exemple http://127.0.0.1:7890",
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -217,6 +225,10 @@ const fr_FR = {
     script: 'Script',
   },
   test: {
+    jsm_title: "Clé d'intégration API JSM",
+    jsm_tip: "Après enregistrement, la clé se renseigne dans la règle de notification ; saisissez-en une ici pour tester. Une vraie alerte est créée dans l'équipe de cette intégration.",
+    jsm_api_key_placeholder: "Clé API de l'intégration",
+    jsm_with_recovery: "Tester aussi la résolution (fermer l’alerte)",
     discord_title: 'Webhook Discord',
     discord_tip: "Après enregistrement, l'URL du webhook se renseigne dans la règle de notification ; saisissez-en une ici pour tester.",
     discord_target_channel: 'Salon',

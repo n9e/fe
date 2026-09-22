@@ -11,6 +11,7 @@ import PagerDuty from './Pagerduty';
 import FeishuApp from './FeishuApp';
 import Jira from './Jira';
 import Discord from './Discord';
+import JSMAlert from './JSMAlert';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -34,6 +35,8 @@ export default function index(props: Props) {
     return <Jira prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
   } else if (request_type === 'discord') {
     return <Discord prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
+  } else if (request_type === 'jsm_alert') {
+    return <JSMAlert prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
   }
 
   return (

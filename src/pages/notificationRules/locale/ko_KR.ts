@@ -49,6 +49,7 @@ const ko_KR = {
   enabled_tip: '이 통지 규칙을 쓸지 정합니다',
   note_tip: '이 통지 규칙의 자세한 정보나 설명을 적어 두면 나중에 관리하기 좋습니다',
   notification_configuration: {
+    test_with_recovery_jsm: "복구도 테스트(알림 닫기)",
     title: '통지 설정',
     section_desc: '알림을 누구에게 어떤 매체로 보낼지 정합니다. 통지 매체, 메시지 템플릿, 수신 대상을 고르며 여러 개를 추가할 수 있습니다',
     item_title: '통지 설정',
@@ -186,6 +187,19 @@ const ko_KR = {
       mentions_tip:
         '알림 발생 시 멘션할 역할 또는 사용자(공백 구분): 역할은 <@&ID>, 사용자는 <@ID>(Developer Mode를 켜고 우클릭 → Copy ID). 여기 입력한 대상만 멘션되며 알림 본문의 @everyone은 무시됩니다',
       mentions_invalid: '<@사용자ID> 또는 <@&역할ID>를 공백으로 구분해 입력하세요',
+    },
+    jsm_history: {
+      label: "입력한 키 재사용",
+      tip: "내 팀의 규칙에서 이 매체에 입력된 키입니다. 선택하면 파라미터 전체가 채워집니다",
+      placeholder: "이전에 입력한 키 선택",
+    },
+    jsm_alert: {
+      api_key: "API 키",
+      api_key_tip: "JSM에서 팀 → Integrations → Add integration → API를 열고 API 키를 복사합니다. 키가 알림을 받을 팀을 결정하며 알림 기록에는 마스킹되어 표시됩니다. {{.변수명}}을 지원합니다.",
+      bot_name: "이름",
+      bot_name_tip: "이 키를 알아보기 쉬운 이름(예: 팀 이름). 알림 기록의 대상으로 표시되며 다른 규칙에서도 이 이름으로 키를 재사용할 수 있습니다",
+      priority_map: "심각도와 우선순위",
+      priority_map_tip: "Nightingale 심각도별 JSM 알림 우선순위. 기본값은 S1→P1, S2→P2, S3→P3",
     },
     pagerduty: {
       services: '서비스/통합',

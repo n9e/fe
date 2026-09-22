@@ -49,6 +49,7 @@ const en_US = {
   enabled_tip: 'Whether to enable this notification rule',
   note_tip: 'You can supplement the detailed information or explanation of this notification rule here for future maintenance',
   notification_configuration: {
+    test_with_recovery_jsm: "Also test recovery (close the alert)",
     title: 'Notification configuration',
     section_desc: 'Decide who receives alerts and via which channel: pick the media type, message template and recipients; multiple configurations can be added',
     item_title: 'Notification config',
@@ -192,6 +193,19 @@ const en_US = {
       mentions_tip:
         'Roles or users to ping when the alert fires, separated by spaces: a role is <@&ID>, a user is <@ID> (turn on Developer Mode and right-click → Copy ID). Only these are pinged; @everyone in the alert text is ignored',
       mentions_invalid: 'Use <@user_id> or <@&role_id>, separated by spaces',
+    },
+    jsm_history: {
+      label: "Reuse a key",
+      tip: "Keys this media type already has in rules of your teams; picking one fills in the whole group of params",
+      placeholder: "Pick a key used before",
+    },
+    jsm_alert: {
+      api_key: "API key",
+      api_key_tip: "In JSM open the team → Integrations → Add integration → API, then copy the API key. The key decides which team gets the alert and is masked in notification records. Supports {{.variable_name}}.",
+      bot_name: "Name",
+      bot_name_tip: "A recognizable name for this key, e.g. the team name: notification records show it as the target, and other rules can reuse the key by this name",
+      priority_map: "Severity to priority",
+      priority_map_tip: "JSM alert priority for each Nightingale severity; defaults are S1→P1, S2→P2, S3→P3",
     },
     pagerduty: {
       services: 'Service/Integration',

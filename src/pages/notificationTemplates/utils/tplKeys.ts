@@ -43,11 +43,12 @@ export const SMTP_TPL_KEYS = ['subject', 'content'];
 
 /**
  * 原生对接的媒介（后端 provider 自己组包，没有 HTTP body）的字段也是固定的：
- * Jira 的 title 是工单标题，content 是描述（恢复时的评论也用它渲染）
+ * Jira 的 title 是工单标题，content 是描述（恢复时的评论也用它渲染）；JSM 的 title 是告警 message，content 是描述
  */
 export const NATIVE_TPL_KEYS: Record<string, string[]> = {
   jira: ['title', 'content'],
   discord: ['content'],
+  jsm_alert: ['title', 'content'],
 };
 
 // 同时兼容 {{$tpl.title}} 与 {{ $tpl.title }}

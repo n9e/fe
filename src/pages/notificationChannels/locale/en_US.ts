@@ -37,6 +37,7 @@ const en_US = {
     },
   },
   request_configuration: {
+    jsm_alert: "JSM Alert configuration",
     discord: 'Discord configuration',
     jira: 'Jira configuration',
     http: 'HTTP configuration',
@@ -155,6 +156,13 @@ const en_US = {
     silent_tip: 'Messages are still posted to the channel but do not trigger push or desktop notifications',
     proxy_tip: 'Fill in when Discord can only be reached through a proxy, e.g. http://127.0.0.1:7890',
   },
+  jsm_alert_request_config: {
+    top_tip: "Alerts go to Jira Service Management Operations. The key of an API integration decides which team gets the alert, so the key is filled in each notification rule; this media type can send to any number of teams. Create the key in JSM: team → Integrations → Add integration → API.",
+    api_url: "API URL",
+    api_url_tip: "Leave empty to use https://api.atlassian.com; the integration path /jsm/ops/integration/v2/alerts is added automatically",
+    api_url_invalid: "Must start with http:// or https://",
+    proxy_tip: "Fill in when api.atlassian.com can only be reached through a proxy, e.g. http://127.0.0.1:7890",
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -219,6 +227,10 @@ const en_US = {
     script: 'Script',
   },
   test: {
+    jsm_title: "JSM API integration key",
+    jsm_tip: "The key is filled in the notification rule after saving; enter one here to test. A real alert is created in the team of this integration.",
+    jsm_api_key_placeholder: "API key of the integration",
+    jsm_with_recovery: "Also test recovery (close the alert)",
     discord_title: 'Discord webhook',
     discord_tip: 'The webhook URL is filled in the notification rule after saving; enter one here to test.',
     discord_target_channel: 'Channel',

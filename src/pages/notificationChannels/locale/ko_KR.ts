@@ -36,6 +36,7 @@ const ko_KR = {
     },
   },
   request_configuration: {
+    jsm_alert: "JSM Alert 설정",
     discord: 'Discord 설정',
     jira: 'Jira 설정',
     http: 'HTTP 설정',
@@ -150,6 +151,13 @@ const ko_KR = {
     silent_tip: '메시지는 채널에 올라가지만 푸시·데스크톱 알림은 발생하지 않습니다',
     proxy_tip: 'Discord에 프록시를 거쳐야만 접속할 수 있을 때 입력합니다(예: http://127.0.0.1:7890)',
   },
+  jsm_alert_request_config: {
+    top_tip: "알림은 Jira Service Management의 Operations로 전송됩니다. API 통합의 키가 알림을 받을 팀을 결정하므로 키는 알림 규칙마다 입력하며, 이 매체로 여러 팀에 보낼 수 있습니다. JSM에서 생성: 팀 → Integrations → Add integration → API.",
+    api_url: "API URL",
+    api_url_tip: "비워 두면 https://api.atlassian.com을 사용하며 경로 /jsm/ops/integration/v2/alerts는 자동으로 붙습니다",
+    api_url_invalid: "http:// 또는 https://로 시작해야 합니다",
+    proxy_tip: "api.atlassian.com에 프록시를 거쳐야만 접속할 수 있을 때 입력합니다(예: http://127.0.0.1:7890)",
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -214,6 +222,10 @@ const ko_KR = {
     script: 'Script',
   },
   test: {
+    jsm_title: "JSM API 통합 키",
+    jsm_tip: "저장 후에는 알림 규칙에서 키를 입력합니다. 여기서는 테스트용으로 입력하세요. 이 통합의 팀에 실제 알림이 생성됩니다.",
+    jsm_api_key_placeholder: "통합의 API 키",
+    jsm_with_recovery: "복구도 테스트(알림 닫기)",
     discord_title: 'Discord Webhook',
     discord_tip: '저장 후에는 알림 규칙에서 Webhook URL을 입력합니다. 여기서는 테스트용으로 입력하세요.',
     discord_target_channel: '채널',

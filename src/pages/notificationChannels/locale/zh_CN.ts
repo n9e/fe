@@ -35,6 +35,7 @@ const zh_CN = {
     },
   },
   request_configuration: {
+    jsm_alert: "JSM 告警配置",
     discord: 'Discord 配置',
     jira: 'Jira 配置',
     http: 'HTTP 配置',
@@ -149,6 +150,13 @@ const zh_CN = {
     silent_tip: '开启后消息照常发到频道，但不触发接收者的推送和桌面通知',
     proxy_tip: '访问 Discord 需要经过代理时填写，如 http://127.0.0.1:7890',
   },
+  jsm_alert_request_config: {
+    top_tip: "告警发到 Jira Service Management 的 Operations。API 集成的 key 决定告警归哪个团队，所以 key 在通知规则里填写，这个媒介可以发给任意多个团队。在 JSM 里创建：团队 → Integrations → Add integration → API。",
+    api_url: "API 地址",
+    api_url_tip: "留空使用 https://api.atlassian.com；接口路径 /jsm/ops/integration/v2/alerts 会自动拼上",
+    api_url_invalid: "须以 http:// 或 https:// 开头",
+    proxy_tip: "访问 api.atlassian.com 需要经过代理时填写，如 http://127.0.0.1:7890",
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -214,6 +222,10 @@ const zh_CN = {
     script: 'Script',
   },
   test: {
+    jsm_title: "JSM API 集成 key",
+    jsm_tip: "保存后 key 在通知规则里填写，这里临时填一个用于测试。会在该集成所属团队里创建一条真实告警。",
+    jsm_api_key_placeholder: "API 集成的 key",
+    jsm_with_recovery: "同时测试恢复（关闭告警）",
     discord_title: 'Discord Webhook',
     discord_tip: '保存后 Webhook 地址在通知规则里填写，这里临时填一个用于测试。',
     discord_target_channel: '频道',

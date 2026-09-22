@@ -866,44 +866,30 @@ export const getNotificationChannelTypes = () => {
         },
       },
     },
-    // jsm_alert: {
-    //   logo: '/image/logos/jira.png',
-    //   type: 'http',
-    //   default_values: {
-    //     param_config: {
-    //       custom: {
-    //         params: [
-    //           {
-    //             key: 'api_key',
-    //             cname: 'API Key',
-    //             type: 'string',
-    //           },
-    //         ],
-    //       },
-    //     },
-    //     request_type: 'http',
-    //     request_config: {
-    //       http_request_config: {
-    //         url: 'https://api.atlassian.com/jsm/ops/integration/v2/alerts{{if $event.IsRecovered}}/{{$event.Hash}}/close?identifierType=alias{{else}}{{end}}',
-    //         method: 'POST',
-    //         headers: {
-    //           Authorization: 'GenieKey {{$params.api_key}}',
-    //           'Content-Type': 'application/json',
-    //         },
-    //         proxy: '',
-    //         timeout: 10000,
-    //         concurrency: 5,
-    //         retry_times: 3,
-    //         retry_interval: 100,
-    //         request: {
-    //           parameters: null,
-    //           form: '',
-    //           body: '{{if $event.IsRecovered}}{"note":"{{$tpl.content}}","source":"{{$event.Cluster}}"}{{else}}{"message":"{{$event.RuleName}}","description":"{{$tpl.content}}","alias":"{{$event.Hash}}","priority":"P{{$event.Severity}}","tags":[{{range $i, $v := $event.TagsJSON}}{{if $i}},{{end}}"{{$v}}"{{end}}],"details":{{jsonMarshal $event.AnnotationsJSON}},"entity":"{{$event.TargetIdent}}","source":"{{$event.Cluster}}"}{{end}}',
-    //         },
-    //       },
-    //     },
-    //   },
-    // },
+    jsm_alert: {
+      logo: '/image/logos/jira.png',
+      type: 'jsm_alert',
+      default_values: {
+        request_type: 'jsm_alert',
+        // 规则侧参数与后端内置 JSM Alert 媒介（models.JSMAlertRuleParams）一致，规则页的历史参数复用按这些 key 回显
+        param_config: {
+          custom: {
+            params: [
+              { key: 'api_key', cname: 'API Key', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+              { key: 'priority_map', cname: 'Priority', type: 'string' },
+            ],
+          },
+        },
+        request_config: {
+          jsm_alert_request_config: {
+            timeout: 10000,
+            retry_times: 3,
+            retry_sleep: 1000,
+          },
+        },
+      },
+    },
     jira: {
       logo: '/image/logos/jira.png',
       type: 'jira',

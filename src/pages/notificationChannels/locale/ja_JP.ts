@@ -37,6 +37,7 @@ const ja_JP = {
     },
   },
   request_configuration: {
+    jsm_alert: "JSM アラート設定",
     discord: 'Discord 設定',
     jira: 'Jira 設定',
     http: 'HTTP 設定',
@@ -153,6 +154,13 @@ const ja_JP = {
     silent_tip: 'メッセージはチャンネルに投稿されますが、プッシュやデスクトップ通知は発生しません',
     proxy_tip: 'Discord へのアクセスにプロキシが必要な場合に入力します（例：http://127.0.0.1:7890）',
   },
+  jsm_alert_request_config: {
+    top_tip: "アラートは Jira Service Management の Operations に送信されます。API 連携のキーがアラートの担当チームを決めるため、キーは通知ルールごとに入力します。このメディアで任意の数のチームに送信できます。JSM で作成：チーム → Integrations → Add integration → API。",
+    api_url: "API URL",
+    api_url_tip: "空欄の場合は https://api.atlassian.com を使います。パス /jsm/ops/integration/v2/alerts は自動で付加されます",
+    api_url_invalid: "http:// または https:// で始まる必要があります",
+    proxy_tip: "api.atlassian.com へのアクセスにプロキシが必要な場合に入力します（例：http://127.0.0.1:7890）",
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API キー',
@@ -217,6 +225,10 @@ const ja_JP = {
     script: 'Script',
   },
   test: {
+    jsm_title: "JSM API 連携キー",
+    jsm_tip: "保存後は通知ルールでキーを入力します。ここではテスト用に一時的に入力してください。この連携のチームに実際のアラートが作成されます。",
+    jsm_api_key_placeholder: "連携の API キー",
+    jsm_with_recovery: "復旧もテストする（アラートをクローズ）",
     discord_title: 'Discord Webhook',
     discord_tip: '保存後は通知ルールで Webhook URL を入力します。ここではテスト用に一時的に入力してください。',
     discord_target_channel: 'チャンネル',

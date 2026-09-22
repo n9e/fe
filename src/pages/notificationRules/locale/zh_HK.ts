@@ -49,6 +49,7 @@ const zh_HK = {
   enabled_tip: '是否啟用此通知規則',
   note_tip: '可在此補充該通知規則的詳細信息或說明，便於日後維護',
   notification_configuration: {
+    test_with_recovery_jsm: "同時測試恢復（關閉告警）",
     title: '通知配置',
     section_desc: '決定告警發給誰、用什麼媒介發：選擇通知媒介、消息模板與接收對象，可添加多條',
     item_title: '通知配置',
@@ -185,6 +186,19 @@ const zh_HK = {
       mentions_tip:
         '告警觸發時要 @ 的角色或使用者，多個用空格分隔：角色寫成 <@&ID>，使用者寫成 <@ID>（開啟 Developer Mode 後右鍵 → Copy ID）。只有這裡填的對象會被提醒，告警內容裡的 @everyone 不會生效',
       mentions_invalid: '請用 <@使用者ID> 或 <@&角色ID>，多個用空格分隔',
+    },
+    jsm_history: {
+      label: "複用填過的 key",
+      tip: "本人所在團隊的規則裡這個媒介填過的 key，選一條會把整組參數填回來",
+      placeholder: "選擇之前填過的 key",
+    },
+    jsm_alert: {
+      api_key: "API Key",
+      api_key_tip: "在 JSM 裡打開團隊 → Integrations → Add integration → API，複製 API Key。key 決定告警歸哪個團隊，通知記錄裡會遮罩顯示。支援用 {{.變數名}} 引用變數設定。",
+      bot_name: "名稱",
+      bot_name_tip: "給這個 key 起個好認的名字（如團隊名）：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個 key",
+      priority_map: "級別與優先級",
+      priority_map_tip: "夜鶯各告警級別對應的 JSM 告警優先級，預設 S1→P1、S2→P2、S3→P3",
     },
     pagerduty: {
       services: '服務/集成',

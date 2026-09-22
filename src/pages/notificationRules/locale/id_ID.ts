@@ -49,6 +49,7 @@ const id_ID = {
   enabled_tip: 'Menentukan apakah aturan notifikasi ini aktif',
   note_tip: 'Tempat menambahkan detail atau keterangan aturan notifikasi ini agar mudah dirawat kelak',
   notification_configuration: {
+    test_with_recovery_jsm: "Uji juga pemulihan (tutup alert)",
     title: 'Konfigurasi notifikasi',
     section_desc: 'Menentukan kepada siapa alert dikirim dan lewat media apa: pilih media notifikasi, templat pesan, dan penerimanya; beberapa entri bisa ditambahkan',
     item_title: 'Konfigurasi notifikasi',
@@ -193,6 +194,19 @@ const id_ID = {
       mentions_tip:
         'Peran atau pengguna yang disebut saat alert terpicu, dipisah spasi: peran ditulis <@&ID>, pengguna <@ID> (aktifkan Developer Mode lalu klik kanan → Copy ID). Hanya ini yang disebut; @everyone di teks alert diabaikan',
       mentions_invalid: 'Gunakan <@id_pengguna> atau <@&id_peran>, dipisah spasi',
+    },
+    jsm_history: {
+      label: "Gunakan ulang kunci",
+      tip: "Kunci yang sudah dipakai media ini di aturan tim Anda; memilih satu mengisi semua parameternya",
+      placeholder: "Pilih kunci yang pernah dipakai",
+    },
+    jsm_alert: {
+      api_key: "Kunci API",
+      api_key_tip: "Di JSM buka tim → Integrations → Add integration → API, lalu salin kunci API. Kunci menentukan tim penerima alert dan disamarkan di catatan notifikasi. Mendukung {{.nama_variabel}}.",
+      bot_name: "Nama",
+      bot_name_tip: "Nama yang mudah dikenali untuk kunci ini, misalnya nama tim: tampil sebagai target di catatan notifikasi, aturan lain dapat memakai ulang kunci lewat nama ini",
+      priority_map: "Tingkat dan prioritas",
+      priority_map_tip: "Prioritas alert JSM untuk tiap tingkat Nightingale; default S1→P1, S2→P2, S3→P3",
     },
     pagerduty: {
       services: 'Layanan/integrasi',

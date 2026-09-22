@@ -37,6 +37,7 @@ const ru_RU = {
     },
   },
   request_configuration: {
+    jsm_alert: "Настройки JSM Alert",
     discord: 'Настройки Discord',
     jira: 'Настройки Jira',
     http: 'Настройка HTTP',
@@ -155,6 +156,13 @@ const ru_RU = {
     silent_tip: 'Сообщения публикуются в канал, но без push- и desktop-уведомлений',
     proxy_tip: 'Укажите, если Discord доступен только через прокси, например http://127.0.0.1:7890',
   },
+  jsm_alert_request_config: {
+    top_tip: "Оповещения отправляются в Operations Jira Service Management. Ключ API-интеграции определяет, какая команда получит оповещение, поэтому он указывается в каждом правиле уведомлений — так этот канал может отправлять любому числу команд. Создайте ключ в JSM: команда → Integrations → Add integration → API.",
+    api_url: "Адрес API",
+    api_url_tip: "Оставьте пустым для https://api.atlassian.com; путь /jsm/ops/integration/v2/alerts добавляется автоматически",
+    api_url_invalid: "Должен начинаться с http:// или https://",
+    proxy_tip: "Укажите, если api.atlassian.com доступен только через прокси, например http://127.0.0.1:7890",
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -219,6 +227,10 @@ const ru_RU = {
     script: 'Script',
   },
   test: {
+    jsm_title: "Ключ API-интеграции JSM",
+    jsm_tip: "После сохранения ключ указывается в правиле уведомлений; для проверки введите его здесь. В команде этой интеграции будет создано реальное оповещение.",
+    jsm_api_key_placeholder: "API-ключ интеграции",
+    jsm_with_recovery: "Проверить и восстановление (закрыть оповещение)",
     discord_title: 'Discord Webhook',
     discord_tip: 'После сохранения адрес Webhook указывается в правиле уведомлений; для проверки введите его здесь.',
     discord_target_channel: 'Канал',

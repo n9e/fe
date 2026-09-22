@@ -25,6 +25,7 @@ import WecomApp from './WecomApp';
 import FeishuApp from './FeishuApp';
 import Jira from './Jira';
 import Discord from './Discord';
+import JSMAlert from './JSMAlert';
 import TestModal from './TestModal';
 
 interface Props {
@@ -164,6 +165,7 @@ export default function FormCpt(props: Props) {
                   <FeishuApp />
                   <Jira />
                   <Discord />
+                  <JSMAlert />
                 </div>
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>

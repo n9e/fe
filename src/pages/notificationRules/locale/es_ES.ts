@@ -49,6 +49,7 @@ const es_ES = {
   enabled_tip: 'Define si esta regla de notificación está activa',
   note_tip: 'Usa este campo para detallar la regla de notificación y facilitar su mantenimiento',
   notification_configuration: {
+    test_with_recovery_jsm: "Probar también la recuperación (cerrar la alerta)",
     title: 'Configuración de notificación',
     section_desc: 'Determina a quién va la alerta y por qué medio: elige el medio de notificación, la plantilla de mensaje y los destinatarios. Puedes añadir varios conjuntos',
     item_title: 'Configuración de notificación',
@@ -193,6 +194,19 @@ const es_ES = {
       mentions_tip:
         'Roles o usuarios a mencionar cuando salta la alerta, separados por espacios: un rol es <@&ID>, un usuario <@ID> (activa Developer Mode y clic derecho → Copy ID). Solo se menciona a estos; @everyone en el texto de la alerta se ignora',
       mentions_invalid: 'Usa <@id_usuario> o <@&id_rol>, separados por espacios',
+    },
+    jsm_history: {
+      label: "Reutilizar una clave",
+      tip: "Claves que este medio ya tiene en reglas de tus equipos; elegir una rellena todo el grupo de parámetros",
+      placeholder: "Elige una clave usada antes",
+    },
+    jsm_alert: {
+      api_key: "Clave de API",
+      api_key_tip: "En JSM abre el equipo → Integrations → Add integration → API y copia la clave de API. La clave decide qué equipo recibe la alerta y se enmascara en los registros de notificación. Admite {{.nombre_variable}}.",
+      bot_name: "Nombre",
+      bot_name_tip: "Un nombre reconocible para la clave, como el del equipo: aparece como destino en los registros y otras reglas pueden reutilizar la clave por este nombre",
+      priority_map: "Severidad y prioridad",
+      priority_map_tip: "Prioridad de la alerta en JSM para cada severidad de Nightingale; por defecto S1→P1, S2→P2, S3→P3",
     },
     pagerduty: {
       services: 'Servicio/integración',

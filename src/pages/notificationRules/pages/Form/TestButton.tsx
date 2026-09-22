@@ -22,7 +22,8 @@ export default function TestButton(props: Props) {
   const { t } = useTranslation(NS);
   const { field, channelItem } = props;
   // Jira 默认连恢复一起测：先按告警、再按恢复各发一次，一次验证建单与关单
-  const supportsRecoveryTest = channelItem?.request_type === 'jira';
+  // 恢复时有独立动作的媒介（Jira 关单、JSM 关告警）才提供「同时测试恢复」
+  const supportsRecoveryTest = _.includes(['jira', 'jsm_alert'], channelItem?.request_type);
   const [withRecovery, setWithRecovery] = useState(true);
   const [visible, setVisible] = useState(false);
   const [mode, setMode] = useState<TestMode>('history');
@@ -104,7 +105,7 @@ export default function TestButton(props: Props) {
         {supportsRecoveryTest && (
           <div className='mb-4'>
             <Checkbox checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
-              {t('notification_configuration.test_with_recovery')}
+              {t(channelItem?.request_type === 'jsm_alert' ? 'notification_configuration.test_with_recovery_jsm' : 'notification_configuration.test_with_recovery')}
             </Checkbox>
           </div>
         )}

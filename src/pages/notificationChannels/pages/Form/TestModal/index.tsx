@@ -48,6 +48,8 @@ export default function TestModal(props: Props) {
   const [jiraIssueType, setJiraIssueType] = useState('');
   // Discord 的 Webhook 地址在通知规则里填，未保存的媒介在这里临时填一个
   const [discordParams, setDiscordParams] = useState<Record<string, string>>({ target: 'channel' });
+  // JSM 的 API 集成 key 也在通知规则里填，这里临时填一个
+  const [jsmApiKey, setJsmApiKey] = useState('');
   // 默认连恢复一起测：一次验证建单、评论和关单
   const [withRecovery, setWithRecovery] = useState(true);
   const [userIds, setUserIds] = useState<number[]>([]);
@@ -69,6 +71,9 @@ export default function TestModal(props: Props) {
   const isPagerduty = requestType === 'pagerduty';
   const isJira = requestType === 'jira';
   const isDiscord = requestType === 'discord';
+  const isJSMAlert = requestType === 'jsm_alert';
+  // 支持「同时测试恢复」的媒介：恢复时有独立动作（Jira 关单、JSM 关告警）
+  const supportsRecoveryTest = isJira || isJSMAlert;
 
   const starterTexts: StarterTexts = {
     ruleName: tt('starter.rule_name'),
@@ -116,6 +121,7 @@ export default function TestModal(props: Props) {
     setJiraProject('');
     setJiraIssueType('');
     setDiscordParams({ target: 'channel' });
+    setJsmApiKey('');
     setWithRecovery(true);
     setUserIds([]);
     setUserGroupIds([]);
@@ -143,11 +149,12 @@ export default function TestModal(props: Props) {
           ...(isPagerduty && pagerdutyKeys.length ? { pagerduty_integration_keys: pagerdutyKeys } : {}),
           ...(isJira ? { project_key: _.trim(jiraProject), issue_type: _.trim(jiraIssueType) } : {}),
           ...(isDiscord ? _.omitBy(_.mapValues(discordParams, _.trim), _.isEmpty) : {}),
+          ...(isJSMAlert ? { api_key: _.trim(jsmApiKey) } : {}),
         },
         severities: [mockEvent.severity],
       },
       tpl_content: tplContent,
-      ...(isJira && withRecovery ? { with_recovery: true } : {}),
+      ...(supportsRecoveryTest && withRecovery ? { with_recovery: true } : {}),
     })
       .then((res) => {
         setResult(res);
@@ -167,7 +174,8 @@ export default function TestModal(props: Props) {
     (mode === 'history' && _.isEmpty(selectedEventIds)) ||
     (isPagerduty && _.isEmpty(pagerdutyKeys)) ||
     (isJira && (!_.trim(jiraProject) || !_.trim(jiraIssueType))) ||
-    (isDiscord && !_.trim(discordParams.webhook_url));
+    (isDiscord && !_.trim(discordParams.webhook_url)) ||
+    (isJSMAlert && !_.trim(jsmApiKey));
 
   return (
     <>
@@ -311,6 +319,16 @@ export default function TestModal(props: Props) {
                     />
                   )}
                 </div>
+              </div>
+            )}
+            {isJSMAlert && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.jsm_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.jsm_tip')}</div>
+                <Input.Password autoComplete='new-password' value={jsmApiKey} placeholder={t('test.jsm_api_key_placeholder')} onChange={(e) => setJsmApiKey(e.target.value)} />
+                <Checkbox className='mt-2' checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
+                  {t('test.jsm_with_recovery')}
+                </Checkbox>
               </div>
             )}
             {contactKey && (

@@ -49,6 +49,7 @@ const fr_FR = {
   enabled_tip: 'Détermine si cette règle de notification est active',
   note_tip: 'Ajoutez ici des précisions sur cette règle pour en faciliter la maintenance',
   notification_configuration: {
+    test_with_recovery_jsm: "Tester aussi la résolution (fermer l’alerte)",
     title: 'Configuration des notifications',
     section_desc: 'Détermine à qui et par quel média les alertes partent : choisissez le média, le modèle de message et les destinataires ; plusieurs entrées sont possibles',
     item_title: 'Configuration des notifications',
@@ -197,6 +198,19 @@ const fr_FR = {
       mentions_tip:
         "Rôles ou utilisateurs à mentionner quand l'alerte se déclenche, séparés par des espaces : un rôle s'écrit <@&ID>, un utilisateur <@ID> (activez Developer Mode puis clic droit → Copy ID). Seuls ceux-ci sont notifiés ; @everyone dans le texte de l'alerte est ignoré",
       mentions_invalid: 'Utilisez <@id_utilisateur> ou <@&id_rôle>, séparés par des espaces',
+    },
+    jsm_history: {
+      label: "Réutiliser une clé",
+      tip: "Clés déjà utilisées par ce média dans les règles de vos équipes ; en choisir une remplit tout le groupe de paramètres",
+      placeholder: "Choisir une clé déjà utilisée",
+    },
+    jsm_alert: {
+      api_key: "Clé API",
+      api_key_tip: "Dans JSM, ouvrez l'équipe → Integrations → Add integration → API, puis copiez la clé API. La clé détermine l'équipe destinataire et est masquée dans les enregistrements de notification. Prend en charge {{.nom_variable}}.",
+      bot_name: "Nom",
+      bot_name_tip: "Un nom reconnaissable pour cette clé, par exemple le nom de l'équipe : affiché comme cible dans les enregistrements, les autres règles peuvent réutiliser la clé par ce nom",
+      priority_map: "Gravité et priorité",
+      priority_map_tip: "Priorité de l'alerte JSM pour chaque gravité Nightingale ; par défaut S1→P1, S2→P2, S3→P3",
     },
     pagerduty: {
       services: 'Service / intégration',
