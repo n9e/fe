@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Col, Collapse, Form, Input, InputNumber, Radio, Row, Select, Space, Switch, Tooltip } from 'antd';
+import { Alert, Button, Col, Collapse, Form, Input, InputNumber, Radio, Row, Select, Space, Spin, Switch, Tooltip } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
@@ -32,24 +32,35 @@ export default function Jira(props: Props) {
   const channelId = channelItem?.id;
 
   const [projects, setProjects] = useState<JiraProject[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(false);
   const [projectsError, setProjectsError] = useState<string>();
   const [issueTypes, setIssueTypes] = useState<JiraIssueType[]>([]);
+  const [issueTypesLoading, setIssueTypesLoading] = useState(false);
   const [issueTypesError, setIssueTypesError] = useState<string>();
   const [priorities, setPriorities] = useState<JiraPriority[]>([]);
   const [check, setCheck] = useState<JiraIssueTypeCheck>();
 
+  // 真实站点要先解析 Cloud ID 再走网关，列表要等一两秒：加载中不能显示成「没有权限」；
+  // 切换媒介 / 项目时丢弃上一轮还没回来的结果
   useEffect(() => {
     if (!channelId) return;
+    let alive = true;
     setProjectsError(undefined);
+    setProjectsLoading(true);
     getJiraProjects(channelId)
-      .then(setProjects)
+      .then((list) => alive && setProjects(list))
       .catch((err) => {
+        if (!alive) return;
         setProjects([]);
         setProjectsError(err?.message);
-      });
+      })
+      .finally(() => alive && setProjectsLoading(false));
     getJiraPriorities(channelId)
-      .then(setPriorities)
-      .catch(() => setPriorities([]));
+      .then((list) => alive && setPriorities(list))
+      .catch(() => alive && setPriorities([]));
+    return () => {
+      alive = false;
+    };
   }, [channelId]);
 
   useEffect(() => {
@@ -57,9 +68,12 @@ export default function Jira(props: Props) {
       setIssueTypes([]);
       return;
     }
+    let alive = true;
     setIssueTypesError(undefined);
+    setIssueTypesLoading(true);
     getJiraIssueTypes(channelId, project)
       .then((list) => {
+        if (!alive) return;
         setIssueTypes(list);
         // 按旧接入文档配置过的项目里有 Alert 工作类型，默认选中它
         if (!form.getFieldValue([...base, 'issue_type'])) {
@@ -70,9 +84,14 @@ export default function Jira(props: Props) {
         }
       })
       .catch((err) => {
+        if (!alive) return;
         setIssueTypes([]);
         setIssueTypesError(err?.message);
-      });
+      })
+      .finally(() => alive && setIssueTypesLoading(false));
+    return () => {
+      alive = false;
+    };
   }, [channelId, project]);
 
   useEffect(() => {
@@ -80,9 +99,13 @@ export default function Jira(props: Props) {
       setCheck(undefined);
       return;
     }
+    let alive = true;
     getJiraIssueTypeCheck(channelId, project, issueType)
-      .then(setCheck)
-      .catch(() => setCheck(undefined));
+      .then((res) => alive && setCheck(res))
+      .catch(() => alive && setCheck(undefined));
+    return () => {
+      alive = false;
+    };
   }, [channelId, project, issueType]);
 
   // 该工作类型的必填字段里，还没在「自定义字段」里填的
@@ -119,8 +142,9 @@ export default function Jira(props: Props) {
               <Select
                 showSearch
                 optionFilterProp='label'
+                loading={projectsLoading}
                 options={_.map(projects, (p) => ({ label: `${p.name} (${p.key})`, value: p.key }))}
-                notFoundContent={t('notification_configuration.jira.project_empty')}
+                notFoundContent={projectsLoading ? <Spin size='small' /> : t('notification_configuration.jira.project_empty')}
                 onChange={() => {
                   form.setFields([{ name: [...base, 'issue_type'], value: undefined }]);
                 }}
@@ -140,7 +164,13 @@ export default function Jira(props: Props) {
             {issueTypesError || projectsError || !channelId ? (
               <Input placeholder='Bug' />
             ) : (
-              <Select showSearch optionFilterProp='label' options={_.map(issueTypes, (it) => ({ label: it.name, value: it.name }))} />
+              <Select
+                showSearch
+                optionFilterProp='label'
+                loading={issueTypesLoading}
+                notFoundContent={issueTypesLoading ? <Spin size='small' /> : undefined}
+                options={_.map(issueTypes, (it) => ({ label: it.name, value: it.name }))}
+              />
             )}
           </Form.Item>
         </Col>
