@@ -6,6 +6,7 @@ import { parseRange } from '@/components/TimeRangePicker/utils';
 import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
 import flatten from '@/utils/flatten';
 import replaceTemplateVariables, { getBuiltInVariables, replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { getMissingVariableReferences } from '@/pages/dashboard/Variables/utils/variableDependencies';
 
 import { getDashboardQueryStep } from './queryStep';
 import { normalizeInterval } from './elasticsearch/utils';
@@ -59,13 +60,16 @@ function interpolateQueryValue(
   return value;
 }
 
+function getRawDatasourceQueryPayload(target: ITarget, cate: string): JsonObject {
+  const payload = getDashboardDatasourceDefinition(cate)?.serializeTarget(target) ?? {
+    ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
+    ..._.omit(target, DASHBOARD_TARGET_META_FIELDS),
+  };
+  return _.omit(payload, Array.from(FORBIDDEN_REQUEST_FIELDS));
+}
+
 function getDatasourceQueryPayload(target: ITarget, cate: string, options: BuildDashboardQueryRequestOptions & { effectiveRange: IRawTimeRange }, value?: unknown) {
-  const payload =
-    getDashboardDatasourceDefinition(cate)?.serializeTarget(target) ??
-    ({
-      ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
-      ..._.omit(target, DASHBOARD_TARGET_META_FIELDS),
-    } as JsonObject);
+  const payload = getRawDatasourceQueryPayload(target, cate);
 
   const step = getDashboardQueryStep({
     time: options.effectiveRange,
@@ -125,6 +129,12 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     effectiveRange,
   };
 
+  const availableVariableNames = new Set([
+    ...(options.variables ?? []).map((variable) => variable.name),
+    ...getBuiltInVariables(effectiveRange).map((variable) => variable.name),
+    ...Object.keys(options.scopedVars ?? {}),
+  ]);
+
   const reservedRefIds = new Set(options.targets.map((target, index) => target.refId || getTargetRefId(index)));
   const getValueRefId = (refId: string, valueIndex: number) => {
     let valueRefId = `${refId}__value_${valueIndex}`;
@@ -150,6 +160,10 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
       cate: options.legacyDatasource?.cate ?? 'prometheus',
       id: options.legacyDatasource?.id,
     };
+    const missingVariables = getMissingVariableReferences([datasource.id, getRawDatasourceQueryPayload(target, datasource.cate)], availableVariableNames);
+    if (missingVariables.length > 0) {
+      throw new Error(`Query ${refId} references missing variable(s): ${missingVariables.join(', ')}`);
+    }
     const resolvedDatasourceId = replaceDatasourceVariables(datasource.id as number | string, {
       datasourceList: options.datasourceList,
       variables: options.variables,

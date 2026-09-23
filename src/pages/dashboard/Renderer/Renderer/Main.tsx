@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Button, Dropdown, Menu, Tooltip, Space, Drawer, message } from 'antd';
+import { Button, Dropdown, Menu, Tooltip, Space, Drawer } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   InfoCircleOutlined,
@@ -51,6 +51,15 @@ function PanelLoadingSkeleton({ label }: { label: string }) {
   return (
     <div className='flex h-full items-center justify-center rounded' aria-label={label}>
       <LineChartOutlined data-testid='panel-loading-chart-icon' style={{ fontSize: 32, opacity: 0.18 }} />
+    </div>
+  );
+}
+
+/** 渲染查询失败占位图标；具体错误由标题栏和排查入口承载。 */
+function PanelErrorIcon({ label }: { label: string }) {
+  return (
+    <div className='renderer-body-content-error' aria-label={label}>
+      <WarningOutlined data-testid='panel-error-icon' />
     </div>
   );
 }
@@ -115,7 +124,6 @@ function index(
     queryResult,
     containerEleRef,
     time,
-    setTime,
     inspect,
     setInspect,
     setViewModalVisible,
@@ -125,13 +133,17 @@ function index(
   const tableRef = useRef<{ exportCsv: () => void }>(null);
   const tableNGRef = useRef<{ exportCsv: () => void }>(null);
   const bodyWrapRef = useRef<HTMLDivElement>(null);
-  const { query, series, errorsByRef, error, loading, loaded, range, revision, retry } = queryResult;
+  const { query, requestReference, series, errorsByRef, error, loading, loaded, range, revision, retry } = queryResult;
+  const hasTargets = Boolean(values.targets?.length);
   // 变量链会先暂停 useQuery，此时查询尚未置为 loading；首次结果前仍须展示面板加载态。
-  const waitingForVariables = variableExecution.isExecuting && !loaded && values.targets.length > 0;
+  const waitingForVariables = variableExecution.isExecuting && !loaded && hasTargets;
   const loadingSkeletonVisible = !loaded && (loading || waitingForVariables);
   const loadingBarVisible = loading || waitingForVariables;
   const failedRefIds = Object.keys(errorsByRef);
   const hasPartialFailure = failedRefIds.length > 0 && series.length > 0;
+  // 存在请求参考但没有执行快照，表示查询在本地校验阶段被拦截，无需提供刷新入口。
+  const isPreflightError = Boolean(requestReference) && (query?.length ?? 0) === 0;
+  const showPanelErrorIcon = Boolean(error) && series.length === 0 && values.type !== 'text' && values.type !== 'iframe';
   const name = replaceTemplateVariables(values.name, {
     scopedVars: values.scopedVars,
     range: time,
@@ -181,19 +193,23 @@ function index(
         setViewModalVisible(true);
       },
     },
-    {
-      key: 'refresh_btn',
-      label: (
-        <Space>
-          <SyncOutlined />
-          {t('refresh_btn')}
-        </Space>
-      ),
-      onClick: () => {
-        setVisible(true);
-        setTime?.({ ...time, refreshFlag: _.uniqueId('refreshFlag_ ') });
-      },
-    },
+    ...(!isPreflightError
+      ? [
+          {
+            key: 'refresh_btn',
+            label: (
+              <Space>
+                <SyncOutlined />
+                {t('refresh_btn')}
+              </Space>
+            ),
+            onClick: () => {
+              setVisible(true);
+              retry();
+            },
+          },
+        ]
+      : []),
     ...(isAuthorized && !values.repeatPanelId
       ? [
           {
@@ -315,7 +331,6 @@ function index(
             ),
             onClick: () => {
               setVisible(false);
-              setTime?.({ ...time, refreshFlag: _.uniqueId('refreshFlag_ ') });
               setInspect(true);
             },
           },
@@ -464,14 +479,18 @@ function index(
             {loadingSkeletonVisible ? (
               <PanelLoadingSkeleton label={t('common:loading')} />
             ) : _.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
-              <PanelEmpty values={values} bodyWrapRef={bodyWrapRef} />
+              showPanelErrorIcon ? (
+                <PanelErrorIcon label={error} />
+              ) : (
+                <PanelEmpty values={values} bodyWrapRef={bodyWrapRef} />
+              )
             ) : (
               <PanelRenderer type={values.type} {...chartProps} />
             )}
           </div>
         )}
       </div>
-      {error && (
+      {error && !isPreflightError && (
         <div className='renderer-query-error-action'>
           <Button type='link' size='small' onClick={retry}>
             {t('refresh_btn')}
@@ -488,7 +507,7 @@ function index(
         visible={inspect}
         className='n9e-antd-drawer'
       >
-        <Inspect query={query} values={values} />
+        <Inspect query={query} error={error} requestReference={requestReference} values={values} />
       </Drawer>
     </div>
   );

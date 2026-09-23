@@ -1,4 +1,4 @@
-import type { ITarget } from '@/pages/dashboard/types';
+import type { ITarget, JsonValue } from '@/pages/dashboard/types';
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
 
 export type DashboardQueryResultType = 'time_series' | 'logs';
@@ -102,11 +102,22 @@ export interface DashboardInspectQuery {
     method: 'POST';
     data: DashboardQueryRequest;
   };
-  response: DashboardQueryResponse;
+  /** 请求已发出但未获得正常响应时，保留错误信息供排查页查看。 */
+  response: DashboardQueryResponse | { error: JsonValue };
+}
+
+/** 请求尚未发送时生成的客户端参考信息，不代表服务端已接收到该请求。 */
+export interface DashboardInspectRequestReference {
+  request: {
+    url: string;
+    method: 'POST';
+    data: unknown;
+  };
 }
 
 export interface DashboardQueryState {
   query: DashboardInspectQuery[];
+  requestReference?: DashboardInspectRequestReference;
   series: DashboardSeries[];
   errorsByRef: Record<string, FailedResult['error']>;
   error: string;

@@ -28,6 +28,7 @@ jest.mock('../datasource/queryStep', () => ({ getDashboardQueryStep: () => 30 })
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
   default: (value: string) => value,
+  getBuiltInVariables: () => [],
   replaceDatasourceVariables: (value: number | string) => value,
 }));
 

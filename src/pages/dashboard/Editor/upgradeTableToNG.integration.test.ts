@@ -5,13 +5,19 @@ import { upgradeTableToNG } from '@/pages/dashboard/utils/upgradeTableToNG';
 
 jest.mock('@/components/TimeRangePicker/utils', () => ({ parseRange: (range: unknown) => range }));
 jest.mock('@/pages/dashboard/Renderer/datasource/queryStep', () => ({ getDashboardQueryStep: () => 30 }));
-jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({ __esModule: true, default: (value: string) => value, replaceDatasourceVariables: (value: number | string) => value }));
+jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
+  __esModule: true,
+  default: (value: string) => value,
+  replaceDatasourceVariables: (value: number | string) => value,
+  getBuiltInVariables: () => [],
+}));
 
 describe('legacy table upgrade query integration', () => {
   it('converts the editor value to TableNG and preserves instant query and transformed columns', () => {
     const upgraded = upgradeTableToNG(
       {
-        id: 'legacy-table', type: 'table',
+        id: 'legacy-table',
+        type: 'table',
         custom: { displayMode: 'seriesToRows' },
         targets: [{ refId: 'A', expr: 'up' }],
       },

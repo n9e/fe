@@ -38,6 +38,7 @@ jest.mock('@/components/TimeRangePicker/utils', () => ({
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
   default: (value: string) => value,
+  getBuiltInVariables: () => [],
   replaceDatasourceVariables: (value: number | string) => value,
 }));
 
@@ -171,7 +172,7 @@ describe('dashboard useQuery', () => {
   it('keeps the latest successful data visible when a refresh fails', async () => {
     jest.useFakeTimers();
     try {
-      fetchDashboardQueryMock.mockResolvedValueOnce(createMockQueryResponse()).mockRejectedValueOnce(new Error('network unavailable'));
+      fetchDashboardQueryMock.mockResolvedValueOnce(createMockQueryResponse()).mockRejectedValueOnce({ data: { code: 'NETWORK_UNAVAILABLE', message: 'network unavailable' } });
       const { result, rerender } = renderUseQuery({ targets: [createMockTarget()] });
 
       await act(async () => {
@@ -192,6 +193,15 @@ describe('dashboard useQuery', () => {
 
       expect(result.current.error).toContain('network unavailable');
       expect(result.current.series).toHaveLength(1);
+      expect(result.current.query).toEqual([
+        expect.objectContaining({
+          request: expect.objectContaining({
+            url: '/api/n9e/v2/query-batch',
+            method: 'POST',
+          }),
+          response: { error: { code: 'NETWORK_UNAVAILABLE', message: 'network unavailable' } },
+        }),
+      ]);
     } finally {
       jest.useRealTimers();
     }
@@ -599,4 +609,89 @@ describe('dashboard useQuery', () => {
       jest.useRealTimers();
     }
   });
+});
+
+test('reports missing datasource and query variables and recovers when they become available', async () => {
+  jest.useFakeTimers();
+  try {
+    const props = {
+      ...baseProps,
+      datasourceValue: '$source',
+      targets: [createMockTarget({ datasource: { cate: 'prometheus', id: '$source' }, expr: 'up{job="$job", instance="${instance}"}' })],
+    };
+    const { result, rerender } = renderUseQuery(props);
+    await act(async () => {
+      jest.advanceTimersByTime(600);
+      await flushPromises();
+    });
+    expect(fetchDashboardQueryMock).not.toHaveBeenCalled();
+    expect(result.current).toMatchObject({
+      loaded: true,
+      loading: false,
+      error: 'Query A references missing variable(s): source, job, instance',
+      requestReference: {
+        request: {
+          url: '/api/n9e/v2/query-batch',
+          method: 'POST',
+          data: expect.objectContaining({
+            status: 'not_sent',
+            panel_datasource: { cate: 'prometheus', id: '$source' },
+            targets: props.targets,
+          }),
+        },
+      },
+    });
+
+    fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
+    await act(async () => {
+      setGlobalState('variablesWithOptions', [
+        { ...variable('api'), name: 'job' },
+        { ...variable('localhost'), name: 'instance' },
+      ]);
+    });
+    rerender({ ...props, targets: [createMockTarget({ expr: props.targets[0].expr })] });
+    await act(async () => {
+      jest.advanceTimersByTime(600);
+      await flushPromises();
+    });
+    expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+    expect(result.current.error).toBe('');
+    expect(result.current.requestReference).toBeUndefined();
+    expect(result.current.series).toHaveLength(1);
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+test('refreshing one panel leaves another panel idle and records inspection data', async () => {
+  jest.useFakeTimers();
+  try {
+    fetchDashboardQueryMock.mockResolvedValue(createMockQueryResponse());
+    const { result } = renderHook(
+      () => ({
+        first: useQuery({ ...baseProps, targets: [createMockTarget({ expr: 'up' })] }),
+        second: useQuery({ ...baseProps, targets: [createMockTarget({ expr: 'other' })] }),
+      }),
+      { wrapper },
+    );
+    await act(async () => {
+      jest.advanceTimersByTime(600);
+      await flushPromises();
+    });
+    expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(2);
+    fetchDashboardQueryMock.mockClear();
+    await act(async () => {
+      result.current.first.retry();
+      jest.advanceTimersByTime(600);
+      await flushPromises();
+    });
+    expect(fetchDashboardQueryMock).toHaveBeenCalledTimes(1);
+    expect(fetchDashboardQueryMock.mock.calls[0][0].queries[0].query.expr).toBe('up');
+    expect(result.current.first.query[0]).toMatchObject({
+      request: { method: 'POST' },
+      response: createMockQueryResponse(),
+    });
+  } finally {
+    jest.useRealTimers();
+  }
 });

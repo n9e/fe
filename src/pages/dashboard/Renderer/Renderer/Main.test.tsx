@@ -325,3 +325,123 @@ test('table panels export CSV through the panel menu', () => {
 
   expect(mockTableExportCsv).toHaveBeenCalledTimes(1);
 });
+
+const queryPanel: IPanel = {
+  id: 'query-panel',
+  type: 'timeseries',
+  name: 'Query panel',
+  description: '',
+  layout: { h: 4, w: 12, x: 0, y: 0, i: 'query-panel' },
+  targets: [{ refId: 'A' }],
+  custom: {},
+  options: {},
+  overrides: [],
+};
+
+test.each([
+  ['refresh_btn', 1],
+  ['inspect_btn', 0],
+])('%s only refreshes when requested and never changes dashboard time', (action, expectedRetryCalls) => {
+  const retry = jest.fn();
+  const setTime = jest.fn();
+  const setInspect = jest.fn();
+  renderWithDashboardRuntime(
+    <Main
+      id='query-panel'
+      values={queryPanel}
+      annotations={[]}
+      controllersVisible
+      queryResult={{ ...queryResult, loaded: true, retry }}
+      containerEleRef={{ current: document.body as HTMLDivElement }}
+      time={time}
+      setTime={setTime}
+      inspect={false}
+      setInspect={setInspect}
+      setViewModalVisible={jest.fn()}
+    />,
+  );
+  fireEvent.click(document.querySelector('.renderer-header-controller')!);
+  fireEvent.click(screen.getByText(action));
+  expect(retry).toHaveBeenCalledTimes(expectedRetryCalls);
+  expect(setTime).not.toHaveBeenCalled();
+  if (action === 'inspect_btn') expect(setInspect).toHaveBeenCalledWith(true);
+});
+
+test('shows a missing-variable error icon and hides refresh actions', async () => {
+  const error = 'Query A references missing variable(s): source, job';
+  const setInspect = jest.fn();
+  const retry = jest.fn();
+  renderWithDashboardRuntime(
+    <Main
+      id='query-panel'
+      values={queryPanel}
+      annotations={[]}
+      controllersVisible
+      queryResult={{
+        ...queryResult,
+        loaded: true,
+        error,
+        retry,
+        requestReference: {
+          request: {
+            url: '/api/n9e/v2/query-batch',
+            method: 'POST',
+            data: { status: 'not_sent', reason: error, targets: queryPanel.targets },
+          },
+        },
+      }}
+      containerEleRef={{ current: document.body as HTMLDivElement }}
+      time={time}
+      inspect={false}
+      setInspect={setInspect}
+      setViewModalVisible={jest.fn()}
+    />,
+  );
+  expect(screen.queryByText('empty')).not.toBeInTheDocument();
+  expect(screen.getByTestId('panel-error-icon')).toBeInTheDocument();
+  expect(screen.queryByText('refresh_btn')).not.toBeInTheDocument();
+  const icon = document.querySelector('.renderer-header-error');
+  expect(icon).toBeInTheDocument();
+  fireEvent.mouseEnter(icon!);
+  expect(await screen.findByText(error)).toBeInTheDocument();
+  fireEvent.click(document.querySelector('.renderer-header-controller')!);
+  expect(screen.queryByText('refresh_btn')).not.toBeInTheDocument();
+  expect(retry).not.toHaveBeenCalled();
+});
+
+test('shows an error icon and retains refresh actions after a request fails without data', () => {
+  const retry = jest.fn();
+  renderWithDashboardRuntime(
+    <Main
+      id='query-panel'
+      values={queryPanel}
+      annotations={[]}
+      controllersVisible
+      queryResult={{
+        ...queryResult,
+        loaded: true,
+        error: 'request failed',
+        retry,
+        query: [
+          {
+            type: 'Dashboard Query',
+            request: {
+              url: '/api/n9e/v2/query-batch',
+              method: 'POST',
+              data: { from: 0, to: 0, queries: [] },
+            },
+            response: { results: [] },
+          },
+        ],
+      }}
+      containerEleRef={{ current: document.body as HTMLDivElement }}
+      time={time}
+      inspect={false}
+      setInspect={jest.fn()}
+      setViewModalVisible={jest.fn()}
+    />,
+  );
+  expect(screen.getByTestId('panel-error-icon')).toBeInTheDocument();
+  fireEvent.click(screen.getByText('refresh_btn'));
+  expect(retry).toHaveBeenCalledTimes(1);
+});
