@@ -16,7 +16,7 @@ export default function DataSourceTypeList(props: DataSourceTypeListProps) {
 
   return (
     <div className={classNames('min-w-0 text-[var(--fc-text-2)]', className)}>
-      {showLabel ? <div className='text-xs font-normal leading-[18px] text-[var(--fc-text-3)]'>{t('sourceType')}</div> : null}
+      {showLabel ? <div className='font-normal leading-[18px] text-[var(--fc-text-3)]'>{t('sourceType')}</div> : null}
       <div className={classNames('flex flex-wrap gap-2', { 'mt-2': showLabel })} role='radiogroup' aria-label={String(t('sourceType'))}>
         {visibleTypes.map((type) => (
           <button
