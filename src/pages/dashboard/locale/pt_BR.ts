@@ -579,9 +579,27 @@ const pt_BR = {
           },
         },
         displayMode: 'Modo de exibição',
+        namePlacement: {
+          label: 'Posição do nome',
+          options: {
+            auto: 'Automático',
+            top: 'Topo',
+            left: 'Esquerda',
+            hidden: 'Ocultar',
+          },
+        },
+        sizing: {
+          label: 'Tamanho da barra',
+          options: {
+            auto: 'Automático',
+            manual: 'Manual',
+          },
+        },
+        barWidth: 'Largura',
         valueMode: {
           label: 'Exibição do valor',
           color: 'Exibir',
+          text: 'Cor do texto',
           hidden: 'Ocultar',
         },
       },

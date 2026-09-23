@@ -143,14 +143,27 @@ function convertPieCustom(panel: GrafanaPanel): Record<string, unknown> {
   };
 }
 
-function convertBarGaugeCustom(panel: GrafanaPanel, report: ReportFn, path?: string): Record<string, unknown> {
-  const displayMode = panel.options?.displayMode;
-  if (displayMode === 'gradient') {
-    report({ scope: 'option', action: 'downgraded', path, reason: 'barGauge gradient 展示降级为 basic' });
-  }
+function convertBarGaugeCustom(panel: GrafanaPanel): Record<string, unknown> {
+  const options = panel.options ?? {};
+  const reduceOptions = options.reduceOptions ?? {};
+  const displayMode = ['basic', 'gradient', 'lcd'].includes(options.displayMode) ? options.displayMode : undefined;
+  const orientation = ['auto', 'horizontal', 'vertical'].includes(options.orientation) ? options.orientation : undefined;
+  const valueMode = ['color', 'text', 'hidden'].includes(options.valueMode) ? options.valueMode : undefined;
+  const namePlacement = ['auto', 'top', 'left', 'hidden'].includes(options.namePlacement) ? options.namePlacement : undefined;
+  const sizing = ['auto', 'manual'].includes(options.sizing) ? options.sizing : undefined;
+  const barWidth = sizing === 'manual' ? (orientation === 'vertical' ? options.minVizWidth : options.minVizHeight) ?? options.maxVizHeight : undefined;
+  const fields = Array.isArray(reduceOptions.fields) ? reduceOptions.fields : reduceOptions.fields ? [reduceOptions.fields] : undefined;
   return {
-    calc: normalizeCalc(panel.options?.reduceOptions?.calcs?.[0]),
-    ...(displayMode ? { displayMode: displayMode === 'gradient' ? 'basic' : displayMode } : {}),
+    calc: normalizeCalc(reduceOptions.calcs?.[0]),
+    ...(reduceOptions.values === true ? { showMode: 'allValues' } : {}),
+    ...(fields?.length ? { fields } : {}),
+    ...(typeof reduceOptions.limit === 'number' ? { limit: reduceOptions.limit } : {}),
+    ...(displayMode ? { displayMode } : {}),
+    ...(orientation ? { orientation } : {}),
+    ...(valueMode ? { valueMode } : {}),
+    ...(namePlacement ? { namePlacement } : {}),
+    ...(sizing ? { sizing } : {}),
+    ...(typeof barWidth === 'number' ? { barWidth } : {}),
   };
 }
 
@@ -171,7 +184,7 @@ function convertCustomByType(panel: GrafanaPanel, n9eType: string, report: Repor
     case 'gauge':
       return convertGaugeCustom(panel);
     case 'barGauge':
-      return convertBarGaugeCustom(panel, report, path);
+      return convertBarGaugeCustom(panel);
     case 'text':
       return convertTextCustom(panel);
     default:

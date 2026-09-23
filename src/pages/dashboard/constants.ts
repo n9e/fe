@@ -5,4 +5,4 @@
  * 放在无依赖的纯模块中，避免导入 `config.tsx`（依赖 `@/utils/constant` 的 import.meta）
  * 导致 node 环境测试无法加载。
  */
-export const DASHBOARD_VERSION = '4.1.0';
+export const DASHBOARD_VERSION = '4.2.0';

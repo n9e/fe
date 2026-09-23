@@ -583,9 +583,27 @@ const fr_FR = {
           },
         },
         displayMode: "Mode d'affichage",
+        namePlacement: {
+          label: 'Position du nom',
+          options: {
+            auto: 'Automatique',
+            top: 'Haut',
+            left: 'Gauche',
+            hidden: 'Masquer',
+          },
+        },
+        sizing: {
+          label: 'Taille de la barre',
+          options: {
+            auto: 'Automatique',
+            manual: 'Manuel',
+          },
+        },
+        barWidth: 'Largeur',
         valueMode: {
           label: 'Affichage des valeurs',
           color: 'Afficher',
+          text: 'Couleur du texte',
           hidden: 'Masquer',
         },
       },

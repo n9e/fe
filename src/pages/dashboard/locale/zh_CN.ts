@@ -664,9 +664,27 @@ const zh_CN = {
           },
         },
         displayMode: '显示模式',
+        namePlacement: {
+          label: '名称位置',
+          options: {
+            auto: '自动',
+            top: '顶部',
+            left: '左侧',
+            hidden: '隐藏',
+          },
+        },
+        sizing: {
+          label: '条尺寸',
+          options: {
+            auto: '自动',
+            manual: '手动',
+          },
+        },
+        barWidth: '宽度',
         valueMode: {
           label: '数值显示',
           color: '显示',
+          text: '文本色',
           hidden: '隐藏',
         },
       },

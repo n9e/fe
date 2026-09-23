@@ -24,16 +24,26 @@ import { useGlobalState } from '../../../globalState';
 
 export default function GraphStyles() {
   const { t } = useTranslation('dashboard');
+  const form = Form.useFormInstance();
   const namePrefix = ['custom'];
   const [statFields, setStatFields] = useGlobalState('statFields');
   const fields = _.compact(_.concat(statFields, 'Value'));
   const combine_other = Form.useWatch([...namePrefix, 'combine_other']);
+  const sizing = Form.useWatch([...namePrefix, 'sizing']) || 'auto';
+  const orientation = Form.useWatch([...namePrefix, 'orientation']) || 'horizontal';
+  const namePlacement = Form.useWatch([...namePrefix, 'namePlacement']) || 'auto';
 
   useEffect(() => {
     return () => {
       setStatFields([]);
     };
   }, []);
+
+  useEffect(() => {
+    if (orientation === 'vertical' && namePlacement !== 'auto' && namePlacement !== 'hidden') {
+      form.setFieldsValue({ custom: { ...form.getFieldValue('custom'), namePlacement: 'auto' } });
+    }
+  }, [form, namePlacement, orientation]);
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -103,6 +113,7 @@ export default function GraphStyles() {
             <Form.Item label={t('panel.custom.barGauge.displayMode')} name={[...namePrefix, 'displayMode']}>
               <Select>
                 <Select.Option value='basic'>Basic</Select.Option>
+                <Select.Option value='gradient'>Gradient</Select.Option>
                 <Select.Option value='lcd'>Retro LCD</Select.Option>
               </Select>
             </Form.Item>
@@ -111,6 +122,7 @@ export default function GraphStyles() {
             <Form.Item label={t('panel.custom.barGauge.valueMode.label')} name={[...namePrefix, 'valueMode']}>
               <Select>
                 <Select.Option value='color'>{t('panel.custom.barGauge.valueMode.color')}</Select.Option>
+                <Select.Option value='text'>{t('panel.custom.barGauge.valueMode.text')}</Select.Option>
                 <Select.Option value='hidden'>{t('panel.custom.barGauge.valueMode.hidden')}</Select.Option>
               </Select>
             </Form.Item>
@@ -157,6 +169,57 @@ export default function GraphStyles() {
             </Form.Item>
           </Col>
         </Row>
+        <Row gutter={10}>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.stat.orientation')} name={[...namePrefix, 'orientation']}>
+              <Select
+                options={[
+                  { label: t('panel.custom.stat.orientationValueMap.auto'), value: 'auto' },
+                  { label: t('panel.custom.stat.orientationValueMap.horizontal'), value: 'horizontal' },
+                  { label: t('panel.custom.stat.orientationValueMap.vertical'), value: 'vertical' },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.barGauge.namePlacement.label')} name={[...namePrefix, 'namePlacement']}>
+              <Select
+                options={
+                  orientation === 'vertical'
+                    ? [
+                        { label: t('panel.custom.barGauge.namePlacement.options.auto'), value: 'auto' },
+                        { label: t('panel.custom.barGauge.namePlacement.options.hidden'), value: 'hidden' },
+                      ]
+                    : [
+                        { label: t('panel.custom.barGauge.namePlacement.options.auto'), value: 'auto' },
+                        { label: t('panel.custom.barGauge.namePlacement.options.top'), value: 'top' },
+                        { label: t('panel.custom.barGauge.namePlacement.options.left'), value: 'left' },
+                        { label: t('panel.custom.barGauge.namePlacement.options.hidden'), value: 'hidden' },
+                      ]
+                }
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item label={t('panel.custom.barGauge.sizing.label')} name={[...namePrefix, 'sizing']}>
+              <Select
+                options={[
+                  { label: t('panel.custom.barGauge.sizing.options.auto'), value: 'auto' },
+                  { label: t('panel.custom.barGauge.sizing.options.manual'), value: 'manual' },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        {sizing === 'manual' && (
+          <Row gutter={10}>
+            <Col span={8}>
+              <Form.Item label={t('panel.custom.barGauge.barWidth')} name={[...namePrefix, 'barWidth']}>
+                <InputNumber min={1} addonAfter='px' style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
         <Row gutter={10}>
           <Col span={24}>
             <Form.Item

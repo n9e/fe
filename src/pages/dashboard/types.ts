@@ -241,8 +241,11 @@ export interface IPieStyles {
 
 export interface IBarGaugeStyles {
   version: string;
-  displayMode: 'basic' | 'lcd';
+  displayMode: 'basic' | 'gradient' | 'lcd';
   calc: string;
+  showMode?: 'calculate' | 'allValues';
+  fields?: string[];
+  limit?: number;
   valueField?: string;
   nameField?: string;
   maxValue: number;
@@ -250,7 +253,17 @@ export interface IBarGaugeStyles {
   serieWidth: number | null;
   sortOrder: 'none' | 'asc' | 'desc';
   detailUrl: string | undefined;
-  valueMode: 'color' | 'hidden';
+  valueMode: 'color' | 'text' | 'hidden';
+  orientation?: 'auto' | 'horizontal' | 'vertical';
+  namePlacement?: 'auto' | 'top' | 'left' | 'hidden';
+  sizing?: 'auto' | 'manual';
+  barWidth?: number;
+  /** @deprecated v4.2 起统一迁移为 barWidth，仅用于读取旧配置。 */
+  minVizWidth?: number;
+  /** @deprecated v4.2 起统一迁移为 barWidth，仅用于读取旧配置。 */
+  minVizHeight?: number;
+  /** @deprecated v4.2 起统一迁移为 barWidth，仅用于读取旧配置。 */
+  maxVizHeight?: number;
 }
 
 export interface ITextStyles {

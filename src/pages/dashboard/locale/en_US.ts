@@ -661,9 +661,27 @@ const en_US = {
           },
         },
         displayMode: 'Display mode',
+        namePlacement: {
+          label: 'Name placement',
+          options: {
+            auto: 'Auto',
+            top: 'Top',
+            left: 'Left',
+            hidden: 'Hidden',
+          },
+        },
+        sizing: {
+          label: 'Bar size',
+          options: {
+            auto: 'Auto',
+            manual: 'Manual',
+          },
+        },
+        barWidth: 'Width',
         valueMode: {
           label: 'Value display',
           color: 'Color',
+          text: 'Text color',
           hidden: 'Hidden',
         },
       },

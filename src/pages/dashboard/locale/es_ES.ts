@@ -580,9 +580,27 @@ const es_ES = {
           },
         },
         displayMode: 'Modo de visualización',
+        namePlacement: {
+          label: 'Ubicación del nombre',
+          options: {
+            auto: 'Automático',
+            top: 'Arriba',
+            left: 'Izquierda',
+            hidden: 'Ocultar',
+          },
+        },
+        sizing: {
+          label: 'Tamaño de barra',
+          options: {
+            auto: 'Automático',
+            manual: 'Manual',
+          },
+        },
+        barWidth: 'Ancho',
         valueMode: {
           label: 'Visualización del valor',
           color: 'Mostrar',
+          text: 'Color del texto',
           hidden: 'Ocultar',
         },
       },

@@ -113,9 +113,13 @@ export const defaultCustomValuesMap = {
   },
   barGauge: {
     calc: 'lastNotNull',
+    showMode: 'calculate',
     valueField: 'Value',
     baseColor: '#9470FF',
     displayMode: 'basic',
+    orientation: 'horizontal',
+    namePlacement: 'auto',
+    sizing: 'auto',
     sortOrder: 'desc',
     otherPosition: 'none',
     valueMode: 'color', // 'color' | 'hidden'

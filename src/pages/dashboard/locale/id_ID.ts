@@ -579,9 +579,27 @@ const id_ID = {
           },
         },
         displayMode: 'Mode tampilan',
+        namePlacement: {
+          label: 'Penempatan nama',
+          options: {
+            auto: 'Otomatis',
+            top: 'Atas',
+            left: 'Kiri',
+            hidden: 'Sembunyikan',
+          },
+        },
+        sizing: {
+          label: 'Ukuran bar',
+          options: {
+            auto: 'Otomatis',
+            manual: 'Manual',
+          },
+        },
+        barWidth: 'Lebar',
         valueMode: {
           label: 'Tampilan nilai',
           color: 'Tampilkan',
+          text: 'Warna teks',
           hidden: 'Sembunyikan',
         },
       },

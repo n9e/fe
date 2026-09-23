@@ -1,13 +1,14 @@
-import React, { useRef } from 'react';
+import React, { CSSProperties } from 'react';
 import { Space, Tooltip } from 'antd';
+import classNames from 'classnames';
 import _ from 'lodash';
 import Color from 'color';
-import { useSize } from 'ahooks';
 
 import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
 
 import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../types';
-import { BarGaugeValue, calculatePercentage } from './utils';
+import { BarGaugeValue, calculatePercentage, getGradientBackground } from './utils';
 
 interface Props {
   custom: IBarGaugeStyles;
@@ -17,30 +18,27 @@ interface Props {
   minValue: number;
   maxValue: number;
   maxNameWidth: number;
+  maxValueWidth: number;
+  barWidth: number;
+  orientation: 'horizontal' | 'vertical';
+  namePlacement: 'top' | 'bottom' | 'left' | 'hidden';
+  itemStyle?: CSSProperties;
 }
 
 export default function BasicDisplayMode(props: Props) {
   const replaceTemplateVariables = useReplaceTemplateVariables();
-  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth } = props;
+  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxValueWidth, barWidth, orientation, namePlacement, itemStyle } = props;
   const metric = item.metric;
-  const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;
+  const { serieWidth, detailUrl, nameField, valueMode = 'color', displayMode = 'basic' } = custom as IBarGaugeStyles;
   const { thresholds } = options;
   const baseColor = _.find(thresholds?.steps, { type: 'base' })?.color ?? '#7EB26D';
   const name = nameField ? _.get(metric, nameField, item.name) : item.name;
   const color = item.color ? item.color : baseColor;
-  const bgRef = useRef(null);
-  const bgSize = useSize(bgRef);
-  const textRef = useRef(null);
-  const textSize = useSize(textRef);
-  const getTextRight = () => {
-    if (bgSize?.width !== undefined && textSize?.width !== undefined) {
-      if (bgSize?.width < textSize?.width + 8) {
-        return -textSize?.width - 8;
-      }
-      return 0;
-    }
-    return 0;
-  };
+  const isVertical = orientation === 'vertical';
+  const valueText = `${item.value ?? ''}${item.unit ?? ''}`;
+  const verticalValueFontSize = isVertical ? Math.max(4, Math.min(18, Math.floor((Math.max(barWidth - 4, 1) / Math.max(getTextWidth(valueText), 1)) * 12))) : undefined;
+  const gradient =
+    displayMode === 'gradient' ? getGradientBackground(thresholds, minValue, maxValue, color, isVertical ? 'to top' : 'to right') : Color(color).alpha(0.2).rgb().string();
 
   const scopedVars = {
     '__field.name': item.name,
@@ -64,63 +62,77 @@ export default function BasicDisplayMode(props: Props) {
         </Space>
       }
     >
-      <div className='renderer-bar-gauge-item' key={item.name}>
-        <div
-          className='renderer-bar-gauge-item-name'
-          style={{
-            width: serieWidth ? `${serieWidth}%` : `${maxNameWidth + 4}px`, // 4px 是 省略号的宽度
-          }}
-        >
-          {detailUrl ? (
-            <a
-              target='_blank'
-              href={replaceTemplateVariables(detailUrl, {
-                scopedVars: scopedVars as unknown as ScopedVariables,
-              })}
-            >
-              {name}
-            </a>
-          ) : (
-            name
-          )}
-        </div>
-
-        <div
-          className='renderer-bar-gauge-item-value'
-          style={{
-            width: '100%',
-          }}
-        >
+      <div
+        className={classNames('renderer-bar-gauge-item', {
+          'renderer-bar-gauge-item-vertical': isVertical,
+          'renderer-bar-gauge-item-name-top': namePlacement === 'top',
+          'renderer-bar-gauge-item-name-bottom': namePlacement === 'bottom',
+        })}
+        key={item.name}
+        style={itemStyle}
+      >
+        {namePlacement !== 'hidden' && (
           <div
-            className='renderer-bar-gauge-item-value-bg'
+            className='renderer-bar-gauge-item-name'
             style={{
-              backgroundColor: themeMode === 'dark' ? '#20222E' : '#F6F6F6',
-            }}
-          />
-          <div
-            ref={bgRef}
-            className='renderer-bar-gauge-item-value-color-bg'
-            style={{
-              color: themeMode === 'dark' ? '#fff' : '#20222E',
-              borderRight: `2px solid ${color}`,
-              backgroundColor: Color(color).alpha(0.2).rgb().string(),
-              width: calculatePercentage(item.stat, minValue, maxValue) + '%',
+              width: namePlacement === 'left' && !isVertical ? (serieWidth ? `${serieWidth}%` : `${maxNameWidth + 4}px`) : undefined,
             }}
           >
-            {valueMode === 'color' && (
-              <div
-                ref={textRef}
-                className='renderer-bar-gauge-item-value-text'
-                style={{
-                  color: color,
-                  right: getTextRight(),
-                }}
+            {detailUrl ? (
+              <a
+                target='_blank'
+                href={replaceTemplateVariables(detailUrl, {
+                  scopedVars: scopedVars as unknown as ScopedVariables,
+                })}
               >
-                {item.value}
-                {item.unit}
-              </div>
+                {name}
+              </a>
+            ) : (
+              name
             )}
           </div>
+        )}
+
+        <div className='renderer-bar-gauge-item-content'>
+          <div className='renderer-bar-gauge-item-value'>
+            <div
+              className='renderer-bar-gauge-item-value-bg'
+              style={{
+                backgroundColor: themeMode === 'dark' ? '#20222E' : '#F6F6F6',
+              }}
+            />
+            <div
+              className='renderer-bar-gauge-item-value-color-bg'
+              style={
+                isVertical
+                  ? {
+                      color: themeMode === 'dark' ? '#fff' : '#20222E',
+                      borderTop: `2px solid ${color}`,
+                      background: gradient,
+                      height: calculatePercentage(item.stat, minValue, maxValue) + '%',
+                      width: '100%',
+                    }
+                  : {
+                      color: themeMode === 'dark' ? '#fff' : '#20222E',
+                      borderRight: `2px solid ${color}`,
+                      background: gradient,
+                      width: calculatePercentage(item.stat, minValue, maxValue) + '%',
+                    }
+              }
+            />
+          </div>
+          {valueMode !== 'hidden' && (
+            <div
+              className='renderer-bar-gauge-item-value-text'
+              style={{
+                color: valueMode === 'text' ? (themeMode === 'dark' ? '#fff' : '#20222E') : color,
+                width: isVertical ? undefined : `${maxValueWidth}px`,
+                fontSize: verticalValueFontSize ? `${verticalValueFontSize}px` : undefined,
+              }}
+            >
+              {valueText}
+            </div>
+          )}
         </div>
       </div>
     </Tooltip>

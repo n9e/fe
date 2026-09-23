@@ -659,9 +659,27 @@ const ja_JP = {
           },
         },
         displayMode: '表示モード',
+        namePlacement: {
+          label: '名前の位置',
+          options: {
+            auto: '自動',
+            top: '上部',
+            left: '左',
+            hidden: '非表示',
+          },
+        },
+        sizing: {
+          label: 'バーのサイズ',
+          options: {
+            auto: '自動',
+            manual: '手動',
+          },
+        },
+        barWidth: '幅',
         valueMode: {
           label: '値の表示モード',
           color: '色',
+          text: 'テキスト色',
           hidden: '非表示',
         },
       },

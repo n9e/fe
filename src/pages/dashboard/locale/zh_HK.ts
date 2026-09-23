@@ -664,9 +664,27 @@ const zh_HK = {
           },
         },
         displayMode: '顯示模式',
+        namePlacement: {
+          label: '名稱位置',
+          options: {
+            auto: '自動',
+            top: '頂部',
+            left: '左側',
+            hidden: '隱藏',
+          },
+        },
+        sizing: {
+          label: '條尺寸',
+          options: {
+            auto: '自動',
+            manual: '手動',
+          },
+        },
+        barWidth: '寬度',
         valueMode: {
           label: '值模式',
           color: '顯示',
+          text: '文字色',
           hidden: '隱藏',
         },
       },

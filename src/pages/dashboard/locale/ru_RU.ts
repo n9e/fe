@@ -631,9 +631,27 @@ const ru_RU = {
           },
         },
         displayMode: 'Режим отображения',
+        namePlacement: {
+          label: 'Размещение имени',
+          options: {
+            auto: 'Автоматически',
+            top: 'Сверху',
+            left: 'Слева',
+            hidden: 'Скрытый',
+          },
+        },
+        sizing: {
+          label: 'Размер полосы',
+          options: {
+            auto: 'Автоматически',
+            manual: 'Вручную',
+          },
+        },
+        barWidth: 'Ширина',
         valueMode: {
           label: 'Значение',
           color: 'Цвет',
+          text: 'Цвет текста',
           hidden: 'Скрытый',
         },
       },

@@ -42,3 +42,13 @@
 - refactor: 使用 `dashboard.version` 作为唯一配置版本，移除面板版本字段
 - fix: 修正 4.1.0 前仪表盘分组面板的折叠状态语义
 - fix: Grafana 导入输出与上述约定对齐：使用当前配置版本（不再固定 4.0.0），且不再写入面板版本字段
+
+## 4.2.0
+
+### BarGauge
+
+- feat: 对齐 Bar gauge 的方向、渐变、名称位置、文本色和值条尺寸配置
+- feat: 导入时保留上述 Bar gauge 配置；gradient 不再降级为 basic
+- refactor: 手动条尺寸收敛为单个宽度配置，兼容旧的 min/max 可视化尺寸配置
+- fix: 修复纵向布局的条背景与填充高度、Top 名称行间距和数值列宽度
+- compat: 保留原有排序、Top N、其他项和下钻链接行为

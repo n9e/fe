@@ -9,11 +9,29 @@
   .renderer-bar-gauge {
     height: 100%;
     width: 100%;
+    box-sizing: border-box;
     overflow-x: hidden;
     overflow-y: auto;
+    // 为出现的纵向滚动条预留槽位，避免覆盖数值列或条形内容。
+    scrollbar-gutter: stable;
+    // macOS 的 overlay scrollbar 不总会占用 gutter，额外留出安全边距。
+    padding-right: 6px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+  }
+  .renderer-bar-gauge-vertical {
+    flex-direction: row;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    // 垂直模式只会产生横向滚动；继承纵向滚动的 gutter 会令自动条宽多出几个像素。
+    scrollbar-gutter: auto;
+    padding-right: 0;
+    min-height: 0;
+    // overlay scrollbar 在部分平台会盖住底部条形，使用内边距承接该区域。
+    box-sizing: border-box;
+    padding-bottom: 6px;
   }
 }
 .renderer-bar-gauge-item {
@@ -21,6 +39,76 @@
   height: 18px;
   line-height: 18px;
   gap: 10px;
+  flex-shrink: 0;
+}
+.renderer-bar-gauge-item-name-top {
+  flex-direction: column;
+  height: auto;
+  gap: 2px;
+
+  .renderer-bar-gauge-item-name {
+    text-align: left;
+    width: 100%;
+  }
+
+  .renderer-bar-gauge-item-value {
+    min-height: 0;
+  }
+}
+.renderer-bar-gauge-item-name-bottom {
+  flex-direction: column;
+  height: auto;
+  gap: 2px;
+
+  .renderer-bar-gauge-item-name {
+    order: 2;
+    text-align: left;
+    width: 100%;
+  }
+
+  .renderer-bar-gauge-item-content {
+    order: 1;
+  }
+}
+.renderer-bar-gauge-item-vertical {
+  flex-direction: column;
+  height: 100%;
+  gap: 4px;
+  box-sizing: border-box;
+
+  .renderer-bar-gauge-item-name {
+    text-align: center;
+    width: 100%;
+  }
+
+  .renderer-bar-gauge-item-value {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .renderer-bar-gauge-item-content {
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+  }
+
+  .renderer-bar-gauge-item-value-bg {
+    bottom: 0;
+    height: 100%;
+  }
+
+  .renderer-bar-gauge-item-value-color-bg {
+    bottom: 0;
+    height: auto;
+  }
+
+  .renderer-bar-gauge-item-value-text {
+    order: -1;
+    width: 100%;
+    text-align: center;
+    line-height: 18px;
+  }
 }
 .renderer-bar-gauge-item-name {
   white-space: nowrap;
@@ -33,28 +121,42 @@
 }
 .renderer-bar-gauge-item-value {
   position: relative;
+  flex: 1;
 }
 .renderer-bar-gauge-item-value-bg {
   position: absolute;
-  height: 18px;
+  height: 100%;
   width: 100%;
 }
 .renderer-bar-gauge-item-value-color-bg {
   position: absolute;
-  height: 18px;
+  height: 100%;
   line-height: 18px;
   display: flex;
   justify-content: flex-end;
 }
 .renderer-bar-gauge-item-value-text {
-  padding-right: 8px;
-  position: relative;
+  flex-shrink: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+.renderer-bar-gauge-item-content {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  gap: 10px;
 }
 
 .renderer-bar-gauge-lcd {
   height: 100%;
+  box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   .renderer-bar-gauge-lcd-item {
     display: flex;
     gap: 10px;
@@ -70,8 +172,9 @@
     border-radius: 2px;
   }
   .renderer-bar-gauge-lcd-item-value {
-    width: 150px;
+    width: auto;
     flex-shrink: 0;
     text-align: right;
+    white-space: nowrap;
   }
 }

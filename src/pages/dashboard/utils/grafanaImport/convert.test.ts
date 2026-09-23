@@ -22,6 +22,45 @@ jest.mock(
 );
 
 describe('convertDashboardGrafanaToN9EWithReport', () => {
+  it('preserves supported bar gauge options without downgrading gradient', () => {
+    const { dashboard, report } = convertDashboardGrafanaToN9EWithReport({
+      schemaVersion: 42,
+      panels: [
+        {
+          id: 1,
+          type: 'bargauge',
+          gridPos: { h: 8, w: 12, x: 0, y: 0 },
+          targets: [{ refId: 'A', expr: 'up' }],
+          options: {
+            reduceOptions: { values: true, fields: ['Value'], limit: 12, calcs: ['max'] },
+            orientation: 'vertical',
+            displayMode: 'gradient',
+            valueMode: 'text',
+            namePlacement: 'top',
+            sizing: 'manual',
+            minVizWidth: 40,
+            minVizHeight: 24,
+            maxVizHeight: 48,
+          },
+        },
+      ],
+    });
+
+    expect(dashboard.configs.panels[0].custom).toMatchObject({
+      showMode: 'allValues',
+      fields: ['Value'],
+      limit: 12,
+      calc: 'max',
+      orientation: 'vertical',
+      displayMode: 'gradient',
+      valueMode: 'text',
+      namePlacement: 'top',
+      sizing: 'manual',
+      barWidth: 40,
+    });
+    expect(report.unsupportedItems).not.toEqual(expect.arrayContaining([expect.objectContaining({ reason: expect.stringContaining('gradient') })]));
+  });
+
   it('converts a modern prometheus dashboard to the current schema version', () => {
     const input = {
       schemaVersion: 42,

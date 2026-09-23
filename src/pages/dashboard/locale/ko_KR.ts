@@ -574,9 +574,27 @@ const ko_KR = {
           },
         },
         displayMode: '표시 모드',
+        namePlacement: {
+          label: '이름 위치',
+          options: {
+            auto: '자동',
+            top: '상단',
+            left: '왼쪽',
+            hidden: '숨기기',
+          },
+        },
+        sizing: {
+          label: '막대 크기',
+          options: {
+            auto: '자동',
+            manual: '수동',
+          },
+        },
+        barWidth: '너비',
         valueMode: {
           label: '값 표시',
           color: '표시',
+          text: '텍스트 색상',
           hidden: '숨기기',
         },
       },
