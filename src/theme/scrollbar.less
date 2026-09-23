@@ -1,0 +1,28 @@
+.best-looking-scrollbar-hover() {
+  &::-webkit-scrollbar,
+  &::-webkit-scrollbar-thumb {
+    visibility: visible;
+  }
+}
+
+.best-looking-scrollbar() {
+  &::-webkit-scrollbar {
+    width: 6px; // 竖向滚动条宽度
+    height: 6px; // 横向滚动条高度
+    visibility: hidden;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1); // 增加透明度
+    border-radius: 3px;
+    visibility: hidden;
+  }
+
+  &:hover {
+    .best-looking-scrollbar-hover();
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}
