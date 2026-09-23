@@ -261,7 +261,7 @@ function FormModal(props: Props & ModalWrapProps) {
 
             <Form.Item>
               <Button type='primary' htmlType='submit'>
-                {mode === 'create' ? t('common:btn.create') : t('common:btn.edit')}
+                {mode === 'create' ? t('common:btn.create') : t('common:btn.save')}
               </Button>
             </Form.Item>
           </Form>
