@@ -358,6 +358,7 @@ export default function index(props: Props) {
     stableOverrides,
     timezone,
     runtimeStore,
+    darkMode,
   ]);
   let data = processedFrames;
   const barGeometryVersion = _.map(baseSeries, (item) => _.get(item, ['n9e_internal', 'bucketInterval'], '')).join(',');

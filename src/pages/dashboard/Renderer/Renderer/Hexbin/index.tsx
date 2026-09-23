@@ -138,7 +138,7 @@ const HexbinContent: FunctionComponent<HoneyCombProps> = (props) => {
         renderFn(data, renderProps, detailFormatter);
       }
     }
-  }, [isPreview, dataDependency, stableOptions, svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain, fontBackground]);
+  }, [isPreview, dataDependency, stableOptions, svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain, fontBackground, themeMode]);
 
   return (
     <div ref={svgEl} style={{ width: '100%', height: '100%' }}>
