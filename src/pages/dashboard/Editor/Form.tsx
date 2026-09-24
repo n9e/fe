@@ -1,10 +1,12 @@
-import React, { useImperativeHandle, forwardRef, useContext, useLayoutEffect, useRef } from 'react';
+import React, { useImperativeHandle, forwardRef, useContext, useLayoutEffect, useRef, useState } from 'react';
 import { Form, Row, Col, Button, Space, Switch, Tooltip, Mentions, Collapse as AntdCollapse, Select } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
+import { useSize } from 'ahooks';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import queryString from 'query-string';
 import { useLocation } from 'react-router-dom';
+import { Resizable } from 're-resizable';
 
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
@@ -17,6 +19,7 @@ import Renderer from '../Renderer/Renderer';
 import { useGlobalState } from '../globalState';
 import QueryEditor from './QueryEditor';
 import VariablesMain from '../Variables/Main';
+import { clampEditorLayout, editorLayoutMinimums, readEditorLayout, writeEditorLayout } from './editorLayout';
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
 import type { IPanel } from '../types';
 
@@ -43,6 +46,28 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
   const values = Form.useWatch([], chartForm);
   const location = useLocation();
   const queryParams = location.search ? queryString.parse(location.search) : {};
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+  const editorContainerSize = useSize(editorContainerRef);
+  const [editorLayout, setEditorLayout] = useState(readEditorLayout);
+  const hasQueryEditor = !_.includes(['text', 'iframe'], type);
+  const layoutBounds = {
+    maxPreviewHeight:
+      hasQueryEditor && editorContainerSize?.height
+        ? Math.max(editorLayoutMinimums.previewHeight, editorContainerSize.height - editorLayoutMinimums.queryHeight - SIZE * 5)
+        : undefined,
+    maxSidebarWidth: editorContainerSize?.width
+      ? Math.max(editorLayoutMinimums.sidebarWidth, editorContainerSize.width - editorLayoutMinimums.workspaceWidth - SIZE * 2)
+      : undefined,
+  };
+  const constrainedEditorLayout = clampEditorLayout(editorLayout, layoutBounds);
+
+  const updateEditorLayout = (nextLayout: Partial<typeof editorLayout>, persist = false) => {
+    setEditorLayout((currentLayout) => {
+      const next = clampEditorLayout({ ...currentLayout, ...nextLayout }, layoutBounds);
+      if (persist) writeEditorLayout(next);
+      return next;
+    });
+  };
 
   defaultValues.custom = defaultCustomValuesMap[initialValues?.type || defaultValues.type];
 
@@ -76,26 +101,49 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
       <Form.Item name='layout' hidden>
         <div />
       </Form.Item>
-      <div
-        style={{
-          height: 'calc(100vh - 150px)',
-        }}
-      >
-        <Row
-          gutter={SIZE * 2}
-          style={{
-            flexWrap: 'nowrap',
-            height: '100%',
-          }}
-        >
-          <Col flex={1} style={{ minWidth: 100 }}>
-            <div className='n9e-dashboard-editor-modal-left-wrapper gap-4'>
-              <div className='n9e-dashboard-editor-modal-left-vars-wrapper gap-4'>
-                <span>{t('var.vars')}</span>
-                {/* 直接渲染变量选择器，避免依赖 portal 对 ref 变化不触发重渲染的问题 */}
-                <VariablesMain variableValueFixed={queryParams.__variable_value_fixed === 'true'} loading={false} />
-              </div>
-              <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper'>
+      <div className='n9e-dashboard-editor-modal-workspace' ref={editorContainerRef}>
+        <div className='n9e-dashboard-editor-modal-left-pane'>
+          <div className='n9e-dashboard-editor-modal-left-wrapper'>
+            <div className='n9e-dashboard-editor-modal-left-vars-wrapper gap-4'>
+              <span>{t('var.vars')}</span>
+              {/* 直接渲染变量选择器，避免依赖 portal 对 ref 变化不触发重渲染的问题 */}
+              <VariablesMain variableValueFixed={queryParams.__variable_value_fixed === 'true'} loading={false} />
+            </div>
+            {hasQueryEditor ? (
+              <Resizable
+                className='n9e-dashboard-editor-modal-left-chart-resizable'
+                size={{ width: '100%', height: constrainedEditorLayout.previewHeight }}
+                minHeight={editorLayoutMinimums.previewHeight}
+                maxHeight={layoutBounds.maxPreviewHeight}
+                enable={{ bottom: true }}
+                handleClasses={{ bottom: 'n9e-dashboard-editor-resize-handle n9e-dashboard-editor-resize-handle-horizontal' }}
+                onResize={(_event, _direction, element) => {
+                  updateEditorLayout({ previewHeight: element.offsetHeight });
+                }}
+                onResizeStop={(_event, _direction, element) => {
+                  updateEditorLayout({ previewHeight: element.offsetHeight }, true);
+                }}
+              >
+                <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper'>
+                  {values && (
+                    <Renderer
+                      id={`${id}__editor__`}
+                      panelWidth={panelWidth}
+                      time={range}
+                      timezone={timezone}
+                      values={values}
+                      isPreview
+                      themeMode={darkMode ? 'dark' : undefined}
+                      annotations={[]}
+                      onOverridesChange={(overrides) => {
+                        chartForm.setFieldsValue({ overrides });
+                      }}
+                    />
+                  )}
+                </div>
+              </Resizable>
+            ) : (
+              <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper n9e-dashboard-editor-modal-left-chart-wrapper-full'>
                 {values && (
                   <Renderer
                     id={`${id}__editor__`}
@@ -112,14 +160,29 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
                   />
                 )}
               </div>
-              {!_.includes(['text', 'iframe'], type) && (
-                <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
-                  <QueryEditor panelWidth={panelWidth} type={type} variablesWithOptions={variablesWithOptions} range={range} />
-                </div>
-              )}
-            </div>
-          </Col>
-          <Col flex='600px' style={{ overflowY: 'auto' }}>
+            )}
+            {hasQueryEditor && (
+              <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
+                <QueryEditor panelWidth={panelWidth} type={type} variablesWithOptions={variablesWithOptions} range={range} />
+              </div>
+            )}
+          </div>
+        </div>
+        <Resizable
+          className='n9e-dashboard-editor-modal-options-resizable'
+          size={{ width: constrainedEditorLayout.sidebarWidth, height: '100%' }}
+          minWidth={editorLayoutMinimums.sidebarWidth}
+          maxWidth={layoutBounds.maxSidebarWidth}
+          enable={{ left: true }}
+          handleClasses={{ left: 'n9e-dashboard-editor-resize-handle n9e-dashboard-editor-resize-handle-vertical' }}
+          onResize={(_event, _direction, element) => {
+            updateEditorLayout({ sidebarWidth: element.offsetWidth });
+          }}
+          onResizeStop={(_event, _direction, element) => {
+            updateEditorLayout({ sidebarWidth: element.offsetWidth }, true);
+          }}
+        >
+          <div className='n9e-dashboard-editor-modal-options-wrapper'>
             <Collapse>
               <Panel header={t('panel.base.title')}>
                 <>
@@ -286,8 +349,8 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
                 }}
               </Form.Item>
             </Collapse>
-          </Col>
-        </Row>
+          </div>
+        </Resizable>
       </div>
     </Form>
   );

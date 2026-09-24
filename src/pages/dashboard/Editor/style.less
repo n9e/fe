@@ -2,11 +2,26 @@
   max-width: 100% !important;
   height: 100% !important;
 
+  .n9e-dashboard-editor-modal-workspace {
+    display: flex;
+    gap: 16px;
+    height: calc(100vh - 150px);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .n9e-dashboard-editor-modal-left-pane {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 0;
+  }
+
   .n9e-dashboard-editor-modal-left-wrapper {
     display: flex;
     flex-direction: column;
     gap: 16px;
     height: 100%;
+    min-height: 0;
   }
 
   .n9e-dashboard-editor-modal-left-vars-wrapper {
@@ -17,17 +32,140 @@
   }
 
   .n9e-dashboard-editor-modal-left-chart-wrapper {
-    height: 300px;
-    flex-shrink: 0;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .n9e-dashboard-editor-modal-left-chart-wrapper-full {
+    flex: 1;
+    height: auto;
+  }
+
+  .n9e-dashboard-editor-modal-left-chart-resizable {
+    min-width: 0;
   }
 
   .n9e-dashboard-editor-modal-left-query-wrapper {
+    flex: 1;
+    min-height: 240px;
     overflow-x: hidden;
     overflow-y: auto;
   }
 
+  .n9e-dashboard-editor-modal-options-resizable {
+    min-height: 0;
+  }
+
+  .n9e-dashboard-editor-modal-options-wrapper {
+    height: 100%;
+    overflow-y: auto;
+    container-name: dashboard-editor-options;
+    container-type: inline-size;
+
+    // 仅让各配置面板的第一层 Row 换行，嵌套的表格/映射编辑器维持原有列布局。
+    .n9e-collapse-content-box > .ant-row {
+      flex-wrap: wrap;
+    }
+
+    .ant-radio-group {
+      white-space: nowrap;
+    }
+  }
+
+  .n9e-dashboard-editor-options-radio-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 16px;
+    align-items: flex-start;
+  }
+
+  .n9e-dashboard-editor-resize-handle {
+    z-index: 2;
+
+    &::after {
+      position: absolute;
+      display: block;
+      content: '';
+      background-color: transparent;
+      transition: background-color 0.15s ease;
+    }
+
+    &:hover::after {
+      background-color: var(--fc-primary-color);
+    }
+  }
+
+  .n9e-dashboard-editor-resize-handle-horizontal::after {
+    top: 3px;
+    left: 50%;
+    width: 200px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--fc-fill-4);
+    transform: translateX(-50%);
+  }
+
+  .n9e-dashboard-editor-resize-handle-horizontal::before {
+    position: absolute;
+    top: 4px;
+    right: 0;
+    left: 0;
+    display: block;
+    height: 1px;
+    content: '';
+    background-color: transparent;
+    transition: background-color 0.15s ease;
+  }
+
+  .n9e-dashboard-editor-resize-handle-horizontal:hover::before {
+    background-color: var(--fc-primary-color);
+  }
+
+  .n9e-dashboard-editor-resize-handle-vertical::after {
+    top: 50%;
+    bottom: auto;
+    left: 3px;
+    width: 4px;
+    height: 200px;
+    border-radius: 2px;
+    background-color: var(--fc-fill-4);
+    transform: translateY(-50%);
+  }
+
+  .n9e-dashboard-editor-resize-handle-vertical::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 4px;
+    display: block;
+    width: 1px;
+    content: '';
+    background-color: transparent;
+    transition: background-color 0.15s ease;
+  }
+
+  .n9e-dashboard-editor-resize-handle-vertical:hover::before {
+    background-color: var(--fc-primary-color);
+  }
+
   .ant-modal-content {
     height: 100% !important;
+  }
+}
+
+// Ant Design 的断点只随浏览器视口变化，编辑器侧栏却可以在大屏内单独拖窄。
+// 按侧栏宽度模拟 xs/sm：中等宽度最多两列，较窄时收为单列。
+@container dashboard-editor-options (min-width: 420px) and (max-width: 519.98px) {
+  .n9e-dashboard-editor-modal .n9e-collapse-content-box > .ant-row:not(.ant-form-item) > .ant-col:not(.ant-col-24) {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@container dashboard-editor-options (max-width: 419.98px) {
+  .n9e-dashboard-editor-modal .n9e-collapse-content-box > .ant-row:not(.ant-form-item) > .ant-col:not(.ant-col-24) {
+    flex: 0 0 100%;
+    max-width: 100%;
   }
 }
 
