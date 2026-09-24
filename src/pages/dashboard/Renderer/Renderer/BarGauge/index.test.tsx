@@ -101,10 +101,31 @@ describe('BarGauge display options', () => {
     expect(view.container.querySelectorAll('.renderer-bar-gauge-item')).toHaveLength(2);
   });
 
-  it('uses one manual bar width for horizontal rows', () => {
-    const view = renderGauge({ orientation: 'horizontal', sizing: 'manual', barWidth: 28 });
+  it('formats and colors the combined other item in LCD mode', () => {
+    const view = renderGauge({ displayMode: 'lcd', topn: 1, combine_other: true });
+    const items = view.container.querySelectorAll('.renderer-bar-gauge-lcd-item');
 
-    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ height: '28px' });
+    expect(items).toHaveLength(2);
+    expect(items[1]).toHaveTextContent('Other');
+    expect(items[1].querySelector('.renderer-bar-gauge-lcd-item-value')).toHaveStyle({ color: '#00ff00' });
+  });
+
+  it('uses the larger of automatic size and manual minimum width in vertical mode', () => {
+    const view = renderGauge({ orientation: 'vertical', sizing: 'manual', minVizWidth: 170 });
+
+    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ width: '170px' });
+  });
+
+  it('keeps the automatic width when it exceeds the manual minimum width in vertical mode', () => {
+    const view = renderGauge({ orientation: 'vertical', sizing: 'manual', minVizWidth: 40 });
+
+    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ width: '155px' });
+  });
+
+  it('clamps manual horizontal rows between their minimum and maximum heights', () => {
+    const view = renderGauge({ orientation: 'horizontal', sizing: 'manual', minVizHeight: 18, maxVizHeight: 18 });
+
+    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ height: '18px' });
   });
 
   it('uses panel height to size automatic horizontal rows', () => {

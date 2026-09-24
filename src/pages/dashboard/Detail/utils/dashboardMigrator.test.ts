@@ -357,15 +357,20 @@ describe('dashboard v4 migration', () => {
     expect(migrated.panels[1]).not.toHaveProperty('version');
   });
 
-  it('migrates manual bar dimensions to one bar width for v4.2', () => {
+  it('adds the legacy 18px fixed height to pre-v4.2 bar gauges', () => {
     const panel = dashboardMigrator({
       version: '4.1.0',
-      panels: [{ id: 'ranking', type: 'barGauge', custom: { sizing: 'manual', minVizHeight: 24, minVizWidth: 40 }, options: {}, targets: [] }],
+      panels: [{ id: 'ranking', type: 'barGauge', custom: {}, options: {}, targets: [] }],
     }).panels[0];
 
-    expect(panel.custom).toMatchObject({ showMode: 'calculate', orientation: 'horizontal', namePlacement: 'left', sizing: 'manual', barWidth: 24 });
-    expect(panel.custom).not.toHaveProperty('minVizHeight');
-    expect(panel.custom).not.toHaveProperty('minVizWidth');
+    expect(panel.custom).toMatchObject({
+      showMode: 'calculate',
+      orientation: 'horizontal',
+      namePlacement: 'left',
+      sizing: 'manual',
+      minVizHeight: 18,
+      maxVizHeight: 18,
+    });
   });
 
   it('keeps pre-v4.2 bar gauges horizontal with their legacy fixed row height', () => {
@@ -374,7 +379,7 @@ describe('dashboard v4 migration', () => {
       panels: [{ id: 'ranking', type: 'barGauge', custom: {}, options: {}, targets: [] }],
     }).panels[0];
 
-    expect(panel.custom).toMatchObject({ orientation: 'horizontal', namePlacement: 'left', sizing: 'manual', barWidth: 18 });
+    expect(panel.custom).toMatchObject({ orientation: 'horizontal', namePlacement: 'left', sizing: 'manual', minVizHeight: 18, maxVizHeight: 18 });
   });
 
   it('returns an empty dashboard for invalid input and drops invalid panels and targets', () => {

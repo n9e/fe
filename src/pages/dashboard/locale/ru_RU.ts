@@ -636,6 +636,7 @@ const ru_RU = {
           options: {
             auto: 'Автоматически',
             top: 'Сверху',
+            bottom: 'Снизу',
             left: 'Слева',
             hidden: 'Скрытый',
           },
@@ -647,7 +648,9 @@ const ru_RU = {
             manual: 'Вручную',
           },
         },
-        barWidth: 'Ширина',
+        minVizWidth: 'Минимальная ширина',
+        minVizHeight: 'Минимальная высота',
+        maxVizHeight: 'Максимальная высота',
         valueMode: {
           label: 'Значение',
           color: 'Цвет',

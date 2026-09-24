@@ -585,6 +585,7 @@ const es_ES = {
           options: {
             auto: 'Automático',
             top: 'Arriba',
+            bottom: 'Abajo',
             left: 'Izquierda',
             hidden: 'Ocultar',
           },
@@ -596,7 +597,9 @@ const es_ES = {
             manual: 'Manual',
           },
         },
-        barWidth: 'Ancho',
+        minVizWidth: 'Ancho mínimo',
+        minVizHeight: 'Altura mínima',
+        maxVizHeight: 'Altura máxima',
         valueMode: {
           label: 'Visualización del valor',
           color: 'Mostrar',

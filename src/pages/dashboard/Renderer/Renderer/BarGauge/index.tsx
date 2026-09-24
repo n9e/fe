@@ -66,7 +66,6 @@ export default function BarGauge(props: IProps) {
     orientation = 'horizontal',
     namePlacement = 'auto',
     sizing = 'auto',
-    barWidth,
     minVizWidth,
     minVizHeight,
     maxVizHeight,
@@ -84,9 +83,8 @@ export default function BarGauge(props: IProps) {
     otherPosition?: 'top' | 'bottom' | 'none';
     nameField?: string;
     orientation?: 'auto' | 'horizontal' | 'vertical';
-    namePlacement?: 'auto' | 'top' | 'left' | 'hidden';
+    namePlacement?: 'auto' | 'top' | 'bottom' | 'left' | 'hidden';
     sizing?: 'auto' | 'manual';
-    barWidth?: number;
     minVizWidth?: number;
     minVizHeight?: number;
     maxVizHeight?: number;
@@ -160,13 +158,16 @@ export default function BarGauge(props: IProps) {
           dateFormat: options?.standardOptions?.dateFormat,
         },
         options?.valueMappings,
+        options?.thresholds,
       );
       const otherOption = {
         id: 'other',
         name: 'Other',
+        metric: {},
         stat: sumValue,
         value: textObj?.value,
         unit: textObj?.unit,
+        color: textObj?.color,
       };
       if (otherPosition === 'top') {
         calculatedValues = _.concat([otherOption as CalculatedSeriesValue], items);
@@ -187,7 +188,7 @@ export default function BarGauge(props: IProps) {
   const resolvedOrientation: 'horizontal' | 'vertical' =
     orientation === 'auto' ? (containerSize && containerSize.width > containerSize.height ? 'vertical' : 'horizontal') : orientation;
   const resolvedNamePlacement: 'top' | 'bottom' | 'left' | 'hidden' =
-    resolvedOrientation === 'vertical' ? (namePlacement === 'hidden' ? 'hidden' : 'bottom') : namePlacement === 'auto' ? 'left' : namePlacement;
+    resolvedOrientation === 'vertical' ? (namePlacement === 'hidden' ? 'hidden' : 'bottom') : namePlacement === 'auto' || namePlacement === 'bottom' ? 'left' : namePlacement;
   const itemSpacing = displayMode === 'lcd' ? 2 : 10;
   const itemCount = Math.max(calculatedValues.length, 1);
   const horizontalNameHeight = resolvedOrientation === 'horizontal' && (resolvedNamePlacement === 'top' || resolvedNamePlacement === 'bottom') ? 20 : 0;
@@ -198,10 +199,13 @@ export default function BarGauge(props: IProps) {
           DEFAULT_MAX_VIZ_HEIGHT,
           Math.max(DEFAULT_MIN_VIZ_HEIGHT, Math.floor(((containerSize?.height ?? 0) - itemSpacing * (itemCount - 1) - horizontalNameHeight * itemCount) / itemCount)),
         );
+  const manualMinHeight = minVizHeight ?? DEFAULT_MIN_VIZ_HEIGHT;
   const barSize =
-    sizing === 'manual'
-      ? barWidth ?? (resolvedOrientation === 'vertical' ? minVizWidth ?? DEFAULT_MIN_VIZ_WIDTH : minVizHeight ?? maxVizHeight ?? DEFAULT_MIN_VIZ_HEIGHT)
-      : automaticBarSize;
+    sizing !== 'manual'
+      ? automaticBarSize
+      : resolvedOrientation === 'vertical'
+      ? Math.max(automaticBarSize, minVizWidth ?? DEFAULT_MIN_VIZ_WIDTH)
+      : Math.min(Math.max(automaticBarSize, manualMinHeight), Math.max(maxVizHeight ?? DEFAULT_MAX_VIZ_HEIGHT, manualMinHeight));
   const itemStyle: CSSProperties =
     resolvedOrientation === 'vertical'
       ? { width: `${barSize}px`, minWidth: `${barSize}px` }
@@ -265,7 +269,7 @@ export default function BarGauge(props: IProps) {
                   maxValue={maxValue as number}
                   maxNameWidth={maxNameWidth}
                   maxValueWidth={maxValueWidth}
-                  barWidth={barSize}
+                  itemWidth={barSize}
                   orientation={resolvedOrientation}
                   namePlacement={resolvedNamePlacement}
                   itemStyle={itemStyle}

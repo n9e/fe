@@ -584,6 +584,7 @@ const id_ID = {
           options: {
             auto: 'Otomatis',
             top: 'Atas',
+            bottom: 'Bawah',
             left: 'Kiri',
             hidden: 'Sembunyikan',
           },
@@ -595,7 +596,9 @@ const id_ID = {
             manual: 'Manual',
           },
         },
-        barWidth: 'Lebar',
+        minVizWidth: 'Lebar minimum',
+        minVizHeight: 'Tinggi minimum',
+        maxVizHeight: 'Tinggi maksimum',
         valueMode: {
           label: 'Tampilan nilai',
           color: 'Tampilkan',

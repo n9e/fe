@@ -151,7 +151,9 @@ function convertBarGaugeCustom(panel: GrafanaPanel): Record<string, unknown> {
   const valueMode = ['color', 'text', 'hidden'].includes(options.valueMode) ? options.valueMode : undefined;
   const namePlacement = ['auto', 'top', 'left', 'hidden'].includes(options.namePlacement) ? options.namePlacement : undefined;
   const sizing = ['auto', 'manual'].includes(options.sizing) ? options.sizing : undefined;
-  const barWidth = sizing === 'manual' ? (orientation === 'vertical' ? options.minVizWidth : options.minVizHeight) ?? options.maxVizHeight : undefined;
+  const minVizWidth = sizing === 'manual' && orientation === 'vertical' ? options.minVizWidth : undefined;
+  const minVizHeight = sizing === 'manual' && orientation !== 'vertical' ? options.minVizHeight : undefined;
+  const maxVizHeight = sizing === 'manual' && orientation !== 'vertical' ? options.maxVizHeight : undefined;
   const fields = Array.isArray(reduceOptions.fields) ? reduceOptions.fields : reduceOptions.fields ? [reduceOptions.fields] : undefined;
   return {
     calc: normalizeCalc(reduceOptions.calcs?.[0]),
@@ -163,7 +165,9 @@ function convertBarGaugeCustom(panel: GrafanaPanel): Record<string, unknown> {
     ...(valueMode ? { valueMode } : {}),
     ...(namePlacement ? { namePlacement } : {}),
     ...(sizing ? { sizing } : {}),
-    ...(typeof barWidth === 'number' ? { barWidth } : {}),
+    ...(typeof minVizWidth === 'number' ? { minVizWidth } : {}),
+    ...(typeof minVizHeight === 'number' ? { minVizHeight } : {}),
+    ...(typeof maxVizHeight === 'number' ? { maxVizHeight } : {}),
   };
 }
 

@@ -664,6 +664,7 @@ const ja_JP = {
           options: {
             auto: '自動',
             top: '上部',
+            bottom: '下部',
             left: '左',
             hidden: '非表示',
           },
@@ -675,7 +676,9 @@ const ja_JP = {
             manual: '手動',
           },
         },
-        barWidth: '幅',
+        minVizWidth: '最小幅',
+        minVizHeight: '最小高さ',
+        maxVizHeight: '最大高さ',
         valueMode: {
           label: '値の表示モード',
           color: '色',

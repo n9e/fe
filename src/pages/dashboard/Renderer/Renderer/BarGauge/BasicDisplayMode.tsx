@@ -19,7 +19,7 @@ interface Props {
   maxValue: number;
   maxNameWidth: number;
   maxValueWidth: number;
-  barWidth: number;
+  itemWidth: number;
   orientation: 'horizontal' | 'vertical';
   namePlacement: 'top' | 'bottom' | 'left' | 'hidden';
   itemStyle?: CSSProperties;
@@ -27,7 +27,7 @@ interface Props {
 
 export default function BasicDisplayMode(props: Props) {
   const replaceTemplateVariables = useReplaceTemplateVariables();
-  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxValueWidth, barWidth, orientation, namePlacement, itemStyle } = props;
+  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxValueWidth, itemWidth, orientation, namePlacement, itemStyle } = props;
   const metric = item.metric;
   const { serieWidth, detailUrl, nameField, valueMode = 'color', displayMode = 'basic' } = custom as IBarGaugeStyles;
   const { thresholds } = options;
@@ -36,7 +36,7 @@ export default function BasicDisplayMode(props: Props) {
   const color = item.color ? item.color : baseColor;
   const isVertical = orientation === 'vertical';
   const valueText = `${item.value ?? ''}${item.unit ?? ''}`;
-  const verticalValueFontSize = isVertical ? Math.max(4, Math.min(18, Math.floor((Math.max(barWidth - 4, 1) / Math.max(getTextWidth(valueText), 1)) * 12))) : undefined;
+  const verticalValueFontSize = isVertical ? Math.max(4, Math.min(18, Math.floor((Math.max(itemWidth - 4, 1) / Math.max(getTextWidth(valueText), 1)) * 12))) : undefined;
   const gradient =
     displayMode === 'gradient' ? getGradientBackground(thresholds, minValue, maxValue, color, isVertical ? 'to top' : 'to right') : Color(color).alpha(0.2).rgb().string();
 

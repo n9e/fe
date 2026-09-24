@@ -666,6 +666,7 @@ const en_US = {
           options: {
             auto: 'Auto',
             top: 'Top',
+            bottom: 'Bottom',
             left: 'Left',
             hidden: 'Hidden',
           },
@@ -677,7 +678,9 @@ const en_US = {
             manual: 'Manual',
           },
         },
-        barWidth: 'Width',
+        minVizWidth: 'Minimum width',
+        minVizHeight: 'Minimum height',
+        maxVizHeight: 'Maximum height',
         valueMode: {
           label: 'Value display',
           color: 'Color',

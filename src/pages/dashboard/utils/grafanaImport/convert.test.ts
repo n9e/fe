@@ -56,9 +56,37 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
       valueMode: 'text',
       namePlacement: 'top',
       sizing: 'manual',
-      barWidth: 40,
+      minVizWidth: 40,
     });
     expect(report.unsupportedItems).not.toEqual(expect.arrayContaining([expect.objectContaining({ reason: expect.stringContaining('gradient') })]));
+  });
+
+  it('maps manual height bounds for horizontal bar gauges', () => {
+    const { dashboard } = convertDashboardGrafanaToN9EWithReport({
+      schemaVersion: 42,
+      panels: [
+        {
+          id: 1,
+          type: 'bargauge',
+          gridPos: { h: 8, w: 12, x: 0, y: 0 },
+          targets: [{ refId: 'A', expr: 'up' }],
+          options: {
+            reduceOptions: { calcs: ['lastNotNull'] },
+            orientation: 'horizontal',
+            sizing: 'manual',
+            minVizHeight: 18,
+            maxVizHeight: 36,
+          },
+        },
+      ],
+    });
+
+    expect(dashboard.configs.panels[0].custom).toMatchObject({
+      orientation: 'horizontal',
+      sizing: 'manual',
+      minVizHeight: 18,
+      maxVizHeight: 36,
+    });
   });
 
   it('converts a modern prometheus dashboard to the current schema version', () => {

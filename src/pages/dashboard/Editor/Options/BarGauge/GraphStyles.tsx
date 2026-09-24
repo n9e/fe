@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Form, Select, Row, Col, InputNumber, Input, Switch } from 'antd';
+import { Form, Select, Row, Col, InputNumber, Input, Switch, Space } from 'antd';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -40,8 +40,10 @@ export default function GraphStyles() {
   }, []);
 
   useEffect(() => {
-    if (orientation === 'vertical' && namePlacement !== 'auto' && namePlacement !== 'hidden') {
-      form.setFieldsValue({ custom: { ...form.getFieldValue('custom'), namePlacement: 'auto' } });
+    const isVertical = orientation === 'vertical';
+    const validNamePlacements = isVertical ? ['bottom', 'hidden'] : ['top', 'left', 'hidden'];
+    if (!validNamePlacements.includes(namePlacement)) {
+      form.setFieldsValue({ custom: { ...form.getFieldValue('custom'), namePlacement: isVertical ? 'bottom' : 'left' } });
     }
   }, [form, namePlacement, orientation]);
 
@@ -91,25 +93,6 @@ export default function GraphStyles() {
         </Row>
         <Row gutter={10}>
           <Col span={12}>
-            <Form.Item label={t('panel.custom.serieWidth')}>
-              <Input.Group>
-                <Form.Item noStyle name={[...namePrefix, 'serieWidth']}>
-                  <InputNumber style={{ width: '100%' }} placeholder='auto' />
-                </Form.Item>
-                <span className='ant-input-group-addon'>%</span>
-              </Input.Group>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label={t('panel.custom.sortOrder')} name={[...namePrefix, 'sortOrder']}>
-              <Select>
-                <Select.Option value='none'>None</Select.Option>
-                <Select.Option value='asc'>Asc</Select.Option>
-                <Select.Option value='desc'>Desc</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={12}>
             <Form.Item label={t('panel.custom.barGauge.displayMode')} name={[...namePrefix, 'displayMode']}>
               <Select>
                 <Select.Option value='basic'>Basic</Select.Option>
@@ -127,46 +110,61 @@ export default function GraphStyles() {
               </Select>
             </Form.Item>
           </Col>
+        </Row>
+        <Row gutter={10}>
           <Col span={8}>
-            <Form.Item label={t('panel.custom.barGauge.topn')} name={[...namePrefix, 'topn']}>
-              <InputNumber style={{ width: '100%' }} />
+            <Form.Item label={t('panel.custom.sortOrder')} name={[...namePrefix, 'sortOrder']}>
+              <Select>
+                <Select.Option value='none'>None</Select.Option>
+                <Select.Option value='asc'>Asc</Select.Option>
+                <Select.Option value='desc'>Desc</Select.Option>
+              </Select>
             </Form.Item>
           </Col>
-          <Col span={8}>
-            <Form.Item
-              label={t('panel.custom.barGauge.combine_other')}
-              tooltip={t('panel.custom.barGauge.combine_other_tip')}
-              name={[...namePrefix, 'combine_other']}
-              valuePropName='checked'
-            >
-              <Switch />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              label={t('panel.custom.barGauge.otherPosition.label')}
-              tooltip={t('panel.custom.barGauge.otherPosition.tip')}
-              name={[...namePrefix, 'otherPosition']}
-              initialValue='none'
-              hidden={!combine_other}
-            >
-              <Select
-                options={[
-                  {
-                    label: t('panel.custom.barGauge.otherPosition.options.none'),
-                    value: 'none',
-                  },
-                  {
-                    label: t('panel.custom.barGauge.otherPosition.options.top'),
-                    value: 'top',
-                  },
-                  {
-                    label: t('panel.custom.barGauge.otherPosition.options.bottom'),
-                    value: 'bottom',
-                  },
-                ]}
-              />
-            </Form.Item>
+          <Col span={16}>
+            <Row gutter={10} wrap={false}>
+              <Col flex='auto' style={{ minWidth: 0 }}>
+                <Form.Item label={t('panel.custom.barGauge.topn')} name={[...namePrefix, 'topn']}>
+                  <InputNumber style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col flex='none'>
+                <Space size={10} align='end'>
+                  <Form.Item
+                    label={t('panel.custom.barGauge.combine_other')}
+                    tooltip={t('panel.custom.barGauge.combine_other_tip')}
+                    name={[...namePrefix, 'combine_other']}
+                    valuePropName='checked'
+                  >
+                    <Switch />
+                  </Form.Item>
+                  <Form.Item
+                    label={t('panel.custom.barGauge.otherPosition.label')}
+                    tooltip={t('panel.custom.barGauge.otherPosition.tip')}
+                    name={[...namePrefix, 'otherPosition']}
+                    initialValue='none'
+                    hidden={!combine_other}
+                  >
+                    <Select
+                      options={[
+                        {
+                          label: t('panel.custom.barGauge.otherPosition.options.none'),
+                          value: 'none',
+                        },
+                        {
+                          label: t('panel.custom.barGauge.otherPosition.options.top'),
+                          value: 'top',
+                        },
+                        {
+                          label: t('panel.custom.barGauge.otherPosition.options.bottom'),
+                          value: 'bottom',
+                        },
+                      ]}
+                    />
+                  </Form.Item>
+                </Space>
+              </Col>
+            </Row>
           </Col>
         </Row>
         <Row gutter={10}>
@@ -187,11 +185,10 @@ export default function GraphStyles() {
                 options={
                   orientation === 'vertical'
                     ? [
-                        { label: t('panel.custom.barGauge.namePlacement.options.auto'), value: 'auto' },
+                        { label: t('panel.custom.barGauge.namePlacement.options.bottom'), value: 'bottom' },
                         { label: t('panel.custom.barGauge.namePlacement.options.hidden'), value: 'hidden' },
                       ]
                     : [
-                        { label: t('panel.custom.barGauge.namePlacement.options.auto'), value: 'auto' },
                         { label: t('panel.custom.barGauge.namePlacement.options.top'), value: 'top' },
                         { label: t('panel.custom.barGauge.namePlacement.options.left'), value: 'left' },
                         { label: t('panel.custom.barGauge.namePlacement.options.hidden'), value: 'hidden' },
@@ -200,6 +197,20 @@ export default function GraphStyles() {
               />
             </Form.Item>
           </Col>
+          {orientation === 'horizontal' && (
+            <Col span={8}>
+              <Form.Item label={t('panel.custom.serieWidth')}>
+                <Input.Group>
+                  <Form.Item noStyle name={[...namePrefix, 'serieWidth']}>
+                    <InputNumber style={{ width: '100%' }} placeholder='auto' />
+                  </Form.Item>
+                  <span className='ant-input-group-addon'>%</span>
+                </Input.Group>
+              </Form.Item>
+            </Col>
+          )}
+        </Row>
+        <Row gutter={10}>
           <Col span={8}>
             <Form.Item label={t('panel.custom.barGauge.sizing.label')} name={[...namePrefix, 'sizing']}>
               <Select
@@ -210,16 +221,28 @@ export default function GraphStyles() {
               />
             </Form.Item>
           </Col>
-        </Row>
-        {sizing === 'manual' && (
-          <Row gutter={10}>
+          {sizing === 'manual' && orientation === 'vertical' && (
             <Col span={8}>
-              <Form.Item label={t('panel.custom.barGauge.barWidth')} name={[...namePrefix, 'barWidth']}>
+              <Form.Item label={t('panel.custom.barGauge.minVizWidth')} name={[...namePrefix, 'minVizWidth']}>
                 <InputNumber min={1} addonAfter='px' style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-          </Row>
-        )}
+          )}
+          {sizing === 'manual' && orientation !== 'vertical' && (
+            <>
+              <Col span={8}>
+                <Form.Item label={t('panel.custom.barGauge.minVizHeight')} name={[...namePrefix, 'minVizHeight']}>
+                  <InputNumber min={1} addonAfter='px' style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label={t('panel.custom.barGauge.maxVizHeight')} name={[...namePrefix, 'maxVizHeight']}>
+                  <InputNumber min={1} addonAfter='px' style={{ width: '100%' }} />
+                </Form.Item>
+              </Col>
+            </>
+          )}
+        </Row>
         <Row gutter={10}>
           <Col span={24}>
             <Form.Item

@@ -669,6 +669,7 @@ const zh_CN = {
           options: {
             auto: '自动',
             top: '顶部',
+            bottom: '底部',
             left: '左侧',
             hidden: '隐藏',
           },
@@ -680,7 +681,9 @@ const zh_CN = {
             manual: '手动',
           },
         },
-        barWidth: '宽度',
+        minVizWidth: '最小宽度',
+        minVizHeight: '最小高度',
+        maxVizHeight: '最大高度',
         valueMode: {
           label: '数值显示',
           color: '显示',

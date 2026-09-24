@@ -118,8 +118,9 @@ export const defaultCustomValuesMap = {
     baseColor: '#9470FF',
     displayMode: 'basic',
     orientation: 'horizontal',
-    namePlacement: 'auto',
+    namePlacement: 'left',
     sizing: 'auto',
+    minVizWidth: 40,
     sortOrder: 'desc',
     otherPosition: 'none',
     valueMode: 'color', // 'color' | 'hidden'

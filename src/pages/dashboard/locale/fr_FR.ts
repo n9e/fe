@@ -588,6 +588,7 @@ const fr_FR = {
           options: {
             auto: 'Automatique',
             top: 'Haut',
+            bottom: 'Bas',
             left: 'Gauche',
             hidden: 'Masquer',
           },
@@ -599,7 +600,9 @@ const fr_FR = {
             manual: 'Manuel',
           },
         },
-        barWidth: 'Largeur',
+        minVizWidth: 'Largeur minimale',
+        minVizHeight: 'Hauteur minimale',
+        maxVizHeight: 'Hauteur maximale',
         valueMode: {
           label: 'Affichage des valeurs',
           color: 'Afficher',

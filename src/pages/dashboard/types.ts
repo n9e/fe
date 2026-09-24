@@ -255,14 +255,10 @@ export interface IBarGaugeStyles {
   detailUrl: string | undefined;
   valueMode: 'color' | 'text' | 'hidden';
   orientation?: 'auto' | 'horizontal' | 'vertical';
-  namePlacement?: 'auto' | 'top' | 'left' | 'hidden';
+  namePlacement?: 'auto' | 'top' | 'bottom' | 'left' | 'hidden';
   sizing?: 'auto' | 'manual';
-  barWidth?: number;
-  /** @deprecated v4.2 起统一迁移为 barWidth，仅用于读取旧配置。 */
   minVizWidth?: number;
-  /** @deprecated v4.2 起统一迁移为 barWidth，仅用于读取旧配置。 */
   minVizHeight?: number;
-  /** @deprecated v4.2 起统一迁移为 barWidth，仅用于读取旧配置。 */
   maxVizHeight?: number;
 }
 

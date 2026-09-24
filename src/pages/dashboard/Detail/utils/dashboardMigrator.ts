@@ -45,11 +45,6 @@ type LegacyCustom = JsonObject & {
   maxValue?: number;
   baseColor?: string;
   stack?: string;
-  sizing?: 'auto' | 'manual';
-  barWidth?: number;
-  minVizWidth?: number;
-  minVizHeight?: number;
-  maxVizHeight?: number;
 };
 
 type LegacyOverride = JsonObject & {
@@ -233,20 +228,16 @@ const migrateBarGaugeToV42 = (panel: LegacyPanel): LegacyPanel => {
   const panelWithChildren = Array.isArray(panel.panels) ? { ...panel, panels: panel.panels.map(migrateBarGaugeToV42) } : panel;
   if (panelWithChildren.type !== 'barGauge') return panelWithChildren;
   const custom = panelWithChildren.custom ?? {};
-  // 4.2.0 之前的排行榜始终按横向固定 18px 行高渲染。迁移时保留这套视觉，
-  // 新建面板再使用 v4.2.0 的 auto 默认值。
-  const barWidth = custom.barWidth ?? custom.minVizHeight ?? custom.minVizWidth ?? custom.maxVizHeight ?? 18;
   const customCopy = {
     ...custom,
     showMode: custom.showMode ?? 'calculate',
     orientation: custom.orientation ?? 'horizontal',
     namePlacement: custom.namePlacement ?? 'left',
     sizing: custom.sizing ?? 'manual',
-    barWidth,
+    // 4.2.0 之前排行榜的行高固定为 18px。
+    minVizHeight: 18,
+    maxVizHeight: 18,
   };
-  delete customCopy.minVizWidth;
-  delete customCopy.minVizHeight;
-  delete customCopy.maxVizHeight;
   return { ...panelWithChildren, custom: customCopy };
 };
 

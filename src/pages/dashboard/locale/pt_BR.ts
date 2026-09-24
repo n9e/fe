@@ -584,6 +584,7 @@ const pt_BR = {
           options: {
             auto: 'Automático',
             top: 'Topo',
+            bottom: 'Abaixo',
             left: 'Esquerda',
             hidden: 'Ocultar',
           },
@@ -595,7 +596,9 @@ const pt_BR = {
             manual: 'Manual',
           },
         },
-        barWidth: 'Largura',
+        minVizWidth: 'Largura mínima',
+        minVizHeight: 'Altura mínima',
+        maxVizHeight: 'Altura máxima',
         valueMode: {
           label: 'Exibição do valor',
           color: 'Exibir',

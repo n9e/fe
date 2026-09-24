@@ -579,6 +579,7 @@ const ko_KR = {
           options: {
             auto: '자동',
             top: '상단',
+            bottom: '하단',
             left: '왼쪽',
             hidden: '숨기기',
           },
@@ -590,7 +591,9 @@ const ko_KR = {
             manual: '수동',
           },
         },
-        barWidth: '너비',
+        minVizWidth: '최소 너비',
+        minVizHeight: '최소 높이',
+        maxVizHeight: '최대 높이',
         valueMode: {
           label: '값 표시',
           color: '표시',
