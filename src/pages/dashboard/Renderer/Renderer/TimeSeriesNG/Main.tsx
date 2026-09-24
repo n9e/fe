@@ -133,11 +133,9 @@ export default function index(props: Props) {
     return frames;
   }, [frames, custom.scaleDistribution?.type]);
 
-  const uOptions: Options = useMemo(() => {
+  const baseUOptions: Options = useMemo(() => {
     const yRange = getScalesYRange({ panel });
     return {
-      width,
-      height,
       padding: [paddingSide, paddingSide, paddingSide, paddingSide],
       legend: { show: false },
       plugins: [
@@ -343,8 +341,6 @@ export default function index(props: Props) {
       },
     };
   }, [
-    width,
-    height,
     colors,
     dashboardMeta.graphTooltip,
     dashboardMeta.graphZoom,
@@ -360,6 +356,14 @@ export default function index(props: Props) {
     runtimeStore,
     darkMode,
   ]);
+  const uOptions: Options = useMemo(
+    () => ({
+      ...baseUOptions,
+      width,
+      height,
+    }),
+    [baseUOptions, width, height],
+  );
   let data = processedFrames;
   const barGeometryVersion = _.map(baseSeries, (item) => _.get(item, ['n9e_internal', 'bucketInterval'], '')).join(',');
 
@@ -402,8 +406,11 @@ export default function index(props: Props) {
           }}
           onDelete={(id) => {
             uplotsMap.delete(id);
-            rootRefs.current.forEach((r) => r.unmount());
+            const roots = Array.from(rootRefs.current.values());
             rootRefs.current.clear();
+            queueMicrotask(() => {
+              roots.forEach((root) => root.unmount());
+            });
           }}
         />
         {!hideResetBtn && (

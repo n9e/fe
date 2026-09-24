@@ -132,4 +132,23 @@ describe('graphTooltip runtime propagation to timeseries charts', () => {
 
     expect(axisBuilderCalls[axisBuilderCalls.length - 1]).toEqual(expect.objectContaining({ theme: 'dark' }));
   });
+
+  it('resizes without rebuilding the chart options when only width changes', () => {
+    const utils = renderMain();
+    const tooltipCallCount = tooltipCalls.length;
+    const axisBuilderCallCount = axisBuilderCalls.length;
+
+    act(() => {
+      utils.rerender(
+        <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+          <MemoryRouter>
+            <Main {...panelProps} width={500} darkMode={false} />
+          </MemoryRouter>
+        </DashboardRuntimeProvider>,
+      );
+    });
+
+    expect(tooltipCalls.length).toBe(tooltipCallCount);
+    expect(axisBuilderCalls.length).toBe(axisBuilderCallCount);
+  });
 });

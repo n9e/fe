@@ -14,13 +14,12 @@ interface IProps {
 export default function index(props: IProps) {
   const replaceTemplateVariables = useReplaceTemplateVariables();
   const { values } = props;
-  const { custom } = values;
-  const { src } = custom as unknown as IIframeStyles;
-  const content = replaceTemplateVariables(src);
+  const custom = (values.custom ?? {}) as Partial<IIframeStyles>;
+  const content = replaceTemplateVariables(custom.src ?? '');
 
   return (
     <iframe
-      src={content}
+      src={content || undefined}
       width='100%'
       height='100%'
       style={{

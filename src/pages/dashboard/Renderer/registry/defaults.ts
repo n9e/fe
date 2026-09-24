@@ -147,7 +147,8 @@ export const defaultCustomValuesMap = {
   iframe: {},
   barchart: {
     calc: 'lastNotNull',
-    valueField: 'Value',
+    xAxisField: 'Name',
+    yAxisField: 'Value',
   },
 };
 

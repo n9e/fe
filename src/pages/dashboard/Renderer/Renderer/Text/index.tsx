@@ -15,13 +15,13 @@ interface IProps {
 export default function index(props: IProps) {
   const replaceTemplateVariables = useReplaceTemplateVariables();
   const { values, themeMode } = props;
-  const { custom } = values;
-  const { textColor, textDarkColor, bgColor, textSize, justifyContent, alignItems } = custom as unknown as ITextStyles;
-  const content = replaceTemplateVariables(custom.content as string);
+  const custom = (values.custom ?? {}) as Partial<ITextStyles>;
+  const { textColor = '#000000', textDarkColor = '#FFFFFF', bgColor = 'rgba(0, 0, 0, 0)', textSize = 12, justifyContent = 'center', alignItems = 'center', content = '' } = custom;
+  const resolvedContent = replaceTemplateVariables(content);
 
   return (
     <Markdown
-      content={content}
+      content={resolvedContent}
       style={{
         height: '100%',
         overflow: 'auto',

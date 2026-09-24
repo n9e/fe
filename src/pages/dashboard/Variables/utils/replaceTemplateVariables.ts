@@ -121,15 +121,15 @@ export function replaceDatasourceVariables(
   const variablesWithOptions = params.variables ?? [];
   if (typeof value === 'number') return value;
   const { datasourceList = [] } = params;
-  if (!value || !variablesWithOptions || variablesWithOptions.length === 0) {
-    console.warn('replaceDatasourceVariables: no variables found');
+  if (!value) {
     return undefined;
   }
   const data = adjustData(variablesWithOptions, {
     datasourceList,
   });
   const result = formatDatasource(value, data);
-  return result;
+  // NaN 会通过调用方的 `typeof id !== 'number'` 判断，导致用非法 id 发起查询；解析失败一律按未解析处理。
+  return typeof result === 'number' && Number.isFinite(result) ? result : undefined;
 }
 
 /**
