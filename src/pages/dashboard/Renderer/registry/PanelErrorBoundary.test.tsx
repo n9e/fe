@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import PanelErrorBoundary from './PanelErrorBoundary';
 
@@ -29,47 +29,36 @@ describe('PanelErrorBoundary', () => {
     jest.restoreAllMocks();
   });
 
-  it('isolates a render error to the panel fallback', () => {
+  it('reports a render error to the panel header without rendering a fallback', () => {
+    const onError = jest.fn();
+
     render(
-      <PanelErrorBoundary resetKey='panel-1'>
+      <PanelErrorBoundary resetKey='panel-1' onError={onError}>
         <FlakyChart />
       </PanelErrorBoundary>,
     );
 
-    expect(screen.getByTestId('panel-render-error')).toHaveTextContent('chart exploded');
+    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'chart exploded' }));
+    expect(screen.queryByTestId('panel-render-error')).not.toBeInTheDocument();
     expect(screen.queryByTestId('healthy-chart')).not.toBeInTheDocument();
   });
 
-  it('renders the chart again after retry', () => {
-    render(
-      <PanelErrorBoundary resetKey='panel-1'>
-        <FlakyChart />
-      </PanelErrorBoundary>,
-    );
-    expect(screen.getByTestId('panel-render-error')).toBeInTheDocument();
-
-    shouldThrow = false;
-    fireEvent.click(screen.getByRole('button'));
-
-    expect(screen.getByTestId('healthy-chart')).toBeInTheDocument();
-    expect(screen.queryByTestId('panel-render-error')).not.toBeInTheDocument();
-  });
-
   it('clears the captured error when the reset key changes', () => {
+    const onError = jest.fn();
     const view = render(
-      <PanelErrorBoundary resetKey='panel-1'>
+      <PanelErrorBoundary resetKey='panel-1' onError={onError}>
         <FlakyChart />
       </PanelErrorBoundary>,
     );
-    expect(screen.getByTestId('panel-render-error')).toBeInTheDocument();
 
     shouldThrow = false;
     view.rerender(
-      <PanelErrorBoundary resetKey='panel-2'>
+      <PanelErrorBoundary resetKey='panel-2' onError={onError}>
         <FlakyChart />
       </PanelErrorBoundary>,
     );
 
+    expect(onError).toHaveBeenLastCalledWith(undefined);
     expect(screen.getByTestId('healthy-chart')).toBeInTheDocument();
   });
 });

@@ -6,6 +6,7 @@ import { createPanelChartProps } from '@/pages/dashboard/test/fixtures/panelChar
 
 import PanelRenderer from './PanelRenderer';
 import { getPanelTypeDefinition } from './index';
+import type { PanelChartProps } from './types';
 import type { IType } from '../../types';
 
 jest.mock('react-i18next', () => ({
@@ -42,15 +43,35 @@ describe('PanelRenderer', () => {
     expect(screen.getByText('detail.invalidPanelType mystery')).toBeInTheDocument();
   });
 
-  it('renders a local fallback when the chart throws', () => {
+  it('reports a chart render error to the panel header', () => {
     getPanelTypeDefinitionMock.mockReturnValue({
       chart: () => {
         throw new Error('render failed');
       },
     });
+    const onError = jest.fn();
 
-    render(<PanelRenderer type='pie' {...createPanelChartProps()} />);
+    render(<PanelRenderer type='pie' {...createPanelChartProps()} onError={onError} />);
 
-    expect(screen.getByTestId('panel-render-error')).toHaveTextContent('render failed');
+    expect(onError.mock.calls[0][0]).toEqual(expect.objectContaining({ message: 'render failed' }));
+    expect(screen.queryByTestId('panel-render-error')).not.toBeInTheDocument();
+  });
+
+  it('renders the chart again after a data revision change clears the captured error', () => {
+    function Chart({ dataRevision }: PanelChartProps) {
+      if (dataRevision === 1) {
+        throw new Error('render failed');
+      }
+      return <div data-testid='pie-chart' />;
+    }
+    getPanelTypeDefinitionMock.mockReturnValue({ chart: Chart });
+    const props = createPanelChartProps({ dataRevision: 1 });
+
+    const view = render(<PanelRenderer type='pie' {...props} />);
+    expect(screen.queryByTestId('pie-chart')).not.toBeInTheDocument();
+
+    view.rerender(<PanelRenderer type='pie' {...props} dataRevision={2} />);
+
+    expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
   });
 });

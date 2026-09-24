@@ -129,6 +129,7 @@ function index(
     setViewModalVisible,
   } = props;
   const [visible, setVisible] = useState(false);
+  const [renderError, setRenderError] = useState<Error>();
   const values = _.cloneDeep(props.values);
   const tableRef = useRef<{ exportCsv: () => void }>(null);
   const tableNGRef = useRef<{ exportCsv: () => void }>(null);
@@ -144,6 +145,7 @@ function index(
   // 存在请求参考但没有执行快照，表示查询在本地校验阶段被拦截，无需提供刷新入口。
   const isPreflightError = Boolean(requestReference) && (query?.length ?? 0) === 0;
   const showPanelErrorIcon = Boolean(error) && series.length === 0 && values.type !== 'text' && values.type !== 'iframe';
+  const headerError = renderError?.message || error;
   const name = replaceTemplateVariables(values.name, {
     scopedVars: values.scopedVars,
     range: time,
@@ -365,9 +367,9 @@ function index(
       {loadingBarVisible && <PanelLoadingBar label={t('common:loading')} width={panelWidth} />}
       <div className='renderer-body-wrap' ref={bodyWrapRef}>
         <div className='renderer-header graph-header'>
-          {error && (
+          {headerError && (
             <Tooltip
-              title={error}
+              title={headerError}
               placement='leftTop'
               overlayInnerStyle={{
                 maxWidth: 300,
@@ -393,7 +395,7 @@ function index(
             className='renderer-header-content'
             style={{
               // 预留右侧错误图标（26px）与「部分查询失败」提示（84px）的宽度，避免标题被压缩
-              width: `calc(100% - ${32 + (error ? 26 : 0) + (hasPartialFailure ? 84 : 0)}px)`,
+              width: `calc(100% - ${32 + (headerError ? 26 : 0) + (hasPartialFailure ? 84 : 0)}px)`,
             }}
           >
             <Tooltip title={name} getPopupContainer={() => containerEleRef.current!}>
@@ -485,7 +487,7 @@ function index(
                 <PanelEmpty values={values} bodyWrapRef={bodyWrapRef} />
               )
             ) : (
-              <PanelRenderer type={values.type} {...chartProps} />
+              <PanelRenderer type={values.type} {...chartProps} onError={setRenderError} />
             )}
           </div>
         )}
