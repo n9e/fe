@@ -73,7 +73,6 @@ export default function Prometheus(props: IProps) {
     datasourceValue,
     // Reaching for the assistant is taking over, the onboarding banner steps aside.
     onTakeOver: () => setProbeBannerVisible(false),
-    onQuery: setPromql,
   });
 
   useEffect(() => {
@@ -178,7 +177,6 @@ export default function Prometheus(props: IProps) {
         queryExtra={ai.trigger}
         extra={
           <Space size={SIZE}>
-            {ai.chatButton}
             <HistoricalRecords localKey={LOCAL_KEY} datasourceValue={datasourceValue} onChange={setPromql} />
           </Space>
         }

@@ -145,23 +145,6 @@ export default function PrometheusContent({ panelWidth, datasourceValue, range }
                             },
                           }}
                           promptList={getExplorerPrompts(i18n.language)}
-                          onExecuteQueryForQueryContent={(promql) => {
-                            const targets = [...(form.getFieldValue('targets') || [])];
-                            const targetIndex = field.name;
-
-                            if (!targets.length || !targets[targetIndex]) {
-                              return;
-                            }
-
-                            targets[targetIndex] = {
-                              ...targets[targetIndex],
-                              expr: promql,
-                            };
-
-                            form.setFieldsValue({
-                              targets,
-                            });
-                          }}
                         />
                       </Form.Item>
                     </div>

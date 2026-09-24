@@ -6,7 +6,6 @@ import { Sparkles, User } from 'lucide-react';
 
 import { IS_ENT } from '@/utils/constant';
 import {
-  AiChatExecuteQueryForQueryContent,
   AiChatPageActionOutcomes,
   EAiChatContentType,
   IAiChatAction,
@@ -72,7 +71,6 @@ function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
 interface IAiChatResponseBlocksProps {
   message: IAiChatMessage;
   isStreaming: boolean;
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onActionClick: (action: IAiChatAction) => void;
   onOKForFormSelectContent: (action: IAiChatAction, overrideContent: string) => void;
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
@@ -171,7 +169,7 @@ export function CurStepBlock({ curStep }: { curStep: string }) {
 
 export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom, pageActionOutcomes } = props;
+  const { message, isStreaming, onActionClick, onOKForFormSelectContent, maybeScrollToBottom, pageActionOutcomes } = props;
   const curStep = message.cur_step?.trim() || t('message.generating');
   const shouldShowCurStep = !message.is_finish && !message.err_code;
 
@@ -257,21 +255,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
           case EAiChatContentType.Hint:
             return <HintBlock key={`${response.content_type}-${index}`} response={response} />;
           case EAiChatContentType.Query:
-            return (
-              <QueryContentBlock
-                key={`${response.content_type}-${index}`}
-                query={response.content}
-                onExecute={
-                  onExecuteQueryForQueryContent
-                    ? () =>
-                        onExecuteQueryForQueryContent(response.content, {
-                          message,
-                          response,
-                        })
-                    : undefined
-                }
-              />
-            );
+            return <QueryContentBlock key={`${response.content_type}-${index}`} query={response.content} />;
           case EAiChatContentType.FormSelect:
             return (
               <FormSelectContentBlock
@@ -381,16 +365,7 @@ function shouldShowRunningStatusAtMessageBottom(isFinish?: boolean, responseList
   return bottomStatusContentTypes.includes(lastResponse.content_type as EAiChatContentType);
 }
 
-function MessageItemComponent({
-  message,
-  isStreaming,
-  onExecuteQueryForQueryContent,
-  onActionClick,
-  onOKForFormSelectContent,
-  maybeScrollToBottom,
-  pageActionOutcomes,
-  variant,
-}: IAiChatResponseBlocksProps) {
+function MessageItemComponent({ message, isStreaming, onActionClick, onOKForFormSelectContent, maybeScrollToBottom, pageActionOutcomes, variant }: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
   const slim = variant === 'slim';
   const showInitialRunningStatus = shouldShowInitialRunningStatus(message.is_finish, message.response);
@@ -424,7 +399,6 @@ function MessageItemComponent({
             message={message}
             isStreaming={isStreaming}
             pageActionOutcomes={pageActionOutcomes}
-            onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
             onActionClick={onActionClick}
             onOKForFormSelectContent={onOKForFormSelectContent}
             maybeScrollToBottom={maybeScrollToBottom}

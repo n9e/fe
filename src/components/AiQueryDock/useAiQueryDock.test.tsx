@@ -12,14 +12,6 @@ type AiQueryDockProps = React.ComponentProps<typeof AiQueryDock>;
 type AiActionsOptions = Parameters<typeof useQueryDockActions>[0];
 type Snapshot = QueryDockSnapshot & { range?: IRawTimeRange };
 
-// Which build we are: the hook reads IS_ENT at render time, so a getter lets
-// each test pick the build without reloading the module.
-const mockMode = { isEnt: false };
-jest.mock('@/utils/constant', () => ({
-  get IS_ENT() {
-    return mockMode.isEnt;
-  },
-}));
 jest.mock('@/components/AiChatNG/constants', () => ({ NAME_SPACE: 'ai' }));
 jest.mock('@/components/TimeRangePicker', () => ({ timeRangeUnix: () => ({ start: 100, end: 200 }) }));
 jest.mock('@/components/AiChatNG/recommend', () => ({
@@ -73,21 +65,7 @@ beforeEach(() => {
   dockProps = undefined;
 });
 
-describe('open-source and Nightingale commercial builds', () => {
-  it('renders nothing and never lets the assistant write', () => {
-    mockMode.isEnt = false;
-    render(<Host />);
-    expect(screen.queryByRole('button', { name: 'dock.open' })).toBeNull();
-    expect(screen.queryByTestId('ai-dock')).toBeNull();
-    expect(mockActions.options.map((options) => options.enabled)).not.toContain(true);
-  });
-});
-
-describe('Flashcat enterprise build', () => {
-  beforeEach(() => {
-    mockMode.isEnt = true;
-  });
-
+describe('useAiQueryDock', () => {
   it('opens behind its trigger, and only then lets the assistant write', () => {
     const onToggle = jest.fn();
     render(<Host onToggle={onToggle} />);

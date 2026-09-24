@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { IS_ENT } from '@/utils/constant';
 import { timeRangeUnix } from '@/components/TimeRangePicker';
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
@@ -48,9 +47,8 @@ export interface AiQueryDockOptions<S extends DockSnapshot> {
  * action it lets the assistant run (only while open), what each message says
  * about the page, and the trigger and dock elements. The panel puts `trigger`
  * in its box and `dock` under it, and calls `invalidateUndo` when the user
- * takes the panel back. Outside the Flashcat enterprise build both elements
- * are undefined and the action never registers: the assistant there is the
- * n9e one, which does not run page actions.
+ * takes the panel back. All builds send registered page actions to their
+ * assistant backend through query.page_actions.
  */
 export function useAiQueryDock<S extends DockSnapshot>(adapter: AiQueryDockAdapter, options: AiQueryDockOptions<S>) {
   const { t } = useTranslation(NAME_SPACE);
@@ -58,7 +56,7 @@ export function useAiQueryDock<S extends DockSnapshot>(adapter: AiQueryDockAdapt
   const latest = useRef({ adapter, options });
   latest.current = { adapter, options };
   const actions = useQueryDockActions({
-    enabled: IS_ENT && open,
+    enabled: open,
     datasourceValue: options.datasourceValue,
     getControl: options.getControl,
     action: adapter.action,
@@ -93,8 +91,8 @@ export function useAiQueryDock<S extends DockSnapshot>(adapter: AiQueryDockAdapt
 
   return {
     open,
-    trigger: IS_ENT ? <AiQueryDockTrigger open={open} onClick={toggle} /> : undefined,
-    dock: IS_ENT ? (
+    trigger: <AiQueryDockTrigger open={open} onClick={toggle} />,
+    dock: (
       <AiQueryDock
         open={open}
         pageFrom={pageFrom}
@@ -111,7 +109,7 @@ export function useAiQueryDock<S extends DockSnapshot>(adapter: AiQueryDockAdapt
           setOpen(false);
         }}
       />
-    ) : undefined,
+    ),
     invalidateUndo: actions.invalidateUndo,
   };
 }

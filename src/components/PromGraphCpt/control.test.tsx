@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import PromQLInputNG from '@/components/PromQLInputNG';
 import PromGraph from './index';
 import { getPromData } from './services';
 
@@ -27,8 +28,35 @@ jest.mock('@/components/TimeRangePicker', () => ({
 }));
 jest.mock('@/components/PromQLInput/BuiltinMetrics', () => () => null);
 jest.mock('./components/MetricsExplorer', () => () => null);
+const mockEditorSetValue = jest.fn();
 jest.mock('@fc-components/monaco-editor', () => ({
-  PromQLMonacoEditor: (props: any) => <input aria-label='query draft' value={props.value || ''} onChange={(event) => props.onChange(event.target.value)} onBlur={props.onBlur} />,
+  PromQLMonacoEditor: (props: any) => {
+    const React = require('react');
+    const editorValue = React.useRef(props.value || '');
+    const onChange = React.useRef(props.onChange);
+    onChange.current = props.onChange;
+    const editor = React.useRef({
+      getValue: () => editorValue.current,
+      setValue: (next: string) => {
+        mockEditorSetValue(next);
+        editorValue.current = next;
+        onChange.current(next);
+      },
+      onKeyDown: () => undefined,
+    });
+    React.useEffect(() => props.editorDidMount(editor.current), []);
+    return (
+      <input
+        aria-label='query draft'
+        value={props.value || ''}
+        onChange={(event) => {
+          editorValue.current = event.target.value;
+          props.onChange(event.target.value);
+        }}
+        onBlur={props.onBlur}
+      />
+    );
+  },
 }));
 jest.mock('antd', () => ({
   ...jest.requireActual('antd'),
@@ -39,7 +67,29 @@ const response = (name: string) => ({ resultType: 'vector', result: [{ metric: {
 let requests: Array<{ resolve: (value: any) => void; reject: (error: Error) => void }>;
 beforeEach(() => {
   requests = [];
+  mockEditorSetValue.mockClear();
   (getPromData as jest.Mock).mockImplementation(() => new Promise((resolve, reject) => requests.push({ resolve, reject })));
+});
+
+it('resets the model only for a new token and does not report it as a user edit', () => {
+  const onChange = jest.fn();
+  const view = render(<PromQLInputNG datasourceValue={1} value='up' modelResetToken={0} onChange={onChange} />);
+
+  view.rerender(<PromQLInputNG datasourceValue={1} value='sum(up)' modelResetToken={1} onChange={onChange} />);
+
+  expect(mockEditorSetValue).toHaveBeenCalledWith('sum(up)');
+  expect(onChange).not.toHaveBeenCalled();
+
+  view.rerender(<PromQLInputNG datasourceValue={1} value='rate(up[5m])' modelResetToken={1} onChange={onChange} />);
+  expect(mockEditorSetValue).toHaveBeenCalledTimes(1);
+});
+
+it('keeps history selections on the editor undoable update path', () => {
+  const view = render(<PromGraph datasourceValue={1} promQL='up' />);
+
+  view.rerender(<PromGraph datasourceValue={1} promQL='rate(up[5m])' />);
+
+  expect(mockEditorSetValue).not.toHaveBeenCalled();
 });
 
 it('captures unblurred edits and restores the draft, submitted expression and range without incrementing user revision', () => {
@@ -51,8 +101,10 @@ it('captures unblurred edits and restores the draft, submitted expression and ra
   const revision = controlRef.current.revision();
   const snapshot = controlRef.current.snapshot();
   act(() => controlRef.current.fill('sum(up)', { start: 'now-6h', end: 'now' }));
+  expect(mockEditorSetValue).toHaveBeenCalledWith('sum(up)');
   expect(controlRef.current.revision()).toBe(revision);
   act(() => controlRef.current.restore(snapshot));
+  expect(mockEditorSetValue).toHaveBeenCalledTimes(1);
   expect(controlRef.current.snapshot()).toEqual(snapshot);
 });
 
