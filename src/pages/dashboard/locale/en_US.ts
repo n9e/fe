@@ -371,6 +371,9 @@ const en_US = {
       valueMappings: {
         title: 'Value mappings',
         btn: 'Add',
+        edit_btn: 'Edit value mappings',
+        update_btn: 'Update',
+        cancel_btn: 'Cancel',
         type: 'Type',
         type_tip: `
           <0>Default value: from=-Infinity; to=Infinity </0>

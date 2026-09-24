@@ -368,6 +368,9 @@ const zh_CN = {
       valueMappings: {
         title: '值映射',
         btn: '添加',
+        edit_btn: '编辑值映射',
+        update_btn: '更新',
+        cancel_btn: '取消',
         type: '条件',
         type_tip: `
           <0>范围值默认值: from=-Infinity; to=Infinity </0>
