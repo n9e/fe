@@ -19,14 +19,14 @@ import { useDebounceFn, useDeepCompareEffect } from 'ahooks';
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { useGlobalState } from '@/pages/dashboard/globalState';
-import { getErrorMessage } from '@/pages/dashboard/utils/json';
+import { getErrorMessage, isJsonValue } from '@/pages/dashboard/utils/json';
 import { N9E_PATHNAME } from '@/utils/constant';
 
 import type { ITarget } from '../../types';
 import type { JsonObject, ScopedVariables } from '../../types';
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse } from './contract';
 import { fetchDashboardQuery } from './service';
-import type { DashboardQueryState } from './types';
+import type { DashboardQueryHookResult, DashboardQueryState } from './types';
 import { acceptDashboardQueryState, DashboardRequestSequence } from './requestState';
 
 interface IProps {
@@ -39,14 +39,25 @@ interface IProps {
   inViewPort?: boolean;
   spanNulls?: boolean;
   scopedVars?: ScopedVariables;
-  inspect?: boolean;
   type?: string;
   custom: JsonObject;
   maxDataPoints?: number;
   queryOptionsTime?: IRawTimeRange;
 }
 
-export default function useQuery(props: IProps) {
+/** 从请求库错误对象中提取可在排查页安全展示的后端响应体。 */
+function getInspectErrorResponse(error: unknown, message: string) {
+  if (error && typeof error === 'object') {
+    const record = error as Record<string, unknown>;
+    const response = record.response;
+    const candidates = [record.data, response && typeof response === 'object' ? (response as Record<string, unknown>).data : undefined, record.error, record.err];
+    const payload = candidates.find(isJsonValue);
+    if (payload !== undefined) return { error: payload };
+  }
+  return { error: { message } };
+}
+
+export default function useQuery(props: IProps): DashboardQueryHookResult {
   const { time, targets, inViewPort, datasourceCate, datasourceValue, maxDataPoints, queryOptionsTime } = props;
   const { datasourceList } = React.useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
@@ -80,7 +91,6 @@ export default function useQuery(props: IProps) {
       spanNulls: props.spanNulls,
       scopedVars: props.scopedVars,
       panelWidth: props.panelWidth,
-      inspect: props.inspect,
       maxDataPoints,
       queryOptionsTime,
     });
@@ -90,6 +100,7 @@ export default function useQuery(props: IProps) {
       if (!targets?.length) return;
 
       const sequence = requestSequenceRef.current.begin();
+      let requestData: ReturnType<typeof buildDashboardQueryRequest> | undefined;
       controllerRef.current?.abort();
       const controller = new AbortController();
       controllerRef.current = controller;
@@ -100,7 +111,7 @@ export default function useQuery(props: IProps) {
       }));
 
       try {
-        const requestData = buildDashboardQueryRequest({
+        const builtRequest = buildDashboardQueryRequest({
           time,
           queryOptionsTime,
           targets,
@@ -108,16 +119,21 @@ export default function useQuery(props: IProps) {
           panelWidth: props.panelWidth,
           maxDataPoints,
           scopedVars: props.scopedVars,
+          variables: variablesWithOptions,
           legacyDatasource: {
             cate: datasourceCate,
             id: datasourceValue,
           },
         });
-        if (!requestData.queries.length) {
+        // 供 catch 判断请求是否已构建完成；闭包内无法使用 const 的收窄结果，故显式保留。
+        requestData = builtRequest;
+        if (!builtRequest.queries.length) {
           if (!mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
           setState((previous) => ({
             ...previous,
+            // Keep the latest request for inspection without making drawer visibility a query dependency.
             query: [],
+            requestReference: undefined,
             series: [],
             errorsByRef: {},
             error: '',
@@ -128,9 +144,9 @@ export default function useQuery(props: IProps) {
           loadedKeyRef.current = getQueryKey();
           return;
         }
-        const response = await fetchDashboardQuery(requestData, controller.signal);
+        const response = await fetchDashboardQuery(builtRequest, controller.signal);
         if (!mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
-        const normalized = normalizeDashboardQueryResponse(response, targets, requestData, {
+        const normalized = normalizeDashboardQueryResponse(response, targets, builtRequest, {
           spanNulls: props.spanNulls,
         });
         const error = Object.entries(normalized.errorsByRef)
@@ -138,19 +154,18 @@ export default function useQuery(props: IProps) {
           .join('; ');
         setState((previous) =>
           acceptDashboardQueryState(previous, {
-            query: props.inspect
-              ? [
-                  {
-                    type: 'Dashboard Query',
-                    request: {
-                      url: `/api/${N9E_PATHNAME}/v2/query-batch`,
-                      method: 'POST',
-                      data: requestData,
-                    },
-                    response,
-                  },
-                ]
-              : [],
+            query: [
+              {
+                type: 'Dashboard Query',
+                request: {
+                  url: `/api/${N9E_PATHNAME}/v2/query-batch`,
+                  method: 'POST',
+                  data: builtRequest,
+                },
+                response,
+              },
+            ],
+            requestReference: undefined,
             series: normalized.series,
             errorsByRef: normalized.errorsByRef,
             error,
@@ -162,12 +177,43 @@ export default function useQuery(props: IProps) {
         loadedKeyRef.current = getQueryKey();
       } catch (error) {
         if (controller.signal.aborted || !mountedRef.current || !requestSequenceRef.current.isLatest(sequence)) return;
+        const errorMessage = getErrorMessage(error);
         setState((previous) =>
           acceptDashboardQueryState(previous, {
-            query: [],
-            series: [],
-            errorsByRef: {},
-            error: getErrorMessage(error),
+            // 请求构建完成后才会发起接口调用。保留该次请求和错误响应，供排查页定位接口问题；
+            // 构建前失败（例如缺失变量）则没有请求快照，排查页会直接展示客户端错误。
+            query: requestData
+              ? [
+                  {
+                    type: 'Dashboard Query',
+                    request: {
+                      url: `/api/${N9E_PATHNAME}/v2/query-batch`,
+                      method: 'POST',
+                      data: requestData,
+                    },
+                    response: getInspectErrorResponse(error, errorMessage),
+                  },
+                ]
+              : [],
+            requestReference: requestData
+              ? undefined
+              : {
+                  request: {
+                    url: `/api/${N9E_PATHNAME}/v2/query-batch`,
+                    method: 'POST',
+                    data: {
+                      status: 'not_sent',
+                      reason: errorMessage,
+                      time_range: queryOptionsTime ?? time,
+                      panel_datasource: datasourceCate || datasourceValue ? { cate: datasourceCate, id: datasourceValue } : undefined,
+                      scoped_variables: props.scopedVars,
+                      targets,
+                    },
+                  },
+                },
+            series: previous.series,
+            errorsByRef: previous.errorsByRef,
+            error: errorMessage,
             loading: false,
             loaded: true,
             range: time,
@@ -201,6 +247,7 @@ export default function useQuery(props: IProps) {
         }
         return acceptDashboardQueryState(previous, {
           query: [],
+          requestReference: undefined,
           series: [],
           errorsByRef: {},
           error: '',
@@ -239,7 +286,6 @@ export default function useQuery(props: IProps) {
     props.spanNulls,
     props.scopedVars,
     props.panelWidth,
-    props.inspect,
     maxDataPoints,
     queryOptionsTime,
     inViewPort,
@@ -262,5 +308,19 @@ export default function useQuery(props: IProps) {
     [cancelDebounce],
   );
 
-  return state;
+  /** Forces this panel to query again without changing the dashboard-wide time range. */
+  const retry = React.useCallback(() => {
+    if (!targets?.length || variableExecution.isExecuting || !inViewPort) return;
+    loadedKeyRef.current = undefined;
+    hasRequestedRef.current = true;
+    requestSequenceRef.current.invalidate();
+    cancelDebounce();
+    controllerRef.current?.abort();
+    fetchData();
+  }, [cancelDebounce, fetchData, inViewPort, targets, variableExecution.isExecuting]);
+
+  return {
+    ...state,
+    retry,
+  };
 }

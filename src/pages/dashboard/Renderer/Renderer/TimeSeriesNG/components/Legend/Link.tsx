@@ -3,7 +3,8 @@ import { LinkOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import _ from 'lodash';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { DashboardRuntimeProvider, useDashboardRuntimeStoreIfAvailable } from '@/pages/dashboard/globalState';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 import type { DataItem } from '../../utils/getLegendData';
 import type { ScopedVariables } from '@/pages/dashboard/types';
 
@@ -14,7 +15,28 @@ interface Props {
   style?: React.CSSProperties;
 }
 
+/**
+ * 渲染图例详情链接，并为探索页等仪表盘外调用提供隔离的运行时容器。
+ *
+ * 已位于仪表盘内时复用父级实例，外部调用时只创建本组件所需的空实例，避免回退模块级共享状态。
+ */
 export default function Link(props: Props) {
+  const dashboardRuntimeStore = useDashboardRuntimeStoreIfAvailable();
+
+  if (!dashboardRuntimeStore) {
+    return (
+      <DashboardRuntimeProvider>
+        <LinkContent {...props} />
+      </DashboardRuntimeProvider>
+    );
+  }
+
+  return <LinkContent {...props} />;
+}
+
+/** 根据所属运行时解析变量，并生成图例详情跳转入口。 */
+function LinkContent(props: Props) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { data, name, url, style } = props;
   if (!url) return null;
   const scopedVars: Record<string, string | number | null | undefined> = {

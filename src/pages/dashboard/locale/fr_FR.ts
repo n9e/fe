@@ -128,6 +128,8 @@ const fr_FR = {
     dashboardIds_placeholder: 'Sélectionnez un tableau de bord',
   },
   var: {
+    reference_in_use: "La variable {{name}} est encore référencée par {{total}} configuration(s). Remplacez-les d'abord.",
+    references_renamed: '{{total}} référence(s) de variable mise(s) à jour',
     vars: 'Variables',
     btn: 'Ajouter une variable',
     title: {
@@ -581,9 +583,30 @@ const fr_FR = {
           },
         },
         displayMode: "Mode d'affichage",
+        namePlacement: {
+          label: 'Position du nom',
+          options: {
+            auto: 'Automatique',
+            top: 'Haut',
+            bottom: 'Bas',
+            left: 'Gauche',
+            hidden: 'Masquer',
+          },
+        },
+        sizing: {
+          label: 'Taille de la barre',
+          options: {
+            auto: 'Automatique',
+            manual: 'Manuel',
+          },
+        },
+        minVizWidth: 'Largeur minimale',
+        minVizHeight: 'Hauteur minimale',
+        maxVizHeight: 'Hauteur maximale',
         valueMode: {
           label: 'Affichage des valeurs',
           color: 'Afficher',
+          text: 'Couleur du texte',
           hidden: 'Masquer',
         },
       },

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Table, Space, Button } from 'antd';
+import { message, Modal, Table, Space, Button } from 'antd';
 import { ArrowDownOutlined, ArrowUpOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
 import { arrayMoveImmutable } from 'array-move';
 import _ from 'lodash';
@@ -17,6 +17,10 @@ interface IProps {
   setVisible: (visible: boolean) => void;
   editMode?: number; // 0: 变量名、类型、数据源类型、数据源值无法修改
   onChange: (newVariables: IVariable[]) => void;
+  /** Rewrites dashboard config references as one local update when a variable is renamed. */
+  onRename?: (oldName: string, newName: string, variables: IVariable[]) => void;
+  /** Counts saved dashboard references before a destructive variable deletion. */
+  getReferenceCount?: (name: string) => number;
 }
 
 export default function EditModal(props: IProps) {
@@ -25,7 +29,7 @@ export default function EditModal(props: IProps) {
   const history = useHistory();
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
-  const { visible, setVisible, editMode, onChange } = props;
+  const { visible, setVisible, editMode, onChange, onRename, getReferenceCount } = props;
   const datasourceVars = _.filter(variablesWithOptions, (item) => {
     return _.includes(['datasource', 'datasourceIdentifier'], item.type);
   });
@@ -180,6 +184,12 @@ export default function EditModal(props: IProps) {
                             type='link'
                             size='small'
                             onClick={() => {
+                              /** 已保存的配置仍在引用该变量时阻止删除，避免留下悬空引用。 */
+                              const referenceCount = getReferenceCount?.(record.name) ?? 0;
+                              if (referenceCount > 0) {
+                                message.warning(t('var.reference_in_use', { name: record.name, total: referenceCount }));
+                                return;
+                              }
                               setVariablesWithOptions((prev) => {
                                 const newData = _.cloneDeep(prev);
                                 newData.splice(idx, 1);
@@ -298,7 +308,11 @@ export default function EditModal(props: IProps) {
                   }
                 }
               }
-              onChange(newData);
+              if (mode === 'edit' && previousVariable && previousVariable.name !== val.name && onRename) {
+                onRename(previousVariable.name, val.name, newData);
+              } else {
+                onChange(newData);
+              }
               return newData;
             });
             setMode('list');

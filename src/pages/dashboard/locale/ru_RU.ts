@@ -144,6 +144,8 @@ const ru_RU = {
     dashboardIds_placeholder: 'Пожалуйста, выберите панель',
   },
   var: {
+    reference_in_use: 'Переменная {{name}} всё ещё используется в {{total}} настройках. Сначала замените их.',
+    references_renamed: 'Обновлено ссылок на переменные: {{total}}',
     vars: 'Переменные',
     btn: 'Добавить переменную',
     title: {
@@ -629,9 +631,30 @@ const ru_RU = {
           },
         },
         displayMode: 'Режим отображения',
+        namePlacement: {
+          label: 'Размещение имени',
+          options: {
+            auto: 'Автоматически',
+            top: 'Сверху',
+            bottom: 'Снизу',
+            left: 'Слева',
+            hidden: 'Скрытый',
+          },
+        },
+        sizing: {
+          label: 'Размер полосы',
+          options: {
+            auto: 'Автоматически',
+            manual: 'Вручную',
+          },
+        },
+        minVizWidth: 'Минимальная ширина',
+        minVizHeight: 'Минимальная высота',
+        maxVizHeight: 'Максимальная высота',
         valueMode: {
           label: 'Значение',
           color: 'Цвет',
+          text: 'Цвет текста',
           hidden: 'Скрытый',
         },
       },

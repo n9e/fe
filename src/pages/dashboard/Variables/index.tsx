@@ -18,12 +18,16 @@ interface Props {
   queryParams: Record<string, VariableQueryParam>;
   editable: boolean;
   onChange: (newVariables: IVariable[]) => void;
+  /** Applies an atomic config rewrite when a variable name changes. */
+  onRename?: (oldName: string, newName: string, variables: IVariable[]) => void;
+  /** Returns the number of dashboard references that prevent a variable from being removed. */
+  getReferenceCount?: (name: string) => number;
   onInitialized?: () => void;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { queryParams, editable, onChange, onInitialized } = props;
+  const { queryParams, editable, onChange, onRename, getReferenceCount, onInitialized } = props;
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const [editing, setEditing] = useState<boolean>(false);
   const hasCalledInitializedRef = React.useRef<boolean>(false);
@@ -92,7 +96,7 @@ export default function index(props: Props) {
   return (
     <div className='n9e-dashboard-variables-container'>
       <Main variableValueFixed={Boolean(queryParams.__variable_value_fixed)} disabledVariableNames={disabledVariableNames} loading={false} renderBtns={renderBtns} />
-      <EditModal visible={editing} setVisible={setEditing} onChange={onChange} />
+      <EditModal visible={editing} setVisible={setEditing} onChange={onChange} onRename={onRename} getReferenceCount={getReferenceCount} />
     </div>
   );
 }

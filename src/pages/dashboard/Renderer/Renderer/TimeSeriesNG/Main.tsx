@@ -17,8 +17,8 @@ import valueFormatter from '../../utils/valueFormatter';
 import { getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import secondYAxisBuilder from './utils/secondYAxisBuilder';
-import { defaultOptionsValues } from '../../../Editor/config';
-import { useGlobalState } from '../../../globalState';
+import { defaultOptionsValues } from '../../registry/defaults';
+import { DashboardRuntimeProvider, useDashboardRuntimeStore, useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
 import type { DashboardAnnotation, IStandardOptions } from '@/pages/dashboard/types';
 
@@ -103,6 +103,7 @@ export default function index(props: Props) {
   const stableOverrides = useStableValue(overrides);
   const stableQueryOptionsTime = useStableValue(queryOptionsTime);
   const [dashboardMeta] = useGlobalState('dashboardMeta');
+  const runtimeStore = useDashboardRuntimeStore();
   const uplotRef = useRef<uPlot>();
   // 保存 x 和 y 轴初始缩放范围
   const xScaleInitMinMaxRef = useRef<[number, number]>();
@@ -132,11 +133,9 @@ export default function index(props: Props) {
     return frames;
   }, [frames, custom.scaleDistribution?.type]);
 
-  const uOptions: Options = useMemo(() => {
+  const baseUOptions: Options = useMemo(() => {
     const yRange = getScalesYRange({ panel });
     return {
-      width,
-      height,
       padding: [paddingSide, paddingSide, paddingSide, paddingSide],
       legend: { show: false },
       plugins: [
@@ -155,18 +154,20 @@ export default function index(props: Props) {
               rootRefs.current.set(domNode, root);
             }
             root.render(
-              <AddAnnotationButton
-                panelID={id}
-                timeZone={timezone}
-                closeOverlay={closeOverlay}
-                uplotRef={uplotRef}
-                setAnnotationSettingUp={setAnnotationSettingUp}
-                onOk={() => {
-                  if (setAnnotationsRefreshFlag) {
-                    setAnnotationsRefreshFlag(_.uniqueId('annotationsRefreshFlag_'));
-                  }
-                }}
-              />,
+              <DashboardRuntimeProvider store={runtimeStore}>
+                <AddAnnotationButton
+                  panelID={id}
+                  timeZone={timezone}
+                  closeOverlay={closeOverlay}
+                  uplotRef={uplotRef}
+                  setAnnotationSettingUp={setAnnotationSettingUp}
+                  onOk={() => {
+                    if (setAnnotationsRefreshFlag) {
+                      setAnnotationsRefreshFlag(_.uniqueId('annotationsRefreshFlag_'));
+                    }
+                  }}
+                />
+              </DashboardRuntimeProvider>,
             );
           },
           pointNameformatter: (val, point) => {
@@ -340,8 +341,6 @@ export default function index(props: Props) {
       },
     };
   }, [
-    width,
-    height,
     colors,
     dashboardMeta.graphTooltip,
     dashboardMeta.graphZoom,
@@ -354,7 +353,17 @@ export default function index(props: Props) {
     stableAnnotations,
     stableOverrides,
     timezone,
+    runtimeStore,
+    darkMode,
   ]);
+  const uOptions: Options = useMemo(
+    () => ({
+      ...baseUOptions,
+      width,
+      height,
+    }),
+    [baseUOptions, width, height],
+  );
   let data = processedFrames;
   const barGeometryVersion = _.map(baseSeries, (item) => _.get(item, ['n9e_internal', 'bucketInterval'], '')).join(',');
 
@@ -397,8 +406,11 @@ export default function index(props: Props) {
           }}
           onDelete={(id) => {
             uplotsMap.delete(id);
-            rootRefs.current.forEach((r) => r.unmount());
+            const roots = Array.from(rootRefs.current.values());
             rootRefs.current.clear();
+            queueMicrotask(() => {
+              roots.forEach((root) => root.unmount());
+            });
           }}
         />
         {!hideResetBtn && (

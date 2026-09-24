@@ -146,6 +146,8 @@ const en_US = {
     dashboardIds_placeholder: 'Select dashboards',
   },
   var: {
+    reference_in_use: 'Variable {{name}} is still referenced by {{total}} configuration(s). Replace them first.',
+    references_renamed: 'Updated {{total}} variable reference(s)',
     vars: 'Variables',
     btn: 'Add variable',
     title: {
@@ -369,6 +371,9 @@ const en_US = {
       valueMappings: {
         title: 'Value mappings',
         btn: 'Add',
+        edit_btn: 'Edit value mappings',
+        update_btn: 'Update',
+        cancel_btn: 'Cancel',
         type: 'Type',
         type_tip: `
           <0>Default value: from=-Infinity; to=Infinity </0>
@@ -659,9 +664,30 @@ const en_US = {
           },
         },
         displayMode: 'Display mode',
+        namePlacement: {
+          label: 'Name placement',
+          options: {
+            auto: 'Auto',
+            top: 'Top',
+            bottom: 'Bottom',
+            left: 'Left',
+            hidden: 'Hidden',
+          },
+        },
+        sizing: {
+          label: 'Bar size',
+          options: {
+            auto: 'Auto',
+            manual: 'Manual',
+          },
+        },
+        minVizWidth: 'Minimum width',
+        minVizHeight: 'Minimum height',
+        maxVizHeight: 'Maximum height',
         valueMode: {
           label: 'Value display',
           color: 'Color',
+          text: 'Text color',
           hidden: 'Hidden',
         },
       },

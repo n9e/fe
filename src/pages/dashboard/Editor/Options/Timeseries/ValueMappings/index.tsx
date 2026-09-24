@@ -14,12 +14,14 @@
  * limitations under the License.
  *
  */
-import React from 'react';
-import { Form, Input, Button, Select, Row, Col, Tooltip } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, Select, Row, Col, Tooltip, Modal } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../../Components/Collapse';
+import Preview from '../../../Fields/ValueMappings/Preview';
+import type { IValueMapping } from '../../../types';
 
 interface IProps {
   preNamePrefix?: (string | number)[];
@@ -29,95 +31,144 @@ interface IProps {
 export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { preNamePrefix = [], namePrefix = ['options', 'valueMappings'] } = props;
+  const form = Form.useFormInstance();
+  const namePath = [...preNamePrefix, ...namePrefix];
+  const [modalForm] = Form.useForm<{ valueMappings?: IValueMapping[] }>();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (!modalVisible) {
+      modalForm.resetFields();
+    }
+  }, [modalForm, modalVisible]);
 
   return (
     <Panel header={t('panel.options.valueMappings.title')}>
-      <Form.List name={namePrefix}>
-        {(fields, { add, remove }) => (
-          <>
-            <Button
-              style={{ width: '100%', marginBottom: 10 }}
-              onClick={() => {
-                add(
-                  {
-                    type: 'textValue',
-                  },
-                  0,
-                );
-              }}
-            >
-              {t('panel.options.valueMappings.btn')}
-            </Button>
-            {_.isEmpty(fields) ? null : (
-              <Row gutter={10}>
-                <Col flex='330px'>
-                  <Tooltip
-                    overlayInnerStyle={{
-                      width: 300,
-                    }}
-                    title={
-                      <Trans ns='dashboard' i18nKey='panel.options.valueMappings.type_tip'>
-                        <div></div>
-                        <div></div>
-                      </Trans>
-                    }
-                  >
-                    {t('panel.options.valueMappings.type')} <InfoCircleOutlined />
-                  </Tooltip>
-                </Col>
-                <Col flex='215'>{t('panel.options.valueMappings.text')}</Col>
-                <Col flex='50'>{t('panel.options.valueMappings.operations')}</Col>
-              </Row>
-            )}
+      <Form.Item noStyle shouldUpdate>
+        {({ getFieldValue }) => {
+          const valueMappings = (getFieldValue(namePath) || []) as IValueMapping[];
 
-            {fields.map(({ key, name, ...restField }) => {
-              return (
-                <Row key={key} gutter={10} style={{ marginBottom: 10 }}>
-                  <Col flex='330px'>
-                    <Row gutter={10}>
-                      <Col flex='120px'>
-                        <Form.Item noStyle {...restField} name={[name, 'type']}>
-                          <Select style={{ width: 120 }}>
-                            <Select.Option value='textValue'>{t('panel.options.valueMappings.type_map.textValue')}</Select.Option>
-                          </Select>
+          return (
+            <Preview
+              valueMappings={valueMappings}
+              editText={t('panel.options.valueMappings.edit_btn')}
+              onEdit={() => {
+                modalForm.resetFields();
+                modalForm.setFieldsValue({ valueMappings: _.cloneDeep(valueMappings) });
+                setModalVisible(true);
+              }}
+            />
+          );
+        }}
+      </Form.Item>
+      <Modal
+        forceRender
+        title={t('panel.options.valueMappings.title')}
+        visible={modalVisible}
+        width={900}
+        okText={t('panel.options.valueMappings.update_btn')}
+        cancelText={t('panel.options.valueMappings.cancel_btn')}
+        onCancel={() => {
+          setModalVisible(false);
+        }}
+        onOk={() => {
+          modalForm.validateFields().then((values) => {
+            const valuesClone = _.cloneDeep(form.getFieldsValue());
+            _.set(valuesClone, namePath, _.cloneDeep(values.valueMappings || []));
+            form.setFieldsValue(valuesClone);
+            setModalVisible(false);
+          });
+        }}
+      >
+        <Form form={modalForm} layout='vertical'>
+          <Form.List name='valueMappings'>
+            {(fields, { add, remove }) => (
+              <>
+                <Button
+                  style={{ width: '100%', marginBottom: 10 }}
+                  onClick={() => {
+                    add(
+                      {
+                        type: 'textValue',
+                      },
+                      0,
+                    );
+                  }}
+                >
+                  {t('panel.options.valueMappings.btn')}
+                </Button>
+                {_.isEmpty(fields) ? null : (
+                  <Row gutter={10}>
+                    <Col flex='330px'>
+                      <Tooltip
+                        overlayInnerStyle={{
+                          width: 300,
+                        }}
+                        title={
+                          <Trans ns='dashboard' i18nKey='panel.options.valueMappings.type_tip'>
+                            <div></div>
+                            <div></div>
+                          </Trans>
+                        }
+                      >
+                        {t('panel.options.valueMappings.type')} <InfoCircleOutlined />
+                      </Tooltip>
+                    </Col>
+                    <Col flex='215'>{t('panel.options.valueMappings.text')}</Col>
+                    <Col flex='50'>{t('panel.options.valueMappings.operations')}</Col>
+                  </Row>
+                )}
+
+                {fields.map(({ key, name, ...restField }) => {
+                  return (
+                    <Row key={key} gutter={10} style={{ marginBottom: 10 }}>
+                      <Col flex='330px'>
+                        <Row gutter={10}>
+                          <Col flex='120px'>
+                            <Form.Item noStyle {...restField} name={[name, 'type']}>
+                              <Select style={{ width: 120 }}>
+                                <Select.Option value='textValue'>{t('panel.options.valueMappings.type_map.textValue')}</Select.Option>
+                              </Select>
+                            </Form.Item>
+                          </Col>
+                          <Col flex='1'>
+                            <Form.Item noStyle {...restField} shouldUpdate>
+                              {({ getFieldValue }) => {
+                                const type = getFieldValue(['valueMappings', name, 'type']);
+                                if (type === 'textValue') {
+                                  return (
+                                    <Form.Item noStyle {...restField} name={[name, 'match', 'textValue']}>
+                                      <Input style={{ width: '100%' }} placeholder={t('panel.options.valueMappings.value_placeholder')} />
+                                    </Form.Item>
+                                  );
+                                }
+                                return null;
+                              }}
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col flex='215'>
+                        <Form.Item noStyle {...restField} name={[name, 'result', 'text']}>
+                          <Input placeholder={t('panel.options.valueMappings.text_placeholder')} />
                         </Form.Item>
                       </Col>
-                      <Col flex='1'>
-                        <Form.Item noStyle {...restField} shouldUpdate>
-                          {({ getFieldValue }) => {
-                            const type = getFieldValue([...preNamePrefix, ...namePrefix, name, 'type']);
-                            if (type === 'textValue') {
-                              return (
-                                <Form.Item noStyle {...restField} name={[name, 'match', 'textValue']}>
-                                  <Input style={{ width: '100%' }} placeholder={t('panel.options.valueMappings.value_placeholder')} />
-                                </Form.Item>
-                              );
-                            }
-                            return null;
+                      <Col flex='50'>
+                        <Button
+                          onClick={() => {
+                            remove(name);
                           }}
-                        </Form.Item>
+                          icon={<DeleteOutlined />}
+                        />
                       </Col>
                     </Row>
-                  </Col>
-                  <Col flex='215'>
-                    <Form.Item noStyle {...restField} name={[name, 'result', 'text']}>
-                      <Input placeholder={t('panel.options.valueMappings.text_placeholder')} />
-                    </Form.Item>
-                  </Col>
-                  <Col flex='50'>
-                    <Button
-                      onClick={() => {
-                        remove(name);
-                      }}
-                      icon={<DeleteOutlined />}
-                    />
-                  </Col>
-                </Row>
-              );
-            })}
-          </>
-        )}
-      </Form.List>
+                  );
+                })}
+              </>
+            )}
+          </Form.List>
+        </Form>
+      </Modal>
     </Panel>
   );
 }

@@ -72,7 +72,6 @@ function index(props: IProps) {
     datasourceValue: values.datasourceValue || datasourceValue,
     spanNulls: values.custom?.spanNulls as boolean | undefined,
     scopedVars: values.scopedVars,
-    inspect,
     type: values.type,
     custom: values.custom,
     maxDataPoints: values.maxDataPoints,

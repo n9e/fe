@@ -124,6 +124,8 @@ const ko_KR = {
     dashboardIds_placeholder: '대시보드를 선택하세요',
   },
   var: {
+    reference_in_use: '변수 {{name}} 이(가) 아직 {{total}}개 설정에서 참조되고 있습니다. 먼저 교체해 주세요.',
+    references_renamed: '변수 참조 {{total}}개를 업데이트했습니다',
     vars: '변수',
     btn: '변수 추가',
     title: {
@@ -572,9 +574,30 @@ const ko_KR = {
           },
         },
         displayMode: '표시 모드',
+        namePlacement: {
+          label: '이름 위치',
+          options: {
+            auto: '자동',
+            top: '상단',
+            bottom: '하단',
+            left: '왼쪽',
+            hidden: '숨기기',
+          },
+        },
+        sizing: {
+          label: '막대 크기',
+          options: {
+            auto: '자동',
+            manual: '수동',
+          },
+        },
+        minVizWidth: '최소 너비',
+        minVizHeight: '최소 높이',
+        maxVizHeight: '최대 높이',
         valueMode: {
           label: '값 표시',
           color: '표시',
+          text: '텍스트 색상',
           hidden: '숨기기',
         },
       },

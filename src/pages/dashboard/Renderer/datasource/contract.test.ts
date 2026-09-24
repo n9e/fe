@@ -25,7 +25,7 @@ jest.mock('@/components/TimeRangePicker/utils', () => ({
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
   default: jest.fn((value: string) => value),
-  getBuiltInVariables: () => [],
+  getBuiltInVariables: () => [{ name: '__interval', value: '30s' }],
   replaceDatasourceVariables: (value: number | string) => (value === '${metrics}' ? 9 : value),
 }));
 
@@ -38,6 +38,31 @@ const getDashboardVariablePluginMock = getDashboardVariablePlugin as jest.Mocked
 describe('dashboard unified query contract', () => {
   afterEach(() => {
     getDashboardVariablePluginMock.mockReset();
+  });
+
+  it('accepts builtins, scoped variables and SQL macros without confusing expression RefIDs with variables', () => {
+    const request = buildDashboardQueryRequest({
+      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+      datasourceList: [],
+      scopedVars: { host: { value: 'localhost' } },
+      targets: [
+        { refId: 'A', datasource: { cate: 'prometheus', id: 1 }, expr: 'rate(up{instance="$host"}[$__interval])', legend: '$unusedLegend' },
+        { refId: 'B', datasource: { cate: 'mysql', id: 2 }, query: { query: 'SELECT value FROM metrics WHERE $__timeFilter(ts)' } },
+        { refId: 'C', kind: 'expression', expression: '$A * 2' },
+      ],
+    });
+    expect(request.queries.map((query) => query.ref_id)).toEqual(['A', 'B', 'C']);
+  });
+
+  it('reports nested query variables before a datasource plugin can silently skip the query', () => {
+    getDashboardVariablePluginMock.mockReturnValue({ transformQuery: jest.fn(() => undefined) } as unknown as NonNullable<ReturnType<typeof getDashboardVariablePlugin>>);
+    expect(() =>
+      buildDashboardQueryRequest({
+        time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+        datasourceList: [],
+        targets: [{ refId: 'B', datasource: { cate: 'elasticsearch', id: 1 }, query: { index: '$index', date_field: '@timestamp', filters: [{ value: '[[service]]' }] } }],
+      }),
+    ).toThrow('Query B references missing variable(s): index, service');
   });
 
   it('registers every dashboard datasource contract', () => {
@@ -536,6 +561,7 @@ describe('dashboard unified query contract', () => {
         start: moment('2026-07-24T00:00:00.000Z'),
         end: moment('2026-07-24T01:00:00.000Z'),
       },
+      variables: [{ name: 'metrics', type: 'constant', value: 9, definition: '' }],
       targets,
       datasourceList: [],
       panelWidth: 800,
