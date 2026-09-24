@@ -57,8 +57,9 @@ export default function Query(props: Props) {
         isPlaceholderQuoted: isPlaceholderQuoted(item.definition, item.name),
         isEscapeJsonString: true,
       });
-      const formatedDefinition = formatString(item.definition as string, data);
-      const formatedQuery = item.query?.query ? formatString(item.query.query as string, data) : undefined;
+      const formatOptions = { enableDorisSqlLike: datasourceCate === DatasourceCateEnum.doris };
+      const formatedDefinition = formatString(item.definition as string, data, formatOptions);
+      const formatedQuery = item.query?.query ? formatString(item.query.query as string, data, formatOptions) : undefined;
       const datasourceValue = formatDatasource(item.datasource.value, data);
 
       if (!item.datasource) {
@@ -187,7 +188,10 @@ export default function Query(props: Props) {
         <InputNumber min={120} placeholder='180' style={{ width: '100%' }} />
       </Form.Item>
       {(capabilities?.multi ??
-        _.includes([DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql], datasourceCate)) && (
+        _.includes(
+          [DatasourceCateEnum.prometheus, DatasourceCateEnum.elasticsearch, DatasourceCateEnum.pgsql, DatasourceCateEnum.mysql, DatasourceCateEnum.doris],
+          datasourceCate,
+        )) && (
         <Row gutter={16}>
           <Col flex='120px'>
             <Form.Item label={t('var.multi')} name='multi' valuePropName='checked'>
@@ -204,7 +208,7 @@ export default function Query(props: Props) {
           {item?.multi && item?.allOption && capabilities?.all !== false ? (
             <Col flex='auto'>
               <Form.Item label={t('var.allValue')} name='allValue'>
-                <Input placeholder={capabilities?.allValuePlaceholder ?? (datasourceCate === DatasourceCateEnum.mysql ? '' : '.*')} />
+                <Input placeholder={capabilities?.allValuePlaceholder ?? (_.includes([DatasourceCateEnum.mysql, DatasourceCateEnum.doris], datasourceCate) ? '' : '.*')} />
               </Form.Item>
             </Col>
           ) : null}

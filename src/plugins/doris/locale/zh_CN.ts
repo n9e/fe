@@ -22,6 +22,11 @@ const zh_CN = {
     1. 查询最近5分钟的日志行数 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
     2. 查询所选时间区间的日志行数 SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
     更多SQL模式说明，请参考 <a>Doris SQL模式说明</a>`,
+    variable_format_tip:
+      '变量高级格式：${变量:csv}、raw、regex、json、text、sqlstring 等；text 输出选项标签。Doris 专属 LIKE：${变量:sql_like_or:字段} 或 ${变量:sql_like_and:字段}。',
+    advanced_variable_formats: '高级变量格式',
+    dashboard_variable_tip:
+      "Doris 查询变量：多选变量默认转换为单引号包裹、逗号分隔的 SQL 值列表。例如 ${host} 会转换为 'host01', 'host02'，可用于 IN (${host})。<1/>使用 ${变量:格式} 指定输出格式；text 输出选项标签。Doris 专属 LIKE 格式：${host:sql_like_or:description} 或 ${host:sql_like_and:table.column}。<1/>完整格式与示例请查看 <advanced>高级变量格式</advanced>。<1/>可使用后端时间宏，例如 $__timeFilter(...)、$__timeFrom()、$__timeTo()。详情请查看 <a>查询条件</a> 文档。",
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查询',
     database: '数据库',

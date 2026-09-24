@@ -107,6 +107,22 @@ describe('replaceTemplateVariables', () => {
     ).toBe('host=api-1');
   });
 
+  test('should support advanced formats and text labels in scopedVars', () => {
+    expect(
+      replaceTemplateVariables('${host:csv} / ${host:text}', {
+        scopedVars: { host: { value: 'api-1', text: 'API One' } },
+      }),
+    ).toBe('api-1 / API One');
+  });
+
+  test('should fall back to values for array scopedVars that carry a text label', () => {
+    expect(
+      replaceTemplateVariables('${host:csv} / ${host:text}', {
+        scopedVars: { host: { value: ['api-1', 'api-2'], text: 'API' } },
+      }),
+    ).toBe('api-1,api-2 / api-1 + api-2');
+  });
+
   test('should support flat scopedVars values including undefined without crashing', () => {
     expect(
       replaceTemplateVariables('/x?name=${__field.name}&value=${__field.value}', {

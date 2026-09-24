@@ -8,6 +8,8 @@ import { IVariable } from '../types';
 import { replaceAllSeparatorMap } from '../constant';
 import stringToRegex from './stringToRegex';
 import { escapePromQLString, escapeJsonString } from './escapeString';
+import { VARIABLE_INTERPOLATION_METADATA } from './formatString';
+import type { InterpolationData, VariableInterpolationMetadata } from './formatString';
 import { getBuiltInVariables } from './replaceTemplateVariables';
 import isPlaceholderQuoted from './isPlaceholderQuoted';
 
@@ -21,10 +23,10 @@ function adjustValue(
     datasourceCate: DatasourceCateEnum;
     isPlaceholderQuoted?: boolean;
     isEscapeJsonString?: boolean;
-    isMysqlMulti?: boolean;
+    isSqlMulti?: boolean;
   },
 ) {
-  const { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isMysqlMulti } = params;
+  const { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isSqlMulti } = params;
   if (datasourceCate === DatasourceCateEnum.prometheus) {
     value = escapePromQLString(value);
   } else if (datasourceCate === DatasourceCateEnum.elasticsearch) {
@@ -36,7 +38,7 @@ function adjustValue(
     if (isEscapeJsonString) {
       value = escapeJsonString(value);
     }
-  } else if (datasourceCate === DatasourceCateEnum.mysql && isMysqlMulti) {
+  } else if ((datasourceCate === DatasourceCateEnum.mysql || datasourceCate === DatasourceCateEnum.doris) && isSqlMulti) {
     // Grafana sqlstring 风格：对每个值加单引号并转义内部单引号
     value = escapeSqlString(value);
   }
@@ -57,11 +59,12 @@ function joinValues(
 ) {
   const { separator, datasourceCate, isPlaceholderQuoted, isEscapeJsonString } = params;
   if (_.isEmpty(values)) return '';
-  // mysql 多值：按 Grafana sqlstring 风格输出 'val1','val2'
-  if (datasourceCate === DatasourceCateEnum.mysql) {
+  // SQL 数据源多值：按 Grafana sqlstring 风格输出单引号包裹的值列表，Doris 用逗号加空格分隔以便阅读。
+  if (datasourceCate === DatasourceCateEnum.mysql || datasourceCate === DatasourceCateEnum.doris) {
+    const valueSeparator = datasourceCate === DatasourceCateEnum.doris ? ', ' : ',';
     return _.join(
-      _.map(values, (item) => adjustValue(String(item.value), { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isMysqlMulti: true })),
-      ',',
+      _.map(values, (item) => adjustValue(String(item.value), { datasourceCate, isPlaceholderQuoted, isEscapeJsonString, isSqlMulti: true })),
+      valueSeparator,
     );
   }
   // 如果只有一个值时，不需要使用分隔符连接和外包裹（括号）
@@ -90,6 +93,44 @@ function joinValues(
   }
 }
 
+function getInterpolationMetadata(variable: IVariable): Omit<VariableInterpolationMetadata, 'defaultValue'> {
+  const { options = [], reg, defaultValue, definition, value, allValue, type } = variable;
+  const isAll = _.isEqual(value, ['all']) || _.isEqual(value, ['__all__']);
+
+  if (isAll) {
+    if (allValue) {
+      return {
+        values: [allValue],
+        texts: ['All'],
+        allValue,
+        isAll: true,
+      };
+    }
+    const allOptions = options.filter((option) => !reg || !stringToRegex(reg) || (stringToRegex(reg) as RegExp).test(String(option.value)));
+    return {
+      values: allOptions.map((option) => String(option.value)),
+      texts: ['All'],
+      isAll: true,
+    };
+  }
+
+  let selectedValue = value;
+  if (type === 'constant') {
+    selectedValue = value ?? definition ?? '';
+  } else if (type === 'textbox' || type === 'datasource' || type === 'datasourceIdentifier') {
+    selectedValue = value ?? defaultValue;
+  }
+
+  const selectedValues = Array.isArray(selectedValue) ? selectedValue : selectedValue == null ? [] : [selectedValue];
+  const selectedOptions = selectedValues.map((selected) => {
+    return options.find((option) => option.value === selected) || { label: String(selected), value: selected };
+  });
+  return {
+    values: selectedOptions.map((option) => String(option.value)),
+    texts: selectedOptions.map((option) => option.label),
+  };
+}
+
 export default function adjustData(
   variables: IVariable[],
   options: {
@@ -101,14 +142,13 @@ export default function adjustData(
       name: string;
     }[];
   },
-): {
-  [key: string]: string | number | undefined;
-} {
+): InterpolationData {
   const { isEscapeJsonString, isPlaceholderQuoted, datasourceList } = options;
   if (_.isEmpty(variables)) {
     return {};
   }
-  const data = _.reduce<IVariable, Record<string, string | number | undefined>>(
+  const metadata: Record<string, VariableInterpolationMetadata> = {};
+  const data = _.reduce<IVariable, InterpolationData>(
     variables,
     (result, variable) => {
       const { options, reg, defaultValue, definition, value, allValue, type, datasource } = variable;
@@ -158,11 +198,20 @@ export default function adjustData(
           }
         }
       }
-      result[variable.name] = Array.isArray(joinedValue) ? joinedValue.join(',') : joinedValue;
+      const interpolatedDefaultValue = Array.isArray(joinedValue) ? joinedValue.join(',') : joinedValue;
+      result[variable.name] = interpolatedDefaultValue;
+      metadata[variable.name] = {
+        defaultValue: interpolatedDefaultValue,
+        ...getInterpolationMetadata(variable),
+      };
       return result;
     },
     {},
   );
+  Object.defineProperty(data, VARIABLE_INTERPOLATION_METADATA, {
+    value: metadata,
+    enumerable: false,
+  });
   return data;
 }
 
