@@ -110,6 +110,15 @@ describe('BarGauge display options', () => {
     expect(items[1].querySelector('.renderer-bar-gauge-lcd-item-value')).toHaveStyle({ color: '#00ff00' });
   });
 
+  it('keeps the LCD value beside the bar when the name is on top', () => {
+    const view = renderGauge({ displayMode: 'lcd', orientation: 'horizontal', namePlacement: 'top' });
+    const firstItem = view.container.querySelector('.renderer-bar-gauge-lcd-item');
+    const content = firstItem?.querySelector('.renderer-bar-gauge-lcd-item-content');
+
+    expect(content?.firstElementChild).toHaveClass('renderer-bar-gauge-lcd-item-cells-wrapper');
+    expect(content?.lastElementChild).toHaveClass('renderer-bar-gauge-lcd-item-value');
+  });
+
   it('uses the larger of automatic size and manual minimum width in vertical mode', () => {
     const view = renderGauge({ orientation: 'vertical', sizing: 'manual', minVizWidth: 170 });
 
@@ -157,6 +166,14 @@ describe('BarGauge display options', () => {
     const view = renderGauge({});
 
     expect(view.container.querySelector('.renderer-bar-gauge-horizontal')).toBeInTheDocument();
+  });
+
+  it('uses the LCD spacing fallback when there are no LCD bars', () => {
+    const vertical = renderGauge({ orientation: 'vertical' });
+    expect(vertical.container.querySelector('.renderer-bar-gauge')).toHaveStyle({ gap: '10px' });
+
+    const lcdOnly = renderGauge({ displayMode: 'lcd', orientation: 'vertical' });
+    expect(lcdOnly.container.querySelector('.renderer-bar-gauge')).toHaveStyle({ gap: '2px' });
   });
 
   it('uses the shared scrollbar style for bar lists', () => {

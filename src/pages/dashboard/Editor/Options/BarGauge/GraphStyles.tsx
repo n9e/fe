@@ -31,7 +31,7 @@ export default function GraphStyles() {
   const combine_other = Form.useWatch([...namePrefix, 'combine_other']);
   const sizing = Form.useWatch([...namePrefix, 'sizing']) || 'auto';
   const orientation = Form.useWatch([...namePrefix, 'orientation']) || 'horizontal';
-  const namePlacement = Form.useWatch([...namePrefix, 'namePlacement']) || 'auto';
+  const namePlacement = Form.useWatch([...namePrefix, 'namePlacement']);
 
   useEffect(() => {
     return () => {
@@ -40,6 +40,7 @@ export default function GraphStyles() {
   }, []);
 
   useEffect(() => {
+    if (!namePlacement) return;
     const isVertical = orientation === 'vertical';
     const validNamePlacements = isVertical ? ['bottom', 'hidden'] : ['top', 'left', 'hidden'];
     if (!validNamePlacements.includes(namePlacement)) {

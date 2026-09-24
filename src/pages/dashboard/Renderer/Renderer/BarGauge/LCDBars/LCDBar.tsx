@@ -113,19 +113,21 @@ export default function LCDBar(props: Props) {
             )}
           </div>
         )}
-        <div className='renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
-        {valueMode !== 'hidden' && (
-          <div
-            className='renderer-bar-gauge-lcd-item-value'
-            style={{
-              color: valueMode === 'text' ? (themeMode === 'dark' ? '#fff' : '#20222E') : item.color,
-              width: `${maxValueWidth}px`,
-            }}
-          >
-            {item.value}
-            {item.unit}
-          </div>
-        )}
+        <div className='renderer-bar-gauge-lcd-item-content'>
+          <div className='renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
+          {valueMode !== 'hidden' && (
+            <div
+              className='renderer-bar-gauge-lcd-item-value'
+              style={{
+                color: valueMode === 'text' ? (themeMode === 'dark' ? '#fff' : '#20222E') : item.color,
+                width: `${maxValueWidth}px`,
+              }}
+            >
+              {item.value}
+              {item.unit}
+            </div>
+          )}
+        </div>
       </div>
     </Tooltip>
   );
