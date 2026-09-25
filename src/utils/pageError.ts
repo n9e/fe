@@ -51,7 +51,34 @@ export function usePageError(): AppError | null {
  * 「返回上一页」不能用 history.length 判断：那是整个标签页的会话长度，
  * 用户先逛了别的网站再把 flashcat 地址粘贴进来，length 一样大于 1，
  * 但点回退会直接离开本应用。这里只数应用内自己的跳转次数。
+ *
+ * The in-memory count alone is not enough: typing an address or reloading starts a
+ * new document and resets it, so an app page right behind this one would be treated
+ * as "nothing to go back to" and the user would be sent home.
+ *
+ * So on each full page load, treat the previous page as ours when this tab has
+ * loaded the app before (a sessionStorage flag, scoped to the tab). Two exceptions:
+ * - reloads: the flag may come from the very page being reloaded; a fresh tab that
+ *   reloads its first page has nothing of ours behind it;
+ * - a tab with a single history entry: a tab the app opened with window.open copies
+ *   the opener's sessionStorage but has nothing behind it.
  */
+const APP_LOADED_IN_TAB_KEY = 'appLoadedInTab';
+
+/** Evaluated once per full page load. */
+const prevPageInApp = (() => {
+  let loadedInTabBefore = false;
+  try {
+    loadedInTabBefore = sessionStorage.getItem(APP_LOADED_IN_TAB_KEY) === '1';
+    sessionStorage.setItem(APP_LOADED_IN_TAB_KEY, '1');
+  } catch {
+    // Storage blocked: fall back to the in-memory count
+  }
+  // Not available in every environment (e.g. jsdom)
+  const [navigation] = performance.getEntriesByType?.('navigation') ?? [];
+  return loadedInTabBefore && window.history.length > 1 && (navigation as PerformanceNavigationTiming | undefined)?.type !== 'reload';
+})();
+
 let inAppNavigationCount = 0;
 
 export function markInAppNavigation() {
@@ -59,5 +86,5 @@ export function markInAppNavigation() {
 }
 
 export function canGoBackInApp(): boolean {
-  return inAppNavigationCount > 1;
+  return prevPageInApp || inAppNavigationCount > 1;
 }
