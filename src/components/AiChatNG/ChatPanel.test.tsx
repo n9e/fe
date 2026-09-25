@@ -433,6 +433,16 @@ describe('ChatPanel turn cancellation and completion', () => {
     fireEvent.keyDown(box, { key: 'Tab' });
     expect(box.value).toBe('Group by env instead');
   });
+
+  it('offers the suggested follow-up in primary with a Tab key that fills it', () => {
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} placeholder='Group by env instead' suggestion='Group by env instead' />);
+    const box = screen.getByRole('textbox') as HTMLTextAreaElement;
+    expect(box).toHaveClass('placeholder:text-primary');
+    fireEvent.mouseDown(screen.getByRole('button', { name: /Tab/ }));
+    expect(box.value).toBe('Group by env instead');
+    expect(box).toHaveClass('placeholder:text-placeholder');
+    expect(screen.queryByRole('button', { name: /Tab/ })).toBeNull();
+  });
 });
 
 describe('ChatPanel initial skill reference', () => {
