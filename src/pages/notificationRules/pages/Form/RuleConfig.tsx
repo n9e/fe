@@ -266,7 +266,7 @@ export default function NotifyConfig(props: Props) {
             </div>
           </div>
         </div>
-        {!disabled && <TestButton field={field} />}
+        {!disabled && <TestButton field={field} channelItem={channelItem} />}
       </div>
     </div>
   );

@@ -115,6 +115,13 @@ describe('getExpectedTplKeys', () => {
     expect(getExpectedTplKeys({ request_type: 'smtp' })).toEqual({ keys: SMTP_TPL_KEYS, source: 'fixed' });
   });
 
+  it('原生对接的 jira 走固定字段：title 是工单标题，content 是描述', () => {
+    expect(getExpectedTplKeys({ request_type: 'jira' })).toEqual({ keys: ['title', 'content'], source: 'fixed' });
+    const starter = buildStarterContent({ request_type: 'jira' }, TEXTS);
+    expect(Object.keys(starter)).toEqual(['title', 'content']);
+    expect(starter.title).not.toContain('\n');
+  });
+
   it('flashduty / pagerduty 不需要模板', () => {
     expect(getExpectedTplKeys({ request_type: 'flashduty' })).toEqual({ keys: [], source: 'none' });
     expect(getExpectedTplKeys({ request_type: 'pagerduty' })).toEqual({ keys: [], source: 'none' });
