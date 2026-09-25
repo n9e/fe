@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-import { ResponseBlocks } from './MessageBlocks';
+import { MessageItem, ResponseBlocks } from './MessageBlocks';
 import { EAiChatContentType, IAiChatMessage } from './types';
 
 jest.mock('./StreamingMarkdown', () => ({
@@ -105,5 +105,15 @@ describe('ResponseBlocks（jsdom 集成）', () => {
     expect(screen.getByText('要看哪个数据源？')).toBeTruthy();
     screen.getByText('prod').click();
     expect(onOK).toHaveBeenCalledWith({}, 'prod');
+  });
+});
+
+describe('MessageItem in the dock', () => {
+  it('keeps the query on the left in a tinted bubble and draws no avatar on either side', () => {
+    const { container } = render(<MessageItem {...responseBlocksProps} message={message([], true)} variant='slim' />);
+    expect(container.querySelector('img, svg.lucide-user')).toBeNull();
+    const bubble = screen.getByText('问题').parentElement!;
+    expect(bubble).toHaveClass('bg-primary/10');
+    expect(bubble.parentElement).not.toHaveClass('justify-end');
   });
 });
