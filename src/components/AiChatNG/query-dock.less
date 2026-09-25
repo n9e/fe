@@ -83,8 +83,8 @@
     box-shadow: none;
   }
 
-  /* Keep user and assistant body copy on one rhythm. Removing the outer
-     paragraph margins also centres the assistant mark on the first line. */
+  /* Keep user and assistant body copy on one rhythm: no outer paragraph
+     margins. */
   .ai-chat-streamdown p:first-child {
     margin-top: 0;
   }
@@ -93,8 +93,8 @@
     margin-bottom: 0;
   }
 
-  /* The assistant mark follows the first 22px line box. Compact running and
-     tool rows need the same baseline instead of their default extra offset. */
+  /* Running and tool rows sit on the body copy's 22px line instead of their
+     default extra offset. */
   .ai-chat-cur-step {
     margin-top: 1px !important;
     padding-top: 0 !important;
