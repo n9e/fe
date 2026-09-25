@@ -20,5 +20,7 @@ import PageError from '@/components/PageError';
 import { basePrefix } from '@/App';
 
 export default function OutOfService() {
-  return <PageError status={500} onRetry={() => (location.href = basePrefix || '/')} />;
+  // App skips initialization on this route; recovery must load a new document.
+  const goHome = () => location.replace(`${basePrefix}/`);
+  return <PageError status={500} onRetry={goHome} onGoHome={goHome} />;
 }

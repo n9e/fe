@@ -21,6 +21,8 @@ interface IProps {
   error?: AppError;
   /** 5xx 的重试动作，不传则不显示重试按钮 */
   onRetry?: () => void;
+  /** Reload app state when recovering from a standalone error page. */
+  onGoHome?: () => void;
 }
 
 /** 自定义插画：明暗共用透明底 WebP；未知/其它 5xx 统一走 500 */
@@ -90,13 +92,15 @@ export default function PageError(props: IProps) {
     return _.take(ownerNames, MAX_SHOWN_OWNERS).join('、');
   }, [ownerNames, ownersExpanded]);
 
+  const handleGoHome = props.onGoHome ?? (() => history.replace(HOME_PATH));
+
   const handleGoBack = () => {
     // 不能无脑 goBack：用户可能是直接粘贴链接进来的（没有上一页），
     // 也可能上一页就是同一个没权限的地址，退回去还会再错一次。
     if (canGoBackInApp()) {
       history.goBack();
     } else {
-      history.replace(HOME_PATH);
+      handleGoHome();
     }
   };
 
@@ -125,7 +129,7 @@ export default function PageError(props: IProps) {
         {t('action.retry')}
       </Button>
     ) : null,
-    <Button key='home' onClick={() => history.replace(HOME_PATH)}>
+    <Button key='home' onClick={handleGoHome}>
       {t('action.home')}
     </Button>,
   ]);
