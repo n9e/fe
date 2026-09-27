@@ -909,7 +909,7 @@ export default function ChatPanel(props: IAiChatProps) {
                 {offered && (
                   <button
                     type='button'
-                    className='ai-query-dock-suggestion-key'
+                    className='ai-query-dock-suggestion-key inline-flex shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap border-0 bg-transparent px-0.5 text-xs text-main hover:text-title'
                     // mousedown, not click: the composer keeps focus, as in the suggestion list.
                     onMouseDown={(event) => {
                       event.preventDefault();

@@ -154,7 +154,8 @@
     }
   }
 
-  /* One key cap for the legend and for the suggestion key in the bar. */
+  /* One key cap for the legend and for the suggestion key in the bar; the key
+     itself is laid out with utilities, this is the shared bare-kbd styling. */
   .ai-query-dock-keys kbd,
   .ai-query-dock-suggestion-key kbd {
     display: inline-flex;
@@ -169,25 +170,6 @@
     font-size: 11px;
     line-height: 1;
     justify-content: center;
-  }
-
-  /* The model's suggested next message is offered in the bar: the placeholder
-     carries the text, this key takes it, the same Tab as the suggestion list. */
-  .ai-query-dock-suggestion-key {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 0 2px;
-    border: 0;
-    background: transparent;
-    color: var(--fc-text-2);
-    font-size: 12px;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-
-  .ai-query-dock-suggestion-key:hover {
-    color: var(--fc-text-1);
   }
 }
 
