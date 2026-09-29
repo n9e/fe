@@ -145,6 +145,8 @@ const ja_JP = {
     dashboardIds_placeholder: 'ダッシュボードを選択してください',
   },
   var: {
+    reference_in_use: '変数 {{name}} はまだ {{total}} 件の設定から参照されています。先に置換してください。',
+    references_renamed: '変数参照を {{total}} 件更新しました',
     vars: '変数',
     btn: '変数を追加',
     title: {
@@ -657,9 +659,30 @@ const ja_JP = {
           },
         },
         displayMode: '表示モード',
+        namePlacement: {
+          label: '名前の位置',
+          options: {
+            auto: '自動',
+            top: '上部',
+            bottom: '下部',
+            left: '左',
+            hidden: '非表示',
+          },
+        },
+        sizing: {
+          label: 'バーのサイズ',
+          options: {
+            auto: '自動',
+            manual: '手動',
+          },
+        },
+        minVizWidth: '最小幅',
+        minVizHeight: '最小高さ',
+        maxVizHeight: '最大高さ',
         valueMode: {
           label: '値の表示モード',
           color: '色',
+          text: 'テキスト色',
           hidden: '非表示',
         },
       },

@@ -19,7 +19,7 @@ import { arc } from 'd3';
 import _ from 'lodash';
 import { IFieldConfig } from './types';
 import { getFormattedThresholds } from './utils';
-import { gaugeDefaultThresholds } from '../../../Editor/config';
+import { gaugeDefaultThresholds } from '../../registry/defaults';
 import { getMaxFontSize } from '../../utils/getTextWidth';
 import './style.less';
 

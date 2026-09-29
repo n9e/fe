@@ -127,6 +127,8 @@ const id_ID = {
     dashboardIds_placeholder: 'Pilih dasbor',
   },
   var: {
+    reference_in_use: 'Variabel {{name}} masih direferensikan oleh {{total}} konfigurasi. Ganti terlebih dahulu.',
+    references_renamed: '{{total}} referensi variabel diperbarui',
     vars: 'Variabel',
     btn: 'Tambah variabel',
     title: {
@@ -577,9 +579,30 @@ const id_ID = {
           },
         },
         displayMode: 'Mode tampilan',
+        namePlacement: {
+          label: 'Penempatan nama',
+          options: {
+            auto: 'Otomatis',
+            top: 'Atas',
+            bottom: 'Bawah',
+            left: 'Kiri',
+            hidden: 'Sembunyikan',
+          },
+        },
+        sizing: {
+          label: 'Ukuran bar',
+          options: {
+            auto: 'Otomatis',
+            manual: 'Manual',
+          },
+        },
+        minVizWidth: 'Lebar minimum',
+        minVizHeight: 'Tinggi minimum',
+        maxVizHeight: 'Tinggi maksimum',
         valueMode: {
           label: 'Tampilan nilai',
           color: 'Tampilkan',
+          text: 'Warna teks',
           hidden: 'Sembunyikan',
         },
       },

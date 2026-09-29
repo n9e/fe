@@ -30,7 +30,7 @@ import '@fc-plot/ts-graph/dist/index.css';
 
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel } from '../../../types';
 import type { IStandardOptions } from '@/pages/dashboard/types';
@@ -38,7 +38,7 @@ import { hexPalette } from '../../../config';
 import valueFormatter from '../../utils/valueFormatter';
 import getSerieName from '../../utils/getSerieName';
 import { getLegendValues, getMappedTextObj } from '../../utils/getCalculatedValuesBySeries';
-import { useGlobalState } from '../../../globalState';
+import { DashboardRuntimeProvider, useDashboardRuntimeStoreIfAvailable, useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
 import './style.less';
 
@@ -156,7 +156,28 @@ function NameWithTooltip({ record, children }) {
   );
 }
 
+/**
+ * 渲染 legacy 时序图，并为仪表盘外的复用调用显式创建独立运行时容器。
+ *
+ * 仪表盘内始终继承所属实例；外部页面只获得空的隔离运行时，不会读写仪表盘状态。
+ */
 export default function index(props: IProps) {
+  const dashboardRuntimeStore = useDashboardRuntimeStoreIfAvailable();
+
+  if (!dashboardRuntimeStore) {
+    return (
+      <DashboardRuntimeProvider>
+        <TimeseriesContent {...props} />
+      </DashboardRuntimeProvider>
+    );
+  }
+
+  return <TimeseriesContent {...props} />;
+}
+
+/** 渲染已处于仪表盘运行时容器内的 legacy 时序图主体。 */
+function TimeseriesContent(props: IProps) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const { darkMode: appDarkMode } = useContext(CommonStateContext);
   // hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底

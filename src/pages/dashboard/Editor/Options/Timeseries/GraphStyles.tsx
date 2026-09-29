@@ -60,7 +60,7 @@ export default function GraphStyles() {
   return (
     <Panel header={t('panel.custom.title')}>
       <>
-        <Space>
+        <div className='n9e-dashboard-editor-options-radio-row'>
           <Form.Item label={t('panel.custom.timeseries.drawStyle')} name={[...namePrefix, 'drawStyle']}>
             <Radio.Group buttonStyle='solid'>
               <Radio.Button value='lines'>Lines</Radio.Button>
@@ -93,11 +93,8 @@ export default function GraphStyles() {
               <Radio.Button value={false}>{t('panel.custom.timeseries.spanNulls_0')}</Radio.Button>
             </Radio.Group>
           </Form.Item>
-        </Space>
-        <Form.Item
-          noStyle
-          shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'drawStyle']) !== _.get(curValues, [...namePrefix, 'drawStyle'])}
-        >
+        </div>
+        <Form.Item noStyle shouldUpdate={(prevValues, curValues) => _.get(prevValues, [...namePrefix, 'drawStyle']) !== _.get(curValues, [...namePrefix, 'drawStyle'])}>
           {({ getFieldValue }) => {
             if (getFieldValue([...namePrefix, 'drawStyle']) !== 'bars') return null;
             const alignments: { value: BarAlignment; label: 'before' | 'center' | 'after' }[] = [
@@ -111,7 +108,11 @@ export default function GraphStyles() {
                   <Radio.Group buttonStyle='solid'>
                     {alignments.map(({ value, label }) => (
                       <Tooltip key={value} title={t(`panel.custom.timeseries.barAlignment_${label}`)}>
-                        <Radio.Button value={value} aria-label={t(`panel.custom.timeseries.barAlignment_${label}`)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Radio.Button
+                          value={value}
+                          aria-label={t(`panel.custom.timeseries.barAlignment_${label}`)}
+                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           <BarAlignmentIcon alignment={value} />
                         </Radio.Button>
                       </Tooltip>
@@ -142,7 +143,7 @@ export default function GraphStyles() {
         <Form.Item label={t('panel.custom.timeseries.fillOpacity')} name={[...namePrefix, 'fillOpacity']}>
           <Slider min={0} max={1} step={0.01} marks={{ 0: '0', 1: '1' }} />
         </Form.Item>
-        <Space>
+        <div className='n9e-dashboard-editor-options-radio-row'>
           <Form.Item label={t('panel.custom.timeseries.gradientMode')} name={[...namePrefix, 'gradientMode']}>
             <Radio.Group buttonStyle='solid'>
               <Radio.Button value='opacity'>{t('panel.custom.timeseries.gradientMode_opacity')}</Radio.Button>
@@ -163,7 +164,7 @@ export default function GraphStyles() {
             {({ getFieldValue, setFields }) => {
               const scaleDistributionType = getFieldValue([...namePrefix, 'scaleDistribution', 'type']);
               return (
-                <Space>
+                <div className='n9e-dashboard-editor-options-radio-row'>
                   <Form.Item label='YAxis Scale' name={[...namePrefix, 'scaleDistribution', 'type']}>
                     <Radio.Group
                       buttonStyle='solid'
@@ -190,11 +191,11 @@ export default function GraphStyles() {
                       </Select>
                     </Form.Item>
                   )}
-                </Space>
+                </div>
               );
             }}
           </Form.Item>
-        </Space>
+        </div>
         <Form.Item label={t('panel.custom.timeseries.showPoints')} name={[...namePrefix, 'showPoints']}>
           <Radio.Group buttonStyle='solid'>
             <Radio.Button value='always'>{t('panel.custom.timeseries.showPoints_always')}</Radio.Button>

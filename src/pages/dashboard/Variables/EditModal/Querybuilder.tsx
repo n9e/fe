@@ -19,6 +19,7 @@ export default function Querybuilder({ variables }: { variables?: import('../typ
   const datasourceValue = Form.useWatch(['datasource', 'value']);
   const currentdatasourceValue = replaceDatasourceVariables(datasourceValue, {
     datasourceList,
+    variables,
   });
   const subProps = {
     datasourceCate,
@@ -29,7 +30,7 @@ export default function Querybuilder({ variables }: { variables?: import('../typ
       {currentdatasourceValue === undefined && datasourceValue !== undefined && <Alert className='mb-2' type='warning' message={`Invalid datasource value ${datasourceValue}`} />}
       <div style={{ display: currentdatasourceValue === undefined ? 'none' : 'block' }}>
         {datasourceCate === DatasourceCateEnum.prometheus && <Prometheus />}
-        {datasourceCate === DatasourceCateEnum.elasticsearch && <Elasticsearch />}
+        {datasourceCate === DatasourceCateEnum.elasticsearch && <Elasticsearch variables={variables} />}
         {datasourceCate === DatasourceCateEnum.ck && <ClickHouse />}
         <VariableQuerybuilderPro variables={variables} {...subProps} datasourceValue={currentdatasourceValue!} />
       </div>

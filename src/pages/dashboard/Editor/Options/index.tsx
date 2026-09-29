@@ -15,20 +15,13 @@
  *
  */
 import React from 'react';
-import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import Timeseries from './Timeseries';
-import Stat from './Stat';
-import Table from './Table';
-import TableNG from './TableNG';
-import Pie from './Pie';
-import Hexbin from './Hexbin';
-import BarGauge from './BarGauge';
-import Text from './Text';
-import Gauge from './Gauge';
-import Iframe from './Iframe';
-import Heatmap from './Heatmap';
-import BarChart from './BarChart';
+import { Button } from 'antd';
+import { LineChartOutlined, ReloadOutlined } from '@ant-design/icons';
+
+import { createLazyComponent } from '../../Renderer/registry/lazyComponent';
+import { getPanelTypeDefinition } from '../../Renderer/registry';
+import type { PanelOptionsProps } from '../../Renderer/registry';
 import type { ITarget, IType } from '../../types';
 
 interface OptionsProps {
@@ -36,21 +29,65 @@ interface OptionsProps {
   targets: ITarget[];
 }
 
+/**
+ * 选项面板组件缓存：同一类型只创建一次可重试的加载组件，
+ * 编辑过程中切换图表类型不会重复构造组件实例。
+ */
+const optionsComponentCache = new Map<string, React.ComponentType<PanelOptionsProps>>();
+
+/** 选项面板加载中的局部占位。 */
+function OptionsLoading() {
+  const { t } = useTranslation('dashboard');
+  return (
+    <div className='flex items-center justify-center py-8' role='status' aria-label={t('common:loading')} data-testid='panel-options-loading'>
+      <LineChartOutlined style={{ fontSize: 24, opacity: 0.18 }} />
+    </div>
+  );
+}
+
+/**
+ * 选项面板加载失败：在表单内就地提示并可重试。
+ *
+ * 编辑器不套错误边界，若让失败态冒泡会导致整个编辑弹窗（乃至整页）不可用。
+ */
+function OptionsLoadError({ error, onRetry }: { error: string; onRetry: () => void }) {
+  const { t } = useTranslation('dashboard');
+  return (
+    <div className='flex flex-col items-center justify-center gap-2 py-8 text-center' role='alert' data-testid='panel-options-load-error'>
+      <div>{t('detail.optionsLoadFailed', { defaultValue: '图表选项加载失败' })}</div>
+      <div className='max-w-full break-all opacity-60'>{error}</div>
+      <Button size='small' icon={<ReloadOutlined />} onClick={onRetry}>
+        {t('detail.retry', { defaultValue: '重试' })}
+      </Button>
+    </div>
+  );
+}
+
+/** 取得（或创建）某类型的懒加载选项面板；未注册类型返回 null。 */
+function getLazyOptionsComponent(type: IType | string) {
+  const definition = getPanelTypeDefinition(type);
+  if (!definition) return null;
+  let optionsComponent = optionsComponentCache.get(definition.type);
+  if (!optionsComponent) {
+    optionsComponent = createLazyComponent<PanelOptionsProps>(definition.loadOptions, { Loading: OptionsLoading, Error: OptionsLoadError });
+    optionsComponentCache.set(definition.type, optionsComponent);
+  }
+  return optionsComponent;
+}
+
+/**
+ * 图表选项面板入口。
+ *
+ * 选项面板通过注册表的动态加载器引入，避免查看态因为引用注册表而打包编辑器代码；
+ * 加载失败只在选项区域内提示并可重试。
+ */
 export default function index({ type, targets }: OptionsProps) {
   const { t } = useTranslation('dashboard');
-  const OptionsCptMap: Partial<Record<IType, React.ReactNode>> = {
-    timeseries: <Timeseries targets={targets} />,
-    stat: <Stat targets={targets} />,
-    table: <Table targets={targets} />,
-    tableNG: <TableNG targets={targets} />,
-    pie: <Pie />,
-    hexbin: <Hexbin />,
-    barGauge: <BarGauge />,
-    text: <Text />,
-    iframe: <Iframe />,
-    gauge: <Gauge />,
-    heatmap: <Heatmap />,
-    barchart: <BarChart />,
-  };
-  return (OptionsCptMap[type] ?? <div>{`${t('detail.invalidPanelType')} ${type}`}</div>) as React.ReactElement;
+  const OptionsCpt = getLazyOptionsComponent(type);
+
+  if (!OptionsCpt) {
+    return <div>{`${t('detail.invalidPanelType')} ${type}`}</div>;
+  }
+
+  return <OptionsCpt targets={targets} />;
 }

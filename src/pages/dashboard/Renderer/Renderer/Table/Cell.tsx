@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { Popover, Tooltip } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel } from '../../../types';
 
@@ -16,6 +16,7 @@ interface Props {
 }
 
 export default function Cell(props: Props) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { text, color, style, panel, record } = props;
   const { custom } = panel;
   // custom 为 JsonObject（宽类型），按表格单元格链接实际结构收窄

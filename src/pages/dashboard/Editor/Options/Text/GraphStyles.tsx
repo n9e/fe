@@ -15,7 +15,7 @@
  *
  */
 import React from 'react';
-import { Form, Row, Col, Select, InputNumber, Mentions } from 'antd';
+import { Form, Space, Select, InputNumber, Mentions } from 'antd';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -31,48 +31,36 @@ export default function GraphStyles() {
 
   return (
     <Panel header={t('panel.custom.title')}>
-      <Row gutter={10}>
-        <Col span={3}>
-          <Form.Item label={t('panel.custom.text.textColor')} name={[...namePrefix, 'textColor']}>
-            <ColorPicker />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item label={t('panel.custom.text.textDarkColor')} name={[...namePrefix, 'textDarkColor']}>
-            <ColorPicker />
-          </Form.Item>
-        </Col>
-        <Col span={3}>
-          <Form.Item label={t('panel.custom.text.bgColor')} name={[...namePrefix, 'bgColor']}>
-            <ColorPicker />
-          </Form.Item>
-        </Col>
-        <Col span={4}>
-          <Form.Item label={t('panel.custom.text.textSize')} name={[...namePrefix, 'textSize']}>
-            <InputNumber />
-          </Form.Item>
-        </Col>
-        <Col span={5}>
-          <Form.Item label={t('panel.custom.text.justifyContent.name')} name={[...namePrefix, 'justifyContent']}>
-            <Select>
-              <Select.Option value='unset'>{t('panel.custom.text.justifyContent.unset')}</Select.Option>
-              <Select.Option value='flexStart'>{t('panel.custom.text.justifyContent.flexStart')}</Select.Option>
-              <Select.Option value='center'>{t('panel.custom.text.justifyContent.center')}</Select.Option>
-              <Select.Option value='flexEnd'>{t('panel.custom.text.justifyContent.flexEnd')}</Select.Option>
-            </Select>
-          </Form.Item>
-        </Col>
-        <Col span={5}>
-          <Form.Item label={t('panel.custom.text.alignItems.name')} name={[...namePrefix, 'alignItems']}>
-            <Select>
-              <Select.Option value='unset'>{t('panel.custom.text.alignItems.unset')}</Select.Option>
-              <Select.Option value='flexStart'>{t('panel.custom.text.alignItems.flexStart')}</Select.Option>
-              <Select.Option value='center'>{t('panel.custom.text.alignItems.center')}</Select.Option>
-              <Select.Option value='flexEnd'>{t('panel.custom.text.alignItems.flexEnd')}</Select.Option>
-            </Select>
-          </Form.Item>
-        </Col>
-      </Row>
+      <Space wrap size={16} align='start'>
+        <Form.Item label={t('panel.custom.text.textColor')} name={[...namePrefix, 'textColor']}>
+          <ColorPicker />
+        </Form.Item>
+        <Form.Item label={t('panel.custom.text.textDarkColor')} name={[...namePrefix, 'textDarkColor']}>
+          <ColorPicker />
+        </Form.Item>
+        <Form.Item label={t('panel.custom.text.bgColor')} name={[...namePrefix, 'bgColor']}>
+          <ColorPicker />
+        </Form.Item>
+        <Form.Item label={t('panel.custom.text.textSize')} name={[...namePrefix, 'textSize']}>
+          <InputNumber />
+        </Form.Item>
+        <Form.Item label={t('panel.custom.text.justifyContent.name')} name={[...namePrefix, 'justifyContent']}>
+          <Select>
+            <Select.Option value='unset'>{t('panel.custom.text.justifyContent.unset')}</Select.Option>
+            <Select.Option value='flexStart'>{t('panel.custom.text.justifyContent.flexStart')}</Select.Option>
+            <Select.Option value='center'>{t('panel.custom.text.justifyContent.center')}</Select.Option>
+            <Select.Option value='flexEnd'>{t('panel.custom.text.justifyContent.flexEnd')}</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label={t('panel.custom.text.alignItems.name')} name={[...namePrefix, 'alignItems']}>
+          <Select>
+            <Select.Option value='unset'>{t('panel.custom.text.alignItems.unset')}</Select.Option>
+            <Select.Option value='flexStart'>{t('panel.custom.text.alignItems.flexStart')}</Select.Option>
+            <Select.Option value='center'>{t('panel.custom.text.alignItems.center')}</Select.Option>
+            <Select.Option value='flexEnd'>{t('panel.custom.text.alignItems.flexEnd')}</Select.Option>
+          </Select>
+        </Form.Item>
+      </Space>
       <Form.Item
         label={t('panel.custom.text.content')}
         tooltip={

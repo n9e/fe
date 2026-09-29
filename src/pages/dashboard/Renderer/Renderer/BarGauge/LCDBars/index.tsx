@@ -14,14 +14,16 @@ interface Props {
   minValue: number;
   maxValue: number;
   maxNameWidth: number;
+  maxValueWidth: number;
   maxBarWidth: number;
+  namePlacement?: 'top' | 'bottom' | 'left' | 'hidden';
 }
 
 export default function LCDBars(props: Props) {
   const { values } = props;
 
   return (
-    <div className='renderer-bar-gauge-lcd'>
+    <div className='renderer-bar-gauge-lcd best-looking-scroll'>
       {_.map(values, (item) => {
         return <LCDBar key={item.id} {...props} item={item} />;
       })}

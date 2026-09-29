@@ -1,9 +1,10 @@
+import { useCallback } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDefaultStepByTime } from '@/pages/dashboard/utils';
-import { getGlobalState } from '@/pages/dashboard/globalState';
+import { useGlobalState } from '@/pages/dashboard/globalState';
 import type { DashboardDatasource, ScopedVariables } from '@/pages/dashboard/types';
 
 import { IVariable } from '../types';
@@ -22,6 +23,8 @@ export default function replaceTemplateVariables(
       maxDataPoints?: number;
     };
     scopedVars?: ScopedVariables;
+    /** Runtime variables supplied by an owning dashboard instance. */
+    variables?: IVariable[];
   },
 ) {
   // 如果 str 为空，如果没有包含变量则直接返回
@@ -30,10 +33,9 @@ export default function replaceTemplateVariables(
     return str;
   }
 
-  const variablesWithOptions = getGlobalState('variablesWithOptions');
-  const globalRange = getGlobalState('range');
+  const variablesWithOptions = params?.variables ?? [];
   const { scopedVars } = params || {};
-  const range = params?.range ?? globalRange;
+  const range = params?.range;
 
   let extVariables: IVariable[] = getBuiltInVariables(range, params);
 
@@ -112,18 +114,54 @@ export function replaceDatasourceVariables(
   value: string | number,
   params: {
     datasourceList: DashboardDatasource[];
+    /** Runtime variables supplied by an owning dashboard instance. */
+    variables?: IVariable[];
   },
 ) {
-  const variablesWithOptions = getGlobalState('variablesWithOptions');
+  const variablesWithOptions = params.variables ?? [];
   if (typeof value === 'number') return value;
   const { datasourceList = [] } = params;
-  if (!value || !variablesWithOptions || variablesWithOptions.length === 0) {
-    console.warn('replaceDatasourceVariables: no variables found');
+  if (!value) {
     return undefined;
   }
   const data = adjustData(variablesWithOptions, {
     datasourceList,
   });
   const result = formatDatasource(value, data);
-  return result;
+  // NaN 会通过调用方的 `typeof id !== 'number'` 判断，导致用非法 id 发起查询；解析失败一律按未解析处理。
+  return typeof result === 'number' && Number.isFinite(result) ? result : undefined;
+}
+
+/**
+ * 返回绑定当前仪表盘运行时变量和时间范围的插值函数。
+ *
+ * 视图组件应使用此 Hook，纯函数调用方则显式传入 variables 和 range，避免读取模块级状态。
+ */
+export function useReplaceTemplateVariables() {
+  const [variables] = useGlobalState('variablesWithOptions');
+  const [runtimeRange] = useGlobalState('range');
+
+  return useCallback(
+    (value: string, params?: Parameters<typeof replaceTemplateVariables>[1]) =>
+      replaceTemplateVariables(value, {
+        ...params,
+        variables,
+        range: params?.range ?? runtimeRange,
+      }),
+    [runtimeRange, variables],
+  );
+}
+
+/** 返回绑定当前仪表盘变量的数据源值替换函数，供表单和查询组件使用。 */
+export function useReplaceDatasourceVariables() {
+  const [variables] = useGlobalState('variablesWithOptions');
+
+  return useCallback(
+    (value: string | number, params: Omit<Parameters<typeof replaceDatasourceVariables>[1], 'variables'>) =>
+      replaceDatasourceVariables(value, {
+        ...params,
+        variables,
+      }),
+    [variables],
+  );
 }

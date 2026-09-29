@@ -1,4 +1,4 @@
-import { visualizations } from '../../Editor/config';
+import { visualizations } from '../registry/panelTypes';
 import adjustInitialValues from './adjustInitialValues';
 
 jest.mock('../../utils/getDefaultTargets', () => ({

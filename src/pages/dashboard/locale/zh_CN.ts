@@ -144,6 +144,8 @@ const zh_CN = {
     dashboardIds_placeholder: '请选择仪表盘',
   },
   var: {
+    reference_in_use: '变量 {{name}} 仍被 {{total}} 处配置引用，请先完成替换。',
+    references_renamed: '已更新 {{total}} 处变量引用',
     vars: '变量',
     btn: '添加变量',
     title: {
@@ -366,6 +368,9 @@ const zh_CN = {
       valueMappings: {
         title: '值映射',
         btn: '添加',
+        edit_btn: '编辑值映射',
+        update_btn: '更新',
+        cancel_btn: '取消',
         type: '条件',
         type_tip: `
           <0>范围值默认值: from=-Infinity; to=Infinity </0>
@@ -662,9 +667,30 @@ const zh_CN = {
           },
         },
         displayMode: '显示模式',
+        namePlacement: {
+          label: '名称位置',
+          options: {
+            auto: '自动',
+            top: '顶部',
+            bottom: '底部',
+            left: '左侧',
+            hidden: '隐藏',
+          },
+        },
+        sizing: {
+          label: '条尺寸',
+          options: {
+            auto: '自动',
+            manual: '手动',
+          },
+        },
+        minVizWidth: '最小宽度',
+        minVizHeight: '最小高度',
+        maxVizHeight: '最大高度',
         valueMode: {
           label: '数值显示',
           color: '显示',
+          text: '文本色',
           hidden: '隐藏',
         },
       },

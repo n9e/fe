@@ -127,6 +127,8 @@ const es_ES = {
     dashboardIds_placeholder: 'Selecciona el dashboard',
   },
   var: {
+    reference_in_use: 'La variable {{name}} todavía está referenciada en {{total}} configuración(es). Reemplázalas primero.',
+    references_renamed: 'Se actualizaron {{total}} referencia(s) de variable',
     vars: 'Variable',
     btn: 'Añadir variable',
     title: {
@@ -578,9 +580,30 @@ const es_ES = {
           },
         },
         displayMode: 'Modo de visualización',
+        namePlacement: {
+          label: 'Ubicación del nombre',
+          options: {
+            auto: 'Automático',
+            top: 'Arriba',
+            bottom: 'Abajo',
+            left: 'Izquierda',
+            hidden: 'Ocultar',
+          },
+        },
+        sizing: {
+          label: 'Tamaño de barra',
+          options: {
+            auto: 'Automático',
+            manual: 'Manual',
+          },
+        },
+        minVizWidth: 'Ancho mínimo',
+        minVizHeight: 'Altura mínima',
+        maxVizHeight: 'Altura máxima',
         valueMode: {
           label: 'Visualización del valor',
           color: 'Mostrar',
+          text: 'Color del texto',
           hidden: 'Ocultar',
         },
       },
