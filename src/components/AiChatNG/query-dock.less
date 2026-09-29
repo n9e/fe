@@ -142,21 +142,6 @@
     font-size: 12px;
     color: var(--fc-text-2);
 
-    kbd {
-      display: inline-flex;
-      align-items: center;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 4px;
-      border: 1px solid var(--fc-border-color);
-      border-radius: 3px;
-      background: var(--fc-fill-1);
-      font-family: inherit;
-      font-size: 11px;
-      line-height: 1;
-      justify-content: center;
-    }
-
     span {
       margin-left: 4px;
     }
@@ -167,6 +152,24 @@
       margin: 0 8px;
       background: var(--fc-border-color);
     }
+  }
+
+  /* One key cap for the legend and for the suggestion key in the bar; the key
+     itself is laid out with utilities, this is the shared bare-kbd styling. */
+  .ai-query-dock-keys kbd,
+  .ai-query-dock-suggestion-key kbd {
+    display: inline-flex;
+    align-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border: 1px solid var(--fc-border-color);
+    border-radius: 3px;
+    background: var(--fc-fill-1);
+    font-family: inherit;
+    font-size: 11px;
+    line-height: 1;
+    justify-content: center;
   }
 }
 
