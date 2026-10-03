@@ -66,7 +66,7 @@ export default function Meta(props: Props) {
       if (node.levelType === 'tables' && node.database) {
         const tables = await getTables({
           ...baseParams,
-          db: node.database,
+          query: [node.database],
         });
         setTreeData((origin) =>
           updateTreeData(
@@ -87,8 +87,7 @@ export default function Meta(props: Props) {
       } else if (node.levelType === 'table' && node.database && node.table) {
         const columns = await getColumns({
           ...baseParams,
-          db: node.database,
-          table: node.table,
+          query: [{ database: node.database, table: node.table }],
         });
         setTreeData((origin) =>
           updateTreeData(
@@ -96,13 +95,13 @@ export default function Meta(props: Props) {
             key,
             _.map(columns, (item) => {
               return {
-                title: `${item.name} (${item.type})`,
-                key: `${key}.${item.name}`,
+                title: `${item.field} (${item.type})`,
+                key: `${key}.${item.field}`,
                 isLeaf: true,
                 levelType: 'field',
                 database: node.database,
                 table: node.table,
-                field: item.name,
+                field: item.field,
                 type: item.type,
               };
             }),
