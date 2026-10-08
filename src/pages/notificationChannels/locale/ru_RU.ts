@@ -37,6 +37,11 @@ const ru_RU = {
     },
   },
   request_configuration: {
+    jsm_alert: 'Настройки JSM Alert',
+    discord: 'Настройки Discord',
+    slackwebhook: 'Настройки Slack Webhook',
+    mattermostwebhook: 'Настройки Mattermost Webhook',
+    jira: 'Настройки Jira',
     http: 'Настройка HTTP',
     smtp: 'Настройка SMTP',
     script: 'Настройка Script',
@@ -111,6 +116,76 @@ const ru_RU = {
     timeout: 'Тайм-аут (мс)',
     retry_times: 'Количество повторных попыток',
   },
+  jira_request_config: {
+    top_tip:
+      'Рекомендуется сервисный аккаунт: создайте его в admin.atlassian.com → Directory → Service accounts, выдайте роль User для Jira и создайте для него API-токен. Автором задач будет этот аккаунт. API-токены Jira Cloud действуют не более 1 года, после истечения уведомления перестанут отправляться.',
+    site_url: 'Адрес сайта',
+    site_url_tip:
+      'Адрес, по которому Jira открывается в браузере, например https://your-domain.atlassian.net, без /rest/api. Для токена с областями тоже укажите адрес сайта — Nightingale сам преобразует его в адрес шлюза Atlassian.',
+    site_url_invalid: 'Должен начинаться с http:// или https://, например https://your-domain.atlassian.net',
+    token_type: 'Тип токена',
+    token_type_tip:
+      'Для токенов сервисных аккаунтов и токенов, созданных через Create API token with scopes, выберите первый вариант: они работают только через шлюз Atlassian (api.atlassian.com), Cloud ID определяется по адресу сайта автоматически. Для обычных токенов (Create API token) выберите второй вариант — запросы идут напрямую на адрес сайта.',
+    token_scoped: 'API-токен с областями (включая сервисные аккаунты, рекомендуется)',
+    token_classic: 'Обычный API-токен',
+    email: 'Email',
+    email_tip: 'Email аккаунта, которому принадлежит токен. Для сервисного аккаунта скопируйте его со страницы аккаунта (вида xxx@serviceaccount.atlassian.com).',
+    api_token: 'API-токен',
+    api_token_tip:
+      'Сервисный аккаунт: на странице аккаунта откройте Credentials и создайте API-токен (права read:jira-work и write:jira-work, read:jira-user — по желанию). Личный аккаунт: https://id.atlassian.com/manage-profile/security/api-tokens. Токен показывается один раз. Можно сослаться на переменную из настроек через {{.имя_переменной}}. Каких прав не хватает, покажет «Проверить учётные данные».',
+    cloud_id: 'Cloud ID',
+    cloud_id_tip:
+      'Обычно оставьте пустым — он определяется по адресу сайта автоматически. Если не получилось, откройте admin.atlassian.com и скопируйте часть адреса после /s/ (это не Organization ID).',
+    cloud_id_placeholder: 'Оставьте пустым для автоопределения',
+    proxy_tip: 'Укажите, если Jira доступна только через прокси, например http://127.0.0.1:7890',
+    insecure_skip_verify: 'Пропустить проверку TLS-сертификата',
+  },
+  check: {
+    btn: 'Проверить учётные данные',
+    passed: 'Проверка пройдена',
+    failed: 'Не пройдены обязательные проверки',
+    optional: 'необязательно',
+  },
+  discord_request_config: {
+    top_tip:
+      'Один адрес Webhook соответствует одному каналу, поэтому адрес указывается в каждом правиле уведомлений — так этот канал уведомлений может отправлять в любое число каналов Discord. Настройки здесь — значения по умолчанию для всех правил. Для создания Webhook нужно право Manage Webhooks на сервере.',
+    username: 'Отображаемое имя',
+    username_tip: 'Переопределяет имя Webhook в канале; пусто — имя, заданное при создании',
+    avatar_url: 'Адрес аватара',
+    avatar_url_tip: 'Переопределяет аватар Webhook; нужен публично доступный адрес изображения',
+    avatar_url_invalid: 'Должен начинаться с http:// или https://',
+    silent: 'Тихая отправка',
+    silent_tip: 'Сообщения публикуются в канал, но без push- и desktop-уведомлений',
+    proxy_tip: 'Укажите, если Discord доступен только через прокси, например http://127.0.0.1:7890',
+  },
+  slackwebhook_request_config: {
+    top_tip:
+      'Один адрес Webhook соответствует одному каналу Slack, поэтому адрес указывается в правиле уведомлений, а этот канал уведомлений может отправлять в любое число каналов. Здесь задаются значения по умолчанию для всех правил. Адрес можно получить, создав приложение на https://api.slack.com/apps и включив Incoming Webhooks.',
+    proxy_tip: 'Укажите, если Slack доступен только через прокси, например http://127.0.0.1:7890',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      'Один адрес Webhook соответствует одному каналу Mattermost, поэтому адрес указывается в правиле уведомлений, а этот канал уведомлений может отправлять в любое число каналов. Здесь задаются значения по умолчанию для всех правил. Администратор должен включить Enable incoming webhooks в System Console → Integrations → Integration Management (включено по умолчанию).',
+    username: 'Отображаемое имя',
+    username_tip: 'Заменяет имя отправителя. Работает, только если администратор включил Enable integrations to override usernames, иначе игнорируется',
+    icon: 'Значок',
+    icon_tip:
+      'Заменяет аватар отправителя: адрес изображения или код эмодзи, например :bell:. Работает, только если администратор включил Enable integrations to override profile picture icons, иначе игнорируется',
+    icon_invalid: 'Укажите адрес изображения, начинающийся с http:// или https://, или код эмодзи, например :bell:',
+    proxy_tip: 'Укажите, если Mattermost доступен только через прокси, например http://127.0.0.1:7890',
+    insecure_skip_verify_tip: 'Включите для собственного Mattermost с самоподписанным сертификатом. Действует для всех адресов Webhook этого канала уведомлений',
+  },
+  jsm_alert_request_config: {
+    top_tip:
+      'Оповещения отправляются в Operations Jira Service Management. Ключ API-интеграции определяет, какая команда получит оповещение, поэтому он указывается в каждом правиле уведомлений — так этот канал может отправлять любому числу команд. Создайте ключ в JSM: команда → Integrations → Add integration → API.',
+    api_url: 'Адрес API',
+    api_url_tip: 'Оставьте пустым для https://api.atlassian.com; путь /jsm/ops/integration/v2/alerts добавляется автоматически',
+    api_url_invalid: 'Должен начинаться с http:// или https://',
+    priority_map: 'Уровень и приоритет',
+    priority_map_tip:
+      'Приоритет оповещения JSM для каждого уровня Nightingale. Приоритеты JSM общие для всего сайта, поэтому задаются здесь один раз для всех правил; по умолчанию S1→P1, S2→P2, S3→P3',
+    proxy_tip: 'Укажите, если api.atlassian.com доступен только через прокси, например http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -175,6 +250,24 @@ const ru_RU = {
     script: 'Script',
   },
   test: {
+    jsm_title: 'Ключ API-интеграции JSM',
+    jsm_tip: 'После сохранения ключ указывается в правиле уведомлений; для проверки введите его здесь. В команде этой интеграции будет создано реальное оповещение.',
+    jsm_api_key_placeholder: 'API-ключ интеграции',
+    jsm_with_recovery: 'Проверить и восстановление (закрыть оповещение)',
+    discord_title: 'Discord Webhook',
+    discord_tip: 'После сохранения адрес Webhook указывается в правиле уведомлений; для проверки введите его здесь.',
+    discord_target_channel: 'Канал',
+    discord_target_forum_post: 'Новый пост форума',
+    discord_target_thread: 'Существующая ветка / пост форума',
+    discord_thread_name_placeholder: 'Заголовок поста, например {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'ID ветки, число',
+    webhook_title: 'Адрес Webhook',
+    webhook_tip: 'После сохранения адрес Webhook указывается в правиле уведомлений; здесь введите его только для проверки.',
+    jira_title: 'Проект и тип задачи Jira',
+    jira_tip: 'В этом проекте будет создана настоящая задача. После сохранения проект и тип задачи выбираются из списков в правиле уведомлений, здесь введите их вручную.',
+    jira_project_placeholder: 'Ключ проекта, например OPS',
+    jira_issue_type_placeholder: 'Тип задачи, например Bug',
+    with_recovery: 'Также проверить восстановление (комментарий и закрытие задачи)',
     btn: 'Тест',
     run: 'Отправить тест',
     back: 'Вернуться к редактированию',
@@ -183,7 +276,8 @@ const ru_RU = {
     params_title: 'Параметры медиа',
     receivers_title: 'Получатели',
     pagerduty_keys_title: 'Integration key',
-    pagerduty_keys_tip: 'PagerDuty доставляет по integration key. После сохранения его можно выбрать по сервису/интеграции в правиле уведомлений; здесь введите вручную. Можно указать несколько.',
+    pagerduty_keys_tip:
+      'PagerDuty доставляет по integration key. После сохранения его можно выбрать по сервису/интеграции в правиле уведомлений; здесь введите вручную. Можно указать несколько.',
     pagerduty_keys_placeholder: 'Введите integration key и нажмите Enter',
     user_ids: 'Выбрать пользователей',
     user_group_ids: 'Выбрать команды',

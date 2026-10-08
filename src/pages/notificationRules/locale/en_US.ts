@@ -49,6 +49,7 @@ const en_US = {
   enabled_tip: 'Whether to enable this notification rule',
   note_tip: 'You can supplement the detailed information or explanation of this notification rule here for future maintenance',
   notification_configuration: {
+    test_with_recovery_jsm: 'Also test recovery (close the alert)',
     title: 'Notification configuration',
     section_desc: 'Decide who receives alerts and via which channel: pick the media type, message template and recipients; multiple configurations can be added',
     item_title: 'Notification config',
@@ -112,6 +113,7 @@ const en_US = {
     run_test_btn_tip:
       'You can select a few events that have already occurred to test whether this notification configuration is correct. If it is correct, you should receive relevant notification messages',
     run_test_request_result: 'Test notification sent; the notification target responded as follows:',
+    test_with_recovery: 'Also test recovery (comment on and close the issue)',
     user_info: {
       user_ids: 'Users',
       user_group_ids: 'Teams',
@@ -119,6 +121,92 @@ const en_US = {
     },
     flashduty: {
       ids: 'Channels',
+    },
+    jira: {
+      project: 'Project',
+      project_tip: 'The project issues are created in. The list is fetched live with the credentials of the media type; if it cannot be loaded you can type the project key.',
+      project_empty: 'No project: the account in the media type lacks the Browse projects permission',
+      issue_type: 'Issue type',
+      issue_type_tip: 'Pick an existing issue type of the project; there is no need to create a dedicated one. If the project has an Alert type it is selected by default.',
+      missing_permissions: 'The account lacks these permissions in the project: {{list}}',
+      required_fields: 'Required fields of this issue type are not filled in Custom fields: {{list}}; issue creation will fail',
+      on_resolve: 'On recovery',
+      on_resolve_tip:
+        'Close issue: comment and move the issue to a Done status automatically (no transition name needed). Comment only: keep the issue open. Do nothing: leave the issue untouched.',
+      on_resolve_close: 'Close issue',
+      on_resolve_comment: 'Comment only',
+      on_resolve_none: 'Do nothing',
+      advanced: 'Advanced',
+      resolve_transition: 'Close transition',
+      resolve_transition_tip: 'Only needed when the workflow has several transitions to Done and you want a specific one. Case-insensitive; a numeric ID also works.',
+      resolve_transition_placeholder: 'Empty = pick automatically',
+      on_repeat: 'On repeated notification',
+      on_repeat_tip: 'While the alert keeps firing, repeated notifications never create a new issue. Choose Add comment to append a comment each time (watchers get notified).',
+      on_repeat_none: 'Do nothing',
+      on_repeat_comment: 'Add comment',
+      priority_map: 'Priority mapping',
+      priority_map_tip: 'Map alert severities to Jira priorities. Leave empty to not set a priority; it must be empty when the issue type screen has no priority field.',
+      priority_unset: 'Not set',
+      priority_fill_common: 'Fill common mapping',
+      labels: 'Fixed labels',
+      labels_tip: 'Labels added to every issue (spaces become _). An eventHash=<event hash> label is always added for deduplication; do not remove it in Jira.',
+      labels_placeholder: 'Press Enter to add',
+      tags_as_labels: 'Alert tags as labels',
+      tags_as_labels_tip: 'Write each alert tag as a Jira label key=value (spaces become _, at most 20).',
+      fields: 'Custom fields',
+      fields_tip:
+        'Fill the required custom fields of the issue type here. A value that is valid JSON is sent as JSON (e.g. {"value":"prod"} for a select list), otherwise as text.',
+      field_value_placeholder: 'Value, e.g. {"value":"prod"}',
+      field_add: 'Add field',
+    },
+    discord: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'In Discord open Server Settings → Integrations → Webhooks → New Webhook, pick the channel and click Copy Webhook URL. The URL is a credential and is masked in notification records. You can reference Variable Settings with {{.variable_name}}.',
+      webhook_url_invalid: 'Should look like https://discord.com/api/webhooks/<id>/<token>',
+      webhook_url_history_placeholder: 'Paste the webhook URL, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip: 'A recognizable name for this webhook. It is shown as the target in notification records and lets other rules reuse the webhook by name',
+      target: 'Send to',
+      target_tip:
+        "Pick by the type of channel the webhook belongs to:\n· Channel: post to the webhook's text channel (most common)\n· New forum post: for a webhook on a forum channel; every notification, including recovery, opens a new post\n· Existing thread / forum post: post into one existing thread or forum post in the webhook's channel so all notifications stay together; needs the thread ID",
+      target_channel: 'Channel',
+      target_forum_post: 'New forum post',
+      target_thread: 'Existing thread / forum post',
+      thread_name: 'Post title',
+      thread_name_tip:
+        'Each notification creates a new post with this title (template variables such as {{$event.RuleName}} are supported, at most 100 characters). To post into one existing post, choose Existing thread',
+      thread_id: 'Thread ID',
+      thread_id_tip: 'Turn on User Settings → Advanced → Developer Mode, then right-click the thread or post → Copy ID',
+      thread_id_invalid: 'Must be a numeric ID',
+    },
+    jsm_alert: {
+      api_key: 'API key',
+      api_key_tip:
+        'In JSM open the team → Integrations → Add integration → API, then copy the API key. The key decides which team gets the alert and is masked in notification records. Supports {{.variable_name}}.',
+      api_key_history_placeholder: 'Paste the API key, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip: 'A recognizable name for this key, e.g. the team name: notification records show it as the target, and other rules can reuse the key by this name',
+    },
+    slackwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Open your app at https://api.slack.com/apps → Incoming Webhooks → turn on Activate Incoming Webhooks → Add New Webhook, pick a channel and copy the generated URL. The URL is a credential and is masked in notification records. Supports {{.variable_name}} references to variable settings.',
+      webhook_url_invalid: 'Should look like https://hooks.slack.com/services/T.../B.../...',
+      webhook_url_history_placeholder: 'Paste a webhook URL, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip:
+        'A recognizable name for this webhook (the channel name works well): notification records show it as the target, and other rules can reuse the URL by picking this name',
+    },
+    mattermostwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'In Mattermost, open the top-left menu → Integrations → Incoming Webhooks → Add Incoming Webhook, pick a channel, save and copy the generated URL. The URL is a credential and is masked in notification records. Supports {{.variable_name}} references to variable settings.',
+      webhook_url_invalid: 'Should look like https://mattermost.example.com/hooks/<id>',
+      webhook_url_history_placeholder: 'Paste a webhook URL, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip:
+        'A recognizable name for this webhook (the channel name works well): notification records show it as the target, and other rules can reuse the URL by picking this name',
     },
     pagerduty: {
       services: 'Service/Integration',
