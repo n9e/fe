@@ -86,11 +86,19 @@ export default function TestModal(props: Props) {
 
   const runTest = () => {
     if (testDisabled) return;
+    const hasFlashAIAutomation =
+      type === 'processor' ? config?.typ === 'flashai_automation' : Array.isArray(config?.processors) && config.processors.some((item: any) => item?.typ === 'flashai_automation');
+    if (hasFlashAIAutomation) {
+      Modal.confirm({ title: t('test_modal.flashai_confirm'), onOk: executeTest });
+      return;
+    }
+    executeTest();
+  };
+
+  const executeTest = () => {
     setLoading(true);
     const eventSource: TryrunEventSource =
-      mode === 'mock'
-        ? { use_mock_event: true, mock_severity: mockEvent.severity, mock_is_recovered: mockEvent.isRecovered }
-        : { event_id: eventID as number };
+      mode === 'mock' ? { use_mock_event: true, mock_severity: mockEvent.severity, mock_is_recovered: mockEvent.isRecovered } : { event_id: eventID as number };
     const request =
       type === 'processor'
         ? eventProcessorTryrun({ ...eventSource, processor_config: normalizeProcessorConfig(config) })
@@ -170,12 +178,7 @@ export default function TestModal(props: Props) {
                   />
                 )}
                 {visible && (
-                  <EventsTable
-                    rowSelectionType='radio'
-                    selectedEventIds={eventID ? [eventID] : []}
-                    onChange={(ids) => setEventID(ids[0])}
-                    onTotalChange={setHistoryTotal}
-                  />
+                  <EventsTable rowSelectionType='radio' selectedEventIds={eventID ? [eventID] : []} onChange={(ids) => setEventID(ids[0])} onTotalChange={setHistoryTotal} />
                 )}
               </div>
               <div style={{ display: mode === 'mock' ? undefined : 'none' }}>
