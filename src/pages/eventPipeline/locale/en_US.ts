@@ -176,6 +176,7 @@ const en_US = {
       annotation_qd: 'Annotation enrichment (query-based)',
       event_recover: 'Self-healing',
       alert_shot: 'Alert screenshot',
+      flashai_automation: 'FlashAI automation',
     },
     category: {
       rewrite: 'Rewrite',
@@ -197,6 +198,7 @@ const en_US = {
       annotation_qd: 'Append info to the event based on a data query result',
       event_recover: 'Run a self-healing script on the affected host',
       alert_shot: 'Screenshot a dashboard / page and attach it to the alert',
+      flashai_automation: 'Trigger a FlashAI automation with the current event',
     },
     delete_confirm: 'Delete this processor?',
     switch_type_confirm: 'Switching type clears this processor\'s current config. Continue?',
@@ -204,6 +206,14 @@ const en_US = {
     move_up: 'Move up',
     move_down: 'Move down',
     copy_tip: 'Duplicate this processor',
+  },
+  flashai_automation: {
+    cron_id: 'Automation task',
+    manage: 'Manage FlashAI automations',
+    placeholder: 'Select an automation enabled for workflow triggers',
+    no_options: 'No FlashAI automations are available. Check the task and workflow trigger switches.',
+    selected_unavailable: 'The selected task is unavailable or no longer visible to you. Execution may fail.',
+    event_context_tip: 'The alert rule, severity, state, tags, and annotations are sent to FlashAI.',
   },
   form_section: {
     filter: {
