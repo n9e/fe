@@ -112,7 +112,6 @@ const zh_CN = {
     back_btn_mock: '重新配置样例事件',
     fidelity_note: '试跑走的是 API 触发路径，会跳过线上的部分流程（如过滤条件判定），结果可能与真实告警不完全一致，请以真实事件为准。',
     fidelity_note_mock: '试跑走的是 API 触发路径，会跳过线上的部分流程（如过滤条件判定）；本次用的是样例事件而非真实告警，上线前请再用真实事件验证一次。',
-    flashai_confirm: '测试会真实触发 FlashAI 自动化，确认继续？',
     mode: {
       history: '历史事件',
       mock: '样例事件',

@@ -113,7 +113,6 @@ const en_US = {
     back_btn_mock: 'Reconfigure mock event',
     fidelity_note: 'A test run uses the API-trigger path and skips some live steps (such as filter matching), so the result may not exactly match a real alert. Verify with a real event.',
     fidelity_note_mock: 'A test run uses the API-trigger path and skips some live steps (such as filter matching). This run used a mock event rather than a real alert, so verify with a real event before going live.',
-    flashai_confirm: 'This test will trigger the FlashAI automation. Continue?',
     mode: {
       history: 'History event',
       mock: 'Mock event',
