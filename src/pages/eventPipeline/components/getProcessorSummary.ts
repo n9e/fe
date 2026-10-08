@@ -30,6 +30,8 @@ export function getProcessorSummary(typ: string, config: any): string {
       return truncate(config.model_name || (config.llm_config_id ? 'LLM' : ''));
     case 'script':
       return config.timeout ? `timeout ${config.timeout}ms` : '';
+    case 'flashai_automation':
+      return truncate(config.cron_id ?? '');
     default:
       return '';
   }
