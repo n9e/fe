@@ -86,16 +86,6 @@ export default function TestModal(props: Props) {
 
   const runTest = () => {
     if (testDisabled) return;
-    const hasFlashAIAutomation =
-      type === 'processor' ? config?.typ === 'flashai_automation' : Array.isArray(config?.processors) && config.processors.some((item: any) => item?.typ === 'flashai_automation');
-    if (hasFlashAIAutomation) {
-      Modal.confirm({ title: t('test_modal.flashai_confirm'), onOk: executeTest });
-      return;
-    }
-    executeTest();
-  };
-
-  const executeTest = () => {
     setLoading(true);
     const eventSource: TryrunEventSource =
       mode === 'mock'
