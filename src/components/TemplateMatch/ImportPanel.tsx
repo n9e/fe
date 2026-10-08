@@ -30,10 +30,25 @@ import { TplMatchedComponent, parseVariant } from './services';
  *     没有可挑的，再叠一层弹窗只是多一次点击。
  */
 
+export interface TemplateMatchExtraTab {
+  key: string;
+  label: React.ReactNode;
+  children: React.ReactNode;
+}
+
 interface Props {
   datasourceId: number;
   entry: TplMatchedComponent;
   show: 'dashboards' | 'alerts' | 'both';
+  /**
+   * 额外 Tab。不传则只有仪表盘 / 告警两个 Tab，默认选中也不变。
+   * 企业版用来放「观测闭环建设」；开源与夜莺不传。
+   */
+  extraTab?: TemplateMatchExtraTab;
+  /**
+   * 告警规则模板 Tab 内容区顶部的常驻说明。不参与导入按钮，不弹确认框。
+   */
+  alertsNotice?: React.ReactNode;
   /**
    * 预填业务组。调用方知道该落哪个组时传（如采集配置所在的组）；
    * 不传则沿用「只有一个业务组就自动选中」的规则。用户仍可改。
@@ -64,7 +79,7 @@ interface PayloadLike {
 
 export default function ImportPanel(props: Props) {
   const { t } = useTranslation('datasourceManage');
-  const { datasourceId, entry, show, defaultBgid, onImported, ctx } = props;
+  const { datasourceId, entry, show, defaultBgid, onImported, ctx, extraTab, alertsNotice } = props;
   const provided = useContext(CommonStateContext);
   // 调用方给了就用它的，否则走 Provider —— 游离树里 Provider 是空的，见 ctx 的注释
   const busiGroups = ctx?.busiGroups ?? provided.busiGroups;
@@ -90,7 +105,7 @@ export default function ImportPanel(props: Props) {
   // 已导入的告警条数，累计——用户可能先导 categraf 那组，再切到 exporter 组接着导
   const [alertImportedCount, setAlertImportedCount] = useState(0);
 
-  const defaultTab = show === 'alerts' || (show === 'both' && _.isEmpty(dashboards)) ? 'alerts' : 'dashboards';
+  const defaultTab = extraTab ? extraTab.key : show === 'alerts' || (show === 'both' && _.isEmpty(dashboards)) ? 'alerts' : 'dashboards';
   // uuid 在 match 接口里是 number、在 payload 接口里可能是 string，一律按字符串比对，
   // 否则「已导入」置灰会因类型不同而失效
   const isDashImported = (uuid: number | string) => _.includes(_.map(dashImported, String), String(uuid));
@@ -150,6 +165,7 @@ export default function ImportPanel(props: Props) {
     () => _.get(_.find(groupedDatasourceList?.prometheus, { id: datasourceId }), 'name') || String(datasourceId),
     [groupedDatasourceList, datasourceId],
   );
+  const datasourceBound = <div className='mt-3 text-[var(--fc-text-4)]'>{t('tpl_match.datasource_bound', { name: boundDatasourceName })}</div>;
 
   /**
    * 仪表盘就地导入：模板内容是用户勾出来的，再弹一个 JSON 文本框让人确认没有意义，
@@ -218,6 +234,11 @@ export default function ImportPanel(props: Props) {
   return (
     <>
       <Tabs defaultActiveKey={defaultTab}>
+        {extraTab && (
+          <Tabs.TabPane tab={extraTab.label} key={extraTab.key}>
+            {extraTab.children}
+          </Tabs.TabPane>
+        )}
         {show !== 'alerts' && (
           <Tabs.TabPane tab={t('tpl_match.tab_dashboards', { count: dashboards.length })} key='dashboards' disabled={_.isEmpty(dashboards)}>
             {/* 缺的只是「放到哪个业务组」，就地问一次即可，不必再开一个弹窗 */}
@@ -278,10 +299,12 @@ export default function ImportPanel(props: Props) {
               {t('tpl_match.import_dashboards_btn', { count: dashChecked.length })}
             </Button>
             {_.isEmpty(busiGroups) && <div className='mt-2 text-[var(--fc-fill-alert)]'>{t('tpl_match.no_busi_group')}</div>}
+            {datasourceBound}
           </Tabs.TabPane>
         )}
         {show !== 'dashboards' && (
           <Tabs.TabPane tab={t('tpl_match.tab_alerts', { count: _.sumBy(alertGroups, (g) => g.rules.length) })} key='alerts' disabled={_.isEmpty(alertGroups)}>
+            {alertsNotice}
             {/* 多分类时先选一组：正常用户只会导入其中一组 */}
             {alertGroups.length > 1 && (
               <div className='flex items-center gap-2 mb-2'>
@@ -363,10 +386,10 @@ export default function ImportPanel(props: Props) {
                 onImported?.('alert');
               }}
             />
+            {datasourceBound}
           </Tabs.TabPane>
         )}
       </Tabs>
-      <div className='mt-3 text-[var(--fc-text-4)]'>{t('tpl_match.datasource_bound', { name: boundDatasourceName })}</div>
     </>
   );
 }
