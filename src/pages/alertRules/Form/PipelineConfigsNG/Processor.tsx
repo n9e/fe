@@ -113,12 +113,18 @@ export default function Processor(props: Props) {
         }
       >
         <Select
-          options={_.map(_.concat(['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary'], IS_PLUS ? PlusOptions.filter((o) => o !== 'annotation_qd') : []), (item) => {
-            return {
-              label: t(`processor.options.${item}`),
-              value: item,
-            };
-          })}
+          options={_.map(
+            _.concat(
+              ['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary'],
+              IS_PLUS ? PlusOptions.filter((o) => !_.includes(['annotation_qd', 'flashai_automation'], o)) : [],
+            ),
+            (item) => {
+              return {
+                label: t(`processor.options.${item}`),
+                value: item,
+              };
+            },
+          )}
           onChange={(newTyp) => {
             const newConfig = getDefaultProcessorConfig(newTyp, t);
             const formValues = _.cloneDeep(form.getFieldsValue());
