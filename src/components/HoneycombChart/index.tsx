@@ -90,7 +90,7 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
           <div className='honeycomb-chart-tooltip' style={{ left: tooltip.x + 10, top: tooltip.y + 10 }}>
             <div>
               <strong>
-                {tooltip.cell.name || tooltip.cell.metric.__name__ || 'value'}: {tooltip.cell.value}
+                {tooltip.cell.metric.__name__ || 'value'}: {tooltip.cell.value}
               </strong>
             </div>
             {Object.entries(tooltip.cell.metric)
