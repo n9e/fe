@@ -121,10 +121,26 @@ function convertStatCustom(panel: GrafanaPanel): Record<string, unknown> {
 }
 
 function convertGaugeCustom(panel: GrafanaPanel): Record<string, unknown> {
+  const options = panel.options ?? {};
+  const reduceOptions = options.reduceOptions ?? {};
+  const style = ['arc', 'circle'].includes(options.style) ? options.style : undefined;
+  const orientation = ['auto', 'horizontal', 'vertical'].includes(options.orientation) ? options.orientation : undefined;
+  const textMode = ['valueAndName', 'value', 'name', 'none'].includes(options.textMode) ? options.textMode : 'value';
   return {
-    textMode: panel.options?.textMode ?? 'value',
-    colorMode: panel.options?.colorMode ?? 'value',
-    calc: normalizeCalc(panel.options?.reduceOptions?.calcs?.[0]),
+    textMode,
+    calc: normalizeCalc(reduceOptions.calcs?.[0]),
+    ...(style ? { style } : {}),
+    ...(orientation ? { orientation } : {}),
+    ...(typeof options.neutral === 'number' ? { neutralValue: options.neutral } : {}),
+    ...(typeof options.segments === 'number' ? { segments: options.segments } : {}),
+    ...(typeof options.showThresholds === 'boolean' ? { showThresholds: options.showThresholds } : {}),
+    ...(typeof options.showLabels === 'boolean' ? { showLabels: options.showLabels } : {}),
+    ...(typeof options.showSparkline === 'boolean' ? { showSparkline: options.showSparkline } : {}),
+    ...(typeof options.barWidthFactor === 'number' ? { barWidthFactor: options.barWidthFactor } : {}),
+    ...(options.barStyle === 'rounded' ? { barStyle: 'rounded' } : {}),
+    ...(typeof options.gradient === 'boolean' ? { gradient: options.gradient } : {}),
+    ...(typeof options.barGlow === 'boolean' ? { barGlow: options.barGlow } : {}),
+    ...(typeof options.centerGlow === 'boolean' ? { centerGlow: options.centerGlow } : {}),
   };
 }
 

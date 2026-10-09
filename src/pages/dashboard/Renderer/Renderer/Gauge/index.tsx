@@ -19,13 +19,13 @@ import _ from 'lodash';
 import { Tooltip } from 'antd';
 import { useSize } from 'ahooks';
 import { IPanel } from '../../../types';
-import type { IOptions } from '../../../types';
+import type { IGaugeStyles, IOptions } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
-import Gauge from './Gauge';
-import { calculateGridDimensions } from '../../utils/squares';
+import Gauge, { ARC_GAUGE_HEIGHT_TO_WIDTH_RATIO } from './Gauge';
+import { calculateGaugeLayout } from './layout';
 import './style.less';
 
 interface IProps {
@@ -36,16 +36,7 @@ interface IProps {
   dataRevision?: number;
 }
 
-interface IGrid {
-  height: number;
-  width: number;
-  widthOnLastRow: number;
-  xCount: number;
-  yCount: number;
-}
-
-const MIN_SIZE = 12;
-const ITEM_SPACIING = 8;
+const ITEM_SPACING = 2;
 
 interface GaugeValue {
   name?: string;
@@ -59,53 +50,43 @@ interface GaugeItemProps {
   item: GaugeValue;
   options: IOptions;
   themeMode?: 'dark';
-  textMode?: string;
   style?: React.CSSProperties;
   valueField?: string;
+  custom: IGaugeStyles;
+  data?: Array<[number, number | string | null]>;
 }
 interface GaugeItemContentProps extends GaugeItemProps {
   eleSize?: { width?: number; height?: number };
-  realHeaderFontSize: number;
 }
 
 function GaugeItemContent(props: GaugeItemContentProps) {
-  const { eleSize, realHeaderFontSize, item, themeMode, options } = props;
-  const height = eleSize?.height! - realHeaderFontSize;
-  const width = eleSize?.width! > height ? height : eleSize?.width;
+  const { eleSize, item, themeMode, options, custom } = props;
+  const availableWidth = eleSize?.width ?? 0;
+  const availableHeight = eleSize?.height ?? 0;
+  const width = Math.min(availableWidth * 0.98, availableHeight / (custom.style === 'circle' ? 1 : ARC_GAUGE_HEIGHT_TO_WIDTH_RATIO));
+  const min = options?.standardOptions?.min ?? 0;
+  const max = options?.standardOptions?.max ?? 100;
+  const thresholdColor = getSerieTextObj(item.stat, options?.standardOptions, options?.valueMappings, options?.thresholds, [min, max]).color;
 
   if (!eleSize?.width) return null;
 
   return (
     <div className='renderer-gauge-item-content-chart'>
       <Gauge
-        min={options?.standardOptions?.min}
-        max={options?.standardOptions?.max}
+        min={min}
+        max={max}
         value={item.stat}
-        formatedValue={item.value}
+        formattedValue={item.value}
         valueUnit={item.unit}
-        color={item.color}
-        bgColor={themeMode === 'dark' ? '#404456' : '#eeeeee'}
+        name={item.name}
+        color={thresholdColor || item.color}
+        bgColor={themeMode === 'dark' ? 'rgb(40, 42, 46)' : '#f4f5f5'}
         width={width}
         height={width}
         thresholds={options.thresholds}
+        custom={custom}
+        data={props.data}
       />
-    </div>
-  );
-}
-
-function GaugeItemLabel(props: { eleSize?: { width?: number }; realHeaderFontSize: number; name?: string }) {
-  const { eleSize, realHeaderFontSize, name } = props;
-
-  if (!eleSize?.width) return null;
-  return (
-    <div
-      className='renderer-gauge-header'
-      style={{
-        width: eleSize?.width,
-        fontSize: realHeaderFontSize > 24 ? 24 : realHeaderFontSize,
-      }}
-    >
-      {name}
     </div>
   );
 }
@@ -113,10 +94,9 @@ function GaugeItemLabel(props: { eleSize?: { width?: number }; realHeaderFontSiz
 function GaugeItem(props: GaugeItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
-  const { textMode = 'valueAndName', style, options, valueField } = props;
-  const headerFontSize = eleSize?.width! / _.toString(props.item.name).length || MIN_SIZE;
-  const realHeaderFontSize = headerFontSize > 24 ? 24 : headerFontSize;
+  const { style, options, valueField } = props;
   let item = props.item;
+  const metricTooltip = _.map(item.metric, (value, key) => <div key={key}>{key === '__name__' ? value : `${key}: ${value}`}</div>);
 
   if (valueField !== 'Value') {
     const value = _.get(item, ['metric', valueField as string]);
@@ -139,14 +119,19 @@ function GaugeItem(props: GaugeItemProps) {
     }
   }
 
-  return (
-    <Tooltip title={item.name}>
-      <div key={item.name} className='renderer-gauge-item' ref={ele} style={style}>
-        <div className='renderer-gauge-item-content'>
-          <GaugeItemContent {...props} eleSize={eleSize} realHeaderFontSize={realHeaderFontSize} />
-          {textMode === 'valueAndName' && <GaugeItemLabel eleSize={eleSize} realHeaderFontSize={realHeaderFontSize} name={item.name} />}
-        </div>
+  const gaugeItem = (
+    <div key={item.name} className='renderer-gauge-item' ref={ele} style={style}>
+      <div className='renderer-gauge-item-content'>
+        <GaugeItemContent {...props} eleSize={eleSize} />
       </div>
+    </div>
+  );
+
+  if (Object.keys(item.metric).length === 0) return gaugeItem;
+
+  return (
+    <Tooltip overlayClassName='ant-tooltip-max-width-600' title={metricTooltip}>
+      {gaugeItem}
     </Tooltip>
   );
 }
@@ -168,21 +153,21 @@ export default function Index(props: IProps) {
   const { custom, options } = values;
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
-  // custom 为 JsonObject（宽类型），按仪表盘 gauge 面板实际使用的结构收窄
-  const {
-    calc,
-    textMode,
-    valueField = 'Value',
-  } = custom as {
-    calc?: string;
-    textMode?: string;
-    valueField?: string;
+  // custom 为持久化 JSON 宽类型；先收窄为可选字段，再在展开后设置有效默认值。
+  const rawCustom = (custom ?? {}) as unknown as Partial<IGaugeStyles>;
+  const gaugeCustom: IGaugeStyles = {
+    ...rawCustom,
+    calc: rawCustom.calc || 'lastNotNull',
+    textMode: rawCustom.textMode || 'valueAndName',
+    valueField: rawCustom.valueField ?? 'Value',
   };
+  const { calc, valueField } = gaugeCustom;
+  const orientation = gaugeCustom.orientation ?? 'auto';
   const calculatedValues = useMemo(
     () =>
       getCalculatedValuesBySeries(
         series,
-        calc as string,
+        calc,
         {
           unit: options?.standardOptions?.unit,
           decimals: options?.standardOptions?.decimals,
@@ -196,50 +181,39 @@ export default function Index(props: IProps) {
   const [statFields, setStatFields] = useGlobalState('statFields');
   const ele = useRef(null);
   const eleSize = useSize(ele);
-  const [grid, setGrid] = React.useState<IGrid>();
-  let xGrid = 0;
-  let yGrid = 0;
+  const layout = useMemo(
+    () => calculateGaugeLayout(eleSize?.width ?? 0, eleSize?.height ?? 0, ITEM_SPACING, calculatedValues.length, orientation),
+    [eleSize?.width, eleSize?.height, calculatedValues.length, orientation],
+  );
 
   useEffect(() => {
     if (isPreview) {
       setStatFields(getColumnsKeys(calculatedValues));
     }
-    if (eleSize?.width) {
-      const grid = calculateGridDimensions(eleSize.width, eleSize.height, ITEM_SPACIING, calculatedValues.length);
-      setGrid(grid);
-    }
-  }, [isPreview, dataDependency, stableCustom, stableOptions, eleSize?.width]);
+  }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   return (
     <div className='renderer-gauge-container'>
-      <div className='renderer-gauge-container-box scroll-container'>
+      <div className='renderer-gauge-container-box'>
         <div ref={ele} className='renderer-gauge-container-box-content'>
-          {grid &&
+          {layout.length === calculatedValues.length &&
             _.map(calculatedValues, (item, idx) => {
-              const isLastRow = yGrid === grid.yCount - 1;
-              const itemWidth = isLastRow ? grid.widthOnLastRow : grid.width;
-              const itemHeight = grid.height;
-              const xPos = xGrid * itemWidth + ITEM_SPACIING * xGrid;
-              const yPos = yGrid * itemHeight + ITEM_SPACIING * yGrid;
-              xGrid++;
-              if (xGrid === grid.xCount) {
-                xGrid = 0;
-                yGrid++;
-              }
+              const itemLayout = layout[idx];
               return (
                 <GaugeItem
                   key={item.id}
                   item={item as unknown as GaugeValue}
-                  textMode={textMode}
                   themeMode={themeMode}
                   options={options}
                   valueField={valueField}
+                  custom={gaugeCustom}
+                  data={series.find((serie) => serie.id === item.id)?.data}
                   style={{
                     position: 'absolute',
-                    left: xPos,
-                    top: yPos,
-                    width: `${itemWidth}px`,
-                    height: `${itemHeight}px`,
+                    left: itemLayout.left,
+                    top: itemLayout.top,
+                    width: itemLayout.width,
+                    height: itemLayout.height,
                   }}
                 />
               );

@@ -262,6 +262,29 @@ export interface IBarGaugeStyles {
   maxVizHeight?: number;
 }
 
+export interface IGaugeStyles {
+  calc: string;
+  valueField?: string;
+  textMode: 'valueAndName' | 'value' | 'name' | 'none';
+  style?: 'arc' | 'circle';
+  neutralValue?: number;
+  segments?: number;
+  segmentSpacing?: number;
+  gradient?: boolean;
+  showThresholds?: boolean;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
+  barWidthFactor?: number;
+  barStyle?: 'flat' | 'rounded';
+  endpointMarker?: 'none' | 'point' | 'glow';
+  barGlow?: boolean;
+  centerGlow?: boolean;
+  showLabels?: boolean;
+  gaugeSize?: 'auto' | 'manual';
+  minVizWidth?: number;
+  minVizHeight?: number;
+  showSparkline?: boolean;
+}
+
 export interface ITextStyles {
   version: string;
   textColor: string;
