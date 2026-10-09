@@ -127,7 +127,11 @@ export default function Row(props: IProps) {
           </Space>
         )}
       </div>
-      {isAuthorized && <Space>{row.collapsed === false && <HolderOutlined className='dashboards-panels-item-drag-handle' />}</Space>}
+      {isAuthorized && row.collapsed && (
+        <Space>
+          <HolderOutlined className='dashboards-panels-item-drag-handle' />
+        </Space>
+      )}
       <Modal
         title={t('row.edit_title')}
         visible={editVisble}

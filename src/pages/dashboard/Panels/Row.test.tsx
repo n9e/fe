@@ -39,11 +39,37 @@ test('renders a row with variable mentions from the dashboard runtime', () => {
     layout: { i: 'row-1', x: 0, y: 0, w: 24, h: 1 },
   } satisfies IPanel;
 
-  render(
+  const { container } = render(
     <DashboardRuntimeProvider store={store}>
       <Row isAuthorized name={row.name} row={row} onToggle={jest.fn()} onAddClick={jest.fn()} onPasteClick={jest.fn()} onEditClick={jest.fn()} onDeleteClick={jest.fn()} />
     </DashboardRuntimeProvider>,
   );
 
   expect(screen.getByText('Region: $region')).toBeInTheDocument();
+  expect(container.querySelector('.dashboards-panels-item-drag-handle')).not.toBeInTheDocument();
+});
+
+test('renders a drag handle for a collapsed row', () => {
+  const store = createDashboardRuntimeStore();
+  const row = {
+    id: 'row-1',
+    type: 'row',
+    name: 'Collapsed row',
+    description: '',
+    collapsed: true,
+    panels: [],
+    targets: [],
+    options: {},
+    custom: {},
+    overrides: [],
+    layout: { i: 'row-1', x: 0, y: 0, w: 24, h: 1 },
+  } satisfies IPanel;
+
+  const { container } = render(
+    <DashboardRuntimeProvider store={store}>
+      <Row isAuthorized name={row.name} row={row} onToggle={jest.fn()} onAddClick={jest.fn()} onPasteClick={jest.fn()} onEditClick={jest.fn()} onDeleteClick={jest.fn()} />
+    </DashboardRuntimeProvider>,
+  );
+
+  expect(container.querySelector('.dashboards-panels-item-drag-handle')).toBeInTheDocument();
 });
