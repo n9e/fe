@@ -37,6 +37,11 @@ const en_US = {
     },
   },
   request_configuration: {
+    jsm_alert: 'JSM Alert configuration',
+    discord: 'Discord configuration',
+    slackwebhook: 'Slack Webhook configuration',
+    mattermostwebhook: 'Mattermost Webhook configuration',
+    jira: 'Jira configuration',
     http: 'HTTP configuration',
     smtp: 'SMTP configuration',
     script: 'Script configuration',
@@ -110,6 +115,77 @@ const en_US = {
     timeout: 'Timeout (unit: ms)',
     retry_times: 'Retry times',
   },
+  jira_request_config: {
+    top_tip:
+      'Recommended: create a service account in admin.atlassian.com → Directory → Service accounts, give it the User role for Jira, and create an API token for it. Issues are reported by this account. Jira Cloud API tokens expire after at most 1 year; notifications fail once the token expires.',
+    site_url: 'Site URL',
+    site_url_tip:
+      'The address you open Jira with in the browser, e.g. https://your-domain.atlassian.net, without /rest/api. Fill in the site URL even with a scoped token; Nightingale converts it to the Atlassian gateway address automatically.',
+    site_url_invalid: 'Must start with http:// or https://, e.g. https://your-domain.atlassian.net',
+    token_type: 'Token type',
+    token_type_tip:
+      'Choose the first option for service-account tokens and tokens created with Create API token with scopes: they must go through the Atlassian gateway (api.atlassian.com), and the Cloud ID is fetched from the site URL automatically. Choose the second option for tokens created with Create API token; they are sent to the site URL directly.',
+    token_scoped: 'Scoped API token (incl. service accounts, recommended)',
+    token_classic: 'Classic API token',
+    email: 'Email',
+    email_tip:
+      "The email of the account that owns the token. For a service account, copy it from the service account's detail page (it looks like xxx@serviceaccount.atlassian.com).",
+    api_token: 'API Token',
+    api_token_tip:
+      'Service account: open Credentials on the service account page and create an API token (grant read:jira-work and write:jira-work; read:jira-user is optional). Personal account: https://id.atlassian.com/manage-profile/security/api-tokens. The token is shown only once. You can reference Variable Settings with {{.variable_name}}. Check credentials tells you exactly which permission is missing.',
+    cloud_id: 'Cloud ID',
+    cloud_id_tip:
+      'Usually leave it empty: it is fetched from the site URL automatically. If that fails, open admin.atlassian.com and copy the segment after /s/ in the address bar (not the Organization ID).',
+    cloud_id_placeholder: 'Leave empty to fetch automatically',
+    proxy_tip: 'Fill in when Jira can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+    insecure_skip_verify: 'Skip TLS certificate verification',
+  },
+  check: {
+    btn: 'Check credentials',
+    passed: 'Credentials work',
+    failed: 'Some required checks failed',
+    optional: 'optional',
+  },
+  discord_request_config: {
+    top_tip:
+      'One webhook URL posts to one channel, so the URL is filled in each notification rule; this media type can post to any number of channels. The settings here are defaults for all rules. Creating a webhook needs the Manage Webhooks permission on the server.',
+    username: 'Display name',
+    username_tip: 'Overrides the name the webhook shows in the channel; leave empty to use the name set when the webhook was created',
+    avatar_url: 'Avatar URL',
+    avatar_url_tip: 'Overrides the webhook avatar; must be a publicly reachable image URL',
+    avatar_url_invalid: 'Must start with http:// or https://',
+    silent: 'Silent push',
+    silent_tip: 'Messages are still posted to the channel but do not trigger push or desktop notifications',
+    proxy_tip: 'Fill in when Discord can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+  },
+  slackwebhook_request_config: {
+    top_tip:
+      'A webhook URL points to one Slack channel, so the URL is filled in the notification rule and this media type can post to any number of channels. The settings here are defaults shared by all rules. Get the URL by creating an app at https://api.slack.com/apps and turning on Incoming Webhooks.',
+    proxy_tip: 'Set this if Slack can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+  },
+  mattermostwebhook_request_config: {
+    top_tip:
+      'A webhook URL points to one Mattermost channel, so the URL is filled in the notification rule and this media type can post to any number of channels. The settings here are defaults shared by all rules. An admin must turn on Enable incoming webhooks under System Console → Integrations → Integration Management (on by default).',
+    username: 'Display name',
+    username_tip: 'Overrides the sender name. Requires Enable integrations to override usernames to be turned on by an admin, otherwise it is ignored',
+    icon: 'Icon',
+    icon_tip:
+      'Overrides the sender avatar: an image URL or an emoji code such as :bell:. Requires Enable integrations to override profile picture icons to be turned on by an admin, otherwise it is ignored',
+    icon_invalid: 'Use an image URL starting with http:// or https://, or an emoji code such as :bell:',
+    proxy_tip: 'Set this if Mattermost can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+    insecure_skip_verify_tip: 'Turn on for a self-hosted Mattermost with a self-signed certificate. Applies to every webhook URL used with this media type',
+  },
+  jsm_alert_request_config: {
+    top_tip:
+      'Alerts go to Jira Service Management Operations. The key of an API integration decides which team gets the alert, so the key is filled in each notification rule; this media type can send to any number of teams. Create the key in JSM: team → Integrations → Add integration → API.',
+    api_url: 'API URL',
+    api_url_tip: 'Leave empty to use https://api.atlassian.com; the integration path /jsm/ops/integration/v2/alerts is added automatically',
+    api_url_invalid: 'Must start with http:// or https://',
+    priority_map: 'Severity to priority',
+    priority_map_tip:
+      'JSM alert priority for each Nightingale severity. JSM priorities are the same across the site, so this is set once here for all rules; defaults are S1→P1, S2→P2, S3→P3',
+    proxy_tip: 'Fill in when api.atlassian.com can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+  },
   pagerduty_request_config: {
     title: 'PagerDuty',
     api_key: 'API Key',
@@ -174,6 +250,24 @@ const en_US = {
     script: 'Script',
   },
   test: {
+    jsm_title: 'JSM API integration key',
+    jsm_tip: 'The key is filled in the notification rule after saving; enter one here to test. A real alert is created in the team of this integration.',
+    jsm_api_key_placeholder: 'API key of the integration',
+    jsm_with_recovery: 'Also test recovery (close the alert)',
+    discord_title: 'Discord webhook',
+    discord_tip: 'The webhook URL is filled in the notification rule after saving; enter one here to test.',
+    discord_target_channel: 'Channel',
+    discord_target_forum_post: 'New forum post',
+    discord_target_thread: 'Existing thread / forum post',
+    discord_thread_name_placeholder: 'Post title, e.g. {{$event.RuleName}}',
+    discord_thread_id_placeholder: 'Thread ID, numeric',
+    webhook_title: 'Webhook URL',
+    webhook_tip: 'Once saved, the webhook URL is filled in the notification rule; enter one here just for testing.',
+    jira_title: 'Jira project and issue type',
+    jira_tip: 'A real issue will be created in this project. After saving, you pick the project and issue type from dropdowns in a notification rule; enter them manually here.',
+    jira_project_placeholder: 'Project key, e.g. OPS',
+    jira_issue_type_placeholder: 'Issue type, e.g. Bug',
+    with_recovery: 'Also test recovery (comment on and close the issue)',
     btn: 'Test',
     run: 'Send test',
     back: 'Back to edit',
@@ -182,7 +276,8 @@ const en_US = {
     params_title: 'Media parameters',
     receivers_title: 'Recipients',
     pagerduty_keys_title: 'Integration key',
-    pagerduty_keys_tip: 'PagerDuty routes by integration key. After saving you can pick one by service/integration in a notification rule; enter it manually here. Multiple keys are allowed.',
+    pagerduty_keys_tip:
+      'PagerDuty routes by integration key. After saving you can pick one by service/integration in a notification rule; enter it manually here. Multiple keys are allowed.',
     pagerduty_keys_placeholder: 'Type an integration key and press Enter',
     user_ids: 'Select users',
     user_group_ids: 'Select teams',
