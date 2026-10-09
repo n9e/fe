@@ -165,7 +165,7 @@ export default function LegendTable(props: Props) {
   return (
     <div
       ref={containerRef}
-      className='min-w-0 h-full overflow-auto renderer-timeseries-ng-legend-table-scroll'
+      className='min-w-0 h-full overflow-auto best-looking-scroll renderer-timeseries-ng-legend-table-scroll'
       onScroll={(e) => {
         setScrollTop(e.currentTarget.scrollTop);
       }}

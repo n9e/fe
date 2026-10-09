@@ -5,7 +5,7 @@ import { Space } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 
 import useOnClickOutside from '@/components/useOnClickOutside';
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, ScopedVariables } from '../../../types';
 
@@ -25,9 +25,11 @@ export function cellClickCallback(
   {
     links,
     linksRef,
+    replaceTemplateVariables,
   }: {
     links: IOptions['links'];
     linksRef: React.RefObject<LinksHandle>;
+    replaceTemplateVariables: (value: string, params?: { scopedVars?: ScopedVariables }) => string;
   },
 ) {
   if (_.isEmpty(links)) return;
@@ -55,6 +57,7 @@ export function cellClickCallback(
 
 function Links(props: Props, ref: React.ForwardedRef<LinksHandle>) {
   const { t } = useTranslation('dashboard');
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { links } = props;
   const [visible, setVisible] = useState(false);
   const [rowDataItem, setRowDataItem] = useState<RowData>({});

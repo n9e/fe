@@ -62,5 +62,5 @@ export default function PanelEmpty(props: Props) {
     );
   }
 
-  return <div className='renderer-body-content-empty'>No Data</div>;
+  return <div className='renderer-body-content-empty renderer-body-content-empty-default'>No data</div>;
 }

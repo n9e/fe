@@ -20,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import semver from 'semver';
 import { updateDashboardConfigs } from '@/services/dashboardV2';
 import { generateQueryNameByIndex } from '@/components/QueryName/utils';
-import { defaultCustomValuesMap } from '../../dashboard/Editor/config';
+import { defaultCustomValuesMap } from '../../dashboard/Renderer/registry/defaults';
 
 function JSONParse(str) {
   if (str) {

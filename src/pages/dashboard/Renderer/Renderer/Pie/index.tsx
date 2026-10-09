@@ -19,7 +19,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import G2PieChart from '@/components/G2PieChart';
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IPanel, ScopedVariables } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
@@ -57,6 +57,7 @@ const getColumnsKeys = (data: Array<{ metric: PieMetric }>) => {
 };
 
 export default function Pie(props: IProps) {
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { t } = useTranslation('dashboard');
   const [, setStatFields] = useGlobalState('statFields');
   const { values, series, themeMode, isPreview } = props;

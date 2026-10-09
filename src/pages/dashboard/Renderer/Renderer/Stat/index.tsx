@@ -19,7 +19,6 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { useSize } from 'ahooks';
 import * as d3 from 'd3';
-import '@fc-plot/ts-graph/dist/index.css';
 import { IPanel } from '../../../types';
 import { statHexPalette } from '../../../config';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
