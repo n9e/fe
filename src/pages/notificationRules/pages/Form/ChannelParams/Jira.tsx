@@ -336,7 +336,7 @@ function JSONFieldsInput(props: { value?: string; onChange?: (v?: string) => voi
     setRows(next);
     const obj = _.fromPairs(
       _.map(
-        _.filter(next, (r) => _.trim(r.key)),
+        _.filter(next, (r) => !!_.trim(r.key)),
         (r) => [_.trim(r.key), r.value],
       ),
     );
