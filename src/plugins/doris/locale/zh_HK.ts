@@ -22,6 +22,11 @@ const zh_HK = {
     1. 查詢最近5分鐘的日誌行數 SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
     2. 查詢所選時間區間的日誌行數 SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
     更多SQL模式說明，請參考 <a>Doris SQL模式說明</a>`,
+    variable_format_tip:
+      '變量高級格式：${變量:csv}、raw、regex、json、text、sqlstring 等；text 輸出選項標籤。Doris 專屬 LIKE：${變量:sql_like_or:字段} 或 ${變量:sql_like_and:字段}。',
+    advanced_variable_formats: '高級變量格式',
+    dashboard_variable_tip:
+      "Doris 查詢變量：多選變量預設會轉換為單引號包裹、逗號分隔的 SQL 值列表。例如 ${host} 會轉換為 'host01', 'host02'，可用於 IN (${host})。<1/>使用 ${變量:格式} 指定輸出格式；text 輸出選項標籤。Doris 專屬 LIKE 格式：${host:sql_like_or:description} 或 ${host:sql_like_and:table.column}。<1/>完整格式與範例請查看 <advanced>高級變量格式</advanced>。<1/>可以使用後端時間宏，例如 $__timeFilter(...)、$__timeFrom()、$__timeTo()。詳情請查看 <a>查詢條件</a> 文檔。",
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: '查詢',
     database: '數據庫',
