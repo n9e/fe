@@ -64,6 +64,8 @@
   --fc-border-color: hsla(240, 5%, 89%, 0.7);
   --fc-border-color2: hsla(240, 5%, 89%);
   --fc-border-base: hsla(240, 5%, 89%, 0.4);
+  --fc-inverse-text-color: #fff;
+  --fc-label-overlay-background: rgba(0, 0, 0, 0.2);
   --fc-antd-border-color: #d9d9d9; /* 用于 跟antd button 连结的边框 */
   --fc-background-color-light: rgba(250, 250, 250, 1);
   --fc-card-border: #f0f0f0;

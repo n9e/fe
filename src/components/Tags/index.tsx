@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { Tag, Tooltip } from 'antd';
-import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
+import getTextWidth, { defaultFont } from '@/utils/getTextWidth';
 
 interface Props {
   width: number;
@@ -15,7 +15,7 @@ export default function index(props: Props) {
     <Tooltip title={_.join(data, ', ')}>
       <div>
         {_.map(displayData, (item, index) => {
-          const textWidth = getTextWidth(item);
+          const textWidth = getTextWidth(item, defaultFont);
           if (textWidth < width) {
             return (
               <div key={index}>

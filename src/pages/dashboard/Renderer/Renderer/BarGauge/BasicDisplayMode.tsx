@@ -5,7 +5,7 @@ import _ from 'lodash';
 import Color from 'color';
 
 import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
-import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
+import getTextWidth, { defaultFont } from '@/utils/getTextWidth';
 
 import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../types';
 import { BarGaugeValue, calculatePercentage, getGradientBackground } from './utils';
@@ -36,7 +36,9 @@ export default function BasicDisplayMode(props: Props) {
   const color = item.color ? item.color : baseColor;
   const isVertical = orientation === 'vertical';
   const valueText = `${item.value ?? ''}${item.unit ?? ''}`;
-  const verticalValueFontSize = isVertical ? Math.max(4, Math.min(18, Math.floor((Math.max(itemWidth - 4, 1) / Math.max(getTextWidth(valueText), 1)) * 12))) : undefined;
+  const verticalValueFontSize = isVertical
+    ? Math.max(4, Math.min(18, Math.floor((Math.max(itemWidth - 4, 1) / Math.max(getTextWidth(valueText, defaultFont), 1)) * 12)))
+    : undefined;
   const gradient =
     displayMode === 'gradient' ? getGradientBackground(thresholds, minValue, maxValue, color, isVertical ? 'to top' : 'to right') : Color(color).alpha(0.2).rgb().string();
 

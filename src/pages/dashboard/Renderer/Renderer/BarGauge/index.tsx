@@ -18,7 +18,7 @@ import React, { CSSProperties, useRef, useEffect, useMemo } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
 
-import { getTextWidth } from '@/pages/dashboard/Renderer/Renderer/Hexbin/utils';
+import getTextWidth, { defaultFont } from '@/utils/getTextWidth';
 
 import { IPanel, IBarGaugeStyles } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
@@ -216,7 +216,7 @@ export default function BarGauge(props: IProps) {
       _.forEach(calculatedValues, (item) => {
         const { metric } = item;
         const name = nameField ? _.get(metric, nameField, item.name) : item.name;
-        const nameWidth = getTextWidth(name ?? '');
+        const nameWidth = getTextWidth(name ?? '', defaultFont);
         if (nameWidth > max) {
           max = nameWidth;
         }
@@ -230,7 +230,7 @@ export default function BarGauge(props: IProps) {
   }, [dataDependency, stableCustom, stableOptions, containerSize]);
   const maxValueWidth = useMemo(() => {
     if (valueMode === 'hidden') return 0;
-    return _.reduce(calculatedValues, (max, item) => Math.max(max, getTextWidth(`${item.value ?? ''}${item.unit ?? ''}`)), 0) + 4;
+    return _.reduce(calculatedValues, (max, item) => Math.max(max, getTextWidth(`${item.value ?? ''}${item.unit ?? ''}`, defaultFont)), 0) + 4;
   }, [dataDependency, stableCustom, stableOptions, valueMode]);
 
   useEffect(() => {

@@ -2,10 +2,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-const mockRenderFn = jest.fn();
+const mockHoneycombChart = jest.fn();
 
-jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
+jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}), basePrefix: '/n9e' }));
 jest.mock('ahooks', () => ({ useSize: () => ({ width: 320, height: 160 }) }));
+jest.mock('@/components/HoneycombChart', () => ({
+  __esModule: true,
+  default: (props: unknown) => {
+    mockHoneycombChart(props);
+    return null;
+  },
+}));
 // 插值工具只用到 parseRange；真实 TimeRangePicker 会引入 rc-picker 的 ESM 产物
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: (range: unknown) => range }));
 // @/utils/constant 在源码里使用 import.meta，node 测试环境无法解析
@@ -21,18 +28,12 @@ jest.mock('../../utils/getCalculatedValuesBySeries', () => ({
   __esModule: true,
   default: () => [{ name: 'value', stat: 1, text: '1', metric: {} }],
 }));
-jest.mock('./render', () => ({ renderFn: mockRenderFn }));
-
 import type { IPanel } from '../../../types';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 
 import Hexbin from './index';
 
-/**
- * 以下两个引用必须在多次渲染间保持稳定：
- * series 经 dataDependency、custom.colorRange 经解构默认值，都会进入重绘 effect 的依赖数组。
- * 若每次渲染新建引用，effect 会无条件重跑，测试就无法守住 themeMode 这一项依赖。
- */
+/** Hexbin panel fixture with a stable color range, matching the persisted panel shape. */
 const colorRange = ['#3399CC'];
 /** 最小 hexbin 面板配置：只覆盖渲染入口需要读取的字段。 */
 const values: IPanel = {
@@ -50,7 +51,7 @@ const series: CalculatedSeries[] = [];
 
 describe('Hexbin without a dashboard runtime', () => {
   beforeEach(() => {
-    mockRenderFn.mockClear();
+    mockHoneycombChart.mockClear();
   });
 
   it('renders outside the dashboard tree instead of throwing', () => {
@@ -59,13 +60,13 @@ describe('Hexbin without a dashboard runtime', () => {
     expect(() => render(<Hexbin values={values} series={series} />)).not.toThrow();
   });
 
-  it('redraws with the new theme when themeMode changes at runtime', () => {
+  it('passes the updated theme and measured dimensions to the chart component', () => {
     const utils = render(<Hexbin values={values} series={series} />);
 
-    expect(mockRenderFn).toHaveBeenLastCalledWith(expect.any(Array), expect.not.objectContaining({ themeMode: 'dark' }), expect.any(Function));
+    expect(mockHoneycombChart).toHaveBeenLastCalledWith(expect.objectContaining({ themeMode: undefined, width: 320, height: 160 }));
 
     utils.rerender(<Hexbin values={values} series={series} themeMode='dark' />);
 
-    expect(mockRenderFn).toHaveBeenLastCalledWith(expect.any(Array), expect.objectContaining({ themeMode: 'dark' }), expect.any(Function));
+    expect(mockHoneycombChart).toHaveBeenLastCalledWith(expect.objectContaining({ themeMode: 'dark', width: 320, height: 160 }));
   });
 });

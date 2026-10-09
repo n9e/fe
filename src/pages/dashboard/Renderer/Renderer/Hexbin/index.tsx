@@ -14,25 +14,22 @@
  * limitations under the License.
  *
  */
-// @ts-nocheck
 import * as React from 'react';
-import { useEffect, useRef, FunctionComponent } from 'react';
-import _ from 'lodash';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import * as d3 from 'd3';
 import { useSize } from 'ahooks';
 
-import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { basePrefix } from '@/App';
+import HoneycombChart from '@/components/HoneycombChart';
+import type { HoneycombCell } from '@/components/HoneycombChart';
 import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
-import { renderFn } from './render';
-import { IPanel, IHexbinStyles } from '../../../types';
+import type { IHexbinStyles, IPanel, ScopedVariables } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { getColorScaleLinearDomain } from './utils';
 import { DashboardRuntimeProvider, useDashboardRuntimeStoreIfAvailable, useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
-
-import './style.less';
 
 interface HoneyCombProps {
   values: IPanel;
@@ -42,109 +39,120 @@ interface HoneyCombProps {
   dataRevision?: number;
 }
 
-interface HexbinValue {
-  name?: string;
-  stat: number;
-  metric: Record<string, string | undefined>;
-}
+/** 颜色解析失败（无命中阈值、色阶未映射）时的兜底填充色 */
+const FALLBACK_CELL_COLOR = '#3399CC';
 
 const getColumnsKeys = (data: Array<{ metric: Record<string, string | undefined> }>) => {
-  const keys = _.reduce(
-    data,
-    (result, item) => {
-      return _.union(result, _.keys(item.metric));
-    },
-    [],
-  );
-  return _.uniq(keys);
+  const keys = new Set<string>();
+  data.forEach((item) => {
+    Object.keys(item.metric).forEach((key) => keys.add(key));
+  });
+  return Array.from(keys);
 };
 
-const HexbinContent: FunctionComponent<HoneyCombProps> = (props) => {
+const HexbinContent: React.FunctionComponent<HoneyCombProps> = (props) => {
   const replaceTemplateVariables = useReplaceTemplateVariables();
   const { values, series, themeMode, isPreview } = props;
   const dataDependency = props.dataRevision ?? series;
-  const { custom = {}, options } = values;
+  const { options } = values;
+  // 面板配置来自 JSON；IHexbinStyles 是该图表配置的持久化结构。
+  // values.custom 类型上必填，但脏数据可能缺失，兜底为空对象避免解构抛错。
+  const custom = (values.custom ?? {}) as unknown as Partial<IHexbinStyles>;
   const stableOptions = useStableValue(options);
   const {
-    calc,
-    colorRange = [],
+    calc = 'lastNotNull',
     reverseColorOrder = false,
-    colorDomainAuto,
-    colorDomain,
+    colorDomainAuto = true,
+    colorDomain = [],
     textMode = 'valueAndName',
     detailUrl,
-    fontBackground,
+    fontBackground = false,
     valueField = 'Value',
-  } = custom as IHexbinStyles;
-  const groupEl = useRef<SVGGElement>(null);
-  const svgEl = useRef<HTMLDivElement>(null);
-  const svgSize = useSize(svgEl);
-  const [statFields, setStatFields] = useGlobalState('statFields');
+  } = custom;
+  const rawColorRange = custom.colorRange;
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const svgSize = useSize(chartContainerRef);
+  const [, setStatFields] = useGlobalState('statFields');
+  const calculatedValues = useMemo(
+    () =>
+      getCalculatedValuesBySeries(
+        series,
+        calc,
+        {
+          unit: stableOptions?.standardOptions?.unit,
+          decimals: stableOptions?.standardOptions?.decimals,
+          dateFormat: stableOptions?.standardOptions?.dateFormat,
+          valueField,
+        },
+        stableOptions?.valueMappings,
+        stableOptions?.thresholds,
+      ),
+    [calc, dataDependency, stableOptions, valueField],
+  );
 
   useEffect(() => {
-    const calculatedValues = getCalculatedValuesBySeries(
-      series,
-      calc,
-      {
-        unit: options?.standardOptions?.unit,
-        decimals: options?.standardOptions?.decimals,
-        dateFormat: options?.standardOptions?.dateFormat,
-      },
-      options?.valueMappings,
-      options?.thresholds,
-    );
-
     if (isPreview) {
       setStatFields(getColumnsKeys(calculatedValues));
     }
-    const colorScales = d3
-      .scaleLinear()
-      .domain(getColorScaleLinearDomain(calculatedValues, colorDomainAuto, colorDomain))
-      .range(reverseColorOrder ? _.reverse(_.slice(colorRange)) : colorRange);
+  }, [calculatedValues, isPreview, setStatFields]);
 
-    const detailFormatter = (data: HexbinValue) => {
-      const scopedVars = {
-        '__field.name': data.name,
-        '__field.value': data.stat,
-      };
-      _.forEach(data.metric, (value, key) => {
-        scopedVars[`__field.labels.${key}`] = value;
-      });
-      return replaceTemplateVariables(detailUrl, {
-        scopedVars,
-      });
-    };
+  const normalizedColorRange = useMemo(() => (Array.isArray(rawColorRange) ? rawColorRange.filter((color): color is string => typeof color === 'string') : []), [rawColorRange]);
+  const isThresholdColorRange = normalizedColorRange.length === 1 && normalizedColorRange[0] === 'thresholds';
+  const colorScales = useMemo(
+    () =>
+      d3
+        .scaleLinear<string>()
+        .domain(getColorScaleLinearDomain(calculatedValues, colorDomainAuto, colorDomain))
+        .range(reverseColorOrder ? [...normalizedColorRange].reverse() : normalizedColorRange),
+    [calculatedValues, colorDomain, colorDomainAuto, normalizedColorRange, reverseColorOrder],
+  );
 
-    if (svgSize?.width && svgSize?.height) {
-      const renderProps = {
-        width: svgSize?.width,
-        height: svgSize?.height,
-        parentGroupEl: groupEl.current,
-        themeMode,
-        textMode,
-        detailUrl,
-        fontBackground,
-        valueField,
-      };
-      const data = _.map(calculatedValues, (item) => {
+  const data = useMemo<HoneycombCell[]>(
+    () =>
+      calculatedValues.map((item) => {
+        const fieldValue = valueField === 'Value' ? item.text : item.metric[valueField];
         return {
-          ...item,
-          value: item.text,
-          color: _.isEqual(colorRange, ['thresholds']) ? item.color : colorScales(item.stat) || '#3399CC',
+          id: item.id,
+          name: valueField === 'Value' ? item.name : valueField,
+          value: fieldValue ?? '',
+          stat: item.stat,
+          metric: item.metric,
+          color: isThresholdColorRange ? item.color || FALLBACK_CELL_COLOR : colorScales(Number(item.stat)) || FALLBACK_CELL_COLOR,
         };
+      }),
+    [calculatedValues, colorScales, isThresholdColorRange, valueField],
+  );
+
+  const handleCellClick = useCallback(
+    (cell: HoneycombCell) => {
+      if (!detailUrl) return;
+
+      const scopedVars: ScopedVariables = {
+        '__field.name': { value: cell.name },
+        '__field.value': { value: cell.stat ?? '' },
+      };
+      Object.entries(cell.metric).forEach(([key, value]) => {
+        scopedVars[`__field.labels.${key}`] = { value };
       });
-      d3.select(groupEl.current).selectAll('*').remove();
-      if (data.length) {
-        renderFn(data, renderProps, detailFormatter);
-      }
-    }
-  }, [isPreview, dataDependency, stableOptions, svgSize?.width, svgSize?.height, calc, colorRange, reverseColorOrder, colorDomainAuto, colorDomain, fontBackground, themeMode]);
+      const detail = replaceTemplateVariables(detailUrl, { scopedVars });
+      window.open(basePrefix + detail, '_blank');
+    },
+    [detailUrl, replaceTemplateVariables],
+  );
 
   return (
-    <div ref={svgEl} style={{ width: '100%', height: '100%' }}>
-      <svg style={{ width: '100%', height: '100%' }}>
-        <g ref={groupEl} />
-      </svg>
+    <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }}>
+      {svgSize?.width && svgSize?.height ? (
+        <HoneycombChart
+          data={data}
+          width={svgSize.width}
+          height={svgSize.height}
+          textMode={textMode}
+          fontBackground={fontBackground}
+          themeMode={themeMode}
+          onCellClick={detailUrl ? handleCellClick : undefined}
+        />
+      ) : null}
     </div>
   );
 };
@@ -155,7 +163,7 @@ const HexbinContent: FunctionComponent<HoneyCombProps> = (props) => {
  * 指标视图等仪表盘外的调用方不会提供运行时容器，这里显式创建隔离实例，
  * 避免读取 statFields 时因缺少 Provider 直接抛错。
  */
-const Hexbin: FunctionComponent<HoneyCombProps> = (props) => {
+const Hexbin: React.FunctionComponent<HoneyCombProps> = (props) => {
   const dashboardRuntimeStore = useDashboardRuntimeStoreIfAvailable();
 
   if (!dashboardRuntimeStore) {

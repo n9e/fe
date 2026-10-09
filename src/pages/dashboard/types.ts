@@ -225,6 +225,7 @@ export interface IHexbinStyles {
   version: string;
   textMode: 'valueAndName' | 'name' | 'value';
   calc: string;
+  valueField?: string;
   colorRange: string[]; // 三个颜色值
   colorDomainAuto: boolean;
   colorDomain: number[]; // 自定义 [min, max]

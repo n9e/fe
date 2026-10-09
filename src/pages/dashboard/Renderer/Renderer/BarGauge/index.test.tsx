@@ -3,7 +3,11 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 jest.mock('ahooks', () => ({ useSize: () => ({ width: 320, height: 160 }) }));
-jest.mock('@/pages/dashboard/Renderer/Renderer/Hexbin/utils', () => ({ getTextWidth: (value: string) => value.length * 8 }));
+jest.mock('@/utils/getTextWidth', () => ({
+  __esModule: true,
+  defaultFont: { fontWeight: 'normal', fontSize: '12px', fontFamily: 'sans-serif' },
+  default: (value: string) => value.length * 8,
+}));
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({ useReplaceTemplateVariables: () => (value: string) => value }));
 
 import { DashboardRuntimeProvider } from '../../../globalState';
