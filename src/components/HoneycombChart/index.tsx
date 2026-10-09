@@ -2,12 +2,51 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Hexagon, HexGrid, Layout } from 'react-hexgrid';
 
+import { createTextWidthMeasurer, getTextWidthInEm } from '@/utils/getTextWidth';
+
 import './style.less';
 
 import calculateHexCoordinates from './utils/calculateHexCoordinates';
 import getRoundedHexagonPath from './utils/getRoundedHexagonPath';
 
 const DEFAULT_SPACING = 1.02;
+const MIN_VALUE_FONT_SIZE = 0.01;
+const MAX_VALUE_FONT_SIZE = 24;
+const VALUE_FONT_WEIGHT = 500;
+const TEXT_LINE_HEIGHT = 1.2;
+const TEXT_BOX_PADDING_Y = 2;
+const TEXT_ROW_PADDING_X = 3;
+const TEXT_ROW_PADDING_Y = 1;
+
+function getValueFontSize(text: string, availableWidth: number, availableHeight: number, measureTextWidth: ReturnType<typeof createTextWidthMeasurer>) {
+  if (!text || availableWidth <= 0 || availableHeight <= 0) {
+    return MIN_VALUE_FONT_SIZE;
+  }
+
+  if (!measureTextWidth) {
+    const estimatedFontSize = availableWidth / Math.max(getTextWidthInEm(text) * 1.08, 1);
+    return Math.max(MIN_VALUE_FONT_SIZE, Math.min(MAX_VALUE_FONT_SIZE, availableHeight / 1.2, estimatedFontSize));
+  }
+
+  const fits = (fontSize: number) => measureTextWidth(text, { fontSize: `${fontSize}px` }) <= availableWidth;
+  let minFontSize = MIN_VALUE_FONT_SIZE;
+  let maxFontSize = Math.min(MAX_VALUE_FONT_SIZE, availableHeight / 1.2);
+  if (!fits(minFontSize)) return minFontSize;
+  if (fits(maxFontSize)) return maxFontSize;
+
+  let fittedFontSize = minFontSize;
+  for (let i = 0; i < 12; i++) {
+    const fontSize = (minFontSize + maxFontSize) / 2;
+    if (fits(fontSize)) {
+      fittedFontSize = fontSize;
+      minFontSize = fontSize;
+    } else {
+      maxFontSize = fontSize;
+    }
+  }
+
+  return Math.floor(fittedFontSize * 100) / 100;
+}
 
 export interface HoneycombCell {
   id: string;
@@ -37,6 +76,43 @@ interface TooltipState {
 export default function HoneycombChart({ data, width, height, textMode, fontBackground = false, themeMode, onCellClick }: Props) {
   const layout = useMemo(() => calculateHexCoordinates(data.length, width, height, DEFAULT_SPACING), [data.length, height, width]);
   const roundedPath = useMemo(() => getRoundedHexagonPath(layout.hexSize), [layout.hexSize]);
+  const textBoxWidth = layout.hexSize * Math.sqrt(3) * 0.9;
+  const textBoxHeight = layout.hexSize * 0.96;
+  const showName = textMode === 'valueAndName' || textMode === 'name';
+  const showValue = textMode === 'valueAndName' || textMode === 'value';
+  const valueTextWidth = textBoxWidth - (fontBackground ? TEXT_ROW_PADDING_X * 2 : 0);
+  const textGap = Math.min(3, layout.hexSize * 0.12);
+  const textBoxVerticalPadding = TEXT_BOX_PADDING_Y * 2;
+  const rowVerticalPadding = fontBackground ? TEXT_ROW_PADDING_Y * 2 : 0;
+  const nameFontSize = Math.max(6, Math.min(20, layout.hexSize / 6));
+  const [fontRevision, setFontRevision] = useState(0);
+  const measureTextWidth = useMemo(() => {
+    // 字体加载完成后通过 fontRevision 重建测量器，触发后续字号重算。
+    void fontRevision;
+    return showValue ? createTextWidthMeasurer({ fontWeight: VALUE_FONT_WEIGHT }) : null;
+  }, [fontRevision, showValue]);
+  const valueFontSizes = useMemo(() => {
+    if (!showValue) return [];
+
+    const fontSizeByNameState = new Map<boolean, Map<string, number>>();
+    return data.map((cell) => {
+      const hasName = showName && Boolean(cell.name);
+      let fontSizeByValue = fontSizeByNameState.get(hasName);
+      if (!fontSizeByValue) {
+        fontSizeByValue = new Map<string, number>();
+        fontSizeByNameState.set(hasName, fontSizeByValue);
+      }
+
+      const cachedFontSize = fontSizeByValue.get(cell.value);
+      if (cachedFontSize !== undefined) return cachedFontSize;
+
+      const nameRowHeight = hasName ? nameFontSize * TEXT_LINE_HEIGHT + rowVerticalPadding : 0;
+      const valueTextHeight = textBoxHeight - textBoxVerticalPadding - nameRowHeight - (hasName ? textGap : 0) - rowVerticalPadding;
+      const fontSize = getValueFontSize(cell.value, valueTextWidth, valueTextHeight, measureTextWidth);
+      fontSizeByValue.set(cell.value, fontSize);
+      return fontSize;
+    });
+  }, [data, measureTextWidth, nameFontSize, rowVerticalPadding, showName, showValue, textBoxHeight, textBoxVerticalPadding, textGap, valueTextWidth]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
 
@@ -59,19 +135,30 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
     setTooltip(null);
   }, [data, height, width]);
 
+  useEffect(() => {
+    if (!showValue || typeof document === 'undefined' || !document.fonts) return;
+
+    let isActive = true;
+    void document.fonts.ready
+      .then(() => {
+        if (isActive) setFontRevision((revision) => revision + 1);
+      })
+      .catch(() => {
+        // 字体加载失败时保持按当前字体测得的字号，不阻断渲染。
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [showValue]);
+
   if (!data.length || !width || !height || !layout.hexSize || !layout.viewBoxWidth || !layout.viewBoxHeight) {
     return null;
   }
 
   const padding = Math.max(2, layout.hexSize * 0.03);
   const viewBox = `${layout.minX - padding} ${layout.minY - padding} ${layout.viewBoxWidth + padding * 2} ${layout.viewBoxHeight + padding * 2}`;
-  const textBoxWidth = layout.hexSize * Math.sqrt(3) * 0.84;
-  const textBoxHeight = layout.hexSize * 0.96;
   const textColor = fontBackground ? 'var(--fc-inverse-text-color)' : themeMode === 'dark' ? 'var(--fc-text-1)' : 'var(--fc-text-2)';
-  const showName = textMode === 'valueAndName' || textMode === 'name';
-  const showValue = textMode === 'valueAndName' || textMode === 'value';
-  const nameFontSize = Math.max(6, Math.min(20, layout.hexSize / 5));
-  const valueFontSize = Math.max(6, Math.min(20, layout.hexSize / 6));
   const textStyle: React.CSSProperties = {
     maxWidth: '100%',
     overflow: 'hidden',
@@ -81,7 +168,7 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
     color: textColor,
     backgroundColor: fontBackground ? 'var(--fc-label-overlay-background)' : 'transparent',
     borderRadius: 2,
-    padding: fontBackground ? '1px 3px' : 0,
+    padding: fontBackground ? `${TEXT_ROW_PADDING_Y}px ${TEXT_ROW_PADDING_X}px` : 0,
     boxSizing: 'border-box',
   };
   const tooltipElement =
@@ -141,15 +228,26 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: Math.min(3, layout.hexSize * 0.12),
+                        gap: textGap,
                         overflow: 'hidden',
-                        lineHeight: 1.2,
-                        padding: '2px 4px',
+                        lineHeight: TEXT_LINE_HEIGHT,
+                        padding: `${TEXT_BOX_PADDING_Y}px 0`,
                         boxSizing: 'border-box',
                       }}
                     >
-                      {showName && cell.name && <div style={{ ...textStyle, fontWeight: 600, fontSize: nameFontSize }}>{cell.name}</div>}
-                      {showValue && <div style={{ ...textStyle, fontSize: valueFontSize }}>{cell.value}</div>}
+                      {showName && cell.name && <div style={{ ...textStyle, fontWeight: 400, fontSize: nameFontSize }}>{cell.name}</div>}
+                      {showValue && (
+                        <div
+                          style={{
+                            ...textStyle,
+                            fontWeight: VALUE_FONT_WEIGHT,
+                            fontSize: valueFontSizes[index] ?? MIN_VALUE_FONT_SIZE,
+                            textOverflow: 'clip',
+                          }}
+                        >
+                          {cell.value}
+                        </div>
+                      )}
                     </div>
                   </foreignObject>
                 </Hexagon>
