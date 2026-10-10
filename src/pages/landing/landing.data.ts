@@ -32,7 +32,7 @@ export interface LandingGuideCard {
   links: LandingGuideLink[];
 }
 
-const DOCS_BASE = 'https://flashcat.cloud/product/nightingale/';
+const DOCS_BASE = 'https://n9e.github.io/';
 const DOCS_V8_BASE = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/';
 
 export const DOC_LINKS = {

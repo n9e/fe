@@ -21,12 +21,13 @@ import App from './App';
 import { I18nextProvider } from 'react-i18next';
 import { initTheme } from './utils/darkMode';
 import { initFlashcatFrom } from './utils/flashcatFrom';
+import { IS_ENT } from './utils/constant';
 
 // 在页面渲染前初始化主题，避免样式闪烁
 initTheme();
 
-// 指向官网/Flashduty 的链接统一携带 from=n9e-user 渠道参数
-initFlashcatFrom();
+// 指向官网/Flashduty/夜莺新官网的链接统一携带 from 渠道参数；非中文界面的旧文档链接跳转到夜莺新官网
+initFlashcatFrom({ getLanguage: () => i18nInit.language, isEnt: IS_ENT });
 
 const root = createRoot(document.getElementById('root')!);
 root.render(
