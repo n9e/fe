@@ -16,7 +16,7 @@ const es_ES = {
     "failed": "Error al validar el inicio de sesión externo",
     "back": "Volver a la pantalla de inicio de sesión",
     "unsupported_type": "Forma de inicio de sesión externo no admitida",
-    "plus_only": "Disponible solo en la edición Plus"
+    "plus_only": "Aún no se admite"
   }
 };
 

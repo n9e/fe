@@ -16,7 +16,7 @@ const zh_HK = {
     failed: '第三方登錄驗證失敗',
     back: '返回登錄頁',
     unsupported_type: '不被支持的第三方登錄方式',
-    plus_only: '只支持 Plus 版本',
+    plus_only: '暫不支持',
   },
 };
 

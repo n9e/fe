@@ -193,7 +193,7 @@ const zh_HK = {
     explore_hint: '在新分頁開啟即時查詢，已為你帶上這個資料來源',
     create_dashboard_hint: '在新分頁開啟儀表盤列表，選擇業務組後即可新建',
     create_alert_hint: '在新分頁開啟告警規則列表，選擇業務組後即可新建',
-    pro_only: '需企業版',
+    pro_only: '暫不支持',
     type_unsupported: '該類型資料來源暫不支持此操作',
     ds_disabled: '該資料來源已停用',
     ds_disabled_desc: '停用期間不執行數據體檢，引用它的告警規則也不會評估。',

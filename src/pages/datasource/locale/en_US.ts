@@ -199,7 +199,7 @@ const en_US = {
     explore_hint: 'Opens the metric explorer in a new tab with this datasource preselected',
     create_dashboard_hint: 'Opens the dashboard list in a new tab — pick a business group, then create',
     create_alert_hint: 'Opens the alert rule list in a new tab — pick a business group, then create',
-    pro_only: 'Enterprise edition required',
+    pro_only: 'Not supported yet',
     type_unsupported: 'Not supported by this datasource type',
     ds_disabled: 'This datasource is disabled',
     ds_disabled_desc: 'Health checks are skipped while disabled, and alert rules referencing it are not evaluated.',
