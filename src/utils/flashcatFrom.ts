@@ -46,9 +46,14 @@ export function initFlashcatFrom({ getLanguage, isEnt = false }: InitFlashcatFro
     if (!target || typeof target.closest !== 'function') return;
     const link = target.closest('a[href*="flashcat.cloud"], a[href*="flashduty.com"], a[href*="n9e.github.io"]') as HTMLAnchorElement | null;
     if (link) {
+      // 始终基于原始地址改写，切换语言后再次点击能恢复；href 若已被 React 更新则以新值为原始地址
+      const { fromOriginalHref, fromRewrittenHref } = link.dataset;
+      const originalHref = fromOriginalHref && fromRewrittenHref === link.href ? fromOriginalHref : link.href;
       const language = getLanguage?.();
-      const n9eSiteDocUrl = !isEnt && language && !isChineseLanguage(language) ? getN9eSiteDocUrl(link.href) : undefined;
-      link.href = withFlashcatFrom(n9eSiteDocUrl ?? link.href);
+      const n9eSiteDocUrl = !isEnt && language && !isChineseLanguage(language) ? getN9eSiteDocUrl(originalHref) : undefined;
+      link.href = withFlashcatFrom(n9eSiteDocUrl ?? originalHref);
+      link.dataset.fromOriginalHref = originalHref;
+      link.dataset.fromRewrittenHref = link.href;
     }
   };
   document.addEventListener('mousedown', rewriteLink, true);

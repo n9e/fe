@@ -58,7 +58,7 @@ describe('withFlashcatFrom', () => {
 describe('initFlashcatFrom', () => {
   it('rewrites anchor href on click before navigation', () => {
     initFlashcatFrom();
-    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/' };
+    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/', dataset: {} as Record<string, string> };
     const event = { target: { closest: () => link } };
     listeners.click(event);
     expect(link.href).toBe('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/?from=n9e-user');
@@ -67,19 +67,45 @@ describe('initFlashcatFrom', () => {
   it('redirects mapped docs to n9e.github.io for non-Chinese languages', () => {
     let language = 'en_US';
     initFlashcatFrom({ getLanguage: () => language });
-    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines_en/' };
+    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines_en/', dataset: {} as Record<string, string> };
     listeners.click({ target: { closest: () => link } });
     expect(link.href).toBe('https://n9e.github.io/docs/events/pipelines?from=v9-n9e-user');
 
     language = 'zh_CN';
-    const zhLink = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/' };
+    const zhLink = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/', dataset: {} as Record<string, string> };
     listeners.click({ target: { closest: () => zhLink } });
     expect(zhLink.href).toBe('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/?from=n9e-user');
   });
 
+  it('restores the original doc link after switching back to Chinese', () => {
+    let language = 'en_US';
+    initFlashcatFrom({ getLanguage: () => language });
+    const original = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/';
+    const link = { href: original, dataset: {} as Record<string, string> };
+    listeners.click({ target: { closest: () => link } });
+    expect(link.href).toBe('https://n9e.github.io/docs/events/pipelines?from=v9-n9e-user');
+
+    language = 'zh_CN';
+    listeners.click({ target: { closest: () => link } });
+    expect(link.href).toBe(`${original}?from=n9e-user`);
+
+    language = 'en_US';
+    listeners.click({ target: { closest: () => link } });
+    expect(link.href).toBe('https://n9e.github.io/docs/events/pipelines?from=v9-n9e-user');
+  });
+
+  it('treats an href updated by React as the new original', () => {
+    initFlashcatFrom({ getLanguage: () => 'zh_CN' });
+    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/', dataset: {} as Record<string, string> };
+    listeners.click({ target: { closest: () => link } });
+    link.href = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/';
+    listeners.click({ target: { closest: () => link } });
+    expect(link.href).toBe('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usecase/subscribe/?from=n9e-user');
+  });
+
   it('does not redirect to n9e.github.io in ENT', () => {
     initFlashcatFrom({ getLanguage: () => 'en_US', isEnt: true });
-    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/' };
+    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/', dataset: {} as Record<string, string> };
     listeners.click({ target: { closest: () => link } });
     expect(link.href).toBe('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/?from=n9e-user');
   });
