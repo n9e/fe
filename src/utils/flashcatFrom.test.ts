@@ -27,10 +27,20 @@ describe('withFlashcatFrom', () => {
 
   it('preserves existing query and hash', () => {
     expect(withFlashcatFrom('https://flashcat.cloud/media/?type=夜莺监控&source=abc')).toBe(
-      `https://flashcat.cloud/media/?type=${encodeURIComponent('夜莺监控')}&source=abc&from=n9e-user`,
+      'https://flashcat.cloud/media/?type=夜莺监控&source=abc&from=n9e-user',
+    );
+    expect(withFlashcatFrom('https://flashcat.cloud/docs/content/flashcat/log/xx/?onlyContent&theme=dark#2-时间宏')).toBe(
+      'https://flashcat.cloud/docs/content/flashcat/log/xx/?onlyContent&theme=dark&from=n9e-user#2-时间宏',
     );
     expect(withFlashcatFrom('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/#step1')).toBe(
       'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/ad-hoc/?from=n9e-user#step1',
+    );
+  });
+
+  it('appends from=v9-n9e-user to n9e.github.io links', () => {
+    expect(withFlashcatFrom('https://n9e.github.io/')).toBe('https://n9e.github.io/?from=v9-n9e-user');
+    expect(withFlashcatFrom('https://n9e.github.io/docs/security/sso?onlyContent&theme=dark#cas')).toBe(
+      'https://n9e.github.io/docs/security/sso?onlyContent&theme=dark&from=v9-n9e-user#cas',
     );
   });
 
@@ -52,6 +62,26 @@ describe('initFlashcatFrom', () => {
     const event = { target: { closest: () => link } };
     listeners.click(event);
     expect(link.href).toBe('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/prologue/introduction/?from=n9e-user');
+  });
+
+  it('redirects mapped docs to n9e.github.io for non-Chinese languages', () => {
+    let language = 'en_US';
+    initFlashcatFrom({ getLanguage: () => language });
+    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines_en/' };
+    listeners.click({ target: { closest: () => link } });
+    expect(link.href).toBe('https://n9e.github.io/docs/events/pipelines?from=v9-n9e-user');
+
+    language = 'zh_CN';
+    const zhLink = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/' };
+    listeners.click({ target: { closest: () => zhLink } });
+    expect(zhLink.href).toBe('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/?from=n9e-user');
+  });
+
+  it('does not redirect to n9e.github.io in ENT', () => {
+    initFlashcatFrom({ getLanguage: () => 'en_US', isEnt: true });
+    const link = { href: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/' };
+    listeners.click({ target: { closest: () => link } });
+    expect(link.href).toBe('https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/event-pipelines/?from=n9e-user');
   });
 
   it('ignores clicks outside target links', () => {

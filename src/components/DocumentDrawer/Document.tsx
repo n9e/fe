@@ -7,6 +7,8 @@ import MDEditor from '@uiw/react-md-editor';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
 import { DOC_URL_LANG_SUFFIX } from '@/utils/docUrl';
+import { withFlashcatFrom } from '@/utils/flashcatFrom';
+import { getN9eSiteDocUrl, getN9eSiteEmbedSrc, isChineseLanguage } from '@/utils/n9eSiteDoc';
 
 import './style.less';
 import renderVariables from './renderVariables';
@@ -30,6 +32,8 @@ export default function index(props: Props) {
   if (type === 'iframe' && IS_ENT) {
     realDocumentPath = realDocumentPath.replace('https://flashcat.cloud', '');
   }
+  // 非中文界面优先内嵌新官网 n9e.github.io 的对应页面
+  const n9eSiteDocUrl = type === 'iframe' && !IS_ENT && !isChineseLanguage(i18n.language) ? getN9eSiteDocUrl(documentPath) : undefined;
 
   useEffect(() => {
     if (documentPath && type === 'md') {
@@ -72,7 +76,11 @@ export default function index(props: Props) {
       {type === 'iframe' && (
         <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
           <iframe
-            src={`${realDocumentPath}${DOC_URL_LANG_SUFFIX[i18n.language] || ''}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}`}
+            src={
+              n9eSiteDocUrl
+                ? withFlashcatFrom(getN9eSiteEmbedSrc(n9eSiteDocUrl, darkMode))
+                : withFlashcatFrom(`${realDocumentPath}${DOC_URL_LANG_SUFFIX[i18n.language] || ''}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}`)
+            }
             style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
             onLoad={() => {
               setLoading(false);

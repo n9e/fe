@@ -11,13 +11,25 @@ describe('getProductDocumentHref', () => {
     expect(getProductDocumentHref(pageDocumentUrl, true)).toBe('/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/');
   });
 
-  it('appends the language suffix for non-Chinese languages', () => {
+  it('opens the n9e.github.io page for non-Chinese languages when a mapping exists', () => {
     const pageDocumentUrl = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/';
 
     expect(getProductDocumentHref(pageDocumentUrl, false, 'zh_CN')).toBe(pageDocumentUrl);
+    expect(getProductDocumentHref(pageDocumentUrl, false, 'en_US')).toBe('https://n9e.github.io/docs/alerting/overview?from=v9-n9e-user');
+    expect(getProductDocumentHref(pageDocumentUrl, false, 'ja_JP')).toBe('https://n9e.github.io/docs/alerting/overview?from=v9-n9e-user');
+  });
+
+  it('falls back to the language suffix when n9e.github.io has no matching page', () => {
+    const pageDocumentUrl = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/datasource/zabbix/';
+
     expect(getProductDocumentHref(pageDocumentUrl, false, 'en_US')).toBe(
-      'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules_en/',
+      'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/integrations/datasource/zabbix_en/',
     );
+  });
+
+  it('keeps Chinese languages on flashcat.cloud', () => {
+    const pageDocumentUrl = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/';
+
     expect(getProductDocumentHref(pageDocumentUrl, false, 'zh_HK')).toBe(
       'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules_hk/',
     );
