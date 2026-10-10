@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { withFlashcatFrom } from '@/utils/flashcatFrom';
+import { N9E_SITE_ORIGIN, isChineseLanguage } from '@/utils/n9eSiteDoc';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { VariableQuerybuilder as ClickHouse } from '@/plugins/clickHouse';
 
@@ -52,6 +53,11 @@ export default function Querybuilder(props: Props) {
                 <QuestionCircleOutlined
                   onClick={() => {
                     if (datasourceCate === 'prometheus') {
+                      // 非中文界面跳转新官网的英文变量文档，中文界面保留视频教程
+                      if (!isChineseLanguage(i18n.language)) {
+                        window.open(withFlashcatFrom(`${N9E_SITE_ORIGIN}/docs/query/variables`));
+                        return;
+                      }
                       window.open(withFlashcatFrom('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA=='));
                     } else if (datasourceCate === 'elasticsearch') {
                       DocumentDrawer({

@@ -13,7 +13,7 @@ export type NextActionKey = 'explore_metric' | 'explore_log' | 'create_dashboard
 export interface NextAction {
   key: NextActionKey;
   enabled: boolean;
-  /** 展示但置灰的原因：pro_only 需企业版；type_unsupported 该类型不支持（不静默隐藏，避免用户以为产品没有） */
+  /** 展示但置灰的原因：pro_only 非 Plus 构建暂不支持（graphPro / alertPro 且 !isPlus）；type_unsupported 该类型不支持（不静默隐藏，避免用户以为产品没有） */
   disabledReason?: 'pro_only' | 'type_unsupported';
   /** 落地链接；无独立页面的动作（模板导入内联渲染）为空 */
   url?: string;

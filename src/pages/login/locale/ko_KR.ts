@@ -16,7 +16,7 @@ const ko_KR = {
     "failed": "외부 서비스 로그인 확인에 실패했습니다",
     "back": "로그인 화면으로",
     "unsupported_type": "지원하지 않는 외부 로그인 방식입니다",
-    "plus_only": "Plus 버전에서만 지원합니다"
+    "plus_only": "아직 지원하지 않습니다"
   }
 };
 

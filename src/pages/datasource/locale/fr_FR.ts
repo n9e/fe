@@ -193,7 +193,7 @@ const fr_FR = {
     "explore_hint": "Ouvre la requête instantanée dans un nouvel onglet, cette source de données déjà sélectionnée",
     "create_dashboard_hint": "Ouvre la liste des tableaux de bord dans un nouvel onglet ; choisissez un groupe métier puis créez le tableau",
     "create_alert_hint": "Ouvre la liste des règles d'alerte dans un nouvel onglet ; choisissez un groupe métier puis créez la règle",
-    "pro_only": "Édition Entreprise requise",
+    "pro_only": "Pas encore pris en charge",
     "type_unsupported": "Cette action n'est pas encore disponible pour ce type de source de données",
     "ds_disabled": "Cette source de données est désactivée",
     "ds_disabled_desc": "Tant qu'elle est désactivée, aucun bilan de santé n'est effectué et les règles d'alerte qui l'utilisent ne sont pas évaluées.",

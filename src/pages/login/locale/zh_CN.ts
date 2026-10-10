@@ -16,7 +16,7 @@ const zh_CN = {
     failed: '第三方登录验证失败',
     back: '返回登录页',
     unsupported_type: '不被支持的第三方登录方式',
-    plus_only: '只支持 Plus 版本',
+    plus_only: '暂不支持',
   },
 };
 export default zh_CN;

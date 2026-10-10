@@ -12,7 +12,7 @@ const ko_KR = {
     "basic_auth_password": "비밀번호 (Basic Auth)",
     "skip_verify": "SSL 검증 건너뛰기",
     "add": "추가",
-    "help": "\n      Nightingale의 알림 이벤트를 전부 다른 플랫폼으로 넘겨 처리하고 싶다면 여기의 전역 콜백 주소를 쓰면 됩니다.\n      <br />\n      <br />\n      보통 모니터링 시스템은 데이터 수집·저장·분석과 알림 이벤트 생성에 집중하고, 이벤트의 배분, 잡음 줄이기, 담당 지정, 에스컬레이션, 당직 편성, 협업은 별도 제품이 맡습니다. 이런 제품을 OnCall 제품이라 부르며 SRE를 실천하는 회사에서 널리 씁니다.\n      <br />\n      <br />\n      OnCall 제품은 대개 Prometheus, Nightingale, Zabbix, ElastAlert, BlueKing, 각종 클라우드 모니터링 등 여러 모니터링 시스템과 연동됩니다. 각 시스템이 웹훅으로 알림 이벤트를 OnCall 센터에 보내면 사용자는 그곳에서 배분과 잡음 줄이기, 처리를 이어 갑니다.\n      <br />\n      <br />\n      해외에서는 <a1>PagerDuty</a1>, 중국에서는 <a2>FlashDuty</a2>가 대표적이며 둘 다 무료로 가입해 써 볼 수 있습니다.\n    "
+    "help": "\n      Nightingale의 알림 이벤트를 전부 다른 플랫폼으로 넘겨 처리하고 싶다면 여기의 전역 콜백 주소를 쓰면 됩니다.\n      <br />\n      <br />\n      보통 모니터링 시스템은 데이터 수집·저장·분석과 알림 이벤트 생성에 집중하고, 이벤트의 배분, 잡음 줄이기, 담당 지정, 에스컬레이션, 당직 편성, 협업은 별도 제품이 맡습니다. 이런 제품을 OnCall 제품이라 부르며 SRE를 실천하는 회사에서 널리 씁니다.\n      <br />\n      <br />\n      OnCall 제품은 대개 Prometheus, Nightingale, Zabbix, ElastAlert, BlueKing, 각종 클라우드 모니터링 등 여러 모니터링 시스템과 연동됩니다. 각 시스템이 웹훅으로 알림 이벤트를 OnCall 센터에 보내면 사용자는 그곳에서 배분과 잡음 줄이기, 처리를 이어 갑니다.\n      <br />\n      <br />\n      해외에서는 <a1>PagerDuty</a1>, 중국에서는 <a2>FlashDuty</a2>가 대표적입니다.\n    "
   },
   "script": {
     "title": "통지 스크립트",

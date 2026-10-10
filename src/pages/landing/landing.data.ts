@@ -38,7 +38,7 @@ const DOCS_V8_BASE = 'https://flashcat.cloud/docs/content/flashcat-monitor/night
 export const DOC_LINKS = {
   base: DOCS_BASE,
   github: 'https://github.com/ccfos/nightingale',
-  categraf: 'https://flashcat.cloud/product/categraf/',
+  categraf: 'https://github.com/flashcatcloud/categraf',
 };
 
 export const landingHero = {
