@@ -1,4 +1,4 @@
-import { formatString } from '../formatString';
+import { formatString, VARIABLE_INTERPOLATION_METADATA } from '../formatString';
 
 describe('formatString', () => {
   const testData = {
@@ -108,5 +108,36 @@ describe('formatString', () => {
   test('should handle mixed underscore scenarios', () => {
     const result = formatString('$user_name and $user_nameSuffix', testData);
     expect(result).toBe('john_doe and john_doeSuffix');
+  });
+
+  test('should support Grafana advanced variable formats', () => {
+    const data = {
+      servers: '(default)',
+      [VARIABLE_INTERPOLATION_METADATA]: {
+        servers: {
+          defaultValue: '(default)',
+          values: ['test1.', "test'2"],
+          texts: ['Primary', 'Secondary'],
+        },
+      },
+    };
+
+    expect(formatString('${servers:csv}', data)).toBe("test1.,test'2");
+    expect(formatString('${servers:distributed}', data)).toBe("test1.,servers=test'2");
+    expect(formatString('${servers:doublequote}', data)).toBe('"test1.","test\'2"');
+    expect(formatString('${servers:glob}', data)).toBe("{test1.,test'2}");
+    expect(formatString('${servers:join:&}', data)).toBe("test1.&test'2");
+    expect(formatString('${servers:json}', data)).toBe('["test1.","test\'2"]');
+    expect(formatString('${servers:lucene}', data)).toBe('("test1." OR "test\'2")');
+    expect(formatString('${servers:pipe}', data)).toBe("test1.|test'2");
+    expect(formatString('${servers:queryparam}', data)).toBe('var-servers=test1.&var-servers=test%272');
+    expect(formatString('${servers:customqueryparam:v-server:x-}', data)).toBe('v-server=x-test1.&v-server=x-test%272');
+    expect(formatString('${servers:raw}', data)).toBe("test1.,test'2");
+    expect(formatString('${servers:regex}', data)).toBe("(test1\\.|test'2)");
+    expect(formatString('${servers:singlequote}', data)).toBe("'test1.','test\\'2'");
+    expect(formatString('${servers:sqlstring}', data)).toBe("'test1.','test''2'");
+    expect(formatString('${servers:text}', data)).toBe('Primary + Secondary');
+    expect(formatString('[[servers:pipe]]', data)).toBe("test1.|test'2");
+    expect(formatString('${servers:not-supported}', data)).toBe("{test1.,test'2}");
   });
 });

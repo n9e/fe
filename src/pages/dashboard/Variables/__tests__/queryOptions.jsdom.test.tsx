@@ -17,7 +17,7 @@ jest.mock('@/App', () => {
   };
 });
 jest.mock('@/utils/constant', () => ({
-  DatasourceCateEnum: { prometheus: 'prometheus', elasticsearch: 'elasticsearch', mysql: 'mysql', gcm: 'gcm' },
+  DatasourceCateEnum: { prometheus: 'prometheus', elasticsearch: 'elasticsearch', mysql: 'mysql', doris: 'doris', gcm: 'gcm' },
   IS_PLUS: true,
 }));
 jest.mock('@/components/TimeRangePicker', () => ({
@@ -335,6 +335,19 @@ function EditorHarness({ variable }: { variable: IVariable }) {
     </>
   );
 }
+
+test('Doris query variables expose multi-select and All controls in the editor', async () => {
+  render(
+    <ConfigProvider virtual={false}>
+      <EditorHarness variable={projectVariable({ datasource: { cate: 'doris', value: 1 }, multi: true, allOption: true })} />
+    </ConfigProvider>,
+  );
+
+  expect(await screen.findByText('var.multi')).toBeInTheDocument();
+  expect(screen.getByText('var.allOption')).toBeInTheDocument();
+  const allValueLabel = screen.getByText('var.allValue');
+  expect(allValueLabel.closest('.ant-form-item')?.querySelector('input')).toHaveAttribute('placeholder', '');
+});
 
 test.each([
   ['/project-/', projects],

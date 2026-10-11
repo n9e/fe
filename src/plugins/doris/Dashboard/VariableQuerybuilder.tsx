@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
-import { Form, Input, Space } from 'antd';
+import { Form, Input, Space, Tooltip } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
@@ -15,6 +16,9 @@ export default function VariableQuerybuilder() {
       label={
         <Space>
           SQL
+          <Tooltip title={t('query.variable_format_tip')}>
+            <InfoCircleOutlined />
+          </Tooltip>
           <a
             onClick={() => {
               DocumentDrawer({
