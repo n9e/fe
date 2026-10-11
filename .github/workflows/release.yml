@@ -15,6 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The backend's fe.sh downloads n9e-fe-<tag>.tar.gz, so the archive is named
+      # after the tag. package.json must carry the same version because the UI
+      # version page reads it; fail fast instead of shipping a mismatched build.
+      - name: Check package.json version matches tag
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$PKG_VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::package.json version ($PKG_VERSION) does not match tag ($GITHUB_REF_NAME); bump package.json and package-lock.json before tagging"
+            exit 1
+          fi
+          echo "ARCHIVE=n9e-fe-${GITHUB_REF_NAME}.tar.gz" >> "$GITHUB_ENV"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -26,24 +38,19 @@ jobs:
           npm ci
           npm run build
 
-      - name: Get version from package.json
-        id: pkg_version
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-
       - name: Package files to tar.gz
-        run: tar -czf n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz pub
+        run: tar -czf "$ARCHIVE" pub
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: package-output-tar-gz
-          path: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
+          path: ${{ env.ARCHIVE }}
           if-no-files-found: error
 
       - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          ARCHIVE: n9e-fe-${{ steps.pkg_version.outputs.version }}.tar.gz
         run: |
           if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
             gh release upload "$GITHUB_REF_NAME" "$ARCHIVE" --clobber
