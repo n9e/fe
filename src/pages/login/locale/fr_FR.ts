@@ -16,7 +16,7 @@ const fr_FR = {
     "failed": "Échec de la vérification de la connexion tierce",
     "back": "Retour à la page de connexion",
     "unsupported_type": "Mode de connexion tierce non pris en charge",
-    "plus_only": "Réservé à l'édition Plus"
+    "plus_only": "Pas encore pris en charge"
   }
 };
 

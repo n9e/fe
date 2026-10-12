@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import { IS_ENT } from '@/utils/constant';
 import { DOC_URL_LANG_SUFFIX } from '@/utils/docUrl';
+import { withFlashcatFrom } from '@/utils/flashcatFrom';
+import { getN9eSiteDocUrl, getN9eSiteEmbedSrc, isChineseLanguage } from '@/utils/n9eSiteDoc';
 
 import ModalHOC, { ModalWrapProps } from '../ModalHOC';
 import Document from './Document';
@@ -41,6 +43,8 @@ function index(props: Props & ModalWrapProps) {
   if (type === 'iframe' && IS_ENT) {
     realDocumentPath = realDocumentPath.replace('https://flashcat.cloud', '');
   }
+  // 非中文界面优先内嵌新官网 n9e.github.io 的对应页面（自带锚点，旧的中文锚点不再适用）
+  const n9eSiteDocUrl = type === 'iframe' && !IS_ENT && !isChineseLanguage(language) ? getN9eSiteDocUrl(documentPath) : undefined;
 
   useEffect(() => {
     if (documentPath && type === 'md') {
@@ -73,7 +77,7 @@ function index(props: Props & ModalWrapProps) {
         <Space>
           {title}
           {type === 'iframe' && (
-            <a target='_blank' href={`${realDocumentPath}${DOC_URL_LANG_SUFFIX[language] || ''}/${anchor || ''}`} className='text-[12px]'>
+            <a target='_blank' href={n9eSiteDocUrl ? withFlashcatFrom(n9eSiteDocUrl) : `${realDocumentPath}${DOC_URL_LANG_SUFFIX[language] || ''}/${anchor || ''}`} className='text-[12px]'>
               <Space size={4}>
                 {t('common:more_document_link')}
                 <ExportOutlined />
@@ -109,7 +113,11 @@ function index(props: Props & ModalWrapProps) {
       {type === 'iframe' && (
         <Spin spinning={loading} wrapperClassName='n9e-document-drawer-iframe-loading'>
           <iframe
-            src={`${realDocumentPath}${DOC_URL_LANG_SUFFIX[language] || ''}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}${anchor || ''}`}
+            src={
+              n9eSiteDocUrl
+                ? withFlashcatFrom(getN9eSiteEmbedSrc(n9eSiteDocUrl, darkMode))
+                : withFlashcatFrom(`${realDocumentPath}${DOC_URL_LANG_SUFFIX[language] || ''}/?onlyContent&theme=${darkMode ? 'dark' : 'light'}${anchor || ''}`)
+            }
             style={{ width: '100%', height: '100%', border: '0 none', visibility: loading ? 'hidden' : 'visible' }}
             onLoad={() => {
               setLoading(false);

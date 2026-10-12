@@ -16,7 +16,7 @@ const pt_BR = {
     "failed": "Falha na validação do login externo",
     "back": "Voltar à tela de login",
     "unsupported_type": "Forma de login externo não suportada",
-    "plus_only": "Disponível apenas na edição Plus"
+    "plus_only": "Ainda não suportado"
   }
 };
 

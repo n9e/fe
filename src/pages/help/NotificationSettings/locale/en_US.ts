@@ -23,7 +23,7 @@ const en_US = {
       OnCall products usually can connect to various monitoring systems, such as Prometheus, Nightingale, Zabbix, ElastAlert, Blue Whale, various cloud monitoring, etc. Each monitoring system pushes alert events to the OnCall center through webhooks, and users complete subsequent routing, noise reduction, and processing in the OnCall center.
       <br />
       <br />
-      Well-known OnCall products include <a1>PagerDuty</a1> overseas and <a2>FlashDuty</a2> in China. You can register for a free trial.
+      Well-known OnCall products include <a1>PagerDuty</a1> overseas and <a2>FlashDuty</a2> in China.
     `,
   },
   script: {

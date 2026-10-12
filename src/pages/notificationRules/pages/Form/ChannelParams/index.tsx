@@ -9,6 +9,10 @@ import Flashduty from './Flashduty';
 import Custom from './Custom';
 import PagerDuty from './Pagerduty';
 import FeishuApp from './FeishuApp';
+import Jira from './Jira';
+import Discord from './Discord';
+import JSMAlert from './JSMAlert';
+import ChatWebhook from './ChatWebhook';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -28,6 +32,14 @@ export default function index(props: Props) {
     return <PagerDuty field={field} channelItem={channelItem} />;
   } else if (request_type === 'feishuapp') {
     return <FeishuApp field={field} channelItem={channelItem} />;
+  } else if (request_type === 'jira') {
+    return <Jira prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
+  } else if (request_type === 'discord') {
+    return <Discord prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
+  } else if (request_type === 'jsm_alert') {
+    return <JSMAlert prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
+  } else if (request_type === 'slackwebhook' || request_type === 'mattermostwebhook') {
+    return <ChatWebhook prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} requestType={request_type} />;
   }
 
   return (

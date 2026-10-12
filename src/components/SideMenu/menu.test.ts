@@ -1,6 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+describe('SideMenu menu config', () => {
+  it('does not declare the same top-level menu group twice', () => {
+    const content = fs.readFileSync(path.join(__dirname, 'menu.tsx'), 'utf8');
+    // 顶层分组的 key 缩进为 6 个空格；合并冲突曾让 infrastructure 分组重复出现
+    const topLevelKeys = Array.from(content.matchAll(/^ {6}key: '([^']+)'/gm), (m) => m[1]);
+
+    expect(topLevelKeys.length).toBeGreaterThan(0);
+    expect(topLevelKeys.filter((key, index) => topLevelKeys.indexOf(key) !== index)).toEqual([]);
+  });
+});
+
 describe('SideMenu hover panel styles', () => {
   it('lets the hover panel header title inherit color from the panel root in both themes', () => {
     const lessPath = path.join(__dirname, 'menu.less');

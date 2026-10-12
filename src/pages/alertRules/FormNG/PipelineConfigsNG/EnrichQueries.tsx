@@ -9,8 +9,12 @@ import { IS_PLUS } from '@/utils/constant';
 import SLSEnrichQueries from 'plus:/datasource/aliyunSLS/AlertRule/EnrichQueries';
 // @ts-ignore
 import CLSEnrichQueries from 'plus:/datasource/tencentCLS/AlertRule/EnrichQueries';
+// @ts-ignore
+import SQLEnrichQueries from 'plus:/parcels/AlertRule/SQLEnrichQueries';
 
-const ENABLED_DATASOURCE_CATES = ['elasticsearch', 'aliyun-sls', 'tencent-cls', 'doris'];
+// oracle / sqlserver / redshift / mysql / pgsql 的查询体都只有一条 SQL，共用一个组件
+const SQL_DATASOURCE_CATES = ['oracle', 'sqlserver', 'redshift', 'mysql', 'pgsql'];
+const ENABLED_DATASOURCE_CATES = ['elasticsearch', 'aliyun-sls', 'tencent-cls', 'doris', ...SQL_DATASOURCE_CATES];
 
 export default function EnrichQueries() {
   const datasourceCate = Form.useWatch(['cate']);
@@ -29,6 +33,7 @@ export default function EnrichQueries() {
       {datasourceCate === 'aliyun-sls' && <SLSEnrichQueries />}
       {datasourceCate === 'tencent-cls' && <CLSEnrichQueries />}
       {datasourceCate === 'doris' && <DorisEnrichQueries />}
+      {SQL_DATASOURCE_CATES.includes(datasourceCate) && <SQLEnrichQueries cate={datasourceCate} />}
     </>
   );
 }

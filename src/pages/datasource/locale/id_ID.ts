@@ -193,7 +193,7 @@ const id_ID = {
     "explore_hint": "Buka kueri sesaat di tab baru dengan sumber data ini sudah terpilih",
     "create_dashboard_hint": "Buka daftar dasbor di tab baru; pilih grup bisnis lalu buat dasbornya",
     "create_alert_hint": "Buka daftar aturan alert di tab baru; pilih grup bisnis lalu buat aturannya",
-    "pro_only": "Perlu edisi Enterprise",
+    "pro_only": "Belum didukung",
     "type_unsupported": "Tindakan ini belum tersedia untuk jenis sumber data ini",
     "ds_disabled": "Sumber data ini dinonaktifkan",
     "ds_disabled_desc": "Selama nonaktif, pemeriksaan kesehatan data tidak dijalankan dan aturan alert yang memakainya tidak dievaluasi.",

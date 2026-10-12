@@ -52,6 +52,7 @@ const TYPE_CATEGORY: Record<string, string> = {
   script: 'dispatch',
   event_recover: 'dispatch',
   alert_shot: 'dispatch',
+  flashai_automation: 'dispatch',
 };
 
 export default function NotifyConfig(props: Props) {

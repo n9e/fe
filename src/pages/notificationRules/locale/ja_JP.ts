@@ -49,6 +49,7 @@ const ja_JP = {
   enabled_tip: 'このアラーム通知ルールを有効にするかどうか。有効にすると、このルールに一致するアラームイベントは、通知設定に従って通知されます',
   note_tip: '将来のメンテナンスのために、この通知ルールの詳細情報や説明を補足できます',
   notification_configuration: {
+    test_with_recovery_jsm: '復旧もテストする（アラートをクローズ）',
     title: '通知設定',
     section_desc: 'アラートを誰に、どのチャネルで送るかを決めます：通知チャネル・メッセージテンプレート・受信者を選択し、複数の設定を追加できます',
     item_title: '通知設定',
@@ -113,6 +114,7 @@ const ja_JP = {
     run_test_btn: 'テストを実行',
     run_test_btn_tip: 'すでに発生したイベントをいくつか選択して、この通知設定が正しいかどうかをテストできます。正しい場合、関連する通知メッセージを受信するはずです',
     run_test_request_result: 'テスト通知が送信されました。通知対象は以下のように応答しました：',
+    test_with_recovery: '復旧もあわせてテスト（課題にコメントしてクローズ）',
     user_info: {
       user_ids: '受信者',
       user_group_ids: '受信チーム',
@@ -120,6 +122,92 @@ const ja_JP = {
     },
     flashduty: {
       ids: '協力スペース',
+    },
+    jira: {
+      project: 'プロジェクト',
+      project_tip: '課題を作成するプロジェクト。一覧はメディアの認証情報でリアルタイムに取得します。取得できない場合はプロジェクトキーを直接入力できます。',
+      project_empty: 'プロジェクトがありません：メディアのアカウントに Browse projects 権限がありません',
+      issue_type: '課題タイプ',
+      issue_type_tip: 'プロジェクトの既存の課題タイプから選びます。専用のタイプを作る必要はありません。Alert タイプがあれば既定で選択されます。',
+      missing_permissions: 'アカウントにこのプロジェクトでの次の権限がありません：{{list}}',
+      required_fields: 'この課題タイプの必須フィールドが「カスタムフィールド」に入力されていません：{{list}}。課題の作成に失敗します',
+      on_resolve: '復旧時',
+      on_resolve_tip:
+        '課題をクローズ：コメントして自動的に完了ステータスへトランジションします（トランジション名は不要）。コメントのみ：課題は開いたままです。何もしない：課題に触れません。',
+      on_resolve_close: '課題をクローズ',
+      on_resolve_comment: 'コメントのみ',
+      on_resolve_none: '何もしない',
+      advanced: '詳細設定',
+      resolve_transition: 'クローズ用トランジション',
+      resolve_transition_tip: 'ワークフローに完了へのトランジションが複数あり、特定のものを使いたい場合のみ入力します。大文字小文字は区別せず、数値 ID も使えます。',
+      resolve_transition_placeholder: '空欄で自動選択',
+      on_repeat: '繰り返し通知時',
+      on_repeat_tip: 'アラートが続いている間、繰り返し通知で新しい課題は作成されません。「コメントを追加」を選ぶと毎回コメントを追加します（ウォッチャーに通知されます）。',
+      on_repeat_none: '何もしない',
+      on_repeat_comment: 'コメントを追加',
+      priority_map: '重要度と優先度の対応',
+      priority_map_tip:
+        'アラートの重要度を Jira の優先度に対応付けます。空欄の場合は優先度を設定しません。課題タイプの画面に優先度フィールドがない場合は空欄にしてください（課題の作成に失敗します）。',
+      priority_unset: '設定しない',
+      priority_fill_common: '一般的な対応を入力',
+      labels: '固定ラベル',
+      labels_tip:
+        'すべての課題に付けるラベルです（空白は _ に置き換えられます）。重複排除のため eventHash=<イベントハッシュ> ラベルが自動で付きます。Jira で削除しないでください。',
+      labels_placeholder: 'Enter で追加',
+      tags_as_labels: 'アラートタグをラベルにする',
+      tags_as_labels_tip: 'アラートの各タグを Jira ラベル key=value として付けます（空白は _ に置換、最大 20 個）。',
+      fields: 'カスタムフィールド',
+      fields_tip:
+        '課題タイプに必須のカスタムフィールドがある場合はここで補います。値が正しい JSON なら JSON として（選択リストなら {"value":"prod"} など）、それ以外はテキストとして送信します。',
+      field_value_placeholder: '値（例：{"value":"prod"}）',
+      field_add: 'フィールドを追加',
+    },
+    discord: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Discord で Server Settings → Integrations → Webhooks → New Webhook を開き、チャンネルを選んで Copy Webhook URL をクリックします。URL 自体が認証情報のため、通知記録ではマスク表示されます。{{.変数名}} で変数設定を参照できます。',
+      webhook_url_invalid: 'https://discord.com/api/webhooks/<id>/<token> の形式にしてください',
+      webhook_url_history_placeholder: 'Webhook URL を貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'この Webhook の分かりやすい名前です。通知記録の送信先に表示され、他のルールで名前から再利用できます',
+      target: '送信先',
+      target_tip:
+        'Webhook が属するチャンネルの種類で選びます：\n· チャンネル：Webhook のテキストチャンネルに投稿（最も一般的）\n· 新しいフォーラム投稿：Webhook がフォーラムチャンネルの場合に使用。通知（復旧を含む）ごとに新しい投稿を作成\n· 既存のスレッド / フォーラム投稿：Webhook のチャンネル内にある既存のスレッドまたはフォーラム投稿にまとめて投稿。スレッド ID が必要',
+      target_channel: 'チャンネル',
+      target_forum_post: '新しいフォーラム投稿',
+      target_thread: '既存のスレッド / フォーラム投稿',
+      thread_name: '投稿タイトル',
+      thread_name_tip:
+        '通知ごとにこのタイトルで新しい投稿を作成します（{{$event.RuleName}} などのテンプレート変数可、最大 100 文字）。既存の投稿に送るには「既存のスレッド」を選んでください',
+      thread_id: 'スレッド ID',
+      thread_id_tip: 'User Settings → Advanced で Developer Mode をオンにし、スレッドまたは投稿を右クリック → Copy ID',
+      thread_id_invalid: '数値の ID を入力してください',
+    },
+    jsm_alert: {
+      api_key: 'API キー',
+      api_key_tip:
+        'JSM でチーム → Integrations → Add integration → API を開き、API キーをコピーします。キーがアラートの担当チームを決め、通知記録ではマスク表示されます。{{.変数名}} で変数を参照できます。',
+      api_key_history_placeholder: 'API キーを貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'このキーの分かりやすい名前（チーム名など）。通知記録の宛先に表示され、他のルールでも名前でキーを再利用できます',
+    },
+    slackwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'https://api.slack.com/apps でアプリを開き → Incoming Webhooks → Activate Incoming Webhooks を有効化 → Add New Webhook でチャンネルを選び、生成された URL をコピーします。URL 自体が認証情報のため、通知記録ではマスク表示されます。{{.変数名}} で変数設定を参照できます。',
+      webhook_url_invalid: 'https://hooks.slack.com/services/T.../B.../... の形式で入力してください',
+      webhook_url_history_placeholder: 'Webhook URL を貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'この Webhook のわかりやすい名前（チャンネル名がおすすめ）。通知記録の送信先に表示され、他のルールでも名前を選ぶだけでこの URL を再利用できます',
+    },
+    mattermostwebhook: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip:
+        'Mattermost の左上のメニュー → Integrations → Incoming Webhooks → Add Incoming Webhook でチャンネルを選んで保存し、生成された URL をコピーします。URL 自体が認証情報のため、通知記録ではマスク表示されます。{{.変数名}} で変数設定を参照できます。',
+      webhook_url_invalid: 'https://mattermost.example.com/hooks/<id> の形式で入力してください',
+      webhook_url_history_placeholder: 'Webhook URL を貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'この Webhook のわかりやすい名前（チャンネル名がおすすめ）。通知記録の送信先に表示され、他のルールでも名前を選ぶだけでこの URL を再利用できます',
     },
     pagerduty: {
       services: 'サービス/統合',
