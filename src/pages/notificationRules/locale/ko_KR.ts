@@ -182,6 +182,14 @@ const ko_KR = {
       bot_name: '이름',
       bot_name_tip: '이 키를 알아보기 쉬운 이름(예: 팀 이름). 알림 기록의 대상으로 표시되며 다른 규칙에서도 이 이름으로 키를 재사용할 수 있습니다',
     },
+    teams: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip: 'Create a Teams Workflows webhook with Anyone access. Paste the complete URL including query parameters. Supports {{.variable_name}}.',
+      webhook_url_invalid: 'Enter a valid HTTP(S) webhook URL',
+      webhook_url_history_placeholder: 'Paste a webhook URL or select a previous configuration',
+      bot_name: 'Name',
+      bot_name_tip: 'Shown in notification records and used to reuse this webhook.',
+    },
     slackwebhook: {
       webhook_url: 'Webhook URL',
       webhook_url_tip:

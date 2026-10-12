@@ -37,6 +37,8 @@ const fr_FR = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams configuration',
+    twilio: 'Twilio configuration',
     jsm_alert: 'Configuration JSM Alert',
     discord: 'Configuration Discord',
     slackwebhook: 'Configuration Slack Webhook',
@@ -156,6 +158,31 @@ const fr_FR = {
     silent_tip: 'Les messages sont publiés sans déclencher de notifications push ou de bureau',
     proxy_tip: "À renseigner si Discord n'est joignable que via un proxy, par exemple http://127.0.0.1:7890",
   },
+  teams_request_config: {
+    top_tip:
+      'Create a Teams Workflows webhook using “When a Teams webhook request is received” and allow Anyone. Paste its URL in the notification rule. Cards include alert status, content and an event link.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach Teams directly.',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Configure a Twilio account and sender, then select recipients in the notification rule. Their phone numbers must include the country code (E.164, e.g. +14155552671). Credentials support {{.variable_name}}.',
+    mode: 'Notification mode',
+    sms: 'SMS',
+    call: 'Voice call',
+    account_sid: 'Account SID',
+    auth_token: 'Auth token',
+    from: 'From',
+    from_tip: 'SMS: a Twilio phone number or alphanumeric sender ID, or use a Messaging Service SID below. Voice: a Twilio phone number in E.164 format.',
+    from_required: 'Enter From, or a Messaging Service SID for SMS',
+    messaging_service_sid: 'Messaging Service SID (SMS only)',
+    voice: 'Voice',
+    language: 'Speech language',
+    retry_tip: 'Only rate limit rejections (HTTP 429) are retried. A successful test means Twilio accepted the request; check Twilio logs for delivery or call status.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach api.twilio.com directly.',
+    account_sid_invalid: 'Account SID must be AC followed by 32 hexadecimal characters',
+    service_sid_invalid: 'Messaging Service SID must be MG followed by 32 hexadecimal characters',
+    phone_format: 'Use E.164 format, e.g. +14155552671',
+  },
   slackwebhook_request_config: {
     top_tip:
       "Une URL de webhook correspond à un salon Slack : elle se renseigne donc dans la règle de notification et ce média peut publier dans autant de salons que nécessaire. Ces réglages sont des valeurs par défaut partagées par toutes les règles. Obtenez l'URL en créant une app sur https://api.slack.com/apps et en activant Incoming Webhooks.",
@@ -220,6 +247,8 @@ const fr_FR = {
   },
   types_select_placeholder: 'Type',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: 'Rappel',
     email: 'E-mail',

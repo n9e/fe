@@ -191,6 +191,14 @@ const ja_JP = {
       bot_name: '名前',
       bot_name_tip: 'このキーの分かりやすい名前（チーム名など）。通知記録の宛先に表示され、他のルールでも名前でキーを再利用できます',
     },
+    teams: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip: 'Create a Teams Workflows webhook with Anyone access. Paste the complete URL including query parameters. Supports {{.variable_name}}.',
+      webhook_url_invalid: 'Enter a valid HTTP(S) webhook URL',
+      webhook_url_history_placeholder: 'Paste a webhook URL or select a previous configuration',
+      bot_name: 'Name',
+      bot_name_tip: 'Shown in notification records and used to reuse this webhook.',
+    },
     slackwebhook: {
       webhook_url: 'Webhook URL',
       webhook_url_tip:

@@ -36,6 +36,8 @@ const ko_KR = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams configuration',
+    twilio: 'Twilio configuration',
     jsm_alert: 'JSM Alert 설정',
     discord: 'Discord 설정',
     slackwebhook: 'Slack Webhook 설정',
@@ -153,6 +155,31 @@ const ko_KR = {
     silent_tip: '메시지는 채널에 올라가지만 푸시·데스크톱 알림은 발생하지 않습니다',
     proxy_tip: 'Discord에 프록시를 거쳐야만 접속할 수 있을 때 입력합니다(예: http://127.0.0.1:7890)',
   },
+  teams_request_config: {
+    top_tip:
+      'Create a Teams Workflows webhook using “When a Teams webhook request is received” and allow Anyone. Paste its URL in the notification rule. Cards include alert status, content and an event link.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach Teams directly.',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Configure a Twilio account and sender, then select recipients in the notification rule. Their phone numbers must include the country code (E.164, e.g. +14155552671). Credentials support {{.variable_name}}.',
+    mode: 'Notification mode',
+    sms: 'SMS',
+    call: 'Voice call',
+    account_sid: 'Account SID',
+    auth_token: 'Auth token',
+    from: 'From',
+    from_tip: 'SMS: a Twilio phone number or alphanumeric sender ID, or use a Messaging Service SID below. Voice: a Twilio phone number in E.164 format.',
+    from_required: 'Enter From, or a Messaging Service SID for SMS',
+    messaging_service_sid: 'Messaging Service SID (SMS only)',
+    voice: 'Voice',
+    language: 'Speech language',
+    retry_tip: 'Only rate limit rejections (HTTP 429) are retried. A successful test means Twilio accepted the request; check Twilio logs for delivery or call status.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach api.twilio.com directly.',
+    account_sid_invalid: 'Account SID must be AC followed by 32 hexadecimal characters',
+    service_sid_invalid: 'Messaging Service SID must be MG followed by 32 hexadecimal characters',
+    phone_format: 'Use E.164 format, e.g. +14155552671',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Webhook URL 하나는 Slack 채널 하나에 대응하므로 URL은 알림 규칙에서 입력하며, 이 미디어로 여러 채널에 보낼 수 있습니다. 여기 설정은 모든 규칙이 공유하는 기본값입니다. https://api.slack.com/apps 에서 앱을 만들고 Incoming Webhooks를 켜면 URL을 받을 수 있습니다.',
@@ -217,6 +244,8 @@ const ko_KR = {
   },
   types_select_placeholder: '유형',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: '콜백',
     email: '이메일',

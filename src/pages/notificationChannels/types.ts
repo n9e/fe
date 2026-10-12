@@ -128,6 +128,16 @@ export interface JSMAlertRequestConfig extends NativeNetworkConfig {
   priority_map?: Record<string, string>;
 }
 
+export interface TwilioRequestConfig extends NativeNetworkConfig {
+  account_sid: string;
+  auth_token: string;
+  mode: 'sms' | 'voice';
+  from?: string;
+  messaging_service_sid?: string;
+  voice?: string;
+  language?: string;
+}
+
 export interface ChannelItem {
   id: number;
   name: string;
@@ -153,7 +163,9 @@ export interface ChannelItem {
     | 'discord'
     | 'jsm_alert'
     | 'slackwebhook'
-    | 'mattermostwebhook';
+    | 'mattermostwebhook'
+    | 'teams'
+    | 'twilio';
   request_config: {
     http_request_config: HttpRequestConfig;
     smtp_request_config: SmtpRequestConfig;
@@ -163,6 +175,8 @@ export interface ChannelItem {
     dingtalkapp_request_config: DingtalkAppRequestConfig;
     wecomapp_request_config: WecomAppRequestConfig;
     feishuapp_request_config: FeishuAppRequestConfig;
+    teams_request_config?: NativeNetworkConfig;
+    twilio_request_config?: TwilioRequestConfig;
     jira_request_config?: JiraRequestConfig;
     discord_request_config?: DiscordRequestConfig;
     jsm_alert_request_config?: JSMAlertRequestConfig;

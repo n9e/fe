@@ -48,6 +48,8 @@ export const SMTP_TPL_KEYS = ['subject', 'content'];
 export const NATIVE_TPL_KEYS: Record<string, string[]> = {
   jira: ['title', 'content'],
   discord: ['content'],
+  teams: ['content'],
+  twilio: ['content'],
   slackwebhook: ['content'],
   mattermostwebhook: ['content'],
   jsm_alert: ['title', 'content'],
@@ -167,6 +169,20 @@ const TITLE_LIKE_KEYS = ['title', 'subject'];
  * 新建模板时落到空白编辑器、让用户从零手写 Go template 是最大的上手障碍。
  */
 export function buildStarterContent(channel: ChannelLike | undefined, texts: StarterTexts): Record<string, string> {
+  if (channel?.request_type === 'teams') {
+    return {
+      // Status/title, target/value, time and action buttons are supplied by the card.
+      content: `{{if $event.RuleNote}}{{$event.RuleNote}}{{end}}{{$first := true}}{{range $k, $v := $labels}}{{if and (ne $k "rulename") (or (ne $k "ident") (not $event.TargetIdent))}}{{if $first}}{{if $event.RuleNote}}
+
+{{end}}**${texts.tags}**  {{else}} · {{end}}{{$first = false}}{{if eq $k "__name__"}}{{$v}}{{else}}{{$k}}={{$v}}{{end}}{{end}}{{end}}`,
+    };
+  }
+  if (channel?.request_type === 'twilio') {
+    return {
+      content:
+        'Nightingale: S{{$event.Severity}} {{if $event.IsRecovered}}Recovered{{else}}Triggered{{end}}. {{$event.RuleName}}.{{if $event.TargetIdent}} Target: {{$event.TargetIdent}}.{{end}}{{if and $event.TriggerValue (not $event.IsRecovered)}} Value: {{$event.TriggerValue}}.{{end}}',
+    };
+  }
   const { keys } = getExpectedTplKeys(channel);
   if (_.isEmpty(keys)) return {};
 

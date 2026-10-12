@@ -37,6 +37,8 @@ const ru_RU = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams configuration',
+    twilio: 'Twilio configuration',
     jsm_alert: 'Настройки JSM Alert',
     discord: 'Настройки Discord',
     slackwebhook: 'Настройки Slack Webhook',
@@ -158,6 +160,31 @@ const ru_RU = {
     silent_tip: 'Сообщения публикуются в канал, но без push- и desktop-уведомлений',
     proxy_tip: 'Укажите, если Discord доступен только через прокси, например http://127.0.0.1:7890',
   },
+  teams_request_config: {
+    top_tip:
+      'Create a Teams Workflows webhook using “When a Teams webhook request is received” and allow Anyone. Paste its URL in the notification rule. Cards include alert status, content and an event link.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach Teams directly.',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Configure a Twilio account and sender, then select recipients in the notification rule. Their phone numbers must include the country code (E.164, e.g. +14155552671). Credentials support {{.variable_name}}.',
+    mode: 'Notification mode',
+    sms: 'SMS',
+    call: 'Voice call',
+    account_sid: 'Account SID',
+    auth_token: 'Auth token',
+    from: 'From',
+    from_tip: 'SMS: a Twilio phone number or alphanumeric sender ID, or use a Messaging Service SID below. Voice: a Twilio phone number in E.164 format.',
+    from_required: 'Enter From, or a Messaging Service SID for SMS',
+    messaging_service_sid: 'Messaging Service SID (SMS only)',
+    voice: 'Voice',
+    language: 'Speech language',
+    retry_tip: 'Only rate limit rejections (HTTP 429) are retried. A successful test means Twilio accepted the request; check Twilio logs for delivery or call status.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach api.twilio.com directly.',
+    account_sid_invalid: 'Account SID must be AC followed by 32 hexadecimal characters',
+    service_sid_invalid: 'Messaging Service SID must be MG followed by 32 hexadecimal characters',
+    phone_format: 'Use E.164 format, e.g. +14155552671',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Один адрес Webhook соответствует одному каналу Slack, поэтому адрес указывается в правиле уведомлений, а этот канал уведомлений может отправлять в любое число каналов. Здесь задаются значения по умолчанию для всех правил. Адрес можно получить, создав приложение на https://api.slack.com/apps и включив Incoming Webhooks.',
@@ -222,6 +249,8 @@ const ru_RU = {
   },
   types_select_placeholder: 'Тип',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: 'Обратный вызов',
     email: 'Электронная почта',

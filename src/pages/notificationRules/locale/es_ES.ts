@@ -189,6 +189,14 @@ const es_ES = {
       bot_name: 'Nombre',
       bot_name_tip: 'Un nombre reconocible para la clave, como el del equipo: aparece como destino en los registros y otras reglas pueden reutilizar la clave por este nombre',
     },
+    teams: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip: 'Create a Teams Workflows webhook with Anyone access. Paste the complete URL including query parameters. Supports {{.variable_name}}.',
+      webhook_url_invalid: 'Enter a valid HTTP(S) webhook URL',
+      webhook_url_history_placeholder: 'Paste a webhook URL or select a previous configuration',
+      bot_name: 'Name',
+      bot_name_tip: 'Shown in notification records and used to reuse this webhook.',
+    },
     slackwebhook: {
       webhook_url: 'URL del webhook',
       webhook_url_tip:

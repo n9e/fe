@@ -35,6 +35,8 @@ const zh_HK = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams configuration',
+    twilio: 'Twilio configuration',
     jsm_alert: 'JSM 告警設定',
     discord: 'Discord 配置',
     slackwebhook: 'Slack Webhook 配置',
@@ -152,6 +154,31 @@ const zh_HK = {
     silent_tip: '開啟後訊息照常發到頻道，但不觸發接收者的推送和桌面通知',
     proxy_tip: '存取 Discord 需要經過代理時填寫，如 http://127.0.0.1:7890',
   },
+  teams_request_config: {
+    top_tip:
+      'Create a Teams Workflows webhook using “When a Teams webhook request is received” and allow Anyone. Paste its URL in the notification rule. Cards include alert status, content and an event link.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach Teams directly.',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Configure a Twilio account and sender, then select recipients in the notification rule. Their phone numbers must include the country code (E.164, e.g. +14155552671). Credentials support {{.variable_name}}.',
+    mode: 'Notification mode',
+    sms: 'SMS',
+    call: 'Voice call',
+    account_sid: 'Account SID',
+    auth_token: 'Auth token',
+    from: 'From',
+    from_tip: 'SMS: a Twilio phone number or alphanumeric sender ID, or use a Messaging Service SID below. Voice: a Twilio phone number in E.164 format.',
+    from_required: 'Enter From, or a Messaging Service SID for SMS',
+    messaging_service_sid: 'Messaging Service SID (SMS only)',
+    voice: 'Voice',
+    language: 'Speech language',
+    retry_tip: 'Only rate limit rejections (HTTP 429) are retried. A successful test means Twilio accepted the request; check Twilio logs for delivery or call status.',
+    proxy_tip: 'Set a proxy if the Nightingale server cannot reach api.twilio.com directly.',
+    account_sid_invalid: 'Account SID must be AC followed by 32 hexadecimal characters',
+    service_sid_invalid: 'Messaging Service SID must be MG followed by 32 hexadecimal characters',
+    phone_format: 'Use E.164 format, e.g. +14155552671',
+  },
   slackwebhook_request_config: {
     top_tip:
       '一個 Webhook 地址對應一個 Slack 頻道，所以地址在通知規則裡填寫，這個媒介可以發到任意多個頻道。這裡的設定是所有規則共用的預設值。在 https://api.slack.com/apps 建立應用並開啟 Incoming Webhooks 後取得地址。',
@@ -214,6 +241,8 @@ const zh_HK = {
   },
   types_select_placeholder: '類型',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: '回調',
     email: '郵件',
