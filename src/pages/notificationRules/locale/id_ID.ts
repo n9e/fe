@@ -191,12 +191,12 @@ const id_ID = {
         'Nama yang mudah dikenali untuk kunci ini, misalnya nama tim: tampil sebagai target di catatan notifikasi, aturan lain dapat memakai ulang kunci lewat nama ini',
     },
     teams: {
-      webhook_url: 'Webhook URL',
-      webhook_url_tip: 'Create a Teams Workflows webhook with Anyone access. Paste the complete URL including query parameters. Supports {{.variable_name}}.',
-      webhook_url_invalid: 'Enter a valid HTTP(S) webhook URL',
-      webhook_url_history_placeholder: 'Paste a webhook URL or select a previous configuration',
-      bot_name: 'Name',
-      bot_name_tip: 'Shown in notification records and used to reuse this webhook.',
+      webhook_url: 'URL webhook',
+      webhook_url_tip: 'Buat webhook di Teams Workflows dengan akses Anyone, lalu tempel URL lengkapnya di sini, termasuk parameter kueri. Mendukung {{.nama_variabel}}.',
+      webhook_url_invalid: 'Masukkan URL webhook HTTP(S) yang valid',
+      webhook_url_history_placeholder: 'Tempel URL webhook, atau klik untuk memilih yang pernah dipakai',
+      bot_name: 'Nama',
+      bot_name_tip: 'Tampil di catatan notifikasi dan dipakai untuk menggunakan ulang webhook ini.',
     },
     slackwebhook: {
       webhook_url: 'URL webhook',

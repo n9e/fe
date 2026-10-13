@@ -184,11 +184,11 @@ const ko_KR = {
     },
     teams: {
       webhook_url: 'Webhook URL',
-      webhook_url_tip: 'Create a Teams Workflows webhook with Anyone access. Paste the complete URL including query parameters. Supports {{.variable_name}}.',
-      webhook_url_invalid: 'Enter a valid HTTP(S) webhook URL',
-      webhook_url_history_placeholder: 'Paste a webhook URL or select a previous configuration',
-      bot_name: 'Name',
-      bot_name_tip: 'Shown in notification records and used to reuse this webhook.',
+      webhook_url_tip: 'Teams Workflows에서 Anyone 접근을 허용한 Webhook을 만들고, 쿼리 매개변수를 포함한 전체 URL을 여기에 붙여 넣으세요. {{.변수명}}을 사용할 수 있습니다.',
+      webhook_url_invalid: '올바른 HTTP(S) Webhook URL을 입력하세요',
+      webhook_url_history_placeholder: 'Webhook URL을 붙여 넣거나, 클릭해서 이전에 입력한 것을 선택',
+      bot_name: '이름',
+      bot_name_tip: '알림 기록에 표시되며 이 Webhook을 재사용하는 데 쓰입니다.',
     },
     slackwebhook: {
       webhook_url: 'Webhook URL',

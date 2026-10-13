@@ -193,11 +193,11 @@ const ja_JP = {
     },
     teams: {
       webhook_url: 'Webhook URL',
-      webhook_url_tip: 'Create a Teams Workflows webhook with Anyone access. Paste the complete URL including query parameters. Supports {{.variable_name}}.',
-      webhook_url_invalid: 'Enter a valid HTTP(S) webhook URL',
-      webhook_url_history_placeholder: 'Paste a webhook URL or select a previous configuration',
-      bot_name: 'Name',
-      bot_name_tip: 'Shown in notification records and used to reuse this webhook.',
+      webhook_url_tip: 'Teams Workflows で Anyone がアクセスできる Webhook を作成し、クエリパラメータを含む完全な URL をここに貼り付けます。{{.変数名}} を使用できます。',
+      webhook_url_invalid: '有効な HTTP(S) の Webhook URL を入力してください',
+      webhook_url_history_placeholder: 'Webhook URL を貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: '通知記録に表示され、この Webhook の再利用に使われます。',
     },
     slackwebhook: {
       webhook_url: 'Webhook URL',
