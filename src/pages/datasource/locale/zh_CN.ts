@@ -193,7 +193,7 @@ const zh_CN = {
     explore_hint: '在新标签打开即时查询，已为你带上这个数据源',
     create_dashboard_hint: '在新标签打开仪表盘列表，选择业务组后即可新建',
     create_alert_hint: '在新标签打开告警规则列表，选择业务组后即可新建',
-    pro_only: '需企业版',
+    pro_only: '暂不支持',
     type_unsupported: '该类型数据源暂不支持此操作',
     ds_disabled: '该数据源已停用',
     ds_disabled_desc: '停用期间不执行数据体检，引用它的告警规则也不会评估。',

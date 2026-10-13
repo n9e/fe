@@ -16,7 +16,7 @@ const id_ID = {
     "failed": "Verifikasi masuk lewat pihak ketiga gagal",
     "back": "Kembali ke halaman masuk",
     "unsupported_type": "Cara masuk pihak ketiga ini tidak didukung",
-    "plus_only": "Hanya tersedia pada edisi Plus"
+    "plus_only": "Belum didukung"
   }
 };
 

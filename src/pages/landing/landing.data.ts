@@ -32,13 +32,13 @@ export interface LandingGuideCard {
   links: LandingGuideLink[];
 }
 
-const DOCS_BASE = 'https://flashcat.cloud/product/nightingale/';
+const DOCS_BASE = 'https://n9e.github.io/';
 const DOCS_V8_BASE = 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/';
 
 export const DOC_LINKS = {
   base: DOCS_BASE,
   github: 'https://github.com/ccfos/nightingale',
-  categraf: 'https://flashcat.cloud/product/categraf/',
+  categraf: 'https://github.com/flashcatcloud/categraf',
 };
 
 export const landingHero = {

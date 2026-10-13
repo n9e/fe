@@ -16,7 +16,7 @@ const en_US = {
     failed: 'Third-party login verification failed',
     back: 'Back to login',
     unsupported_type: 'Unsupported third-party login type',
-    plus_only: 'Only supported in the Plus edition',
+    plus_only: 'Not supported yet',
   },
 };
 export default en_US;
