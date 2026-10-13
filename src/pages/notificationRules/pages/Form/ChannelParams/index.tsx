@@ -38,7 +38,7 @@ export default function index(props: Props) {
     return <Discord prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
   } else if (request_type === 'jsm_alert') {
     return <JSMAlert prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
-  } else if (request_type === 'slackwebhook' || request_type === 'mattermostwebhook') {
+  } else if (request_type === 'teams' || request_type === 'slackwebhook' || request_type === 'mattermostwebhook') {
     return <ChatWebhook prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} requestType={request_type} />;
   }
 

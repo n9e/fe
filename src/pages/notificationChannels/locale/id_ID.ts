@@ -37,6 +37,8 @@ const id_ID = {
     },
   },
   request_configuration: {
+    teams: 'Konfigurasi Microsoft Teams',
+    twilio: 'Konfigurasi Twilio',
     jsm_alert: 'Konfigurasi JSM Alert',
     discord: 'Konfigurasi Discord',
     slackwebhook: 'Konfigurasi Slack Webhook',
@@ -155,6 +157,32 @@ const id_ID = {
     silent_tip: 'Pesan tetap dikirim ke channel tetapi tanpa notifikasi push atau desktop',
     proxy_tip: 'Isi jika Discord hanya dapat dijangkau melalui proxy, misalnya http://127.0.0.1:7890',
   },
+  teams_request_config: {
+    top_tip:
+      'Buat webhook di Teams Workflows dengan pemicu “When a Teams webhook request is received” dan izinkan Anyone. Tempel URL-nya di aturan notifikasi. Kartu memuat status alert, isi, dan tautan ke event.',
+    proxy_tip: 'Isi jika server Nightingale tidak dapat menjangkau Teams secara langsung.',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Konfigurasikan akun Twilio dan pengirim, lalu pilih penerima di aturan notifikasi. Nomor telepon mereka harus menyertakan kode negara (E.164, misalnya +14155552671). Kredensial mendukung {{.nama_variabel}}.',
+    mode: 'Mode notifikasi',
+    sms: 'SMS',
+    call: 'Panggilan suara',
+    account_sid: 'Account SID',
+    auth_token: 'Auth Token',
+    from: 'Pengirim',
+    from_tip: 'SMS: nomor Twilio atau Sender ID alfanumerik, atau gunakan Messaging Service SID di bawah. Suara: nomor Twilio dalam format E.164.',
+    from_required: 'Isi pengirim, atau Messaging Service SID untuk SMS',
+    messaging_service_sid: 'Messaging Service SID (khusus SMS)',
+    voice: 'Suara',
+    language: 'Bahasa pembacaan',
+    retry_tip:
+      'Hanya penolakan karena batas laju (HTTP 429) yang dicoba ulang. Tes yang berhasil berarti Twilio menerima permintaan; periksa log Twilio untuk status pengiriman atau panggilan.',
+    proxy_tip: 'Isi jika server Nightingale tidak dapat menjangkau api.twilio.com secara langsung.',
+    account_sid_invalid: 'Account SID harus berupa AC diikuti 32 karakter heksadesimal',
+    service_sid_invalid: 'Messaging Service SID harus berupa MG diikuti 32 karakter heksadesimal',
+    phone_format: 'Gunakan format E.164, misalnya +14155552671',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Satu URL webhook mengarah ke satu channel Slack, jadi URL diisi di aturan notifikasi dan media ini bisa mengirim ke banyak channel. Pengaturan di sini adalah nilai default untuk semua aturan. Dapatkan URL dengan membuat app di https://api.slack.com/apps lalu mengaktifkan Incoming Webhooks.',
@@ -219,6 +247,8 @@ const id_ID = {
   },
   types_select_placeholder: 'Jenis',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: 'Callback',
     email: 'Email',

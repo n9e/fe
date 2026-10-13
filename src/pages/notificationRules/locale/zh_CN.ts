@@ -181,6 +181,14 @@ const zh_CN = {
       bot_name: '名称',
       bot_name_tip: '给这个 key 起个好认的名字（如团队名）：通知记录里的目标显示它，其他规则也可以按名称直接复用这个 key',
     },
+    teams: {
+      webhook_url: 'Webhook URL',
+      webhook_url_tip: '在 Teams Workflows 中创建接收 Webhook 的工作流，权限选择 Anyone，将完整地址（包含查询参数）粘贴在此。支持 {{.变量名}} 引用。',
+      webhook_url_invalid: '请填写有效的 HTTP(S) Webhook URL',
+      webhook_url_history_placeholder: '粘贴 Webhook 地址，或选择历史配置',
+      bot_name: '名称',
+      bot_name_tip: '用于通知记录展示和历史配置复用。',
+    },
     slackwebhook: {
       webhook_url: 'Webhook 地址',
       webhook_url_tip:

@@ -35,6 +35,8 @@ const zh_CN = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams \u914d\u7f6e',
+    twilio: 'Twilio \u914d\u7f6e',
     jsm_alert: 'JSM 告警配置',
     discord: 'Discord 配置',
     slackwebhook: 'Slack Webhook 配置',
@@ -152,6 +154,29 @@ const zh_CN = {
     silent_tip: '开启后消息照常发到频道，但不触发接收者的推送和桌面通知',
     proxy_tip: '访问 Discord 需要经过代理时填写，如 http://127.0.0.1:7890',
   },
+  teams_request_config: {
+    top_tip: '在 Teams Workflows 中创建“收到 Teams Webhook 请求时”工作流，调用权限选择 Anyone，将地址填入通知规则。通知卡片包含告警状态、正文和事件详情链接。',
+    proxy_tip: '夜莺服务器需要通过代理访问 Teams 时填写。',
+  },
+  twilio_request_config: {
+    top_tip: '配置 Twilio 账号和发送号码，在通知规则中选择接收人。接收人的手机号必须包含国家码（E.164 格式，如 +8613800138000）。凭证支持 {{.变量名}} 引用。',
+    mode: '通知方式',
+    sms: '短信',
+    call: '语音电话',
+    account_sid: 'Account SID',
+    auth_token: 'Auth Token',
+    from: '发送号码 / Sender ID',
+    from_tip: '短信可填 Twilio 号码、字母数字 Sender ID，或改填下方 Messaging Service SID；语音必须填写 E.164 格式的 Twilio 号码。',
+    from_required: '请填写发送号码，短信也可填写 Messaging Service SID',
+    messaging_service_sid: 'Messaging Service SID（仅短信）',
+    voice: '语音名称',
+    language: '播报语言',
+    retry_tip: '仅限流拒绝（HTTP 429）会自动重试。测试成功表示 Twilio 已受理，请在 Twilio 日志中查看最终送达或通话状态。',
+    proxy_tip: '夜莺服务器需要通过代理访问 api.twilio.com 时填写。',
+    account_sid_invalid: 'Account SID 应为 AC 加 32 位十六进制字符',
+    service_sid_invalid: 'Messaging Service SID 应为 MG 加 32 位十六进制字符',
+    phone_format: '请使用 E.164 格式，例如 +8613800138000',
+  },
   slackwebhook_request_config: {
     top_tip:
       '一个 Webhook 地址对应一个 Slack 频道，所以地址在通知规则里填写，这个媒介可以发到任意多个频道。这里的设置是所有规则共用的默认值。在 https://api.slack.com/apps 创建应用并开启 Incoming Webhooks 后获取地址。',
@@ -215,6 +240,8 @@ const zh_CN = {
   },
   types_select_placeholder: '类型',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: '回调',
     email: '邮件',
