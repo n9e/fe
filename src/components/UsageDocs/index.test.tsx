@@ -6,7 +6,7 @@ import UsageDocs from './index';
 jest.mock('@/App', () => ({ CommonStateContext: require('react').createContext({}) }));
 jest.mock('@/utils/constant', () => ({ IS_ENT: true }));
 
-const Context = CommonStateContext as React.Context<{ hideUsageDocs?: boolean }>;
+const Context = CommonStateContext as unknown as React.Context<{ hideUsageDocs?: boolean }>;
 
 describe('UsageDocs', () => {
   it('renders its children by default', () => {
