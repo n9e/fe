@@ -208,8 +208,9 @@ export function processInitialValues(values) {
       };
     });
   }
-  if (Array.isArray(values?.rule_config?.triggers)) {
-    // rule_config.triggers 仅包含阈值告警；exp 缺失即未配置有效阈值，不应回填或渲染。
+  const isHostRule = values?.cate === 'host' || values?.prod === 'host';
+  if (!isHostRule && Array.isArray(values?.rule_config?.triggers)) {
+    // 指标类阈值条件以 exp 作为后端实际执行表达式；host trigger 使用 type/duration，不要求 exp。
     values.rule_config.triggers = values.rule_config.triggers.filter((trigger) => {
       return typeof trigger?.exp === 'string' && trigger.exp.trim().length > 0;
     });
