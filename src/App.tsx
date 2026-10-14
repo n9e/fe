@@ -97,6 +97,7 @@ interface SiteInfo {
 }
 
 export interface ICommonState {
+  hideUsageDocs?: boolean;
   datasourceCateOptions: Cate[];
   groupedDatasourceList: {
     [index: string]: Datasource[];

@@ -12,13 +12,14 @@ interface SplitterProps {
   children: [ReactNode, ReactNode];
   className?: string;
   style?: React.CSSProperties;
+  hideRight?: boolean;
 }
 
 const Panel: React.FC<PanelProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-const Splitter: React.FC<SplitterProps> & { Panel: typeof Panel } = ({ children, className, style }) => {
+const Splitter: React.FC<SplitterProps> & { Panel: typeof Panel } = ({ children, className, style, hideRight = false }) => {
   const [leftWidth, setLeftWidth] = useState<number>(50); // 百分比
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,15 +62,19 @@ const Splitter: React.FC<SplitterProps> & { Panel: typeof Panel } = ({ children,
 
   return (
     <div ref={containerRef} className={`n9e-splitter ${className || ''} ${isDragging ? 'n9e-splitter-dragging' : ''}`} style={style}>
-      <div className='n9e-splitter-panel n9e-splitter-panel-left' style={{ width: `${leftWidth}%` }}>
+      <div className='n9e-splitter-panel n9e-splitter-panel-left' style={{ width: hideRight ? '100%' : `${leftWidth}%` }}>
         {leftPanel}
       </div>
-      <div className='n9e-splitter-resizer' onMouseDown={handleMouseDown}>
-        <div className='n9e-splitter-resizer-bar' />
-      </div>
-      <div className='n9e-splitter-panel n9e-splitter-panel-right' style={{ width: `${100 - leftWidth}%` }}>
-        {rightPanel}
-      </div>
+      {!hideRight && (
+        <>
+          <div className='n9e-splitter-resizer' onMouseDown={handleMouseDown}>
+            <div className='n9e-splitter-resizer-bar' />
+          </div>
+          <div className='n9e-splitter-panel n9e-splitter-panel-right' style={{ width: `${100 - leftWidth}%` }}>
+            {rightPanel}
+          </div>
+        </>
+      )}
     </div>
   );
 };

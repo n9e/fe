@@ -8,6 +8,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NS, DOC_URL } from '../constants';
 import ScenarioList from './ScenarioList';
+import UsageDocs from '@/components/UsageDocs';
 
 const STORAGE_KEY = 'event_pipelines_scenario_tips_dismissed';
 
@@ -36,20 +37,22 @@ export default function ScenarioTips() {
         {t('scenario_tips.title')}
       </div>
       <ScenarioList className='text-soft' />
-      <a
-        className='inline-block mt-2 ml-[18px]'
-        onClick={() => {
-          DocumentDrawer({
-            language: i18n.language,
-            darkMode,
-            title: t('common:page_help'),
-            type: 'iframe',
-            documentPath: DOC_URL,
-          });
-        }}
-      >
-        {t('scenario_tips.more')} →
-      </a>
+      <UsageDocs>
+        <a
+          className='inline-block mt-2 ml-[18px]'
+          onClick={() => {
+            DocumentDrawer({
+              language: i18n.language,
+              darkMode,
+              title: t('common:page_help'),
+              type: 'iframe',
+              documentPath: DOC_URL,
+            });
+          }}
+        >
+          {t('scenario_tips.more')} →
+        </a>
+      </UsageDocs>
     </div>
   );
 }

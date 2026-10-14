@@ -11,6 +11,7 @@ import DocumentDrawer from '../../components/DocumentDrawer';
 import LogQL from '@/components/LogQL';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { NAME_SPACE } from '../../constants';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   datasourceValue: number;
@@ -34,13 +35,15 @@ export default function index({ field = {}, prefixPath = [], path = [], datasour
               label={
                 <Space>
                   {t('query.query')}
-                  <InfoCircleOutlined
-                    onClick={() => {
-                      DocumentDrawer({
-                        darkMode,
-                      });
-                    }}
-                  />
+                  <UsageDocs>
+                    <InfoCircleOutlined
+                      onClick={() => {
+                        DocumentDrawer({
+                          darkMode,
+                        });
+                      }}
+                    />
+                  </UsageDocs>
                 </Space>
               }
             >
