@@ -6,6 +6,7 @@ import { FileText, Database, TriangleAlert, Workflow, Bell, CalendarClock, Setti
 
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import UsageDocs from '@/components/UsageDocs';
 
 export interface SectionItem {
   key: string;
@@ -99,7 +100,7 @@ export default function SectionCard(props: {
             <div className='text-[12px] text-soft pl-[22px] mt-0.5 font-normal'>
               {item.description}
               {item.helpDoc && (
-                <>
+                <UsageDocs>
                   <span className='mx-1.5 text-[var(--fc-border-color)]'>|</span>
                   <a
                     className='text-primary cursor-pointer hover:underline'
@@ -116,7 +117,7 @@ export default function SectionCard(props: {
                   >
                     {t('common:page_help')}
                   </a>
-                </>
+                </UsageDocs>
               )}
             </div>
           </div>

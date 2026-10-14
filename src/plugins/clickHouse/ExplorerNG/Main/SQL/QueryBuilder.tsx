@@ -11,6 +11,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE } from '../../../constants';
 import QueryBuilder from '../../components/QueryBuilder';
 import CommonStateContext from '../../components/QueryBuilder/commonStateContext';
+import UsageDocs from '@/components/UsageDocs';
 
 type Keys = { value: string[]; label: string[] };
 
@@ -129,20 +130,22 @@ export default function QueryBuilderCpt(props: Props) {
         />
         <div className='absolute top-2 right-2'>
           <Space size={0}>
-            <Button
-              type='link'
-              onClick={(e) => {
-                e.stopPropagation();
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  title: t('common:document_title'),
-                  type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-ck-discover/',
-                });
-              }}
-            >
-              {t('common:document_title')}
-            </Button>
+            <UsageDocs>
+              <Button
+                type='link'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    title: t('common:document_title'),
+                    type: 'iframe',
+                    documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-ck-discover/',
+                  });
+                }}
+              >
+                {t('common:document_title')}
+              </Button>
+            </UsageDocs>
             <Button
               type='text'
               icon={<PushpinOutlined />}

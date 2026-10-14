@@ -35,6 +35,7 @@ import NotificationRuleSelect from './NotificationRuleSelect';
 import NotifyExtra from 'plus:/parcels/AlertRule/NotifyExtra';
 // @ts-ignore
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function index({ disabled }) {
   const { t } = useTranslation('alertRules');
@@ -202,20 +203,22 @@ export default function index({ disabled }) {
               <div>
                 <Space align='baseline'>
                   {t('callbacks')}
-                  <Tooltip
-                    title={
-                      <Trans
-                        ns='alertRules'
-                        i18nKey='alertRules:callbacks_tip'
-                        components={{
-                          a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/msg-template/tpl_func/' target='_blank' />,
-                        }}
-                      />
-                    }
-                    overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'
-                  >
-                    <InfoCircleOutlined />
-                  </Tooltip>
+                  <UsageDocs>
+                    <Tooltip
+                      title={
+                        <Trans
+                          ns='alertRules'
+                          i18nKey='alertRules:callbacks_tip'
+                          components={{
+                            a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/msg-template/tpl_func/' target='_blank' />,
+                          }}
+                        />
+                      }
+                      overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'
+                    >
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  </UsageDocs>
                   <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
                 </Space>
                 {fields.map((field) => (

@@ -14,6 +14,7 @@ import QueryBoxPrefix, { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 import { NAME_SPACE } from '../../../constants';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from '../../SideBarNav/FieldsSidebar/DefaultSearchIcon';
 import QueryInputAddonAfter from '../../components/QueryInputAddonAfter';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   snapRangeRef: React.MutableRefObject<{
@@ -45,17 +46,19 @@ export default function QueryInputCpt(props: Props) {
         label={
           <Space>
             {t(`${logExplorerNS}:query`)}
-            <InfoCircleOutlined
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  darkMode,
-                  title: t('common:document_link'),
-                  type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
-                });
-              }}
-            />
+            <UsageDocs>
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('common:document_link'),
+                    type: 'iframe',
+                    documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
+                  });
+                }}
+              />
+            </UsageDocs>
           </Space>
         }
         addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}

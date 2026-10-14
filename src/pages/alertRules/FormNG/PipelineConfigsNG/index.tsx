@@ -12,6 +12,7 @@ import Relabel from './Relabel';
 import WorkflowItem, { WorkflowItemRef, WorkflowTabTitle } from './WorkflowItem';
 import Annotations from './Annotations';
 import EnrichQueries from './EnrichQueries';
+import UsageDocs from '@/components/UsageDocs';
 
 export interface PipelineConfigsNGRef {
   checkUnsavedAndNotify: () => boolean;
@@ -212,19 +213,21 @@ const PipelineConfigsNG = React.forwardRef<PipelineConfigsNGRef, PipelineConfigs
                 <span>{t('relabel.title')}</span>
                 {relabelCollapsed ? <RightOutlined /> : <DownOutlined />}
                 {!relabelCollapsed && (
-                  <a
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      DocumentDrawer({
-                        language: i18n.language,
-                        darkMode,
-                        title: t('relabel.help_btn'),
-                        documentPath: '/n9e-docs/alert-event-relabel',
-                      });
-                    }}
-                  >
-                    {t('relabel.help_btn')}
-                  </a>
+                  <UsageDocs>
+                    <a
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        DocumentDrawer({
+                          language: i18n.language,
+                          darkMode,
+                          title: t('relabel.help_btn'),
+                          documentPath: '/n9e-docs/alert-event-relabel',
+                        });
+                      }}
+                    >
+                      {t('relabel.help_btn')}
+                    </a>
+                  </UsageDocs>
                 )}
               </Space>
             </div>
