@@ -188,6 +188,29 @@ describe('processInitialValues', () => {
     expect(result.rule_config.triggers).toEqual([{ exp: '$A > 10', expressions: [{ ref: 'A', comparisonOperator: '>', value: 10 }] }]);
   });
 
+  it('host 规则（cate=host）应保留无 exp 的 trigger', () => {
+    const triggers = [
+      { type: 'target_miss', severity: 2, duration: 30 },
+      { type: 'offset', severity: 1, duration: 60 },
+    ];
+    const result = processInitialValues({
+      cate: 'host',
+      rule_config: { triggers },
+    });
+
+    expect(result.rule_config.triggers).toEqual(triggers);
+  });
+
+  it('host 规则（仅 prod=host）应保留无 exp 的 trigger', () => {
+    const triggers = [{ type: 'target_miss', severity: 2, duration: 30 }];
+    const result = processInitialValues({
+      prod: 'host',
+      rule_config: { triggers },
+    });
+
+    expect(result.rule_config.triggers).toEqual(triggers);
+  });
+
   // ---------- 多查询测试 ----------
 
   it('应正确处理多个 queries', () => {
