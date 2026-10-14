@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 import {
   fillComboboxAfterText,
@@ -71,6 +71,17 @@ async function fillQueryAdvancedSettings(page: Page, query: ElasticsearchQuery) 
   }
 }
 
+async function selectTermsGroupByOption(page: Page, label: string, optionText: string, groupByIndex: number) {
+  const inputGroup = page
+    .locator('.input-group-with-form-item')
+    .filter({ has: page.getByText(label, { exact: true }) })
+    .nth(groupByIndex);
+  const select = inputGroup.locator('.ant-select-selector');
+
+  await selectAntSelectOption(page, select, optionText);
+  await expect(inputGroup.locator('.ant-select-selection-item'), `selected Group By ${label} option ${optionText}`).toHaveText(optionText);
+}
+
 async function addTermsGroupBy(page: Page, groupBy: ElasticsearchGroupBy, groupByIndex: number, aiTap: AiTap, fieldKeyIndexOffset = 0) {
   if (groupBy.cate !== 'terms') {
     throw new Error(`TODO: elasticsearch rule_config.queries[0].group_by[${groupByIndex}].cate=${groupBy.cate} is not supported yet`);
@@ -98,12 +109,12 @@ async function addTermsGroupBy(page: Page, groupBy: ElasticsearchGroupBy, groupB
 
   if (groupBy.order) {
     const orderLabel = groupBy.order === 'desc' ? 'Descend' : groupBy.order === 'asc' ? 'Ascend' : groupBy.order;
-    await selectAntInputGroupOption(aiTap, 'Order', orderLabel);
+    await selectTermsGroupByOption(page, 'Order', orderLabel, groupByIndex);
   }
 
   if (groupBy.order_by) {
     const orderByLabel = groupBy.order_by === '_key' ? 'Term value' : groupBy.order_by === '_count' ? 'Count' : groupBy.order_by;
-    await selectAntInputGroupOption(aiTap, 'OrderBy', orderByLabel);
+    await selectTermsGroupByOption(page, 'OrderBy', orderByLabel, groupByIndex);
   }
 }
 
