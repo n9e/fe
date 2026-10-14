@@ -191,6 +191,14 @@ const ru_RU = {
       bot_name: 'Название',
       bot_name_tip: 'Понятное имя ключа, например имя команды: отображается как получатель в записях уведомлений, другие правила могут переиспользовать ключ по этому имени',
     },
+    teams: {
+      webhook_url: 'Адрес Webhook',
+      webhook_url_tip: 'Создайте в Teams Workflows Webhook с доступом Anyone и вставьте сюда полный адрес вместе с параметрами запроса. Поддерживается {{.имя_переменной}}.',
+      webhook_url_invalid: 'Введите корректный адрес Webhook HTTP(S)',
+      webhook_url_history_placeholder: 'Вставьте адрес Webhook или нажмите, чтобы выбрать ранее использованный',
+      bot_name: 'Название',
+      bot_name_tip: 'Показывается в записях уведомлений и позволяет переиспользовать этот Webhook.',
+    },
     slackwebhook: {
       webhook_url: 'Адрес Webhook',
       webhook_url_tip:

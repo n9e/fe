@@ -781,6 +781,31 @@ export const getNotificationChannelTypes = () => {
         },
       },
     },
+    teams: {
+      logo: '/image/logos/teams.svg',
+      type: 'teams',
+      default_values: {
+        request_type: 'teams',
+        param_config: {
+          custom: {
+            params: [
+              { key: 'webhook_url', cname: 'Webhook URL', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+            ],
+          },
+        },
+        request_config: { teams_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
+      },
+    },
+    twilio: {
+      logo: '/image/logos/twilio.svg',
+      type: 'twilio',
+      default_values: {
+        request_type: 'twilio',
+        param_config: { user_info: { contact_key: 'phone' } },
+        request_config: { twilio_request_config: { mode: 'sms', voice: 'woman', language: 'en-US', timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
+      },
+    },
     slackwebhook: {
       logo: '/image/logos/slack.png',
       type: 'slackwebhook',

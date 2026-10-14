@@ -37,6 +37,8 @@ const es_ES = {
     },
   },
   request_configuration: {
+    teams: 'Configuración de Microsoft Teams',
+    twilio: 'Configuración de Twilio',
     jsm_alert: 'Configuración de JSM Alert',
     discord: 'Configuración de Discord',
     slackwebhook: 'Configuración de Slack Webhook',
@@ -157,6 +159,32 @@ const es_ES = {
     silent_tip: 'Los mensajes se publican igual, pero sin notificaciones push ni de escritorio',
     proxy_tip: 'Rellénalo cuando Discord solo sea accesible a través de un proxy, por ejemplo http://127.0.0.1:7890',
   },
+  teams_request_config: {
+    top_tip:
+      'Crea en Teams Workflows un webhook con el desencadenador «When a Teams webhook request is received» y permite el acceso a Anyone. Pega su URL en la regla de notificación. Las tarjetas incluyen el estado de la alerta, el contenido y un enlace al evento.',
+    proxy_tip: 'Rellénalo cuando el servidor de Nightingale no pueda acceder a Teams directamente.',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Configura una cuenta de Twilio y un remitente, y elige los destinatarios en la regla de notificación. Sus números de teléfono deben incluir el prefijo del país (E.164, por ejemplo +14155552671). Las credenciales admiten {{.nombre_variable}}.',
+    mode: 'Modo de notificación',
+    sms: 'SMS',
+    call: 'Llamada de voz',
+    account_sid: 'Account SID',
+    auth_token: 'Auth Token',
+    from: 'Remitente',
+    from_tip: 'SMS: un número de Twilio o un Sender ID alfanumérico, o bien usa el Messaging Service SID de abajo. Voz: un número de Twilio en formato E.164.',
+    from_required: 'Indica el remitente o, para SMS, un Messaging Service SID',
+    messaging_service_sid: 'Messaging Service SID (solo SMS)',
+    voice: 'Voz',
+    language: 'Idioma de la locución',
+    retry_tip:
+      'Solo se reintentan los rechazos por límite de frecuencia (HTTP 429). Una prueba correcta significa que Twilio aceptó la solicitud; consulta los registros de Twilio para ver el estado de entrega o de la llamada.',
+    proxy_tip: 'Rellénalo cuando el servidor de Nightingale no pueda acceder a api.twilio.com directamente.',
+    account_sid_invalid: 'El Account SID debe ser AC seguido de 32 caracteres hexadecimales',
+    service_sid_invalid: 'El Messaging Service SID debe ser MG seguido de 32 caracteres hexadecimales',
+    phone_format: 'Usa el formato E.164, por ejemplo +14155552671',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Una URL de webhook corresponde a un canal de Slack, por eso se indica en la regla de notificación y este medio puede enviar a cualquier número de canales. Estos ajustes son valores por defecto compartidos por todas las reglas. Obtén la URL creando una app en https://api.slack.com/apps y activando Incoming Webhooks.',
@@ -221,6 +249,8 @@ const es_ES = {
   },
   types_select_placeholder: 'Tipo',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: 'Callback',
     email: 'Correo electrónico',

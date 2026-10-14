@@ -12,6 +12,7 @@ import CredentialInput, { maskWebhookURL } from './CredentialInput';
 
 // 与后端校验一致：http(s) 且路径含固定的一段，不限域名，经反向代理或网关转发的地址也要能填
 const WEBHOOK_RULES: Record<string, { pattern: RegExp; placeholder: string; namePlaceholder: string }> = {
+  teams: { pattern: /^https?:\/\/[^/\s]+\/.+/i, placeholder: 'https://<workflow-host>/workflows/.../invoke?...', namePlaceholder: 'Ops alerts' },
   slackwebhook: { pattern: /^https?:\/\/[^/]+\/.*services\/.+/i, placeholder: 'https://hooks.slack.com/services/T.../B.../...', namePlaceholder: '#ops-alerts' },
   mattermostwebhook: { pattern: /^https?:\/\/[^/]+\/.*hooks\/.+/i, placeholder: 'https://mattermost.example.com/hooks/<id>', namePlaceholder: '#ops' },
 };
@@ -21,7 +22,7 @@ interface Props {
   prefixNamePath?: (string | number)[];
   field: FormListFieldData;
   channelItem?: ChannelItem;
-  requestType: 'slackwebhook' | 'mattermostwebhook';
+  requestType: 'slackwebhook' | 'mattermostwebhook' | 'teams';
 }
 
 /**
@@ -67,7 +68,17 @@ export default function ChatWebhook(props: Props) {
             channelId={channelItem?.id}
             paramsPath={paramsPath}
             credentialKey='webhook_url'
-            mask={maskWebhookURL}
+            mask={
+              requestType === 'teams'
+                ? (raw) => {
+                    try {
+                      return `${new URL(raw || '').origin}/***`;
+                    } catch {
+                      return '***';
+                    }
+                  }
+                : maskWebhookURL
+            }
             placeholder={rule.placeholder}
             historyPlaceholder={t(k('webhook_url_history_placeholder'))}
           />
