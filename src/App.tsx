@@ -265,7 +265,7 @@ function App() {
   };
 
   useEffect(() => {
-    if (location.pathname === '/out-of-service') {
+    if (location.pathname === `${basePrefix}/out-of-service`) {
       initialized.current = true;
       removePreloader();
       setCommonState({ ...commonState }); // 为了触发重新渲染
@@ -357,7 +357,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!location.pathname.startsWith('/login')) {
+    if (!location.pathname.startsWith(`${basePrefix}/login`)) {
       document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
       // TODO: 临时兼容 Class 组件的写法
       localStorage.setItem('n9e-dark-mode', _.toString(commonState.darkMode));
