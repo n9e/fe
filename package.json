@@ -120,7 +120,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@midscene/web": "^1.10.0",
+    "@midscene/web": "^1.15.3",
     "@playwright/test": "^1.61.1",
     "@rollup/pluginutils": "^4.1.1",
     "@testing-library/dom": "^10.4.1",
