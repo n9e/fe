@@ -201,6 +201,7 @@ const getCalculatedValuesBySeries = (
       id: string;
       name?: string;
       __time__: number;
+      target?: ITarget;
       metric: Record<string, string | undefined>;
       fields: Record<string, string | number>;
       stat: SeriesValue;
@@ -211,6 +212,7 @@ const getCalculatedValuesBySeries = (
           id: `${serie.id}_${item[0]}`,
           name: getMappedTextObj(serie.name as string, valueMappings)?.text,
           __time__: item[0],
+          target: serie.target,
           metric: _.reduce(
             serie.metric,
             (pre, curVal, curKey) => {

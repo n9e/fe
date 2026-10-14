@@ -67,6 +67,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
               id: _.uniqueId('series_'),
               name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
               metric: serie.metric,
+              target,
               data: serie.values,
             });
           });

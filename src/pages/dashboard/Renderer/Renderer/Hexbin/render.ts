@@ -19,15 +19,12 @@ import { transition, min, select, event } from 'd3';
 import { hexbin as d3Hexbin } from 'd3-hexbin';
 import _ from 'lodash';
 import { bestFitElemCountPerRow, getTextSizeForWidthAndHeight, getMapColumnsAndRows } from './utils';
+import { getTooltipContent } from './tooltip';
+import type { HexbinRecord } from './tooltip';
 import { basePrefix } from '@/App';
 
 const xmlns = 'http://www.w3.org/2000/svg';
 const minFont = 6;
-interface HexbinRecord {
-  name?: string;
-  value?: string | number;
-  metric?: Record<string, string | number | undefined>;
-}
 
 function getPlaceHolderElems(rows, columns, len, radius: number) {
   const points: Array<[number, number]> = [];
@@ -149,13 +146,7 @@ function renderHoneyComb(
     })
     .attr('class', 'hexagon')
     .on('mousemove', function (_d, i) {
-      const metricObj = data[i]?.metric;
-      const metricName = metricObj?.__name__ || 'value';
-      const metricNameRow = `<div><strong>${metricName}: ${getValue(data[i], valueField)}</strong></div>`;
-      const labelsRows = _.map(_.omit(metricObj, '__name__'), (val, key) => {
-        return `<div>${key}: ${val}</div>`;
-      });
-      const content = `${metricNameRow}${labelsRows.join('')}`;
+      const content = getTooltipContent(data[i], valueField);
       div.style('opacity', 0.9);
       div
         .html(content)

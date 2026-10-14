@@ -151,6 +151,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 refId: item.refId,
                 name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
                 metric: serie.metric,
+                target,
                 expr: item.expr,
                 data: !spanNulls ? completeBreakpoints(step, serie.values) : serie.values, // release-24 修改，是否补全断点由前端控制，后端不再处理
               });
@@ -200,6 +201,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
                 refId: item.refId,
                 name: target?.legend ? replaceExpressionBracket(target?.legend, serie.metric) : getSerieName(serie.metric),
                 metric: serie.metric,
+                target,
                 expr: item.expr,
                 data: serie.values ? serie.values : [serie.value],
               });
