@@ -141,9 +141,6 @@ export interface TwilioRequestConfig extends NativeNetworkConfig {
 export interface PushoverRequestConfig extends NativeNetworkConfig {
   api_url?: string;
   token: string;
-  priority_map?: Record<string, number>;
-  retry?: number;
-  expire?: number;
   sound?: string;
 }
 
@@ -152,13 +149,11 @@ export interface NtfyRequestConfig extends NativeNetworkConfig {
   token?: string;
   username?: string;
   password?: string;
-  priority_map?: Record<string, number>;
 }
 
 export interface SplunkOnCallRequestConfig extends NativeNetworkConfig {
   api_url?: string;
   api_key: string;
-  message_type_map?: Record<string, string>;
 }
 
 export interface LineRequestConfig extends NativeNetworkConfig {

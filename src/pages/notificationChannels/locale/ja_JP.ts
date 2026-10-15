@@ -196,12 +196,6 @@ const ja_JP = {
       'https://pushover.net/apps/build でアプリケーションを作成し、その API トークンをここに入力します。通知を受け取るユーザーキーまたはグループキーは各通知ルールで入力します。トークンには {{.変数名}} を使用できます。',
     token: 'API トークン',
     token_invalid: 'API トークンは英数字 30 文字です',
-    priority_map: '重大度と優先度',
-    priority_map_tip:
-      'Nightingale の重大度ごとの Pushover 優先度です。High（1）はおやすみ時間を無視して通知し、Emergency（2）は確認されるまで繰り返し、アラートの復旧時に停止します。復旧通知は常に Normal です。',
-    retry: '緊急通知の再送間隔（秒）',
-    expire: '緊急通知の継続時間（秒）',
-    emergency_tip: 'Emergency 優先度でのみ使用します。再送の間隔（30 秒以上）と継続時間（10800 秒以下）です。',
     sound: '通知音',
     sound_tip: 'siren などの Pushover の通知音の名前です。空欄の場合は受信者の既定の設定を使用します。',
     proxy_tip: 'Pushover へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
@@ -218,8 +212,6 @@ const ja_JP = {
     password: 'パスワード',
     auth_conflict: 'アクセストークンとユーザー名・パスワードはどちらか一方だけ入力してください',
     basic_incomplete: 'ユーザー名とパスワードは両方入力してください',
-    priority_map: '重大度と優先度',
-    priority_map_tip: 'Nightingale の重大度ごとの ntfy 優先度です。Max（5）は鳴り続け、おやすみモードを無視できます。復旧通知は常に Default です。',
     proxy_tip: 'ntfy へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
     insecure_tip: '自己署名証明書を使うセルフホストの ntfy サーバーの場合にオンにします',
   },
@@ -229,9 +221,6 @@ const ja_JP = {
     api_key: 'API Key',
     api_key_tip:
       'Splunk On-Call の Integrations → 3rd Party Integrations → REST - Generic を開きます。エンドポイント URL の /alert/ の後ろの部分が API キーです。{{.変数名}} を使用できます。',
-    message_type_map: '重大度とメッセージタイプ',
-    message_type_map_tip:
-      'CRITICAL はインシデントを作成し、WARNING は Splunk On-Call の設定によって作成され、INFO はタイムラインに記録されるだけです。復旧時は常に RECOVERY を送信します。',
     proxy_tip: 'Splunk On-Call へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
   },
   line_request_config: {

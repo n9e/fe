@@ -22,7 +22,6 @@
 <img width='100%' src='/n9e-docs/notification-channel/splunk_oncall-request/form.zh_CN.png' />
 
 - **API Key**：REST 集成的 Key；支持 `{{.变量名}}` 引用变量配置。
-- **级别与消息类型**：默认 S1→CRITICAL、S2/S3→WARNING。CRITICAL 会创建事件；WARNING 是否创建事件取决于 Splunk On-Call 的设置；INFO 只在时间线上记一条。
 - **高级设置**：接口地址、代理、超时和重试。把集成页面给的完整地址贴到接口地址里也可以。
 
 ## 测试
@@ -42,6 +41,8 @@
 - **消息模板**：选择 Splunk On-Call 模板，`title` 是事件的显示名称，`content` 是详细描述。
 
 ## 收到的效果
+
+消息类型固定为 S1→CRITICAL、S2/S3→WARNING。CRITICAL 会创建事件，WARNING 是否创建事件取决于 Splunk On-Call 集成设置。无需在夜莺配置等级映射。
 
 每条告警以事件哈希作为 `entity_id`：触发、重复通知都落在同一个事件上，恢复时用同一个 `entity_id` 发送 `RECOVERY`，事件随之自动解决（Resolved by SYSTEM）。事件里带有 **Event details** 链接注解，可以跳回夜莺的事件详情。下图是一条告警从触发到自动解决的时间线：
 

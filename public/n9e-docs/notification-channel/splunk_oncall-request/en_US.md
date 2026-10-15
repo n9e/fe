@@ -22,7 +22,6 @@ Under **Alerts & Notifications → Media types**, pick **Splunk On-Call** on the
 <img width='100%' src='/n9e-docs/notification-channel/splunk_oncall-request/form.en_US.png' />
 
 - **API key**: the REST integration key; `{{.variable_name}}` references are supported.
-- **Severity to message type**: defaults S1→CRITICAL, S2/S3→WARNING. CRITICAL opens an incident; whether WARNING opens one depends on your Splunk On-Call settings; INFO only adds a timeline event.
 - **Advanced settings**: API URL, proxy, timeout and retries. Pasting the full URL from the integration page into the API URL also works.
 
 ## Test
@@ -42,6 +41,8 @@ Click **Test**, enter a routing key and send. **Also test recovery (resolve the 
 - **Message template**: pick a Splunk On-Call template; `title` is the incident's display name and `content` the detailed message.
 
 ## What the on-call team sees
+
+Message types are fixed: S1→CRITICAL and S2/S3→WARNING. CRITICAL opens an incident; whether WARNING opens one depends on your Splunk On-Call integration settings. No severity mapping needs to be configured in Nightingale.
 
 Each alert uses its event hash as `entity_id`: the firing and repeated notifications land on the same incident, and on recovery a `RECOVERY` with the same `entity_id` resolves it (Resolved by SYSTEM). The incident carries an **Event details** annotation that links back to the event in Nightingale. The timeline below shows one alert from trigger to automatic resolution:
 

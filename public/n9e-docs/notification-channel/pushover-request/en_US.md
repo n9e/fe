@@ -21,8 +21,6 @@ Under **Alerts & Notifications → Media types**, pick **Pushover** on the left.
 <img width='100%' src='/n9e-docs/notification-channel/pushover-request/form.en_US.png' />
 
 - **API token**: the application's token; `{{.variable_name}}` references are supported.
-- **Severity to priority**: Pushover priority for each Nightingale severity. Defaults: S1→High (1), S2/S3→Normal (0). High bypasses the recipient's quiet hours; Emergency (2) repeats until someone acknowledges it in the app.
-- **Emergency repeat interval / duration**: used by Emergency only; the interval is at least 30 seconds and the duration at most 10800 seconds (3 hours).
 - **Sound**: e.g. `siren` or `pushover`; leave empty to use each recipient's default.
 - **Advanced settings**: API URL, proxy, timeout and retries.
 
@@ -46,11 +44,9 @@ In a notification config of the rule, pick this media type and the Pushover mess
 
 ## What recipients see
 
-The title is `[S1] Triggered: <rule name>`, the message is the rendered template (up to 1024 characters), and an **Event details** link opens the event. Below are an alert sent with Emergency priority and its recovery:
+The title is `[S1] Triggered: <rule name>`, the message is the rendered template (up to 1024 characters), and an **Event details** link opens the event.
 
-<img width='100%' src='/n9e-docs/notification-channel/pushover-request/vendor-delivered.png' />
-
-Recovery notifications always use Normal priority. When an alert whose severity maps to Emergency recovers, Nightingale first cancels the emergency repeats of that alert and then sends the recovery notification.
+Priorities are fixed: S1→High (1), S2/S3→Normal (0), and recovery→Normal (0). High bypasses the recipient's quiet hours. No severity mapping needs to be configured, and Emergency repeat notifications are not used.
 
 ## Troubleshooting
 
@@ -58,4 +54,4 @@ Recovery notifications always use Normal priority. When an alert whose severity 
 - `user identifier is not a valid user, group, or subscribed user key`: the key in the rule is wrong.
 - HTTP 429: the application has used up its monthly message limit. As Pushover requires, 4xx errors are not retried; server errors are retried at least 5 seconds apart.
 
-References: [Pushover Message API](https://pushover.net/api), [receipts and cancellation](https://pushover.net/api/receipts).
+Reference: [Pushover Message API](https://pushover.net/api).

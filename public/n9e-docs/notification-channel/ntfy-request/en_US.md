@@ -21,7 +21,6 @@ The built-in media type works with every field left empty: it publishes to `http
 - **Server URL**: root URL of a self-hosted server, e.g. `https://ntfy.example.com`, without the topic.
 - **Access token**: created in the ntfy account settings, starts with `tk_`.
 - **Username / Password**: an alternative to the access token.
-- **Severity to priority**: defaults S1→Max (5), S2→High (4), S3→Default (3); recovery notifications always use Default. Max keeps ringing and can bypass do-not-disturb.
 - **Advanced settings**: proxy, timeout and retries; enable "Skip TLS certificate verification" for a self-hosted server with a self-signed certificate.
 
 ## Test
@@ -41,6 +40,8 @@ Click **Test**, enter a topic and send, then check the app or web page subscribe
 - **Message template**: pick an ntfy template; the body key is `content`, plain text.
 
 ## What recipients see
+
+Priorities are fixed: S1→Max (5), S2→High (4), S3→Default (3), and recovery→Default (3). No severity mapping needs to be configured. Sound, vibration and do-not-disturb behavior depend on the recipient's client settings.
 
 The title is `[S1] Triggered: <rule name>` with a severity icon. Tapping the notification or the **Event details** button opens the event; firing alerts also get a **Silence 1h** button. Content longer than 4096 bytes is truncated (ntfy turns longer messages into attachments). Below are an alert and its recovery in the ntfy web app:
 

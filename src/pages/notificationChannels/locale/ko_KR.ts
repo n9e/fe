@@ -192,12 +192,6 @@ const ko_KR = {
       'https://pushover.net/apps/build 에서 애플리케이션을 만들고 그 API 토큰을 여기에 입력하세요. 알림을 받을 사용자 키 또는 그룹 키는 각 알림 규칙에서 입력합니다. 토큰에 {{.변수명}}을 사용할 수 있습니다.',
     token: 'API 토큰',
     token_invalid: 'API 토큰은 영문자 또는 숫자 30자입니다',
-    priority_map: '심각도와 우선순위',
-    priority_map_tip:
-      'Nightingale 심각도별 Pushover 우선순위입니다. High(1)는 방해 금지 시간을 무시하고, Emergency(2)는 누군가 확인할 때까지 반복되며 알림이 복구되면 중지됩니다. 복구 알림은 항상 Normal을 사용합니다.',
-    retry: '긴급 반복 간격(초)',
-    expire: '긴급 반복 지속 시간(초)',
-    emergency_tip: 'Emergency 우선순위에서만 사용합니다. 반복 간격(30초 이상)과 지속 시간(10800초 이하)입니다.',
     sound: '알림음',
     sound_tip: 'siren 같은 Pushover 알림음 이름입니다. 비워 두면 수신자의 기본 설정을 사용합니다.',
     proxy_tip: 'Pushover에 프록시를 거쳐야 접근할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
@@ -214,8 +208,6 @@ const ko_KR = {
     password: '비밀번호',
     auth_conflict: '액세스 토큰과 사용자 이름·비밀번호 중 하나만 입력하세요',
     basic_incomplete: '사용자 이름과 비밀번호를 모두 입력하세요',
-    priority_map: '심각도와 우선순위',
-    priority_map_tip: 'Nightingale 심각도별 ntfy 우선순위입니다. Max(5)는 계속 울리며 방해 금지 모드를 무시할 수 있습니다. 복구 알림은 항상 Default를 사용합니다.',
     proxy_tip: 'ntfy에 프록시를 거쳐야 접근할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
     insecure_tip: '자체 서명 인증서를 쓰는 자체 호스팅 ntfy 서버라면 켜세요',
   },
@@ -225,8 +217,6 @@ const ko_KR = {
     api_key: 'API Key',
     api_key_tip:
       'Splunk On-Call에서 Integrations → 3rd Party Integrations → REST - Generic을 여세요. 엔드포인트 URL에서 /alert/ 뒤의 부분이 API 키입니다. {{.변수명}}을 사용할 수 있습니다.',
-    message_type_map: '심각도와 메시지 유형',
-    message_type_map_tip: 'CRITICAL은 인시던트를 생성하고, WARNING은 Splunk On-Call 설정에 따라 생성되며, INFO는 타임라인에 기록만 합니다. 복구 시에는 항상 RECOVERY를 보냅니다.',
     proxy_tip: 'Splunk On-Call에 프록시를 거쳐야 접근할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
   },
   line_request_config: {

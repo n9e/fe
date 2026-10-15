@@ -21,8 +21,6 @@
 <img width='100%' src='/n9e-docs/notification-channel/pushover-request/form.zh_CN.png' />
 
 - **API Token**：应用的 Token；支持 `{{.变量名}}` 引用变量配置。
-- **级别与优先级**：夜莺各告警级别对应的 Pushover 优先级，默认 S1→High（1）、S2/S3→Normal（0）。High 会绕过接收人的免打扰时段；Emergency（2）会重复提醒，直到有人在 App 里确认。
-- **紧急提醒间隔 / 时长**：仅 Emergency 使用，间隔不少于 30 秒，时长不超过 10800 秒（3 小时）。
 - **提示音**：如 `siren`、`pushover`，留空用接收人自己的默认设置。
 - **高级设置**：接口地址、代理、超时和重试。
 
@@ -46,11 +44,9 @@
 
 ## 收到的效果
 
-通知标题是「[S1] Triggered: 规则名」，正文是渲染后的模板（最多 1024 个字符），并带 **Event details** 链接。下图是 Emergency 级别的告警和它的恢复通知：
+通知标题是「[S1] Triggered: 规则名」，正文是渲染后的模板（最多 1024 个字符），并带 **Event details** 链接。
 
-<img width='100%' src='/n9e-docs/notification-channel/pushover-request/vendor-delivered.png' />
-
-恢复通知固定使用 Normal 优先级。级别映射到 Emergency 的告警恢复时，夜莺会先取消这条告警还在重复的紧急提醒，再发恢复通知。
+优先级固定为 S1→High（1）、S2/S3→Normal（0），恢复通知固定使用 Normal（0）。High 会绕过接收人的免打扰时段。无需配置等级映射，不使用 Emergency 重复提醒。
 
 ## 排查
 
@@ -58,4 +54,4 @@
 - `user identifier is not a valid user, group, or subscribed user key`：规则里的 Key 不对。
 - HTTP 429：应用当月的消息额度已用完。按 Pushover 的要求，4xx 错误不会重试；服务端错误至少间隔 5 秒重试。
 
-参考：[Pushover Message API](https://pushover.net/api)、[回执与取消](https://pushover.net/api/receipts)。
+参考：[Pushover Message API](https://pushover.net/api)。

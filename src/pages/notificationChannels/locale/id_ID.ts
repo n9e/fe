@@ -195,12 +195,6 @@ const id_ID = {
       'Buat aplikasi di https://pushover.net/apps/build lalu tempel token API-nya di sini. Kunci pengguna atau kunci grup pengiriman yang menerima notifikasi diisi di tiap aturan notifikasi. Token mendukung {{.nama_variabel}}.',
     token: 'Token API',
     token_invalid: 'Token API terdiri dari 30 huruf atau angka',
-    priority_map: 'Tingkat dan prioritas',
-    priority_map_tip:
-      'Prioritas Pushover untuk tiap tingkat Nightingale. High (1) menembus jam tenang; Emergency (2) terus berulang sampai ada yang mengonfirmasi dan berhenti saat alert pulih. Notifikasi pemulihan selalu memakai Normal.',
-    retry: 'Interval pengulangan Emergency (dtk)',
-    expire: 'Durasi pengulangan Emergency (dtk)',
-    emergency_tip: 'Hanya dipakai untuk prioritas Emergency: seberapa sering notifikasi diulang (minimal 30 detik) dan berapa lama (maksimal 10800 detik).',
     sound: 'Suara',
     sound_tip: 'Nama suara Pushover, misalnya siren. Kosongkan untuk memakai bawaan masing-masing penerima.',
     proxy_tip: 'Isi jika Pushover hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
@@ -217,8 +211,6 @@ const id_ID = {
     password: 'Kata sandi',
     auth_conflict: 'Pakai token akses atau nama pengguna dan kata sandi, jangan keduanya',
     basic_incomplete: 'Isi nama pengguna dan kata sandi sekaligus',
-    priority_map: 'Tingkat dan prioritas',
-    priority_map_tip: 'Prioritas ntfy untuk tiap tingkat Nightingale. Max (5) terus berdering dan dapat menembus mode Jangan Ganggu. Notifikasi pemulihan selalu memakai Default.',
     proxy_tip: 'Isi jika ntfy hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
     insecure_tip: 'Aktifkan untuk server ntfy milik sendiri dengan sertifikat self-signed',
   },
@@ -227,9 +219,6 @@ const id_ID = {
       'Alert dikirim ke Splunk On-Call (dulu VictorOps) melalui integrasi REST endpoint. Kunci API milik seluruh organisasi dan diatur di sini; kunci routing menentukan tim mana yang dipanggil dan diisi di tiap aturan notifikasi. Saat alert pulih, insidennya diselesaikan.',
     api_key: 'API Key',
     api_key_tip: 'Di Splunk On-Call buka Integrations → 3rd Party Integrations → REST - Generic. Kuncinya adalah bagian URL setelah /alert/. Mendukung {{.nama_variabel}}.',
-    message_type_map: 'Tingkat dan jenis pesan',
-    message_type_map_tip:
-      'CRITICAL membuat insiden, WARNING bisa membuat insiden tergantung pengaturan Splunk On-Call, INFO hanya menambah catatan di linimasa. Pemulihan selalu mengirim RECOVERY.',
     proxy_tip: 'Isi jika Splunk On-Call hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
   },
   line_request_config: {

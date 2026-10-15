@@ -5,21 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { NS } from '../../constants';
 import NativeNetworkSettings from './NativeNetworkSettings';
 import NativeApiUrl from './NativeApiUrl';
-import SeverityMap from './SeverityMap';
 
 const names = ['request_config', 'ntfy_request_config'];
 
-// 与后端 ntfyDefaultPriority 一致。级别名称是 ntfy 自己的叫法，与它的 App 里一致，不翻译
-const DEFAULT_PRIORITY: Record<string, number> = { '1': 5, '2': 4, '3': 3 };
-const PRIORITY_OPTIONS = [
-  { label: '5 · Max', value: 5 },
-  { label: '4 · High', value: 4 },
-  { label: '3 · Default', value: 3 },
-  { label: '2 · Low', value: 2 },
-  { label: '1 · Min', value: 1 },
-];
-
-/** ntfy 媒介放服务地址、认证和级别到优先级的映射，全部可以留空（公共服务 ntfy.sh）；Topic 在通知规则里填。 */
+/** ntfy 媒介放服务地址和认证，全部可以留空（公共服务 ntfy.sh）；Topic 在通知规则里填。 */
 export default function Ntfy() {
   const { t } = useTranslation(NS);
   const requestType = Form.useWatch('request_type');
@@ -62,7 +51,6 @@ export default function Ntfy() {
           <Input.Password autoComplete='new-password' />
         </Form.Item>
       </Space>
-      <SeverityMap name={[...names, 'priority_map']} label={label('priority_map')} tooltip={label('priority_map_tip')} options={PRIORITY_OPTIONS} defaults={DEFAULT_PRIORITY} />
       <NativeNetworkSettings names={names} proxyTip={label('proxy_tip')} insecureTip={label('insecure_tip')} />
     </div>
   );

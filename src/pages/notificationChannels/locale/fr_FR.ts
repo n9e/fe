@@ -196,12 +196,6 @@ const fr_FR = {
       "Créez une application sur https://pushover.net/apps/build et collez ici son jeton d'API. La clé utilisateur ou la clé de groupe qui reçoit les notifications se renseigne dans chaque règle de notification. Le jeton accepte {{.nom_variable}}.",
     token: "Jeton d'API",
     token_invalid: "Le jeton d'API comporte 30 lettres ou chiffres",
-    priority_map: 'Gravité et priorité',
-    priority_map_tip:
-      "Priorité Pushover pour chaque gravité Nightingale. High (1) ignore les heures calmes ; Emergency (2) se répète jusqu'à ce que quelqu'un acquitte, et s'arrête quand l'alerte est résolue. Les notifications de résolution utilisent toujours Normal.",
-    retry: 'Intervalle de répétition Emergency (s)',
-    expire: 'Durée de répétition Emergency (s)',
-    emergency_tip: 'Utilisé uniquement pour la priorité Emergency : fréquence de répétition (30 secondes minimum) et durée (10800 secondes maximum).',
     sound: 'Son',
     sound_tip: "Nom d'un son Pushover, par exemple siren. Laissez vide pour utiliser le réglage par défaut de chaque destinataire.",
     proxy_tip: "À renseigner si Pushover n'est accessible que via un proxy, par exemple http://127.0.0.1:7890",
@@ -218,9 +212,6 @@ const fr_FR = {
     password: 'Mot de passe',
     auth_conflict: "Utilisez soit un jeton d'accès, soit un nom d'utilisateur et un mot de passe, pas les deux",
     basic_incomplete: "Renseignez à la fois le nom d'utilisateur et le mot de passe",
-    priority_map: 'Gravité et priorité',
-    priority_map_tip:
-      'Priorité ntfy pour chaque gravité Nightingale. Max (5) sonne en continu et peut ignorer le mode Ne pas déranger. Les notifications de résolution utilisent toujours Default.',
     proxy_tip: "À renseigner si ntfy n'est accessible que via un proxy, par exemple http://127.0.0.1:7890",
     insecure_tip: 'À activer pour un serveur ntfy auto-hébergé avec un certificat auto-signé',
   },
@@ -229,9 +220,6 @@ const fr_FR = {
       "Les alertes sont envoyées à Splunk On-Call (anciennement VictorOps) via l'intégration REST endpoint. La clé d'API appartient à toute l'organisation et se configure ici ; la clé de routage détermine l'équipe sollicitée et se renseigne dans chaque règle de notification. Quand l'alerte est résolue, l'incident l'est aussi.",
     api_key: 'API Key',
     api_key_tip: "Dans Splunk On-Call, ouvrez Integrations → 3rd Party Integrations → REST - Generic. La clé est la partie de l'URL qui suit /alert/. Accepte {{.nom_variable}}.",
-    message_type_map: 'Gravité et type de message',
-    message_type_map_tip:
-      'CRITICAL ouvre un incident, WARNING peut en ouvrir un selon vos réglages Splunk On-Call, INFO ajoute seulement un événement à la chronologie. La résolution envoie toujours RECOVERY.',
     proxy_tip: "À renseigner si Splunk On-Call n'est accessible que via un proxy, par exemple http://127.0.0.1:7890",
   },
   line_request_config: {

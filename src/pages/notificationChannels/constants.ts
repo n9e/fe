@@ -820,8 +820,8 @@ export const getNotificationChannelTypes = () => {
           },
         },
         request_config: {
-          // 与后端的默认映射一致；5xx 重试间隔按 Pushover 的要求不少于 5 秒
-          pushover_request_config: { priority_map: { '1': 1, '2': 0, '3': 0 }, retry: 60, expire: 3600, timeout: 10000, retry_times: 3, retry_sleep: 5000 },
+          // 5xx 重试间隔按 Pushover 的要求不少于 5 秒
+          pushover_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 5000 },
         },
       },
     },
@@ -839,7 +839,7 @@ export const getNotificationChannelTypes = () => {
             ],
           },
         },
-        request_config: { ntfy_request_config: { priority_map: { '1': 5, '2': 4, '3': 3 }, timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
+        request_config: { ntfy_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
       },
     },
     splunk_oncall: {
@@ -856,7 +856,7 @@ export const getNotificationChannelTypes = () => {
           },
         },
         request_config: {
-          splunk_oncall_request_config: { message_type_map: { '1': 'CRITICAL', '2': 'WARNING', '3': 'WARNING' }, timeout: 10000, retry_times: 3, retry_sleep: 1000 },
+          splunk_oncall_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 },
         },
       },
     },

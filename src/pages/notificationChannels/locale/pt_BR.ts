@@ -196,12 +196,6 @@ const pt_BR = {
       'Crie um aplicativo em https://pushover.net/apps/build e cole aqui o token de API dele. A chave de usuário ou de grupo de entrega que recebe as notificações é preenchida em cada regra de notificação. O token aceita {{.nome_variavel}}.',
     token: 'Token de API',
     token_invalid: 'O token de API tem 30 letras ou dígitos',
-    priority_map: 'Severidade e prioridade',
-    priority_map_tip:
-      'Prioridade do Pushover para cada severidade do Nightingale. High (1) ignora o horário de silêncio; Emergency (2) se repete até alguém confirmar e para quando o alerta é recuperado. As notificações de recuperação usam sempre Normal.',
-    retry: 'Intervalo de repetição Emergency (s)',
-    expire: 'Duração da repetição Emergency (s)',
-    emergency_tip: 'Usado apenas com a prioridade Emergency: a cada quanto tempo a notificação se repete (no mínimo 30 segundos) e por quanto tempo (no máximo 10800 segundos).',
     sound: 'Som',
     sound_tip: 'Nome de um som do Pushover, como siren. Deixe em branco para usar o padrão de cada destinatário.',
     proxy_tip: 'Preencha se o Pushover só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
@@ -218,9 +212,6 @@ const pt_BR = {
     password: 'Senha',
     auth_conflict: 'Use um token de acesso ou usuário e senha, não os dois',
     basic_incomplete: 'Preencha tanto o usuário quanto a senha',
-    priority_map: 'Severidade e prioridade',
-    priority_map_tip:
-      'Prioridade do ntfy para cada severidade do Nightingale. Max (5) toca continuamente e pode ignorar o modo Não perturbe. As notificações de recuperação usam sempre Default.',
     proxy_tip: 'Preencha se o ntfy só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
     insecure_tip: 'Ative para um servidor ntfy próprio com certificado autoassinado',
   },
@@ -229,9 +220,6 @@ const pt_BR = {
       'Os alertas são enviados ao Splunk On-Call (antigo VictorOps) pela integração REST endpoint. A chave de API pertence a toda a organização e é configurada aqui; a chave de roteamento define qual equipe é acionada e é preenchida em cada regra de notificação. Quando o alerta é recuperado, o incidente é resolvido.',
     api_key: 'API Key',
     api_key_tip: 'No Splunk On-Call, abra Integrations → 3rd Party Integrations → REST - Generic. A chave é a parte da URL depois de /alert/. Aceita {{.nome_variavel}}.',
-    message_type_map: 'Severidade e tipo de mensagem',
-    message_type_map_tip:
-      'CRITICAL abre um incidente, WARNING pode abrir conforme as configurações do Splunk On-Call e INFO apenas adiciona um evento à linha do tempo. A recuperação envia sempre RECOVERY.',
     proxy_tip: 'Preencha se o Splunk On-Call só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
   },
   line_request_config: {

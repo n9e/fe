@@ -197,12 +197,6 @@ const en_US = {
       'Create an application at https://pushover.net/apps/build and paste its API token here. The user key or delivery group key that receives the notifications is filled in each notification rule. The token supports {{.variable_name}}.',
     token: 'API token',
     token_invalid: 'The API token is 30 letters or digits',
-    priority_map: 'Severity to priority',
-    priority_map_tip:
-      'Pushover priority for each Nightingale severity. High (1) bypasses quiet hours; Emergency (2) repeats until someone acknowledges it and stops when the alert recovers. Recovery notifications always use Normal.',
-    retry: 'Emergency repeat interval (s)',
-    expire: 'Emergency repeat duration (s)',
-    emergency_tip: 'Only used by Emergency priority: how often the notification repeats (at least 30 seconds) and for how long (at most 10800 seconds).',
     sound: 'Sound',
     sound_tip: "Name of a Pushover sound such as siren. Leave empty to use each recipient's own default.",
     proxy_tip: 'Set this if Pushover can only be reached through a proxy, e.g. http://127.0.0.1:7890',
@@ -219,8 +213,6 @@ const en_US = {
     password: 'Password',
     auth_conflict: 'Use either an access token or a username and password, not both',
     basic_incomplete: 'Fill in both the username and the password',
-    priority_map: 'Severity to priority',
-    priority_map_tip: 'ntfy priority for each Nightingale severity. Max (5) keeps ringing and can bypass do-not-disturb. Recovery notifications always use Default.',
     proxy_tip: 'Set this if ntfy can only be reached through a proxy, e.g. http://127.0.0.1:7890',
     insecure_tip: 'Turn on for a self-hosted ntfy server with a self-signed certificate',
   },
@@ -230,9 +222,6 @@ const en_US = {
     api_key: 'API Key',
     api_key_tip:
       'In Splunk On-Call open Integrations → 3rd Party Integrations → REST - Generic. The key is the part of the endpoint URL after /alert/. Supports {{.variable_name}}.',
-    message_type_map: 'Severity to message type',
-    message_type_map_tip:
-      'CRITICAL opens an incident, WARNING may open one depending on your Splunk On-Call settings, INFO only adds a timeline event. Recovery always sends RECOVERY.',
     proxy_tip: 'Set this if Splunk On-Call can only be reached through a proxy, e.g. http://127.0.0.1:7890',
   },
   line_request_config: {
