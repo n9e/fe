@@ -18,6 +18,7 @@ import React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import _ from 'lodash';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { basePrefix } from '@/App';
 
 export interface ModalWrapProps<TData = unknown> {
   title?: string | React.ReactNode;
@@ -43,7 +44,7 @@ export default function ModalHOC<Props extends ModalWrapProps>(Component: React.
 
     function render(props: Props) {
       root.render(
-        <Router>
+        <Router basename={basePrefix}>
           <Component {...props} />
         </Router>,
       );
