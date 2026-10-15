@@ -42,12 +42,17 @@ e2e/
 # 运行全部 e2e 测试
 npm run e2e-test
 
+# 运行必须通过的告警规则核心回归用例
+E2E_CONFIGS=base,prometheus-v1,prometheus-v2,es-index,es-index-pattern,host npm run e2e-test
+
 # 只运行 es-index 配置
 E2E_CONFIGS=es-index npm run e2e-test
 
 # 指定目标环境
 E2E_BASE_URL=http://your-server npm run e2e-test
 ```
+
+告警规则表单改动必须保证 `base`、`prometheus-v1`、`prometheus-v2`、`es-index`、`es-index-pattern` 和 `host` 这些核心配置用例可运行且通过。其他数据源类型的用例应在测试数据稳定时尽力维护和运行；由于其测试数据源或数据可能不稳定，不作为强制门槛。
 
 ## 添加新测试配置
 

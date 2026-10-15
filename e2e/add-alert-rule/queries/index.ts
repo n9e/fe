@@ -17,6 +17,7 @@ import victorialogsQuery from './victorialogs';
 import bceBlsQuery from './bce-bls';
 import cloudwatchQuery from './cloudwatch';
 import gcmQuery from './gcm';
+import hostQuery from './host';
 
 const HANDLERS: Record<string, AlertRuleConditionHandler> = {
   'aliyun-sls': aliyunSlsQuery,
@@ -37,6 +38,7 @@ const HANDLERS: Record<string, AlertRuleConditionHandler> = {
   'bce-bls': bceBlsQuery,
   cloudwatch: cloudwatchQuery,
   gcm: gcmQuery,
+  host: hostQuery,
 };
 
 export function getAlertRuleConditionHandler(cate: string): AlertRuleConditionHandler {

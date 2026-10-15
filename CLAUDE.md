@@ -98,3 +98,10 @@ Less/CSS 侧要求：
 - 避免在测试数据中使用 `as any`。如测试数据与函数签名不匹配，优先用 `satisfies` 验证结构。
 - 测试数据中如含 mock 函数（`jest.fn()`），不适合加 `as const`，保持原样。
 - 不要在测试文件中定义与源码重复的本地类型/接口。
+
+### 告警规则表单 E2E
+
+- 修改告警规则新增/编辑表单的字段、默认值、校验、序列化或回填行为时，必须同步更新 `e2e/add-alert-rule/` 下的 config-driven E2E 用例。
+- `e2e/add-alert-rule/configs/*.json` 是用例输入；配置中的有效字段应贯穿 normalizer、对应的 step/query handler 和 API 持久化断言。涉及编辑回显时，也要验证回填结果。不要静默跳过配置字段或为了通过测试而删减断言；确属 UI/API 转换的差异，应在 expected-value builder 中说明。
+- 必须保证 `base`、`prometheus-v1`、`prometheus-v2`、`es-index`、`es-index-pattern` 和 `host` 这组核心回归用例可运行且通过。其他数据源配置也应在条件允许时维护和运行，但由于测试数据源或数据可能不稳定，属于尽力维护，不作为强制门槛。
+- 改完后检查 Playwright 用例收集，并运行核心配置：`E2E_CONFIGS=base,prometheus-v1,prometheus-v2,es-index,es-index-pattern,host npm run e2e-test`；其他数据源配置在测试数据稳定时再运行。
