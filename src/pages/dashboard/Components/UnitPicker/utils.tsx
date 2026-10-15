@@ -30,6 +30,7 @@ export interface UnitOption {
   // 运行时为 ReactNode（buildUnitOptions 中赋值 JSX/string），此处仅作类型收窄
   cleanLabel?: React.ReactNode;
   cleanLabelLink?: React.ReactNode;
+  searchText?: string;
 }
 
 export const units: UnitOption[] = [
@@ -401,6 +402,7 @@ export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter
   let unitsClone = _.cloneDeep(units);
   if (hideSIOption) {
     unitsClone = _.filter(unitsClone, (unit) => unit.value !== 'sishort');
+    unitsClone = _.map(unitsClone, (unit) => (unit.options ? { ...unit, options: _.filter(unit.options, (option) => option.value !== 'sishort') } : unit));
   }
   if (filter) {
     unitsClone = filter(unitsClone);
@@ -410,28 +412,32 @@ export const buildUnitOptions = (hideLabel = false, hideSIOption = false, filter
       return {
         ...item,
         options: _.map(item.options, (option) => {
+          const description = i18next.t(`unitPicker:unitDesc.${option.value}`);
           return {
             ...option,
             cleanLabel: option.label,
             cleanLabelLink: <a>{option.label}</a>,
+            searchText: [option.label, description].filter((value) => typeof value === 'string').join(' '),
             label: (
               <span>
                 {!hideLabel && option.label}
-                <span className='built-in-metrics-form-unit-option-desc'>{i18next.t(`unitPicker:unitDesc.${option.value}`)}</span>
+                <span className='built-in-metrics-form-unit-option-desc'>{description}</span>
               </span>
             ),
           };
         }),
       };
     }
+    const description = i18next.t(`unitPicker:unitDesc.${item.value}`);
     return {
       ...item,
       cleanLabel: item.label,
       cleanLabelLink: <a>{item.label}</a>,
+      searchText: [item.label, description].filter((value) => typeof value === 'string').join(' '),
       label: (
         <span>
           {!hideLabel && item.label}
-          <span className='built-in-metrics-form-unit-option-desc'>{i18next.t(`unitPicker:unitDesc.${item.value}`)}</span>
+          <span className='built-in-metrics-form-unit-option-desc'>{description}</span>
         </span>
       ),
     };

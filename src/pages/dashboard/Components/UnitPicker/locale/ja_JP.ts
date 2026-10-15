@@ -1,4 +1,5 @@
 const ja_JP = {
+  useCustomUnit: 'カスタム単位として使用: {{unit}}',
   unitDesc: {
     none: '生の値、単位変換なし',
     sishort: 'SI接頭辞を使用して単位を変換します。例：1Kは1000を表します。',
