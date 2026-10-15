@@ -24,7 +24,9 @@ export default function SplunkOnCall() {
       <NativeNetworkSettings
         names={names}
         proxyTip={label('proxy_tip')}
-        extra={<NativeApiUrl name={[...names, 'api_url']} defaultUrl='https://alert.victorops.com/integrations/generic/20131114/alert' active={active} />}
+        extra={(expand) => (
+          <NativeApiUrl name={[...names, 'api_url']} defaultUrl='https://alert.victorops.com/integrations/generic/20131114/alert' active={active} onValidationError={expand} />
+        )}
       />
     </div>
   );

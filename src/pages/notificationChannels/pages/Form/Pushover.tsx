@@ -38,7 +38,7 @@ export default function Pushover() {
       <NativeNetworkSettings
         names={names}
         proxyTip={label('proxy_tip')}
-        extra={<NativeApiUrl name={[...names, 'api_url']} defaultUrl='https://api.pushover.net' active={active} />}
+        extra={(expand) => <NativeApiUrl name={[...names, 'api_url']} defaultUrl='https://api.pushover.net' active={active} onValidationError={expand} />}
       />
     </div>
   );
