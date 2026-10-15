@@ -69,19 +69,21 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
         type: 'none',
       },
     };
-    result.options = { ...(isRecord(result.options) ? result.options : {}) };
-    delete result.options.links;
-    result.targets = targets.map((target) => {
+    const nextOptions: Record<string, unknown> = { ...(isRecord(result.options) ? result.options : {}) };
+    delete nextOptions.links;
+    result.options = nextOptions;
+    const nextTargets = targets.map((target) => {
       if (displayMode === 'labelValuesToRows') {
         const { legend, ...targetWithoutLegend } = target;
         return { ...targetWithoutLegend, instant: true };
       }
       return { ...target, instant: true };
     }) as ITarget[];
+    result.targets = nextTargets;
     result.overrides = asRecordArray(result.overrides).map((override) => {
       const matcher = isRecord(override.matcher) ? override.matcher : undefined;
       if (matcher?.id !== 'byFrameRefID') return override;
-      const targetIndex = asRecordArray(result.targets).findIndex((target) => target.refId === matcher.value);
+      const targetIndex = nextTargets.findIndex((target) => target.refId === matcher.value);
       let fieldName: string | undefined;
       if (targetIndex >= 0) {
         if (displayMode === 'labelValuesToRows') {
@@ -89,7 +91,7 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
         } else if (valueFieldNames.length === 1) {
           fieldName = 'value';
         } else {
-          fieldName = `value_${result.targets[targetIndex].refId}`;
+          fieldName = `value_${nextTargets[targetIndex].refId}`;
         }
       }
       return {
@@ -176,9 +178,9 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
       ...link,
       url: typeof link.url === 'string' ? replaceLegacyLinkVariables(link.url, valueFieldName) : link.url,
     })) as LinksItem[];
-    if (optionLinks.length) result.options.links = optionLinks;
+    if (optionLinks.length) nextOptions.links = optionLinks;
 
-    return result;
+    return result as IPanel;
   } catch (error) {
     console.warn('Failed to upgrade legacy Table panel to TableNG', error);
     return fallback;

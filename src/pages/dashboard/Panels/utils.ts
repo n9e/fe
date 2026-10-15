@@ -396,19 +396,13 @@ export function getPanelRepeatClone(sourcePanel: IPanel, valueIndex: number, sou
 }
 
 export function getSelectedRepeatOptions(variable: IVariable): Array<string | number> {
-  let selectedOptions = variable.value;
-
-  if (typeof selectedOptions === 'number') {
+  const value = variable.value;
+  if (typeof value === 'number' || value == null || value === '') {
     return [];
   }
-  if (!selectedOptions) {
-    selectedOptions = [];
-  }
-  if (typeof selectedOptions === 'string') {
-    selectedOptions = [selectedOptions];
-  }
-  if (_.isEqual(selectedOptions, ['all'])) {
-    selectedOptions = _.map(variable.options, 'value') || [];
+  const selectedOptions = typeof value === 'string' ? [value] : value;
+  if (selectedOptions.length === 1 && selectedOptions[0] === 'all') {
+    return (variable.options ?? []).map((option) => option.value);
   }
   return selectedOptions;
 }
