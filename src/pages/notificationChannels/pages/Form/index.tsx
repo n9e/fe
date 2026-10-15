@@ -28,6 +28,10 @@ import Discord from './Discord';
 import SlackWebhook from './SlackWebhook';
 import Teams from './Teams';
 import Twilio from './Twilio';
+import Pushover from './Pushover';
+import Ntfy from './Ntfy';
+import SplunkOnCall from './SplunkOnCall';
+import Line from './Line';
 import MattermostWebhook from './MattermostWebhook';
 import JSMAlert from './JSMAlert';
 import TestModal from './TestModal';
@@ -172,6 +176,10 @@ export default function FormCpt(props: Props) {
                   <SlackWebhook />
                   <Teams />
                   <Twilio />
+                  <Pushover />
+                  <Ntfy />
+                  <SplunkOnCall />
+                  <Line />
                   <MattermostWebhook />
                   <JSMAlert />
                 </div>

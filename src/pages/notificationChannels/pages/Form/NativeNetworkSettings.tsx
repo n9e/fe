@@ -10,14 +10,17 @@ interface Props {
   proxyTip: string;
   /** 自建服务（如 Mattermost）才需要跳过证书校验 */
   insecureTip?: string;
+  /** 放在高级设置最前面的额外字段，如可改的接口地址 */
+  extra?: React.ReactNode;
 }
 
 /** 原生媒介共用的「高级设置」：代理、超时、重试，按需加跳过证书校验。字段都不设 initialValue，原因见 Jira.tsx。 */
-export default function NativeNetworkSettings({ names, proxyTip, insecureTip }: Props) {
+export default function NativeNetworkSettings({ names, proxyTip, insecureTip, extra }: Props) {
   const { t } = useTranslation(NS);
   return (
     <Collapse ghost className='n9e-collapse-advanced-settings'>
       <Collapse.Panel key='advanced' header={t('advanced_settings')} forceRender>
+        {extra}
         <Form.Item label={t('http_request_config.proxy')} tooltip={proxyTip} name={[...names, 'proxy']}>
           <Input placeholder='http://127.0.0.1:7890' />
         </Form.Item>

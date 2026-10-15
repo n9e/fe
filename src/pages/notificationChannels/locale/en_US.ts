@@ -37,6 +37,10 @@ const en_US = {
     },
   },
   request_configuration: {
+    pushover: 'Pushover configuration',
+    ntfy: 'ntfy configuration',
+    splunk_oncall: 'Splunk On-Call configuration',
+    line: 'LINE configuration',
     teams: 'Microsoft Teams configuration',
     twilio: 'Twilio configuration',
     jsm_alert: 'JSM Alert configuration',
@@ -185,6 +189,59 @@ const en_US = {
     service_sid_invalid: 'Messaging Service SID must be MG followed by 32 hexadecimal characters',
     phone_format: 'Use E.164 format, e.g. +14155552671',
   },
+  native_api_url: 'API URL',
+  native_api_url_tip: 'Leave empty to use the official address. Change it only when requests go through a gateway or reverse proxy.',
+  native_api_url_invalid: 'Must start with http:// or https://',
+  pushover_request_config: {
+    top_tip:
+      'Create an application at https://pushover.net/apps/build and paste its API token here. The user key or delivery group key that receives the notifications is filled in each notification rule. The token supports {{.variable_name}}.',
+    token: 'API token',
+    token_invalid: 'The API token is 30 letters or digits',
+    priority_map: 'Severity to priority',
+    priority_map_tip:
+      'Pushover priority for each Nightingale severity. High (1) bypasses quiet hours; Emergency (2) repeats until someone acknowledges it and stops when the alert recovers. Recovery notifications always use Normal.',
+    retry: 'Emergency repeat interval (s)',
+    expire: 'Emergency repeat duration (s)',
+    emergency_tip: 'Only used by Emergency priority: how often the notification repeats (at least 30 seconds) and for how long (at most 10800 seconds).',
+    sound: 'Sound',
+    sound_tip: "Name of a Pushover sound such as siren. Leave empty to use each recipient's own default.",
+    proxy_tip: 'Set this if Pushover can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+  },
+  ntfy_request_config: {
+    top_tip:
+      'Leave everything empty to publish to the public server ntfy.sh without authentication, or fill in your self-hosted server and credentials. The topic is filled in each notification rule. On a public server anyone who knows the topic can read it, so pick a topic name that is hard to guess.',
+    server_url: 'Server URL',
+    server_url_tip: 'Root address of the ntfy server, without the topic. Leave empty to use https://ntfy.sh.',
+    token: 'Access token',
+    token_tip:
+      'A token created in the ntfy account settings (starts with tk_). Use either a token or a username and password; leave both empty for servers without authentication. Supports {{.variable_name}}.',
+    username: 'Username',
+    password: 'Password',
+    auth_conflict: 'Use either an access token or a username and password, not both',
+    basic_incomplete: 'Fill in both the username and the password',
+    priority_map: 'Severity to priority',
+    priority_map_tip: 'ntfy priority for each Nightingale severity. Max (5) keeps ringing and can bypass do-not-disturb. Recovery notifications always use Default.',
+    proxy_tip: 'Set this if ntfy can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+    insecure_tip: 'Turn on for a self-hosted ntfy server with a self-signed certificate',
+  },
+  splunk_oncall_request_config: {
+    top_tip:
+      'Alerts go to Splunk On-Call (formerly VictorOps) through the REST endpoint integration. The API key belongs to the whole organization and is set here; the routing key decides which team is paged and is filled in each notification rule. When an alert recovers, its incident is resolved.',
+    api_key: 'API Key',
+    api_key_tip:
+      'In Splunk On-Call open Integrations → 3rd Party Integrations → REST - Generic. The key is the part of the endpoint URL after /alert/. Supports {{.variable_name}}.',
+    message_type_map: 'Severity to message type',
+    message_type_map_tip:
+      'CRITICAL opens an incident, WARNING may open one depending on your Splunk On-Call settings, INFO only adds a timeline event. Recovery always sends RECOVERY.',
+    proxy_tip: 'Set this if Splunk On-Call can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+  },
+  line_request_config: {
+    top_tip:
+      'Notifications are sent by a LINE Official Account through the Messaging API (LINE Notify has been discontinued). Set the channel access token here; the recipient — a user, group or multi-person chat ID — is filled in each notification rule. Users must add the official account as a friend, and groups must invite it.',
+    channel_access_token: 'Channel access token',
+    channel_access_token_tip: 'LINE Developers Console → your channel → Messaging API → Channel access token (long-lived). Supports {{.variable_name}}.',
+    proxy_tip: 'Set this if LINE can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+  },
   slackwebhook_request_config: {
     top_tip:
       'A webhook URL points to one Slack channel, so the URL is filled in the notification rule and this media type can post to any number of channels. The settings here are defaults shared by all rules. Get the URL by creating an app at https://api.slack.com/apps and turning on Incoming Webhooks.',
@@ -249,6 +306,10 @@ const en_US = {
   },
   types_select_placeholder: 'Type',
   types: {
+    pushover: 'Pushover',
+    ntfy: 'ntfy',
+    splunk_oncall: 'Splunk On-Call',
+    line: 'LINE',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
@@ -279,6 +340,15 @@ const en_US = {
     script: 'Script',
   },
   test: {
+    pushover_title: 'User Key / Group Key',
+    pushover_tip: 'Once saved, this value is filled in the notification rule; enter one here just for testing.',
+    ntfy_title: 'Topic',
+    ntfy_tip: 'Once saved, this value is filled in the notification rule; enter one here just for testing.',
+    splunk_oncall_title: 'Routing Key',
+    splunk_oncall_tip: 'Once saved, this value is filled in the notification rule; enter one here just for testing.',
+    splunk_oncall_with_recovery: 'Also test recovery (resolve the incident)',
+    line_title: 'Recipient ID',
+    line_tip: 'Once saved, this value is filled in the notification rule; enter one here just for testing.',
     jsm_title: 'JSM API integration key',
     jsm_tip: 'The key is filled in the notification rule after saving; enter one here to test. A real alert is created in the team of this integration.',
     jsm_api_key_placeholder: 'API key of the integration',

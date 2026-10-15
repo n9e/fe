@@ -37,6 +37,10 @@ const pt_BR = {
     },
   },
   request_configuration: {
+    pushover: 'Configuração do Pushover',
+    ntfy: 'Configuração do ntfy',
+    splunk_oncall: 'Configuração do Splunk On-Call',
+    line: 'Configuração do LINE',
     teams: 'Configuração do Microsoft Teams',
     twilio: 'Configuração do Twilio',
     jsm_alert: 'Configuração do JSM Alert',
@@ -184,6 +188,59 @@ const pt_BR = {
     service_sid_invalid: 'O Messaging Service SID deve ser MG seguido de 32 caracteres hexadecimais',
     phone_format: 'Use o formato E.164, por exemplo +14155552671',
   },
+  native_api_url: 'URL da API',
+  native_api_url_tip: 'Deixe em branco para usar o endereço oficial. Altere apenas se as requisições passarem por um gateway ou proxy reverso.',
+  native_api_url_invalid: 'Deve começar com http:// ou https://',
+  pushover_request_config: {
+    top_tip:
+      'Crie um aplicativo em https://pushover.net/apps/build e cole aqui o token de API dele. A chave de usuário ou de grupo de entrega que recebe as notificações é preenchida em cada regra de notificação. O token aceita {{.nome_variavel}}.',
+    token: 'Token de API',
+    token_invalid: 'O token de API tem 30 letras ou dígitos',
+    priority_map: 'Severidade e prioridade',
+    priority_map_tip:
+      'Prioridade do Pushover para cada severidade do Nightingale. High (1) ignora o horário de silêncio; Emergency (2) se repete até alguém confirmar e para quando o alerta é recuperado. As notificações de recuperação usam sempre Normal.',
+    retry: 'Intervalo de repetição Emergency (s)',
+    expire: 'Duração da repetição Emergency (s)',
+    emergency_tip: 'Usado apenas com a prioridade Emergency: a cada quanto tempo a notificação se repete (no mínimo 30 segundos) e por quanto tempo (no máximo 10800 segundos).',
+    sound: 'Som',
+    sound_tip: 'Nome de um som do Pushover, como siren. Deixe em branco para usar o padrão de cada destinatário.',
+    proxy_tip: 'Preencha se o Pushover só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
+  },
+  ntfy_request_config: {
+    top_tip:
+      'Deixe tudo em branco para publicar no servidor público ntfy.sh sem autenticação, ou informe seu servidor próprio e as credenciais. O tópico é preenchido em cada regra de notificação. Em um servidor público, qualquer pessoa que conheça o tópico pode lê-lo, então escolha um nome difícil de adivinhar.',
+    server_url: 'URL do servidor',
+    server_url_tip: 'Endereço raiz do servidor ntfy, sem o tópico. Deixe em branco para usar https://ntfy.sh.',
+    token: 'Token de acesso',
+    token_tip:
+      'Token criado nas configurações da conta do ntfy (começa com tk_). Use um token ou então usuário e senha; deixe ambos em branco em servidores sem autenticação. Aceita {{.nome_variavel}}.',
+    username: 'Usuário',
+    password: 'Senha',
+    auth_conflict: 'Use um token de acesso ou usuário e senha, não os dois',
+    basic_incomplete: 'Preencha tanto o usuário quanto a senha',
+    priority_map: 'Severidade e prioridade',
+    priority_map_tip:
+      'Prioridade do ntfy para cada severidade do Nightingale. Max (5) toca continuamente e pode ignorar o modo Não perturbe. As notificações de recuperação usam sempre Default.',
+    proxy_tip: 'Preencha se o ntfy só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
+    insecure_tip: 'Ative para um servidor ntfy próprio com certificado autoassinado',
+  },
+  splunk_oncall_request_config: {
+    top_tip:
+      'Os alertas são enviados ao Splunk On-Call (antigo VictorOps) pela integração REST endpoint. A chave de API pertence a toda a organização e é configurada aqui; a chave de roteamento define qual equipe é acionada e é preenchida em cada regra de notificação. Quando o alerta é recuperado, o incidente é resolvido.',
+    api_key: 'API Key',
+    api_key_tip: 'No Splunk On-Call, abra Integrations → 3rd Party Integrations → REST - Generic. A chave é a parte da URL depois de /alert/. Aceita {{.nome_variavel}}.',
+    message_type_map: 'Severidade e tipo de mensagem',
+    message_type_map_tip:
+      'CRITICAL abre um incidente, WARNING pode abrir conforme as configurações do Splunk On-Call e INFO apenas adiciona um evento à linha do tempo. A recuperação envia sempre RECOVERY.',
+    proxy_tip: 'Preencha se o Splunk On-Call só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
+  },
+  line_request_config: {
+    top_tip:
+      'As notificações são enviadas por uma conta oficial do LINE pela Messaging API (o LINE Notify foi descontinuado). Configure aqui o token de acesso do canal; o destinatário (ID de usuário, de grupo ou de chat com várias pessoas) é preenchido em cada regra de notificação. Os usuários precisam adicionar a conta oficial como amiga, e os grupos precisam convidá-la.',
+    channel_access_token: 'Channel access token',
+    channel_access_token_tip: 'LINE Developers Console → seu canal → Messaging API → Channel access token (long-lived). Aceita {{.nome_variavel}}.',
+    proxy_tip: 'Preencha se o LINE só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Uma URL de webhook corresponde a um canal do Slack, por isso ela é preenchida na regra de notificação e este meio pode enviar para quantos canais precisar. Estas configurações são padrões compartilhados por todas as regras. Obtenha a URL criando um app em https://api.slack.com/apps e ativando Incoming Webhooks.',
@@ -248,6 +305,10 @@ const pt_BR = {
   },
   types_select_placeholder: 'Tipo',
   types: {
+    pushover: 'Pushover',
+    ntfy: 'ntfy',
+    splunk_oncall: 'Splunk On-Call',
+    line: 'LINE',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
@@ -278,6 +339,15 @@ const pt_BR = {
     script: 'Script',
   },
   test: {
+    pushover_title: 'User Key / Group Key',
+    pushover_tip: 'Depois de salvar, este valor é preenchido na regra de notificação; informe um aqui apenas para testar.',
+    ntfy_title: 'Topic',
+    ntfy_tip: 'Depois de salvar, este valor é preenchido na regra de notificação; informe um aqui apenas para testar.',
+    splunk_oncall_title: 'Routing Key',
+    splunk_oncall_tip: 'Depois de salvar, este valor é preenchido na regra de notificação; informe um aqui apenas para testar.',
+    splunk_oncall_with_recovery: 'Testar também a recuperação (resolver o incidente)',
+    line_title: 'ID do destinatário',
+    line_tip: 'Depois de salvar, este valor é preenchido na regra de notificação; informe um aqui apenas para testar.',
     jsm_title: 'Chave da integração de API do JSM',
     jsm_tip: 'Depois de salvar, a chave é informada na regra de notificação; informe uma aqui para testar. Um alerta real é criado na equipe desta integração.',
     jsm_api_key_placeholder: 'Chave de API da integração',
