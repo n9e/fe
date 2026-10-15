@@ -133,7 +133,7 @@ export default function index(props: Props) {
     return frames;
   }, [frames, custom.scaleDistribution?.type]);
 
-  const baseUOptions: Options = useMemo(() => {
+  const baseUOptions: Omit<Options, 'width' | 'height'> = useMemo(() => {
     const yRange = getScalesYRange({ panel });
     return {
       padding: [paddingSide, paddingSide, paddingSide, paddingSide],

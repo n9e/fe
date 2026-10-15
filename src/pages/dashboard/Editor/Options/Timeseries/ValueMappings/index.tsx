@@ -21,7 +21,7 @@ import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../../Components/Collapse';
 import Preview from '../../../Fields/ValueMappings/Preview';
-import type { IValueMapping } from '../../../types';
+import type { IValueMapping } from '../../../../types';
 
 interface IProps {
   preNamePrefix?: (string | number)[];
