@@ -1,4 +1,3 @@
-export const GUIDE_MODE_KEY = 'privateCloudGuideMode';
 export const EMPTY_MODE_KEY = 'privateCloudEmptyMode';
 export const HOME_MODE_KEY = 'privateCloudHomeMode';
 
