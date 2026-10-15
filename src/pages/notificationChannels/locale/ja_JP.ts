@@ -37,6 +37,8 @@ const ja_JP = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams 設定',
+    twilio: 'Twilio 設定',
     jsm_alert: 'JSM アラート設定',
     discord: 'Discord 設定',
     slackwebhook: 'Slack Webhook 設定',
@@ -156,6 +158,32 @@ const ja_JP = {
     silent_tip: 'メッセージはチャンネルに投稿されますが、プッシュやデスクトップ通知は発生しません',
     proxy_tip: 'Discord へのアクセスにプロキシが必要な場合に入力します（例：http://127.0.0.1:7890）',
   },
+  teams_request_config: {
+    top_tip:
+      'Teams Workflows で「When a Teams webhook request is received」トリガーの Webhook を作成し、Anyone を許可します。その URL を通知ルールに貼り付けてください。カードにはアラートの状態、本文、イベントへのリンクが含まれます。',
+    proxy_tip: 'Nightingale サーバーから Teams に直接アクセスできない場合に入力します。',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Twilio アカウントと送信元を設定し、通知ルールで受信者を選択します。受信者の電話番号には国番号が必要です（E.164 形式、例：+14155552671）。認証情報では {{.変数名}} を使用できます。',
+    mode: '通知方法',
+    sms: 'SMS',
+    call: '音声通話',
+    account_sid: 'Account SID',
+    auth_token: 'Auth Token',
+    from: '送信元',
+    from_tip: 'SMS：Twilio の電話番号または英数字の Sender ID を入力するか、下の Messaging Service SID を使用します。音声：E.164 形式の Twilio 電話番号が必要です。',
+    from_required: '送信元を入力してください。SMS の場合は Messaging Service SID でも構いません',
+    messaging_service_sid: 'Messaging Service SID（SMS のみ）',
+    voice: '音声の種類',
+    language: '読み上げ言語',
+    retry_tip:
+      'レート制限による拒否（HTTP 429）のみ再試行します。テストの成功は Twilio がリクエストを受け付けたことを意味します。配信や通話の最終状態は Twilio のログで確認してください。',
+    proxy_tip: 'Nightingale サーバーから api.twilio.com に直接アクセスできない場合に入力します。',
+    account_sid_invalid: 'Account SID は AC に続く 32 桁の 16 進数である必要があります',
+    service_sid_invalid: 'Messaging Service SID は MG に続く 32 桁の 16 進数である必要があります',
+    phone_format: 'E.164 形式で入力してください（例：+14155552671）',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Webhook URL は 1 つの Slack チャンネルに対応するため、URL は通知ルールで入力します。このメディアで任意の数のチャンネルに送信できます。ここの設定はすべてのルールで共有されるデフォルト値です。https://api.slack.com/apps でアプリを作成し、Incoming Webhooks を有効にすると URL を取得できます。',
@@ -219,6 +247,8 @@ const ja_JP = {
   },
   types_select_placeholder: 'タイプ',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: 'コールバック',
     email: 'メール',

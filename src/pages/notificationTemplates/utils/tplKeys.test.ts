@@ -189,6 +189,28 @@ describe('与 normalizeFormValues 的契约', () => {
 });
 
 describe('buildStarterContent', () => {
+  it('Teams keeps only editable notes and labels because metadata and actions are rendered by the card', () => {
+    const { content } = buildStarterContent({ request_type: 'teams' }, TEXTS);
+    expect(content).toContain('{{$event.RuleNote}}');
+    expect(content).toContain('$labels');
+    expect(content).toContain(TEXTS.tags);
+    expect(content).not.toContain('{{$event.RuleName}}');
+    expect(content).not.toContain('{{$event.TriggerValue}}');
+    expect(content).not.toContain('/share/');
+  });
+
+  it('Teams and Twilio expose a plain content template, with a short speech-safe Twilio starter', () => {
+    for (const request_type of ['teams', 'twilio']) {
+      expect(getExpectedTplKeys({ request_type }).keys).toEqual(['content']);
+    }
+    const content = buildStarterContent({ request_type: 'twilio' }, TEXTS);
+    expect(Object.keys(content)).toEqual(['content']);
+    expect(content.content).toContain('Recovered');
+    expect(content.content).toContain('Triggered');
+    expect(content.content).not.toContain('/share/');
+    expect(content.content).not.toContain('**');
+  });
+
   it('按 body 推导出的字段生成内容，标题字段只有一行', () => {
     const channel = {
       request_type: 'http',

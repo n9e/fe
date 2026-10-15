@@ -1,6 +1,7 @@
 import type { ReferenceData } from './reference-data';
 import type { AlertRuleConfig, NormalizedAlertRuleConfig, NormalizedRelabelConfig, NormalizedTimeRange, NormalizedServiceCalConfig } from './types';
 import { processAlertRuleFormValuesForE2E, processAlertRuleInitialValuesForE2E } from './form-values';
+import { formatServiceCalConfigs, normalizeServiceCalConfigs as normalizeAppServiceCalConfigs, type ServiceCalConfigItem } from '../../src/pages/alertRules/Form/serviceCalConfigs';
 
 const MATCH_TYPE_LABEL_MAP: Record<number, string> = {
   0: '精确匹配',
@@ -25,6 +26,7 @@ const SEVERITY_LABEL_MAP: Record<number, string> = {
 };
 
 const CATE_LABEL_MAP: Record<string, string> = {
+  host: 'Host',
   prometheus: 'Prometheus',
   loki: 'Loki',
   elasticsearch: 'Elasticsearch',
@@ -120,19 +122,18 @@ function normalizeEffectiveTimeRanges(stimes: string[], etimes: string[], daysOf
   }));
 }
 
-function normalizeServiceCalConfigs(raw: unknown, refs: ReferenceData): NormalizedServiceCalConfig[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.map((cfg: Record<string, unknown>) => {
-    const ids = Array.isArray(cfg.service_cal_ids) ? cfg.service_cal_ids.map(Number) : [];
-    const timeRangeRaw = isPlainObject(cfg.time_range) ? (cfg.time_range as Record<string, string>) : {};
-    return {
-      serviceCalNames: ids.map((id: number) => requiredMapValue(refs.serviceCalNameMap, id, 'extra_config.service_cal_configs.service_cal_ids')),
-      timeRange: {
-        start: timeRangeRaw.start || '00:00',
-        end: timeRangeRaw.end || '00:00',
-      },
-    };
-  });
+function normalizeServiceCalConfigs(raw: unknown, legacyIds: unknown, refs: ReferenceData): NormalizedServiceCalConfig[] {
+  const configs = Array.isArray(raw) ? (raw as ServiceCalConfigItem[]) : undefined;
+  const ids = Array.isArray(legacyIds) ? legacyIds.map(Number) : undefined;
+  const normalized = formatServiceCalConfigs(normalizeAppServiceCalConfigs(configs, ids));
+
+  return normalized.map((config) => ({
+    serviceCalNames: config.service_cal_ids.map((id) => requiredMapValue(refs.serviceCalNameMap, id, 'extra_config.service_cal_configs.service_cal_ids')),
+    timeRange: {
+      start: typeof config.time_range?.start === 'string' ? config.time_range.start : '00:00',
+      end: typeof config.time_range?.end === 'string' ? config.time_range.end : '00:00',
+    },
+  }));
 }
 
 function normalizeAnnotations(raw: unknown) {
@@ -166,7 +167,7 @@ export function normalizeAlertRuleForUi(config: AlertRuleConfig, refs: Reference
   const formValues = processAlertRuleInitialValuesForE2E(config);
   const ruleVersion = typeof config.rule_config.version === 'string' ? config.rule_config.version : undefined;
   const annotations = normalizeAnnotations(config.annotations);
-  const serviceCalConfigs = config.extra_config?.service_cal_configs ? normalizeServiceCalConfigs(config.extra_config.service_cal_configs, refs) : [];
+  const serviceCalConfigs = normalizeServiceCalConfigs(config.extra_config?.service_cal_configs, config.extra_config?.service_cal_ids, refs);
 
   return {
     name: `${config.name}-${Date.now().toString(36)}`,
@@ -298,6 +299,17 @@ export function buildExpectedAlertRule(config: AlertRuleConfig, uiConfig: Normal
   }
   if (expected.extra_config?.network_device_config === null) {
     delete expected.extra_config.network_device_config;
+  }
+
+  if (expected.extra_config) {
+    const rawServiceCalConfigs = expected.extra_config.service_cal_configs;
+    const legacyServiceCalIds = expected.extra_config.service_cal_ids;
+    const serviceCalConfigs = normalizeAppServiceCalConfigs(
+      Array.isArray(rawServiceCalConfigs) ? (rawServiceCalConfigs as ServiceCalConfigItem[]) : undefined,
+      Array.isArray(legacyServiceCalIds) ? legacyServiceCalIds.map(Number) : undefined,
+    );
+    expected.extra_config.service_cal_configs = formatServiceCalConfigs(serviceCalConfigs);
+    delete expected.extra_config.service_cal_ids;
   }
 
   // FormNG add page does not expose prom_eval_interval. New rules keep the

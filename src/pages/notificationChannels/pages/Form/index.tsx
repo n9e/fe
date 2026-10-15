@@ -26,6 +26,8 @@ import FeishuApp from './FeishuApp';
 import Jira from './Jira';
 import Discord from './Discord';
 import SlackWebhook from './SlackWebhook';
+import Teams from './Teams';
+import Twilio from './Twilio';
 import MattermostWebhook from './MattermostWebhook';
 import JSMAlert from './JSMAlert';
 import TestModal from './TestModal';
@@ -168,6 +170,8 @@ export default function FormCpt(props: Props) {
                   <Jira />
                   <Discord />
                   <SlackWebhook />
+                  <Teams />
+                  <Twilio />
                   <MattermostWebhook />
                   <JSMAlert />
                 </div>

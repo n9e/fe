@@ -36,6 +36,8 @@ const ko_KR = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams 설정',
+    twilio: 'Twilio 설정',
     jsm_alert: 'JSM Alert 설정',
     discord: 'Discord 설정',
     slackwebhook: 'Slack Webhook 설정',
@@ -153,6 +155,31 @@ const ko_KR = {
     silent_tip: '메시지는 채널에 올라가지만 푸시·데스크톱 알림은 발생하지 않습니다',
     proxy_tip: 'Discord에 프록시를 거쳐야만 접속할 수 있을 때 입력합니다(예: http://127.0.0.1:7890)',
   },
+  teams_request_config: {
+    top_tip:
+      'Teams Workflows에서 “When a Teams webhook request is received” 트리거로 Webhook을 만들고 Anyone을 허용하세요. 해당 URL을 알림 규칙에 붙여 넣습니다. 카드에는 알림 상태, 본문, 이벤트 링크가 포함됩니다.',
+    proxy_tip: 'Nightingale 서버가 Teams에 직접 접속할 수 없을 때 입력합니다.',
+  },
+  twilio_request_config: {
+    top_tip:
+      'Twilio 계정과 발신자를 설정한 뒤 알림 규칙에서 수신자를 선택하세요. 수신자의 전화번호에는 국가 번호가 포함되어야 합니다(E.164 형식, 예: +14155552671). 자격 증명에는 {{.변수명}}을 사용할 수 있습니다.',
+    mode: '알림 방식',
+    sms: 'SMS',
+    call: '음성 통화',
+    account_sid: 'Account SID',
+    auth_token: 'Auth Token',
+    from: '발신자',
+    from_tip: 'SMS: Twilio 전화번호 또는 영숫자 Sender ID를 입력하거나 아래 Messaging Service SID를 사용합니다. 음성: E.164 형식의 Twilio 전화번호가 필요합니다.',
+    from_required: '발신자를 입력하세요. SMS는 Messaging Service SID로 대신할 수 있습니다',
+    messaging_service_sid: 'Messaging Service SID(SMS 전용)',
+    voice: '음성 종류',
+    language: '안내 언어',
+    retry_tip: '속도 제한으로 거부된 경우(HTTP 429)에만 재시도합니다. 테스트 성공은 Twilio가 요청을 접수했다는 뜻이며, 전달 및 통화 상태는 Twilio 로그에서 확인하세요.',
+    proxy_tip: 'Nightingale 서버가 api.twilio.com에 직접 접속할 수 없을 때 입력합니다.',
+    account_sid_invalid: 'Account SID는 AC 뒤에 16진수 32자가 와야 합니다',
+    service_sid_invalid: 'Messaging Service SID는 MG 뒤에 16진수 32자가 와야 합니다',
+    phone_format: 'E.164 형식을 사용하세요(예: +14155552671)',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Webhook URL 하나는 Slack 채널 하나에 대응하므로 URL은 알림 규칙에서 입력하며, 이 미디어로 여러 채널에 보낼 수 있습니다. 여기 설정은 모든 규칙이 공유하는 기본값입니다. https://api.slack.com/apps 에서 앱을 만들고 Incoming Webhooks를 켜면 URL을 받을 수 있습니다.',
@@ -217,6 +244,8 @@ const ko_KR = {
   },
   types_select_placeholder: '유형',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: '콜백',
     email: '이메일',

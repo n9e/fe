@@ -74,7 +74,7 @@ export default function TestModal(props: Props) {
   const isJira = requestType === 'jira';
   const isDiscord = requestType === 'discord';
   const isJSMAlert = requestType === 'jsm_alert';
-  const isChatWebhook = requestType === 'slackwebhook' || requestType === 'mattermostwebhook';
+  const isChatWebhook = requestType === 'teams' || requestType === 'slackwebhook' || requestType === 'mattermostwebhook';
   // 支持「同时测试恢复」的媒介：恢复时有独立动作（Jira 关单、JSM 关告警）
   const supportsRecoveryTest = isJira || isJSMAlert;
 
@@ -333,7 +333,13 @@ export default function TestModal(props: Props) {
                 <Input.Password
                   autoComplete='new-password'
                   value={webhookUrl}
-                  placeholder={requestType === 'slackwebhook' ? 'https://hooks.slack.com/services/T.../B.../...' : 'https://mattermost.example.com/hooks/<id>'}
+                  placeholder={
+                    requestType === 'teams'
+                      ? 'https://<workflow-host>/workflows/.../invoke?...'
+                      : requestType === 'slackwebhook'
+                      ? 'https://hooks.slack.com/services/T.../B.../...'
+                      : 'https://mattermost.example.com/hooks/<id>'
+                  }
                   onChange={(e) => setWebhookUrl(e.target.value)}
                 />
               </div>

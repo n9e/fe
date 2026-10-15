@@ -35,6 +35,8 @@ const zh_HK = {
     },
   },
   request_configuration: {
+    teams: 'Microsoft Teams 配置',
+    twilio: 'Twilio 配置',
     jsm_alert: 'JSM 告警設定',
     discord: 'Discord 配置',
     slackwebhook: 'Slack Webhook 配置',
@@ -152,6 +154,29 @@ const zh_HK = {
     silent_tip: '開啟後訊息照常發到頻道，但不觸發接收者的推送和桌面通知',
     proxy_tip: '存取 Discord 需要經過代理時填寫，如 http://127.0.0.1:7890',
   },
+  teams_request_config: {
+    top_tip: '在 Teams Workflows 中建立「收到 Teams Webhook 請求時」工作流，呼叫權限選擇 Anyone，將地址填入通知規則。通知卡片包含告警狀態、正文和事件詳情連結。',
+    proxy_tip: '夜鶯伺服器需要通過代理存取 Teams 時填寫。',
+  },
+  twilio_request_config: {
+    top_tip: '配置 Twilio 帳號和發送號碼，在通知規則中選擇接收人。接收人的手機號必須包含國家碼（E.164 格式，如 +85251234567）。憑證支援 {{.變量名}} 引用。',
+    mode: '通知方式',
+    sms: '短訊',
+    call: '語音電話',
+    account_sid: 'Account SID',
+    auth_token: 'Auth Token',
+    from: '發送號碼 / Sender ID',
+    from_tip: '短訊可填 Twilio 號碼、字母數字 Sender ID，或改填下方 Messaging Service SID；語音必須填寫 E.164 格式的 Twilio 號碼。',
+    from_required: '請填寫發送號碼，短訊也可填寫 Messaging Service SID',
+    messaging_service_sid: 'Messaging Service SID（僅短訊）',
+    voice: '語音名稱',
+    language: '播報語言',
+    retry_tip: '僅限流拒絕（HTTP 429）會自動重試。測試成功表示 Twilio 已受理，請在 Twilio 日誌中查看最終送達或通話狀態。',
+    proxy_tip: '夜鶯伺服器需要通過代理存取 api.twilio.com 時填寫。',
+    account_sid_invalid: 'Account SID 應為 AC 加 32 位十六進制字符',
+    service_sid_invalid: 'Messaging Service SID 應為 MG 加 32 位十六進制字符',
+    phone_format: '請使用 E.164 格式，例如 +85251234567',
+  },
   slackwebhook_request_config: {
     top_tip:
       '一個 Webhook 地址對應一個 Slack 頻道，所以地址在通知規則裡填寫，這個媒介可以發到任意多個頻道。這裡的設定是所有規則共用的預設值。在 https://api.slack.com/apps 建立應用並開啟 Incoming Webhooks 後取得地址。',
@@ -214,6 +239,8 @@ const zh_HK = {
   },
   types_select_placeholder: '類型',
   types: {
+    teams: 'Microsoft Teams',
+    twilio: 'Twilio',
     flashduty: 'FlashDuty',
     callback: '回調',
     email: '郵件',
