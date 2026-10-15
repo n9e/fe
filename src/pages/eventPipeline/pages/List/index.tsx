@@ -14,6 +14,7 @@ import { tagsColumn, updateByColumn, dateColumn } from '@/components/EnhancedTab
 import EllipsisText from '@/components/EllipsisText';
 import EmptyGuide from '@/components/EmptyGuide';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import UsageDocs from '@/components/UsageDocs';
 
 import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY, MAX_NAME_LENGTH } from '../../constants';
 import { Item, getList, putItemsDisabled, deleteItems } from '../../services';
@@ -261,7 +262,9 @@ export default function List({ embedded = false }: ListProps) {
                         >
                           {t('common:btn.add')}
                         </Button>
-                        <a onClick={openDoc}>{t('empty_guide.doc')}</a>
+                        <UsageDocs>
+                          <a onClick={openDoc}>{t('empty_guide.doc')}</a>
+                        </UsageDocs>
                       </>
                     }
                   />

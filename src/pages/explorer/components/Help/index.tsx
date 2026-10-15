@@ -8,6 +8,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 
 // @ts-ignore
 import { proDocumentPathMap } from 'plus:/constants';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   datasourceCate?: string;
@@ -30,19 +31,21 @@ export default function index(props: Props) {
 
   return (
     <span className='ant-input-group-addon'>
-      <Tooltip title={t('help')}>
-        <QuestionCircleOutlined
-          onClick={() => {
-            DocumentDrawer({
-              language: i18n.language,
-              darkMode,
-              title: t('help'),
-              type: 'iframe',
-              documentPath: documentPathMap[datasourceCate],
-            });
-          }}
-        />
-      </Tooltip>
+      <UsageDocs>
+        <Tooltip title={t('help')}>
+          <QuestionCircleOutlined
+            onClick={() => {
+              DocumentDrawer({
+                language: i18n.language,
+                darkMode,
+                title: t('help'),
+                type: 'iframe',
+                documentPath: documentPathMap[datasourceCate],
+              });
+            }}
+          />
+        </Tooltip>
+      </UsageDocs>
     </span>
   );
 }

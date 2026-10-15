@@ -12,6 +12,7 @@ import { CommonStateContext } from '@/App';
 import { getComponents } from '@/pages/builtInComponents/services';
 import { writeOnboardingMarker } from '@/components/OnboardingProgress/detect';
 import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
+import UsageDocs from '@/components/UsageDocs';
 
 import { localizeDocUrl } from '@/utils/docUrl';
 
@@ -578,9 +579,11 @@ export default function CollectSetup(props: Props) {
                         <Button size='small' onClick={arrival.restart}>
                           {t('install.retry')}
                         </Button>
-                        <a href={localizeDocUrl(CATEGRAF_TROUBLESHOOT_DOC, i18n.language)} target='_blank' rel='noreferrer'>
-                          {t('install.troubleshoot_doc')}
-                        </a>
+                        <UsageDocs>
+                          <a href={localizeDocUrl(CATEGRAF_TROUBLESHOOT_DOC, i18n.language)} target='_blank' rel='noreferrer'>
+                            {t('install.troubleshoot_doc')}
+                          </a>
+                        </UsageDocs>
                       </Space>
                     </>
                   }

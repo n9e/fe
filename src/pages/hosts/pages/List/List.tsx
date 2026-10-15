@@ -26,6 +26,7 @@ import { copy2ClipBoard } from '@/utils';
 import getTextWidth from '@/utils/getTextWidth';
 import usePagination from '@/components/usePagination';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import UsageDocs from '@/components/UsageDocs';
 import EmptyGuide from '@/components/EmptyGuide';
 import NextStepsCard from '@/components/OnboardingActions/NextStepsCard';
 import HostsSelect from '@/pages/targets/components/HostsSelect';
@@ -433,10 +434,20 @@ export default function List(props: Props) {
                   description={t('empty_guide.desc')}
                   actions={
                     <>
-                      <Button type='primary' onClick={() => (installMeta ? setInstallVisible(true) : openCategrafDoc())}>
-                        {installMeta ? t('install.entry') : t('empty_guide.deploy_btn')}
-                      </Button>
-                      <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
+                      {installMeta ? (
+                        <Button type='primary' onClick={() => setInstallVisible(true)}>
+                          {t('install.entry')}
+                        </Button>
+                      ) : (
+                        <UsageDocs>
+                          <Button type='primary' onClick={openCategrafDoc}>
+                            {t('empty_guide.deploy_btn')}
+                          </Button>
+                        </UsageDocs>
+                      )}
+                      <UsageDocs>
+                        <a onClick={openCategrafDoc}>{t('categraf_doc')}</a>
+                      </UsageDocs>
                     </>
                   }
                 />

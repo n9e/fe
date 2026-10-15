@@ -31,6 +31,7 @@ import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/util
 import ScenarioList from './components/ScenarioList';
 import './locale';
 import './index.less';
+import UsageDocs from '@/components/UsageDocs';
 
 export { default as Add } from './add';
 export { default as Edit } from './edit';
@@ -463,19 +464,21 @@ const Subscribe = (props: Props) => {
                             {t('common:btn.add')}
                           </Button>
                         )}
-                        <a
-                          onClick={() => {
-                            DocumentDrawer({
-                              language: i18n.language,
-                              darkMode,
-                              title: t('common:page_help'),
-                              type: 'iframe',
-                              documentPath: DOC_URL,
-                            });
-                          }}
-                        >
-                          {t('empty_guide.doc')}
-                        </a>
+                        <UsageDocs>
+                          <a
+                            onClick={() => {
+                              DocumentDrawer({
+                                language: i18n.language,
+                                darkMode,
+                                title: t('common:page_help'),
+                                type: 'iframe',
+                                documentPath: DOC_URL,
+                              });
+                            }}
+                          >
+                            {t('empty_guide.doc')}
+                          </a>
+                        </UsageDocs>
                       </>
                     }
                   />
