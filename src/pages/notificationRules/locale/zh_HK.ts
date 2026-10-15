@@ -181,6 +181,32 @@ const zh_HK = {
       bot_name: '名稱',
       bot_name_tip: '給這個 key 起個好認的名字（如團隊名）：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用這個 key',
     },
+    native_param: {
+      history_placeholder: '貼上一個值，或點擊選擇之前填過的',
+      bot_name: '名稱',
+      bot_name_tip: '給這個接收方起個好認的名字：通知記錄裡的目標顯示它，其他規則也可以按名稱直接複用',
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip: 'Pushover 控制台首頁的 User Key，或用來通知整個團隊的 Delivery Group 的 Key。多個 Key 用逗號分隔。支援 {{.變量名}} 引用。',
+      user_key_invalid: '每個 Key 是 30 位字母或數字，多個 Key 用逗號分隔',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: '只填 Topic 名稱，不要填完整地址。接收人在 ntfy App 裡訂閱同一個 Topic。支援 {{.變量名}} 引用。',
+      topic_invalid: '1 到 64 位字母、數字、底線或連字號',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: '在 Splunk On-Call 的 Settings → Routing Keys 裡查看，它決定告警交給哪條升級策略。支援 {{.變量名}} 引用。',
+      routing_key_invalid: '只填 Routing Key，不能包含空格或斜線',
+    },
+    line: {
+      to: '接收方 ID',
+      to_tip:
+        '使用者 ID（U 開頭）、群組 ID（C 開頭）或多人聊天 ID（R 開頭），後跟 32 位十六進位字元。它來自 Channel 的 Webhook 事件裡的 source 欄位，不是 LINE App 裡顯示的 LINE ID。支援 {{.變量名}} 引用。',
+      to_invalid: '以 U、C 或 R 開頭，後跟 32 位十六進位字元',
+    },
     teams: {
       webhook_url: 'Webhook 地址',
       webhook_url_tip: '在 Teams Workflows 中建立接收 Webhook 的工作流，權限選擇 Anyone，將完整地址（包含查詢參數）貼在此處。支援 {{.變量名}} 引用。',

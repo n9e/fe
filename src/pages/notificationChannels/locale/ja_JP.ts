@@ -37,6 +37,10 @@ const ja_JP = {
     },
   },
   request_configuration: {
+    pushover: 'Pushover 設定',
+    ntfy: 'ntfy 設定',
+    splunk_oncall: 'Splunk On-Call 設定',
+    line: 'LINE 設定',
     teams: 'Microsoft Teams 設定',
     twilio: 'Twilio 設定',
     jsm_alert: 'JSM アラート設定',
@@ -184,6 +188,48 @@ const ja_JP = {
     service_sid_invalid: 'Messaging Service SID は MG に続く 32 桁の 16 進数である必要があります',
     phone_format: 'E.164 形式で入力してください（例：+14155552671）',
   },
+  native_api_url: 'API URL',
+  native_api_url_tip: '空欄の場合は公式のアドレスを使用します。ゲートウェイやリバースプロキシ経由の場合のみ変更してください。',
+  native_api_url_invalid: 'http:// または https:// で始まる必要があります',
+  pushover_request_config: {
+    top_tip:
+      'https://pushover.net/apps/build でアプリケーションを作成し、その API トークンをここに入力します。通知を受け取るユーザーキーまたはグループキーは各通知ルールで入力します。トークンには {{.変数名}} を使用できます。',
+    token: 'API トークン',
+    token_invalid: 'API トークンは英数字 30 文字です',
+    sound: '通知音',
+    sound_tip: 'siren などの Pushover の通知音の名前です。空欄の場合は受信者の既定の設定を使用します。',
+    proxy_tip: 'Pushover へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
+  },
+  ntfy_request_config: {
+    top_tip:
+      'すべて空欄にすると、公開サーバー ntfy.sh に認証なしで送信します。セルフホストのサーバーと認証情報を入力することもできます。トピックは各通知ルールで入力します。公開サーバーではトピックを知っていれば誰でも読めるため、推測されにくいトピック名を使用してください。',
+    server_url: 'サーバー URL',
+    server_url_tip: 'トピックを含まない ntfy サーバーのルートアドレスです。空欄の場合は https://ntfy.sh を使用します。',
+    token: 'アクセストークン',
+    token_tip:
+      'ntfy のアカウント設定で作成したトークン（tk_ で始まります）。トークンとユーザー名・パスワードのどちらか一方を使用し、認証不要のサーバーでは両方とも空欄にします。{{.変数名}} を使用できます。',
+    username: 'ユーザー名',
+    password: 'パスワード',
+    auth_conflict: 'アクセストークンとユーザー名・パスワードはどちらか一方だけ入力してください',
+    basic_incomplete: 'ユーザー名とパスワードは両方入力してください',
+    proxy_tip: 'ntfy へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
+    insecure_tip: '自己署名証明書を使うセルフホストの ntfy サーバーの場合にオンにします',
+  },
+  splunk_oncall_request_config: {
+    top_tip:
+      'アラートは REST エンドポイント連携で Splunk On-Call（旧 VictorOps）に送信されます。API キーは組織全体のものでここに設定し、どのチームを呼び出すかを決めるルーティングキーは各通知ルールで入力します。アラートが復旧するとインシデントは解決されます。',
+    api_key: 'API Key',
+    api_key_tip:
+      'Splunk On-Call の Integrations → 3rd Party Integrations → REST - Generic を開きます。エンドポイント URL の /alert/ の後ろの部分が API キーです。{{.変数名}} を使用できます。',
+    proxy_tip: 'Splunk On-Call へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
+  },
+  line_request_config: {
+    top_tip:
+      '通知は LINE 公式アカウントから Messaging API で送信されます（LINE Notify は終了しました）。ここにチャネルアクセストークンを設定し、送信先（ユーザー・グループ・複数人トークの ID）は各通知ルールで入力します。ユーザーは公式アカウントを友だち追加し、グループには公式アカウントを招待しておく必要があります。',
+    channel_access_token: 'Channel access token',
+    channel_access_token_tip: 'LINE Developers コンソール → チャネル → Messaging API → チャネルアクセストークン（長期）。{{.変数名}} を使用できます。',
+    proxy_tip: 'LINE へのアクセスにプロキシが必要な場合に入力します（例: http://127.0.0.1:7890）',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Webhook URL は 1 つの Slack チャンネルに対応するため、URL は通知ルールで入力します。このメディアで任意の数のチャンネルに送信できます。ここの設定はすべてのルールで共有されるデフォルト値です。https://api.slack.com/apps でアプリを作成し、Incoming Webhooks を有効にすると URL を取得できます。',
@@ -247,6 +293,10 @@ const ja_JP = {
   },
   types_select_placeholder: 'タイプ',
   types: {
+    pushover: 'Pushover',
+    ntfy: 'ntfy',
+    splunk_oncall: 'Splunk On-Call',
+    line: 'LINE',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
@@ -277,6 +327,15 @@ const ja_JP = {
     script: 'Script',
   },
   test: {
+    pushover_title: 'User Key / Group Key',
+    pushover_tip: '保存後、この値は通知ルールで入力します。ここではテスト用に一時的に入力してください。',
+    ntfy_title: 'Topic',
+    ntfy_tip: '保存後、この値は通知ルールで入力します。ここではテスト用に一時的に入力してください。',
+    splunk_oncall_title: 'Routing Key',
+    splunk_oncall_tip: '保存後、この値は通知ルールで入力します。ここではテスト用に一時的に入力してください。',
+    splunk_oncall_with_recovery: '復旧もテストする（インシデントを解決）',
+    line_title: '送信先 ID',
+    line_tip: '保存後、この値は通知ルールで入力します。ここではテスト用に一時的に入力してください。',
     jsm_title: 'JSM API 連携キー',
     jsm_tip: '保存後は通知ルールでキーを入力します。ここではテスト用に一時的に入力してください。この連携のチームに実際のアラートが作成されます。',
     jsm_api_key_placeholder: '連携の API キー',

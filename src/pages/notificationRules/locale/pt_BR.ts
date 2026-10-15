@@ -189,6 +189,33 @@ const pt_BR = {
       bot_name: 'Nome',
       bot_name_tip: 'Um nome fácil de reconhecer para a chave, como o nome da equipe: aparece como destino nos registros e outras regras podem reutilizar a chave por ele',
     },
+    native_param: {
+      history_placeholder: 'Cole um valor ou clique para escolher um usado antes',
+      bot_name: 'Nome',
+      bot_name_tip: 'Um nome reconhecível para este destinatário: aparece como destino nos registros de notificação, e outras regras podem reutilizar o valor escolhendo esse nome',
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip:
+        'A chave de usuário do seu painel do Pushover, ou a chave de um grupo de entrega para avisar toda a equipe. Separe várias chaves com vírgulas. Aceita {{.nome_variavel}}.',
+      user_key_invalid: 'Cada chave tem 30 letras ou dígitos; separe várias chaves com vírgulas',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: 'Apenas o nome do tópico, não a URL completa. Os destinatários assinam o mesmo tópico no app do ntfy. Aceita {{.nome_variavel}}.',
+      topic_invalid: 'De 1 a 64 letras, dígitos, sublinhados ou hifens',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: 'Veja Settings → Routing Keys no Splunk On-Call. Ela define qual política de escalonamento recebe o alerta. Aceita {{.nome_variavel}}.',
+      routing_key_invalid: 'Informe apenas a chave de roteamento, sem espaços nem barras',
+    },
+    line: {
+      to: 'ID do destinatário',
+      to_tip:
+        'Um ID de usuário (U…), de grupo (C…) ou de chat com várias pessoas (R…) seguido de 32 caracteres hexadecimais. Ele vem do campo source dos eventos de webhook do seu canal e não é o LINE ID exibido no app. Aceita {{.nome_variavel}}.',
+      to_invalid: 'Começa com U, C ou R, seguido de 32 caracteres hexadecimais',
+    },
     teams: {
       webhook_url: 'URL do webhook',
       webhook_url_tip: 'Crie no Teams Workflows um webhook com acesso para Anyone e cole aqui a URL completa, incluindo os parâmetros de consulta. Aceita {{.nome_variavel}}.',

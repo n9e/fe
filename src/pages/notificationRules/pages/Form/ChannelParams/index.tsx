@@ -13,6 +13,7 @@ import Jira from './Jira';
 import Discord from './Discord';
 import JSMAlert from './JSMAlert';
 import ChatWebhook from './ChatWebhook';
+import SimpleCredential from './SimpleCredential';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -40,6 +41,8 @@ export default function index(props: Props) {
     return <JSMAlert prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} />;
   } else if (request_type === 'teams' || request_type === 'slackwebhook' || request_type === 'mattermostwebhook') {
     return <ChatWebhook prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} requestType={request_type} />;
+  } else if (request_type === 'pushover' || request_type === 'ntfy' || request_type === 'splunk_oncall' || request_type === 'line') {
+    return <SimpleCredential prefixNamePath={prefixNamePath} field={field} channelItem={channelItem} requestType={request_type} />;
   }
 
   return (
