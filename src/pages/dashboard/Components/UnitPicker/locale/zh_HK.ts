@@ -1,4 +1,5 @@
 const zh_HK = {
+  useCustomUnit: '使用此自訂單位：{{unit}}',
   unitDesc: {
     none: '原始值, 不做單位轉換',
     sishort: '使用 SI 標準換算, 例如 1K=1000',
