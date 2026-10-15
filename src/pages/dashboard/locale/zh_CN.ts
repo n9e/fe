@@ -275,6 +275,8 @@ const zh_CN = {
     `,
   },
   row: {
+    repeat: '按变量重复',
+    repeat_tip: '为每个选中的变量值生成一个分组，副本仅支持展开和折叠。',
     edit_title: '编辑分组',
     delete_title: '删除分组',
     name: '分组名称',

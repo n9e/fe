@@ -277,6 +277,8 @@ const ja_JP = {
     `,
   },
   row: {
+    repeat: '変数で繰り返す',
+    repeat_tip: '選択した変数の値ごとに行を作成します。複製された行は展開と折りたたみのみ可能です。',
     edit_title: 'グループを編集',
     delete_title: 'グループを削除',
     name: 'グループ名',

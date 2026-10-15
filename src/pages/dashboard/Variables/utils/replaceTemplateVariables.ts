@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 
@@ -8,6 +8,7 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 import type { DashboardDatasource, ScopedVariables } from '@/pages/dashboard/types';
 
 import { IVariable } from '../types';
+import { ScopedVariablesContext } from '../ScopedVariablesContext';
 import adjustData from './ajustData';
 import { formatString, formatDatasource } from './formatString';
 
@@ -116,6 +117,7 @@ export function replaceDatasourceVariables(
     datasourceList: DashboardDatasource[];
     /** Runtime variables supplied by an owning dashboard instance. */
     variables?: IVariable[];
+    scopedVars?: ScopedVariables;
   },
 ) {
   const variablesWithOptions = params.variables ?? [];
@@ -124,7 +126,12 @@ export function replaceDatasourceVariables(
   if (!value) {
     return undefined;
   }
-  const data = adjustData(variablesWithOptions, {
+  const scopedVariables = Object.entries(params.scopedVars ?? {}).map(([name, scopedValue]) => {
+    const value = scopedValue !== null && typeof scopedValue === 'object' && !Array.isArray(scopedValue) ? scopedValue.value : (scopedValue as IVariable['value']);
+    // 保留 datasourceIdentifier 等变量类型，确保作用域内的标识仍能解析为数据源 ID。
+    return { ...variablesWithOptions.find((variable) => variable.name === name), name, value } as IVariable;
+  });
+  const data = adjustData([...variablesWithOptions, ...scopedVariables], {
     datasourceList,
   });
   const result = formatDatasource(value, data);
@@ -138,6 +145,7 @@ export function replaceDatasourceVariables(
  * 视图组件应使用此 Hook，纯函数调用方则显式传入 variables 和 range，避免读取模块级状态。
  */
 export function useReplaceTemplateVariables() {
+  const scopedVars = useContext(ScopedVariablesContext);
   const [variables] = useGlobalState('variablesWithOptions');
   const [runtimeRange] = useGlobalState('range');
 
@@ -145,23 +153,26 @@ export function useReplaceTemplateVariables() {
     (value: string, params?: Parameters<typeof replaceTemplateVariables>[1]) =>
       replaceTemplateVariables(value, {
         ...params,
+        scopedVars: { ...scopedVars, ...params?.scopedVars },
         variables,
         range: params?.range ?? runtimeRange,
       }),
-    [runtimeRange, variables],
+    [runtimeRange, variables, scopedVars],
   );
 }
 
 /** 返回绑定当前仪表盘变量的数据源值替换函数，供表单和查询组件使用。 */
 export function useReplaceDatasourceVariables() {
+  const scopedVars = useContext(ScopedVariablesContext);
   const [variables] = useGlobalState('variablesWithOptions');
 
   return useCallback(
     (value: string | number, params: Omit<Parameters<typeof replaceDatasourceVariables>[1], 'variables'>) =>
       replaceDatasourceVariables(value, {
         ...params,
+        scopedVars: { ...scopedVars, ...params.scopedVars },
         variables,
       }),
-    [variables],
+    [variables, scopedVars],
   );
 }

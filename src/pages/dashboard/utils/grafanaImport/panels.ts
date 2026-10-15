@@ -301,6 +301,7 @@ function appendPanels(panels: GrafanaPanel[] | undefined, ctx: ResolveContext, r
         type: 'row',
         name: panel.title ?? '',
         collapsed: Boolean(panel.collapsed),
+        repeat: panel.repeat,
         layout: { ...(panel.gridPos ?? {}), i: id },
       };
       out.push(row);
@@ -309,9 +310,6 @@ function appendPanels(panels: GrafanaPanel[] | undefined, ctx: ResolveContext, r
         appendPanels(panel.panels, ctx, report, row.panels);
       } else {
         appendPanels(panel.panels, ctx, report, out);
-      }
-      if (panel.repeat) {
-        report({ scope: 'panel', action: 'dropped', path: `$.panels[id=${id}]`, reason: '按变量重复的 row 不支持，已丢弃' });
       }
       continue;
     }

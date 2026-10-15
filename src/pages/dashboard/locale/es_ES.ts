@@ -207,6 +207,8 @@ const es_ES = {
       '\n      Cómo usar las variables\n      <br />\n      ${variable_name}: valor de la variable del dashboard\n      <br />\n      ${__row.column_name}: valor de una columna de la fila\n      <br />\n      ${__interval}: intervalo en segundos, por ejemplo 15s; por defecto es el paso\n      <br />\n      ${__interval_ms}: intervalo en milisegundos, por ejemplo 15000\n      <br />\n      ${__range}: ventana de tiempo en segundos, por ejemplo 3600s\n      <br />\n      ${__range_ms}: ventana de tiempo en milisegundos, por ejemplo 3600000\n      <br />\n      ${__rate_interval}: intervalo en segundos, __interval * 4\n      <br />\n      ${__from}: inicio del intervalo en milisegundos\n      <br />\n      ${__from_date_seconds}: inicio del intervalo en segundos\n      <br />\n      ${__from_date_iso}: inicio del intervalo en ISO 8601/RFC 3339\n      <br />\n      La misma sintaxis sirve para ${__to}\n    ',
   },
   row: {
+    repeat: 'Repetir por variable',
+    repeat_tip: 'Crea un grupo por cada valor seleccionado de la variable. Las copias solo se pueden expandir o contraer.',
     edit_title: 'Editar grupo',
     delete_title: 'Eliminar grupo',
     name: 'Nombre del grupo',

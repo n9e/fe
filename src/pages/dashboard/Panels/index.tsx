@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useRef, useContext, useCallback } from 'react';
+import React, { useState, useRef, useContext, useCallback, useEffect } from 'react';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { message, Modal, Input } from 'antd';
@@ -40,6 +40,9 @@ import {
   getRowCollapsedPanels,
   getRowUnCollapsedPanels,
   canEditPanelLayout,
+  processRepeats,
+  repeatRowChildren,
+  updateRepeatGroupOverrides,
 } from './utils';
 import Renderer from '../Renderer/Renderer/index';
 import Row from './Row';
@@ -83,6 +86,7 @@ function index(props: IProps) {
   const layoutEditable = canEditPanelLayout(editable, isAuthorized);
   const layoutInitialized = useRef(false);
   const shouldPersistNextLayoutRef = useRef(false);
+  const pendingRepeatRef = useRef(false);
   const reactGridLayoutDefaultProps = {
     rowHeight: ROW_HEIGHT,
     cols: 24,
@@ -94,12 +98,22 @@ function index(props: IProps) {
    * Network persistence is intentionally centralized in the detail page's Save action.
    */
   const commitPanels = useCallback(
-    (nextPanels: IPanel[], shouldConfirmLeave = true) => {
+    (nextPanels: IPanel[], shouldConfirmLeave = true, recomputeRepeats = true) => {
+      if (recomputeRepeats && [...panels, ...nextPanels].some((panel) => panel.type === 'row' && panel.repeat)) {
+        pendingRepeatRef.current = true;
+      }
       setPanels(nextPanels);
       onConfigChange(mergePanelsToConfig(dashboard.configs, nextPanels), shouldConfirmLeave);
     },
-    [dashboard.configs, onConfigChange, setPanels],
+    [dashboard.configs, onConfigChange, panels, setPanels],
   );
+  // 等待 onDragStop 与随后使用旧闭包的 onLayoutChange 都提交后，再从最终列表生成副本。
+  useEffect(() => {
+    if (!pendingRepeatRef.current) return;
+    pendingRepeatRef.current = false;
+    const nextPanels = processRepeats(panels, variableConfigWithOptions);
+    if (!_.isEqual(panels, nextPanels)) setPanels(nextPanels);
+  }, [panels, variableConfigWithOptions, setPanels]);
   const editorRef = useRef<EditorModalHandle>(null);
   const [pasteModalVisible, setPasteModalVisible] = useState(false);
   const [pasteValue, setPasteValue] = useState('');
@@ -216,17 +230,7 @@ function index(props: IProps) {
                       isAuthorized && editable
                         ? (overrides) => {
                             /** Applies generated overrides to the source panel and all of its runtime repeats. */
-                            const sourcePanelId = item.repeatPanelId || item.id;
-                            const newPanels = _.map(panels, (panel) => {
-                              if (panel.id === sourcePanelId || panel.repeatPanelId === sourcePanelId) {
-                                return {
-                                  ...panel,
-                                  overrides,
-                                };
-                              }
-                              return panel;
-                            });
-                            commitPanels(newPanels);
+                            commitPanels(updateRepeatGroupOverrides(panels, item.id, overrides));
                           }
                         : undefined
                     }
@@ -284,8 +288,14 @@ function index(props: IProps) {
                   row={item}
                   onToggle={() => {
                     /** Keeps the existing collapse persistence behavior without creating a leave prompt. */
-                    const newPanels = handleRowToggle(!item.collapsed, panels, _.cloneDeep(item));
-                    commitPanels(newPanels, false);
+                    shouldPersistNextLayoutRef.current = false;
+                    let newPanels = handleRowToggle(!item.collapsed, panels, item);
+                    if (item.collapsed) newPanels = repeatRowChildren(newPanels, item.id, variableConfigWithOptions);
+                    if (item.repeatPanelId) {
+                      setPanels(newPanels);
+                    } else {
+                      commitPanels(newPanels, false, false);
+                    }
                   }}
                   onAddClick={() => {
                     editorRef.current?.setEditorData({

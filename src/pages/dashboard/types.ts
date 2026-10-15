@@ -345,6 +345,8 @@ export interface IPanel {
   repeat?: string;
   maxPerRow?: number;
   repeatPanelId?: string;
+  repeatedByRow?: boolean; // 仅运行时：随重复 row 生成的子面板
+  repeatSourceLayout?: Pick<IGridPos, 'x' | 'w'>; // 仅运行时：还原面板 repeat 修改的横向布局
   scopedVars?: ScopedVariables;
   maxDataPoints?: number; // 2025-10-20 新增
   queryOptionsTime?: IRawTimeRange; // 2025-10-20 新增， queryOptionsTime 会覆盖 time

@@ -15,7 +15,7 @@
  *
  */
 import React, { useState } from 'react';
-import { Space, Modal, Button, Mentions, Dropdown, Menu } from 'antd';
+import { Space, Modal, Button, Mentions, Dropdown, Menu, Select } from 'antd';
 import { CaretRightOutlined, CaretDownOutlined, HolderOutlined, SettingOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -46,8 +46,19 @@ export default function Row(props: IProps) {
   const { isAuthorized, name, row, onToggle, onAddClick, onPasteClick, onEditClick, onDeleteClick } = props;
   const [editVisble, setEditVisble] = useState(false);
   const [newName, setNewName] = useState<string>();
+  const [newRepeat, setNewRepeat] = useState<string>();
   const [deleteVisible, setDeleteVisible] = useState(false);
+  const canEdit = isAuthorized && !row.repeatPanelId;
   const rowPanels = row.panels?.length ?? 0;
+  const closeEditor = () => {
+    setEditVisble(false);
+    setNewName(undefined);
+    setNewRepeat(undefined);
+  };
+  const submitEditor = () => {
+    onEditClick({ ...row, name: newName || row.name, repeat: newRepeat });
+    closeEditor();
+  };
 
   return (
     <div
@@ -64,7 +75,7 @@ export default function Row(props: IProps) {
         >
           {row.collapsed ? <CaretRightOutlined /> : <CaretDownOutlined />}
           <span className='pl-2'>
-            <span>{replaceTemplateVariables(name)}</span>
+            <span>{replaceTemplateVariables(name, { scopedVars: row.scopedVars })}</span>
             {row.collapsed && (
               <span className='ml-4 dashboards-panels-row-name-panels-count'>
                 (
@@ -80,7 +91,7 @@ export default function Row(props: IProps) {
             )}
           </span>
         </span>
-        {isAuthorized && (
+        {canEdit && (
           <Space className='text-[12px] ml-4'>
             <Dropdown
               trigger={['click']}
@@ -117,6 +128,7 @@ export default function Row(props: IProps) {
               onClick={() => {
                 setEditVisble(true);
                 setNewName(name);
+                setNewRepeat(row.repeat);
               }}
             />
             <DeleteOutlined
@@ -127,26 +139,12 @@ export default function Row(props: IProps) {
           </Space>
         )}
       </div>
-      {isAuthorized && row.collapsed && (
+      {canEdit && row.collapsed && (
         <Space>
           <HolderOutlined className='dashboards-panels-item-drag-handle' />
         </Space>
       )}
-      <Modal
-        title={t('row.edit_title')}
-        visible={editVisble}
-        onCancel={() => {
-          setEditVisble(false);
-        }}
-        onOk={() => {
-          onEditClick({
-            ...row,
-            // 空输入（undefined 或清空）不覆盖原行名
-            name: newName || row.name,
-          });
-          setEditVisble(false);
-        }}
-      >
+      <Modal title={t('row.edit_title')} visible={editVisble} onCancel={closeEditor} onOk={submitEditor}>
         <div>
           {t('row.name')}
           <Mentions
@@ -156,14 +154,7 @@ export default function Row(props: IProps) {
             onChange={(val) => {
               setNewName(val);
             }}
-            onPressEnter={() => {
-              onEditClick({
-                ...row,
-                // 空输入（undefined 或清空）不覆盖原行名
-                name: newName || row.name,
-              });
-              setEditVisble(false);
-            }}
+            onPressEnter={submitEditor}
           >
             {_.map(variablesWithOptions, (item) => {
               return (
@@ -173,6 +164,18 @@ export default function Row(props: IProps) {
               );
             })}
           </Mentions>
+        </div>
+        <div className='mt-4'>
+          <div>{t('row.repeat')}</div>
+          <Select
+            className='w-full'
+            aria-label={t('row.repeat')}
+            allowClear
+            value={newRepeat}
+            onChange={setNewRepeat}
+            options={variablesWithOptions.map((variable) => ({ label: variable.name, value: variable.name }))}
+          />
+          <div className='text-hint mt-1'>{t('row.repeat_tip')}</div>
         </div>
       </Modal>
       <Modal

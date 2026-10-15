@@ -210,6 +210,8 @@ const fr_FR = {
       "\n      Utilisation des variables\n      <br />\n      ${variable_name} : valeur d'une variable du tableau de bord\n      <br />\n      ${__row.column_name} : valeur d'une colonne de la ligne\n      <br />\n      ${__interval} : intervalle en secondes, par exemple 15s, égal au pas par défaut\n      <br />\n      ${__interval_ms} : intervalle en millisecondes, par exemple 15000\n      <br />\n      ${__range} : plage en secondes, par exemple 3600s\n      <br />\n      ${__range_ms} : plage en millisecondes, par exemple 3600000\n      <br />\n      ${__rate_interval} : intervalle en secondes, __interval * 4\n      <br />\n      ${__from} : date de début en millisecondes\n      <br />\n      ${__from_date_seconds} : date de début en secondes\n      <br />\n      ${__from_date_iso} : date de début, ISO 8601/RFC 3339\n      <br />\n      La même syntaxe vaut pour ${__to}\n    ",
   },
   row: {
+    repeat: 'Répéter par variable',
+    repeat_tip: 'Crée un groupe pour chaque valeur sélectionnée de la variable. Les copies peuvent uniquement être développées ou réduites.',
     edit_title: 'Modifier le groupe',
     delete_title: 'Supprimer le groupe',
     name: 'Nom du groupe',

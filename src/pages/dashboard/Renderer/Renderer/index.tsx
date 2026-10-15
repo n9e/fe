@@ -23,6 +23,7 @@ import { Modal, Space, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
+import { ScopedVariablesContext } from '../../Variables/ScopedVariablesContext';
 
 import useQuery from '../datasource/useQuery';
 import { IOverride, IPanel } from '../../types';
@@ -80,7 +81,7 @@ function index(props: IProps) {
 
   if (_.isEmpty(values)) return null;
 
-  return (
+  const panelContent = (
     <div className='h-full' ref={containerEleRef}>
       <Main
         {..._.omit(props)}
@@ -147,6 +148,7 @@ function index(props: IProps) {
         )}
     </div>
   );
+  return <ScopedVariablesContext.Provider value={values.scopedVars}>{panelContent}</ScopedVariablesContext.Provider>;
 }
 
 export default React.memo(index, (prevProps, nextProps) => {

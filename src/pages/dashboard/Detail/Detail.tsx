@@ -366,7 +366,7 @@ function DetailContent(props: IProps) {
     if (!variablesInitialized || !dashboard.configs?.panels) return;
 
     // 重新处理 panels（使用原始配置，而不是已处理的 panels）
-    const processedPanels = processRepeats(panels, variablesWithOptions);
+    const processedPanels = processRepeats(panels, variablesWithOptions, { preserveRowState: false });
     setPanels(processedPanels);
   }, [
     variablesInitialized,
@@ -551,7 +551,7 @@ function DetailContent(props: IProps) {
                         } as IPanel,
                         'row',
                       );
-                      setPanels(newPanels);
+                      setPanels(processRepeats(newPanels, variablesWithOptions));
                       updateLocalDashboardConfigs(mergePanelsToConfig(dashboard.configs, newPanels));
                     } else {
                       setEditorData(adjustInitialValues(type, groupedDatasourceList, panels, variablesWithOptions));
@@ -559,7 +559,7 @@ function DetailContent(props: IProps) {
                   }}
                   onImportPanel={(panelConfig) => {
                     const newPanels = updatePanelsInsertNewPanelToGlobal(panels, { ...panelConfig, id: uuidv4() }, 'chart', false);
-                    setPanels(newPanels);
+                    setPanels(processRepeats(newPanels, variablesWithOptions));
                     scrollToLastPanel(newPanels);
                     updateLocalDashboardConfigs(mergePanelsToConfig(dashboard.configs, newPanels));
                   }}
@@ -619,6 +619,7 @@ function DetailContent(props: IProps) {
                       ? replaceDatasourceVariables(target.datasource.id, {
                           datasourceList,
                           variables: variablesWithOptions,
+                          scopedVars: panel.scopedVars,
                         })
                       : undefined;
                     return {

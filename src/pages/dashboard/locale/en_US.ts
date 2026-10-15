@@ -278,6 +278,8 @@ const en_US = {
     `,
   },
   row: {
+    repeat: 'Repeat by variable',
+    repeat_tip: 'Create a row for each selected variable value. Repeated rows can only be expanded or collapsed.',
     edit_title: 'Edit row',
     delete_title: 'Delete row',
     name: 'Name',

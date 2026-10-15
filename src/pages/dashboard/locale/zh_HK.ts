@@ -275,6 +275,8 @@ const zh_HK = {
     `,
   },
   row: {
+    repeat: '按變數重複',
+    repeat_tip: '為每個選取的變數值產生一個分組，副本僅支援展開和摺疊。',
     edit_title: '編輯分組',
     delete_title: '刪除分組',
     name: '分組名稱',

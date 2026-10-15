@@ -420,6 +420,7 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
           id: 2,
           type: 'row',
           title: 'Row',
+          repeat: 'region',
           collapsed: true,
           gridPos: { h: 1, w: 24, x: 0, y: 8 },
           panels: [{ id: 3, type: 'stat', title: 'S', gridPos: { h: 4, w: 6, x: 0, y: 9 }, targets: [{ refId: 'A', expr: 'down' }] }],
@@ -428,6 +429,7 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
           id: 4,
           type: 'row',
           title: 'Expanded row',
+          repeat: 'region',
           collapsed: false,
           gridPos: { h: 1, w: 24, x: 0, y: 13 },
           panels: [{ id: 5, type: 'stat', title: 'S2', gridPos: { h: 4, w: 6, x: 0, y: 14 }, targets: [{ refId: 'A', expr: 'up' }] }],
@@ -435,7 +437,7 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
       ],
       templating: { list: [{ name: 'DS_PROMETHEUS', type: 'datasource', query: 'prometheus', hide: 0 }] },
     };
-    const { dashboard } = convertDashboardGrafanaToN9EWithReport(input);
+    const { dashboard, report } = convertDashboardGrafanaToN9EWithReport(input);
     const configs = dashboard.configs;
 
     const validation = validateDashboardConfig(configs);
@@ -450,12 +452,13 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
 
     // row 折叠语义与 Grafana 同向：折叠行缓存子面板，展开行把子面板平铺到顶层
     const collapsedRow = configs.panels.find((panel: { id: string }) => panel.id === '2');
-    expect(collapsedRow).toMatchObject({ type: 'row', collapsed: true });
+    expect(collapsedRow).toMatchObject({ type: 'row', collapsed: true, repeat: 'region' });
     expect(collapsedRow.panels).toHaveLength(1);
     const expandedRow = configs.panels.find((panel: { id: string }) => panel.id === '4');
-    expect(expandedRow).toMatchObject({ type: 'row', collapsed: false });
+    expect(expandedRow).toMatchObject({ type: 'row', collapsed: false, repeat: 'region' });
     expect(expandedRow.panels).toBeUndefined();
     expect(configs.panels.filter((panel: { id: string }) => panel.id === '5')).toHaveLength(1);
+    expect(report.unsupportedItems.some((item) => item.reason.includes('重复的 row'))).toBe(false);
   });
 
   it('keeps variables visible when hide is undefined or 1, hides only when hide === 2', () => {

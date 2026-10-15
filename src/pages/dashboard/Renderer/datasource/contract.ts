@@ -167,6 +167,7 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     const resolvedDatasourceId = replaceDatasourceVariables(datasource.id as number | string, {
       datasourceList: options.datasourceList,
       variables: options.variables,
+      scopedVars: options.scopedVars,
     });
     if (typeof resolvedDatasourceId !== 'number') {
       skippedQueryRefIds.add(refId);

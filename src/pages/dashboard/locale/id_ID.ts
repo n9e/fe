@@ -207,6 +207,8 @@ const id_ID = {
       '\n      Cara memakai variabel\n      <br />\n      ${variable_name}: nilai variabel dasbor\n      <br />\n      ${__row.column_name}: nilai salah satu kolom pada baris data\n      <br />\n      ${__interval}: interval waktu dalam detik, misalnya 15s, bawaannya step\n      <br />\n      ${__interval_ms}: interval waktu dalam milidetik, misalnya 15000\n      <br />\n      ${__range}: rentang waktu dalam detik, misalnya 3600s\n      <br />\n      ${__range_ms}: rentang waktu dalam milidetik, misalnya 3600000\n      <br />\n      ${__rate_interval}: interval waktu dalam detik, __interval * 4\n      <br />\n      ${__from}: waktu mulai dalam milidetik\n      <br />\n      ${__from_date_seconds}: waktu mulai dalam detik\n      <br />\n      ${__from_date_iso}: waktu mulai, ISO 8601/RFC 3339\n      <br />\n      Sintaks di atas berlaku juga untuk ${__to}\n    ',
   },
   row: {
+    repeat: 'Ulangi berdasarkan variabel',
+    repeat_tip: 'Buat grup untuk setiap nilai variabel yang dipilih. Salinan hanya dapat diperluas atau diciutkan.',
     edit_title: 'Ubah grup',
     delete_title: 'Hapus grup',
     name: 'Nama grup',

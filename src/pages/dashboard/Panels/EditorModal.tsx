@@ -28,16 +28,20 @@ interface Props {
   editModalVariablecontainerRef: React.RefObject<HTMLDivElement>;
 }
 
-function EditorModal(props: Props, ref: React.ForwardedRef<EditorModalHandle>) {
-  const { range, timezone, setTimezone, panels, setPanels, onPanelsChange } = props;
-  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
-  const [editorData, setEditorData] = useState<EditorModalData>({
+function getInitialEditorData(): EditorModalData {
+  return {
     mode: 'add',
     visible: false,
     id: '',
     initialValues: {} as IPanel,
     panelWidth: undefined,
-  });
+  };
+}
+
+function EditorModal(props: Props, ref: React.ForwardedRef<EditorModalHandle>) {
+  const { range, timezone, setTimezone, panels, setPanels, onPanelsChange } = props;
+  const [variablesWithOptions] = useGlobalState('variablesWithOptions');
+  const [editorData, setEditorData] = useState<EditorModalData>(getInitialEditorData);
 
   useImperativeHandle(
     ref,
@@ -52,10 +56,7 @@ function EditorModal(props: Props, ref: React.ForwardedRef<EditorModalHandle>) {
       mode={editorData.mode}
       visible={editorData.visible}
       setVisible={(visible) => {
-        setEditorData({
-          ...editorData,
-          visible,
-        });
+        setEditorData(visible ? { ...editorData, visible } : getInitialEditorData());
       }}
       id={editorData.id}
       time={range}
@@ -69,7 +70,7 @@ function EditorModal(props: Props, ref: React.ForwardedRef<EditorModalHandle>) {
         // 立即根据当前变量值重新计算 repeat，保证保存后 UI 立刻生效
         const processedPanels = processRepeats(newPanels, variablesWithOptions);
         setPanels(processedPanels);
-        onPanelsChange(newPanels);
+        onPanelsChange(processedPanels);
       }}
       editModalVariablecontainerRef={props.editModalVariablecontainerRef}
     />

@@ -203,6 +203,8 @@ const ko_KR = {
       '\n      변수 사용 안내\n      <br />\n      ${variable_name}: 대시보드 변수 값\n      <br />\n      ${__row.column_name}: 행 데이터의 특정 열 값\n      <br />\n      ${__interval}: 시간 간격(초), 예를 들어 15s이며 기본값은 step입니다\n      <br />\n      ${__interval_ms}: 시간 간격(밀리초), 예를 들어 15000\n      <br />\n      ${__range}: 시간 범위(초), 예를 들어 3600s\n      <br />\n      ${__range_ms}: 시간 범위(밀리초), 예를 들어 3600000\n      <br />\n      ${__rate_interval}: 시간 간격(초), __interval * 4\n      <br />\n      ${__from}: 시작 시각(밀리초)\n      <br />\n      ${__from_date_seconds}: 시작 시각(초)\n      <br />\n      ${__from_date_iso}: 시작 시각, ISO 8601/RFC 3339\n      <br />\n      위 문법은 ${__to}에도 그대로 적용됩니다\n    ',
   },
   row: {
+    repeat: '변수별 반복',
+    repeat_tip: '선택한 변수 값마다 그룹을 생성합니다. 복제된 그룹은 펼치거나 접을 수만 있습니다.',
     edit_title: '그룹 수정',
     delete_title: '그룹 삭제',
     name: '그룹 이름',
