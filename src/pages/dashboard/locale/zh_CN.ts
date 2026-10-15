@@ -403,7 +403,7 @@ const zh_CN = {
       title: '高级设置',
       unit: '单位',
       unit_tip: `
-        <0>默认会做 SI Prefixes 处理，如不想默认的处理可选择 none 关闭</0>
+        <0>默认使用 SI short（SI 前缀自动缩放，1000 进位）；如不需要，可选择 none 关闭</0>
         <1>Data(SI): 基数为 1000, 单位为 B、kB、MB、GB、TB、PB、EB、ZB、YB</1>
         <2>Data(IEC): 基数为 1024, 单位为 B、KiB、MiB、GiB、TiB、PiB、EiB、ZiB、YiB</2>
         <3>bits: b</3>

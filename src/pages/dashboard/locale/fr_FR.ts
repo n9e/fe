@@ -333,7 +333,7 @@ const fr_FR = {
       title: 'Réglages avancés',
       unit: 'Unité',
       unit_tip:
-        '\n        <0>Les préfixes SI sont appliqués par défaut ; choisissez none pour les désactiver</0>\n        <1>Data(SI) : base 1000, avec les unités B, kB, MB, GB, TB, PB, EB, ZB, YB</1>\n        <2>Data(IEC) : base 1024, avec les unités B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB</2>\n        <3>bits : b</3>\n        <4>octets : B</4>\n      ',
+        '\n        <0>Par défaut, les valeurs utilisent le format SI short (mise à l’échelle automatique avec les préfixes SI, base 1000). Choisissez none pour désactiver ce comportement</0>\n        <1>Data(SI) : base 1000, avec les unités B, kB, MB, GB, TB, PB, EB, ZB, YB</1>\n        <2>Data(IEC) : base 1024, avec les unités B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB</2>\n        <3>bits : b</3>\n        <4>octets : B</4>\n      ',
       datetime: 'Format de date',
       min: 'Minimum',
       max: 'Maximum',

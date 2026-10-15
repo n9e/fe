@@ -403,7 +403,7 @@ const zh_HK = {
       title: '高階設定',
       unit: '單位',
       unit_tip: `
-        <0>預設會做 SI Prefixes 處理，如不想預設的處理可選擇 none 關閉</0>
+        <0>預設使用 SI short（SI 前綴自動縮放，1000 進位）；如不需要，可選擇 none 關閉</0>
         <1>Data(SI): 基數為 1000, 單位為 B、kB、MB、GB、TB、PB、EB、ZB、YB</1>
         <2>Data(IEC): 基數為 1024, 單位為 B、KiB、MiB、GiB、TiB、PiB、EiB、ZiB、YiB</2>
         <3>bits: b</3>
