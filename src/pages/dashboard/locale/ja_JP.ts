@@ -1,5 +1,17 @@
 const ja_JP = {
   title: '監視ダッシュボード',
+  colorPicker: {
+    colors: '組み込み色',
+    custom: 'カスタム',
+    transparent: '透明',
+    text_color: '文字色',
+    red: '赤',
+    orange: 'オレンジ',
+    yellow: '黄',
+    green: '緑',
+    blue: '青',
+    purple: '紫',
+  },
   list: 'ダッシュボードリスト',
   back_icon_tip: '前のページに戻る',
   back_icon_tip_is_built_in: '内蔵ダッシュボードに戻る',

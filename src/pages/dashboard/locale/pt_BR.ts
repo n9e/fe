@@ -1,5 +1,17 @@
 const pt_BR = {
   title: 'Dashboards de monitoramento',
+  colorPicker: {
+    colors: 'Cores integradas',
+    custom: 'Personalizado',
+    transparent: 'Transparente',
+    text_color: 'Cor do texto',
+    red: 'Vermelho',
+    orange: 'Laranja',
+    yellow: 'Amarelo',
+    green: 'Verde',
+    blue: 'Azul',
+    purple: 'Roxo',
+  },
   list: 'Lista de dashboards',
   back_icon_tip: 'Volta à página anterior ou, se não houver, à lista de dashboards',
   back_icon_tip_is_built_in: 'Volta à página anterior ou, se não houver, à central de modelos',

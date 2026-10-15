@@ -1,5 +1,17 @@
 const zh_CN = {
   title: '监控仪表盘',
+  colorPicker: {
+    colors: '内置颜色',
+    custom: '自定义',
+    transparent: '透明',
+    text_color: '文本颜色',
+    red: '红色',
+    orange: '橙色',
+    yellow: '黄色',
+    green: '绿色',
+    blue: '蓝色',
+    purple: '紫色',
+  },
   list: '仪表盘列表',
   back_icon_tip: '返回上一页，没有上一页则返回仪表盘列表',
   back_icon_tip_is_built_in: '返回上一页，没有上一页则返回模板中心',

@@ -1,7 +1,6 @@
 import React, { useId, useMemo } from 'react';
 import { arc, interpolateRgb } from 'd3';
 import type { IGaugeStyles, IThresholds } from '../../../types';
-import { gaugeDefaultThresholds } from '../../registry/defaults';
 import {
   getFormattedThresholds,
   getGaugeContentWidth,
@@ -28,7 +27,8 @@ interface Props {
   bgColor?: string;
   width?: number;
   height?: number;
-  thresholds?: IThresholds;
+  // 由调用方保证传入：面板未配置阈值时需由调用方按当前主题解析内置默认值，避免主题 token 直接进入 SVG
+  thresholds: IThresholds;
   custom: IGaugeStyles;
   data?: Point[];
 }
@@ -133,7 +133,7 @@ export default function Gauge(props: Props) {
   // Keep the threshold color ramp visually continuous at the rendered size while
   // bounding the number of SVG sectors per gauge.
   const gradientSegments = Math.min(360, Math.max(120, Math.ceil(((2 * Math.PI * thresholdOuterRadius * width) / SIZE) * 0.4)));
-  const thresholds = getFormattedThresholds(props.thresholds ?? { steps: gaugeDefaultThresholds, mode: 'absolute' }, min, max);
+  const thresholds = getFormattedThresholds(props.thresholds, min, max);
   const valueGradientSegments = Math.max(1, Math.ceil(gradientSegments * (fillTo - fillFrom)));
   const value = props.formattedValue ?? props.value;
   const isEmpty = value === null || value === undefined || value === '' || Number.isNaN(props.value);

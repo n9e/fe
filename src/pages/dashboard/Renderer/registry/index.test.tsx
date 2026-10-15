@@ -20,6 +20,8 @@ jest.mock('./panelCharts', () => {
 });
 // 编辑器选项面板依赖 @/utils/constant，该模块在源码中使用 import.meta，node 测试环境无法解析
 jest.mock('@/utils/constant', () => ({ PRIMARY_COLOR: '#3274d9', SIZE: 8 }));
+// ColorPicker 通过 @/App 读取当前主题，App 模块同样使用 import.meta
+jest.mock('@/App', () => ({ CommonStateContext: require('react').createContext({ darkMode: false }) }));
 
 describe('panel type registry', () => {
   it('keeps the historical visualization order', () => {

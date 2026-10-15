@@ -1,5 +1,17 @@
 const fr_FR = {
   title: 'Tableaux de bord de supervision',
+  colorPicker: {
+    colors: 'Couleurs intégrées',
+    custom: 'Personnalisé',
+    transparent: 'Transparent',
+    text_color: 'Couleur du texte',
+    red: 'Rouge',
+    orange: 'Orange',
+    yellow: 'Jaune',
+    green: 'Vert',
+    blue: 'Bleu',
+    purple: 'Violet',
+  },
   list: 'Liste des tableaux de bord',
   back_icon_tip: "Revient à la page précédente, ou à la liste des tableaux de bord s'il n'y en a pas",
   back_icon_tip_is_built_in: "Revient à la page précédente, ou au centre de modèles s'il n'y en a pas",

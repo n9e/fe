@@ -12,23 +12,23 @@ import type { PanelDefaultOptions, PanelVisualizationType } from './types';
  */
 
 export const defaultThreshold: IThresholds['steps'][number] = {
-  color: 'rgb(44, 157, 61)',
+  color: 'green-9',
   value: null,
   type: 'base',
 };
 
 export const gaugeDefaultThresholds: IThresholds['steps'] = [
   {
-    color: '#3FC453',
+    color: 'green-9',
     value: null,
     type: 'base',
   },
   {
-    color: '#FF9919',
+    color: 'orange-9',
     value: 60,
   },
   {
-    color: '#FF656B',
+    color: 'red-9',
     value: 80,
   },
 ];

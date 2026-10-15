@@ -1,5 +1,17 @@
 const zh_HK = {
   title: '監控儀表盤',
+  colorPicker: {
+    colors: '內置顏色',
+    custom: '自訂',
+    transparent: '透明',
+    text_color: '文字顏色',
+    red: '紅色',
+    orange: '橙色',
+    yellow: '黃色',
+    green: '綠色',
+    blue: '藍色',
+    purple: '紫色',
+  },
   list: '儀表盤列表',
   back_icon_tip: '返回上一頁，沒有上一頁則返回儀表盤列表',
   back_icon_tip_is_built_in: '返回上一頁，沒有上一頁則返回模板中心',

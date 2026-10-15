@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 
 import type { IValueMapping } from '../../../types';
+import { getBuiltinColorCssValue } from '../../../Components/ColorPicker/builtinColors';
 
 interface Props {
   valueMappings?: IValueMapping[];
@@ -56,7 +57,7 @@ export default function Preview({ valueMappings = [], showColor = false, editTex
                   width: 16,
                   height: 16,
                   borderRadius: '50%',
-                  backgroundColor: color || 'transparent',
+                  backgroundColor: getBuiltinColorCssValue(color),
                 }}
               />
             )}

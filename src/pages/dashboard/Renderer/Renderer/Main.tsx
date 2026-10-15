@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Menu, Tooltip, Space, Drawer } from 'antd';
+import { CommonStateContext } from '@/App';
 import type { MenuProps } from 'antd';
 import {
   InfoCircleOutlined,
@@ -35,6 +36,7 @@ import getPanelCustomTimeDescribe from '../utils/getPanelCustomTimeDescribe';
 import Inspect from '../Inspect';
 import PanelRenderer from '../registry/PanelRenderer';
 import type { PanelChartProps } from '../registry/types';
+import { resolvePanelColors } from '../../Components/ColorPicker/builtinColors';
 import { IProps } from './index';
 
 const LOADING_BAR_MILLISECONDS_PER_PIXEL = 2.4;
@@ -103,6 +105,7 @@ function index(
   },
 ) {
   const { t } = useTranslation('dashboard');
+  const { darkMode: appDarkMode } = useContext(CommonStateContext);
   const replaceTemplateVariables = useReplaceTemplateVariables();
   const [variableExecution] = useGlobalState('variableExecution');
   const {
@@ -130,7 +133,7 @@ function index(
   } = props;
   const [visible, setVisible] = useState(false);
   const [renderError, setRenderError] = useState<Error>();
-  const values = _.cloneDeep(props.values);
+  const values = resolvePanelColors(props.values, themeMode === 'dark' || Boolean(appDarkMode));
   const tableRef = useRef<{ exportCsv: () => void }>(null);
   const tableNGRef = useRef<{ exportCsv: () => void }>(null);
   const bodyWrapRef = useRef<HTMLDivElement>(null);
@@ -509,7 +512,7 @@ function index(
         visible={inspect}
         className='n9e-antd-drawer'
       >
-        <Inspect query={query} error={error} requestReference={requestReference} values={values} />
+        <Inspect query={query} error={error} requestReference={requestReference} values={props.values} />
       </Drawer>
     </div>
   );

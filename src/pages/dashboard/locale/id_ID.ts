@@ -1,5 +1,17 @@
 const id_ID = {
   title: 'Dasbor pemantauan',
+  colorPicker: {
+    colors: 'Warna bawaan',
+    custom: 'Kustom',
+    transparent: 'Transparan',
+    text_color: 'Warna teks',
+    red: 'Merah',
+    orange: 'Oranye',
+    yellow: 'Kuning',
+    green: 'Hijau',
+    blue: 'Biru',
+    purple: 'Ungu',
+  },
   list: 'Daftar dasbor',
   back_icon_tip: 'Kembali ke halaman sebelumnya, atau ke daftar dasbor bila tidak ada',
   back_icon_tip_is_built_in: 'Kembali ke halaman sebelumnya, atau ke pusat templat bila tidak ada',

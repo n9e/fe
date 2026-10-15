@@ -93,7 +93,7 @@ export default function index(props: IProps) {
                     add({
                       type: 'special',
                       result: {
-                        color: '#000000',
+                        color: 'text',
                       },
                     });
                   }}
@@ -195,7 +195,7 @@ export default function index(props: IProps) {
                       </Col>
                       <Col flex='45'>
                         <Form.Item noStyle {...restField} name={[name, 'result', 'color']}>
-                          <ColorPicker />
+                          <ColorPicker builtin />
                         </Form.Item>
                       </Col>
                       <Col flex='50'>

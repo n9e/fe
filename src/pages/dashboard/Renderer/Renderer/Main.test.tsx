@@ -10,6 +10,7 @@ import type { DashboardQueryHookResult } from '../datasource/types';
 import type { IPanel } from '../../types';
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (value: string) => value }) }));
+jest.mock('@/App', () => ({ CommonStateContext: require('react').createContext({ darkMode: false }) }));
 jest.mock('@/components/TimeRangePicker', () => ({ describeTimeRange: () => '' }));
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
@@ -17,7 +18,10 @@ jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   useReplaceTemplateVariables: () => (value: string) => value,
 }));
 jest.mock('../../Components/Markdown', () => ({ __esModule: true, default: ({ content }: { content: string }) => <div>{content}</div> }));
-jest.mock('../Inspect', () => () => null);
+jest.mock('../Inspect', () => ({
+  __esModule: true,
+  default: ({ values }: { values: unknown }) => require('react').createElement('pre', { 'data-testid': 'inspect-panel-config' }, JSON.stringify(values)),
+}));
 jest.mock('../components/CloneIcon', () => () => null);
 jest.mock('../components/PanelEmpty', () => () => <div>empty</div>);
 jest.mock('./TimeSeriesNG', () => () => <div data-testid='timeseries-body' />);
@@ -95,6 +99,44 @@ test('text panel renders its body before the query state is loaded', () => {
 
   expect(screen.getByText('$project')).toBeInTheDocument();
   expect(document.querySelector('.renderer-body')).toBeInTheDocument();
+});
+
+test('Inspect Panel JSON preserves configured color tokens', () => {
+  const values: IPanel = {
+    id: 'builtin-colors-panel',
+    type: 'timeseries',
+    name: 'Builtin colors panel',
+    description: '',
+    layout: { h: 4, w: 12, x: 0, y: 0, i: 'builtin-colors-panel' },
+    targets: [],
+    custom: {},
+    options: {
+      thresholds: { mode: 'absolute', steps: [{ color: 'green-9', value: null }] },
+      valueMappings: [{ type: 'special', match: { special: 1 }, result: { color: 'text', text: 'one' } }],
+    },
+    overrides: [],
+  };
+
+  renderWithDashboardRuntime(
+    <Main
+      id='builtin-colors-panel'
+      panelWidth={400}
+      values={values}
+      annotations={[]}
+      controllersVisible={false}
+      queryResult={{ ...queryResult, loaded: true }}
+      containerEleRef={{ current: null }}
+      time={time}
+      inspect
+      setInspect={jest.fn()}
+      setViewModalVisible={jest.fn()}
+    />,
+  );
+
+  const panelJson = screen.getByTestId('inspect-panel-config');
+  expect(panelJson).toHaveTextContent('"color":"green-9"');
+  expect(panelJson).toHaveTextContent('"color":"text"');
+  expect(values.options.thresholds?.steps[0].color).toBe('green-9');
 });
 
 /** 验证变量链阻断查询时，首次加载面板仍立即显示骨架和顶部活动条。 */

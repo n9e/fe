@@ -14,16 +14,19 @@
  * limitations under the License.
  *
  */
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import _ from 'lodash';
 import { Tooltip } from 'antd';
 import { useSize } from 'ahooks';
+import { CommonStateContext } from '@/App';
 import { IPanel } from '../../../types';
-import type { IGaugeStyles, IOptions } from '../../../types';
+import type { IGaugeStyles, IOptions, IThresholds } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
 import useStableValue from '../../../hooks/useStableValue';
+import { gaugeDefaultThresholds } from '../../registry/defaults';
+import { resolveColor } from '../../../Components/ColorPicker/builtinColors';
 import Gauge, { ARC_GAUGE_HEIGHT_TO_WIDTH_RATIO } from './Gauge';
 import { calculateGaugeLayout } from './layout';
 import './style.less';
@@ -61,12 +64,19 @@ interface GaugeItemContentProps extends GaugeItemProps {
 
 function GaugeItemContent(props: GaugeItemContentProps) {
   const { eleSize, item, themeMode, options, custom } = props;
+  const { darkMode: appDarkMode } = useContext(CommonStateContext);
   const availableWidth = eleSize?.width ?? 0;
   const availableHeight = eleSize?.height ?? 0;
   const width = Math.min(availableWidth * 0.98, availableHeight / (custom.style === 'circle' ? 1 : ARC_GAUGE_HEIGHT_TO_WIDTH_RATIO));
   const min = options?.standardOptions?.min ?? 0;
   const max = options?.standardOptions?.max ?? 100;
   const thresholdColor = getSerieTextObj(item.stat, options?.standardOptions, options?.valueMappings, options?.thresholds, [min, max]).color;
+  // 面板未配置阈值时使用内置默认色阶；默认值是主题 token，需先解析成具体颜色再交给 SVG，
+  // 否则 fill 会拿到非法色值。
+  const thresholds: IThresholds = options?.thresholds ?? {
+    mode: 'absolute',
+    steps: gaugeDefaultThresholds.map((step) => ({ ...step, color: resolveColor(step.color, themeMode === 'dark' || Boolean(appDarkMode)) })),
+  };
 
   if (!eleSize?.width) return null;
 
@@ -83,7 +93,7 @@ function GaugeItemContent(props: GaugeItemContentProps) {
         bgColor={themeMode === 'dark' ? 'rgb(40, 42, 46)' : '#f4f5f5'}
         width={width}
         height={width}
-        thresholds={options.thresholds}
+        thresholds={thresholds}
         custom={custom}
         data={props.data}
       />

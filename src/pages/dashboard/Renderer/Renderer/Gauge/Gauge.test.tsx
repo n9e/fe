@@ -1,10 +1,21 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import type { IThresholds } from '../../../types';
 import Gauge from './Gauge';
+
+/** 面板未配置阈值时由调用方解析后传入，这里用一组固定色值覆盖「无自定义阈值」的渲染分支。 */
+const defaultThresholds: IThresholds = {
+  mode: 'absolute',
+  steps: [
+    { type: 'base', value: null, color: '#3FC453' },
+    { value: 60, color: '#FF9919' },
+    { value: 80, color: '#FF656B' },
+  ],
+};
 
 describe('Gauge threshold label rendering', () => {
   it('uses a vertically compact viewBox for arc gauges', () => {
-    const markup = renderToStaticMarkup(<Gauge min={0} max={100} value={50} custom={{ calc: 'last', textMode: 'value' }} />);
+    const markup = renderToStaticMarkup(<Gauge min={0} max={100} value={50} thresholds={defaultThresholds} custom={{ calc: 'last', textMode: 'value' }} />);
     const style = markup.match(/class="renderer-gauge-svg renderer-gauge-svg-arc" style="(.*?)"/)?.[1] ?? '';
     const width = Number(style.match(/width:([\d.]+)px/)?.[1]);
     const height = Number(style.match(/height:([\d.]+)px/)?.[1]);
@@ -77,7 +88,7 @@ describe('Gauge threshold label rendering', () => {
 
   it('draws rounded bar caps centered exactly on the start and value boundaries', () => {
     const markup = renderToStaticMarkup(
-      <Gauge min={0} max={100} value={25} custom={{ calc: 'last', style: 'circle', barStyle: 'rounded', showLabels: true, textMode: 'value' }} />,
+      <Gauge min={0} max={100} value={25} thresholds={defaultThresholds} custom={{ calc: 'last', style: 'circle', barStyle: 'rounded', showLabels: true, textMode: 'value' }} />,
     );
     const caps = Array.from(markup.matchAll(/<circle\b(?=[^>]*class="renderer-gauge-bar-cap")([^>]*)>/g)).map(([, attributes]) => ({
       endpoint: attributes.match(/data-endpoint="(.*?)"/)?.[1],
@@ -145,7 +156,7 @@ describe('Gauge threshold label rendering', () => {
 
   it('applies segment spacing to the gaps between value segments', () => {
     const renderSegments = (segmentSpacing: number) =>
-      renderToStaticMarkup(<Gauge min={0} max={100} value={100} custom={{ calc: 'last', segments: 4, segmentSpacing, textMode: 'value' }} />);
+      renderToStaticMarkup(<Gauge min={0} max={100} value={100} thresholds={defaultThresholds} custom={{ calc: 'last', segments: 4, segmentSpacing, textMode: 'value' }} />);
     const zeroSpacing = renderSegments(0).match(/<path\b(?=[^>]*class="renderer-gauge-value-segment")([^>]*)>/g) ?? [];
     const fullSpacing = renderSegments(0.5).match(/<path\b(?=[^>]*class="renderer-gauge-value-segment")([^>]*)>/g) ?? [];
 
@@ -155,7 +166,9 @@ describe('Gauge threshold label rendering', () => {
   });
 
   it('segments the entire value track while filling only the portion reached by the value', () => {
-    const markup = renderToStaticMarkup(<Gauge min={0} max={100} value={50} custom={{ calc: 'last', segments: 4, segmentSpacing: 0.16, textMode: 'value' }} />);
+    const markup = renderToStaticMarkup(
+      <Gauge min={0} max={100} value={50} thresholds={defaultThresholds} custom={{ calc: 'last', segments: 4, segmentSpacing: 0.16, textMode: 'value' }} />,
+    );
     const trackSegments = markup.match(/<path\b(?=[^>]*class="renderer-gauge-track-segment")[^>]*>/g) ?? [];
     const valueSegments = markup.match(/<path\b(?=[^>]*class="renderer-gauge-value-segment")[^>]*>/g) ?? [];
 
@@ -165,7 +178,9 @@ describe('Gauge threshold label rendering', () => {
 
   it('grows the value arc when the threshold band or threshold labels are hidden', () => {
     const getTrackPath = (showThresholds: boolean, showLabels: boolean) => {
-      const markup = renderToStaticMarkup(<Gauge min={0} max={100} value={50} custom={{ calc: 'last', textMode: 'value', showThresholds, showLabels }} />);
+      const markup = renderToStaticMarkup(
+        <Gauge min={0} max={100} value={50} thresholds={defaultThresholds} custom={{ calc: 'last', textMode: 'value', showThresholds, showLabels }} />,
+      );
       return markup.match(/<path class="renderer-gauge-track" d="(.*?)" fill=/)?.[1];
     };
 
@@ -181,7 +196,7 @@ describe('Gauge threshold label rendering', () => {
 
   it('moves the value and name down when the sparkline is hidden', () => {
     const renderGauge = (showSparkline: boolean) =>
-      renderToStaticMarkup(<Gauge min={0} max={100} value={50} name='series' custom={{ calc: 'last', textMode: 'valueAndName', showSparkline }} />);
+      renderToStaticMarkup(<Gauge min={0} max={100} value={50} name='series' thresholds={defaultThresholds} custom={{ calc: 'last', textMode: 'valueAndName', showSparkline }} />);
     const getTextY = (markup: string, className: string) => Number(markup.match(new RegExp(`<text class="${className}"[^>]*\\by="([\\d.-]+)"`))?.[1]);
     const withSparkline = renderGauge(true);
     const withoutSparkline = renderGauge(false);

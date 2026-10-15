@@ -1,5 +1,17 @@
 const ko_KR = {
   title: '모니터링 대시보드',
+  colorPicker: {
+    colors: '기본 색상',
+    custom: '사용자 지정',
+    transparent: '투명',
+    text_color: '텍스트 색상',
+    red: '빨강',
+    orange: '주황',
+    yellow: '노랑',
+    green: '초록',
+    blue: '파랑',
+    purple: '보라',
+  },
   list: '대시보드 목록',
   back_icon_tip: '이전 페이지로 돌아가며, 없으면 대시보드 목록으로 갑니다',
   back_icon_tip_is_built_in: '이전 페이지로 돌아가며, 없으면 템플릿 센터로 갑니다',
