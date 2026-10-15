@@ -16,6 +16,8 @@ Dashboard 的颜色选择器支持内置主题色和自定义颜色。组件通�
 
 内置颜色通过 CSS 变量跟随主题变化。渲染器在使用阈值、x 轴阈值和值映射颜色前，会克隆面板配置，并将这些字段中的 token 解析为当前主题的实际颜色。解析不会改写原配置；Inspect 的 Panel JSON 展示原始 token。其他字段以及已有的十六进制、RGB 和 RGBA 颜色保持原值。
 
+Grafana 仪表板导入会把 Grafana 内置颜色名按色相和明暗映射为 N9E token（例如 `green` → `green-9`、`semi-dark-blue` → `blue-10`）。自定义 hex、RGBA 以及未知颜色名仍原样保留。
+
 ## 使用位置和兼容性
 
 | 使用位置                          | 模式           | 行为                                 |

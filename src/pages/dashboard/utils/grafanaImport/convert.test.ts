@@ -115,6 +115,12 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
                   { color: 'red', value: 80 },
                 ],
               },
+              mappings: [
+                {
+                  type: 'range',
+                  options: { from: 0, to: 50, result: { text: 'Low', color: 'semi-dark-blue' } },
+                },
+              ],
               custom: { drawStyle: 'line', lineInterpolation: 'smooth', fillOpacity: 50, stacking: { mode: 'normal' } },
             },
           },
@@ -145,10 +151,12 @@ describe('convertDashboardGrafanaToN9EWithReport', () => {
     });
     // 单一数据源 → target 不带 datasource
     expect(panel.targets[0].datasource).toBeUndefined();
-    // unit 用 unit（非 util typo）、thresholds 颜色转 hex、base 标记
+    // unit 用 unit（非 util typo）、Grafana 内置颜色转主题 token、base 标记
     expect(panel.options.standardOptions.unit).toBe('percent');
-    expect(panel.options.thresholds.steps[0].color).toBe('#73BF69');
+    expect(panel.options.thresholds.steps[0].color).toBe('green-9');
+    expect(panel.options.thresholds.steps[1].color).toBe('red-9');
     expect(panel.options.thresholds.steps[0].type).toBe('base');
+    expect(panel.options.valueMappings[0]).toMatchObject({ type: 'range', result: { text: 'Low', color: 'blue-10' } });
     // custom
     expect(panel.custom.drawStyle).toBe('lines');
     expect(panel.custom.fillOpacity).toBe(0.5);
