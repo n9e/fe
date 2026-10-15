@@ -1,4 +1,5 @@
 import dashboardMigrator, { type LegacyPanel } from './dashboardMigrator';
+import { DASHBOARD_VERSION } from '@/pages/dashboard/constants';
 import { DASHBOARD_DATASOURCE_CATES } from '@/pages/dashboard/Renderer/datasource/registry';
 import { buildLegacyDashboard, catesUnderTest, legacyLogsPanelSpecByCate, legacyPanelSpecByCate, logsCatesUnderTest } from '@/pages/dashboard/test/fixtures/legacyDashboardsByCate';
 
@@ -33,7 +34,7 @@ describe('dashboardMigrator legacy cate coverage', () => {
   it.each(catesUnderTest)('migrates a legacy %s panel to v4 keeping the panel-level datasource', (cate) => {
     const spec = legacyPanelSpecByCate[cate];
     const migrated = dashboardMigrator(buildLegacyDashboard(spec));
-    expect(migrated.version).toBe('4.1.0');
+    expect(migrated.version).toBe(DASHBOARD_VERSION);
 
     const panel = migrated.panels[0] as LegacyPanel;
     expect(panel).not.toHaveProperty('version');

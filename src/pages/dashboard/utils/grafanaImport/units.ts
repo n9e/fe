@@ -3,44 +3,44 @@
  */
 import _ from 'lodash';
 
-/** Grafana 内置颜色名 → hex（thresholds 等处的颜色直接输出 hex） */
-export const grafanaBuiltinColors: { color: string; name: string }[] = [
-  { color: '#FFA6B0', name: 'super-light-red' },
-  { color: '#FF7383', name: 'light-red' },
-  { color: '#F2495C', name: 'red' },
-  { color: '#E02F44', name: 'semi-dark-red' },
-  { color: '#C4162A', name: 'dark-red' },
-  { color: '#FFCB7D', name: 'super-light-orange' },
-  { color: '#FFB357', name: 'light-orange' },
-  { color: '#FF9830', name: 'orange' },
-  { color: '#FF780A', name: 'semi-dark-orange' },
-  { color: '#FA6400', name: 'dark-orange' },
-  { color: '#FFF899', name: 'super-light-yellow' },
-  { color: '#FFEE52', name: 'light-yellow' },
-  { color: '#FADE2A', name: 'yellow' },
-  { color: '#F2CC0C', name: 'semi-dark-yellow' },
-  { color: '#E0B400', name: 'dark-yellow' },
-  { color: '#C8F2C2', name: 'super-light-green' },
-  { color: '#96D98D', name: 'light-green' },
-  { color: '#73BF69', name: 'green' },
-  { color: '#56A64B', name: 'semi-dark-green' },
-  { color: '#37872D', name: 'dark-green' },
-  { color: '#C0D8FF', name: 'super-light-blue' },
-  { color: '#8AB8FF', name: 'light-blue' },
-  { color: '#5794F2', name: 'blue' },
-  { color: '#3274D9', name: 'semi-dark-blue' },
-  { color: '#1F60C4', name: 'dark-blue' },
-  { color: '#DEB6F2', name: 'super-light-purple' },
-  { color: '#CA95E5', name: 'light-purple' },
-  { color: '#B877D9', name: 'purple' },
-  { color: '#A352CC', name: 'semi-dark-purple' },
-  { color: '#8F3BB8', name: 'dark-purple' },
+/** Grafana 的颜色名称按色相和明暗映射到 N9E 的主题色 token。 */
+export const grafanaBuiltinColors: { name: string; token: string }[] = [
+  { name: 'super-light-red', token: 'red-7' },
+  { name: 'light-red', token: 'red-8' },
+  { name: 'red', token: 'red-9' },
+  { name: 'semi-dark-red', token: 'red-10' },
+  { name: 'dark-red', token: 'red-11' },
+  { name: 'super-light-orange', token: 'orange-7' },
+  { name: 'light-orange', token: 'orange-8' },
+  { name: 'orange', token: 'orange-9' },
+  { name: 'semi-dark-orange', token: 'orange-10' },
+  { name: 'dark-orange', token: 'orange-11' },
+  { name: 'super-light-yellow', token: 'yellow-7' },
+  { name: 'light-yellow', token: 'yellow-8' },
+  { name: 'yellow', token: 'yellow-9' },
+  { name: 'semi-dark-yellow', token: 'yellow-10' },
+  { name: 'dark-yellow', token: 'yellow-11' },
+  { name: 'super-light-green', token: 'green-7' },
+  { name: 'light-green', token: 'green-8' },
+  { name: 'green', token: 'green-9' },
+  { name: 'semi-dark-green', token: 'green-10' },
+  { name: 'dark-green', token: 'green-11' },
+  { name: 'super-light-blue', token: 'blue-7' },
+  { name: 'light-blue', token: 'blue-8' },
+  { name: 'blue', token: 'blue-9' },
+  { name: 'semi-dark-blue', token: 'blue-10' },
+  { name: 'dark-blue', token: 'blue-11' },
+  { name: 'super-light-purple', token: 'purple-7' },
+  { name: 'light-purple', token: 'purple-8' },
+  { name: 'purple', token: 'purple-9' },
+  { name: 'semi-dark-purple', token: 'purple-10' },
+  { name: 'dark-purple', token: 'purple-11' },
 ];
 
-/** Grafana 颜色名 → hex；非内置颜色（自定义 hex / rgba）原样返回 */
-export function grafanaColorNameToHex(color: unknown): string {
+/** Grafana 内置颜色名 → N9E 主题 token；自定义颜色原样返回。 */
+export function grafanaColorNameToBuiltinToken(color: unknown): string {
   if (typeof color !== 'string' || !color) return '';
-  return _.find(grafanaBuiltinColors, { name: color })?.color || color;
+  return _.find(grafanaBuiltinColors, { name: color })?.token || color;
 }
 
 /** Grafana 单位 id → N9E 单位（mapping-common.md §4） */

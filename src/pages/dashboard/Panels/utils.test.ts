@@ -8,8 +8,16 @@ jest.mock('lodash', () => {
   };
 });
 
-import { buildLayout, canEditPanelLayout, handleRowToggle, isValidPanelConfig, updatePanelsInsertNewPanelToRow, updatePanelsInsertNewPanelToGlobal } from './utils';
-import { IPanel } from '../types';
+import {
+  buildLayout,
+  canEditPanelLayout,
+  handleRowToggle,
+  isValidPanelConfig,
+  mergePanelsToConfig,
+  updatePanelsInsertNewPanelToRow,
+  updatePanelsInsertNewPanelToGlobal,
+} from './utils';
+import { IDashboardConfig, IPanel } from '../types';
 
 describe('buildLayout', () => {
   const panels = [
@@ -31,6 +39,35 @@ describe('canEditPanelLayout', () => {
     [false, false, false],
   ])('requires both editability and dashboard write permission', (editable, isAuthorized, expected) => {
     expect(canEditPanelLayout(editable, isAuthorized)).toBe(expected);
+  });
+});
+
+describe('mergePanelsToConfig', () => {
+  it('does not mutate rendered config or panels while removing runtime repeat data', () => {
+    const configs = { version: '4.1.0', panels: [] } as IDashboardConfig;
+    const panels = [
+      {
+        id: 'source',
+        type: 'timeseries',
+        layout: { i: 'source', x: 0, y: 0, w: 12, h: 4 },
+        scopedVars: { host: { value: 'a' } },
+      },
+      {
+        id: 'repeat',
+        type: 'timeseries',
+        repeatPanelId: 'source',
+        layout: { i: 'repeat', x: 12, y: 0, w: 12, h: 4 },
+      },
+    ] as IPanel[];
+
+    const result = mergePanelsToConfig(configs, panels);
+
+    expect(result).not.toBe(configs);
+    expect(result.panels).toHaveLength(1);
+    expect(result.panels[0].scopedVars).toBeUndefined();
+    expect(configs.panels).toEqual([]);
+    expect(panels).toHaveLength(2);
+    expect(panels[0].scopedVars).toEqual({ host: { value: 'a' } });
   });
 });
 

@@ -237,12 +237,20 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
   return _.concat(newPanel, newPanels);
 }
 
-export function panelsMergeToConfigs(configs: IDashboardConfig, panels: IPanel[]) {
-  const parsedConfigs = configs;
-  const cloneDeep = _.cloneDeep(panels);
-  cleanUpRepeats(cloneDeep);
-  parsedConfigs.panels = cloneDeep;
-  return JSON.stringify(parsedConfigs);
+/**
+ * Builds the persisted dashboard config for a panel change.
+ *
+ * Repeat instances and scoped variables belong to the current runtime only, so
+ * they are removed from a cloned panel list before the caller stores the config.
+ * The input config is never mutated because it may still be rendered by React.
+ */
+export function mergePanelsToConfig(configs: IDashboardConfig, panels: IPanel[]): IDashboardConfig {
+  const persistedPanels = _.cloneDeep(panels);
+  cleanUpRepeats(persistedPanels);
+  return {
+    ...configs,
+    panels: persistedPanels,
+  };
 }
 
 export function deleteScopeVars(panels: IPanel[]) {

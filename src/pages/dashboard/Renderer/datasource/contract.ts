@@ -6,6 +6,7 @@ import { parseRange } from '@/components/TimeRangePicker/utils';
 import type { ITarget, JsonObject, JsonValue } from '@/pages/dashboard/types';
 import flatten from '@/utils/flatten';
 import replaceTemplateVariables, { getBuiltInVariables, replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { getMissingVariableReferences } from '@/pages/dashboard/Variables/utils/variableDependencies';
 
 import { getDashboardQueryStep } from './queryStep';
 import { normalizeInterval } from './elasticsearch/utils';
@@ -14,7 +15,6 @@ import type { DashboardQueryRequest, DashboardQueryResponse, DatasourceQuery, Ex
 import { getTargetRefId, inferTargetResultType, isExpressionTarget } from './target';
 import { DASHBOARD_TARGET_META_FIELDS, getDashboardDatasourceDefinition } from './registry';
 
-import { getGlobalState } from '@/pages/dashboard/globalState';
 import { getDashboardVariablePlugin } from '@/pages/dashboard/Variables/plugins';
 
 export { inferTargetResultType, isExpressionTarget } from './target';
@@ -30,21 +30,29 @@ function getEsIntervalUnit(value: unknown): EsIntervalUnit {
   return ES_INTERVAL_UNITS.includes(value as EsIntervalUnit) ? (value as EsIntervalUnit) : 'min';
 }
 
-function interpolateQueryValue(value: unknown, range: IRawTimeRange, step: number | undefined, scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined): unknown {
+/** Recursively interpolates a datasource payload with the runtime variables supplied for this panel query. */
+function interpolateQueryValue(
+  value: unknown,
+  range: IRawTimeRange,
+  step: number | undefined,
+  scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined,
+  variables?: import('@/pages/dashboard/Variables/types').IVariable[],
+): unknown {
   if (typeof value === 'string') {
     return replaceTemplateVariables(value, {
       range,
       step,
       scopedVars,
+      variables,
     });
   }
   if (Array.isArray(value)) {
-    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars));
+    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars, variables));
   }
   if (value && typeof value === 'object') {
     return Object.keys(value).reduce<Record<string, unknown>>((result, key) => {
       if (!FORBIDDEN_REQUEST_FIELDS.has(key)) {
-        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars);
+        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars, variables);
       }
       return result;
     }, {});
@@ -52,13 +60,16 @@ function interpolateQueryValue(value: unknown, range: IRawTimeRange, step: numbe
   return value;
 }
 
+function getRawDatasourceQueryPayload(target: ITarget, cate: string): JsonObject {
+  const payload = getDashboardDatasourceDefinition(cate)?.serializeTarget(target) ?? {
+    ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
+    ..._.omit(target, DASHBOARD_TARGET_META_FIELDS),
+  };
+  return _.omit(payload, Array.from(FORBIDDEN_REQUEST_FIELDS));
+}
+
 function getDatasourceQueryPayload(target: ITarget, cate: string, options: BuildDashboardQueryRequestOptions & { effectiveRange: IRawTimeRange }, value?: unknown) {
-  const payload =
-    getDashboardDatasourceDefinition(cate)?.serializeTarget(target) ??
-    ({
-      ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
-      ..._.omit(target, DASHBOARD_TARGET_META_FIELDS),
-    } as JsonObject);
+  const payload = getRawDatasourceQueryPayload(target, cate);
 
   const step = getDashboardQueryStep({
     time: options.effectiveRange,
@@ -85,13 +96,13 @@ function getDatasourceQueryPayload(target: ITarget, cate: string, options: Build
   const plugin = getDashboardVariablePlugin(cate);
   if (plugin) {
     return plugin.transformQuery(payload, {
-      variables: [...getGlobalState('variablesWithOptions'), ...getBuiltInVariables(options.effectiveRange, { step })],
+      variables: [...(options.variables ?? []), ...getBuiltInVariables(options.effectiveRange, { step })],
       range: options.effectiveRange,
       step,
       scopedVars: options.scopedVars,
     });
   }
-  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars);
+  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars, options.variables);
 }
 
 export interface BuildDashboardQueryRequestOptions {
@@ -102,6 +113,8 @@ export interface BuildDashboardQueryRequestOptions {
   panelWidth?: number;
   maxDataPoints?: number;
   scopedVars?: import('@/pages/dashboard/types').ScopedVariables;
+  /** Variables read from the owning runtime instance instead of the legacy module store. */
+  variables?: import('@/pages/dashboard/Variables/types').IVariable[];
   legacyDatasource?: {
     cate?: string;
     id?: number | string;
@@ -115,6 +128,12 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
     ...options,
     effectiveRange,
   };
+
+  const availableVariableNames = new Set([
+    ...(options.variables ?? []).map((variable) => variable.name),
+    ...getBuiltInVariables(effectiveRange).map((variable) => variable.name),
+    ...Object.keys(options.scopedVars ?? {}),
+  ]);
 
   const reservedRefIds = new Set(options.targets.map((target, index) => target.refId || getTargetRefId(index)));
   const getValueRefId = (refId: string, valueIndex: number) => {
@@ -141,8 +160,13 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
       cate: options.legacyDatasource?.cate ?? 'prometheus',
       id: options.legacyDatasource?.id,
     };
+    const missingVariables = getMissingVariableReferences([datasource.id, getRawDatasourceQueryPayload(target, datasource.cate)], availableVariableNames);
+    if (missingVariables.length > 0) {
+      throw new Error(`Query ${refId} references missing variable(s): ${missingVariables.join(', ')}`);
+    }
     const resolvedDatasourceId = replaceDatasourceVariables(datasource.id as number | string, {
       datasourceList: options.datasourceList,
+      variables: options.variables,
     });
     if (typeof resolvedDatasourceId !== 'number') {
       skippedQueryRefIds.add(refId);
