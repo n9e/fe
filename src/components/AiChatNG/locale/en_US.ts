@@ -175,6 +175,8 @@ const en_US = {
     prompt_search_service_query: 'Find the recent logs of one service',
     prompt_search_timeout: 'Logs mentioning a timeout',
     prompt_search_timeout_query: 'Find the logs that mention timeout',
+    prompt_cloudwatch_logs_all: 'All logs',
+    prompt_cloudwatch_logs_all_query: 'Find all logs in the selected log groups and current time range',
     prompt_cloudwatch_logs_errors: 'Error logs',
     prompt_cloudwatch_logs_errors_query: 'Find error logs in the selected log groups and current time range',
     prompt_cloudwatch_logs_volume: 'Log volume per minute',
