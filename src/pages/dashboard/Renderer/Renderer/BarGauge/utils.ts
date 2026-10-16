@@ -1,16 +1,24 @@
 import _ from 'lodash';
-import type { IThresholds } from '../../../types';
+import type { ITarget, IThresholds } from '../../../types';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 
 export interface BarGaugeValue {
   id: string;
   name?: string;
   metric: Record<string, string | undefined>;
+  target?: ITarget;
   stat: number;
   value?: string;
   unit?: string;
   color?: string;
 }
+
+/** 配置了自定义 legend 或没有标签（如合并出的 Other 项）时，tooltip 直接展示名称 */
+export const getTooltipLegend = (item: BarGaugeValue, displayName?: string) => {
+  if (item.target?.legend) return item.name;
+  if (_.isEmpty(item.metric)) return displayName;
+  return undefined;
+};
 
 export const getColumnsKeys = (data: CalculatedSeries[]) => {
   const keys = _.reduce(

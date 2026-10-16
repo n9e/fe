@@ -1,14 +1,14 @@
 import React, { CSSProperties } from 'react';
-import { Space, Tooltip } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import Color from 'color';
 
+import SeriesTooltip from '@/components/SeriesTooltip';
 import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 import getTextWidth, { defaultFont } from '@/utils/getTextWidth';
 
 import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../types';
-import { BarGaugeValue, calculatePercentage, getGradientBackground } from './utils';
+import { BarGaugeValue, calculatePercentage, getGradientBackground, getTooltipLegend } from './utils';
 
 interface Props {
   custom: IBarGaugeStyles;
@@ -51,19 +51,7 @@ export default function BasicDisplayMode(props: Props) {
   });
 
   return (
-    <Tooltip
-      mouseEnterDelay={0.5}
-      overlayClassName='ant-tooltip-max-width-600'
-      title={
-        <Space>
-          {name}
-          <Space size={2}>
-            {item.value}
-            {item.unit}
-          </Space>
-        </Space>
-      }
-    >
+    <SeriesTooltip mouseEnterDelay={0.5} metrics={metric} legend={getTooltipLegend(item, name)} value={valueText}>
       <div
         className={classNames('n9e-renderer-bar-gauge-item', {
           'n9e-renderer-bar-gauge-item-vertical': isVertical,
@@ -137,6 +125,6 @@ export default function BasicDisplayMode(props: Props) {
           )}
         </div>
       </div>
-    </Tooltip>
+    </SeriesTooltip>
   );
 }

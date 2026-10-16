@@ -117,6 +117,7 @@ const HexbinContent: React.FunctionComponent<HoneyCombProps> = (props) => {
           value: fieldValue ?? '',
           stat: item.stat,
           metric: item.metric,
+          legend: item.target?.legend ? item.name : undefined,
           color: isThresholdColorRange ? item.color || FALLBACK_CELL_COLOR : colorScales(Number(item.stat)) || FALLBACK_CELL_COLOR,
         };
       }),

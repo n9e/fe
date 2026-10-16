@@ -16,11 +16,11 @@
  */
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import _ from 'lodash';
-import { Tooltip } from 'antd';
 import { useSize } from 'ahooks';
 import { CommonStateContext } from '@/App';
+import SeriesTooltip from '@/components/SeriesTooltip';
 import { IPanel } from '../../../types';
-import type { IGaugeStyles, IOptions, IThresholds } from '../../../types';
+import type { IGaugeStyles, IOptions, ITarget, IThresholds } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
 import type { CalculatedSeries } from '../../utils/getCalculatedValuesBySeries';
 import { useGlobalState } from '../../../globalState';
@@ -45,6 +45,7 @@ interface GaugeValue {
   name?: string;
   stat: number;
   metric: Record<string, string | undefined>;
+  target?: ITarget;
   value?: string | number;
   unit?: string;
   color?: string;
@@ -106,8 +107,6 @@ function GaugeItem(props: GaugeItemProps) {
   const eleSize = useSize(ele);
   const { style, options, valueField } = props;
   let item = props.item;
-  const metricTooltip = _.map(item.metric, (value, key) => <div key={key}>{key === '__name__' ? value : `${key}: ${value}`}</div>);
-
   if (valueField !== 'Value') {
     const value = _.get(item, ['metric', valueField as string]);
     if (!_.isNaN(_.toNumber(value))) {
@@ -137,12 +136,10 @@ function GaugeItem(props: GaugeItemProps) {
     </div>
   );
 
-  if (Object.keys(item.metric).length === 0) return gaugeItem;
-
   return (
-    <Tooltip overlayClassName='ant-tooltip-max-width-600' title={metricTooltip}>
+    <SeriesTooltip metrics={item.metric} legend={item.target?.legend ? item.name : undefined} value={`${item.value ?? ''}${item.unit ?? ''}`}>
       {gaugeItem}
-    </Tooltip>
+    </SeriesTooltip>
   );
 }
 

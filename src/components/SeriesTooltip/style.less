@@ -1,0 +1,45 @@
+// 视觉与时序图 tooltip（UPlotChart/style.less 中的 .n9e-uplot-tooltip）保持一致
+.n9e-series-tooltip {
+  box-sizing: border-box;
+  max-width: 600px;
+  color: var(--fc-text-4);
+  background: var(--fc-fill-1);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 3px;
+  box-shadow: 1px 1px 1px var(--fc-boxshadow-base-color);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: normal;
+  word-break: break-all;
+  .n9e-series-tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 4px 8px;
+    color: var(--fc-text-2);
+    font-weight: bolder;
+  }
+  .n9e-series-tooltip-labels {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+  }
+  .n9e-series-tooltip-header + .n9e-series-tooltip-labels {
+    border-top: 1px solid var(--fc-border-color);
+  }
+}
+
+.n9e-series-tooltip-overlay {
+  max-width: none;
+  .ant-tooltip-arrow {
+    display: none;
+  }
+  .ant-tooltip-inner {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    box-shadow: none;
+  }
+}

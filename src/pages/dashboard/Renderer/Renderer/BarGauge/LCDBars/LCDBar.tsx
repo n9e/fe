@@ -1,13 +1,14 @@
 import React, { CSSProperties } from 'react';
-import { Tooltip, Space } from 'antd';
 import classNames from 'classnames';
 import _ from 'lodash';
 import Color from 'color';
 
+import SeriesTooltip from '@/components/SeriesTooltip';
 import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../../types';
 import { getSerieTextObj } from '../../../utils/getCalculatedValuesBySeries';
+import { getTooltipLegend } from '../utils';
 import type { BarGaugeValue } from '../utils';
 
 interface Props {
@@ -72,19 +73,7 @@ export default function LCDBar(props: Props) {
   });
 
   return (
-    <Tooltip
-      mouseEnterDelay={0.5}
-      overlayClassName='ant-tooltip-max-width-600'
-      title={
-        <Space>
-          {name}
-          <Space size={2}>
-            {item.value}
-            {item.unit}
-          </Space>
-        </Space>
-      }
-    >
+    <SeriesTooltip mouseEnterDelay={0.5} metrics={metric} legend={getTooltipLegend(item, name)} value={`${item.value ?? ''}${item.unit ?? ''}`}>
       <div
         key={item.id}
         className={classNames('n9e-renderer-bar-gauge-lcd-item', {
@@ -129,6 +118,6 @@ export default function LCDBar(props: Props) {
           )}
         </div>
       </div>
-    </Tooltip>
+    </SeriesTooltip>
   );
 }

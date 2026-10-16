@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Hexagon, HexGrid, Layout } from 'react-hexgrid';
 
+import { SeriesTooltipContent } from '@/components/SeriesTooltip';
 import { createTextWidthMeasurer, getTextWidthInEm } from '@/utils/getTextWidth';
 
 import './style.less';
 
 import calculateHexCoordinates from './utils/calculateHexCoordinates';
 import getRoundedHexagonPath from './utils/getRoundedHexagonPath';
+import getTooltipPosition from './utils/getTooltipPosition';
 
 const DEFAULT_SPACING = 1.02;
 const MIN_VALUE_FONT_SIZE = 0.01;
@@ -54,6 +56,8 @@ export interface HoneycombCell {
   value: string;
   stat: number | string | null;
   metric: Record<string, string | undefined>;
+  /** 自定义 legend，存在时 tooltip 用它替代 metric 展示 */
+  legend?: string;
   color: string;
 }
 
@@ -115,6 +119,26 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
   }, [data, measureTextWidth, nameFontSize, rowVerticalPadding, showName, showValue, textBoxHeight, textBoxVerticalPadding, textGap, valueTextWidth]);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const element = tooltipRef.current;
+    if (!tooltip || !element) return;
+
+    const updatePosition = () => {
+      const position = getTooltipPosition(tooltip, element.getBoundingClientRect(), {
+        width: document.documentElement.clientWidth || window.innerWidth,
+        height: document.documentElement.clientHeight || window.innerHeight,
+      });
+      element.style.left = `${position.left}px`;
+      element.style.top = `${position.top}px`;
+    };
+
+    // 在绘制前按实际尺寸定位，避免靠近边界时先闪出溢出的浮层。
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [tooltip, fontRevision]);
 
   const handleMouseEnter = useCallback((event: React.MouseEvent<SVGPathElement>, cell: HoneycombCell, index: number) => {
     setHoveredIndex(index);
@@ -174,19 +198,8 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
   const tooltipElement =
     tooltip && typeof document !== 'undefined'
       ? createPortal(
-          <div className='honeycomb-chart-tooltip' style={{ left: tooltip.x + 10, top: tooltip.y + 10 }}>
-            <div>
-              <strong>
-                {tooltip.cell.metric.__name__ || 'value'}: {tooltip.cell.value}
-              </strong>
-            </div>
-            {Object.entries(tooltip.cell.metric)
-              .filter(([key]) => key !== '__name__')
-              .map(([key, value]) => (
-                <div key={key}>
-                  {key}: {value}
-                </div>
-              ))}
+          <div ref={tooltipRef} className='honeycomb-chart-tooltip'>
+            <SeriesTooltipContent metrics={tooltip.cell.metric} legend={tooltip.cell.legend} value={tooltip.cell.value} />
           </div>,
           document.body,
         )
