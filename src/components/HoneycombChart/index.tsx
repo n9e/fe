@@ -11,7 +11,10 @@ import calculateHexCoordinates from './utils/calculateHexCoordinates';
 import getRoundedHexagonPath from './utils/getRoundedHexagonPath';
 import getTooltipPosition from './utils/getTooltipPosition';
 
-const DEFAULT_SPACING = 1.02;
+// 中心按无缝网格排列，可见间距改由路径内缩产生（见 CELL_GAP）。
+const LAYOUT_SPACING = 1;
+const CELL_GAP = 2;
+const CELL_STROKE_WIDTH = 2;
 const MIN_VALUE_FONT_SIZE = 0.01;
 const MAX_VALUE_FONT_SIZE = 24;
 const VALUE_FONT_WEIGHT = 500;
@@ -78,17 +81,24 @@ interface TooltipState {
 }
 
 export default function HoneycombChart({ data, width, height, textMode, fontBackground = false, themeMode, onCellClick }: Props) {
-  const layout = useMemo(() => calculateHexCoordinates(data.length, width, height, DEFAULT_SPACING), [data.length, height, width]);
-  const roundedPath = useMemo(() => getRoundedHexagonPath(layout.hexSize), [layout.hexSize]);
-  const textBoxWidth = layout.hexSize * Math.sqrt(3) * 0.9;
-  const textBoxHeight = layout.hexSize * 0.96;
+  const layout = useMemo(() => calculateHexCoordinates(data.length, width, height, LAYOUT_SPACING), [data.length, height, width]);
+  const padding = Math.max(2, layout.hexSize * 0.03);
+  const viewBoxWidth = layout.viewBoxWidth + padding * 2;
+  const viewBoxHeight = layout.viewBoxHeight + padding * 2;
+  const scale = Math.min(width / viewBoxWidth, height / viewBoxHeight);
+  // 中心按无缝网格排列；路径内缩时补偿 SVG 缩放和两侧描边，让可见间距保持固定像素。
+  // 极密集的网格放不下完整间距时，仍保留可见的单元格。
+  const cellSize = layout.hexSize > 0 ? Math.max(layout.hexSize * 0.1, layout.hexSize - (CELL_GAP / scale + CELL_STROKE_WIDTH) / Math.sqrt(3)) : 0;
+  const roundedPath = useMemo(() => getRoundedHexagonPath(cellSize), [cellSize]);
+  const textBoxWidth = cellSize * Math.sqrt(3) * 0.9;
+  const textBoxHeight = cellSize * 0.96;
   const showName = textMode === 'valueAndName' || textMode === 'name';
   const showValue = textMode === 'valueAndName' || textMode === 'value';
   const valueTextWidth = textBoxWidth - (fontBackground ? TEXT_ROW_PADDING_X * 2 : 0);
-  const textGap = Math.min(3, layout.hexSize * 0.12);
+  const textGap = Math.min(3, cellSize * 0.12);
   const textBoxVerticalPadding = TEXT_BOX_PADDING_Y * 2;
   const rowVerticalPadding = fontBackground ? TEXT_ROW_PADDING_Y * 2 : 0;
-  const nameFontSize = Math.max(6, Math.min(20, layout.hexSize / 6));
+  const nameFontSize = Math.max(6, Math.min(20, cellSize / 6));
   const [fontRevision, setFontRevision] = useState(0);
   const measureTextWidth = useMemo(() => {
     // 字体加载完成后通过 fontRevision 重建测量器，触发后续字号重算。
@@ -180,8 +190,7 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
     return null;
   }
 
-  const padding = Math.max(2, layout.hexSize * 0.03);
-  const viewBox = `${layout.minX - padding} ${layout.minY - padding} ${layout.viewBoxWidth + padding * 2} ${layout.viewBoxHeight + padding * 2}`;
+  const viewBox = `${layout.minX - padding} ${layout.minY - padding} ${viewBoxWidth} ${viewBoxHeight}`;
   const textColor = fontBackground ? 'var(--fc-inverse-text-color)' : themeMode === 'dark' ? 'var(--fc-text-1)' : 'var(--fc-text-2)';
   const textStyle: React.CSSProperties = {
     maxWidth: '100%',
@@ -208,7 +217,7 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
   return (
     <>
       <HexGrid width={width} height={height} viewBox={viewBox}>
-        <Layout size={{ x: layout.hexSize, y: layout.hexSize }} flat={false} spacing={DEFAULT_SPACING} origin={{ x: 0, y: 0 }}>
+        <Layout size={{ x: layout.hexSize, y: layout.hexSize }} flat={false} spacing={LAYOUT_SPACING} origin={{ x: 0, y: 0 }}>
           {data
             .map((cell, index) => {
               const coordinate = layout.coordinates[index];
@@ -222,7 +231,7 @@ export default function HoneycombChart({ data, width, height, textMode, fontBack
                     d={roundedPath}
                     fill={cell.color}
                     stroke={isHovered ? (themeMode === 'dark' ? 'var(--fc-text-1)' : 'var(--fc-text-2)') : cell.color}
-                    strokeWidth={2}
+                    strokeWidth={CELL_STROKE_WIDTH}
                     style={{
                       cursor: onCellClick ? 'pointer' : 'default',
                       filter: isHovered ? 'brightness(0.9)' : 'none',
