@@ -60,7 +60,7 @@ export default function LCDBar(props: Props) {
     } else {
       cellStyles.backgroundColor = Color(textObj.color).alpha(0.3).string();
     }
-    cells.push(<div key={i.toString()} style={cellStyles} className='renderer-bar-gauge-lcd-item-cells' />);
+    cells.push(<div key={i.toString()} style={cellStyles} className='n9e-renderer-bar-gauge-lcd-item-cells' />);
   }
 
   const scopedVars = {
@@ -87,14 +87,14 @@ export default function LCDBar(props: Props) {
     >
       <div
         key={item.id}
-        className={classNames('renderer-bar-gauge-lcd-item', {
-          'renderer-bar-gauge-item-name-top': namePlacement === 'top',
-          'renderer-bar-gauge-item-name-bottom': namePlacement === 'bottom',
+        className={classNames('n9e-renderer-bar-gauge-lcd-item', {
+          'n9e-renderer-bar-gauge-item-name-top': namePlacement === 'top',
+          'n9e-renderer-bar-gauge-item-name-bottom': namePlacement === 'bottom',
         })}
       >
         {namePlacement !== 'hidden' && (
           <div
-            className='renderer-bar-gauge-item-name'
+            className='n9e-renderer-bar-gauge-item-name'
             style={{
               width: namePlacement === 'left' ? (serieWidth ? `${serieWidth}%` : `${maxNameWidth + 4}px`) : undefined,
             }}
@@ -113,11 +113,11 @@ export default function LCDBar(props: Props) {
             )}
           </div>
         )}
-        <div className='renderer-bar-gauge-lcd-item-content'>
-          <div className='renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
+        <div className='n9e-renderer-bar-gauge-lcd-item-content'>
+          <div className='n9e-renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
           {valueMode !== 'hidden' && (
             <div
-              className='renderer-bar-gauge-lcd-item-value'
+              className='n9e-renderer-bar-gauge-lcd-item-value'
               style={{
                 color: valueMode === 'text' ? (themeMode === 'dark' ? '#fff' : '#20222E') : item.color,
                 width: `${maxValueWidth}px`,

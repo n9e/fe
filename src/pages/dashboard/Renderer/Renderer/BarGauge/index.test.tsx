@@ -70,18 +70,18 @@ describe('BarGauge display options', () => {
   it('uses a vertical layout with value above the bar and name below it', () => {
     const view = renderGauge({ orientation: 'vertical', namePlacement: 'top' });
 
-    expect(view.container.querySelector('.renderer-bar-gauge-vertical')).toBeInTheDocument();
-    expect(view.container.querySelectorAll('.renderer-bar-gauge-item-vertical')).toHaveLength(2);
-    expect(view.container.querySelectorAll('.renderer-bar-gauge-item-name-bottom')).toHaveLength(2);
-    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ width: '155px' });
-    expect(view.container.querySelector('.renderer-bar-gauge-item-value-text')).toHaveStyle({ fontSize: '18px' });
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-vertical')).toBeInTheDocument();
+    expect(view.container.querySelectorAll('.n9e-renderer-bar-gauge-item-vertical')).toHaveLength(2);
+    expect(view.container.querySelectorAll('.n9e-renderer-bar-gauge-item-name-bottom')).toHaveLength(2);
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item')).toHaveStyle({ width: '155px' });
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item-value-text')).toHaveStyle({ fontSize: '18px' });
   });
 
   it('renders gradient mode and hides names when configured', () => {
     const view = renderGauge({ displayMode: 'gradient', namePlacement: 'hidden', valueMode: 'text' });
 
-    expect(view.container.querySelectorAll('.renderer-bar-gauge-item-name')).toHaveLength(0);
-    expect(view.container.querySelector('.renderer-bar-gauge-item-value-color-bg')).toBeInTheDocument();
+    expect(view.container.querySelectorAll('.n9e-renderer-bar-gauge-item-name')).toHaveLength(0);
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item-value-color-bg')).toBeInTheDocument();
     expect(
       getGradientBackground(
         {
@@ -96,66 +96,66 @@ describe('BarGauge display options', () => {
         '#00ff00',
       ),
     ).toContain('linear-gradient');
-    expect(view.container.querySelector('.renderer-bar-gauge-item-content > .renderer-bar-gauge-item-value-text')).toBeInTheDocument();
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item-content > .n9e-renderer-bar-gauge-item-value-text')).toBeInTheDocument();
   });
 
   it('uses origin values and applies the all-values limit', () => {
     const view = renderGauge({ showMode: 'allValues', limit: 2 });
 
-    expect(view.container.querySelectorAll('.renderer-bar-gauge-item')).toHaveLength(2);
+    expect(view.container.querySelectorAll('.n9e-renderer-bar-gauge-item')).toHaveLength(2);
   });
 
   it('formats and colors the combined other item in LCD mode', () => {
     const view = renderGauge({ displayMode: 'lcd', topn: 1, combine_other: true });
-    const items = view.container.querySelectorAll('.renderer-bar-gauge-lcd-item');
+    const items = view.container.querySelectorAll('.n9e-renderer-bar-gauge-lcd-item');
 
     expect(items).toHaveLength(2);
     expect(items[1]).toHaveTextContent('Other');
-    expect(items[1].querySelector('.renderer-bar-gauge-lcd-item-value')).toHaveStyle({ color: '#00ff00' });
+    expect(items[1].querySelector('.n9e-renderer-bar-gauge-lcd-item-value')).toHaveStyle({ color: '#00ff00' });
   });
 
   it('keeps the LCD value beside the bar when the name is on top', () => {
     const view = renderGauge({ displayMode: 'lcd', orientation: 'horizontal', namePlacement: 'top' });
-    const firstItem = view.container.querySelector('.renderer-bar-gauge-lcd-item');
-    const content = firstItem?.querySelector('.renderer-bar-gauge-lcd-item-content');
+    const firstItem = view.container.querySelector('.n9e-renderer-bar-gauge-lcd-item');
+    const content = firstItem?.querySelector('.n9e-renderer-bar-gauge-lcd-item-content');
 
-    expect(content?.firstElementChild).toHaveClass('renderer-bar-gauge-lcd-item-cells-wrapper');
-    expect(content?.lastElementChild).toHaveClass('renderer-bar-gauge-lcd-item-value');
+    expect(content?.firstElementChild).toHaveClass('n9e-renderer-bar-gauge-lcd-item-cells-wrapper');
+    expect(content?.lastElementChild).toHaveClass('n9e-renderer-bar-gauge-lcd-item-value');
   });
 
   it('uses the larger of automatic size and manual minimum width in vertical mode', () => {
     const view = renderGauge({ orientation: 'vertical', sizing: 'manual', minVizWidth: 170 });
 
-    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ width: '170px' });
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item')).toHaveStyle({ width: '170px' });
   });
 
   it('keeps the automatic width when it exceeds the manual minimum width in vertical mode', () => {
     const view = renderGauge({ orientation: 'vertical', sizing: 'manual', minVizWidth: 40 });
 
-    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ width: '155px' });
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item')).toHaveStyle({ width: '155px' });
   });
 
   it('clamps manual horizontal rows between their minimum and maximum heights', () => {
     const view = renderGauge({ orientation: 'horizontal', sizing: 'manual', minVizHeight: 18, maxVizHeight: 18 });
 
-    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ height: '18px' });
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item')).toHaveStyle({ height: '18px' });
   });
 
   it('uses panel height to size automatic horizontal rows', () => {
     const view = renderGauge({ orientation: 'horizontal' });
 
-    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ height: '75px' });
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item')).toHaveStyle({ height: '75px' });
   });
 
   it('reserves name-row height for horizontal top placement', () => {
     const view = renderGauge({ orientation: 'horizontal', namePlacement: 'top' });
 
-    expect(view.container.querySelector('.renderer-bar-gauge-item')).toHaveStyle({ height: '75px' });
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-item')).toHaveStyle({ height: '75px' });
   });
 
   it('reserves the same value column width for every horizontal bar', () => {
     const view = renderGauge({ orientation: 'horizontal' });
-    const widths = Array.from(view.container.querySelectorAll<HTMLElement>('.renderer-bar-gauge-item-value-text')).map((element) => element.style.width);
+    const widths = Array.from(view.container.querySelectorAll<HTMLElement>('.n9e-renderer-bar-gauge-item-value-text')).map((element) => element.style.width);
 
     expect(widths).toEqual(['20px', '20px']);
   });
@@ -163,26 +163,26 @@ describe('BarGauge display options', () => {
   it('uses auto orientation for a wide panel', () => {
     const view = renderGauge({ orientation: 'auto' });
 
-    expect(view.container.querySelector('.renderer-bar-gauge-vertical')).toBeInTheDocument();
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-vertical')).toBeInTheDocument();
   });
 
   it('uses horizontal layout when orientation is absent', () => {
     const view = renderGauge({});
 
-    expect(view.container.querySelector('.renderer-bar-gauge-horizontal')).toBeInTheDocument();
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-horizontal')).toBeInTheDocument();
   });
 
   it('uses the LCD spacing fallback when there are no LCD bars', () => {
     const vertical = renderGauge({ orientation: 'vertical' });
-    expect(vertical.container.querySelector('.renderer-bar-gauge')).toHaveStyle({ gap: '10px' });
+    expect(vertical.container.querySelector('.n9e-renderer-bar-gauge')).toHaveStyle({ gap: '10px' });
 
     const lcdOnly = renderGauge({ displayMode: 'lcd', orientation: 'vertical' });
-    expect(lcdOnly.container.querySelector('.renderer-bar-gauge')).toHaveStyle({ gap: '2px' });
+    expect(lcdOnly.container.querySelector('.n9e-renderer-bar-gauge')).toHaveStyle({ gap: '2px' });
   });
 
   it('uses the shared scrollbar style for bar lists', () => {
     const view = renderGauge({});
 
-    expect(view.container.querySelector('.renderer-bar-gauge')).toHaveClass('best-looking-scroll');
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge')).toHaveClass('best-looking-scroll');
   });
 });

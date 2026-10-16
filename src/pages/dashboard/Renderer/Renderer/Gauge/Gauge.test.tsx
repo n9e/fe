@@ -16,7 +16,7 @@ const defaultThresholds: IThresholds = {
 describe('Gauge threshold label rendering', () => {
   it('uses a vertically compact viewBox for arc gauges', () => {
     const markup = renderToStaticMarkup(<Gauge min={0} max={100} value={50} thresholds={defaultThresholds} custom={{ calc: 'last', textMode: 'value' }} />);
-    const style = markup.match(/class="renderer-gauge-svg renderer-gauge-svg-arc" style="(.*?)"/)?.[1] ?? '';
+    const style = markup.match(/class="n9e-renderer-gauge-svg n9e-renderer-gauge-svg-arc" style="(.*?)"/)?.[1] ?? '';
     const width = Number(style.match(/width:([\d.]+)px/)?.[1]);
     const height = Number(style.match(/height:([\d.]+)px/)?.[1]);
 
@@ -41,7 +41,7 @@ describe('Gauge threshold label rendering', () => {
         }}
       />,
     );
-    const rangeMarkup = markup.match(/<g class="renderer-gauge-range">([\s\S]*?)<\/g>/)?.[1];
+    const rangeMarkup = markup.match(/<g class="n9e-renderer-gauge-range">([\s\S]*?)<\/g>/)?.[1];
     const labels = Array.from(rangeMarkup?.matchAll(/<text\b([^>]*)>(.*?)<\/text>/g) ?? []).map(([, attributes, text]) => ({ attributes, text }));
 
     expect(labels.map((label) => label.text)).toEqual(['0%', '60%', '80%', '100%']);
@@ -75,7 +75,7 @@ describe('Gauge threshold label rendering', () => {
         }}
       />,
     );
-    const rangeMarkup = markup.match(/<g class="renderer-gauge-range">([\s\S]*?)<\/g>/)?.[1];
+    const rangeMarkup = markup.match(/<g class="n9e-renderer-gauge-range">([\s\S]*?)<\/g>/)?.[1];
     const labels = Array.from(rangeMarkup?.matchAll(/<text\b([^>]*)>(.*?)<\/text>/g) ?? []).map(([, attributes, text]) => ({ attributes, text }));
 
     expect(labels.map((label) => label.text)).toEqual(['0%', '60%', '80%', '100%']);
@@ -90,7 +90,7 @@ describe('Gauge threshold label rendering', () => {
     const markup = renderToStaticMarkup(
       <Gauge min={0} max={100} value={25} thresholds={defaultThresholds} custom={{ calc: 'last', style: 'circle', barStyle: 'rounded', showLabels: true, textMode: 'value' }} />,
     );
-    const caps = Array.from(markup.matchAll(/<circle\b(?=[^>]*class="renderer-gauge-bar-cap")([^>]*)>/g)).map(([, attributes]) => ({
+    const caps = Array.from(markup.matchAll(/<circle\b(?=[^>]*class="n9e-renderer-gauge-bar-cap")([^>]*)>/g)).map(([, attributes]) => ({
       endpoint: attributes.match(/data-endpoint="(.*?)"/)?.[1],
       x: Number(attributes.match(/\bcx="([\d.e-]+)"/)?.[1]),
       y: Number(attributes.match(/\bcy="([\d.e-]+)"/)?.[1]),
@@ -123,7 +123,7 @@ describe('Gauge threshold label rendering', () => {
         }}
       />,
     );
-    const gradientMarkup = markup.match(/<g class="renderer-gauge-threshold-gradient"[^>]*>([\s\S]*?)<\/g>/)?.[1] ?? '';
+    const gradientMarkup = markup.match(/<g class="n9e-renderer-gauge-threshold-gradient"[^>]*>([\s\S]*?)<\/g>/)?.[1] ?? '';
     const fills = Array.from(gradientMarkup.matchAll(/\bfill="(.*?)"/g), ([, fill]) => fill);
 
     expect(fills.length).toBeGreaterThan(120);
@@ -147,7 +147,7 @@ describe('Gauge threshold label rendering', () => {
         }}
       />,
     );
-    const valueMarkup = markup.match(/<g class="renderer-gauge-value-fill"[^>]*>([\s\S]*?)<\/g>/)?.[1] ?? '';
+    const valueMarkup = markup.match(/<g class="n9e-renderer-gauge-value-fill"[^>]*>([\s\S]*?)<\/g>/)?.[1] ?? '';
     const paths = Array.from(valueMarkup.matchAll(/<path\b[^>]*fill="(.*?)"[^>]*>/g), ([, fill]) => fill);
 
     expect(paths.length).toBeGreaterThan(20);
@@ -157,8 +157,8 @@ describe('Gauge threshold label rendering', () => {
   it('applies segment spacing to the gaps between value segments', () => {
     const renderSegments = (segmentSpacing: number) =>
       renderToStaticMarkup(<Gauge min={0} max={100} value={100} thresholds={defaultThresholds} custom={{ calc: 'last', segments: 4, segmentSpacing, textMode: 'value' }} />);
-    const zeroSpacing = renderSegments(0).match(/<path\b(?=[^>]*class="renderer-gauge-value-segment")([^>]*)>/g) ?? [];
-    const fullSpacing = renderSegments(0.5).match(/<path\b(?=[^>]*class="renderer-gauge-value-segment")([^>]*)>/g) ?? [];
+    const zeroSpacing = renderSegments(0).match(/<path\b(?=[^>]*class="n9e-renderer-gauge-value-segment")([^>]*)>/g) ?? [];
+    const fullSpacing = renderSegments(0.5).match(/<path\b(?=[^>]*class="n9e-renderer-gauge-value-segment")([^>]*)>/g) ?? [];
 
     expect(zeroSpacing).toHaveLength(4);
     expect(fullSpacing).toHaveLength(4);
@@ -169,8 +169,8 @@ describe('Gauge threshold label rendering', () => {
     const markup = renderToStaticMarkup(
       <Gauge min={0} max={100} value={50} thresholds={defaultThresholds} custom={{ calc: 'last', segments: 4, segmentSpacing: 0.16, textMode: 'value' }} />,
     );
-    const trackSegments = markup.match(/<path\b(?=[^>]*class="renderer-gauge-track-segment")[^>]*>/g) ?? [];
-    const valueSegments = markup.match(/<path\b(?=[^>]*class="renderer-gauge-value-segment")[^>]*>/g) ?? [];
+    const trackSegments = markup.match(/<path\b(?=[^>]*class="n9e-renderer-gauge-track-segment")[^>]*>/g) ?? [];
+    const valueSegments = markup.match(/<path\b(?=[^>]*class="n9e-renderer-gauge-value-segment")[^>]*>/g) ?? [];
 
     expect(trackSegments).toHaveLength(4);
     expect(valueSegments).toHaveLength(2);
@@ -181,7 +181,7 @@ describe('Gauge threshold label rendering', () => {
       const markup = renderToStaticMarkup(
         <Gauge min={0} max={100} value={50} thresholds={defaultThresholds} custom={{ calc: 'last', textMode: 'value', showThresholds, showLabels }} />,
       );
-      return markup.match(/<path class="renderer-gauge-track" d="(.*?)" fill=/)?.[1];
+      return markup.match(/<path class="n9e-renderer-gauge-track" d="(.*?)" fill=/)?.[1];
     };
 
     const standardTrack = getTrackPath(true, true);
@@ -201,7 +201,7 @@ describe('Gauge threshold label rendering', () => {
     const withSparkline = renderGauge(true);
     const withoutSparkline = renderGauge(false);
 
-    expect(getTextY(withoutSparkline, 'renderer-gauge-value') - getTextY(withSparkline, 'renderer-gauge-value')).toBe(8);
-    expect(getTextY(withoutSparkline, 'renderer-gauge-name') - getTextY(withSparkline, 'renderer-gauge-name')).toBe(8);
+    expect(getTextY(withoutSparkline, 'n9e-renderer-gauge-value') - getTextY(withSparkline, 'n9e-renderer-gauge-value')).toBe(8);
+    expect(getTextY(withoutSparkline, 'n9e-renderer-gauge-name') - getTextY(withSparkline, 'n9e-renderer-gauge-name')).toBe(8);
   });
 });

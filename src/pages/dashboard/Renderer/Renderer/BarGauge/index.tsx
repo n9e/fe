@@ -240,8 +240,8 @@ export default function BarGauge(props: IProps) {
   }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   return (
-    <div className='renderer-bar-gauge-container-wrapper'>
-      <div className='renderer-bar-gauge-container best-looking-scroll' ref={containerRef}>
+    <div className='n9e-renderer-bar-gauge-container-wrapper'>
+      <div className='n9e-renderer-bar-gauge-container best-looking-scroll' ref={containerRef}>
         {displayMode === 'lcd' && resolvedOrientation === 'horizontal' && containerSize?.width ? (
           <LCDBars
             values={calculatedValues as BarGaugeValue[]}
@@ -256,7 +256,7 @@ export default function BarGauge(props: IProps) {
             namePlacement={resolvedNamePlacement}
           />
         ) : (
-          <div className={`renderer-bar-gauge renderer-bar-gauge-${resolvedOrientation} best-looking-scroll`} style={{ gap: `${itemSpacing}px` }}>
+          <div className={`n9e-renderer-bar-gauge n9e-renderer-bar-gauge-${resolvedOrientation} best-looking-scroll`} style={{ gap: `${itemSpacing}px` }}>
             {_.map(calculatedValues, (item) => {
               return (
                 <BasicDisplayMode

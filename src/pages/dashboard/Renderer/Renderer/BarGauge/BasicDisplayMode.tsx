@@ -65,17 +65,17 @@ export default function BasicDisplayMode(props: Props) {
       }
     >
       <div
-        className={classNames('renderer-bar-gauge-item', {
-          'renderer-bar-gauge-item-vertical': isVertical,
-          'renderer-bar-gauge-item-name-top': namePlacement === 'top',
-          'renderer-bar-gauge-item-name-bottom': namePlacement === 'bottom',
+        className={classNames('n9e-renderer-bar-gauge-item', {
+          'n9e-renderer-bar-gauge-item-vertical': isVertical,
+          'n9e-renderer-bar-gauge-item-name-top': namePlacement === 'top',
+          'n9e-renderer-bar-gauge-item-name-bottom': namePlacement === 'bottom',
         })}
         key={item.name}
         style={itemStyle}
       >
         {namePlacement !== 'hidden' && (
           <div
-            className='renderer-bar-gauge-item-name'
+            className='n9e-renderer-bar-gauge-item-name'
             style={{
               width: namePlacement === 'left' && !isVertical ? (serieWidth ? `${serieWidth}%` : `${maxNameWidth + 4}px`) : undefined,
             }}
@@ -95,16 +95,16 @@ export default function BasicDisplayMode(props: Props) {
           </div>
         )}
 
-        <div className='renderer-bar-gauge-item-content'>
-          <div className='renderer-bar-gauge-item-value'>
+        <div className='n9e-renderer-bar-gauge-item-content'>
+          <div className='n9e-renderer-bar-gauge-item-value'>
             <div
-              className='renderer-bar-gauge-item-value-bg'
+              className='n9e-renderer-bar-gauge-item-value-bg'
               style={{
                 backgroundColor: themeMode === 'dark' ? '#20222E' : '#F6F6F6',
               }}
             />
             <div
-              className='renderer-bar-gauge-item-value-color-bg'
+              className='n9e-renderer-bar-gauge-item-value-color-bg'
               style={
                 isVertical
                   ? {
@@ -125,7 +125,7 @@ export default function BasicDisplayMode(props: Props) {
           </div>
           {valueMode !== 'hidden' && (
             <div
-              className='renderer-bar-gauge-item-value-text'
+              className='n9e-renderer-bar-gauge-item-value-text'
               style={{
                 color: valueMode === 'text' ? (themeMode === 'dark' ? '#fff' : '#20222E') : color,
                 width: isVertical ? undefined : `${maxValueWidth}px`,

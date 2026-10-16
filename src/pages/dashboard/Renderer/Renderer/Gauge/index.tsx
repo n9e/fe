@@ -81,7 +81,7 @@ function GaugeItemContent(props: GaugeItemContentProps) {
   if (!eleSize?.width) return null;
 
   return (
-    <div className='renderer-gauge-item-content-chart'>
+    <div className='n9e-renderer-gauge-item-content-chart'>
       <Gauge
         min={min}
         max={max}
@@ -130,8 +130,8 @@ function GaugeItem(props: GaugeItemProps) {
   }
 
   const gaugeItem = (
-    <div key={item.name} className='renderer-gauge-item' ref={ele} style={style}>
-      <div className='renderer-gauge-item-content'>
+    <div key={item.name} className='n9e-renderer-gauge-item' ref={ele} style={style}>
+      <div className='n9e-renderer-gauge-item-content'>
         <GaugeItemContent {...props} eleSize={eleSize} />
       </div>
     </div>
@@ -203,9 +203,9 @@ export default function Index(props: IProps) {
   }, [isPreview, dataDependency, stableCustom, stableOptions]);
 
   return (
-    <div className='renderer-gauge-container'>
-      <div className='renderer-gauge-container-box'>
-        <div ref={ele} className='renderer-gauge-container-box-content'>
+    <div className='n9e-renderer-gauge-container'>
+      <div className='n9e-renderer-gauge-container-box'>
+        <div ref={ele} className='n9e-renderer-gauge-container-box-content'>
           {layout.length === calculatedValues.length &&
             _.map(calculatedValues, (item, idx) => {
               const itemLayout = layout[idx];

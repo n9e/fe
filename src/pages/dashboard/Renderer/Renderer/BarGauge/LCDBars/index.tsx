@@ -23,7 +23,7 @@ export default function LCDBars(props: Props) {
   const { values } = props;
 
   return (
-    <div className='renderer-bar-gauge-lcd best-looking-scroll'>
+    <div className='n9e-renderer-bar-gauge-lcd best-looking-scroll'>
       {_.map(values, (item) => {
         return <LCDBar key={item.id} {...props} item={item} />;
       })}

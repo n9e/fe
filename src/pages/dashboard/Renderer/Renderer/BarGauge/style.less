@@ -1,12 +1,12 @@
-.renderer-bar-gauge-container-wrapper {
+.n9e-renderer-bar-gauge-container-wrapper {
   height: 100%;
   width: 100%;
   padding: 10px;
 }
-.renderer-bar-gauge-container {
+.n9e-renderer-bar-gauge-container {
   height: 100%;
   width: 100%;
-  .renderer-bar-gauge {
+  .n9e-renderer-bar-gauge {
     height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -20,7 +20,7 @@
     flex-direction: column;
     gap: 8px;
   }
-  .renderer-bar-gauge-vertical {
+  .n9e-renderer-bar-gauge-vertical {
     flex-direction: row;
     align-items: stretch;
     overflow-x: auto;
@@ -34,83 +34,83 @@
     padding-bottom: 6px;
   }
 }
-.renderer-bar-gauge-item {
+.n9e-renderer-bar-gauge-item {
   display: flex;
   height: 18px;
   line-height: 18px;
   gap: 10px;
   flex-shrink: 0;
 }
-.renderer-bar-gauge-item-name-top {
+.n9e-renderer-bar-gauge-item-name-top {
   flex-direction: column;
   height: auto;
   gap: 2px;
 
-  .renderer-bar-gauge-item-name {
+  .n9e-renderer-bar-gauge-item-name {
     text-align: left;
     width: 100%;
   }
 
-  .renderer-bar-gauge-item-value {
+  .n9e-renderer-bar-gauge-item-value {
     min-height: 0;
   }
 }
-.renderer-bar-gauge-item-name-bottom {
+.n9e-renderer-bar-gauge-item-name-bottom {
   flex-direction: column;
   height: auto;
   gap: 2px;
 
-  .renderer-bar-gauge-item-name {
+  .n9e-renderer-bar-gauge-item-name {
     order: 2;
     text-align: left;
     width: 100%;
   }
 
-  .renderer-bar-gauge-item-content {
+  .n9e-renderer-bar-gauge-item-content {
     order: 1;
   }
 }
-.renderer-bar-gauge-item-vertical {
+.n9e-renderer-bar-gauge-item-vertical {
   flex-direction: column;
   height: 100%;
   gap: 4px;
   box-sizing: border-box;
 
-  .renderer-bar-gauge-item-name {
+  .n9e-renderer-bar-gauge-item-name {
     text-align: center;
     width: 100%;
   }
 
-  .renderer-bar-gauge-item-value {
+  .n9e-renderer-bar-gauge-item-value {
     flex: 1;
     min-height: 0;
   }
 
-  .renderer-bar-gauge-item-content {
+  .n9e-renderer-bar-gauge-item-content {
     flex: 1;
     flex-direction: column;
     gap: 4px;
     min-height: 0;
   }
 
-  .renderer-bar-gauge-item-value-bg {
+  .n9e-renderer-bar-gauge-item-value-bg {
     bottom: 0;
     height: 100%;
   }
 
-  .renderer-bar-gauge-item-value-color-bg {
+  .n9e-renderer-bar-gauge-item-value-color-bg {
     bottom: 0;
     height: auto;
   }
 
-  .renderer-bar-gauge-item-value-text {
+  .n9e-renderer-bar-gauge-item-value-text {
     order: -1;
     width: 100%;
     text-align: center;
     line-height: 18px;
   }
 }
-.renderer-bar-gauge-item-name {
+.n9e-renderer-bar-gauge-item-name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,35 +119,35 @@
   text-align: right;
   flex-shrink: 0;
 }
-.renderer-bar-gauge-item-value {
+.n9e-renderer-bar-gauge-item-value {
   position: relative;
   flex: 1;
 }
-.renderer-bar-gauge-item-value-bg {
+.n9e-renderer-bar-gauge-item-value-bg {
   position: absolute;
   height: 100%;
   width: 100%;
 }
-.renderer-bar-gauge-item-value-color-bg {
+.n9e-renderer-bar-gauge-item-value-color-bg {
   position: absolute;
   height: 100%;
   line-height: 18px;
   display: flex;
   justify-content: flex-end;
 }
-.renderer-bar-gauge-item-value-text {
+.n9e-renderer-bar-gauge-item-value-text {
   flex-shrink: 0;
   text-align: right;
   white-space: nowrap;
 }
-.renderer-bar-gauge-item-content {
+.n9e-renderer-bar-gauge-item-content {
   min-width: 0;
   flex: 1;
   display: flex;
   gap: 10px;
 }
 
-.renderer-bar-gauge-lcd {
+.n9e-renderer-bar-gauge-lcd {
   height: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -157,22 +157,22 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  .renderer-bar-gauge-lcd-item {
+  .n9e-renderer-bar-gauge-lcd-item {
     display: flex;
     gap: 10px;
   }
-  .renderer-bar-gauge-lcd-item.renderer-bar-gauge-item-name-top,
-  .renderer-bar-gauge-lcd-item.renderer-bar-gauge-item-name-bottom {
+  .n9e-renderer-bar-gauge-lcd-item.n9e-renderer-bar-gauge-item-name-top,
+  .n9e-renderer-bar-gauge-lcd-item.n9e-renderer-bar-gauge-item-name-bottom {
     gap: 2px;
   }
-  .renderer-bar-gauge-lcd-item-content {
+  .n9e-renderer-bar-gauge-lcd-item-content {
     min-width: 0;
     flex: 1;
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  .renderer-bar-gauge-lcd-item-cells-wrapper {
+  .n9e-renderer-bar-gauge-lcd-item-cells-wrapper {
     min-width: 0;
     flex: 1;
     display: flex;
@@ -180,10 +180,10 @@
     align-items: center;
     justify-content: flex-start;
   }
-  .renderer-bar-gauge-lcd-item-cells {
+  .n9e-renderer-bar-gauge-lcd-item-cells {
     border-radius: 2px;
   }
-  .renderer-bar-gauge-lcd-item-value {
+  .n9e-renderer-bar-gauge-lcd-item-value {
     width: auto;
     flex-shrink: 0;
     text-align: right;

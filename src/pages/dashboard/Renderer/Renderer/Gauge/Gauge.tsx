@@ -83,7 +83,7 @@ function Sparkline({ data, color, width }: { data: Point[]; color: string; width
     return sampled.map((value, index) => `${CENTER - width / 2 + (index / (sampled.length - 1)) * width},${CENTER + 36 - ((value - min) / range) * 16}`).join(' ');
   }, [data, width]);
 
-  return points ? <polyline className='renderer-gauge-sparkline' points={points} stroke={color} /> : null;
+  return points ? <polyline className='n9e-renderer-gauge-sparkline' points={points} stroke={color} /> : null;
 }
 
 export default function Gauge(props: Props) {
@@ -158,7 +158,7 @@ export default function Gauge(props: Props) {
     : [];
 
   return (
-    <div className={`renderer-gauge-svg renderer-gauge-svg-${isCircle ? 'circle' : 'arc'}`} style={{ width, height }}>
+    <div className={`n9e-renderer-gauge-svg n9e-renderer-gauge-svg-${isCircle ? 'circle' : 'arc'}`} style={{ width, height }}>
       <svg
         viewBox={isCircle ? `0 0 ${SIZE} ${SIZE}` : `${ARC_VIEWBOX_LEFT} ${ARC_VIEWBOX_TOP} ${ARC_VIEWBOX_WIDTH} ${ARC_VIEWBOX_HEIGHT}`}
         preserveAspectRatio='xMidYMid meet'
@@ -175,7 +175,7 @@ export default function Gauge(props: Props) {
           </filter>
         </defs>
         <g transform={geometryTransform}>
-          {custom.centerGlow && <circle className='renderer-gauge-center-glow' cx={CENTER} cy={CENTER} r='52' fill={color} />}
+          {custom.centerGlow && <circle className='n9e-renderer-gauge-center-glow' cx={CENTER} cy={CENTER} r='52' fill={color} />}
           <g transform={`translate(${CENTER}, ${CENTER})`}>
             {segments > 1 ? (
               Array.from({ length: segments }, (_, index) => {
@@ -184,14 +184,14 @@ export default function Gauge(props: Props) {
                 return (
                   <path
                     key={`track-${index}`}
-                    className='renderer-gauge-track-segment'
+                    className='n9e-renderer-gauge-track-segment'
                     d={arcPath(valueOuter, valueInner, startAngle + segmentStart * span, startAngle + segmentEnd * span)}
                     fill={background}
                   />
                 );
               })
             ) : (
-              <path className='renderer-gauge-track' d={arcPath(valueOuter, valueInner, startAngle, endAngle, rounded)} fill={background} />
+              <path className='n9e-renderer-gauge-track' d={arcPath(valueOuter, valueInner, startAngle, endAngle, rounded)} fill={background} />
             )}
             {showThresholds &&
               !custom.gradient &&
@@ -203,7 +203,7 @@ export default function Gauge(props: Props) {
                 />
               ))}
             {showThresholds && custom.gradient && (
-              <g className='renderer-gauge-threshold-gradient' shapeRendering='geometricPrecision'>
+              <g className='n9e-renderer-gauge-threshold-gradient' shapeRendering='geometricPrecision'>
                 {Array.from({ length: gradientSegments }, (_, index) => {
                   const from = index / gradientSegments;
                   const to = (index + 1) / gradientSegments;
@@ -218,7 +218,7 @@ export default function Gauge(props: Props) {
               </g>
             )}
             {segments === 1 && fillTo > fillFrom && (
-              <g className='renderer-gauge-value-fill' filter={custom.barGlow ? `url(#${glowId})` : undefined} shapeRendering='geometricPrecision'>
+              <g className='n9e-renderer-gauge-value-fill' filter={custom.barGlow ? `url(#${glowId})` : undefined} shapeRendering='geometricPrecision'>
                 {custom.gradient ? (
                   Array.from({ length: valueGradientSegments }, (_, index) => {
                     const progressStart = fillFrom + (index / valueGradientSegments) * (fillTo - fillFrom);
@@ -236,7 +236,7 @@ export default function Gauge(props: Props) {
                   <path d={arcPath(valueOuter, valueInner, fillStartAngle, fillEndAngle)} fill={color} />
                 )}
                 {rounded && (
-                  <g className='renderer-gauge-bar-caps'>
+                  <g className='n9e-renderer-gauge-bar-caps'>
                     {[
                       { endpoint: 'start', angle: fillStartAngle, progress: fillFrom },
                       { endpoint: 'end', angle: fillEndAngle, progress: fillTo },
@@ -245,7 +245,7 @@ export default function Gauge(props: Props) {
                       return (
                         <circle
                           key={endpoint}
-                          className='renderer-gauge-bar-cap'
+                          className='n9e-renderer-gauge-bar-cap'
                           data-endpoint={endpoint}
                           cx={center.x}
                           cy={center.y}
@@ -267,7 +267,7 @@ export default function Gauge(props: Props) {
                 return fillSegmentEnd > fillSegmentStart ? (
                   <path
                     key={index}
-                    className='renderer-gauge-value-segment'
+                    className='n9e-renderer-gauge-value-segment'
                     d={arcPath(valueOuter, valueInner, startAngle + fillSegmentStart * span, startAngle + fillSegmentEnd * span)}
                     fill={custom.gradient ? getThresholdColor((fillSegmentStart + fillSegmentEnd) / 2, thresholds, range) : color}
                     filter={custom.barGlow ? `url(#${glowId})` : undefined}
@@ -291,17 +291,17 @@ export default function Gauge(props: Props) {
           />
         )}
         {showValue && (
-          <text className='renderer-gauge-value' x={CENTER} y={valueY} fontSize={valueFontSize}>
+          <text className='n9e-renderer-gauge-value' x={CENTER} y={valueY} fontSize={valueFontSize}>
             {displayValue}
           </text>
         )}
         {showName && (
-          <text className='renderer-gauge-name' x={CENTER} y={nameY}>
+          <text className='n9e-renderer-gauge-name' x={CENTER} y={nameY}>
             {name}
           </text>
         )}
         {thresholdLabels.length > 0 && (
-          <g className='renderer-gauge-range'>
+          <g className='n9e-renderer-gauge-range'>
             {thresholdLabels.map((value) => {
               const progress = range > 0 ? value / range : 0;
               const angle = startAngle + progress * span;
