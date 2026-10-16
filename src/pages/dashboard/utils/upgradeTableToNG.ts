@@ -45,8 +45,10 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
   try {
     // 历史面板可能缺少 options，甚至传入非对象；缺失时按空对象继续升级。
     // 若在这里抛错，会被下面的兜底吞掉，导致面板静默停留在 legacy Table。
-    if (!isRecord(fallback)) return fallback;
-    const result = fallback;
+    // 这里校验入参 panel 而不是 fallback：对 fallback 做类型守卫会把它收窄成
+    // Record<string, unknown>（部分新版 TS），后续赋值与返回都要额外断言。
+    if (!isRecord(panel)) return fallback;
+    const result: IPanel = fallback;
     const custom = isRecord(result.custom) ? result.custom : {};
     const displayMode = typeof custom.displayMode === 'string' ? custom.displayMode : 'seriesToRows';
     const targets = asRecordArray(result.targets);
@@ -180,7 +182,7 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
     })) as LinksItem[];
     if (optionLinks.length) nextOptions.links = optionLinks;
 
-    return result as IPanel;
+    return result;
   } catch (error) {
     console.warn('Failed to upgrade legacy Table panel to TableNG', error);
     return fallback;
