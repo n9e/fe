@@ -54,6 +54,7 @@ const ja_JP = {
       status_done: '完了',
       status3: 'キャンセル済み',
       status4: '生成済み（未エクスポートのフィールドあり）',
+      status_failed: '失敗',
       datasource: 'データソース',
       current_datasource: '現在のデータソース',
       all_datasources: 'すべてのデータソース',
