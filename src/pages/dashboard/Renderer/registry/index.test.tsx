@@ -24,8 +24,8 @@ jest.mock('@/utils/constant', () => ({ PRIMARY_COLOR: '#3274d9', SIZE: 8 }));
 jest.mock('@/App', () => ({ CommonStateContext: require('react').createContext({ darkMode: false }) }));
 
 describe('panel type registry', () => {
-  it('keeps the historical visualization order', () => {
-    expect(PANEL_VISUALIZATION_TYPES).toEqual(['timeseries', 'barchart', 'stat', 'tableNG', 'table', 'pie', 'hexbin', 'barGauge', 'text', 'gauge', 'heatmap', 'iframe']);
+  it('keeps the visualization selectors in the configured display order', () => {
+    expect(PANEL_VISUALIZATION_TYPES).toEqual(['timeseries', 'stat', 'tableNG', 'barGauge', 'gauge', 'hexbin', 'barchart', 'pie', 'table', 'text', 'heatmap', 'iframe']);
     expect(visualizations.map((item) => item.type)).toEqual(PANEL_VISUALIZATION_TYPES);
   });
 

@@ -4,19 +4,19 @@ import type { PanelVisualizationType } from './types';
  * 可视化类型的展示顺序。
  *
  * 这是类型顺序的唯一来源：注册表按该顺序组织，
- * `visualizations` 由它派生，保持与历史下拉顺序一致。
+ * `visualizations` 由它派生，让新增面板和编辑器选择使用一致的顺序。
  */
 export const PANEL_VISUALIZATION_TYPES: PanelVisualizationType[] = [
   'timeseries',
-  'barchart',
   'stat',
   'tableNG',
-  'table',
-  'pie',
-  'hexbin',
   'barGauge',
-  'text',
   'gauge',
+  'hexbin',
+  'barchart',
+  'pie',
+  'table',
+  'text',
   'heatmap',
   'iframe',
 ];
