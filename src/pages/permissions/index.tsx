@@ -82,10 +82,10 @@ export default function index() {
             </div>
 
             <List
+              className='best-looking-scroll overflow-x-hidden overflow-y-auto min-h-0'
               style={{
                 marginBottom: '12px',
                 flex: 1,
-                overflow: 'auto',
               }}
               dataSource={
                 _.filter(roleList, (item) => {
@@ -94,7 +94,7 @@ export default function index() {
               }
               size='small'
               renderItem={(item) => (
-                <List.Item key={item.id} className={activeRole?.id === item.id ? 'is-active' : ''} onClick={() => setActiveRole(item)}>
+                <List.Item key={item.id} className={`break-all ${activeRole?.id === item.id ? 'is-active' : ''}`} onClick={() => setActiveRole(item)}>
                   {item.name}
                 </List.Item>
               )}
