@@ -1,5 +1,6 @@
-// Explicit rows prevent a zero-width flex main from sharing the retained heading row.
-:has(> .fc-retained-sidebar) {
+// Outrank global !important flex utilities regardless of production CSS chunk order.
+// Explicit rows keep collapsed headings above the full-width results.
+:has(> .fc-retained-sidebar[class]) {
   --fc-retained-content-row: 1;
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr);
