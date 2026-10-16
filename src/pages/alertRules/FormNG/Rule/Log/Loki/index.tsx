@@ -32,6 +32,7 @@ import Inhibit from '@/pages/alertRules/Form/components/Inhibit';
 import AdvancedSettings from '@/pages/alertRules/Form/Rule/Rule/Metric/Prometheus/components/AdvancedSettings';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 import FormItemLabel from '@/pages/alertRules/FormNG/components/FormItemLabel';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function index(props: { datasourceCate: string; datasourceValue: number[] }) {
   const { t, i18n } = useTranslation('alertRules');
@@ -55,19 +56,21 @@ export default function index(props: { datasourceCate: string; datasourceValue: 
                   label={
                     <Space>
                       {'LogQL'}
-                      <Tooltip title={t('common:click_to_view_doc')}>
-                        <QuestionCircleOutlined
-                          onClick={() => {
-                            DocumentDrawer({
-                              language: i18n.language,
-                              darkMode,
-                              title: t('common:page_help'),
-                              type: 'iframe',
-                              documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/loki/',
-                            });
-                          }}
-                        />
-                      </Tooltip>
+                      <UsageDocs>
+                        <Tooltip title={t('common:click_to_view_doc')}>
+                          <QuestionCircleOutlined
+                            onClick={() => {
+                              DocumentDrawer({
+                                language: i18n.language,
+                                darkMode,
+                                title: t('common:page_help'),
+                                type: 'iframe',
+                                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/loki/',
+                              });
+                            }}
+                          />
+                        </Tooltip>
+                      </UsageDocs>
                     </Space>
                   }
                 >

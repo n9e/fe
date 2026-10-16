@@ -10,6 +10,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NAME_SPACE, DEFAULT_QUERY } from '../../constants';
 import GraphPreview from '../../AlertRule/Queries/GraphPreview';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   datasourceValue: number;
@@ -33,17 +34,19 @@ export default function index({ field = {}, path = [], prefixPath = [], datasour
               label={
                 <Space>
                   {t('explorer.query')}
-                  <InfoCircleOutlined
-                    onClick={() => {
-                      DocumentDrawer({
-                        language: i18n.language,
-                        darkMode,
-                        title: t('common:page_help'),
-                        type: 'iframe',
-                        documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
-                      });
-                    }}
-                  />
+                  <UsageDocs>
+                    <InfoCircleOutlined
+                      onClick={() => {
+                        DocumentDrawer({
+                          language: i18n.language,
+                          darkMode,
+                          title: t('common:page_help'),
+                          type: 'iframe',
+                          documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
+                        });
+                      }}
+                    />
+                  </UsageDocs>
                 </Space>
               }
             >

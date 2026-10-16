@@ -13,6 +13,7 @@ import { TableData } from '@/pages/dashboard/transformations/types';
 import EyeSwitch from '../../Components/EyeSwitch';
 import Collapse, { Panel } from '../../Components/Collapse';
 import useColumns from './useColumns';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Value {
   fields: {
@@ -43,19 +44,21 @@ export default function GroupedAggregateTable(props: IProps) {
         header={t('transformations.groupedAggregateTable.title')}
         extra={
           <Space size={2}>
-            <Button
-              icon={<InfoCircleOutlined />}
-              type='text'
-              size='small'
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  darkMode,
-                  title: t('transformations.groupedAggregateTable.title'),
-                  documentPath: '/n9e-docs/transformations/groupedAggregateTable',
-                });
-              }}
-            />
+            <UsageDocs>
+              <Button
+                icon={<InfoCircleOutlined />}
+                type='text'
+                size='small'
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('transformations.groupedAggregateTable.title'),
+                    documentPath: '/n9e-docs/transformations/groupedAggregateTable',
+                  });
+                }}
+              />
+            </UsageDocs>
             {/* <Button icon={<BugOutlined />} type='text' size='small' /> */}
             <Form.Item {...resetField} name={[name, 'disabled']} noStyle>
               <EyeSwitch />

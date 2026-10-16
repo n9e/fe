@@ -39,6 +39,7 @@ import usePagination from '@/components/usePagination';
 import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import UsageDocs from '@/components/UsageDocs';
 import EmptyGuide from '@/components/EmptyGuide';
 import DeleteMutesModal from './components/DeleteMutesModal';
 
@@ -470,7 +471,9 @@ const Shield: React.FC = () => {
                             ) : (
                               <span className='opacity-70'>{t('empty_guide.select_busi_group')}</span>
                             )}
-                            <a onClick={openDoc}>{t('common:page_help')}</a>
+                            <UsageDocs>
+                              <a onClick={openDoc}>{t('common:page_help')}</a>
+                            </UsageDocs>
                           </>
                         }
                       />

@@ -19,6 +19,7 @@ import { getLabelNames, getLabelValues, getParsedFields } from '../services';
 import { FieldNameSuggestion, LokiLabelMatcher, LokiLineFilter, LokiMetricBuilderState, LokiParsedFieldFilter, LokiRawBuilderState } from '../types';
 import { renderLogQLByMode, renderRawLogQL } from '../utils/logsQL';
 import { LokiCompletionCache } from '../utils/logqlCompletionCache';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   visible: boolean;
@@ -1030,20 +1031,22 @@ export default function Builder(props: Props) {
       </Form>
       <div className='absolute top-2 right-2'>
         <Space size={0}>
-          <Button
-            type='link'
-            onClick={(e) => {
-              e.stopPropagation();
-              DocumentDrawer({
-                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                title: t('common:document_title'),
-                type: 'iframe',
-                documentPath: LOKI_LOGS_QUERY_DOC_URL,
-              });
-            }}
-          >
-            {t('common:document_title')}
-          </Button>
+          <UsageDocs>
+            <Button
+              type='link'
+              onClick={(e) => {
+                e.stopPropagation();
+                DocumentDrawer({
+                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                  title: t('common:document_title'),
+                  type: 'iframe',
+                  documentPath: LOKI_LOGS_QUERY_DOC_URL,
+                });
+              }}
+            >
+              {t('common:document_title')}
+            </Button>
+          </UsageDocs>
           <Tooltip title={queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}>
             <Button
               type='text'

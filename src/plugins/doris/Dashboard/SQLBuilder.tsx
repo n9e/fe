@@ -10,6 +10,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../constants';
 import SQLInputWrap from './SQLInputWrap';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   field: any;
@@ -33,49 +34,51 @@ export default function SQLBuilder(props: Props) {
         label={
           <Space>
             {t('query.query')}
-            <Tooltip
-              overlayClassName='ant-tooltip-auto-width ant-tooltip-with-link'
-              title={
-                <div>
-                  <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />
-                  <div className='mt-2'>
-                    <Trans
-                      ns={NAME_SPACE}
-                      i18nKey='query.click_doc'
-                      components={{
-                        a: (
-                          <a
-                            onClick={() => {
-                              DocumentDrawer({
-                                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                                darkMode,
-                                title: t('common:document_link'),
-                                type: 'iframe',
-                                documentPath: DORIS_SQL_MODE_DOC_URL,
-                                anchor: '#2-时间宏',
-                              });
-                            }}
-                          />
-                        ),
-                      }}
-                    />
+            <UsageDocs>
+              <Tooltip
+                overlayClassName='ant-tooltip-auto-width ant-tooltip-with-link'
+                title={
+                  <div>
+                    <Trans ns='dashboard' i18nKey='dashboard:var.help_tip' components={{ 1: <br /> }} />
+                    <div className='mt-2'>
+                      <Trans
+                        ns={NAME_SPACE}
+                        i18nKey='query.click_doc'
+                        components={{
+                          a: (
+                            <a
+                              onClick={() => {
+                                DocumentDrawer({
+                                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                                  darkMode,
+                                  title: t('common:document_link'),
+                                  type: 'iframe',
+                                  documentPath: DORIS_SQL_MODE_DOC_URL,
+                                  anchor: '#2-时间宏',
+                                });
+                              }}
+                            />
+                          ),
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              }
-            >
-              <InfoCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                    darkMode,
-                    title: t('common:document_link'),
-                    type: 'iframe',
-                    documentPath: DORIS_SQL_MODE_DOC_URL,
-                    anchor: '#2-时间宏',
-                  });
-                }}
-              />
-            </Tooltip>
+                }
+              >
+                <InfoCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                      darkMode,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: DORIS_SQL_MODE_DOC_URL,
+                      anchor: '#2-时间宏',
+                    });
+                  }}
+                />
+              </Tooltip>
+            </UsageDocs>
           </Space>
         }
         {...restField}
@@ -193,28 +196,30 @@ export default function SQLBuilder(props: Props) {
             />
           </Space>
         </div>
-        <div>
-          <Trans
-            ns={NAME_SPACE}
-            i18nKey='query.warn_message_content_4'
-            components={{
-              a: (
-                <a
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                      darkMode,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: DORIS_SQL_MODE_DOC_URL,
-                      anchor: '#2-时间宏',
-                    });
-                  }}
-                />
-              ),
-            }}
-          />
-        </div>
+        <UsageDocs>
+          <div>
+            <Trans
+              ns={NAME_SPACE}
+              i18nKey='query.warn_message_content_4'
+              components={{
+                a: (
+                  <a
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                        darkMode,
+                        title: t('common:document_link'),
+                        type: 'iframe',
+                        documentPath: DORIS_SQL_MODE_DOC_URL,
+                        anchor: '#2-时间宏',
+                      });
+                    }}
+                  />
+                ),
+              }}
+            />
+          </div>
+        </UsageDocs>
       </Modal>
     </>
   );

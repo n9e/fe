@@ -12,6 +12,7 @@ import DocumentDrawer from '../components/DocumentDrawer';
 import HistoricalRecords from '../components/HistoricalRecords';
 import { CACHE_KEY, NAME_SPACE } from '../constants';
 import { useGlobalState } from '../globalState';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   extra?: React.ReactNode;
@@ -34,13 +35,15 @@ export default function QueryBuilder(props: Props) {
           label={
             <Space>
               {t('query.query')}
-              <InfoCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    darkMode,
-                  });
-                }}
-              />
+              <UsageDocs>
+                <InfoCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      darkMode,
+                    });
+                  }}
+                />
+              </UsageDocs>
             </Space>
           }
         >

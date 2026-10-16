@@ -12,6 +12,7 @@ import HistoricalRecords from '@/components/HistoricalRecords';
 import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { SQL_CACHE_KEY, NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../constants';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 
 interface Props {
   extra?: React.ReactNode;
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function QueryBuilder(props: Props) {
+  const showUsageDocs = useShowUsageDocs();
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
   const form = Form.useFormInstance();
@@ -77,34 +79,40 @@ export default function QueryBuilder(props: Props) {
         <Tooltip
           overlayClassName='ant-tooltip-with-link ant-tooltip-auto-width'
           title={
-            <Trans
-              ns={NAME_SPACE}
-              i18nKey='query.time_field_tip'
-              components={{
-                span: (
-                  <span
-                    style={{
-                      color: 'var(--fc-orange-5-color)',
-                    }}
-                  />
-                ),
-                br: <br />,
-                a: (
-                  <a
-                    onClick={() => {
-                      DocumentDrawer({
-                        language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                        darkMode,
-                        title: t('common:document_link'),
-                        type: 'iframe',
-                        documentPath: DORIS_SQL_MODE_DOC_URL,
-                        anchor: '#2-时间宏',
-                      });
-                    }}
-                  />
-                ),
-              }}
-            />
+            showUsageDocs ? (
+              <Trans
+                ns={NAME_SPACE}
+                i18nKey='query.time_field_tip'
+                components={{
+                  span: (
+                    <span
+                      style={{
+                        color: 'var(--fc-orange-5-color)',
+                      }}
+                    />
+                  ),
+                  br: <br />,
+                  a: (
+                    <a
+                      onClick={() => {
+                        DocumentDrawer({
+                          language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                          darkMode,
+                          title: t('common:document_link'),
+                          type: 'iframe',
+                          documentPath: DORIS_SQL_MODE_DOC_URL,
+                          anchor: '#2-时间宏',
+                        });
+                      }}
+                    />
+                  ),
+                }}
+              />
+            ) : (
+              t('query.time_field_tip')
+                .split(/<br\s*\/?\s*>/i)[0]
+                .replace(/<[^>]+>/g, '')
+            )
           }
         >
           <Form.Item name={['query', 'range']} initialValue={logsDefaultRange}>

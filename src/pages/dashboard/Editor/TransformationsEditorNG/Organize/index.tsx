@@ -15,6 +15,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import EyeSwitch from '../../Components/EyeSwitch';
 import Collapse, { Panel } from '../../Components/Collapse';
 import useColumns from './useColumns';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Value {
   fields?: string[];
@@ -68,19 +69,21 @@ export default function OrganizeFields(props: IProps) {
         header={t('transformations.organize.title')}
         extra={
           <Space size={2}>
-            <Button
-              icon={<InfoCircleOutlined />}
-              type='text'
-              size='small'
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  darkMode,
-                  title: t('transformations.organize.title'),
-                  documentPath: '/n9e-docs/transformations/organize',
-                });
-              }}
-            />
+            <UsageDocs>
+              <Button
+                icon={<InfoCircleOutlined />}
+                type='text'
+                size='small'
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('transformations.organize.title'),
+                    documentPath: '/n9e-docs/transformations/organize',
+                  });
+                }}
+              />
+            </UsageDocs>
             {/* <Button icon={<BugOutlined />} type='text' size='small' /> */}
             <Form.Item {...resetField} name={[name, 'disabled']} noStyle>
               <EyeSwitch />

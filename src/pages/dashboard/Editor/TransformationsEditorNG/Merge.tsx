@@ -10,6 +10,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import EyeSwitch from '../Components/EyeSwitch';
 import Collapse, { Panel } from '../Components/Collapse';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   field: FormListFieldData;
@@ -28,19 +29,21 @@ export default function Merge(props: IProps) {
         header={t('transformations.merge.title')}
         extra={
           <Space size={2}>
-            <Button
-              icon={<InfoCircleOutlined />}
-              type='text'
-              size='small'
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  darkMode,
-                  title: t('transformations.merge.title'),
-                  documentPath: '/n9e-docs/transformations/merge',
-                });
-              }}
-            />
+            <UsageDocs>
+              <Button
+                icon={<InfoCircleOutlined />}
+                type='text'
+                size='small'
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('transformations.merge.title'),
+                    documentPath: '/n9e-docs/transformations/merge',
+                  });
+                }}
+              />
+            </UsageDocs>
             {/* <Button icon={<BugOutlined />} type='text' size='small' /> */}
             <Form.Item {...resetField} name={[name, 'disabled']} noStyle>
               <EyeSwitch />
