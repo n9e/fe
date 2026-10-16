@@ -69,7 +69,7 @@ async function hoverChart(container: HTMLElement, chart: ChartCase, index = 0) {
   fireEvent.mouseEnter(trigger, { clientX: 30, clientY: 40 });
   await act(async () => jest.advanceTimersByTime(500));
 
-  const tooltip = chart.type === 'hexbin' ? document.body.querySelector('.honeycomb-chart-tooltip') : screen.getByRole('tooltip');
+  const tooltip = screen.getByRole('tooltip');
   await waitFor(() => expect(tooltip).toBeVisible());
   return tooltip as HTMLElement;
 }
@@ -169,14 +169,14 @@ describe('Hexbin tooltip lifecycle', () => {
     fireEvent.mouseMove(cells[0], { clientX: 80, clientY: 90 });
     expect(tooltip).toHaveStyle({ left: '90px', top: '100px' });
     fireEvent.mouseLeave(cells[0]);
-    expect(document.body.querySelector('.honeycomb-chart-tooltip')).toBeNull();
+    expect(screen.queryByRole('tooltip')).toBeNull();
 
     const secondTooltip = await hoverChart(view.container, chart, 1);
     expect(secondTooltip.querySelector('.n9e-series-tooltip-title')).toHaveTextContent('mem_usage');
     expect(secondTooltip).toHaveTextContent('ident: host-2');
     expect(secondTooltip).not.toHaveTextContent('host-1');
     view.unmount();
-    expect(document.body.querySelector('.honeycomb-chart-tooltip')).toBeNull();
+    expect(screen.queryByRole('tooltip')).toBeNull();
   });
 
   it('clears an open tooltip on data refresh and displays the updated value on the next hover', async () => {
@@ -184,7 +184,7 @@ describe('Hexbin tooltip lifecycle', () => {
     await hoverChart(view.container, chart);
 
     view.rerender(<Hexbin values={view.values} series={[{ ...series[0], metric: { __name__: 'new_cpu', ident: 'host-2' }, data: [[2000, 60.78]] }]} />);
-    expect(document.body.querySelector('.honeycomb-chart-tooltip')).toBeNull();
+    expect(screen.queryByRole('tooltip')).toBeNull();
 
     const tooltip = await hoverChart(view.container, chart);
     expect(tooltip.querySelector('.n9e-series-tooltip-title')).toHaveTextContent('new_cpu');
@@ -194,9 +194,61 @@ describe('Hexbin tooltip lifecycle', () => {
   });
 });
 
-describe('Hexbin tooltip boundary', () => {
-  const chart = charts[4];
+describe('Gauge pointer tooltip', () => {
+  const chart = charts[3];
 
+  it('appears at the pointer, follows mouse movement, and disappears on mouse leave', () => {
+    const view = renderChart(chart);
+    const trigger = view.container.querySelector(`${chart.selector} svg path`)!;
+    fireEvent.mouseEnter(trigger, { clientX: 30, clientY: 40 });
+
+    const tooltip = screen.getByRole('tooltip');
+    expect(tooltip).toHaveStyle({ left: '40px', top: '50px' });
+    expect(tooltip).toHaveTextContent('cpu_usage');
+    expect(view.container).not.toContainElement(tooltip);
+
+    fireEvent.mouseMove(trigger, { clientX: 80, clientY: 90 });
+    expect(tooltip).toHaveStyle({ left: '90px', top: '100px' });
+
+    fireEvent.mouseLeave(trigger);
+    expect(screen.queryByRole('tooltip')).toBeNull();
+    fireEvent.mouseMove(trigger, { clientX: 90, clientY: 100 });
+    expect(screen.queryByRole('tooltip')).toBeNull();
+  });
+
+  it('switches series without retaining the previous tooltip and removes the portal on unmount', () => {
+    const view = renderChart(chart, [...series, { id: 'B', refId: 'B', metric: { __name__: 'mem_usage', ident: 'host-2' }, data: [[1000, 8]] }]);
+    const triggers = view.container.querySelectorAll(chart.selector);
+
+    fireEvent.mouseEnter(triggers[0], { clientX: 30, clientY: 40 });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('ident: host-1');
+    fireEvent.mouseLeave(triggers[0]);
+    fireEvent.mouseEnter(triggers[1], { clientX: 80, clientY: 90 });
+
+    expect(screen.getAllByRole('tooltip')).toHaveLength(1);
+    expect(screen.getByRole('tooltip')).toHaveTextContent('mem_usage');
+    expect(screen.getByRole('tooltip')).toHaveTextContent('ident: host-2');
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent('host-1');
+
+    view.unmount();
+    expect(screen.queryByRole('tooltip')).toBeNull();
+  });
+
+  it('clears an open tooltip when series data refreshes', () => {
+    const view = renderChart(chart);
+    fireEvent.mouseEnter(view.container.querySelector(chart.selector)!, { clientX: 30, clientY: 40 });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('ident: host-1');
+
+    view.rerender(<Gauge values={view.values} series={[{ ...series[0], metric: { __name__: 'new_cpu', ident: 'host-2' }, data: [[2000, 60.78]] }]} />);
+    expect(screen.queryByRole('tooltip')).toBeNull();
+
+    fireEvent.mouseEnter(view.container.querySelector(chart.selector)!, { clientX: 80, clientY: 90 });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('ident: host-2');
+    expect(screen.getByRole('tooltip').querySelector('.n9e-series-tooltip-value')).toHaveTextContent('60.8%');
+  });
+});
+
+describe.each(charts.filter((chart) => chart.type === 'gauge' || chart.type === 'hexbin'))('$name tooltip boundary', (chart) => {
   function mockViewport(width = 800, height = 600) {
     const widthSpy = jest.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(width);
     const heightSpy = jest.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(height);
@@ -221,7 +273,7 @@ describe('Hexbin tooltip boundary', () => {
 
     fireEvent.mouseEnter(cell, { clientX: 790, clientY: 590 });
 
-    const tooltip = document.body.querySelector('.honeycomb-chart-tooltip');
+    const tooltip = screen.getByRole('tooltip');
     expect(tooltip).toHaveStyle({ left: '540px', top: '480px' });
     expect(tooltip).toHaveTextContent('cpu_usage');
     expect(tooltip).toHaveTextContent('ident: host-1');
@@ -240,10 +292,10 @@ describe('Hexbin tooltip boundary', () => {
     heightSpy.mockReturnValue(400);
     fireEvent(window, new Event('resize'));
 
-    expect(document.body.querySelector('.honeycomb-chart-tooltip')).toHaveStyle({ left: '348px', top: '288px' });
+    expect(screen.getByRole('tooltip')).toHaveStyle({ left: '348px', top: '288px' });
 
     view.unmount();
     expect(removeListener).toHaveBeenCalledWith('resize', expect.any(Function));
-    expect(document.body.querySelector('.honeycomb-chart-tooltip')).toBeNull();
+    expect(screen.queryByRole('tooltip')).toBeNull();
   });
 });

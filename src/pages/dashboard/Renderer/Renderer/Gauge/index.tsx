@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
 import { CommonStateContext } from '@/App';
-import SeriesTooltip from '@/components/SeriesTooltip';
+import { SeriesTooltipOverlay } from '@/components/SeriesTooltip';
+import type { TooltipPoint } from '@/components/SeriesTooltip';
 import { IPanel } from '../../../types';
 import type { IGaugeStyles, IOptions, ITarget, IThresholds } from '../../../types';
 import getCalculatedValuesBySeries, { getSerieTextObj } from '../../utils/getCalculatedValuesBySeries';
@@ -106,6 +107,11 @@ function GaugeItem(props: GaugeItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
   const { style, options, valueField } = props;
+  const [tooltipPoint, setTooltipPoint] = useState<TooltipPoint | null>(null);
+  // 数据刷新或重排后指针可能已不在原 item 上，先关闭浮层，等下一次 hover 重新定位。
+  useEffect(() => {
+    setTooltipPoint(null);
+  }, [props.item, style?.width, style?.height, style?.left, style?.top]);
   let item = props.item;
   if (valueField !== 'Value') {
     const value = _.get(item, ['metric', valueField as string]);
@@ -129,7 +135,15 @@ function GaugeItem(props: GaugeItemProps) {
   }
 
   const gaugeItem = (
-    <div key={item.name} className='n9e-renderer-gauge-item' ref={ele} style={style}>
+    <div
+      key={item.name}
+      className='n9e-renderer-gauge-item'
+      ref={ele}
+      style={style}
+      onMouseEnter={(event) => setTooltipPoint({ x: event.clientX, y: event.clientY })}
+      onMouseMove={(event) => setTooltipPoint((previous) => (previous ? { x: event.clientX, y: event.clientY } : null))}
+      onMouseLeave={() => setTooltipPoint(null)}
+    >
       <div className='n9e-renderer-gauge-item-content'>
         <GaugeItemContent {...props} eleSize={eleSize} />
       </div>
@@ -137,9 +151,12 @@ function GaugeItem(props: GaugeItemProps) {
   );
 
   return (
-    <SeriesTooltip metrics={item.metric} legend={item.target?.legend ? item.name : undefined} value={`${item.value ?? ''}${item.unit ?? ''}`}>
+    <>
       {gaugeItem}
-    </SeriesTooltip>
+      {tooltipPoint && (
+        <SeriesTooltipOverlay point={tooltipPoint} metrics={item.metric} legend={item.target?.legend ? item.name : undefined} value={`${item.value ?? ''}${item.unit ?? ''}`} />
+      )}
+    </>
   );
 }
 

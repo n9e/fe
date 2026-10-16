@@ -2,7 +2,7 @@
 import React from 'react';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 
-import SeriesTooltip, { createSeriesTooltipElement, SERIES_TOOLTIP_OVERLAY_CLASS, SeriesTooltipContent } from './index';
+import SeriesTooltip, { createSeriesTooltipElement, SERIES_TOOLTIP_OVERLAY_CLASS, SeriesTooltipContent, SeriesTooltipOverlay } from './index';
 import type { SeriesTooltipParams } from './index';
 
 describe('SeriesTooltip renderers', () => {
@@ -55,6 +55,42 @@ describe('SeriesTooltip renderers', () => {
 
     expect(view.container.querySelector('.n9e-series-tooltip-header')).toBeNull();
     expect(view.getByRole('listitem')).toHaveTextContent('ident: host-1');
+  });
+});
+
+describe('SeriesTooltipOverlay', () => {
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
+  it('renders no portal when there is no displayable content', () => {
+    render(<SeriesTooltipOverlay point={{ x: 30, y: 40 }} metrics={{ missing: null }} value='' />);
+
+    expect(screen.queryByRole('tooltip')).toBeNull();
+  });
+
+  it('repositions after content size changes and removes the portal and listener when content becomes empty', () => {
+    jest.spyOn(document.documentElement, 'clientWidth', 'get').mockReturnValue(800);
+    jest.spyOn(document.documentElement, 'clientHeight', 'get').mockReturnValue(600);
+    const rect = { x: 0, y: 0, width: 200, height: 120, top: 0, right: 200, bottom: 120, left: 0, toJSON: () => ({}) };
+    const measure = jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(rect);
+    const removeListener = jest.spyOn(window, 'removeEventListener');
+    const point = { x: 790, y: 590 };
+    const view = render(<SeriesTooltipOverlay point={point} legend='CPU' value='12%' />);
+
+    expect(screen.getByRole('tooltip')).toHaveStyle({ left: '580px', top: '460px' });
+
+    measure.mockReturnValue({ ...rect, width: 300, height: 200, right: 300, bottom: 200 });
+    view.rerender(<SeriesTooltipOverlay point={point} legend='Host memory' value='64MB' />);
+
+    expect(screen.getByRole('tooltip')).toHaveStyle({ left: '480px', top: '380px' });
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Host memory');
+    expect(screen.getByRole('tooltip')).toHaveTextContent('64MB');
+
+    view.rerender(<SeriesTooltipOverlay point={point} />);
+    expect(screen.queryByRole('tooltip')).toBeNull();
+    expect(removeListener).toHaveBeenCalledWith('resize', expect.any(Function));
   });
 });
 
