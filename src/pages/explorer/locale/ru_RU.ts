@@ -54,6 +54,7 @@ const ru_RU = {
       status_done: 'Завершено',
       status3: 'Отменено',
       status4: 'Создано с предупреждениями',
+      status_failed: 'Ошибка',
       datasource: 'Источник данных',
       current_datasource: 'Текущий источник',
       all_datasources: 'Все источники',
