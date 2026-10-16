@@ -242,22 +242,20 @@ const Resource: React.FC = () => {
               />
             </div>
             {teamDisplayMode == 'list' ? (
-              <div className='radio-list' style={{ overflowY: 'auto' }}>
-                <List
-                  style={{
-                    marginBottom: '12px',
-                    flex: 1,
-                    overflow: 'auto',
-                  }}
-                  dataSource={teamList}
-                  size='small'
-                  renderItem={(item) => (
-                    <List.Item key={item.id} className={_.toNumber(teamId) === _.toNumber(item.id) ? 'is-active' : ''} onClick={() => setTeamId(item.id)}>
-                      {item.name}
-                    </List.Item>
-                  )}
-                />
-              </div>
+              <List
+                className='best-looking-scroll overflow-x-hidden overflow-y-auto min-h-0'
+                style={{
+                  marginBottom: '12px',
+                  flex: 1,
+                }}
+                dataSource={teamList}
+                size='small'
+                renderItem={(item) => (
+                  <List.Item key={item.id} className={`break-all ${_.toNumber(teamId) === _.toNumber(item.id) ? 'is-active' : ''}`} onClick={() => setTeamId(item.id)}>
+                    {item.name}
+                  </List.Item>
+                )}
+              />
             ) : (
               <div className='radio-list' style={{ overflowY: 'auto' }}>
                 {!_.isEmpty(teamList) && (
