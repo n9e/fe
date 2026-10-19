@@ -1,3 +1,4 @@
+import { useMemoizedFn, useRequest } from 'ahooks';
 import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { Info } from 'lucide-react';
 import _ from 'lodash';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
 import usePagination from '@/components/usePagination';
 import Tags from '@/components/TableTags/Tags';
@@ -51,23 +53,12 @@ export default function List({ embedded = false }: ListProps) {
   const history = useHistory();
   const { darkMode } = useContext(CommonStateContext);
   const [filter, setFilter] = useState<Filter>(readFilter);
-  const [data, setData] = useState<{
-    list: Item[];
-    loading: boolean;
-    // 首次请求成功返回过才算「加载完成」：只有这时列表为空才是真的没有工作流，
-    // 否则（尚未发起 / 请求失败）会把首帧和接口故障都误报成空状态引导
-    loaded: boolean;
-  }>({
-    list: [],
-    loading: true,
-    loaded: false,
-  });
+  const [data, setData] = useState<{ list: Item[]; loaded: boolean }>({ list: [], loaded: false });
   // 选择态只存 id，行数据渲染时从最新的 data.list 现查：
   // 存 record 引用的话，行内启停或列表刷新后拿到的仍是勾选那一刻的旧对象，
   // 批量删除的「启用中不可删」校验会读到过期的 disabled 值而被绕过。
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  // 切换中的行：请求返回前必须挡住重复点击，否则两次请求的落库顺序不保证
-  const [togglingIds, setTogglingIds] = useState<number[]>([]);
+  const { run: runMutation, pendingIds } = useRowMutation();
 
   const pagination = usePagination({ PAGESIZE_KEY: 'event-pipelines-pagesize' });
 
@@ -80,17 +71,14 @@ export default function List({ embedded = false }: ListProps) {
     });
   };
 
-  const featchData = () => {
-    setData((prev) => ({ ...prev, loading: true }));
-    getList()
-      .then((res) => {
-        setData({ list: res, loading: false, loaded: true });
-      })
-      .catch((err) => {
-        console.error(err);
-        setData((prev) => ({ ...prev, loading: false }));
-      });
-  };
+  const {
+    loading,
+    run: featchData,
+    cancel,
+  } = useRequest(getList, {
+    manual: true,
+    onSuccess: (list) => setData({ list, loaded: true }),
+  });
 
   const [eventPipelineDrawerState, setEventPipelineDrawerState] = useState<{
     visible: boolean;
@@ -156,21 +144,24 @@ export default function List({ embedded = false }: ListProps) {
   // 行内切换启用/停用：走只写 disabled 的窄接口，不再「先 GET 详情再整条 PUT 回去」。
   // 整条回写会用页面加载时的旧快照覆盖别人并发改过的 processors / 过滤条件；
   // 先 GET 只是把窗口缩小，并没有根治，窄接口才是。
+  const updateStatus = useMemoizedFn((ids: number[], disabled: boolean) => {
+    cancel();
+    setData((prev) => ({
+      ...prev,
+      list: prev.list.map((row) => (ids.includes(row.id) ? { ...row, disabled } : row)),
+    }));
+    if (loading) featchData();
+  });
+
   const toggleDisabled = (record: Item, checked: boolean) => {
-    if (_.includes(togglingIds, record.id)) return;
-    setTogglingIds((prev) => [...prev, record.id]);
-    putItemsDisabled([record.id], !checked)
-      .then(() => {
+    runMutation([record.id], () =>
+      putItemsDisabled([record.id], !checked).then(() => {
         message.success(t('common:success.modify'));
-        // 重新拉列表而不是本地打补丁：还要刷新「更新时间 / 更新人」两列
-        featchData();
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        setTogglingIds((prev) => _.without(prev, record.id));
-      });
+        updateStatus([record.id], !checked);
+      }),
+    ).catch((err) => {
+      console.error(err);
+    });
   };
 
   const openDoc = () => {
@@ -221,7 +212,13 @@ export default function List({ embedded = false }: ListProps) {
             {t('common:btn.add')}
           </Button>
           <MoreOperations
+            runMutation={runMutation}
+            pendingIds={pendingIds}
             selectedRows={selectedRows}
+            onStatusChange={(ids, disabled) => {
+              updateStatus(ids, disabled);
+              setSelectedRowKeys([]);
+            }}
             onFinished={() => {
               setSelectedRowKeys([]);
               featchData();
@@ -235,7 +232,7 @@ export default function List({ embedded = false }: ListProps) {
         rowKey='id'
         scroll={{ x: 'max-content' }}
         locale={
-          data.loaded && !data.loading && data.list.length === 0
+          data.loaded && !loading && data.list.length === 0
             ? {
                 emptyText: (
                   <EmptyGuide
@@ -322,12 +319,12 @@ export default function List({ embedded = false }: ListProps) {
             key: 'disabled',
             width: 90,
             render: (value, record: Item) => (
-              <Switch size='small' checked={value === false} loading={_.includes(togglingIds, record.id)} onChange={(checked) => toggleDisabled(record, checked)} />
+              <Switch size='small' checked={value === false} loading={pendingIds.has(record.id)} onChange={(checked) => toggleDisabled(record, checked)} />
             ),
           },
         ]}
         dataSource={filteredData}
-        loading={data.loading}
+        loading={loading}
         pagination={pagination}
         rowSelection={{
           selectedRowKeys,
@@ -417,6 +414,7 @@ export default function List({ embedded = false }: ListProps) {
         )}
         {eventPipelineDrawerState.action === 'edit' && eventPipelineDrawerState?.id && (
           <Edit
+            runMutation={runMutation}
             id={eventPipelineDrawerState.id}
             onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
             onOk={() => {
