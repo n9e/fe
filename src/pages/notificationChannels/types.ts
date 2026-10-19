@@ -138,6 +138,29 @@ export interface TwilioRequestConfig extends NativeNetworkConfig {
   language?: string;
 }
 
+export interface PushoverRequestConfig extends NativeNetworkConfig {
+  api_url?: string;
+  token: string;
+  sound?: string;
+}
+
+export interface NtfyRequestConfig extends NativeNetworkConfig {
+  server_url?: string;
+  token?: string;
+  username?: string;
+  password?: string;
+}
+
+export interface SplunkOnCallRequestConfig extends NativeNetworkConfig {
+  api_url?: string;
+  api_key: string;
+}
+
+export interface LineRequestConfig extends NativeNetworkConfig {
+  api_url?: string;
+  channel_access_token: string;
+}
+
 export interface ChannelItem {
   id: number;
   name: string;
@@ -165,7 +188,11 @@ export interface ChannelItem {
     | 'slackwebhook'
     | 'mattermostwebhook'
     | 'teams'
-    | 'twilio';
+    | 'twilio'
+    | 'pushover'
+    | 'ntfy'
+    | 'splunk_oncall'
+    | 'line';
   request_config: {
     http_request_config: HttpRequestConfig;
     smtp_request_config: SmtpRequestConfig;
@@ -177,6 +204,10 @@ export interface ChannelItem {
     feishuapp_request_config: FeishuAppRequestConfig;
     teams_request_config?: NativeNetworkConfig;
     twilio_request_config?: TwilioRequestConfig;
+    pushover_request_config?: PushoverRequestConfig;
+    ntfy_request_config?: NtfyRequestConfig;
+    splunk_oncall_request_config?: SplunkOnCallRequestConfig;
+    line_request_config?: LineRequestConfig;
     jira_request_config?: JiraRequestConfig;
     discord_request_config?: DiscordRequestConfig;
     jsm_alert_request_config?: JSMAlertRequestConfig;

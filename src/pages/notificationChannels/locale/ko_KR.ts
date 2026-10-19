@@ -36,6 +36,10 @@ const ko_KR = {
     },
   },
   request_configuration: {
+    pushover: 'Pushover 설정',
+    ntfy: 'ntfy 설정',
+    splunk_oncall: 'Splunk On-Call 설정',
+    line: 'LINE 설정',
     teams: 'Microsoft Teams 설정',
     twilio: 'Twilio 설정',
     jsm_alert: 'JSM Alert 설정',
@@ -180,6 +184,48 @@ const ko_KR = {
     service_sid_invalid: 'Messaging Service SID는 MG 뒤에 16진수 32자가 와야 합니다',
     phone_format: 'E.164 형식을 사용하세요(예: +14155552671)',
   },
+  native_api_url: 'API URL',
+  native_api_url_tip: '비워 두면 공식 주소를 사용합니다. 게이트웨이나 리버스 프록시를 거칠 때만 변경하세요.',
+  native_api_url_invalid: 'http:// 또는 https://로 시작해야 합니다',
+  pushover_request_config: {
+    top_tip:
+      'https://pushover.net/apps/build 에서 애플리케이션을 만들고 그 API 토큰을 여기에 입력하세요. 알림을 받을 사용자 키 또는 그룹 키는 각 알림 규칙에서 입력합니다. 토큰에 {{.변수명}}을 사용할 수 있습니다.',
+    token: 'API 토큰',
+    token_invalid: 'API 토큰은 영문자 또는 숫자 30자입니다',
+    sound: '알림음',
+    sound_tip: 'siren 같은 Pushover 알림음 이름입니다. 비워 두면 수신자의 기본 설정을 사용합니다.',
+    proxy_tip: 'Pushover에 프록시를 거쳐야 접근할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
+  },
+  ntfy_request_config: {
+    top_tip:
+      '모두 비워 두면 공개 서버 ntfy.sh에 인증 없이 전송합니다. 자체 호스팅 서버와 인증 정보를 입력할 수도 있습니다. 토픽은 각 알림 규칙에서 입력합니다. 공개 서버에서는 토픽을 아는 누구나 읽을 수 있으므로 추측하기 어려운 토픽 이름을 사용하세요.',
+    server_url: '서버 URL',
+    server_url_tip: '토픽을 제외한 ntfy 서버의 루트 주소입니다. 비워 두면 https://ntfy.sh 를 사용합니다.',
+    token: '액세스 토큰',
+    token_tip:
+      'ntfy 계정 설정에서 만든 토큰(tk_로 시작)입니다. 토큰과 사용자 이름·비밀번호 중 하나만 사용하고, 인증이 없는 서버는 둘 다 비워 두세요. {{.변수명}}을 사용할 수 있습니다.',
+    username: '사용자 이름',
+    password: '비밀번호',
+    auth_conflict: '액세스 토큰과 사용자 이름·비밀번호 중 하나만 입력하세요',
+    basic_incomplete: '사용자 이름과 비밀번호를 모두 입력하세요',
+    proxy_tip: 'ntfy에 프록시를 거쳐야 접근할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
+    insecure_tip: '자체 서명 인증서를 쓰는 자체 호스팅 ntfy 서버라면 켜세요',
+  },
+  splunk_oncall_request_config: {
+    top_tip:
+      '알림은 REST 엔드포인트 통합으로 Splunk On-Call(구 VictorOps)에 전송됩니다. API 키는 조직 전체에 속하며 여기에 설정하고, 어느 팀을 호출할지 정하는 라우팅 키는 각 알림 규칙에서 입력합니다. 알림이 복구되면 인시던트가 해결됩니다.',
+    api_key: 'API Key',
+    api_key_tip:
+      'Splunk On-Call에서 Integrations → 3rd Party Integrations → REST - Generic을 여세요. 엔드포인트 URL에서 /alert/ 뒤의 부분이 API 키입니다. {{.변수명}}을 사용할 수 있습니다.',
+    proxy_tip: 'Splunk On-Call에 프록시를 거쳐야 접근할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
+  },
+  line_request_config: {
+    top_tip:
+      '알림은 LINE 공식 계정이 Messaging API로 전송합니다(LINE Notify는 종료되었습니다). 여기에 채널 액세스 토큰을 설정하고, 수신자(사용자, 그룹 또는 다자간 채팅 ID)는 각 알림 규칙에서 입력합니다. 사용자는 공식 계정을 친구로 추가해야 하고, 그룹에는 공식 계정을 초대해야 합니다.',
+    channel_access_token: 'Channel access token',
+    channel_access_token_tip: 'LINE Developers Console → 채널 → Messaging API → Channel access token (long-lived). {{.변수명}}을 사용할 수 있습니다.',
+    proxy_tip: 'LINE에 프록시를 거쳐야 접근할 수 있을 때 입력합니다. 예: http://127.0.0.1:7890',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Webhook URL 하나는 Slack 채널 하나에 대응하므로 URL은 알림 규칙에서 입력하며, 이 미디어로 여러 채널에 보낼 수 있습니다. 여기 설정은 모든 규칙이 공유하는 기본값입니다. https://api.slack.com/apps 에서 앱을 만들고 Incoming Webhooks를 켜면 URL을 받을 수 있습니다.',
@@ -244,6 +290,10 @@ const ko_KR = {
   },
   types_select_placeholder: '유형',
   types: {
+    pushover: 'Pushover',
+    ntfy: 'ntfy',
+    splunk_oncall: 'Splunk On-Call',
+    line: 'LINE',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
@@ -274,6 +324,15 @@ const ko_KR = {
     script: 'Script',
   },
   test: {
+    pushover_title: 'User Key / Group Key',
+    pushover_tip: '저장 후 이 값은 알림 규칙에서 입력합니다. 여기서는 테스트용으로 임시 입력하세요.',
+    ntfy_title: 'Topic',
+    ntfy_tip: '저장 후 이 값은 알림 규칙에서 입력합니다. 여기서는 테스트용으로 임시 입력하세요.',
+    splunk_oncall_title: 'Routing Key',
+    splunk_oncall_tip: '저장 후 이 값은 알림 규칙에서 입력합니다. 여기서는 테스트용으로 임시 입력하세요.',
+    splunk_oncall_with_recovery: '복구도 테스트(인시던트 해결)',
+    line_title: '수신자 ID',
+    line_tip: '저장 후 이 값은 알림 규칙에서 입력합니다. 여기서는 테스트용으로 임시 입력하세요.',
     jsm_title: 'JSM API 통합 키',
     jsm_tip: '저장 후에는 알림 규칙에서 키를 입력합니다. 여기서는 테스트용으로 입력하세요. 이 통합의 팀에 실제 알림이 생성됩니다.',
     jsm_api_key_placeholder: '통합의 API 키',

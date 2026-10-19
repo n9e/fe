@@ -35,6 +35,10 @@ const zh_CN = {
     },
   },
   request_configuration: {
+    pushover: 'Pushover 配置',
+    ntfy: 'ntfy 配置',
+    splunk_oncall: 'Splunk On-Call 配置',
+    line: 'LINE 配置',
     teams: 'Microsoft Teams \u914d\u7f6e',
     twilio: 'Twilio \u914d\u7f6e',
     jsm_alert: 'JSM 告警配置',
@@ -177,6 +181,45 @@ const zh_CN = {
     service_sid_invalid: 'Messaging Service SID 应为 MG 加 32 位十六进制字符',
     phone_format: '请使用 E.164 格式，例如 +8613800138000',
   },
+  native_api_url: '接口地址',
+  native_api_url_tip: '留空使用官方地址，只有经网关或反向代理访问时才需要修改。',
+  native_api_url_invalid: '需以 http:// 或 https:// 开头',
+  pushover_request_config: {
+    top_tip: '在 https://pushover.net/apps/build 创建应用，把它的 API Token 填在这里。接收通知的 User Key 或 Group Key 在每条通知规则里填写。Token 支持 {{.变量名}} 引用。',
+    token: 'API Token',
+    token_invalid: 'API Token 是 30 位字母或数字',
+    sound: '提示音',
+    sound_tip: 'Pushover 提示音的名称，如 siren。留空使用接收人自己的默认设置。',
+    proxy_tip: '访问 Pushover 需要经过代理时填写，如 http://127.0.0.1:7890',
+  },
+  ntfy_request_config: {
+    top_tip:
+      '全部留空时发到公共服务 ntfy.sh，不带认证；也可以填写自建服务的地址和认证信息。Topic 在每条通知规则里填写。公共服务上知道 Topic 的人都能读到消息，请使用不易猜到的 Topic 名称。',
+    server_url: '服务地址',
+    server_url_tip: 'ntfy 服务的根地址，不带 Topic。留空使用 https://ntfy.sh。',
+    token: 'Access Token',
+    token_tip: '在 ntfy 账号设置里创建的令牌（以 tk_ 开头）。令牌和用户名密码二选一，服务不需要认证时都留空。支持 {{.变量名}} 引用。',
+    username: '用户名',
+    password: '密码',
+    auth_conflict: 'Access Token 和用户名密码只能填一种',
+    basic_incomplete: '用户名和密码需要同时填写',
+    proxy_tip: '访问 ntfy 需要经过代理时填写，如 http://127.0.0.1:7890',
+    insecure_tip: '自建的 ntfy 服务使用自签名证书时开启',
+  },
+  splunk_oncall_request_config: {
+    top_tip:
+      '告警通过 REST 集成发到 Splunk On-Call（原 VictorOps）。API Key 属于整个组织，在这里配置；Routing Key 决定通知哪个团队，在每条通知规则里填写。告警恢复时对应的事件会自动解决。',
+    api_key: 'API Key',
+    api_key_tip: '在 Splunk On-Call 打开 Integrations → 3rd Party Integrations → REST - Generic，接口地址里 /alert/ 后面那一段就是 API Key。支持 {{.变量名}} 引用。',
+    proxy_tip: '访问 Splunk On-Call 需要经过代理时填写，如 http://127.0.0.1:7890',
+  },
+  line_request_config: {
+    top_tip:
+      '通知由 LINE 官方账号通过 Messaging API 发送（LINE Notify 已停止服务）。在这里配置 Channel Access Token；接收方（用户、群组或多人聊天的 ID）在每条通知规则里填写。用户需要先加官方账号为好友，群组需要先把官方账号邀请进群。',
+    channel_access_token: 'Channel access token',
+    channel_access_token_tip: 'LINE Developers Console → 你的 Channel → Messaging API → Channel access token (long-lived)。支持 {{.变量名}} 引用。',
+    proxy_tip: '访问 LINE 需要经过代理时填写，如 http://127.0.0.1:7890',
+  },
   slackwebhook_request_config: {
     top_tip:
       '一个 Webhook 地址对应一个 Slack 频道，所以地址在通知规则里填写，这个媒介可以发到任意多个频道。这里的设置是所有规则共用的默认值。在 https://api.slack.com/apps 创建应用并开启 Incoming Webhooks 后获取地址。',
@@ -240,6 +283,10 @@ const zh_CN = {
   },
   types_select_placeholder: '类型',
   types: {
+    pushover: 'Pushover',
+    ntfy: 'ntfy',
+    splunk_oncall: 'Splunk On-Call',
+    line: 'LINE',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
@@ -270,6 +317,15 @@ const zh_CN = {
     script: 'Script',
   },
   test: {
+    pushover_title: 'User Key / Group Key',
+    pushover_tip: '保存后这个值在通知规则里填写，这里临时填一个用于测试。',
+    ntfy_title: 'Topic',
+    ntfy_tip: '保存后这个值在通知规则里填写，这里临时填一个用于测试。',
+    splunk_oncall_title: 'Routing Key',
+    splunk_oncall_tip: '保存后这个值在通知规则里填写，这里临时填一个用于测试。',
+    splunk_oncall_with_recovery: '同时测试恢复（解决事件）',
+    line_title: '接收方 ID',
+    line_tip: '保存后这个值在通知规则里填写，这里临时填一个用于测试。',
     jsm_title: 'JSM API 集成 key',
     jsm_tip: '保存后 key 在通知规则里填写，这里临时填一个用于测试。会在该集成所属团队里创建一条真实告警。',
     jsm_api_key_placeholder: 'API 集成的 key',

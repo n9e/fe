@@ -194,6 +194,34 @@ const fr_FR = {
       bot_name_tip:
         "Un nom reconnaissable pour cette clé, par exemple le nom de l'équipe : affiché comme cible dans les enregistrements, les autres règles peuvent réutiliser la clé par ce nom",
     },
+    native_param: {
+      history_placeholder: 'Collez une valeur ou cliquez pour en choisir une déjà utilisée',
+      bot_name: 'Nom',
+      bot_name_tip:
+        "Un nom reconnaissable pour ce destinataire : il s'affiche comme cible dans les enregistrements de notification, et d'autres règles peuvent réutiliser la valeur en le choisissant",
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip:
+        "La clé utilisateur de votre tableau de bord Pushover, ou la clé d'un groupe de diffusion pour prévenir toute une équipe. Séparez plusieurs clés par des virgules. Accepte {{.nom_variable}}.",
+      user_key_invalid: 'Chaque clé comporte 30 lettres ou chiffres ; séparez plusieurs clés par des virgules',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: "Uniquement le nom du topic, pas l'URL complète. Les destinataires s'abonnent au même topic dans l'application ntfy. Accepte {{.nom_variable}}.",
+      topic_invalid: '1 à 64 lettres, chiffres, tirets bas ou tirets',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: "Voir Settings → Routing Keys dans Splunk On-Call. Elle détermine la politique d'escalade qui reçoit l'alerte. Accepte {{.nom_variable}}.",
+      routing_key_invalid: 'Saisissez uniquement la clé de routage, sans espace ni barre oblique',
+    },
+    line: {
+      to: 'ID du destinataire',
+      to_tip:
+        "Un ID d'utilisateur (U…), de groupe (C…) ou de discussion à plusieurs (R…) suivi de 32 caractères hexadécimaux. Il provient du champ source des événements webhook de votre canal et n'est pas le LINE ID affiché dans l'application. Accepte {{.nom_variable}}.",
+      to_invalid: 'Commence par U, C ou R, suivi de 32 caractères hexadécimaux',
+    },
     teams: {
       webhook_url: 'URL du webhook',
       webhook_url_tip: "Créez dans Teams Workflows un webhook avec l'accès Anyone et collez ici l'URL complète, paramètres de requête compris. Accepte {{.nom_variable}}.",
