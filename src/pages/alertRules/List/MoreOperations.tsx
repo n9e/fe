@@ -35,7 +35,6 @@ interface MoreOperationsProps {
   selectRowKeys: React.Key[];
   selectedRows: any[];
   getAlertRules: () => void;
-  onStatusChange?: (ids: React.Key[], disabled: 0 | 1) => void;
   clearSelection?: () => void;
 }
 
@@ -260,11 +259,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
               if (!res.err) {
                 message.success(t('common:success.modify'));
                 clearSelection?.();
-                if (Object.keys(fieldsData).length === 1 && (fieldsData.disabled === 0 || fieldsData.disabled === 1)) {
-                  props.onStatusChange?.(selectRowKeys, fieldsData.disabled);
-                } else {
-                  getAlertRules();
-                }
+                getAlertRules();
                 setisModalVisible(false);
               } else {
                 message.error(res.err);
