@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { CommonStateContext } from '@/App';
+import { IS_ENT } from '@/utils/constant';
 import classnames from 'classnames';
 import { Empty } from 'antd';
 
@@ -21,6 +24,16 @@ interface EmptyGuideProps {
  */
 export default function EmptyGuide(props: EmptyGuideProps) {
   const { title, description, descriptionClassName, actions, image, className } = props;
+  const { t } = useTranslation('common');
+  const { emptyMode = 'show' } = useContext(CommonStateContext);
+  const mode = IS_ENT ? emptyMode : 'show';
+  if (mode !== 'show') {
+    return (
+      <Empty className={className} image={Empty.PRESENTED_IMAGE_SIMPLE} description={mode === 'hide' ? t('nodata') : title}>
+        {actions && <div className='mt-3 flex flex-wrap items-center justify-center gap-3'>{actions}</div>}
+      </Empty>
+    );
+  }
   return (
     <Empty className={className} image={image ?? Empty.PRESENTED_IMAGE_SIMPLE} description={null}>
       <div className='flex flex-col items-center gap-1'>

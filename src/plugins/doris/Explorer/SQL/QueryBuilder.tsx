@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useContext } from 'react';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
@@ -93,18 +94,20 @@ export default function QueryBuilder(props: Props) {
                   ),
                   br: <br />,
                   a: (
-                    <a
-                      onClick={() => {
-                        DocumentDrawer({
-                          language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                          darkMode,
-                          title: t('common:document_link'),
-                          type: 'iframe',
-                          documentPath: DORIS_SQL_MODE_DOC_URL,
-                          anchor: '#2-时间宏',
-                        });
-                      }}
-                    />
+                    <UsageDocs>
+                      <a
+                        onClick={() => {
+                          DocumentDrawer({
+                            language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                            darkMode,
+                            title: t('common:document_link'),
+                            type: 'iframe',
+                            documentPath: DORIS_SQL_MODE_DOC_URL,
+                            anchor: '#2-时间宏',
+                          });
+                        }}
+                      />
+                    </UsageDocs>
                   ),
                 }}
               />

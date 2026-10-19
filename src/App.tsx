@@ -15,6 +15,7 @@
  *
  */
 import '@/utils/chunkGuard';
+import type { ContentMode } from '@/components/UsageDocs/guideVisibility';
 import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
@@ -98,6 +99,7 @@ interface SiteInfo {
 
 export interface ICommonState {
   hideUsageDocs?: boolean;
+  emptyMode?: ContentMode;
   datasourceCateOptions: Cate[];
   groupedDatasourceList: {
     [index: string]: Datasource[];

@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Table, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -637,16 +638,18 @@ export default function List(props: IProps) {
                   i18nKey='all_no_data'
                   components={{
                     a: (
-                      <a
-                        onClick={() => {
-                          DocumentDrawer({
-                            language: i18n.language,
-                            darkMode,
-                            title: t('categraf_doc'),
-                            documentPath: '/n9e-docs/categraf',
-                          });
-                        }}
-                      />
+                      <UsageDocs>
+                        <a
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('categraf_doc'),
+                              documentPath: '/n9e-docs/categraf',
+                            });
+                          }}
+                        />
+                      </UsageDocs>
                     ),
                   }}
                 />
