@@ -4,14 +4,23 @@ import IconFont from '@/components/IconFont';
 import { Popover } from 'antd';
 import moment from 'moment';
 import { basePrefix } from '@/App';
+import { addAppBasePrefix, getAppBaseUrl } from '@/utils/appUrl';
 import { ILogExtract, ILogURL, ILogMappingParams, LinkContext } from '@/pages/log/IndexPatterns/types';
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 // Doris 内置保留变量，不需要替换
 const dorisBuiltInVar = [
-  '__timeFilter', '__timeFrom', '__timeTo',
-  '__unixEpochFilter', '__unixEpochFrom', '__unixEpochTo',
-  '__unixEpochNanoFilter', '__unixEpochNanoFrom', '__unixEpochNanoTo',
-  '__timeGroup', '__interval', '__interval_ms'
+  '__timeFilter',
+  '__timeFrom',
+  '__timeTo',
+  '__unixEpochFilter',
+  '__unixEpochFrom',
+  '__unixEpochTo',
+  '__unixEpochNanoFilter',
+  '__unixEpochNanoFrom',
+  '__unixEpochNanoTo',
+  '__timeGroup',
+  '__interval',
+  '__interval_ms',
 ];
 const utcTimeFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
 
@@ -35,7 +44,7 @@ export function replaceVarAndGenerateLink(link: string, rawValue: object, regExt
   const startMarginNew = param.get('$__start_time_margin__');
   const endMarginNew = param.get('$__end_time_margin__');
 
-  reallink = reallink.replace('$local_protocol', location.protocol).replace('$local_domain', location.host).replace('$local_url', location.origin);
+  reallink = reallink.replace('$local_protocol', location.protocol).replace('$local_domain', location.host).replace('$local_url', getAppBaseUrl(location.origin, basePrefix));
 
   if (startMarginNew) {
     reallink = reallink.replace('&$__start_time_margin__' + '=' + startMarginNew, '');
@@ -85,7 +94,7 @@ export function replaceVarAndGenerateLink(link: string, rawValue: object, regExt
   const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
     // 如果是保留字，不替换，返回原始匹配
-    if (dorisBuiltInVar.some(item => b.includes(item))) {
+    if (dorisBuiltInVar.some((item) => b.includes(item))) {
       return a;
     }
     const wholeWord = valueWithExtract[b];
@@ -104,7 +113,7 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
   let reallink = link
     .replace('${local_protocol}', location.protocol)
     .replace('${local_domain}', location.host)
-    .replace('${local_url}', location.origin)
+    .replace('${local_url}', getAppBaseUrl(location.origin, basePrefix))
     .replace('${__start_time__}', typeof query.start === 'number' ? String(1000 * query.start + startMarginNum) : '')
     .replace('${__end_time__}', typeof query.end === 'number' ? String(1000 * query.end + endMarginNum) : '');
 
@@ -132,7 +141,7 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
   reallink = reallink
     .replace('$local_protocol', location.protocol)
     .replace('$local_domain', location.host)
-    .replace('$local_url', location.origin)
+    .replace('$local_url', getAppBaseUrl(location.origin, basePrefix))
     .replace('$__from', fromValue + '')
     .replace('$__to', toValue + '');
 
@@ -187,14 +196,13 @@ export const handleNav = (link: string, rawValue: object, query: { start: number
   const unReplaceKeyRegNew = /\$(.+?)(?=&|$)/gm;
   reallink = reallink.replace(unReplaceKeyRegNew, function (a, b) {
     // 如果是保留字，不替换，返回原始匹配
-    if (dorisBuiltInVar.some(item => b.includes(item))) {
+    if (dorisBuiltInVar.some((item) => b.includes(item))) {
       return a;
     }
     const wholeWord = valueWithExtract[b];
     return wholeWord || _.get(valueWithExtract, b.split('.'));
   });
-  window.open(basePrefix + reallink, '_blank');
-  // window.open(basePrefix + reallink.replace(unReplaceKeyRegNew, ''), '_blank');
+  window.open(addAppBasePrefix(reallink, basePrefix), '_blank');
 };
 
 interface IProps {

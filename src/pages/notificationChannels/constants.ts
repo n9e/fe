@@ -806,6 +806,76 @@ export const getNotificationChannelTypes = () => {
         request_config: { twilio_request_config: { mode: 'sms', voice: 'woman', language: 'en-US', timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
       },
     },
+    pushover: {
+      logo: '/image/logos/pushover.svg',
+      type: 'pushover',
+      default_values: {
+        request_type: 'pushover',
+        param_config: {
+          custom: {
+            params: [
+              { key: 'user_key', cname: 'User / Group Key', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+            ],
+          },
+        },
+        request_config: {
+          // 5xx 重试间隔按 Pushover 的要求不少于 5 秒
+          pushover_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 5000 },
+        },
+      },
+    },
+    ntfy: {
+      logo: '/image/logos/ntfy.svg',
+      type: 'ntfy',
+      default_values: {
+        request_type: 'ntfy',
+        // 规则侧参数与后端内置的 ntfy 媒介一致
+        param_config: {
+          custom: {
+            params: [
+              { key: 'topic', cname: 'Topic', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+            ],
+          },
+        },
+        request_config: { ntfy_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
+      },
+    },
+    splunk_oncall: {
+      logo: '/image/logos/splunk-oncall.svg',
+      type: 'splunk_oncall',
+      default_values: {
+        request_type: 'splunk_oncall',
+        param_config: {
+          custom: {
+            params: [
+              { key: 'routing_key', cname: 'Routing Key', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+            ],
+          },
+        },
+        request_config: {
+          splunk_oncall_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 },
+        },
+      },
+    },
+    line: {
+      logo: '/image/logos/line.svg',
+      type: 'line',
+      default_values: {
+        request_type: 'line',
+        param_config: {
+          custom: {
+            params: [
+              { key: 'to', cname: 'Recipient ID', type: 'string' },
+              { key: 'bot_name', cname: 'Name', type: 'string' },
+            ],
+          },
+        },
+        request_config: { line_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
+      },
+    },
     slackwebhook: {
       logo: '/image/logos/slack.png',
       type: 'slackwebhook',

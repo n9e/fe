@@ -23,6 +23,19 @@ interface Props {
 
 type TestMode = 'history' | 'mock';
 
+// 规则侧只有一个「发给谁」参数的原生媒介：未保存的媒介在测试弹窗里临时填一个
+const SIMPLE_RULE_PARAMS: Record<string, { key: string; placeholder: string; secret: boolean }> = {
+  pushover: { key: 'user_key', placeholder: 'uQiRzpo4DXghDmr9QzzfQu27cmVRsG', secret: true },
+  ntfy: { key: 'topic', placeholder: 'ops-alerts-x7Kq2', secret: true },
+  splunk_oncall: { key: 'routing_key', placeholder: 'database', secret: false },
+  line: { key: 'to', placeholder: 'U4af4980629...', secret: true },
+};
+const WEBHOOK_PLACEHOLDERS: Record<string, string> = {
+  teams: 'https://<workflow-host>/workflows/.../invoke?...',
+  slackwebhook: 'https://hooks.slack.com/services/T.../B.../...',
+  mattermostwebhook: 'https://mattermost.example.com/hooks/<id>',
+};
+
 const DEFAULT_MOCK_EVENT: MockEventState = { severity: 2, isRecovered: false };
 
 export default function TestModal(props: Props) {
@@ -52,6 +65,8 @@ export default function TestModal(props: Props) {
   const [jsmApiKey, setJsmApiKey] = useState('');
   // Slack / Mattermost 的 Webhook 地址同样在通知规则里填
   const [webhookUrl, setWebhookUrl] = useState('');
+  // Pushover 的 User Key、ntfy 的 Topic、Splunk On-Call 的 Routing Key、LINE 的接收方 ID
+  const [simpleParam, setSimpleParam] = useState('');
   // 默认连恢复一起测：一次验证建单、评论和关单
   const [withRecovery, setWithRecovery] = useState(true);
   const [userIds, setUserIds] = useState<number[]>([]);
@@ -74,9 +89,11 @@ export default function TestModal(props: Props) {
   const isJira = requestType === 'jira';
   const isDiscord = requestType === 'discord';
   const isJSMAlert = requestType === 'jsm_alert';
-  const isChatWebhook = requestType === 'teams' || requestType === 'slackwebhook' || requestType === 'mattermostwebhook';
-  // 支持「同时测试恢复」的媒介：恢复时有独立动作（Jira 关单、JSM 关告警）
-  const supportsRecoveryTest = isJira || isJSMAlert;
+  const isChatWebhook = !!requestType && requestType in WEBHOOK_PLACEHOLDERS;
+  const simpleRuleParam = requestType ? SIMPLE_RULE_PARAMS[requestType] : undefined;
+  const isSplunkOnCall = requestType === 'splunk_oncall';
+  // 支持「同时测试恢复」的媒介：恢复时有独立动作（Jira 关单、JSM 关告警、Splunk On-Call 解决事件）
+  const supportsRecoveryTest = isJira || isJSMAlert || isSplunkOnCall;
 
   const starterTexts: StarterTexts = {
     ruleName: tt('starter.rule_name'),
@@ -125,6 +142,8 @@ export default function TestModal(props: Props) {
     setJiraIssueType('');
     setDiscordParams({ target: 'channel' });
     setJsmApiKey('');
+    setWebhookUrl('');
+    setSimpleParam('');
     setWithRecovery(true);
     setUserIds([]);
     setUserGroupIds([]);
@@ -154,6 +173,7 @@ export default function TestModal(props: Props) {
           ...(isDiscord ? _.omitBy(_.mapValues(discordParams, _.trim), _.isEmpty) : {}),
           ...(isJSMAlert ? { api_key: _.trim(jsmApiKey) } : {}),
           ...(isChatWebhook ? { webhook_url: _.trim(webhookUrl) } : {}),
+          ...(simpleRuleParam ? { [simpleRuleParam.key]: _.trim(simpleParam) } : {}),
         },
         severities: [mockEvent.severity],
       },
@@ -180,7 +200,8 @@ export default function TestModal(props: Props) {
     (isJira && (!_.trim(jiraProject) || !_.trim(jiraIssueType))) ||
     (isDiscord && !_.trim(discordParams.webhook_url)) ||
     (isJSMAlert && !_.trim(jsmApiKey)) ||
-    (isChatWebhook && !_.trim(webhookUrl));
+    (isChatWebhook && !_.trim(webhookUrl)) ||
+    (!!simpleRuleParam && !_.trim(simpleParam));
 
   return (
     <>
@@ -330,18 +351,23 @@ export default function TestModal(props: Props) {
               <div className='mb-4'>
                 <div className='mb-2 font-bold'>{t('test.webhook_title')}</div>
                 <div className='mb-1 text-soft text-[12px]'>{t('test.webhook_tip')}</div>
-                <Input.Password
-                  autoComplete='new-password'
-                  value={webhookUrl}
-                  placeholder={
-                    requestType === 'teams'
-                      ? 'https://<workflow-host>/workflows/.../invoke?...'
-                      : requestType === 'slackwebhook'
-                      ? 'https://hooks.slack.com/services/T.../B.../...'
-                      : 'https://mattermost.example.com/hooks/<id>'
-                  }
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                />
+                <Input.Password autoComplete='new-password' value={webhookUrl} placeholder={WEBHOOK_PLACEHOLDERS[requestType]} onChange={(e) => setWebhookUrl(e.target.value)} />
+              </div>
+            )}
+            {simpleRuleParam && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t(`test.${requestType}_title`)}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t(`test.${requestType}_tip`)}</div>
+                {simpleRuleParam.secret ? (
+                  <Input.Password autoComplete='new-password' value={simpleParam} placeholder={simpleRuleParam.placeholder} onChange={(e) => setSimpleParam(e.target.value)} />
+                ) : (
+                  <Input value={simpleParam} placeholder={simpleRuleParam.placeholder} onChange={(e) => setSimpleParam(e.target.value)} />
+                )}
+                {isSplunkOnCall && (
+                  <Checkbox className='mt-2' checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
+                    {t('test.splunk_oncall_with_recovery')}
+                  </Checkbox>
+                )}
               </div>
             )}
             {isJSMAlert && (

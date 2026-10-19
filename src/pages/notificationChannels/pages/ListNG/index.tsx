@@ -84,10 +84,10 @@ export default function index() {
       icon={<NotificationOutlined />}
       doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/'
     >
-      <div className='n9e'>
-        <div className='flex items-start'>
-          <div className='w-[360px] shrink-0'>
-            <div className='pr-[16px] mb-4'>
+      <div className='n9e min-h-0 flex-1 overflow-hidden'>
+        <div className='flex h-full min-h-0 items-start'>
+          <div className='flex h-full min-h-0 w-[360px] shrink-0 flex-col'>
+            <div className='pr-[16px] mb-4 shrink-0'>
               <Input
                 placeholder={t('types_search_placeholder')}
                 value={typesSearch}
@@ -96,29 +96,29 @@ export default function index() {
                 }}
               />
             </div>
-            <div className='pr-[10px]'>
+            <div className='min-h-0 flex-1 overflow-y-auto overscroll-contain pr-[10px]'>
               <div className='grid grid-cols-2 gap-3'>
-                  {map(filteredTypes, (val, key) => {
-                    return (
-                      <Link to={`/notification-channels/add?ident=${key}`} key={key}>
-                        <div className='relative overflow-hidden bg-fc-100 border border-antd rounded p-2 flex flex-col items-center justify-center transition group hover:border-primary'>
-                          <div className='mb-2'>
-                            <img src={val.logo} alt={key} height={40} />
-                          </div>
-                          <div className='text-center text-main'>{t(`types.${key}`)}</div>
-                          <div className='absolute -bottom-10 -right-10 z-0 h-16 w-16 rounded-[32px] bg-fc-300 pl-2 pt-2 opacity-0 group-hover:opacity-100'>
-                            <PlusOutlined className='text-l1' />
-                          </div>
+                {map(filteredTypes, (val, key) => {
+                  return (
+                    <Link to={`/notification-channels/add?ident=${key}`} key={key}>
+                      <div className='relative overflow-hidden bg-fc-100 border border-antd rounded p-2 flex flex-col items-center justify-center transition group hover:border-primary'>
+                        <div className='mb-2'>
+                          <img src={val.logo} alt={key} height={40} />
                         </div>
-                      </Link>
-                    );
-                  })}
-                </div>
+                        <div className='text-center text-main'>{t(`types.${key}`)}</div>
+                        <div className='absolute -bottom-10 -right-10 z-0 h-16 w-16 rounded-[32px] bg-fc-300 pl-2 pt-2 opacity-0 group-hover:opacity-100'>
+                          <PlusOutlined className='text-l1' />
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
+          </div>
           <div className='w-px self-stretch bg-fc-300'></div>
-          <div className='ml-4 min-w-0 flex-1 flex flex-col gap-4'>
-            <div className='flex justify-between'>
+          <div className='ml-4 h-full min-h-0 min-w-0 flex-1 flex flex-col gap-4'>
+            <div className='flex shrink-0 justify-between'>
               <Space>
                 <Input
                   placeholder={t('name_search_placeholder')}
@@ -228,7 +228,8 @@ export default function index() {
                 </Button>
               </Space>
             </div>
-            <EnhancedTable
+            <div className='min-h-0 flex-1 overflow-auto overscroll-contain'>
+              <EnhancedTable
                 size='small'
                 loading={loading}
                 rowKey='id'
@@ -358,6 +359,7 @@ export default function index() {
                   history.replace({ pathname: location.pathname, search: setPageInSearch(location.search, pag.current || 1) });
                 }}
               />
+            </div>
           </div>
         </div>
       </div>

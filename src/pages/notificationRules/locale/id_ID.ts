@@ -190,6 +190,33 @@ const id_ID = {
       bot_name_tip:
         'Nama yang mudah dikenali untuk kunci ini, misalnya nama tim: tampil sebagai target di catatan notifikasi, aturan lain dapat memakai ulang kunci lewat nama ini',
     },
+    native_param: {
+      history_placeholder: 'Tempel nilai, atau klik untuk memilih yang pernah dipakai',
+      bot_name: 'Nama',
+      bot_name_tip: 'Nama yang mudah dikenali untuk penerima ini: tampil sebagai target di catatan notifikasi, dan aturan lain bisa memakai ulang nilainya dengan memilih nama ini',
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip:
+        'Kunci pengguna di dasbor Pushover Anda, atau kunci grup pengiriman untuk memberi tahu seluruh tim. Pisahkan beberapa kunci dengan koma. Mendukung {{.nama_variabel}}.',
+      user_key_invalid: 'Tiap kunci terdiri dari 30 huruf atau angka; pisahkan beberapa kunci dengan koma',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: 'Hanya nama topik, bukan URL lengkap. Penerima berlangganan topik yang sama di aplikasi ntfy. Mendukung {{.nama_variabel}}.',
+      topic_invalid: '1 sampai 64 huruf, angka, garis bawah, atau tanda hubung',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: 'Lihat Settings → Routing Keys di Splunk On-Call. Kunci ini menentukan kebijakan eskalasi mana yang menerima alert. Mendukung {{.nama_variabel}}.',
+      routing_key_invalid: 'Isi kunci routing saja, tanpa spasi atau garis miring',
+    },
+    line: {
+      to: 'ID penerima',
+      to_tip:
+        'ID pengguna (U…), ID grup (C…), atau ID obrolan multi-orang (R…) diikuti 32 karakter heksadesimal. Nilainya berasal dari kolom source pada event webhook channel Anda, bukan LINE ID yang tampil di aplikasi. Mendukung {{.nama_variabel}}.',
+      to_invalid: 'Diawali U, C, atau R, diikuti 32 karakter heksadesimal',
+    },
     teams: {
       webhook_url: 'URL webhook',
       webhook_url_tip: 'Buat webhook di Teams Workflows dengan akses Anyone, lalu tempel URL lengkapnya di sini, termasuk parameter kueri. Mendukung {{.nama_variabel}}.',

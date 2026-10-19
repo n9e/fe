@@ -188,6 +188,33 @@ const en_US = {
       bot_name: 'Name',
       bot_name_tip: 'A recognizable name for this key, e.g. the team name: notification records show it as the target, and other rules can reuse the key by this name',
     },
+    native_param: {
+      history_placeholder: 'Paste a value, or click to pick one used before',
+      bot_name: 'Name',
+      bot_name_tip: 'A recognizable name for this recipient: notification records show it as the target, and other rules can reuse the value by picking this name',
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip:
+        'The user key on your Pushover dashboard, or the key of a delivery group to notify a whole team. Separate several keys with commas. Supports {{.variable_name}}.',
+      user_key_invalid: 'Each key is 30 letters or digits; separate several keys with commas',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: 'The topic name only, not the full URL. Recipients subscribe to the same topic in the ntfy app. Supports {{.variable_name}}.',
+      topic_invalid: '1 to 64 letters, digits, underscores or dashes',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: 'See Settings → Routing Keys in Splunk On-Call. It decides which escalation policy receives the alert. Supports {{.variable_name}}.',
+      routing_key_invalid: 'Fill in the routing key only, without spaces or slashes',
+    },
+    line: {
+      to: 'Recipient ID',
+      to_tip:
+        "A user ID (U…), group ID (C…) or multi-person chat ID (R…) followed by 32 hexadecimal characters. It comes from the source field of your channel's webhook events and is not the LINE ID shown in the app. Supports {{.variable_name}}.",
+      to_invalid: 'Starts with U, C or R, followed by 32 hexadecimal characters',
+    },
     teams: {
       webhook_url: 'Webhook URL',
       webhook_url_tip: 'Create a Teams Workflows webhook with Anyone access. Paste the complete URL including query parameters. Supports {{.variable_name}}.',

@@ -182,6 +182,32 @@ const ko_KR = {
       bot_name: '이름',
       bot_name_tip: '이 키를 알아보기 쉬운 이름(예: 팀 이름). 알림 기록의 대상으로 표시되며 다른 규칙에서도 이 이름으로 키를 재사용할 수 있습니다',
     },
+    native_param: {
+      history_placeholder: '값을 붙여 넣거나, 클릭해서 이전에 입력한 것을 선택',
+      bot_name: '이름',
+      bot_name_tip: '이 수신자를 알아보기 쉬운 이름입니다. 알림 기록에 대상으로 표시되며, 다른 규칙에서도 이 이름으로 재사용할 수 있습니다',
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip: 'Pushover 대시보드의 사용자 키, 또는 팀 전체에 알리는 전달 그룹의 키입니다. 여러 키는 쉼표로 구분합니다. {{.변수명}}을 사용할 수 있습니다.',
+      user_key_invalid: '각 키는 영문자 또는 숫자 30자입니다. 여러 키는 쉼표로 구분하세요',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: '전체 URL이 아니라 토픽 이름만 입력하세요. 수신자는 ntfy 앱에서 같은 토픽을 구독합니다. {{.변수명}}을 사용할 수 있습니다.',
+      topic_invalid: '영문자, 숫자, 밑줄, 하이픈 1~64자',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: 'Splunk On-Call의 Settings → Routing Keys에서 확인합니다. 어느 에스컬레이션 정책이 알림을 받을지 결정합니다. {{.변수명}}을 사용할 수 있습니다.',
+      routing_key_invalid: '라우팅 키만 입력하세요(공백이나 슬래시 불가)',
+    },
+    line: {
+      to: '수신자 ID',
+      to_tip:
+        '사용자 ID(U…), 그룹 ID(C…) 또는 다자간 채팅 ID(R…) 뒤에 16진수 32자가 붙습니다. 채널의 Webhook 이벤트의 source 필드에서 얻으며, 앱에 표시되는 LINE ID가 아닙니다. {{.변수명}}을 사용할 수 있습니다.',
+      to_invalid: 'U, C 또는 R로 시작하고 16진수 32자가 이어져야 합니다',
+    },
     teams: {
       webhook_url: 'Webhook URL',
       webhook_url_tip: 'Teams Workflows에서 Anyone 접근을 허용한 Webhook을 만들고, 쿼리 매개변수를 포함한 전체 URL을 여기에 붙여 넣으세요. {{.변수명}}을 사용할 수 있습니다.',

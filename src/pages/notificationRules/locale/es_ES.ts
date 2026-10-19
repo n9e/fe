@@ -189,6 +189,33 @@ const es_ES = {
       bot_name: 'Nombre',
       bot_name_tip: 'Un nombre reconocible para la clave, como el del equipo: aparece como destino en los registros y otras reglas pueden reutilizar la clave por este nombre',
     },
+    native_param: {
+      history_placeholder: 'Pega un valor o haz clic para elegir uno usado antes',
+      bot_name: 'Nombre',
+      bot_name_tip: 'Un nombre reconocible para este destinatario: aparece como destino en los registros de notificación y otras reglas pueden reutilizar el valor eligiéndolo',
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip:
+        'La clave de usuario de tu panel de Pushover, o la clave de un grupo de entrega para avisar a todo un equipo. Separa varias claves con comas. Admite {{.nombre_variable}}.',
+      user_key_invalid: 'Cada clave tiene 30 letras o dígitos; separa varias claves con comas',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: 'Solo el nombre del topic, no la URL completa. Los destinatarios se suscriben al mismo topic en la app de ntfy. Admite {{.nombre_variable}}.',
+      topic_invalid: 'De 1 a 64 letras, dígitos, guiones bajos o guiones',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: 'Consulta Settings → Routing Keys en Splunk On-Call. Decide qué política de escalado recibe la alerta. Admite {{.nombre_variable}}.',
+      routing_key_invalid: 'Indica solo la clave de enrutamiento, sin espacios ni barras',
+    },
+    line: {
+      to: 'ID del destinatario',
+      to_tip:
+        'Un ID de usuario (U…), de grupo (C…) o de chat de varias personas (R…) seguido de 32 caracteres hexadecimales. Se obtiene del campo source de los eventos webhook de tu canal y no es el LINE ID que se ve en la app. Admite {{.nombre_variable}}.',
+      to_invalid: 'Empieza por U, C o R, seguido de 32 caracteres hexadecimales',
+    },
     teams: {
       webhook_url: 'URL del webhook',
       webhook_url_tip: 'Crea en Teams Workflows un webhook con acceso para Anyone y pega aquí la URL completa, incluidos los parámetros de consulta. Admite {{.nombre_variable}}.',

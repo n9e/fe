@@ -57,7 +57,7 @@ const ja_JP = {
       timeRangeFormat: '開始・終了時刻（フォーマット）：基本変数に $__time_format__=YYYY-MM-DD HH:mm:ss を追加',
       timeRangeOffset:
         '開始・終了時刻（時間オフセット）：基本変数に $__start_time_margin__=-100000 と $__end_time_margin__=100000 を追加。単位はミリ秒で、正数は前方、負数は後方へオフセットします',
-      localUrl: '本システムのアドレス：$local_url。プロトコルとドメインを含みます。例："https://flashcat.cloud"',
+      localUrl: '本システムのアドレス：$local_url。プロトコル、ドメイン、デプロイプレフィックスを含みます。例："https://flashcat.cloud"',
       localProtocol: '本システムのプロトコル：$local_protocol。例："http:" または "https:"',
       localDomain: '本システムのドメイン：$local_domain。例：flashcat.cloud',
       mappingParams: 'パラメータマッピングテーブル：$__mapping_para__。すべてのパラメータマッピングテーブルで設定されたパラメータを表します',
@@ -111,7 +111,7 @@ const ja_JP = {
           urlTemplateTip1: '例えばtracingシステムへのリンク：http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplateTip2: 'リンクの設定と変更は「リンクを跳ぶ」の中で行ってください。同じフィールドのリンクが「リンクを跳ぶ」に設定されている場合、この設定は無効になります。',
           urlTemplatePlaceholder: 'https://www.example.com/?q={{value}}',
-          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
+          urlTemplatePlaceholder1: '$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: 'ラベルテンプレート',
           labelTemplatePlaceholder: '{{value}}',
         },
