@@ -24,12 +24,13 @@ import classNames from 'classnames';
 import { getFilters, deleteFilter } from '../../services';
 import FormModal from './FormModal';
 import { filtersToStr } from './utils';
+import { RetainedSidebarActions } from '@/components/RetainedSidebar';
 
 export { filtersToStr };
 
 const LOCALE_KEY = 'built-in-metrics-filter-id';
 
-function index(_props: any, ref: any) {
+function index(props: { onSelectionChange?: (item?: { name: string; configs: string }) => void }, ref: any) {
   const { t } = useTranslation('metricsBuiltin');
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState<any[]>([]);
@@ -55,6 +56,10 @@ function index(_props: any, ref: any) {
       });
   }, [refreshFlag]);
 
+  useEffect(() => {
+    props.onSelectionChange?.(list.find((item) => item.id === active));
+  }, [active, list, props.onSelectionChange]);
+
   useImperativeHandle(ref, () => {
     return {
       getActive: () => {
@@ -67,10 +72,9 @@ function index(_props: any, ref: any) {
 
   return (
     <>
-      <div className='built-in-metrics-filter-header'>
+      <RetainedSidebarActions>
         <div className='built-in-metrics-filter-title'>
           <Space>
-            {t('filter.title')}
             <Tooltip title={t('filter.title_tip')}>
               <InfoCircleOutlined />
             </Tooltip>
@@ -84,7 +88,7 @@ function index(_props: any, ref: any) {
             });
           }}
         />
-      </div>
+      </RetainedSidebarActions>
       <Input
         prefix={<SearchOutlined />}
         value={search}
