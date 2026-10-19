@@ -54,6 +54,7 @@ const zh_CN = {
       status_done: '已完成',
       status3: '已取消',
       status4: '已生成（部分字段未导出）',
+      status_failed: '失败',
       datasource: '数据源',
       current_datasource: '当前数据源',
       all_datasources: '全部数据源',
