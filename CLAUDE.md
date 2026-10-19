@@ -41,6 +41,8 @@ src/
 - 构造应用内跳转、调用 React Router 的 `history.push` / `history.replace`，或保留当前路由路径时，使用 Router 的相对路径（如 `useLocation()` 或 `history.location`）。不要把全局 `location.pathname` 直接当作 Router 路径，也不要给 Router 路径手动再拼 `basename`，否则可能出现 `/flashcat/flashcat/polaris` 这样的重复前缀。
 - `useLocation()` 是当前渲染对应的路由快照。异步请求等延迟回调需要读取执行时的最新路径或查询串时，使用对应 Router history 的 `history.location`，避免使用闭包中的旧值覆盖后来更新的路由状态。
 - 只有确实需要浏览器完整 URL（例如整页跳转、刷新或生成带部署前缀的浏览器级地址）时才使用 `window.location` / 全局 `location`；注意它们与 Router 的路由路径语义不同。`window.history` 的原生 History API 也不等同于 React Router 的 `history`。
+- 构造复制、分享、保存或自定义组件使用的 URL 时，先区分 Router 路径、应用相对 URL 和完整 URL；优先复用 `src/utils/appUrl.ts` 的 `getAppBaseUrl` / `addAppBasePrefix`，不要随手拼接 `basePrefix`。这些 helper 会避免重复前缀，并让绝对 URL 保持原样。
+- `$local_url` 已包含协议、域名和部署前缀；替换后不要再给结果加前缀。Vite 前缀插件只处理它识别的浏览器 URL 接收点，不会处理复制到剪贴板、显示在输入框、存入对象或经自定义组件传递的 URL；这些场景需要显式构造。
 
 ## 数据与错误
 

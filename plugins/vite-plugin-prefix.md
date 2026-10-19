@@ -178,6 +178,28 @@ prefixPlugin(baseName, { exclude: ['/docs/', '/other-system/'] });
 
 后端返回的跳转地址（例如 `res.dat.redirect`）也遵循这条规则：完整 URL 原样使用；以 `/` 开头的会被补上前缀。
 
+### 8. 手动生成、复制或保存的 URL
+
+插件只改写它能识别的浏览器 URL 接收点。把 URL 放进剪贴板、输入框、分享数据、配置对象或自定义组件时，插件不会处理它。尤其要区分“应用路径”和“完整浏览器 URL”：
+
+| 值 | `/flashcat` 部署时的例子 | 处理方式 |
+| --- | --- | --- |
+| Router 路径 | `/firemap/card-pool` | 在 Router 内直接传给 `<Link>` / `history.push`；不要手动拼前缀 |
+| 应用相对 URL | `/firemap/card-pool?x=1` | 交给 `window.open` 等浏览器接收点时插件会补前缀；复制或保存时用应用 URL helper 补前缀 |
+| 完整站内 URL | `https://host/flashcat/firemap/card-pool?x=1` | 由 `origin + basePrefix + appPath` 构造；传给 helper 时应保持原样 |
+| 外部 URL | `https://other.example/path` | 保持原样，不能在 origin 前拼 `basePrefix` |
+
+本仓库的 `src/utils/appUrl.ts` 提供了 `getAppBaseUrl(origin, basePrefix)` 和 `addAppBasePrefix(url, basePrefix)`：前者生成 `origin + 规范化部署前缀`，后者只给应用相对 URL 加前缀、对已有前缀保持幂等，并原样返回绝对 URL。生成完整分享链接时可按下面的方式组合：
+
+```ts
+const appBaseUrl = getAppBaseUrl(window.location.origin, basePrefix);
+const fullUrl = `${appBaseUrl}${addAppBasePrefix(appPath, basePrefix)}`;
+```
+
+注意 `$local_url` 模板变量代表完整的本系统基址，包含协议、域名和部署前缀。先把它替换成完整基址后，不要再给整个结果拼接一次 `basePrefix`。同理，拿 `window.location.pathname` 构造完整浏览器 URL 时它已经含有部署前缀；`useLocation().pathname` 则是 Router 路径，不含前缀。
+
+这类边界已用于日志检索链接、链路详情链接、灭火图分享链接和看板图表链接。增加新的复制、分享、弹窗链接或模板变量解析逻辑时，应先确定 URL 是 Router 路径、应用相对 URL 还是完整 URL，再使用对应方式构造；不要在任意字符串上直接拼接 `basePrefix`。
+
 ## 配置项
 
 ```ts

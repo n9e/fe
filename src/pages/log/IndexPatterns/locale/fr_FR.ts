@@ -33,7 +33,7 @@ const fr_FR = {
       timeRangeFormat: 'Dates de début et de fin mises en forme : ajoutez le paramètre $__time_format__=YYYY-MM-DD HH:mm:ss aux variables de base',
       timeRangeOffset:
         'Dates de début et de fin décalées : ajoutez les paramètres $__start_time_margin__=-100000 et $__end_time_margin__=100000 aux variables de base, en millisecondes, un nombre positif avançant la date et un nombre négatif la reculant',
-      localUrl: 'Adresse de ce système : $local_url, protocole et domaine compris, par exemple « https://flashcat.cloud »',
+      localUrl: 'Adresse de ce système : $local_url, protocole, domaine et préfixe de déploiement compris, par exemple « https://flashcat.cloud »',
       localProtocol: 'Protocole de ce système : $local_protocol, par exemple « http: » ou « https: »',
       localDomain: 'Domaine de ce système : $local_domain, par exemple flashcat.cloud',
       mappingParams: 'Table de correspondance des paramètres : $__mapping_para__ désigne tous les paramètres qui y sont définis',
@@ -77,7 +77,7 @@ const fr_FR = {
           urlTemplateTip2:
             'Les liens se configurent et se modifient dans Liens de navigation. Si un lien y est déjà défini pour le même champ, le réglage fait ici reste sans effet.',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
+          urlTemplatePlaceholder1: '$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: "Modèle d'étiquette",
           labelTemplatePlaceholder: '{{value}}',
         },

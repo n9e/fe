@@ -11,6 +11,9 @@
 - When building in-app navigation, calling React Router's `history.push` or `history.replace`, or preserving the current route, use Router-relative paths such as `useLocation()` or `history.location`. Do not use global `location.pathname` as a Router path or prepend `basename` to a Router path; either can duplicate the prefix and produce a URL such as `/flashcat/flashcat/polaris`.
 - `useLocation()` is a snapshot for the current render. If an asynchronous callback needs the latest path or query string when it runs, read `history.location` from the corresponding Router history instead of relying on a stale value captured by a closure.
 - Use `window.location` or global `location` only when browser-level URL semantics are needed, such as a full-page navigation, reload, or generating a browser URL that includes the deployment prefix. Their paths have different semantics from Router paths. The native History API on `window.history` is also different from React Router's `history`.
+- For copied, shared, saved, or custom-generated URLs, first distinguish a Router path, an app-relative URL, and a fully qualified URL. Use the existing URL helpers (`getAppBaseUrl` and `addAppBasePrefix` in `src/utils/appUrl.ts`) instead of concatenating `basePrefix` ad hoc. The helper leaves absolute URLs untouched and avoids duplicating an existing prefix.
+- `$local_url` is a fully qualified app base URL, including origin and deployment prefix. After expanding it, do not prepend `basePrefix` again. Likewise, `window.location.pathname` already includes the browser prefix, while `useLocation().pathname` does not.
+- The Vite prefix plugin rewrites recognized URL sinks such as direct `window.open` calls; it does not rewrite URLs copied to the clipboard, displayed in inputs, stored in config/data objects, or passed through custom components. Handle those values explicitly with the URL helpers.
 
 ## Forms and temporary containers
 
