@@ -4,6 +4,7 @@ import { ShareAltOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
+import { basePrefix } from '@/App';
 import { copyToClipBoard } from '@/utils';
 
 import { NAME_SPACE } from '../../constants';
@@ -29,7 +30,7 @@ export default function index(props: Props) {
           const values = form.getFieldsValue();
           const locationsearch = getLocationSearchByFormValues(values);
           if (locationsearch) {
-            copyToClipBoard(`${window.location.origin}${location.pathname}?${locationsearch}&__execute__=true`);
+            copyToClipBoard(`${window.location.origin}${basePrefix}${location.pathname}?${locationsearch}&__execute__=true`);
           }
         }}
       >
@@ -52,7 +53,7 @@ export function ShareLinkText(props: Props) {
           const values = form.getFieldsValue();
           const locationsearch = getLocationSearchByFormValues(values);
           if (locationsearch) {
-            copyToClipBoard(`${window.location.origin}${location.pathname}?${locationsearch}&__execute__=true`);
+            copyToClipBoard(`${window.location.origin}${basePrefix}${location.pathname}?${locationsearch}&__execute__=true`);
           }
         }}
       >

@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { ConfigProvider } from 'antd';
 
 import { getAntdLocale } from '@/utils/antdLocale';
-import { CommonStateContext, ICommonState } from '@/App';
+import { basePrefix, CommonStateContext, ICommonState } from '@/App';
 
 export interface ModalWrapProps {
   visible: boolean;
@@ -45,7 +45,7 @@ export default function ModalHOC<T>(Component: React.FC<T & ModalWrapProps>) {
     function render(props: any) {
       const tree = (
         <ConfigProvider locale={getAntdLocale(language)}>
-          <Router>
+          <Router basename={basePrefix}>
             <Component {...props} />
           </Router>
         </ConfigProvider>

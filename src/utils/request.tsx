@@ -249,7 +249,7 @@ request.interceptors.response.use(
                   const { access_token, refresh_token } = res.dat;
                   localStorage.setItem(AccessTokenKey, access_token);
                   localStorage.setItem('refresh_token', refresh_token);
-                  location.href = `${basePrefix}${location.pathname}${location.search}`;
+                  location.href = `${location.pathname}${location.search}`;
                 }
               })
               .catch(() => {

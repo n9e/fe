@@ -1,3 +1,4 @@
+import { basePrefix } from '@/App';
 import { IAiChatAction, IAiChatPageInfo } from './types';
 
 export interface IAiChatRecommendConfig {
@@ -20,18 +21,11 @@ function isZhCN(lang?: string) {
   return (lang || '').toLowerCase() === 'zh_cn';
 }
 
-type PageType =
-  | 'dashboards'
-  | 'alert_rule'
-  | 'alert_history'
-  | 'active_alert'
-  | 'targets'
-  | 'notification_rules'
-  | 'notification_channels'
-  | 'self_healing';
+type PageType = 'dashboards' | 'alert_rule' | 'alert_history' | 'active_alert' | 'targets' | 'notification_rules' | 'notification_channels' | 'self_healing';
 
 function matchPageTypeByUrl(url: string): PageType | undefined {
-  const pathname = (url.split('?')[0] || '').toLowerCase();
+  const fullPathname = url.split('?')[0] || '';
+  const pathname = (basePrefix && fullPathname.startsWith(`${basePrefix}/`) ? fullPathname.slice(basePrefix.length) : fullPathname).toLowerCase();
   if (pathname.startsWith('/dashboards')) return 'dashboards';
   if (pathname.startsWith('/alert-rules')) return 'alert_rule';
   if (pathname.startsWith('/alert-his-events') || pathname.startsWith('/history-events')) return 'alert_history';
@@ -58,11 +52,7 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
       return {
         promptList: isZhCN(lang)
           ? ['创建一条 CPU 使用率超过 80% 的告警规则', '为什么某个告警规则没有发出告警', '这个告警为什么会触发']
-          : [
-              'Create a CPU usage alert rule with a threshold above 80%',
-              'Why did a specific alert rule not fire?',
-              'Why did this alert fire?',
-            ],
+          : ['Create a CPU usage alert rule with a threshold above 80%', 'Why did a specific alert rule not fire?', 'Why did this alert fire?'],
       };
     case 'alert_history':
       return {
@@ -86,21 +76,13 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
       return {
         promptList: isZhCN(lang)
           ? ['我刚装的机器为什么没出现 / 显示 unknown？', '这台机器为什么失联了？', '如何部署 categraf 采集器']
-          : [
-              'I just installed a host but it does not appear / shows unknown, why?',
-              'Why did this host go offline?',
-              'How do I deploy the Categraf collector?',
-            ],
+          : ['I just installed a host but it does not appear / shows unknown, why?', 'Why did this host go offline?', 'How do I deploy the Categraf collector?'],
       };
     case 'notification_rules':
       return {
         promptList: isZhCN(lang)
           ? ['这条规则保存后会命中哪些事件？', '为什么我这条告警没发出通知？', '为什么测试能收到但实际发不出通知？']
-          : [
-              'Which events will this rule match after saving?',
-              'Why did my alert not send a notification?',
-              'Why can the test receive but real notifications fail?',
-            ],
+          : ['Which events will this rule match after saving?', 'Why did my alert not send a notification?', 'Why can the test receive but real notifications fail?'],
       };
     case 'notification_channels':
       return {
@@ -126,11 +108,7 @@ export function getRecommendByUrl(url: string, lang?: string): IAiChatRecommendC
       return {
         promptList: isZhCN(lang)
           ? ['如何使用仪表盘可视化业务指标？', '如何配置我的第一条告警规则？', '如何添加数据源？']
-          : [
-              'How to visualize business metrics with dashboards?',
-              'How to configure my first alert rule?',
-              'How to add a data source?',
-            ],
+          : ['How to visualize business metrics with dashboards?', 'How to configure my first alert rule?', 'How to add a data source?'],
       };
   }
 }
