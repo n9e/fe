@@ -5,6 +5,13 @@
 - After modifying source files, run `./node_modules/.bin/prettier --write` on the changed files and verify them with `./node_modules/.bin/prettier --check` before delivery. Follow `.prettierrc.json`; do not leave formatting-only violations in changed files.
 - Prefer native type-checking APIs over lodash for type narrowing: use `Array.isArray` instead of `_.isArray`, `typeof x === 'number'` instead of `_.isNumber`, `x == null` instead of `_.isNil`, etc. Lodash type guard functions are not recognized by TypeScript when `@types/lodash` is unavailable, leaving `unknown` types un-narrowed.
 
+## React Router Routes and Deployment Prefixes
+
+- This project uses React Router's `basename` for subpath deployments. Use Router-provided paths for in-app routes. For example, with a `/flashcat` basename, `useLocation().pathname` and React Router's `history.location.pathname` are `/dial-analysis`, while `window.location.pathname` or global `location.pathname` is the full browser path `/flashcat/dial-analysis`.
+- When building in-app navigation, calling React Router's `history.push` or `history.replace`, or preserving the current route, use Router-relative paths such as `useLocation()` or `history.location`. Do not use global `location.pathname` as a Router path or prepend `basename` to a Router path; either can duplicate the prefix and produce a URL such as `/flashcat/flashcat/polaris`.
+- `useLocation()` is a snapshot for the current render. If an asynchronous callback needs the latest path or query string when it runs, read `history.location` from the corresponding Router history instead of relying on a stale value captured by a closure.
+- Use `window.location` or global `location` only when browser-level URL semantics are needed, such as a full-page navigation, reload, or generating a browser URL that includes the deployment prefix. Their paths have different semantics from Router paths. The native History API on `window.history` is also different from React Router's `history`.
+
 ## Forms and temporary containers
 
 - When closing temporary containers such as modals and drawers, explicitly reset form data and local state (for example, `form.resetFields()`, loading state, and temporary selections) to prevent stale values when reopening.

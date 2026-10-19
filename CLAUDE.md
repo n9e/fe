@@ -35,6 +35,13 @@ src/
 - 同一组件中应避免多次调用同一有副作用的转换函数，优先提取变量复用计算结果。
 - **类型收窄优先使用原生接口**：用 `Array.isArray` 代替 `_.isArray`，用 `typeof x === 'number'` 代替 `_.isNumber`，用 `x == null` 代替 `_.isNil`，以此类推。lodash 的类型守卫函数在缺少 `@types/lodash` 时不会被 TypeScript 识别为类型守卫，导致 `unknown` 类型无法收窄。
 
+## React Router 路由与部署前缀
+
+- 项目使用 React Router 的 `basename` 支持子路径部署。应用内路由路径应使用 Router 提供的路径：例如部署前缀为 `/flashcat` 时，`useLocation().pathname` 和 React Router `history.location.pathname` 是 `/dial-analysis`，而 `window.location.pathname` / 全局 `location.pathname` 是浏览器完整路径 `/flashcat/dial-analysis`。
+- 构造应用内跳转、调用 React Router 的 `history.push` / `history.replace`，或保留当前路由路径时，使用 Router 的相对路径（如 `useLocation()` 或 `history.location`）。不要把全局 `location.pathname` 直接当作 Router 路径，也不要给 Router 路径手动再拼 `basename`，否则可能出现 `/flashcat/flashcat/polaris` 这样的重复前缀。
+- `useLocation()` 是当前渲染对应的路由快照。异步请求等延迟回调需要读取执行时的最新路径或查询串时，使用对应 Router history 的 `history.location`，避免使用闭包中的旧值覆盖后来更新的路由状态。
+- 只有确实需要浏览器完整 URL（例如整页跳转、刷新或生成带部署前缀的浏览器级地址）时才使用 `window.location` / 全局 `location`；注意它们与 Router 的路由路径语义不同。`window.history` 的原生 History API 也不等同于 React Router 的 `history`。
+
 ## 数据与错误
 
 - 异步请求须有错误处理（`try/catch`、`.catch`、`onError` 等，与现有模式一致）。
