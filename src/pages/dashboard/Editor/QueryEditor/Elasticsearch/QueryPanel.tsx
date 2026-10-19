@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { Form, Row, Col, Input, InputNumber, Space, Select, Tooltip, Radio, Segmented, Button, Modal } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
@@ -254,16 +255,18 @@ export default function QueryPanel({ fields, field, index, add, remove, datasour
             label={
               <Space>
                 {t('datasource:es.filter')}
-                <a
-                  href={
-                    filterLanguage === 'lucene'
-                      ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
-                      : 'https://www.elastic.co/docs/reference/query-languages/kql'
-                  }
-                  target='_blank'
-                >
-                  <QuestionCircleOutlined />
-                </a>
+                <UsageDocs>
+                  <a
+                    href={
+                      filterLanguage === 'lucene'
+                        ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
+                        : 'https://www.elastic.co/docs/reference/query-languages/kql'
+                    }
+                    target='_blank'
+                  >
+                    <QuestionCircleOutlined />
+                  </a>
+                </UsageDocs>
               </Space>
             }
           >

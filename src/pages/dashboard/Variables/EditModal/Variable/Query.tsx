@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useState, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { Form, Input, InputNumber, Row, Col, Switch } from 'antd';
@@ -165,16 +166,18 @@ export default function Query(props: Props) {
                   i18nKey='var.reg_tip2'
                   components={{
                     a: (
-                      <a
-                        onClick={() => {
-                          DocumentDrawer({
-                            language: i18n.language,
-                            darkMode,
-                            title: t('common:document_link'),
-                            documentPath: '/n9e-docs/dashboards/variables/named-text-and-value-capture-groups',
-                          });
-                        }}
-                      />
+                      <UsageDocs>
+                        <a
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('common:document_link'),
+                              documentPath: '/n9e-docs/dashboards/variables/named-text-and-value-capture-groups',
+                            });
+                          }}
+                        />
+                      </UsageDocs>
                     ),
                   }}
                 />
