@@ -570,7 +570,7 @@ export default function AlertRules(props: Props) {
                     },
                     {
                       key: 'eval_records',
-                      icon: 'view',
+                      icon: 'history',
                       text: t('eval_records.btn'),
                       onClick: () => {
                         setEvalRecordsDrawerProps((prev) => ({
