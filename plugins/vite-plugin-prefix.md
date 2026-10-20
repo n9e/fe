@@ -50,19 +50,19 @@ window.open('/alert-rules')        →  window.open('/flashcat/alert-rules')
 window.open(`/reports/${id}`)      →  window.open(__n9eWithPrefix(`/reports/${id}`))
 ```
 
-### 3. 不会重复加前缀，兼容已有写法
+### 3. 排除项优先，并兼容已有前缀
 
-运行时函数会先检查地址，下面这些情况都原样返回：
+运行时函数会先识别当前应用前缀，再按去掉前缀后的路径检查排除项。被排除的地址保持在站点根路径；其他已带前缀的地址原样返回：
 
 | 地址                                                        | 结果                                |
 | ----------------------------------------------------------- | ----------------------------------- |
-| 已经带前缀：`/flashcat/x`（例如手写的 `basePrefix + '/x'`） | 不变                                |
+| 已经带前缀：`/flashcat/x`（例如手写的 `basePrefix + '/x'`） | 不变（排除项除外）                  |
 | 外链：`https://...`、`//cdn...`                             | 不变                                |
 | 相对路径、锚点、data URL：`a/b`、`#top`、`data:...`         | 不变                                |
-| 排除项：默认 `/docs/`（官网文档站）                         | 不变                                |
+| 排除项：`/docs/x` 或 `/flashcat/docs/x`（官网文档站）       | `/docs/x`                           |
 | 其他以 `/` 开头的站内地址                                   | 加上前缀，例如 `/x` → `/flashcat/x` |
 
-所以项目里已经手动写了 `basePrefix + '/x'` 的代码不用改，也不会变成 `/flashcat/flashcat/x`。
+所以项目里已经手动写了 `basePrefix + '/x'` 的代码不会变成 `/flashcat/flashcat/x`；如果路径属于排除项，即使已经带前缀，也会去掉应用前缀并保持在站点根路径。
 
 ### 4. 生成改写报告
 
@@ -182,12 +182,12 @@ prefixPlugin(baseName, { exclude: ['/docs/', '/other-system/'] });
 
 插件只改写它能识别的浏览器 URL 接收点。把 URL 放进剪贴板、输入框、分享数据、配置对象或自定义组件时，插件不会处理它。尤其要区分“应用路径”和“完整浏览器 URL”：
 
-| 值 | `/flashcat` 部署时的例子 | 处理方式 |
-| --- | --- | --- |
-| Router 路径 | `/firemap/card-pool` | 在 Router 内直接传给 `<Link>` / `history.push`；不要手动拼前缀 |
-| 应用相对 URL | `/firemap/card-pool?x=1` | 交给 `window.open` 等浏览器接收点时插件会补前缀；复制或保存时用应用 URL helper 补前缀 |
-| 完整站内 URL | `https://host/flashcat/firemap/card-pool?x=1` | 由 `origin + basePrefix + appPath` 构造；传给 helper 时应保持原样 |
-| 外部 URL | `https://other.example/path` | 保持原样，不能在 origin 前拼 `basePrefix` |
+| 值           | `/flashcat` 部署时的例子                      | 处理方式                                                                              |
+| ------------ | --------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Router 路径  | `/firemap/card-pool`                          | 在 Router 内直接传给 `<Link>` / `history.push`；不要手动拼前缀                        |
+| 应用相对 URL | `/firemap/card-pool?x=1`                      | 交给 `window.open` 等浏览器接收点时插件会补前缀；复制或保存时用应用 URL helper 补前缀 |
+| 完整站内 URL | `https://host/flashcat/firemap/card-pool?x=1` | 由 `origin + basePrefix + appPath` 构造；传给 helper 时应保持原样                     |
+| 外部 URL     | `https://other.example/path`                  | 保持原样，不能在 origin 前拼 `basePrefix`                                             |
 
 本仓库的 `src/utils/appUrl.ts` 提供了 `getAppBaseUrl(origin, basePrefix)` 和 `addAppBasePrefix(url, basePrefix)`：前者生成 `origin + 规范化部署前缀`，后者只给应用相对 URL 加前缀、对已有前缀保持幂等，并原样返回绝对 URL。生成完整分享链接时可按下面的方式组合：
 

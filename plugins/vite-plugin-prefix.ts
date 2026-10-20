@@ -10,8 +10,9 @@ import type { Plugin, ResolvedConfig } from 'vite';
  * 以及 JSX 原生标签（img、a、iframe 等）的 src / href / poster。
  * 不能改写任意 '/xxx' 字符串：路由路径再加一次就会变成 /flashcat/flashcat/xxx。
  *
- * 改写方式是把参数包成 __n9eWithPrefix(expr)，运行时幂等：已带前缀、外链、相对路径原样返回，
- * 所以兼容已经手写 basePrefix + '/xxx' 的代码。字符串字面量直接在构建期算好，不留运行时调用。
+ * 改写方式是把参数包成 __n9eWithPrefix(expr)，运行时检查路径：已带前缀的应用路径、外链和相对路径原样返回；
+ * 排除项会先去掉已存在的应用前缀，再保持在站点根路径。所以兼容已经手写 basePrefix + '/xxx' 的代码。
+ * 字符串字面量直接在构建期算好，不留运行时调用。
  */
 
 export interface PrefixPluginOptions {
@@ -66,8 +67,10 @@ const SCRIPT_RE = /\.(m?[jt]sx?)$/;
 
 export function applyPrefix(prefix: string, exclude: string[], url: string): string {
   if (!prefix || url.charAt(0) !== '/' || url.charAt(1) === '/') return url;
-  if (url === prefix || url.startsWith(prefix + '/') || url.startsWith(prefix + '?') || url.startsWith(prefix + '#')) return url;
-  if (exclude.some((item) => url.startsWith(item))) return url;
+  const alreadyPrefixed = url === prefix || url.startsWith(prefix + '/') || url.startsWith(prefix + '?') || url.startsWith(prefix + '#');
+  const pathWithoutPrefix = alreadyPrefixed ? url.slice(prefix.length) : url;
+  if (exclude.some((item) => pathWithoutPrefix.startsWith(item))) return pathWithoutPrefix;
+  if (alreadyPrefixed) return url;
   return prefix + url;
 }
 
@@ -77,10 +80,12 @@ export function createRuntimeCode(prefix: string, exclude: string[]): string {
 const exclude = ${JSON.stringify(exclude)};
 export function ${HELPER}(url) {
   if (!prefix || typeof url !== 'string' || url.charAt(0) !== '/' || url.charAt(1) === '/') return url;
-  if (url === prefix || url.startsWith(prefix + '/') || url.startsWith(prefix + '?') || url.startsWith(prefix + '#')) return url;
+  const alreadyPrefixed = url === prefix || url.startsWith(prefix + '/') || url.startsWith(prefix + '?') || url.startsWith(prefix + '#');
+  const pathWithoutPrefix = alreadyPrefixed ? url.slice(prefix.length) : url;
   for (let i = 0; i < exclude.length; i++) {
-    if (url.startsWith(exclude[i])) return url;
+    if (pathWithoutPrefix.startsWith(exclude[i])) return pathWithoutPrefix;
   }
+  if (alreadyPrefixed) return url;
   return prefix + url;
 }
 `;
