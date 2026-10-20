@@ -293,7 +293,7 @@ export default function LogsViewer(props: Props) {
 
   usePinnedHistogram(histogramRef, histogramPinned && !hideHistogram && !patternHistogramState.visible);
   const pinHistogramAction = (
-    <Tooltip title={t(histogramPinned ? 'histogram_unpin_tip' : 'histogram_pin_tip')}>
+    <Tooltip placement='topRight' arrowPointAtCenter title={t(histogramPinned ? 'histogram_unpin_tip' : 'histogram_pin_tip')}>
       <button
         type='button'
         aria-label={t(histogramPinned ? 'histogram_unpin' : 'histogram_pin')}
