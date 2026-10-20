@@ -1,5 +1,7 @@
 import i18next from 'i18next';
+import { Modal } from 'antd';
 import { createDomFeedback, getSharedActionRuntime } from '@flashcatcloud/ai-kit/actions';
+import type { ConfirmRequest } from '@flashcatcloud/ai-kit/actions';
 
 import { NAME_SPACE } from './constants';
 
@@ -9,6 +11,28 @@ function accent(): string | undefined {
   if (typeof document === 'undefined') return undefined;
   const value = getComputedStyle(document.documentElement).getPropertyValue('--fc-fill-primary-rgb').trim();
   return value ? value.split(/\s+/).join(',') : undefined;
+}
+
+/** Render the confirmation contract declared by a page action. */
+export function confirmUiAction(request: ConfirmRequest): Promise<boolean> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const settle = (approved: boolean) => {
+      if (settled) return;
+      settled = true;
+      resolve(approved);
+    };
+
+    Modal.confirm({
+      title: request.prompt,
+      okText: request.actionLabel || i18next.t('common:btn.ok'),
+      cancelText: i18next.t('common:btn.cancel'),
+      closable: true,
+      maskClosable: true,
+      onOk: () => settle(true),
+      onCancel: () => settle(false),
+    });
+  });
 }
 
 /**
@@ -35,6 +59,7 @@ function accent(): string | undefined {
  * the page, so both copies resolve to one registry.
  */
 export const uiActionRuntime = getSharedActionRuntime({
+  confirm: confirmUiAction,
   // Ring the target and glide a cursor onto it. Writing a form field takes a
   // millisecond, so without this an action is indistinguishable from the page
   // glitching. The banner and the frame say it out loud: the assistant is
