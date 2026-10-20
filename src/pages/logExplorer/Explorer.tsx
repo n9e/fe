@@ -32,6 +32,7 @@ function areExplorerPropsEqual(prev: Props, next: Props) {
   return (
     prev.active === next.active &&
     prev.tabKey === next.tabKey &&
+    prev.defaultFormValuesControl?.selectedViewId === next.defaultFormValuesControl?.selectedViewId &&
     prev.defaultFormValuesControl?.isInited === next.defaultFormValuesControl?.isInited &&
     _.isEqual(prev.defaultFormValuesControl?.defaultFormValues, next.defaultFormValuesControl?.defaultFormValues)
   );
@@ -52,7 +53,7 @@ function Explorer(props: Props) {
   const hasDatasourceCate = !!datasourceCate;
 
   // 统一维护 ViewSelect 的状态，这样 ViewSelect 组件本身就是一个无状态组件
-  const [viewSelectValue, setViewSelectValue] = useState<number>();
+  const viewSelectValue = defaultFormValuesControl?.selectedViewId;
   const [viewSelectFilters, setViewSelectFilters] = useState<{ searchText: string; publicCate?: number }>({ searchText: '', publicCate: undefined });
   const [viewModalState, setViewModalState] = useState<ModalState>({
     visible: false,
@@ -135,9 +136,10 @@ function Explorer(props: Props) {
             [key: string]: any;
           }>
             // 统一的状态
+            validateSelection
             value={viewSelectValue}
             onChange={(value) => {
-              setViewSelectValue(value);
+              defaultFormValuesControl?.setSelectedViewId?.(value);
             }}
             filters={viewSelectFilters}
             setFilters={setViewSelectFilters}

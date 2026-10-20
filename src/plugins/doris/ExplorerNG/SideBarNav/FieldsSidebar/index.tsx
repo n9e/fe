@@ -151,7 +151,7 @@ export default function index(props: IProps) {
           const title = active ? t('query.stack_tip_unpin') : loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin');
           return (
             <Space>
-              <Tooltip title={title}>
+              <Tooltip mouseEnterDelay={0.6} title={title}>
                 <Button
                   aria-label={active ? t('query.stack_tip_unpin') : t('query.stack_tip_pin')}
                   aria-pressed={active}
@@ -166,7 +166,7 @@ export default function index(props: IProps) {
                   }}
                 />
               </Tooltip>
-              <Tooltip title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}>
+              <Tooltip mouseEnterDelay={0.6} title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}>
                 <Button
                   aria-label={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}
                   aria-pressed={searchActive}

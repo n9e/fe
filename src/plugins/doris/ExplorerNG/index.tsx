@@ -103,10 +103,12 @@ export default function index(props: Props) {
     executeQuery();
   };
 
-  const handleSetDefaultSearchField = (index) => {
+  const handleSetDefaultSearchField = (index?: string) => {
     form.setFieldsValue({
       query: {
         defaultSearchField: index,
+        // Bare search text is invalid without a default field.
+        ...(index === undefined ? { query: '' } : {}),
       },
     });
   };

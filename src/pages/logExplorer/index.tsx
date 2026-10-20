@@ -23,6 +23,7 @@ interface TabItem {
   key: string;
   isInited?: boolean;
   formValues?: any;
+  selectedViewId?: number;
   /** 新增页签标记（仅运行时存在，不持久化）：激活时跳过自动查询 */
   isNewTab?: boolean;
 }
@@ -82,6 +83,17 @@ function TabExplorer({
     [setItems, item.key, persistItems],
   );
 
+  const setSelectedViewId = useCallback(
+    (selectedViewId: number | undefined) => {
+      setItems((prev) => {
+        if (_.find(prev, { key: item.key })?.selectedViewId === selectedViewId) return prev;
+        persistItems();
+        return prev.map((i) => (i.key === item.key ? { ...i, selectedViewId } : i));
+      });
+    },
+    [setItems, item.key, persistItems],
+  );
+
   // P2 方案A：页签切走时由 Explorer 调用，快照当前表单值（含未执行的修改）
   const handleSnapshot = useCallback(
     (formValues: any) => {
@@ -104,6 +116,8 @@ function TabExplorer({
       tabKey={item.key}
       tabIndex={itemIndex}
       defaultFormValuesControl={{
+        selectedViewId: item.selectedViewId,
+        setSelectedViewId,
         isInited: item?.isInited,
         setIsInited,
         defaultFormValues: item?.formValues,
@@ -189,9 +203,12 @@ export default function index() {
     persistItemsRef.current?.();
   }, []);
   useEffect(() => {
+    const flush = () => persistItemsRef.current?.flush();
+    // A browser refresh does not run React's unmount cleanup.
+    window.addEventListener('pagehide', flush);
     return () => {
-      // 页面卸载前 flush，避免防抖窗口内的最后一次写入丢失
-      persistItemsRef.current?.flush();
+      window.removeEventListener('pagehide', flush);
+      flush();
     };
   }, []);
 
