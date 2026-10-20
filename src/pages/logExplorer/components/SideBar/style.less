@@ -2,8 +2,8 @@
   flex-shrink: 0;
   align-self: flex-start;
   position: sticky !important;
-  top: 0;
-  height: calc(100vh - 180px) !important;
+  top: var(--log-sidebar-top, 0px);
+  height: var(--log-sidebar-height, auto) !important;
   min-height: 320px;
   display: flex;
   flex-direction: column;
@@ -30,6 +30,7 @@
   }
   &.n9e-log-sidebar-collapsed {
     position: relative !important;
+    top: 0;
     border: 0;
     height: 32px !important;
     min-height: 0;
