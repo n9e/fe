@@ -423,7 +423,7 @@ export default function FieldsItem(props: Props) {
           onMouseDown={(event) => event.stopPropagation()}
         >
           {field.indexable && renderStatsPopoverTitleExtra?.({ index: field, stats, loading: topNLoading, setTopNVisible })}
-          <Tooltip title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
+          <Tooltip mouseEnterDelay={0.6} title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
             <Button
               type='text'
               size='small'
