@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext, useContext, useMemo, useCallback } from 'react';
 import { Spin, Space, Radio, Tooltip } from 'antd';
+import { Pin } from 'lucide-react';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -293,20 +294,19 @@ export default function LogsViewer(props: Props) {
   usePinnedHistogram(histogramRef, histogramPinned && !hideHistogram && !patternHistogramState.visible);
   const pinHistogramAction = (
     <Tooltip title={t(histogramPinned ? 'histogram_unpin_tip' : 'histogram_pin_tip')}>
-      <a
-        role='button'
-        tabIndex={0}
+      <button
+        type='button'
+        aria-label={t(histogramPinned ? 'histogram_unpin' : 'histogram_pin')}
         aria-pressed={histogramPinned}
-        onClick={() => setHistogramPinned(!histogramPinned)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            setHistogramPinned(!histogramPinned);
-          }
+        className='inline-flex h-[18px] w-[20px] items-center justify-center rounded border-0 p-0 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary'
+        style={{
+          color: histogramPinned ? 'var(--fc-primary-color)' : 'var(--fc-text-3)',
+          background: histogramPinned ? 'var(--fc-fill-3)' : 'transparent',
         }}
+        onClick={() => setHistogramPinned(!histogramPinned)}
       >
-        {histogramPinned ? t('histogram_unpin') : t('histogram_pin')}
-      </a>
+        <Pin size={14} strokeWidth={1.5} fill={histogramPinned ? 'currentColor' : 'none'} />
+      </button>
     </Tooltip>
   );
 
