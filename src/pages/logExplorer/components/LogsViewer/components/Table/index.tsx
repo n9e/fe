@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
-import DataGrid, { Column, RowsChangeData, SortColumn } from 'react-data-grid';
+import DataGrid, { Column, RowsChangeData, SortColumn, DataGridHandle } from 'react-data-grid';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { Empty } from 'antd';
@@ -8,6 +8,7 @@ import CellExpanderFormatter from './components/CellExpanderFormatter';
 import RowDetail from './components/RowDetail';
 
 import './style.less';
+import useExternalGridScroll from '../../utils/useExternalGridScroll';
 
 declare type Maybe<T> = T | undefined | null;
 
@@ -157,47 +158,62 @@ export default function Table<Row>(props: Props<Row>) {
     return baseColumns;
   }, [columns, handleHeightChange, rowKeyGetterExtra]);
 
+  const shellRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<DataGridHandle>(null);
+  const contentHeight =
+    ROW_HEIGHT +
+    2 +
+    rows.reduce((height, row) => {
+      if (row.__type === 'DETAIL') return height + (detailHeights.get(rowKeyGetterExtra(row)) || ROW_EXPANDED_HEIGHT_DETAIL);
+      return height + (getRowHeight?.(row) ?? ROW_HEIGHT);
+    }, 0);
+  const { top, viewportHeight, totalHeight } = useExternalGridScroll(shellRef, gridRef, contentHeight);
+
   if (rows.length === 0) {
     return <Empty className='mt-4' image={Empty.PRESENTED_IMAGE_SIMPLE} />;
   }
 
   return (
-    <DataGrid
-      rowKeyGetter={(row) => row.__id}
-      columns={ajustedColumns}
-      rows={rows}
-      rowClass={(row) => (row.__type === 'DETAIL' ? 'rdg-row-detail' : '')}
-      onRowsChange={onRowsChange}
-      headerRowHeight={ROW_HEIGHT}
-      rowHeight={(args) => {
-        if (args.type !== 'ROW') return ROW_HEIGHT;
-        const rowKey = rowKeyGetterExtra(args.row);
+    <div ref={shellRef} style={{ height: totalHeight }} className='n9e-log-grid-shell'>
+      <DataGrid
+        ref={gridRef}
+        style={{ height: viewportHeight, position: 'sticky', top, overflowY: 'hidden' }}
+        rowKeyGetter={(row) => row.__id}
+        columns={ajustedColumns}
+        rows={rows}
+        rowClass={(row) => (row.__type === 'DETAIL' ? 'rdg-row-detail' : '')}
+        onRowsChange={onRowsChange}
+        headerRowHeight={ROW_HEIGHT}
+        rowHeight={(args) => {
+          if (args.type !== 'ROW') return ROW_HEIGHT;
+          const rowKey = rowKeyGetterExtra(args.row);
 
-        // 如果是DETAIL行，用展开内容的高度
-        if (args.row.__type === 'DETAIL') {
-          return detailHeights.get(rowKey) || ROW_EXPANDED_HEIGHT_DETAIL;
-        }
+          // 如果是DETAIL行，用展开内容的高度
+          if (args.row.__type === 'DETAIL') {
+            return detailHeights.get(rowKey) || ROW_EXPANDED_HEIGHT_DETAIL;
+          }
 
-        // 如果提供了自定义高度计算函数，使用它
-        if (getRowHeight) {
-          const customHeight = getRowHeight(args.row);
-          // 如果返回数字，直接使用；否则用最小高度
-          return typeof customHeight === 'number' ? customHeight : ROW_HEIGHT;
-        }
+          // 如果提供了自定义高度计算函数，使用它
+          if (getRowHeight) {
+            const customHeight = getRowHeight(args.row);
+            // 如果返回数字，直接使用；否则用最小高度
+            return typeof customHeight === 'number' ? customHeight : ROW_HEIGHT;
+          }
 
-        return ROW_HEIGHT;
-      }}
-      className={classNames(`n9e-logs-viewer-rdg w-full h-full ${className ? ` ${className}` : ''}`, {
-        'rdg-light': theme === 'light',
-        'rdg-dark': theme === 'dark',
-      })}
-      defaultColumnOptions={{
-        resizable: true,
-      }}
-      sortColumns={sortColumns}
-      onSortColumnsChange={onSortColumnsChange}
-      onScroll={onScroll}
-      onColumnResize={onColumnResize}
-    />
+          return ROW_HEIGHT;
+        }}
+        className={classNames(`n9e-logs-viewer-rdg w-full ${className ? ` ${className}` : ''}`, {
+          'rdg-light': theme === 'light',
+          'rdg-dark': theme === 'dark',
+        })}
+        defaultColumnOptions={{
+          resizable: true,
+        }}
+        sortColumns={sortColumns}
+        onSortColumnsChange={onSortColumnsChange}
+        onScroll={onScroll}
+        onColumnResize={onColumnResize}
+      />
+    </div>
   );
 }

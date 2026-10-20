@@ -34,7 +34,7 @@ function createHeaderCellWithSorterTooltip(OriginHeaderCell: React.ElementType =
  * loses its boundary here and edits trigger a full page reload.
  */
 export default function EnhancedTable<RecordType extends object = any>(props: EnhancedTableProps<RecordType>) {
-  const { rowActions, actionColumn, columns, className, components, dataSource, compactHeader, autoSortColumns, pagination,actionMaxIcons, ...rest } = props;
+  const { rowActions, actionColumn, columns, className, components, dataSource, compactHeader, autoSortColumns, actionMaxIcons, pagination, ...rest } = props;
 
   // Every paginated table gets the quick jumper, regardless of whether the caller spreads
   // usePagination. `pagination={false}` stays off, and an explicit caller value still wins.

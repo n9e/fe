@@ -20,6 +20,7 @@ describe('applyPrefix', () => {
     ['/flashcat', '/flashcat'],
     ['/flashcat?x=1', '/flashcat?x=1'],
     ['/flashcatx', '/flashcat/flashcatx'],
+    ['/flashcat/docs/content/a', '/docs/content/a'],
     ['https://flashcat.cloud/a', 'https://flashcat.cloud/a'],
     ['//cdn.example.com/a.js', '//cdn.example.com/a.js'],
     ['relative/path', 'relative/path'],
@@ -36,7 +37,7 @@ describe('applyPrefix', () => {
 
   it('runtime helper matches applyPrefix', () => {
     const helper = loadRuntime(PREFIX, ['/docs/']);
-    ['/a', '/', '/flashcat/a', '/flashcat', 'https://x.com', '//x.com', '/docs/x', 'a'].forEach((url) => {
+    ['/a', '/', '/flashcat/a', '/flashcat', 'https://x.com', '//x.com', '/docs/x', '/flashcat/docs/x', 'a'].forEach((url) => {
       expect(helper(url)).toBe(applyPrefix(PREFIX, ['/docs/'], url));
     });
     const urlObject = { href: '/a' };
@@ -130,6 +131,7 @@ describe('transformPrefix', () => {
 
   it('respects exclude', () => {
     expect(run("window.open('/docs/content/x')")).toBeNull();
+    expect(output("window.open('/flashcat/docs/content/x')")).toBe('window.open("/docs/content/x")');
     expect(output("window.open('/docs/content/x')".replace('/docs', '/help'))).toContain('/flashcat/help');
   });
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useMemo, useCallback } from 'react';
-import { Spin, Space, Radio } from 'antd';
+import { Spin, Space, Radio, Tooltip } from 'antd';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +21,9 @@ import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
+import useScrollParent from './utils/useScrollParent';
+import usePinnedHistogram from './utils/usePinnedHistogram';
+import { getScrollEventTarget } from './utils/scrollParent';
 import DrilldownBtn, { type DrilldownInitialValues } from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
 interface Props {
@@ -136,6 +139,25 @@ interface LogsViewerState {
 export const LogsViewerStateContext = createContext({} as LogsViewerState);
 
 export default function LogsViewer(props: Props) {
+  const resultsRef = React.useRef<HTMLDivElement>(null);
+  const scrollParent = useScrollParent(resultsRef);
+  useEffect(() => {
+    if (!scrollParent || !props.onScrollCapture) return;
+    let frame = 0;
+    const handleScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        // Retained query tabs must not load more data while hidden.
+        if (resultsRef.current?.hasAttribute('data-log-results') && resultsRef.current.getClientRects().length) props.onScrollCapture?.();
+      });
+    };
+    const scrollTarget = getScrollEventTarget(scrollParent);
+    scrollTarget.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      scrollTarget.removeEventListener('scroll', handleScroll);
+    };
+  }, [scrollParent, props.onScrollCapture]);
   const { t } = useTranslation(NAME_SPACE);
   const { isPlus } = useContext(CommonStateContext);
   const {
@@ -186,7 +208,8 @@ export default function LogsViewer(props: Props) {
     hideTypeIcon = false,
   } = props;
   const [options, setOptions] = useState(props.options);
-  const [histogramVisible, setHistogramVisible] = useState(true);
+  const [histogramPinned, setHistogramPinned] = useState(false);
+  const histogramRef = React.useRef<HTMLDivElement>(null);
   const [drilldownDrawerVisible, setDrilldownDrawerVisible] = useState(false);
   const [drilldownInitialValues, setDrilldownInitialValues] = useState<DrilldownInitialValues | undefined>();
   const isClusteringEnabled = !!logClusting?.enabled;
@@ -267,6 +290,26 @@ export default function LogsViewer(props: Props) {
     };
   }, [id_key, raw_key, props.fieldConfig, props.indexData, props.range, props.getAddToQueryInfo, drilldownContext, openAddDrilldownLink, enableLogTextSelectMenu]);
 
+  usePinnedHistogram(histogramRef, histogramPinned && !hideHistogram && !patternHistogramState.visible);
+  const pinHistogramAction = (
+    <Tooltip title={t(histogramPinned ? 'histogram_unpin_tip' : 'histogram_pin_tip')}>
+      <a
+        role='button'
+        tabIndex={0}
+        aria-pressed={histogramPinned}
+        onClick={() => setHistogramPinned(!histogramPinned)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            setHistogramPinned(!histogramPinned);
+          }
+        }}
+      >
+        {histogramPinned ? t('histogram_unpin') : t('histogram_pin')}
+      </a>
+    </Tooltip>
+  );
+
   return (
     <LogsViewerStateContext.Provider value={logsViewerState}>
       <>
@@ -275,36 +318,16 @@ export default function LogsViewer(props: Props) {
         ) : (
           <>
             {!hideHistogram && (
-              <div
-                className={classNames('flex-shrink-0', {
-                  'h-[130px]': histogramVisible,
-                  'h-[30px]': !histogramVisible,
-                })}
-              >
+              <div ref={histogramRef} className='n9e-log-histogram flex-shrink-0'>
                 <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
                   <Space>
-                    <span>{t('clustering.all_log_statistics')}</span>
                     {histogramAddonBeforeRender}
                     <Spin spinning={histogramLoading} size='small' />
                   </Space>
 
-                  {renderHistogramAddonAfterRender?.(
-                    <a
-                      onClick={() => {
-                        setHistogramVisible(!histogramVisible);
-                      }}
-                    >
-                      {histogramVisible ? t('histogram_hide') : t('histogram_show')}
-                    </a>,
-                  )}
+                  {renderHistogramAddonAfterRender ? renderHistogramAddonAfterRender(pinHistogramAction) : pinHistogramAction}
                 </div>
-                <div
-                  className={classNames('flex-shrink-0', {
-                    'h-[120px]': histogramVisible,
-                    block: histogramVisible,
-                    hidden: !histogramVisible,
-                  })}
-                >
+                <div className='h-[120px] flex-shrink-0'>
                   {props.range && histogram && (
                     <HistogramChart
                       series={histogram}
@@ -331,7 +354,7 @@ export default function LogsViewer(props: Props) {
             )}
           </>
         )}
-        <FullscreenButton.Provider>
+        <FullscreenButton.Provider autoHeight={logMode !== 'clustering'}>
           <div className='n9e-log-explorer-toolbar flex justify-between items-center gap-2 pb-2'>
             <Space className='n9e-log-explorer-toolbar-main'>
               {addonBefore}
@@ -389,8 +412,13 @@ export default function LogsViewer(props: Props) {
             </Space>
             {logMode === 'clustering' && isClusteringEnabled ? <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} /> : optionsExtraRender}
           </div>
-          <div className='h-full min-h-0' onScrollCapture={onScrollCapture}>
-            <div className='n9e-antd-table-height-full'>
+          <div
+            ref={resultsRef}
+            data-log-results={logMode !== 'clustering' ? '' : undefined}
+            className={logMode === 'clustering' ? 'h-full min-h-0' : 'n9e-log-results'}
+            onScrollCapture={logMode === 'clustering' ? onScrollCapture : undefined}
+          >
+            <div className={logMode === 'clustering' ? 'n9e-antd-table-height-full' : undefined}>
               {logMode === 'origin' && (
                 <Raw
                   id_key={id_key}

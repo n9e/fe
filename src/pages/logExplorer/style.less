@@ -130,3 +130,14 @@
     white-space: nowrap;
   }
 }
+
+// Only raw/table results grow into the page. Keep the original bounded height
+// for clustering and other result modes that still have their own viewport.
+.log-explorer-content:has(.n9e-log-results-auto-height) {
+  &,
+  > div,
+  > div > form {
+    height: auto !important;
+    min-height: 100%;
+  }
+}

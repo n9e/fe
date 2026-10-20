@@ -144,8 +144,8 @@ export default function index(props: Props) {
   const segmentedValue = isSQLMode ? 'sql' : 'query';
 
   return (
-    <div className='flex flex-col h-full'>
-      <div className='flex-shrink-0 relative'>
+    <div data-log-query-main className='flex flex-col h-full'>
+      <div className='log-explorer-query-row flex-shrink-0 relative'>
         <Row gutter={SIZE} wrap>
           <Col flex='none'>
             <Segmented

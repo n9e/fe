@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider, Tag } from 'antd';
@@ -25,6 +25,7 @@ interface Props {
   fetchStats?: (field: Field) => Promise<StatsResult>;
   renderStatsPopoverTitleExtra?: (options: {
     index: Field;
+    loading?: boolean;
     stats?: {
       [index: string]: number;
     };
@@ -98,6 +99,52 @@ export default function FieldsItem(props: Props) {
     [index: string]: number;
   }>();
 
+  const statsRequest = useRef<Promise<StatsResult> | undefined>();
+  const statsLoaded = useRef(false);
+  const requestVersion = useRef(0);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    // The provider changes fetchStats when the datasource/query/time range changes.
+    requestVersion.current += 1;
+    statsRequest.current = undefined;
+    statsLoaded.current = false;
+    setStats(undefined);
+    setTopNData([]);
+    setTopNLoading(false);
+    setTopNVisible(false);
+    return () => {
+      requestVersion.current += 1;
+      clearTimeout(hoverTimer.current);
+    };
+  }, [fetchStats, field.field]);
+
+  const loadStats = () => {
+    if (!enableStats || !fetchStats || !field.indexable || statsLoaded.current || statsRequest.current) return;
+    const version = requestVersion.current;
+    setTopNLoading(true);
+    const request = Promise.resolve().then(() => fetchStats(field));
+    statsRequest.current = request;
+    request
+      .then((res) => {
+        if (version !== requestVersion.current) return;
+        setTopNumber(res.topNumber ?? DEFAULT_TOP_NUMBER);
+        setTopNData(res.topN);
+        setStats(res.stats);
+        statsLoaded.current = true;
+      })
+      .catch(() => {
+        if (version !== requestVersion.current) return;
+        setTopNData([]);
+        setStats(undefined);
+      })
+      .finally(() => {
+        if (version !== requestVersion.current) return;
+        statsRequest.current = undefined;
+        setTopNLoading(false);
+      });
+  };
+
   return (
     <Popover
       placement='right'
@@ -111,7 +158,6 @@ export default function FieldsItem(props: Props) {
           <Space>
             <span>{field.field}</span>
           </Space>
-          {topNVisible ? renderStatsPopoverTitleExtra?.({ index: field, stats, setTopNVisible }) : null}
         </div>
       }
       content={
@@ -299,70 +345,72 @@ export default function FieldsItem(props: Props) {
           </Spin>
         </div>
       }
-      onVisibleChange={async (visible) => {
+      onVisibleChange={(visible) => {
         if (enableStats && fetchStats && field.indexable) {
           setTopNVisible(visible);
-          if (visible) {
-            setTopNLoading(true);
-            fetchStats(field)
-              .then((res) => {
-                const { topNumber, topN, stats } = res;
-                setTopNumber(topNumber ?? DEFAULT_TOP_NUMBER);
-                setTopNData(topN);
-                setStats(stats);
-              })
-              .catch(() => {
-                setTopNData([]);
-                setStats({});
-              })
-              .finally(() => {
-                setTopNLoading(false);
-              });
-          } else {
-            setTopNData([]);
-            setStats({});
-          }
+          if (visible) loadStats();
         }
       }}
     >
-      <Tooltip
-        placement='left'
-        title={
-          <div className='break-all'>
-            {field.type2 && (
-              <div>
-                <Space align='start'>
-                  <span className='whitespace-nowrap'>{t('field_type')}:</span>
-                  {field.type2}
-                </Space>
-              </div>
-            )}
-            <div>{field.indexable === false ? t('unindexable') : t('field_tip')}</div>
-          </div>
-        }
+      <div
+        className='n9e-log-field-row cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'
+        onMouseEnter={() => {
+          if (renderStatsPopoverTitleExtra) hoverTimer.current = setTimeout(loadStats, 200);
+        }}
+        onMouseLeave={() => clearTimeout(hoverTimer.current)}
+        onFocus={() => {
+          if (renderStatsPopoverTitleExtra) loadStats();
+        }}
       >
-        <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'>
-          {field.type && (
-            <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
-          )}
-          <span
-            style={{
-              width: 'calc(100% - 26px)',
-            }}
-            className='break-all wrap-anywhere leading-[1.2] hover:text-gray-400'
-          >
-            {field.field} {renderFieldNameExtra?.(field)}
+        <Tooltip
+          placement='left'
+          mouseLeaveDelay={0}
+          title={
+            <div className='break-all'>
+              {field.type2 && (
+                <div>
+                  <Space align='start'>
+                    <span className='whitespace-nowrap'>{t('field_type')}:</span>
+                    {field.type2}
+                  </Space>
+                </div>
+              )}
+              <div>{field.indexable === false ? t('unindexable') : t('field_tip')}</div>
+            </div>
+          }
+        >
+          <span className='n9e-log-field-label flex min-w-0 flex-1 items-center gap-[8px]'>
+            {field.type && (
+              <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+            )}
+            <span
+              style={{
+                minWidth: 0,
+                flex: '1 1 0',
+              }}
+              title={field.field}
+              className='truncate leading-[1.2] hover:text-gray-400'
+            >
+              {field.field} {renderFieldNameExtra?.(field)}
+            </span>
           </span>
-          <span
-            className='cursor-pointer w-[20px] flex-shrink-0 invisible group-hover:visible'
-            onClick={() => {
-              onOperClick();
-            }}
-          >
-            {operIconMap[operType]}
-          </span>
-        </div>
-      </Tooltip>
+        </Tooltip>
+        <span className='n9e-log-field-actions flex items-center flex-shrink-0' onClick={(event) => event.stopPropagation()} onMouseDown={(event) => event.stopPropagation()}>
+          {field.indexable && renderStatsPopoverTitleExtra?.({ index: field, stats, loading: topNLoading, setTopNVisible })}
+          <Tooltip title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
+            <button
+              type='button'
+              aria-label={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}
+              className='cursor-pointer w-[20px] flex-shrink-0 border-0 bg-transparent p-0 text-inherit'
+              onClick={() => {
+                onOperClick();
+              }}
+            >
+              {operIconMap[operType]}
+            </button>
+          </Tooltip>
+        </span>
+      </div>
     </Popover>
   );
 }

@@ -1,4 +1,11 @@
+import { getExternalLogScroll, isExternalLogAtBottom } from '@/pages/logExplorer/components/LogsViewer/utils/scrollParent';
 export function scrollToTop(logsAntdTableSelector: string, logsRgdTableSelector: string) {
+  const external = getExternalLogScroll(document.querySelector(logsAntdTableSelector) || document.querySelector(logsRgdTableSelector));
+  if (external) {
+    external.parent.scrollTo({ top: 0 });
+    return;
+  }
+
   const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
   const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
   if (antdTableEleNodes) {
@@ -9,6 +16,9 @@ export function scrollToTop(logsAntdTableSelector: string, logsRgdTableSelector:
 }
 
 export function getIsAtBottom(logsAntdTableSelector: string, logsRgdTableSelector: string) {
+  const externalBottom = isExternalLogAtBottom(document.querySelector(logsAntdTableSelector) || document.querySelector(logsRgdTableSelector));
+  if (externalBottom !== undefined) return externalBottom;
+
   const antdTableEleNodes = document.querySelector(logsAntdTableSelector);
   const rgdTableEleNodes = document.querySelector(logsRgdTableSelector);
   let isAtBottom = false;
@@ -19,4 +29,3 @@ export function getIsAtBottom(logsAntdTableSelector: string, logsRgdTableSelecto
   }
   return isAtBottom;
 }
-

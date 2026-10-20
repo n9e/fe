@@ -1,4 +1,9 @@
 const zh_CN = {
+  histogram_pin_tip: '固定后，上下滚动页面时，图表及上方查询区域将保持可见，方便同时查看日志和趋势。',
+  histogram_unpin_tip: '取消固定后，图表及上方查询区域将恢复随页面上下滚动。',
+  histogram_pin: '固定图表',
+  histogram_unpin: '取消固定',
+  sidebar: { title: '过滤条件', expand: '展开过滤条件', collapse: '收起过滤条件' },
   title: '日志检索',
   tab: {
     rename: '重命名',
@@ -42,6 +47,8 @@ const zh_CN = {
   field_popover_info_alert: '点击数值可查看统计图表和 SQL',
   field_search_placeholder: '搜索字段',
   field_list: {
+    add_field: '添加展示字段',
+    remove_field: '移除展示字段',
     show_fields: '显示字段',
     available_fields: '可用字段',
   },

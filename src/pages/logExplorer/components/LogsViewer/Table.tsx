@@ -178,7 +178,7 @@ function Table(props: Props) {
   );
 
   return (
-    <div className='min-h-0 h-full' ref={drawerRef}>
+    <div className='min-h-0' ref={drawerRef}>
       <RDGTable
         className='n9e-event-logs-table'
         rowKeyGetter={(row) => {
@@ -225,6 +225,7 @@ function Table(props: Props) {
         }}
       />
       <NavigableDrawer
+        defaultSize='middle'
         className='log-explorer-ignore-click-away'
         title={navigableDrawerTitle}
         extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}

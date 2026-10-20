@@ -143,7 +143,7 @@ export default function index(props: IProps) {
             };
           }
         }}
-        renderStatsPopoverTitleExtra={({ index, stats, setTopNVisible }) => {
+        renderStatsPopoverTitleExtra={({ index, stats, loading, setTopNVisible }) => {
           const unique_count = stats?.unique_count !== undefined ? _.toNumber(stats.unique_count) : 0;
           const disabled = _.isNaN(unique_count) || unique_count <= 1 || unique_count > 10;
           return (
@@ -174,7 +174,7 @@ export default function index(props: IProps) {
                 </Tooltip>
               )}
               {stackByField && stackByField === index.field ? (
-                <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
+                <Tooltip title={loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
                   <Button
                     icon={<UnPinIcon className='text-[14px]' />}
                     type='text'
@@ -186,7 +186,7 @@ export default function index(props: IProps) {
                   />
                 </Tooltip>
               ) : (
-                <Tooltip title={disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin')}>
+                <Tooltip title={loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin')}>
                   <Button
                     disabled={disabled}
                     icon={<PinIcon className='text-[14px]' />}
