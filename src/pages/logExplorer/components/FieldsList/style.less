@@ -4,15 +4,31 @@
     font-size: 14px;
   }
 }
+.show-log-field-action() {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.n9e-log-field-row {
+  position: relative;
+}
+.n9e-log-field-label {
+  padding-right: var(--log-field-active-width, 0px);
+}
 .n9e-log-field-actions {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
   .ant-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
     height: 24px;
     padding: 0;
+    border: 0;
     line-height: 1;
+    transition: color 0.2s, background-color 0.2s;
   }
   .ant-space-item {
     display: flex;
@@ -32,32 +48,39 @@
   .ant-space {
     gap: 0 !important;
   }
-  button,
+  // Hidden controls retain their slots so active buttons never move on hover.
+  button.ant-btn.ant-btn-sm,
   .ant-tooltip-disabled-compatible-wrapper {
+    width: 24px;
+    min-width: 24px;
+    overflow: hidden;
     opacity: 0;
     pointer-events: none;
   }
-  // A selected stack button remains visible; its neighbours still appear on hover/focus.
-  button[aria-pressed='true'] {
+  button.ant-btn[aria-pressed='true'] {
+    .show-log-field-action();
     color: var(--fc-primary-color) !important;
-    opacity: 1;
-    pointer-events: auto;
   }
 }
 .n9e-log-field-row:hover .n9e-log-field-actions,
 .n9e-log-field-row:has(:focus-visible) .n9e-log-field-actions {
-  button,
+  button.ant-btn.ant-btn-sm,
   .ant-tooltip-disabled-compatible-wrapper {
-    opacity: 1;
-    pointer-events: auto;
+    .show-log-field-action();
   }
 }
+.n9e-log-field-row:hover .n9e-log-field-label,
+.n9e-log-field-row:has(:focus-visible) .n9e-log-field-label {
+  padding-right: var(--log-field-actions-width, 0px);
+}
 @media (hover: none) {
+  .n9e-log-field-label {
+    padding-right: var(--log-field-actions-width, 0px);
+  }
   .n9e-log-field-actions {
-    button,
+    button.ant-btn.ant-btn-sm,
     .ant-tooltip-disabled-compatible-wrapper {
-      opacity: 1;
-      pointer-events: auto;
+      .show-log-field-action();
     }
   }
 }

@@ -13,7 +13,7 @@ import { HandleValueFilterParams } from '../../types';
 import { getDorisLogsQuery, getDorisSQLsPreview } from '../../../services';
 import { NAME_SPACE, TYPE_MAP } from '../../../constants';
 import { PinIcon } from './PinIcon';
-import { DefaultSearchIcon, UnDefaultSearchIcon } from './DefaultSearchIcon';
+import { DefaultSearchIcon } from './DefaultSearchIcon';
 
 interface IProps {
   organizeFields: string[];
@@ -145,6 +145,7 @@ export default function index(props: IProps) {
         }}
         renderStatsPopoverTitleExtra={({ index, stats, loading, setTopNVisible }) => {
           const active = stackByField === index.field;
+          const searchActive = defaultSearchField === index.field;
           const uniqueCount = Number(stats?.unique_count ?? 0);
           const disabled = !Number.isFinite(uniqueCount) || uniqueCount <= 1 || uniqueCount > 10;
           const title = active ? t('query.stack_tip_unpin') : loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin');
@@ -165,47 +166,20 @@ export default function index(props: IProps) {
                   }}
                 />
               </Tooltip>
-              {defaultSearchField && defaultSearchField === index.field ? (
-                <Tooltip title={t('query.default_search_tip_2')}>
-                  <Button
-                    icon={<UnDefaultSearchIcon className='text-[14px]' />}
-                    type='text'
-                    size='small'
-                    onClick={() => {
-                      setDefaultSearchField(undefined);
-                      setTopNVisible(false);
-                    }}
-                  />
-                </Tooltip>
-              ) : (
-                <Tooltip title={t('query.default_search_tip_1')}>
-                  <Button
-                    icon={<DefaultSearchIcon className='text-[14px]' />}
-                    type='text'
-                    size='small'
-                    onClick={() => {
-                      setDefaultSearchField(index.field);
-                      setTopNVisible(false);
-                    }}
-                  />
-                </Tooltip>
-              )}
-            </Space>
-          );
-        }}
-        renderFieldNameExtra={(field) => {
-          return (
-            <Space size={2}>
-              {defaultSearchField && defaultSearchField === field.field && (
-                <Tooltip title={t('query.default_search_by_tip')}>
-                  <DefaultSearchIcon
-                    className='text-[12px]'
-                    style={{
-                      color: 'var(--fc-primary-color)',
-                    }}
-                  />
-                </Tooltip>
-              )}
+              <Tooltip title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}>
+                <Button
+                  aria-label={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}
+                  aria-pressed={searchActive}
+                  className={searchActive ? 'n9e-log-field-search-active' : undefined}
+                  icon={<DefaultSearchIcon className='text-[14px]' />}
+                  type='text'
+                  size='small'
+                  onClick={() => {
+                    setDefaultSearchField(searchActive ? undefined : index.field);
+                    setTopNVisible(false);
+                  }}
+                />
+              </Tooltip>
             </Space>
           );
         }}

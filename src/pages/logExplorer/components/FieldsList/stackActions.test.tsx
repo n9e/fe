@@ -21,8 +21,9 @@ jest.mock('@/plugins/clickHouse/services', () => ({ getCKLogsQuery: jest.fn(), g
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 
 const field = { field: 'labels.alertname', type: 'string', indexable: true };
-function actions(Provider: any, active: boolean, uniqueCount?: number) {
+function actions(Provider: any, active: boolean, uniqueCount?: number, searchActive = false) {
   const setStackByField = jest.fn();
+  const setDefaultSearchField = jest.fn();
   render(
     <Form>
       <Provider
@@ -34,7 +35,8 @@ function actions(Provider: any, active: boolean, uniqueCount?: number) {
         onValueFilter={jest.fn()}
         stackByField={active ? field.field : undefined}
         setStackByField={setStackByField}
-        setDefaultSearchField={jest.fn()}
+        defaultSearchField={searchActive ? field.field : undefined}
+        setDefaultSearchField={setDefaultSearchField}
       />
     </Form>,
   );
@@ -46,7 +48,7 @@ function actions(Provider: any, active: boolean, uniqueCount?: number) {
       {props.renderStatsPopoverTitleExtra({ index: field, stats: uniqueCount === undefined ? undefined : { unique_count: uniqueCount }, setTopNVisible: jest.fn() })}
     </>,
   );
-  return { setStackByField, container };
+  return { setStackByField, setDefaultSearchField, container };
 }
 
 for (const [name, Provider] of [
@@ -78,3 +80,24 @@ for (const [name, Provider] of [
     });
   });
 }
+
+describe('Doris default search field', () => {
+  it('shows one selected search button after the stack button, without a separate field badge', () => {
+    const { container, setDefaultSearchField } = actions(DorisSidebar, false, undefined, true);
+    const button = screen.getByRole('button', { name: 'query.default_search_tip_2' });
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+    expect(button).toHaveClass('n9e-log-field-search-active');
+    expect(container.querySelectorAll('button')).toHaveLength(2);
+    expect(container.querySelectorAll('svg')).toHaveLength(2);
+    expect(container.querySelectorAll('button')[1]).toBe(button);
+    fireEvent.click(button);
+    expect(setDefaultSearchField).toHaveBeenCalledWith(undefined);
+  });
+  it('sets the field when the same search button is unselected', () => {
+    const { setDefaultSearchField } = actions(DorisSidebar, false, 3);
+    const button = screen.getByRole('button', { name: 'query.default_search_tip_1' });
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(button);
+    expect(setDefaultSearchField).toHaveBeenCalledWith(field.field);
+  });
+});

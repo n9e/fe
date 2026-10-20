@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider, Tag } from 'antd';
@@ -102,6 +102,7 @@ export default function FieldsItem(props: Props) {
   const statsRequest = useRef<Promise<StatsResult> | undefined>();
   const statsLoaded = useRef(false);
   const requestVersion = useRef(0);
+  const actionsRef = useRef<HTMLSpanElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
@@ -118,6 +119,25 @@ export default function FieldsItem(props: Props) {
       clearTimeout(hoverTimer.current);
     };
   }, [fetchStats, field.field]);
+
+  // Keep every action in a fixed slot; only reserve label space for visible actions.
+  useLayoutEffect(() => {
+    const actions = actionsRef.current;
+    const row = actions?.parentElement;
+    if (!actions || !row) return;
+    const measure = () => {
+      const bounds = actions.getBoundingClientRect();
+      const activeButtons = Array.from(actions.querySelectorAll('button[aria-pressed="true"]'));
+      const activeWidth = activeButtons.length ? bounds.right - Math.min(...activeButtons.map((button) => button.getBoundingClientRect().left)) + 8 : 0;
+      row.style.setProperty('--log-field-actions-width', `${bounds.width + 8}px`);
+      row.style.setProperty('--log-field-active-width', `${activeWidth}px`);
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(actions);
+    return () => observer.disconnect();
+  });
 
   const loadStats = () => {
     if (!enableStats || !fetchStats || !field.indexable || statsLoaded.current || statsRequest.current) return;
@@ -353,7 +373,7 @@ export default function FieldsItem(props: Props) {
       }}
     >
       <div
-        className='n9e-log-field-row cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'
+        className='n9e-log-field-row cursor-pointer min-h-[24px] flex items-center pl-2 pr-1 group'
         onMouseEnter={() => {
           if (renderStatsPopoverTitleExtra) hoverTimer.current = setTimeout(loadStats, 200);
         }}
@@ -396,7 +416,12 @@ export default function FieldsItem(props: Props) {
             </span>
           </span>
         </Tooltip>
-        <span className='n9e-log-field-actions flex items-center flex-shrink-0' onClick={(event) => event.stopPropagation()} onMouseDown={(event) => event.stopPropagation()}>
+        <span
+          ref={actionsRef}
+          className='n9e-log-field-actions flex items-center flex-shrink-0'
+          onClick={(event) => event.stopPropagation()}
+          onMouseDown={(event) => event.stopPropagation()}
+        >
           {field.indexable && renderStatsPopoverTitleExtra?.({ index: field, stats, loading: topNLoading, setTopNVisible })}
           <Tooltip title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
             <Button
