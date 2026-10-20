@@ -9,6 +9,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { useClickAway } from 'ahooks';
 
 import NavigableDrawer from '@/components/NavigableDrawer';
+import useScrollParent from './utils/useScrollParent';
 
 import { NAME_SPACE } from '../../constants';
 import { OnValueFilterParams, FieldValueType } from './types';
@@ -657,6 +658,7 @@ function Raw(props: Props) {
   }, [logsHash, timeField, logViewerDrawerState]);
 
   const drawerRef = useRef<HTMLDivElement>(null);
+  const scrollParent = useScrollParent(drawerRef);
 
   useClickAway(
     (event) => {
@@ -676,13 +678,15 @@ function Raw(props: Props) {
   );
 
   return (
-    <div className='min-h-0 h-full' ref={drawerRef}>
-      <div className='n9e-event-logs-table n9e-log-explorer-raw-table h-full min-h-0 flex flex-col'>
+    <div className='min-h-0' ref={drawerRef}>
+      <div className='n9e-event-logs-table n9e-log-explorer-raw-table min-h-0 flex flex-col'>
         <RawHeader showLines={showLines} showTime={showTime} timeColumnWidth={timeColumnWidth} sortOrder={sortOrder} onToggleSort={handleToggleSort} />
         {/* Virtuoso 默认 scroller 内联 height:100%，用 flex-1 包装层提供确定高度 */}
         <div className='flex-1 min-h-0'>
           <Virtuoso
             className='ant-table-body n9e-log-explorer-virtuoso-scroller'
+            customScrollParent={scrollParent === document.scrollingElement ? undefined : scrollParent}
+            useWindowScroll={scrollParent === document.scrollingElement}
             totalCount={data.length}
             computeItemKey={computeRowKey}
             overscan={400}

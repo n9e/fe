@@ -69,8 +69,8 @@ export default function Main(props: Props) {
   };
 
   return (
-    <div className='flex flex-col flex-1 h-full min-h-0'>
-      <div className='flex-shrink-0 relative z-10'>
+    <div data-log-query-main className='flex flex-col flex-1 h-full min-h-0'>
+      <div className='log-explorer-query-row flex-shrink-0 relative z-10'>
         <Row gutter={SIZE} wrap>
           <Col flex='none'>
             <Segmented

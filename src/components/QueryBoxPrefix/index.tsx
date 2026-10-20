@@ -19,7 +19,7 @@ interface QueryBoxPrefixProps {
 export default function QueryBoxPrefix({ prefix, boxRef, children }: QueryBoxPrefixProps) {
   if (!prefix) return <>{children}</>;
   return (
-    <div className='relative' ref={boxRef}>
+    <div className='relative' style={{ isolation: 'isolate' }} ref={boxRef}>
       {children}
       <span className='absolute left-2 top-0 z-10 flex h-8 items-center'>{prefix}</span>
     </div>

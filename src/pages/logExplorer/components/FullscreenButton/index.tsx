@@ -3,11 +3,7 @@ import IconFont from '@/components/IconFont';
 import { Button } from 'antd';
 import './style.less';
 
-// 创建 Context
-const FullscreenContext = React.createContext<{
-  viewModalVisible: boolean;
-  setViewModalVisible: (visible: boolean) => void;
-} | null>(null);
+import { FullscreenContext } from './context';
 
 // 自定义 hook 来使用 Context
 const useFullscreen = () => {
@@ -47,12 +43,14 @@ export default function FullscreenButton() {
   );
 }
 
-function Provider(props: { children: React.ReactNode }) {
+function Provider(props: { children: React.ReactNode; autoHeight?: boolean }) {
   const [viewModalVisible, setViewModalVisible] = React.useState(false);
 
   return (
     <FullscreenContext.Provider value={{ viewModalVisible, setViewModalVisible }}>
-      <div className={'flex flex-col h-full min-h-0' + (viewModalVisible ? ' n9e-logs-view-modal' : ' relative')}>{props.children}</div>
+      <div className={'flex flex-col min-h-0' + (props.autoHeight ? ' n9e-log-results-auto-height' : ' h-full') + (viewModalVisible ? ' n9e-logs-view-modal' : ' relative')}>
+        {props.children}
+      </div>
     </FullscreenContext.Provider>
   );
 }

@@ -1,4 +1,9 @@
 const en_US = {
+  histogram_pin_tip: 'Keep the chart and query controls above it visible while scrolling through logs, so you can compare logs with trends.',
+  histogram_unpin_tip: 'Let the chart and query controls above it scroll with the page again.',
+  histogram_pin: 'Pin chart',
+  histogram_unpin: 'Unpin chart',
+  sidebar: { title: 'Filters', expand: 'Expand filters', collapse: 'Collapse filters' },
   title: 'Log explorer',
   tab: {
     rename: 'Rename',
@@ -42,6 +47,8 @@ const en_US = {
   field_popover_info_alert: 'Click the value to view statistical charts and SQL',
   field_search_placeholder: 'Search fields',
   field_list: {
+    add_field: 'Add display field',
+    remove_field: 'Remove display field',
     show_fields: 'Show fields',
     available_fields: 'Available fields',
   },

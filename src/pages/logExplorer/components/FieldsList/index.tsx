@@ -25,6 +25,7 @@ interface Props {
   loading?: boolean;
   renderStatsPopoverTitleExtra?: (options: {
     index: Field;
+    loading?: boolean;
     stats?: {
       [index: string]: number;
     };

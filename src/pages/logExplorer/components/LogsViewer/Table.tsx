@@ -178,7 +178,7 @@ function Table(props: Props) {
   );
 
   return (
-    <div className='min-h-0 h-full' ref={drawerRef}>
+    <div className='min-h-0' ref={drawerRef}>
       <RDGTable
         className='n9e-event-logs-table'
         rowKeyGetter={(row) => {

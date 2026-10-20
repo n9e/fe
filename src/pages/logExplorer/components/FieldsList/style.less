@@ -4,3 +4,21 @@
     font-size: 14px;
   }
 }
+.n9e-log-field-actions {
+  opacity: 0;
+  pointer-events: none;
+  .ant-space {
+    gap: 0 !important;
+  }
+}
+.n9e-log-field-row:hover .n9e-log-field-actions,
+.n9e-log-field-row:focus-within .n9e-log-field-actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (hover: none) {
+  .n9e-log-field-actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
