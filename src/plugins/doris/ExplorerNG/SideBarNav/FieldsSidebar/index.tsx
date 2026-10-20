@@ -12,7 +12,7 @@ import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 import { HandleValueFilterParams } from '../../types';
 import { getDorisLogsQuery, getDorisSQLsPreview } from '../../../services';
 import { NAME_SPACE, TYPE_MAP } from '../../../constants';
-import { PinIcon, UnPinIcon } from './PinIcon';
+import { PinIcon } from './PinIcon';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from './DefaultSearchIcon';
 
 interface IProps {
@@ -144,10 +144,27 @@ export default function index(props: IProps) {
           }
         }}
         renderStatsPopoverTitleExtra={({ index, stats, loading, setTopNVisible }) => {
-          const unique_count = stats?.unique_count !== undefined ? _.toNumber(stats.unique_count) : 0;
-          const disabled = _.isNaN(unique_count) || unique_count <= 1 || unique_count > 10;
+          const active = stackByField === index.field;
+          const uniqueCount = Number(stats?.unique_count ?? 0);
+          const disabled = !Number.isFinite(uniqueCount) || uniqueCount <= 1 || uniqueCount > 10;
+          const title = active ? t('query.stack_tip_unpin') : loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin');
           return (
             <Space>
+              <Tooltip title={title}>
+                <Button
+                  aria-label={active ? t('query.stack_tip_unpin') : t('query.stack_tip_pin')}
+                  aria-pressed={active}
+                  disabled={!active && disabled}
+                  className={active ? 'n9e-log-field-stack-active' : undefined}
+                  icon={<PinIcon className='text-[14px]' />}
+                  type='text'
+                  size='small'
+                  onClick={() => {
+                    setStackByField(active ? undefined : index.field);
+                    setTopNVisible(false);
+                  }}
+                />
+              </Tooltip>
               {defaultSearchField && defaultSearchField === index.field ? (
                 <Tooltip title={t('query.default_search_tip_2')}>
                   <Button
@@ -173,32 +190,6 @@ export default function index(props: IProps) {
                   />
                 </Tooltip>
               )}
-              {stackByField && stackByField === index.field ? (
-                <Tooltip title={loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_unpin')}>
-                  <Button
-                    icon={<UnPinIcon className='text-[14px]' />}
-                    type='text'
-                    size='small'
-                    onClick={() => {
-                      setStackByField(undefined);
-                      setTopNVisible(false);
-                    }}
-                  />
-                </Tooltip>
-              ) : (
-                <Tooltip title={loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin')}>
-                  <Button
-                    disabled={disabled}
-                    icon={<PinIcon className='text-[14px]' />}
-                    type='text'
-                    size='small'
-                    onClick={() => {
-                      setStackByField(index.field);
-                      setTopNVisible(false);
-                    }}
-                  />
-                </Tooltip>
-              )}
             </Space>
           );
         }}
@@ -208,16 +199,6 @@ export default function index(props: IProps) {
               {defaultSearchField && defaultSearchField === field.field && (
                 <Tooltip title={t('query.default_search_by_tip')}>
                   <DefaultSearchIcon
-                    className='text-[12px]'
-                    style={{
-                      color: 'var(--fc-primary-color)',
-                    }}
-                  />
-                </Tooltip>
-              )}
-              {stackByField && stackByField === field.field && (
-                <Tooltip title={t('query.stack_group_by_tip')}>
-                  <PinIcon
                     className='text-[12px]'
                     style={{
                       color: 'var(--fc-primary-color)',

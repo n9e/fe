@@ -365,6 +365,7 @@ export default function FieldsItem(props: Props) {
         <Tooltip
           placement='left'
           mouseLeaveDelay={0}
+          overlayStyle={{ pointerEvents: 'none' }}
           title={
             <div className='break-all'>
               {field.type2 && (
@@ -398,16 +399,13 @@ export default function FieldsItem(props: Props) {
         <span className='n9e-log-field-actions flex items-center flex-shrink-0' onClick={(event) => event.stopPropagation()} onMouseDown={(event) => event.stopPropagation()}>
           {field.indexable && renderStatsPopoverTitleExtra?.({ index: field, stats, loading: topNLoading, setTopNVisible })}
           <Tooltip title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
-            <button
-              type='button'
+            <Button
+              type='text'
+              size='small'
               aria-label={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}
-              className='cursor-pointer w-[20px] flex-shrink-0 border-0 bg-transparent p-0 text-inherit'
-              onClick={() => {
-                onOperClick();
-              }}
-            >
-              {operIconMap[operType]}
-            </button>
+              icon={operIconMap[operType]}
+              onClick={onOperClick}
+            />
           </Tooltip>
         </span>
       </div>
