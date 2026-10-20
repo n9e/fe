@@ -40,6 +40,8 @@ export default function SideBar({ ns, children }: Props) {
         ancestor = ancestor.parentElement;
       }
       const height = Math.max(320, viewport.top + viewport.height - top - bottomInset);
+      // Sticky offsets start inside the scroll container's padding.
+      sidebar.style.setProperty('--log-sidebar-top', `${Math.max(0, top - viewport.top)}px`);
       sidebar.style.setProperty('--log-sidebar-height', `${height}px`);
     };
     const observer = new ResizeObserver(measure);

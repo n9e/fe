@@ -355,7 +355,7 @@ export default function LogsViewer(props: Props) {
           </>
         )}
         <FullscreenButton.Provider autoHeight={logMode !== 'clustering'}>
-          <div className='n9e-log-explorer-toolbar flex justify-between items-center gap-2 pb-2'>
+          <div className='n9e-log-explorer-toolbar flex justify-between items-center gap-1 pb-2'>
             <Space className='n9e-log-explorer-toolbar-main'>
               {addonBefore}
               {showLogMode && (
@@ -410,7 +410,11 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {logMode === 'clustering' && isClusteringEnabled ? <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} /> : optionsExtraRender}
+            {logMode === 'clustering' && isClusteringEnabled ? (
+              <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} />
+            ) : (
+              optionsExtraRender && <div className='n9e-log-explorer-toolbar-meta'>{optionsExtraRender}</div>
+            )}
           </div>
           <div
             ref={resultsRef}

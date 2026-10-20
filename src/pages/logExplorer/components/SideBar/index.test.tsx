@@ -58,12 +58,14 @@ it('fills the actual page viewport and preserves its height when the sticky side
     const height = () => sidebar.style.getPropertyValue('--log-sidebar-height');
     // Scroll viewport bottom (864) - row top (112) - card bottom padding (16).
     expect(height()).toBe('736px');
+    expect(sidebar.style.getPropertyValue('--log-sidebar-top')).toBe('16px');
     viewportHeight = 1000;
     fireEvent.resize(window);
     expect(height()).toBe('936px');
     screen.getByTestId('page').scrollTop = 350;
     fireEvent.resize(window);
     expect(height()).toBe('936px');
+    expect(sidebar.style.getPropertyValue('--log-sidebar-top')).toBe('16px');
     fireEvent.click(screen.getByRole('button', { name: 'sidebar.collapse' }));
     viewportHeight = 900;
     fireEvent.resize(window);

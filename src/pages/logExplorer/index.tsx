@@ -264,7 +264,7 @@ export default function index() {
       }
       doc={IS_ENT ? '/docs/content/flashcat/log/discover/what-is-log-discover/' : undefined}
     >
-      <div className='n9e'>
+      <div className='n9e n9e-log-explorer-page'>
         {_.map(items, (item, itemIndex) => {
           // P2 方案A：不在 LRU 保活范围内的页签直接卸载（切回时基于 formValues 恢复重查）
           if (!mountedKeys.has(item.key)) {

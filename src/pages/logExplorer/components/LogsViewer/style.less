@@ -58,6 +58,46 @@
 
 .n9e-log-explorer-toolbar {
   min-width: 0;
+  &:has(.n9e-log-explorer-toolbar-meta) {
+    flex-wrap: wrap;
+    // Keep all controls visible without spending a full extra row on small gaps.
+    .n9e-log-explorer-toolbar-main,
+    .n9e-log-explorer-toolbar-main .ant-space,
+    .n9e-log-explorer-toolbar-meta .ant-space {
+      gap: 4px !important;
+    }
+    .ant-pagination-total-text {
+      margin-right: 4px;
+    }
+    .ant-pagination-options-quick-jumper {
+      margin-left: 4px;
+    }
+  }
+}
+.n9e-log-explorer-toolbar-meta {
+  flex: 0 0 auto;
+  margin-left: auto;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+
+  .ant-pagination.ant-pagination-mini {
+    .ant-pagination-item,
+    .ant-pagination-prev,
+    .ant-pagination-next,
+    .ant-pagination-jump-prev,
+    .ant-pagination-jump-next {
+      min-width: 20px;
+    }
+    .ant-pagination-item a {
+      padding: 0 4px;
+    }
+    .ant-pagination-options-quick-jumper input {
+      width: 40px;
+      margin: 0 4px;
+      padding: 0 5px;
+    }
+  }
 }
 
 .n9e-log-explorer-toolbar-main {
