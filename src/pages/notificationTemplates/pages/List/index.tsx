@@ -10,6 +10,7 @@ import { Resizable } from 're-resizable';
 import PageLayout from '@/components/pageLayout';
 import { Document } from '@/components/DocumentDrawer';
 import EmptyGuide from '@/components/EmptyGuide';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 
 import { getItems } from '../../services';
 import { NS, CN } from '../../constants';
@@ -25,6 +26,7 @@ const DEFAULT_DOCUMENT_WIDTH = 600;
 const MIN_DOCUMENT_WIDTH = 100;
 
 export default function ListCpt() {
+  const showUsageDocs = useShowUsageDocs();
   const { t } = useTranslation(NS);
   const urlQuery = queryString.parse(useLocation().search);
   const [search, setSearch] = useState('');
@@ -211,13 +213,17 @@ export default function ListCpt() {
               <div className='flex h-full min-h-0 flex-col'>
                 {/* 字段行比原来的芯片高，且删掉字段表格后文档短了一多半，
                     这里把空间向字段面板倾斜 */}
-                <div className='flex min-h-0 flex-none flex-col' style={{ maxHeight: '62%' }}>
+                <div className='flex min-h-0 flex-none flex-col' style={{ maxHeight: showUsageDocs ? '62%' : '100%' }}>
                   <FieldsPanel />
                 </div>
-                <div className='my-3 h-px flex-none bg-fc-300' />
-                <div className='min-h-0 flex-1 best-looking-scroll'>
-                  <Document documentPath='/n9e-docs/notification-template' />
-                </div>
+                {showUsageDocs && (
+                  <>
+                    <div className='my-3 h-px flex-none bg-fc-300' />
+                    <div className='min-h-0 flex-1 best-looking-scroll'>
+                      <Document documentPath='/n9e-docs/notification-template' />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </Resizable>

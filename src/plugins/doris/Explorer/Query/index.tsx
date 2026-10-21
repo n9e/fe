@@ -21,6 +21,7 @@ import TableSelect from './TableSelect';
 import DateFieldSelect from './DateFieldSelect';
 import Content from './Content';
 import SQLFormatButton from './SQLFormatButton';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   disabled?: boolean;
@@ -151,17 +152,19 @@ export default function index(props: Props) {
           label={
             <Space>
               {t('query.query')}
-              <InfoCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                    darkMode,
-                    title: t('common:document_link'),
-                    type: 'iframe',
-                    documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
-                  });
-                }}
-              />
+              <UsageDocs>
+                <InfoCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                      darkMode,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
+                    });
+                  }}
+                />
+              </UsageDocs>
             </Space>
           }
         >

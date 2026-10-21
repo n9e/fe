@@ -44,6 +44,18 @@
     }
   }
 
+  // Restore the terminal control edge when an optional help addon renders nothing.
+  > .input-group-with-form-item-content:last-child {
+    .ant-input,
+    .ant-select .ant-select-selector,
+    .ant-picker,
+    .ant-input-number,
+    .ant-input-affix-wrapper {
+      border-top-right-radius: var(--fc-border-radius-base) !important;
+      border-bottom-right-radius: var(--fc-border-radius-base) !important;
+    }
+  }
+
   // 右侧 addonAfter：左侧连接处取消圆角，右侧保留
   > .ant-input-group-addon:last-child {
     border-radius: 0 var(--fc-border-radius-base) var(--fc-border-radius-base) 0 !important;

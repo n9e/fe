@@ -5,6 +5,7 @@ import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 import { IS_ENT } from '@/utils/constant';
 import { localizeDocUrl } from '@/utils/docUrl';
+import UsageDocs from '@/components/UsageDocs';
 import { withFlashcatFrom } from '@/utils/flashcatFrom';
 import { getN9eSiteDocUrl, isChineseLanguage } from '@/utils/n9eSiteDoc';
 
@@ -33,16 +34,18 @@ export default function DocLink({ link }: { link: string }) {
   const href = getProductDocumentHref(link, IS_ENT, i18n.language);
 
   return (
-    <Button
-      className='document-open-button page-layout-header-button'
-      size='small'
-      type='default'
-      icon={<IconFont type='icon-ic_book_one' />}
-      href={href}
-      target='_blank'
-      rel='noopener'
-    >
-      {t('common:product_document_title')}
-    </Button>
+    <UsageDocs>
+      <Button
+        className='document-open-button page-layout-header-button'
+        size='small'
+        type='default'
+        icon={<IconFont type='icon-ic_book_one' />}
+        href={href}
+        target='_blank'
+        rel='noopener'
+      >
+        {t('common:product_document_title')}
+      </Button>
+    </UsageDocs>
   );
 }

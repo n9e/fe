@@ -16,6 +16,7 @@ import DocumentDrawer from '../components/DocumentDrawer';
 import LegendInput from '../components/LegendInput';
 import { NAME_SPACE } from '../constants';
 import './style.less';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function MySQLQueryBuilder({ datasourceValue }) {
   const { t } = useTranslation('dashboard');
@@ -76,13 +77,15 @@ export default function MySQLQueryBuilder({ datasourceValue }) {
                         >
                           <Space>
                             {t(`${NAME_SPACE}:query.query`)}
-                            <InfoCircleOutlined
-                              onClick={() => {
-                                DocumentDrawer({
-                                  darkMode,
-                                });
-                              }}
-                            />
+                            <UsageDocs>
+                              <InfoCircleOutlined
+                                onClick={() => {
+                                  DocumentDrawer({
+                                    darkMode,
+                                  });
+                                }}
+                              />
+                            </UsageDocs>
                           </Space>
                           <Form.Item name={[field.name, 'query', 'mode']} initialValue={type === 'timeseries' ? 'timeSeries' : 'raw'} noStyle>
                             <Select>

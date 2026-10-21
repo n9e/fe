@@ -22,6 +22,7 @@ import SideBarNav from './SideBarNav';
 import Main from './Main';
 
 import './style.less';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   tabKey: string;
@@ -293,28 +294,30 @@ export default function index(props: Props) {
             />
           </Space>
         </div>
-        <div>
-          <Trans
-            ns={NAME_SPACE}
-            i18nKey='query.warn_message_content_4'
-            components={{
-              a: (
-                <a
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                      darkMode,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: `https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-ck-discover/`,
-                      anchor: '#2-时间宏',
-                    });
-                  }}
-                />
-              ),
-            }}
-          />
-        </div>
+        <UsageDocs>
+          <div>
+            <Trans
+              ns={NAME_SPACE}
+              i18nKey='query.warn_message_content_4'
+              components={{
+                a: (
+                  <a
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                        darkMode,
+                        title: t('common:document_link'),
+                        type: 'iframe',
+                        documentPath: `https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-sql-mode-in-ck-discover/`,
+                        anchor: '#2-时间宏',
+                      });
+                    }}
+                  />
+                ),
+              }}
+            />
+          </div>
+        </UsageDocs>
       </Modal>
     </>
   );

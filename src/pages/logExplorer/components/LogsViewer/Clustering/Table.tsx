@@ -15,6 +15,7 @@ import { Field } from '@/plugins/doris/ExplorerNG/types';
 import RDGTable from '../components/Table';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { PatternPopover, ConstPopover } from './Popover';
+import UsageDocs from '@/components/UsageDocs';
 interface Props {
   onValueFilter: (condition: OnValueFilterParams) => void;
   indexData: Field[];
@@ -337,21 +338,23 @@ export default function TableCpt(props: Props) {
           dropdownMatchSelectWidth={false}
         />
       </div>
-      <Button
-        className='document-open-button'
-        type='link'
-        size='small'
-        icon={<IconFont type='icon-ic_book_one' />}
-        onClick={() =>
-          DocumentDrawer({
-            title: t('common:page_help'),
-            type: 'iframe',
-            documentPath: '/docs/content/flashcat/log/discover/log-clustering/',
-          })
-        }
-      >
-        {t('common:page_help')}
-      </Button>
+      <UsageDocs>
+        <Button
+          className='document-open-button'
+          type='link'
+          size='small'
+          icon={<IconFont type='icon-ic_book_one' />}
+          onClick={() =>
+            DocumentDrawer({
+              title: t('common:page_help'),
+              type: 'iframe',
+              documentPath: '/docs/content/flashcat/log/discover/log-clustering/',
+            })
+          }
+        >
+          {t('common:page_help')}
+        </Button>
+      </UsageDocs>
     </Space>
   );
 
