@@ -90,9 +90,7 @@ export default function FieldsItem(props: Props) {
   const [topNumber, setTopNumber] = useState<number>(DEFAULT_TOP_NUMBER);
   const [topNData, setTopNData] = useState<any[]>([]);
   const [topNLoading, setTopNLoading] = useState<boolean>(false);
-  const [stats, setStats] = useState<{
-    [index: string]: number;
-  }>();
+  const [stats, setStats] = useState<StatsResult['stats']>();
 
   const statsRequest = useRef<Promise<StatsResult> | undefined>();
   const statsLoaded = useRef(false);
