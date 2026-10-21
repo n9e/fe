@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Drawer, Form, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +17,10 @@ export default function AddDrawer(props: Props) {
   const { visible, onOk, onClose } = props;
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    if (!visible) form.resetFields();
+  }, [form, visible]);
+
   return (
     <Drawer
       width={600}
@@ -26,7 +30,6 @@ export default function AddDrawer(props: Props) {
       onClose={onClose}
       footer={
         <Space>
-          <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
           <Button
             type='primary'
             onClick={() => {
@@ -37,8 +40,9 @@ export default function AddDrawer(props: Props) {
               });
             }}
           >
-            {t('common:btn.save')}
+            {t('common:btn.ok')}
           </Button>
+          <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
         </Space>
       }
       className='n9e-antd-drawer'

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 import { getNotificationChannelTypes } from '@/pages/notificationChannels/constants';
+import { DrawerFooterContext, useDrawerFooter } from '@/components/DrawerFooterContext';
 
 import { getItem as getNotificationRule, putItem as putNotificationRule, postItems as createNotificationRules, RuleItem } from '../../services';
 import { NS, CN } from '../../constants';
@@ -161,6 +162,8 @@ function Content(props: ContentProps) {
   const [createDrawerVisible, setCreateDrawerVisible] = useState(false);
   const [createSaving, setCreateSaving] = useState(false);
   const [quickCreateVisible, setQuickCreateVisible] = useState(false);
+  const { footer: viewFooter, context: viewFooterContext } = useDrawerFooter();
+  const { footer: createFooter, context: createFooterContext } = useDrawerFooter();
   const [shouldRestoreDropdownAfterDrawerClose, setShouldRestoreDropdownAfterDrawerClose] = useState(false);
 
   const filteredRules = useMemo(() => {
@@ -351,25 +354,28 @@ function Content(props: ContentProps) {
         afterVisibleChange={handleDrawerAfterVisibleChange}
         onClose={handleCloseViewDrawer}
         visible={viewDrawerVisible}
+        footer={viewFooter}
         className='n9e-antd-drawer'
       >
-        <div className={`n9e ${CN}`}>
-          {viewDrawerData ? (
-            <NotificationRuleForm
-              initialValues={viewDrawerData}
-              onOk={(values) => {
-                putNotificationRule(values).then(() => {
-                  message.success(t('common:success.edit'));
-                  handleCloseViewDrawer();
-                  refresh?.();
-                });
-              }}
-              onCancel={handleCloseViewDrawer}
-            />
-          ) : (
-            <Spin spinning />
-          )}
-        </div>
+        <DrawerFooterContext.Provider value={viewFooterContext}>
+          <div className={`n9e ${CN}`}>
+            {viewDrawerData ? (
+              <NotificationRuleForm
+                initialValues={viewDrawerData}
+                onOk={(values) => {
+                  putNotificationRule(values).then(() => {
+                    message.success(t('common:success.edit'));
+                    handleCloseViewDrawer();
+                    refresh?.();
+                  });
+                }}
+                onCancel={handleCloseViewDrawer}
+              />
+            ) : (
+              <Spin spinning />
+            )}
+          </div>
+        </DrawerFooterContext.Provider>
       </Drawer>
       <Drawer
         title={t('title')}
@@ -379,32 +385,35 @@ function Content(props: ContentProps) {
         afterVisibleChange={handleDrawerAfterVisibleChange}
         onClose={handleCloseCreateDrawer}
         visible={createDrawerVisible}
+        footer={createFooter}
         className='n9e-antd-drawer'
       >
-        <div className={`n9e ${CN}`}>
-          <NotificationRuleForm
-            disabled={createSaving}
-            onOk={(values) => {
-              setCreateSaving(true);
-              createNotificationRules([values])
-                .then((dat) => {
-                  message.success(t('common:success.add'));
-                  handleCloseCreateDrawer();
-                  refresh?.();
-                  // 自动选中新建的规则，免去用户再去下拉里手动勾选
-                  const first = Array.isArray(dat) ? dat[0] : undefined;
-                  const newId = typeof first === 'object' ? Number(first?.id) : Number(first);
-                  if (Number.isFinite(newId) && newId > 0) {
-                    selectRule(newId);
-                  }
-                })
-                .finally(() => {
-                  setCreateSaving(false);
-                });
-            }}
-            onCancel={handleCloseCreateDrawer}
-          />
-        </div>
+        <DrawerFooterContext.Provider value={createFooterContext}>
+          <div className={`n9e ${CN}`}>
+            <NotificationRuleForm
+              disabled={createSaving}
+              onOk={(values) => {
+                setCreateSaving(true);
+                createNotificationRules([values])
+                  .then((dat) => {
+                    message.success(t('common:success.add'));
+                    handleCloseCreateDrawer();
+                    refresh?.();
+                    // 自动选中新建的规则，免去用户再去下拉里手动勾选
+                    const first = Array.isArray(dat) ? dat[0] : undefined;
+                    const newId = typeof first === 'object' ? Number(first?.id) : Number(first);
+                    if (Number.isFinite(newId) && newId > 0) {
+                      selectRule(newId);
+                    }
+                  })
+                  .finally(() => {
+                    setCreateSaving(false);
+                  });
+              }}
+              onCancel={handleCloseCreateDrawer}
+            />
+          </div>
+        </DrawerFooterContext.Provider>
       </Drawer>
       <QuickCreateModal visible={quickCreateVisible} onCancel={() => setQuickCreateVisible(false)} onSuccess={handleQuickCreateSuccess} />
     </>
