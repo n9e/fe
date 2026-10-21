@@ -18,6 +18,7 @@ import Relabel from '@/pages/eventPipeline/pages/Form/Processor/Relabel';
 import Callback from '@/pages/eventPipeline/pages/Form/Processor/Callback';
 import EventDrop from '@/pages/eventPipeline/pages/Form/Processor/EventDrop';
 import AISummary from '@/pages/eventPipeline/pages/Form/Processor/AISummary';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   disabled?: boolean;
@@ -94,20 +95,22 @@ export default function Processor(props: Props) {
           <Space>
             {t('processor.typ')}
             {documentPathMap[processorType] && (
-              <a
-                onClick={(event) => {
-                  event.stopPropagation();
-                  DocumentDrawer({
-                    language: i18n.language,
-                    darkMode,
-                    type: 'iframe',
-                    title: t('processor.help_btn'),
-                    documentPath: documentPathMap[processorType],
-                  });
-                }}
-              >
-                {t('processor.help_btn')}
-              </a>
+              <UsageDocs>
+                <a
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    DocumentDrawer({
+                      language: i18n.language,
+                      darkMode,
+                      type: 'iframe',
+                      title: t('processor.help_btn'),
+                      documentPath: documentPathMap[processorType],
+                    });
+                  }}
+                >
+                  {t('processor.help_btn')}
+                </a>
+              </UsageDocs>
             )}
           </Space>
         }

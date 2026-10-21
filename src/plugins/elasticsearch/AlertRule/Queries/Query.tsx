@@ -25,6 +25,7 @@ import DateField from './DateField';
 import AdvancedSettings from './AdvancedSettings';
 import IndexPatternSelect from './IndexPatternSelect';
 import GroupBy from './GroupBy';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   hideIndexPattern?: boolean;
@@ -223,19 +224,21 @@ export default function Query(props: Props) {
                     label={
                       <span>
                         {t('datasource:es.filter')}{' '}
-                        <Tooltip title={t('common:page_help')}>
-                          <QuestionCircleOutlined
-                            onClick={() => {
-                              DocumentDrawer({
-                                language: i18n.language,
-                                darkMode,
-                                title: t('common:page_help'),
-                                type: 'iframe',
-                                documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/es/',
-                              });
-                            }}
-                          />
-                        </Tooltip>
+                        <UsageDocs>
+                          <Tooltip title={t('common:page_help')}>
+                            <QuestionCircleOutlined
+                              onClick={() => {
+                                DocumentDrawer({
+                                  language: i18n.language,
+                                  darkMode,
+                                  title: t('common:page_help'),
+                                  type: 'iframe',
+                                  documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/es/',
+                                });
+                              }}
+                            />
+                          </Tooltip>
+                        </UsageDocs>
                       </span>
                     }
                     addonAfter='Lucene'

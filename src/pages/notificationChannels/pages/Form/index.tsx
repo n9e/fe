@@ -10,6 +10,7 @@ import { scrollToFirstError } from '@/utils';
 import { getPageFromSearch } from '@/utils/urlPage';
 import { Document } from '@/components/DocumentDrawer';
 import Splitter from '@/components/Splitter';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 
 import { NS, getChannelTypeMeta } from '../../constants';
 import { ChannelItem } from '../../types';
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export default function FormCpt(props: Props) {
+  const showUsageDocs = useShowUsageDocs();
   const { t } = useTranslation(NS);
   const location = useLocation();
   const [form] = Form.useForm();
@@ -44,7 +46,7 @@ export default function FormCpt(props: Props) {
   return (
     <Form form={form} layout='vertical' className='h-full'>
       <div className='h-full bg-fc-100'>
-        <Splitter>
+        <Splitter hideRight={!showUsageDocs}>
           <Splitter.Panel>
             <div className='h-full flex flex-col justify-between overflow-hidden'>
               <div className='h-full min-h-0 best-looking-scroll'>
