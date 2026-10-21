@@ -1,3 +1,4 @@
+import React from 'react';
 import i18next from 'i18next';
 import { Modal } from 'antd';
 import { createDomFeedback, getSharedActionRuntime } from '@flashcatcloud/ai-kit/actions';
@@ -23,8 +24,37 @@ export function confirmUiAction(request: ConfirmRequest): Promise<boolean> {
       resolve(approved);
     };
 
+    const separatorIndex = request.prompt.indexOf('\n\n');
+    const title = separatorIndex === -1 ? request.prompt : request.prompt.slice(0, separatorIndex);
+    const detail = separatorIndex === -1 ? '' : request.prompt.slice(separatorIndex + 2);
+
     Modal.confirm({
-      title: request.prompt,
+      title,
+      ...(detail
+        ? {
+            width: 720,
+            content: React.createElement(
+              'div',
+              {
+                style: {
+                  marginTop: 16,
+                  maxHeight: 320,
+                  overflow: 'auto',
+                  padding: 12,
+                  border: '1px solid var(--fc-border-color, #d9d9d9)',
+                  borderRadius: 6,
+                  background: 'var(--fc-fill-2, #f5f5f5)',
+                  fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  whiteSpace: 'pre-wrap',
+                  overflowWrap: 'anywhere',
+                },
+              },
+              detail,
+            ),
+          }
+        : {}),
       okText: request.actionLabel || i18next.t('common:btn.ok'),
       cancelText: i18next.t('common:btn.cancel'),
       closable: true,
