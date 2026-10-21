@@ -12,19 +12,15 @@ export interface StatsResult {
     percent: number;
     count?: number;
   }[];
-  stats?: {
-    min: number;
-    max: number;
-    avg: number;
-    sum: number;
-    unique_count: number;
-  };
+  // Sources return different subsets, or no metrics on failure. Display values
+  // can be formatted strings; stack validation uses uniqueCount above instead.
+  stats?: Record<string, number | string>;
 }
 
 export interface FieldActionOptions {
   index: Field;
   loading?: boolean;
-  stats?: { [index: string]: number };
+  stats?: StatsResult['stats'];
   getUniqueCount?: () => Promise<number>;
   statsScope?: object;
   setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;

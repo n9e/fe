@@ -16,7 +16,7 @@ function setup(filters: any[] = []) {
   const executeQuery = jest.fn();
   render(
     <Form>
-      <FiltersBuilder indexData={[{ field: 'service', type: 'keyword' }]} filters={filters} onChange={onChange} executeQuery={executeQuery} />
+      <FiltersBuilder indexData={[{ field: 'service', type: 'keyword', indexable: true }]} filters={filters} onChange={onChange} executeQuery={executeQuery} />
     </Form>,
   );
   return { onChange, executeQuery };

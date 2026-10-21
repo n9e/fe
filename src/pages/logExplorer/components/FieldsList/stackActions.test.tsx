@@ -137,7 +137,16 @@ for (const [name, Provider, query] of [
         <Form.Item name='refreshFlag' hidden>
           <input />
         </Form.Item>
-        <Provider data={[]} loading={false} organizeFields={[]} setOrganizeFields={jest.fn()} executeQuery={jest.fn()} onValueFilter={jest.fn()} setStackByField={jest.fn()} />
+        <Provider
+          data={[]}
+          loading={false}
+          organizeFields={[]}
+          setOrganizeFields={jest.fn()}
+          executeQuery={jest.fn()}
+          onValueFilter={jest.fn()}
+          setStackByField={jest.fn()}
+          setDefaultSearchField={jest.fn()}
+        />
       </Form>,
     );
     expect(query).not.toHaveBeenCalled();
