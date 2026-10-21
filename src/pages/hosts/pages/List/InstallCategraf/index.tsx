@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
+import UsageDocs from '@/components/UsageDocs';
 
 import { localizeDocUrl } from '@/utils/docUrl';
 
@@ -76,11 +77,7 @@ export default function InstallCategraf(props: Props) {
         </Form.Item>
 
         {meta.basic_auth && (
-          <Form.Item
-            label={t('install.basic_auth_label')}
-            validateStatus={authFilled ? undefined : 'warning'}
-            help={authFilled ? undefined : t('install.basic_auth_tip')}
-          >
+          <Form.Item label={t('install.basic_auth_label')} validateStatus={authFilled ? undefined : 'warning'} help={authFilled ? undefined : t('install.basic_auth_tip')}>
             <Space>
               <Input value={authUser} onChange={(e) => setAuthUser(e.target.value)} placeholder={t('install.basic_auth_user')} />
               <Input.Password value={authPass} onChange={(e) => setAuthPass(e.target.value)} placeholder={t('install.basic_auth_pass')} />
@@ -113,11 +110,7 @@ export default function InstallCategraf(props: Props) {
               type='success'
               showIcon
               icon={<CheckCircleFilled />}
-              message={
-                _.isEmpty(newIdents)
-                  ? t('install.detected_generic')
-                  : t('install.detected', { count: newIdents.length, idents: _.join(_.take(newIdents, 3), ', ') })
-              }
+              message={_.isEmpty(newIdents) ? t('install.detected_generic') : t('install.detected', { count: newIdents.length, idents: _.join(_.take(newIdents, 3), ', ') })}
               description={
                 <>
                   <div>{t('install.detected_next')}</div>
@@ -137,9 +130,11 @@ export default function InstallCategraf(props: Props) {
                     <Button size='small' onClick={restart}>
                       {t('install.retry')}
                     </Button>
-                    <a href={localizeDocUrl(CATEGRAF_TROUBLESHOOT_DOC, i18n.language)} target='_blank' rel='noreferrer'>
-                      {t('install.troubleshoot_doc')}
-                    </a>
+                    <UsageDocs>
+                      <a href={localizeDocUrl(CATEGRAF_TROUBLESHOOT_DOC, i18n.language)} target='_blank' rel='noreferrer'>
+                        {t('install.troubleshoot_doc')}
+                      </a>
+                    </UsageDocs>
                   </Space>
                 </>
               }

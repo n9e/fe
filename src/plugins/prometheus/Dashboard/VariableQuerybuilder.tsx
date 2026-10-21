@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function VariableQuerybuilder() {
   const { t, i18n } = useTranslation('dashboard');
@@ -16,18 +17,20 @@ export default function VariableQuerybuilder() {
       label={
         <Space size={4}>
           {t('var.definition')}
-          <Tooltip title={t('common:click_to_view_doc')}>
-            <QuestionCircleOutlined
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language,
-                  darkMode,
-                  title: t('var.definition'),
-                  documentPath: '/n9e-docs/dashboards/variables/query/prometheus',
-                });
-              }}
-            />
-          </Tooltip>
+          <UsageDocs>
+            <Tooltip title={t('common:click_to_view_doc')}>
+              <QuestionCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language,
+                    darkMode,
+                    title: t('var.definition'),
+                    documentPath: '/n9e-docs/dashboards/variables/query/prometheus',
+                  });
+                }}
+              />
+            </Tooltip>
+          </UsageDocs>
         </Space>
       }
       name='definition'

@@ -13,6 +13,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { NAME_SPACE, DEFAULT_QUERY } from '../../constants';
 import GraphPreview from './GraphPreview';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   prefixField?: any;
@@ -67,20 +68,22 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                             label={
                               <Space>
                                 {t('explorer.query')}
-                                <Tooltip title={t('common:click_to_view_doc')}>
-                                  <QuestionCircleOutlined
-                                    onClick={() => {
-                                      DocumentDrawer({
-                                        language: i18n.language,
-                                        darkMode,
-                                        title: t('common:page_help'),
-                                        type: 'iframe',
-                                        documentPath:
-                                          'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
-                                      });
-                                    }}
-                                  />
-                                </Tooltip>
+                                <UsageDocs>
+                                  <Tooltip title={t('common:click_to_view_doc')}>
+                                    <QuestionCircleOutlined
+                                      onClick={() => {
+                                        DocumentDrawer({
+                                          language: i18n.language,
+                                          darkMode,
+                                          title: t('common:page_help'),
+                                          type: 'iframe',
+                                          documentPath:
+                                            'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/rules/alert-rules/query-data/victorialogs/',
+                                        });
+                                      }}
+                                    />
+                                  </Tooltip>
+                                </UsageDocs>
                               </Space>
                             }
                           >

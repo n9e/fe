@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React from 'react';
 import { Form, Row, Col, Input, Button, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -58,9 +59,11 @@ export default function TDengineQueryBuilder({ datasourceValue }) {
                                 title={
                                   <span>
                                     {t('db_tdengine:query.query_tip1')}
-                                    <a target='_blank' href='https://docs.taosdata.com/basic/query/'>
-                                      {t('db_tdengine:query.query_tip2')}
-                                    </a>
+                                    <UsageDocs>
+                                      <a target='_blank' href='https://docs.taosdata.com/basic/query/'>
+                                        {t('db_tdengine:query.query_tip2')}
+                                      </a>
+                                    </UsageDocs>
                                   </span>
                                 }
                               >

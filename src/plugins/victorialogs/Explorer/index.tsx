@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import _ from 'lodash';
@@ -76,9 +77,11 @@ export default function Explorer(props: IProps) {
               }}
             >
               <Space>
-                <a target='_blank' href='https://docs.victoriametrics.com/victorialogs/logsql/'>
-                  {t('explorer.query_lanaguage_docs')}
-                </a>
+                <UsageDocs>
+                  <a target='_blank' href='https://docs.victoriametrics.com/victorialogs/logsql/'>
+                    {t('explorer.query_lanaguage_docs')}
+                  </a>
+                </UsageDocs>
                 <Share tooltip={t('explorer:share_tip_2')} />
                 <Form.Item name={['range']} initialValue={{ start: 'now-1h', end: 'now' }} noStyle>
                   <TimeRangePicker dateFormat='YYYY-MM-DD HH:mm:ss' />

@@ -18,6 +18,7 @@ import { getFieldNames, getFieldValues } from '../services';
 import { FieldNameSuggestion, VictoriaLogsAggregation, VictoriaLogsFilter, VictoriaLogsMetricBuilderState, VictoriaLogsRawBuilderState } from '../types';
 import { renderLogsQL, renderMetricLogsQL } from '../utils/logsQL';
 import getOperatorsByFieldType from '../utils/getOperatorsByFieldType';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   visible: boolean;
@@ -928,20 +929,22 @@ export default function Builder(props: Props) {
       </Form>
       <div className='absolute top-2 right-2'>
         <Space size={0}>
-          <Button
-            type='link'
-            onClick={(e) => {
-              e.stopPropagation();
-              DocumentDrawer({
-                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                title: t('common:document_title'),
-                type: 'iframe',
-                documentPath: VICTORIALOGS_LOGS_QUERY_DOC_URL,
-              });
-            }}
-          >
-            {t('common:document_title')}
-          </Button>
+          <UsageDocs>
+            <Button
+              type='link'
+              onClick={(e) => {
+                e.stopPropagation();
+                DocumentDrawer({
+                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                  title: t('common:document_title'),
+                  type: 'iframe',
+                  documentPath: VICTORIALOGS_LOGS_QUERY_DOC_URL,
+                });
+              }}
+            >
+              {t('common:document_title')}
+            </Button>
+          </UsageDocs>
           <Tooltip title={queryBuilderPinned ? t('builder.unpin') : t('builder.pin')}>
             <Button
               type='text'

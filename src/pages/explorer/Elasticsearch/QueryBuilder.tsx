@@ -16,6 +16,7 @@ import ConditionHistoricalRecords from '@/components/HistoricalRecords/Condition
 import { getIndices, getFullFields, Field } from './services';
 import InputFilter from './InputFilter';
 import { CACHE_KEY_MAP, SYNTAX_OPTIONS } from './index';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   onExecute: () => void;
@@ -148,19 +149,21 @@ export default function QueryBuilder(props: Props) {
           label={
             <>
               {t('datasource:es.filter')}{' '}
-              <Tooltip title={t('common:page_help')}>
-                <QuestionCircleOutlined
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language,
-                      darkMode,
-                      title: t('common:page_help'),
-                      type: 'iframe',
-                      documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/logs/elasticserch/',
-                    });
-                  }}
-                />
-              </Tooltip>
+              <UsageDocs>
+                <Tooltip title={t('common:page_help')}>
+                  <QuestionCircleOutlined
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language,
+                        darkMode,
+                        title: t('common:page_help'),
+                        type: 'iframe',
+                        documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/logs/elasticserch/',
+                      });
+                    }}
+                  />
+                </Tooltip>
+              </UsageDocs>
             </>
           }
           addonAfter={

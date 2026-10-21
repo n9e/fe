@@ -8,6 +8,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 
 // @ts-ignore
 import { proDocumentPathMap } from 'plus:/constants';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 
 interface Props {
   datasourceCate?: string;
@@ -25,8 +26,9 @@ export default function index(props: Props) {
   const { t, i18n } = useTranslation('explorer');
   const { darkMode } = useContext(CommonStateContext);
   const { datasourceCate } = props;
+  const showUsageDocs = useShowUsageDocs();
 
-  if (!datasourceCate || (datasourceCate && !documentPathMap[datasourceCate])) return null;
+  if (!showUsageDocs || !datasourceCate || (datasourceCate && !documentPathMap[datasourceCate])) return null;
 
   return (
     <span className='ant-input-group-addon'>

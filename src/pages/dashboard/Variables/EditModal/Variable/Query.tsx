@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useState, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { Form, Input, InputNumber, Row, Col, Switch } from 'antd';
@@ -21,6 +22,7 @@ import { getBuiltInVariables } from '../../utils/replaceTemplateVariables';
 import Querybuilder from '../Querybuilder';
 import datasource from '../../datasource';
 import Preview from '../Preview';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 
 interface Props {
   formatedReg: string;
@@ -38,6 +40,7 @@ interface DatasourceOption {
 }
 
 export default function Query(props: Props) {
+  const showUsageDocs = useShowUsageDocs();
   const { t, i18n } = useTranslation('dashboard');
   const [range] = useGlobalState('range');
   const { datasourceCateOptions, datasourceList, darkMode } = useContext(CommonStateContext);
@@ -156,26 +159,30 @@ export default function Query(props: Props) {
                 components={{ a: <a target='_blank' href='https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions' /> }}
               />
             </div>
-            <div>
-              <Trans
-                ns='dashboard'
-                i18nKey='var.reg_tip2'
-                components={{
-                  a: (
-                    <a
-                      onClick={() => {
-                        DocumentDrawer({
-                          language: i18n.language,
-                          darkMode,
-                          title: t('common:document_link'),
-                          documentPath: '/n9e-docs/dashboards/variables/named-text-and-value-capture-groups',
-                        });
-                      }}
-                    />
-                  ),
-                }}
-              />
-            </div>
+            {showUsageDocs && (
+              <div>
+                <Trans
+                  ns='dashboard'
+                  i18nKey='var.reg_tip2'
+                  components={{
+                    a: (
+                      <UsageDocs>
+                        <a
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('common:document_link'),
+                              documentPath: '/n9e-docs/dashboards/variables/named-text-and-value-capture-groups',
+                            });
+                          }}
+                        />
+                      </UsageDocs>
+                    ),
+                  }}
+                />
+              </div>
+            )}
             <div>{t('var.reg_object_tip')}</div>
           </>
         }

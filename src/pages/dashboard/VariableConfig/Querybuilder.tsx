@@ -15,6 +15,7 @@ import { replaceExpressionVars, getVaraiableSelected } from './constant';
 
 // @ts-ignore
 import VariableQuerybuilderPro from 'plus:/parcels/Dashboard/VariableQuerybuilder';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   dashboardId: string;
@@ -48,20 +49,22 @@ export default function Querybuilder(props: Props) {
             <Space>
               {t('var.definition')}
               {_.includes(['prometheus', 'elasticsearch'], datasourceCate) && (
-                <QuestionCircleOutlined
-                  onClick={() => {
-                    if (datasourceCate === 'prometheus') {
-                      window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
-                    } else if (datasourceCate === 'elasticsearch') {
-                      DocumentDrawer({
-                        language: i18n.language,
-                        darkMode,
-                        title: t('var.definition'),
-                        documentPath: '/n9e-docs/elasticsearch-template-variables',
-                      });
-                    }
-                  }}
-                />
+                <UsageDocs>
+                  <QuestionCircleOutlined
+                    onClick={() => {
+                      if (datasourceCate === 'prometheus') {
+                        window.open('https://flashcat.cloud/media/?type=夜莺监控&source=aHR0cHM6Ly9kb3dubG9hZC5mbGFzaGNhdC5jbG91ZC9uOWUtMTMtZGFzaGJvYXJkLWludHJvLm1wNA==');
+                      } else if (datasourceCate === 'elasticsearch') {
+                        DocumentDrawer({
+                          language: i18n.language,
+                          darkMode,
+                          title: t('var.definition'),
+                          documentPath: '/n9e-docs/elasticsearch-template-variables',
+                        });
+                      }
+                    }}
+                  />
+                </UsageDocs>
               )}
             </Space>
           }
