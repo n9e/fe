@@ -7,21 +7,10 @@
   min-height: 320px;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--fc-border-color);
-  border-radius: var(--fc-border-radius-base);
   background: var(--fc-fill-2);
-  .n9e-log-sidebar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 40px;
-    padding: 0 12px;
-    border-bottom: 1px solid var(--fc-border-color);
-  }
   .n9e-log-sidebar-body {
     display: flex;
     flex-direction: column;
-    padding: 12px;
     flex: 1;
     min-height: 0;
   }
@@ -49,4 +38,22 @@
 // Reserve space only beside the top query controls, not beside the results below.
 .n9e-log-sidebar-collapsed ~ * .log-explorer-query-row {
   margin-left: 42px;
+}
+
+.n9e-log-sidebar-toggle.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+.n9e-log-view-select-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  > :first-child {
+    flex: 1;
+    min-width: 0;
+  }
 }

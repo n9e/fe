@@ -44,6 +44,7 @@ export default function ChatPanel(props: IAiChatProps) {
     queryAction,
     promptList,
     initialMessage,
+    continuationMessage,
     initialSkill,
     onExecuteQueryForQueryContent,
     onChatChange,
@@ -489,6 +490,7 @@ export default function ChatPanel(props: IAiChatProps) {
   }, [cancelScheduledStreamRender, cleanupPolling, stopStream, slim]);
 
   const initialMessageSentRef = useRef(false);
+  const sentContinuationIdsRef = useRef(new Set<string | number>());
   const acceptedChatIdsRef = useRef(new Set<string>());
 
   const createNewChat = useCallback(
@@ -641,6 +643,15 @@ export default function ChatPanel(props: IAiChatProps) {
       sendUserMessage(undefined, initialMessage);
     }
   }, [initialMessage, sendUserMessage]);
+
+  useEffect(() => {
+    if (!continuationMessage?.content.trim() || sentContinuationIdsRef.current.has(continuationMessage.id) || submitting || pendingTurnRef.current || !activeRef.current) {
+      return;
+    }
+
+    sentContinuationIdsRef.current.add(continuationMessage.id);
+    void sendUserMessage(undefined, continuationMessage.content);
+  }, [continuationMessage, sendUserMessage, submitting]);
 
   const handleStop = useCallback(() => {
     const pending = pendingTurnRef.current;

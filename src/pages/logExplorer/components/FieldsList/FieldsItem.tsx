@@ -9,7 +9,7 @@ import { PRIMARY_COLOR } from '@/utils/constant';
 
 import { NAME_SPACE } from '../../constants';
 import renderFieldValue from '../../utils/renderFieldValue';
-import { Field, StatsResult } from './types';
+import { Field, StatsResult, FieldActionOptions } from './types';
 import QuickViewPopover from './QuickViewPopover';
 
 const DEFAULT_TOP_NUMBER = 5;
@@ -23,14 +23,9 @@ interface Props {
   disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: string; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
-  renderStatsPopoverTitleExtra?: (options: {
-    index: Field;
-    loading?: boolean;
-    stats?: {
-      [index: string]: number;
-    };
-    setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  }) => React.ReactNode;
+  getUniqueCount?: (field: Field) => Promise<number>;
+  statsScope?: object;
+  renderStatsPopoverTitleExtra?: (options: FieldActionOptions) => React.ReactNode;
   renderFieldNameExtra?: (field: Field) => React.ReactNode;
   onStatisticClick?: (
     type: string,
@@ -103,10 +98,9 @@ export default function FieldsItem(props: Props) {
   const statsLoaded = useRef(false);
   const requestVersion = useRef(0);
   const actionsRef = useRef<HTMLSpanElement>(null);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
-    // The provider changes fetchStats when the datasource/query/time range changes.
+    // The cache changes fetchStats when the datasource/query/time range changes.
     requestVersion.current += 1;
     statsRequest.current = undefined;
     statsLoaded.current = false;
@@ -116,7 +110,6 @@ export default function FieldsItem(props: Props) {
     setTopNVisible(false);
     return () => {
       requestVersion.current += 1;
-      clearTimeout(hoverTimer.current);
     };
   }, [fetchStats, field.field]);
 
@@ -372,16 +365,7 @@ export default function FieldsItem(props: Props) {
         }
       }}
     >
-      <div
-        className='n9e-log-field-row cursor-pointer min-h-[24px] flex items-center pl-2 pr-1 group'
-        onMouseEnter={() => {
-          if (renderStatsPopoverTitleExtra) hoverTimer.current = setTimeout(loadStats, 200);
-        }}
-        onMouseLeave={() => clearTimeout(hoverTimer.current)}
-        onFocus={() => {
-          if (renderStatsPopoverTitleExtra) loadStats();
-        }}
-      >
+      <div className='n9e-log-field-row cursor-pointer min-h-[24px] flex items-center pl-2 pr-1 group'>
         <Tooltip
           placement='left'
           mouseLeaveDelay={0}
@@ -422,7 +406,15 @@ export default function FieldsItem(props: Props) {
           onClick={(event) => event.stopPropagation()}
           onMouseDown={(event) => event.stopPropagation()}
         >
-          {field.indexable && renderStatsPopoverTitleExtra?.({ index: field, stats, loading: topNLoading, setTopNVisible })}
+          {field.indexable &&
+            renderStatsPopoverTitleExtra?.({
+              index: field,
+              stats,
+              loading: topNLoading,
+              setTopNVisible,
+              getUniqueCount: props.getUniqueCount ? () => props.getUniqueCount!(field) : undefined,
+              statsScope: props.statsScope,
+            })}
           <Tooltip mouseEnterDelay={0.6} title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
             <Button
               type='text'

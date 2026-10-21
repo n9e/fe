@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import FieldsItem from './FieldsItem';
 
 jest.mock('@/utils/constant', () => ({ PRIMARY_COLOR: '#7755aa', DatasourceCateEnum: { doris: 'doris' } }));
@@ -28,27 +28,29 @@ function setup(fetchStats = jest.fn().mockResolvedValue(result)) {
   return { ...view, props, fetchStats, onOperClick, action };
 }
 
-it('loads statistics on hover without opening the popover, caches them, and isolates action clicks', async () => {
+it('never fetches on hover/focus or action clicks; loads and caches details on label click', async () => {
   const view = setup();
-  expect(view.fetchStats).not.toHaveBeenCalled();
   const row = view.container.querySelector('.n9e-log-field-row')!;
   fireEvent.mouseEnter(row);
-  await waitFor(() => expect(screen.getByRole('button', { name: 'stack' })).toBeEnabled());
-  expect(view.fetchStats).toHaveBeenCalledTimes(1);
-  expect(document.querySelector('.ant-popover')).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'stack' }));
-  expect(view.action).toHaveBeenCalledTimes(1);
-  expect(document.querySelector('.ant-popover')).not.toBeInTheDocument();
-  fireEvent.mouseLeave(row);
-  fireEvent.mouseEnter(row);
+  fireEvent.focus(screen.getByRole('button', { name: 'field_list.add_field' }));
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  });
+  expect(view.fetchStats).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button', { name: 'field_list.add_field' }));
   expect(view.onOperClick).toHaveBeenCalledTimes(1);
-  fireEvent.click(screen.getByText('severity'));
-  await waitFor(() => expect(screen.getByText('field_values_topn.title')).toBeInTheDocument());
+  expect(view.fetchStats).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByTitle('severity'));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'stack' })).toBeEnabled());
+  expect(view.fetchStats).toHaveBeenCalledTimes(1);
+  fireEvent.click(screen.getByRole('button', { name: 'stack' }));
+  expect(view.action).toHaveBeenCalledTimes(1);
+  fireEvent.mouseLeave(row);
+  fireEvent.mouseEnter(row);
   expect(view.fetchStats).toHaveBeenCalledTimes(1);
 });
 
-it('supports keyboard access and ignores statistics from a previous query', async () => {
+it('ignores detailed statistics from a previous query', async () => {
   let resolveOld!: (value: typeof result) => void;
   const oldRequest = jest.fn(
     () =>
@@ -57,25 +59,31 @@ it('supports keyboard access and ignores statistics from a previous query', asyn
       }),
   );
   const view = setup(oldRequest);
-  fireEvent.focus(screen.getByRole('button', { name: 'stack' }));
+  fireEvent.click(screen.getByTitle('severity'));
   await waitFor(() => expect(oldRequest).toHaveBeenCalledTimes(1));
   const newRequest = jest.fn().mockResolvedValue(result);
   view.rerender(<FieldsItem {...view.props} fetchStats={newRequest} />);
-  resolveOld(result);
-  await waitFor(() => expect(screen.getByRole('button', { name: 'stack' })).toBeDisabled());
-  fireEvent.focus(screen.getByRole('button', { name: 'stack' }));
+  await act(async () => {
+    resolveOld(result);
+  });
+  expect(screen.getByRole('button', { name: 'stack' })).toBeDisabled();
+  expect(newRequest).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByTitle('severity'));
   await waitFor(() => expect(screen.getByRole('button', { name: 'stack' })).toBeEnabled());
   expect(newRequest).toHaveBeenCalledTimes(1);
 });
 
-it('retries a failed statistics request on the next hover', async () => {
+it('retries a failed details request when the label is reopened', async () => {
   const fetchStats = jest.fn().mockRejectedValueOnce(new Error('failed')).mockResolvedValueOnce(result);
-  const view = setup(fetchStats);
-  const row = view.container.querySelector('.n9e-log-field-row')!;
-  fireEvent.focus(screen.getByRole('button', { name: 'stack' }));
+  setup(fetchStats);
+  fireEvent.click(screen.getByTitle('severity'));
   await waitFor(() => expect(fetchStats).toHaveBeenCalledTimes(1));
-  fireEvent.mouseLeave(row);
-  fireEvent.mouseEnter(row);
+  // Wait for the failure to clear the pending request before reopening.
+  await act(async () => {
+    await Promise.resolve();
+  });
+  fireEvent.click(screen.getByTitle('severity'));
+  fireEvent.click(screen.getByTitle('severity'));
   await waitFor(() => expect(screen.getByRole('button', { name: 'stack' })).toBeEnabled());
   expect(fetchStats).toHaveBeenCalledTimes(2);
 });

@@ -12,6 +12,29 @@
 .n9e-log-field-row {
   position: relative;
 }
+
+// Body-mounted message content, scoped to stack feedback only.
+.n9e-log-field-stack-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  text-align: left;
+  > span {
+    min-width: 0;
+  }
+  .n9e-log-field-stack-notice-close.ant-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    color: var(--fc-text-3);
+    font-size: 12px;
+  }
+}
 .n9e-log-field-label {
   padding-right: var(--log-field-active-width, 0px);
 }

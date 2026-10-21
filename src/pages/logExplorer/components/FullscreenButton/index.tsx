@@ -48,7 +48,10 @@ function Provider(props: { children: React.ReactNode; autoHeight?: boolean }) {
 
   return (
     <FullscreenContext.Provider value={{ viewModalVisible, setViewModalVisible }}>
-      <div className={'flex flex-col min-h-0' + (props.autoHeight ? ' n9e-log-results-auto-height' : ' h-full') + (viewModalVisible ? ' n9e-logs-view-modal' : ' relative')}>
+      <div
+        data-log-viewer-shell
+        className={'flex flex-col min-h-0' + (props.autoHeight ? ' n9e-log-results-auto-height' : ' h-full') + (viewModalVisible ? ' n9e-logs-view-modal' : ' relative')}
+      >
         {props.children}
       </div>
     </FullscreenContext.Provider>

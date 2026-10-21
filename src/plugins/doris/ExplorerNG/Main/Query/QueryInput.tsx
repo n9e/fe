@@ -41,7 +41,7 @@ export default function QueryInputCpt(props: Props) {
   const { snapRangeRef, executeQuery, defaultSearchField, setDefaultSearchField, queryExtra, noticeBanner, queryBoxRef, onQueryEdit } = props;
 
   return (
-    <QueryBoxColumn className='min-w-0' prefixed={!!queryExtra} below={noticeBanner}>
+    <QueryBoxColumn className='min-w-0 doris-log-query-controls' prefixed={!!queryExtra} below={noticeBanner}>
       <InputGroupWithFormItem
         label={
           <Space>
@@ -102,7 +102,7 @@ export default function QueryInputCpt(props: Props) {
               }
             >
               <Button
-                className={classNames('absolute top-[4px] z-10', queryExtra ? 'left-[32px]' : 'left-[4px]')}
+                className={classNames('absolute top-[4px] z-10', queryExtra ? 'left-[30px]' : 'left-[4px]')}
                 size='small'
                 type='text'
                 icon={

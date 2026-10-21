@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import FieldsList, { Field } from '@/pages/logExplorer/components/FieldsList';
+import FieldStackButton from '@/pages/logExplorer/components/FieldsList/FieldStackButton';
+import { parseUniqueCount } from '@/pages/logExplorer/components/FieldsList/useFieldStatsCache';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
 import { HandleValueFilterParams } from '../../types';
@@ -35,6 +37,35 @@ export default function index(props: IProps) {
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
+  const refreshFlag = Form.useWatch('refreshFlag');
+  const statsCacheKey = JSON.stringify([
+    datasourceValue,
+    _.pick(queryValues, ['database', 'table', 'time_field', 'range', 'query', 'query_builder_filter', 'syntax']),
+    defaultSearchField,
+    refreshFlag,
+  ]);
+  // Freeze relative time bounds for the cache scope, including explicit refreshes.
+  const statsRange = React.useMemo(() => (queryValues?.range ? parseRange(queryValues.range) : undefined), [statsCacheKey]);
+  const queryField = (record: Field, funcs: string[]) => {
+    if (!statsRange) return Promise.reject(new Error('Missing time range'));
+    return getDorisLogsQuery({
+      cate: DatasourceCateEnum.doris,
+      datasource_id: datasourceValue,
+      query: funcs.map((func) => ({
+        database: queryValues.database,
+        table: queryValues.table,
+        time_field: queryValues.time_field,
+        query: queryValues.query,
+        query_builder_filter: queryValues.query_builder_filter,
+        from: moment(statsRange.start).valueOf(),
+        to: moment(statsRange.end).valueOf(),
+        field: record.field,
+        func,
+        ref: func,
+        default_field: defaultSearchField,
+      })),
+    } as any);
+  };
 
   return (
     <div className='h-full flex flex-col flex-shrink-0'>
@@ -65,33 +96,18 @@ export default function index(props: IProps) {
                 });
               }
         }
+        statsCacheKey={statsCacheKey}
+        fetchUniqueCount={async (record) => {
+          const result = await queryField(record, ['unique_count']);
+          return parseUniqueCount(result.list.find((item) => item.ref === 'unique_count')?.unique_count);
+        }}
         fetchStats={async (record) => {
           try {
-            const range = parseRange(queryValues.range);
             let funcs = ['exist_ratio', 'unique_count', 'max', 'min', 'avg', 'median', 'p95', 'sum', 'top5'];
             if (TYPE_MAP[record.type] !== 'number') {
               funcs = ['exist_ratio', 'unique_count', 'top5'];
             }
-            const requestParams = {
-              cate: DatasourceCateEnum.doris,
-              datasource_id: datasourceValue,
-              query: _.map(funcs, (func) => {
-                return {
-                  database: queryValues.database,
-                  table: queryValues.table,
-                  time_field: queryValues.time_field,
-                  query: queryValues.query,
-                  query_builder_filter: queryValues.query_builder_filter,
-                  from: moment(range.start).valueOf(),
-                  to: moment(range.end).valueOf(),
-                  field: record.field,
-                  func,
-                  ref: func,
-                  default_field: defaultSearchField,
-                };
-              }),
-            };
-            const result = await getDorisLogsQuery(requestParams as any);
+            const result = await queryField(record, funcs);
             const top5Result = _.filter(result.list, (item) => {
               return item.ref === 'top5';
             });
@@ -118,6 +134,7 @@ export default function index(props: IProps) {
             );
 
             return {
+              uniqueCount: parseUniqueCount(result.list.find((item) => item.ref === 'unique_count')?.unique_count),
               topN: _.map(top5Result, (item) => {
                 return {
                   value: item[record.field],
@@ -143,29 +160,23 @@ export default function index(props: IProps) {
             };
           }
         }}
-        renderStatsPopoverTitleExtra={({ index, stats, loading, setTopNVisible }) => {
+        renderStatsPopoverTitleExtra={({ index, getUniqueCount, statsScope, setTopNVisible }) => {
           const active = stackByField === index.field;
           const searchActive = defaultSearchField === index.field;
-          const uniqueCount = Number(stats?.unique_count ?? 0);
-          const disabled = !Number.isFinite(uniqueCount) || uniqueCount <= 1 || uniqueCount > 10;
-          const title = active ? t('query.stack_tip_unpin') : loading ? t('log_explorer:loading') : disabled ? t('query.stack_disabled_tip') : t('query.stack_tip_pin');
+          const title = t(active ? 'query.stack_tip_unpin' : 'query.stack_tip_pin');
           return (
             <Space>
-              <Tooltip mouseEnterDelay={0.6} title={title}>
-                <Button
-                  aria-label={active ? t('query.stack_tip_unpin') : t('query.stack_tip_pin')}
-                  aria-pressed={active}
-                  disabled={!active && disabled}
-                  className={active ? 'n9e-log-field-stack-active' : undefined}
-                  icon={<PinIcon className='text-[14px]' />}
-                  type='text'
-                  size='small'
-                  onClick={() => {
-                    setStackByField(active ? undefined : index.field);
-                    setTopNVisible(false);
-                  }}
-                />
-              </Tooltip>
+              <FieldStackButton
+                active={active}
+                title={title}
+                icon={<PinIcon className='text-[14px]' />}
+                getUniqueCount={getUniqueCount}
+                statsScope={statsScope}
+                onChange={() => {
+                  setStackByField(active ? undefined : index.field);
+                  setTopNVisible(false);
+                }}
+              />
               <Tooltip mouseEnterDelay={0.6} title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}>
                 <Button
                   aria-label={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}

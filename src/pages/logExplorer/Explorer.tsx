@@ -17,6 +17,7 @@ import { filterLogExplorerDatasourceList, isLogExplorerDatasourceCateSupported }
 import { DefaultFormValuesControl, RenderCommonSettingsParams } from './types';
 import { NAME_SPACE } from './constants';
 import ExplorerContent from './ExplorerContent';
+import { SideBarCollapseButton } from './components/SideBar';
 
 // @ts-ignore
 import PlusLogExplorer from 'plus:/parcels/LogExplorer';
@@ -130,103 +131,106 @@ function Explorer(props: Props) {
     return (
       <div className={'flex-shrink-0' + (layout === 'horizontal' ? ' flex gap-2' : '')}>
         <Form.Item>
-          <ViewSelect<{
-            datasourceCate: string;
-            datasourceValue: number;
-            [key: string]: any;
-          }>
-            // 统一的状态
-            validateSelection
-            value={viewSelectValue}
-            onChange={(value) => {
-              defaultFormValuesControl?.setSelectedViewId?.(value);
-            }}
-            filters={viewSelectFilters}
-            setFilters={setViewSelectFilters}
-            modalState={viewModalState}
-            setModalState={setViewModalState}
-            // 其他 props
-            page={location.pathname}
-            getFilterValues={() => {
-              const formValues = form.getFieldsValue();
-              let range = formValues.query?.range;
-              if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
-                range = {
-                  start: range.start.unix(),
-                  end: range.end.unix(),
-                };
-              }
-              const filterValues = {
-                datasourceCate: formValues.datasourceCate,
-                datasourceValue: formValues.datasourceValue,
-                query: {
-                  ...formValues.query,
-                  range,
-                },
-              };
-              return filterValues;
-            }}
-            renderOptionExtra={(filterValues) => {
-              const { datasourceCate, datasourceValue } = filterValues;
-              return (
-                <div className='flex items-center gap-2'>
-                  <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
-                  <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
-                </div>
-              );
-            }}
-            onSelect={(filterValues) => {
-              const datasourceCate = form.getFieldValue('datasourceCate');
-
-              filterValues.datasourceCate = filterValues.datasourceCate || datasourceCate;
-              filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[datasourceCate]?.[0]?.id!;
-
-              let range = filterValues.query?.range;
-              if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
-                range = {
-                  start: moment.unix(range.start),
-                  end: moment.unix(range.end),
-                };
-              }
-
-              const isCateChanged = datasourceCate !== filterValues.datasourceCate;
-
-              form.resetFields(['refreshFlag', 'query']);
-              form.setFieldsValue({
-                ...filterValues,
-                query: {
-                  ...filterValues.query,
-                  range: range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
-                  ...(getDefaultQueryValues ? getDefaultQueryValues(filterValues.query || {}) || {} : {}),
-                },
-              });
-
-              if (isCateChanged) {
-                setShouldExecuteQuery(true);
-              } else if (executeQueryRef.current) {
-                executeQueryRef.current();
-              }
-            }}
-            adjustOldFilterValues={(values) => {
-              if (values) {
-                // 去掉 query 中值为 undefined 的字段
-                const cleanedQuery = omitUndefinedDeep(values.query) || {};
-                if (moment.isMoment(cleanedQuery.range?.start) && moment.isMoment(cleanedQuery.range?.end)) {
-                  cleanedQuery.range = {
-                    start: cleanedQuery.range.start.unix(),
-                    end: cleanedQuery.range.end.unix(),
+          <div className='n9e-log-view-select-row'>
+            <ViewSelect<{
+              datasourceCate: string;
+              datasourceValue: number;
+              [key: string]: any;
+            }>
+              // 统一的状态
+              validateSelection
+              value={viewSelectValue}
+              onChange={(value) => {
+                defaultFormValuesControl?.setSelectedViewId?.(value);
+              }}
+              filters={viewSelectFilters}
+              setFilters={setViewSelectFilters}
+              modalState={viewModalState}
+              setModalState={setViewModalState}
+              // 其他 props
+              page={location.pathname}
+              getFilterValues={() => {
+                const formValues = form.getFieldsValue();
+                let range = formValues.query?.range;
+                if (moment.isMoment(range?.start) && moment.isMoment(range?.end)) {
+                  range = {
+                    start: range.start.unix(),
+                    end: range.end.unix(),
                   };
                 }
-                return {
-                  datasourceCate: values.datasourceCate,
-                  datasourceValue: values.datasourceValue,
-                  query: cleanedQuery,
+                const filterValues = {
+                  datasourceCate: formValues.datasourceCate,
+                  datasourceValue: formValues.datasourceValue,
+                  query: {
+                    ...formValues.query,
+                    range,
+                  },
                 };
-              }
-              return {};
-            }}
-            placeholder={t('view_placeholder')}
-          />
+                return filterValues;
+              }}
+              renderOptionExtra={(filterValues) => {
+                const { datasourceCate, datasourceValue } = filterValues;
+                return (
+                  <div className='flex items-center gap-2'>
+                    <img src={_.get(_.find(allCates, { value: datasourceCate }), 'logo')} alt={datasourceCate} className='w-[12px] h-[12px]' />
+                    <span>{_.find(datasourceList, { id: datasourceValue })?.name ?? datasourceValue}</span>
+                  </div>
+                );
+              }}
+              onSelect={(filterValues) => {
+                const datasourceCate = form.getFieldValue('datasourceCate');
+
+                filterValues.datasourceCate = filterValues.datasourceCate || datasourceCate;
+                filterValues.datasourceValue = filterValues.datasourceValue || groupedDatasourceList[datasourceCate]?.[0]?.id!;
+
+                let range = filterValues.query?.range;
+                if (_.isNumber(range?.start) && _.isNumber(range?.end)) {
+                  range = {
+                    start: moment.unix(range.start),
+                    end: moment.unix(range.end),
+                  };
+                }
+
+                const isCateChanged = datasourceCate !== filterValues.datasourceCate;
+
+                form.resetFields(['refreshFlag', 'query']);
+                form.setFieldsValue({
+                  ...filterValues,
+                  query: {
+                    ...filterValues.query,
+                    range: range ?? logsDefaultRange ?? { start: 'now-5m', end: 'now' },
+                    ...(getDefaultQueryValues ? getDefaultQueryValues(filterValues.query || {}) || {} : {}),
+                  },
+                });
+
+                if (isCateChanged) {
+                  setShouldExecuteQuery(true);
+                } else if (executeQueryRef.current) {
+                  executeQueryRef.current();
+                }
+              }}
+              adjustOldFilterValues={(values) => {
+                if (values) {
+                  // 去掉 query 中值为 undefined 的字段
+                  const cleanedQuery = omitUndefinedDeep(values.query) || {};
+                  if (moment.isMoment(cleanedQuery.range?.start) && moment.isMoment(cleanedQuery.range?.end)) {
+                    cleanedQuery.range = {
+                      start: cleanedQuery.range.start.unix(),
+                      end: cleanedQuery.range.end.unix(),
+                    };
+                  }
+                  return {
+                    datasourceCate: values.datasourceCate,
+                    datasourceValue: values.datasourceValue,
+                    query: cleanedQuery,
+                  };
+                }
+                return {};
+              }}
+              placeholder={t('view_placeholder')}
+            />
+            <SideBarCollapseButton />
+          </div>
         </Form.Item>
         <Form.Item
           name='datasourceValue'

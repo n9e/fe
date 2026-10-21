@@ -76,11 +76,12 @@ function Outcome({ outcome }: { outcome: ActionResponse }) {
   if (outcome.status === 'declined') {
     return <span className='text-warning'>{outcome.message || t('page_action.declined')}</span>;
   }
+  const message = outcome.message?.replace(/^The action failed:\s*/i, '');
   return (
     <span className='text-error'>
       <CloseCircleFilled className='mr-1' />
       {t('page_action.failed')}
-      {outcome.message ? `：${outcome.message}` : ''}
+      {message ? `：${message}` : ''}
     </span>
   );
 }

@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import SideBar from './index';
+import SideBar, { SideBarCollapseButton } from './index';
 
 jest.mock('../../constants', () => ({ NAME_SPACE: 'log_explorer' }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
@@ -12,6 +12,7 @@ it('collapses to an inline button, retaining mounted controls and persisting the
   const { container, unmount } = render(
     <div style={{ display: 'flex' }}>
       <SideBar ns='doris'>
+        <SideBarCollapseButton />
         <input defaultValue='my-table' aria-label='table' />
       </SideBar>
       <div>query</div>
@@ -27,7 +28,12 @@ it('collapses to an inline button, retaining mounted controls and persisting the
   expect(container.querySelector('.n9e-log-sidebar')).toHaveStyle({ width: '0px', marginRight: '0px' });
   expect(localStorage.getItem('ng-doris-explorer-sidebar-collapse-retained-v2')).toBe('1');
   unmount();
-  render(<SideBar ns='doris'>controls</SideBar>);
+  render(
+    <SideBar ns='doris'>
+      <SideBarCollapseButton />
+      controls
+    </SideBar>,
+  );
   expect(screen.getByRole('button', { name: 'sidebar.expand' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'sidebar.expand' }));
   expect(screen.getByRole('button', { name: 'sidebar.collapse' })).toBeInTheDocument();
@@ -48,7 +54,10 @@ it('fills the actual page viewport and preserves its height when the sticky side
       <div data-testid='page' style={{ overflowY: 'auto', padding: 16 }}>
         <div style={{ padding: 16 }}>
           <div style={{ display: 'flex' }}>
-            <SideBar ns='doris'>fields</SideBar>
+            <SideBar ns='doris'>
+              <SideBarCollapseButton />
+              fields
+            </SideBar>
             <div>results</div>
           </div>
         </div>

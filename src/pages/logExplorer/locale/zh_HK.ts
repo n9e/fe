@@ -1,4 +1,15 @@
 const zh_HK = {
+  filter_editor: { cancel: '取消', confirm: '確定', disabled_tip: '保留此篩選條件，但查詢時暫不使用；取消勾選並點擊「確定」後恢復使用。' },
+  field_stack: {
+    close: '關閉提示',
+    checking: '正在檢查欄位值個數…',
+    unsupported: '該欄位有 {{count}} 個不同值，僅當不同值個數在 2～10 個之間時，才支援堆疊展示。',
+    failed: '欄位值個數查詢失敗，請點擊堆疊按鈕重試',
+  },
+  histogram_hide: '隱藏圖表',
+  histogram_show: '顯示圖表',
+  histogram_pin: '固定頂部區域',
+  histogram_unpin: '取消頂部區域固定',
   title: '日誌檢索',
   tab: {
     rename: '重命名',
@@ -20,8 +31,6 @@ const zh_HK = {
   before_query: '請點擊 <b>查詢</b>，展示數據',
   loading: '數據加載中 ...',
   no_data: '查詢無數據',
-  histogram_hide: '隱藏圖表',
-  histogram_show: '顯示圖表',
   share_btn: '分享連結',
   share_tip: '點擊複製分享連結',
   log_viewer_drawer_trigger_tip: '點擊查看日誌詳情',
