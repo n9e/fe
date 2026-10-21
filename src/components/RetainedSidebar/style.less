@@ -1,0 +1,133 @@
+// Outrank global !important flex utilities regardless of production CSS chunk order.
+// Explicit rows keep collapsed headings above the full-width results.
+:has(> .fc-retained-sidebar[class]) {
+  --fc-retained-content-row: 1;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  &:has(> .fc-retained-sidebar:not(.fc-retained-sidebar--collapsed) ~ .fc-retained-sidebar:not(.fc-retained-sidebar--collapsed)) {
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+  &:has(> .fc-retained-sidebar--collapsed) {
+    --fc-retained-content-row: 2;
+    grid-template-rows: 40px minmax(0, 1fr);
+  }
+  &:has(> .fc-retained-sidebar--collapsed ~ .fc-retained-sidebar--collapsed) {
+    --fc-retained-content-row: 3;
+    grid-template-rows: 40px 40px minmax(0, 1fr);
+  }
+  &:not(:has(> .fc-retained-sidebar:not(.fc-retained-sidebar--collapsed))) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  > .fc-retained-sidebar:not(.fc-retained-sidebar--collapsed),
+  > :not(.fc-retained-sidebar) {
+    grid-row: var(--fc-retained-content-row);
+    height: 100% !important;
+    min-height: 0;
+  }
+  > :not(.fc-retained-sidebar) {
+    grid-column: -2 / -1;
+    min-width: 0;
+    width: 100%;
+  }
+  > .fc-retained-sidebar--collapsed {
+    grid-row: 1;
+    grid-column: 1 / -1;
+  }
+  > .fc-retained-sidebar--collapsed ~ .fc-retained-sidebar--collapsed {
+    grid-row: 2;
+  }
+  &:has(> .fc-retained-sidebar--logs.fc-retained-sidebar--collapsed) {
+    row-gap: 12px;
+  }
+}
+.fc-retained-sidebar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--fc-border-color);
+  border-radius: var(--fc-border-radius-base);
+  background: var(--fc-fill-2);
+  &__header {
+    height: 40px;
+    flex: 0 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px 0 16px;
+    border-bottom: 1px solid var(--fc-border-color);
+    > strong {
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .ant-btn {
+      flex: 0 0 24px;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+  }
+  &__actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    > span:not([hidden]) {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+  &__selection {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--fc-text-3);
+    font-size: 12px;
+  }
+  &__body {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 12px 16px 16px;
+    &[hidden] {
+      display: none;
+    }
+  }
+  &--collapsed {
+    border-radius: 0;
+    border-width: 0 0 1px;
+    .fc-retained-sidebar__header {
+      border: 0;
+      .fc-retained-sidebar__actions {
+        margin-left: 0;
+        order: -1;
+      }
+      .fc-retained-sidebar__selection {
+        flex: 1 1 auto;
+      }
+    }
+  }
+  .n9e-metric-views-list,
+  .n9e-metric-views-labels-values,
+  .built-in-metrics-filter {
+    border: 0;
+    padding: 0;
+    min-width: 0;
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}
