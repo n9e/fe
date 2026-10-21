@@ -23,6 +23,9 @@ const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, workspace, u
 if (parsed.errors.length) fail(parsed.errors);
 
 const scopes = [
+  'src/pages/logExplorer/components/LogsViewer/index.tsx',
+  'src/pages/logExplorer/components/LogsViewer/Clustering/Table.tsx',
+  'src/pages/logExplorer/components/LogsViewer/utils/useExternalGridScroll.test.tsx',
   'src/pages/logExplorer/components/FieldsList',
   'src/pages/logExplorer/components/FilterConfigPopover.test.tsx',
   'src/plugins/doris/ExplorerNG/SideBarNav/FieldsSidebar/index.tsx',

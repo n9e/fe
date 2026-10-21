@@ -131,8 +131,8 @@
   }
 }
 
-// Only raw/table results grow into the page. Keep the original bounded height
-// for clustering and other result modes that still have their own viewport.
+// All log result modes grow into the page so sticky sidebars and table headers
+// share one scroll container, including clustering and its virtual grid.
 .log-explorer-content:has(.n9e-log-results-auto-height) {
   &,
   > div,

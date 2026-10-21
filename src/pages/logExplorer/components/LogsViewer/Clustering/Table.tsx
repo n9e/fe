@@ -359,7 +359,7 @@ export default function TableCpt(props: Props) {
   );
 
   return (
-    <div className='min-h-0 h-full'>
+    <div className='min-h-0'>
       {clusteringOptionsEleRef.current && createPortal(clusteringPortal, clusteringOptionsEleRef.current)}
       {clusteringExtraEleRef.current &&
         createPortal(
@@ -382,7 +382,7 @@ export default function TableCpt(props: Props) {
           clusteringExtraEleRef.current,
         )}
       {fullAggregateLoading ? (
-        <div className='h-full flex flex-col items-center justify-center bg-fc-200' style={{ minHeight: 300 }}>
+        <div className='flex flex-col items-center justify-center bg-fc-200' style={{ minHeight: 300 }}>
           <SyncOutlined spin style={{ fontSize: 64, color: 'var(--fc-text-4)' }} />
           <div className='mt-6 text-base font-bold'>{t('clustering.loading_title')}</div>
           <div className='mt-2 text-l2'>

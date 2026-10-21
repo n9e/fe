@@ -368,7 +368,7 @@ export default function LogsViewer(props: Props) {
             )}
           </>
         )}
-        <FullscreenButton.Provider autoHeight={logMode !== 'clustering'}>
+        <FullscreenButton.Provider autoHeight>
           <div data-log-toolbar className='n9e-log-explorer-toolbar flex justify-between items-center gap-1 pb-2'>
             <Space className='n9e-log-explorer-toolbar-main'>
               {addonBefore}
@@ -433,10 +433,10 @@ export default function LogsViewer(props: Props) {
           <div
             ref={resultsRef}
             data-log-results={logMode !== 'clustering' ? '' : undefined}
-            className={logMode === 'clustering' ? 'h-full min-h-0' : 'n9e-log-results'}
+            className='n9e-log-results'
             onScrollCapture={logMode === 'clustering' ? onScrollCapture : undefined}
           >
-            <div className={logMode === 'clustering' ? 'n9e-antd-table-height-full' : undefined}>
+            <div>
               {logMode === 'origin' && (
                 <Raw
                   id_key={id_key}
