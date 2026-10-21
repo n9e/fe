@@ -18,6 +18,7 @@ import BuilderModal from '../../components/BuilderModal';
 import BuilderConfigRequiredItem from '../../components/BuilderConfigRequiredItem';
 import GraphPreview from '../../AlertRule/GraphPreview';
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../constants';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   datasourceValue: number;
@@ -156,17 +157,19 @@ export default function index(props: IProps) {
           label={
             <Space>
               {t('query.query')}
-              <InfoCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                    darkMode,
-                    title: t('common:document_link'),
-                    type: 'iframe',
-                    documentPath: DORIS_SQL_MODE_DOC_URL,
-                  });
-                }}
-              />
+              <UsageDocs>
+                <InfoCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                      darkMode,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: DORIS_SQL_MODE_DOC_URL,
+                    });
+                  }}
+                />
+              </UsageDocs>
             </Space>
           }
         >

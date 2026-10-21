@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React from 'react';
 import _ from 'lodash';
 import { Input, Form, Tooltip } from 'antd';
@@ -29,9 +30,11 @@ export default function QueryBuilder(props: Props) {
                 title={
                   <span>
                     {t('query.query_tip1')}
-                    <a target='_blank' href='https://docs.taosdata.com/basic/query/'>
-                      {t('query.query_tip2')}
-                    </a>
+                    <UsageDocs>
+                      <a target='_blank' href='https://docs.taosdata.com/basic/query/'>
+                        {t('query.query_tip2')}
+                      </a>
+                    </UsageDocs>
                   </span>
                 }
               >

@@ -5,6 +5,7 @@ import IconFont from '@/components/IconFont';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
+import UsageDocs from '@/components/UsageDocs';
 
 export const PAGE_DOCUMENT_LABEL_KEY = 'common:document_title';
 
@@ -27,7 +28,7 @@ export default function PageDocLink({ link, buttonText }: { link: string; button
   const { darkMode } = useContext(CommonStateContext);
 
   return (
-    <>
+    <UsageDocs>
       <Divider type='vertical' />
       <Button
         className='document-open-button page-layout-page-doc-button'
@@ -40,6 +41,6 @@ export default function PageDocLink({ link, buttonText }: { link: string; button
       >
         {buttonText || t(PAGE_DOCUMENT_LABEL_KEY)}
       </Button>
-    </>
+    </UsageDocs>
   );
 }
