@@ -211,6 +211,7 @@ export default function TableCpt(props: Props) {
       cols.unshift({
         name: t('logs.settings.lines'),
         key: '___lines___',
+        cellClass: 'n9e-log-line-number-cell',
         width: 40,
         resizable: false,
         formatter: ({ row }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, createContext, useContext } from 'react';
 import { Resizable } from 're-resizable';
 import { Button, Tooltip } from 'antd';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
@@ -12,14 +12,43 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function SideBar({ ns, children }: Props) {
+const SideBarContext = createContext<{ collapsed: boolean; toggle: () => void } | null>(null);
+
+function ToggleButton({ collapsed, toggle }: { collapsed: boolean; toggle: () => void }) {
   const { t } = useTranslation(NAME_SPACE);
+  const action = t(collapsed ? 'sidebar.expand' : 'sidebar.collapse');
+  return (
+    <Tooltip title={action}>
+      <Button
+        type='default'
+        size='small'
+        className='n9e-log-sidebar-toggle'
+        aria-label={action}
+        aria-expanded={!collapsed}
+        icon={collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+        onClick={toggle}
+      />
+    </Tooltip>
+  );
+}
+
+/** Render next to the saved-view actions, within the retained sidebar. */
+export function SideBarCollapseButton() {
+  const state = useContext(SideBarContext);
+  return state && !state.collapsed ? <ToggleButton {...state} /> : null;
+}
+
+export default function SideBar({ ns, children }: Props) {
   // Share the retained sidebar's state when switching between main and pre builds.
   const collapseKey = `ng-${ns}-explorer-sidebar-collapse-retained-v2`;
   const widthKey = `ng-${ns}-explorer-sidebar-width`;
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(collapseKey) === '1');
   const [width, setWidth] = useState(() => Math.min(480, Math.max(200, Number(localStorage.getItem(widthKey)) || 200)));
-  const action = t(collapsed ? 'sidebar.expand' : 'sidebar.collapse');
+  const toggle = () => {
+    setCollapsed(!collapsed);
+    localStorage.setItem(collapseKey, collapsed ? '0' : '1');
+    requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+  };
   const sidebarRef = useRef<Resizable>(null);
   useLayoutEffect(() => {
     const sidebar = sidebarRef.current?.resizable;
@@ -70,26 +99,16 @@ export default function SideBar({ ns, children }: Props) {
         window.dispatchEvent(new Event('resize'));
       }}
     >
-      <header className='n9e-log-sidebar-header'>
-        {!collapsed && <strong>{t('sidebar.title')}</strong>}
-        <Tooltip title={action}>
-          <Button
-            type='text'
-            size='small'
-            aria-label={action}
-            aria-expanded={!collapsed}
-            icon={collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
-            onClick={() => {
-              setCollapsed(!collapsed);
-              localStorage.setItem(collapseKey, collapsed ? '0' : '1');
-              requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
-            }}
-          />
-        </Tooltip>
-      </header>
-      <div className='n9e-log-sidebar-body' hidden={collapsed}>
-        {children}
-      </div>
+      {collapsed && (
+        <div className='n9e-log-sidebar-header'>
+          <ToggleButton collapsed toggle={toggle} />
+        </div>
+      )}
+      <SideBarContext.Provider value={{ collapsed, toggle }}>
+        <div className='n9e-log-sidebar-body' hidden={collapsed}>
+          {children}
+        </div>
+      </SideBarContext.Provider>
     </Resizable>
   );
 }

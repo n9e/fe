@@ -1,7 +1,11 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { Form } from 'antd';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { Form, message } from 'antd';
+import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
+import { getDorisLogsQuery } from '@/plugins/doris/services';
+import { getCKLogsQuery } from '@/plugins/clickHouse/services';
+import { parseRange } from '@/components/TimeRangePicker';
+import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 import DorisSidebar from '@/plugins/doris/ExplorerNG/SideBarNav/FieldsSidebar';
 import ClickHouseSidebar from '@/plugins/clickHouse/ExplorerNG/SideBarNav/FieldsSidebar';
 
@@ -45,7 +49,7 @@ function actions(Provider: any, active: boolean, uniqueCount?: number, searchAct
   const { container } = render(
     <>
       {props.renderFieldNameExtra?.(field)}
-      {props.renderStatsPopoverTitleExtra({ index: field, stats: uniqueCount === undefined ? undefined : { unique_count: uniqueCount }, setTopNVisible: jest.fn() })}
+      {props.renderStatsPopoverTitleExtra({ index: field, getUniqueCount: jest.fn().mockResolvedValue(uniqueCount ?? 3), statsScope: {}, setTopNVisible: jest.fn() })}
     </>,
   );
   return { setStackByField, setDefaultSearchField, container };
@@ -67,16 +71,22 @@ for (const [name, Provider] of [
       fireEvent.click(button);
       expect(setStackByField).toHaveBeenCalledWith(undefined);
     });
-    it('enables stacking for supported statistics', () => {
+    it('enables stacking after click validation', async () => {
       const { setStackByField } = actions(Provider, false, 3);
       const button = screen.getByRole('button', { name: 'query.stack_tip_pin' });
       expect(button).toHaveAttribute('aria-pressed', 'false');
       fireEvent.click(button);
-      expect(setStackByField).toHaveBeenCalledWith(field.field);
+      await waitFor(() => expect(setStackByField).toHaveBeenCalledWith(field.field));
     });
-    it('disables enabling unsupported fields', () => {
-      actions(Provider, false, 1);
-      expect(screen.getByRole('button', { name: 'query.stack_tip_pin' })).toBeDisabled();
+    it('explains unsupported cardinality after clicking, without applying it', async () => {
+      const info = jest.spyOn(message, 'warning').mockImplementation(() => (() => {}) as any);
+      const { setStackByField } = actions(Provider, false, 1);
+      const button = screen.getByRole('button', { name: 'query.stack_tip_pin' });
+      expect(button).toBeEnabled();
+      fireEvent.click(button);
+      await waitFor(() => expect(info).toHaveBeenCalledWith(expect.objectContaining({ duration: 10, content: expect.anything() })));
+      expect(setStackByField).not.toHaveBeenCalled();
+      info.mockRestore();
     });
   });
 }
@@ -101,3 +111,54 @@ describe('Doris default search field', () => {
     expect(setDefaultSearchField).toHaveBeenCalledWith(field.field);
   });
 });
+
+for (const [name, Provider, query] of [
+  ['Doris', DorisSidebar, getDorisLogsQuery],
+  ['ClickHouse', ClickHouseSidebar, getCKLogsQuery],
+] as const) {
+  it(`${name} sends only unique_count for stack validation and retains the raw count from detailed stats`, async () => {
+    (parseRange as jest.Mock).mockReturnValue({ start: new Date(100000), end: new Date(200000) });
+    (format as jest.Mock).mockReturnValue({ text: '1.5K' });
+    (query as jest.Mock).mockResolvedValue({ list: [{ ref: 'unique_count', unique_count: '1500' }] });
+    render(
+      <Form
+        initialValues={{
+          datasourceValue: 42,
+          refreshFlag: 'query-1',
+          query: { database: 'db', table: 'logs', time_field: 'timestamp', range: { start: 'now-30m', end: 'now' }, query: 'error', query_builder_filter: [] },
+        }}
+      >
+        <Form.Item name='query' hidden>
+          <input />
+        </Form.Item>
+        <Form.Item name='datasourceValue' hidden>
+          <input />
+        </Form.Item>
+        <Form.Item name='refreshFlag' hidden>
+          <input />
+        </Form.Item>
+        <Provider data={[]} loading={false} organizeFields={[]} setOrganizeFields={jest.fn()} executeQuery={jest.fn()} onValueFilter={jest.fn()} setStackByField={jest.fn()} />
+      </Form>,
+    );
+    expect(query).not.toHaveBeenCalled();
+    expect(await mockFieldsProps.fetchUniqueCount(field)).toBe(1500);
+    const request = (query as jest.Mock).mock.calls[0][0];
+    expect(request.datasource_id).toBe(42);
+    expect(request.query).toHaveLength(1);
+    expect(request.query[0]).toMatchObject({
+      database: 'db',
+      table: 'logs',
+      field: field.field,
+      func: 'unique_count',
+      ref: 'unique_count',
+      from: name === 'Doris' ? 100000 : 100,
+      to: name === 'Doris' ? 200000 : 200,
+    });
+    const detail = await mockFieldsProps.fetchStats(field);
+    expect(detail.uniqueCount).toBe(1500);
+    expect(detail.stats.unique_count).toBe('1.5K');
+    (query as jest.Mock).mockResolvedValue({ list: [] });
+    await expect(mockFieldsProps.fetchUniqueCount(field)).rejects.toThrow('cardinality');
+    (query as jest.Mock).mockReset();
+  });
+}

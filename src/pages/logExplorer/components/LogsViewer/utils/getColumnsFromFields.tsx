@@ -164,6 +164,7 @@ export default function getColumnsFromFields(params: {
     columns.unshift({
       name: i18next.t('log_explorer:logs.settings.lines'),
       key: '___lines___',
+      cellClass: 'n9e-log-line-number-cell',
       width: 40,
       resizable: false,
       formatter: ({ row }) => {

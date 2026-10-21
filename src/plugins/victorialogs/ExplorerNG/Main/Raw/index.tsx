@@ -25,7 +25,7 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 import { getIsAtBottom, scrollToTop } from '../../utils/tableElementMethods';
 
 // @ts-ignore
-import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
+import DownloadModal from '@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal';
 
 interface Props {
   tableSelector: {
@@ -350,7 +350,7 @@ export default function Raw(props: Props) {
           renderHistogramAddonAfterRender={(toggleNode) => {
             if (data) {
               return (
-                <Space>
+                <Space className='n9e-log-histogram-meta-content' size={6} wrap>
                   {rangeRef.current && (
                     <>
                       {moment(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}

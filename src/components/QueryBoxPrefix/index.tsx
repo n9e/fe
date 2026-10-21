@@ -21,7 +21,7 @@ export default function QueryBoxPrefix({ prefix, boxRef, children }: QueryBoxPre
   return (
     <div className='relative' style={{ isolation: 'isolate' }} ref={boxRef}>
       {children}
-      <span className='absolute left-2 top-0 z-10 flex h-8 items-center'>{prefix}</span>
+      <span className='query-box-prefix-control absolute left-2 top-0 z-10 flex h-8 items-center'>{prefix}</span>
     </div>
   );
 }

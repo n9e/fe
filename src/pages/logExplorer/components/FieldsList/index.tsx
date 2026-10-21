@@ -7,7 +7,9 @@ import _ from 'lodash';
 import { NAME_SPACE } from '../../constants';
 import FieldsItem from './FieldsItem';
 import { TYPE_MAP } from './constants';
-import { Field, StatsResult } from './types';
+import { Field, StatsResult, FieldActionOptions } from './types';
+
+import useFieldStatsCache from './useFieldStatsCache';
 
 import './style.less';
 
@@ -22,15 +24,10 @@ interface Props {
   disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: any; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
+  fetchUniqueCount?: (field: Field) => Promise<number>;
+  statsCacheKey?: string;
   loading?: boolean;
-  renderStatsPopoverTitleExtra?: (options: {
-    index: Field;
-    loading?: boolean;
-    stats?: {
-      [index: string]: number;
-    };
-    setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  }) => React.ReactNode;
+  renderStatsPopoverTitleExtra?: (options: FieldActionOptions) => React.ReactNode;
   renderFieldNameExtra?: (field: Field) => React.ReactNode;
   onStatisticClick?: (
     type: string,
@@ -60,6 +57,7 @@ export default function index(props: Props) {
     renderFieldNameExtra,
     onStatisticClick,
   } = props;
+  const statsCache = useFieldStatsCache(props.statsCacheKey, fetchStats, props.fetchUniqueCount);
   const [fieldsSearch, setFieldsSearch] = useState('');
   const [showFieldsCollapsed, setShowFieldsCollapsed] = useState(false);
   const [availableFieldsCollapsed, setAvailableFieldsCollapsed] = useState(false);
@@ -114,8 +112,10 @@ export default function index(props: Props) {
                         disableEmptyValueClick={disableEmptyValueClick}
                         onValueFilter={onValueFilter}
                         typeMap={typeMap}
-                        fetchStats={fetchStats}
+                        fetchStats={statsCache.fetchStats}
                         enableStats={enableStats}
+                        getUniqueCount={statsCache.getUniqueCount}
+                        statsScope={statsCache}
                         renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                         renderFieldNameExtra={renderFieldNameExtra}
                         onStatisticClick={onStatisticClick}
@@ -154,8 +154,10 @@ export default function index(props: Props) {
                       disableEmptyValueClick={disableEmptyValueClick}
                       onValueFilter={onValueFilter}
                       typeMap={typeMap}
-                      fetchStats={fetchStats}
+                      fetchStats={statsCache.fetchStats}
                       enableStats={enableStats}
+                      getUniqueCount={statsCache.getUniqueCount}
+                      statsScope={statsCache}
                       renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                       renderFieldNameExtra={renderFieldNameExtra}
                       onStatisticClick={onStatisticClick}

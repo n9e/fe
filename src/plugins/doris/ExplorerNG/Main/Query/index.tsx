@@ -27,7 +27,7 @@ import { HandleValueFilterParams } from '../../types';
 import QueryBuilderFilters from './QueryBuilderFilters';
 
 // @ts-ignore
-import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
+import DownloadModal from '@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal';
 
 interface Props {
   tableSelector: {
@@ -359,11 +359,14 @@ export default function index(props: Props) {
 
   return (
     <>
-      <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
+      {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && (
+        <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
+      )}
       {refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
+              histogramFilters={<QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />}
               logClusting={{
                 enabled: true,
                 queryStrRef,
@@ -437,7 +440,7 @@ export default function index(props: Props) {
               renderHistogramAddonAfterRender={(toggleNode) => {
                 if (data) {
                   return (
-                    <Space>
+                    <Space className='n9e-log-histogram-meta-content' size={6} wrap>
                       {rangeRef.current && (
                         <>
                           {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
