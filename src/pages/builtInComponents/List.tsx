@@ -224,7 +224,7 @@ export default function index() {
                   }
                 }}
               >
-                {t('common:btn.save')}
+                {t('common:btn.ok')}
               </Button>
               <Button
                 onClick={() => {

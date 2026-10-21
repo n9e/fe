@@ -16,6 +16,7 @@ import MockEventPanel, { MockEventState } from './MockEventPanel';
 interface Props {
   type: 'processor' | 'pipeline';
   config: any;
+  getConfig?: () => any;
   size?: 'small' | 'middle' | 'large';
   disabled?: boolean;
   /**
@@ -51,7 +52,7 @@ const DEFAULT_MOCK_EVENT: MockEventState = { severity: MOCK_EVENT_DEFAULT_SEVERI
 
 export default function TestModal(props: Props) {
   const { t } = useTranslation(NS);
-  const { type, config, size, disabled, onBeforeOpen } = props;
+  const { type, config, getConfig, size, disabled, onBeforeOpen } = props;
   const [visible, setVisible] = useState<boolean>(false);
   const [eventID, setEventID] = useState<number>();
   const [mode, setMode] = useState<TestMode>('history');
@@ -86,19 +87,18 @@ export default function TestModal(props: Props) {
 
   const runTest = () => {
     if (testDisabled) return;
+    const currentConfig = getConfig?.() ?? config;
     setLoading(true);
     const eventSource: TryrunEventSource =
-      mode === 'mock'
-        ? { use_mock_event: true, mock_severity: mockEvent.severity, mock_is_recovered: mockEvent.isRecovered }
-        : { event_id: eventID as number };
+      mode === 'mock' ? { use_mock_event: true, mock_severity: mockEvent.severity, mock_is_recovered: mockEvent.isRecovered } : { event_id: eventID as number };
     const request =
       type === 'processor'
-        ? eventProcessorTryrun({ ...eventSource, processor_config: normalizeProcessorConfig(config) })
+        ? eventProcessorTryrun({ ...eventSource, processor_config: normalizeProcessorConfig(currentConfig) })
         : eventPipelineTryrun({
             ...eventSource,
             pipeline_config: {
-              ...config,
-              processors: _.map(config.processors, normalizeProcessorConfig),
+              ...currentConfig,
+              processors: _.map(currentConfig.processors, normalizeProcessorConfig),
             },
           });
 
@@ -170,12 +170,7 @@ export default function TestModal(props: Props) {
                   />
                 )}
                 {visible && (
-                  <EventsTable
-                    rowSelectionType='radio'
-                    selectedEventIds={eventID ? [eventID] : []}
-                    onChange={(ids) => setEventID(ids[0])}
-                    onTotalChange={setHistoryTotal}
-                  />
+                  <EventsTable rowSelectionType='radio' selectedEventIds={eventID ? [eventID] : []} onChange={(ids) => setEventID(ids[0])} onTotalChange={setHistoryTotal} />
                 )}
               </div>
               <div style={{ display: mode === 'mock' ? undefined : 'none' }}>

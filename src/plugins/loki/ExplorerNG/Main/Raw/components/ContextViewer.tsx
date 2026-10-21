@@ -4,7 +4,7 @@ import moment from 'moment';
 import purify from 'dompurify';
 import type { InputRef } from 'antd';
 import { Button, Col, Drawer, Empty, Input, Modal, Row, Space, Table, Tag, Tooltip, message } from 'antd';
-import { CloseOutlined, CloseSquareOutlined, EyeInvisibleOutlined, LeftOutlined, PlusOutlined, PlusSquareOutlined, RightOutlined } from '@ant-design/icons';
+import { CloseSquareOutlined, EyeInvisibleOutlined, LeftOutlined, PlusOutlined, PlusSquareOutlined, RightOutlined } from '@ant-design/icons';
 import { useRequest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 
@@ -503,13 +503,6 @@ export default function ContextViewer(props: Props) {
       <Drawer
         className='n9e-antd-drawer log-explorer-ignore-click-away'
         title={t('context.title')}
-        extra={
-          <CloseOutlined
-            onClick={() => {
-              setOpen(false);
-            }}
-          />
-        }
         placement='right'
         onClose={() => {
           setOpen(false);
