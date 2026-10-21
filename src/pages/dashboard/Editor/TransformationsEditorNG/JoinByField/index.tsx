@@ -11,6 +11,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import EyeSwitch from '../../Components/EyeSwitch';
 import Collapse, { Panel } from '../../Components/Collapse';
 import useColumns from './useColumns';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Value {
   byField?: string; // 用于连接的字段（例如时间戳或 ID）
@@ -37,19 +38,21 @@ export default function JoinByField(props: IProps) {
         header={t('transformations.joinByField.title')}
         extra={
           <Space size={2}>
-            <Button
-              icon={<InfoCircleOutlined />}
-              type='text'
-              size='small'
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  darkMode,
-                  title: t('transformations.joinByField.title'),
-                  documentPath: '/n9e-docs/transformations/joinByField',
-                });
-              }}
-            />
+            <UsageDocs>
+              <Button
+                icon={<InfoCircleOutlined />}
+                type='text'
+                size='small'
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('transformations.joinByField.title'),
+                    documentPath: '/n9e-docs/transformations/joinByField',
+                  });
+                }}
+              />
+            </UsageDocs>
             {/* <Button icon={<BugOutlined />} type='text' size='small' /> */}
             <Form.Item {...resetField} name={[name, 'disabled']} noStyle>
               <EyeSwitch />

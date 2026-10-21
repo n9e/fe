@@ -17,6 +17,7 @@ import EnrichQueryValuesMaxLen from 'plus:/parcels/AlertRule/NotifyExtra/EnrichQ
 import Query from './Query';
 import GraphPreview from './GraphPreview';
 import './style.less';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   disabled?: boolean;
@@ -66,19 +67,21 @@ export default function index(props: IProps) {
                     });
                   }}
                 />
-                <a
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language,
-                      darkMode,
-                      type: 'iframe',
-                      title: t('common:page_help'),
-                      documentPath: ANNOTATIONS_ENRICH_QUERIES_DOC_URL,
-                    });
-                  }}
-                >
-                  {t('common:page_help')}
-                </a>
+                <UsageDocs>
+                  <a
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language,
+                        darkMode,
+                        type: 'iframe',
+                        title: t('common:page_help'),
+                        documentPath: ANNOTATIONS_ENRICH_QUERIES_DOC_URL,
+                      });
+                    }}
+                  >
+                    {t('common:page_help')}
+                  </a>
+                </UsageDocs>
               </Space>
             </div>
             <div className='mb-4'>

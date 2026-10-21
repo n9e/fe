@@ -13,6 +13,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { SSOConfigType } from './types';
 import { putSSOConfig } from './services';
+import UsageDocs from '@/components/UsageDocs';
 
 export const documentMap = {
   OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/oauth2/',
@@ -315,19 +316,21 @@ export default function Item(props: Props) {
           {t('common:btn.save')}
         </Button>
         {activeKey && documentMap[activeKey] && (
-          <Button
-            type='link'
-            onClick={() => {
-              DocumentDrawer({
-                language: i18n.language,
-                title: t('common:document_link'),
-                type: 'iframe',
-                documentPath: documentMap[activeKey],
-              });
-            }}
-          >
-            {t('common:document_link')}
-          </Button>
+          <UsageDocs>
+            <Button
+              type='link'
+              onClick={() => {
+                DocumentDrawer({
+                  language: i18n.language,
+                  title: t('common:document_link'),
+                  type: 'iframe',
+                  documentPath: documentMap[activeKey],
+                });
+              }}
+            >
+              {t('common:document_link')}
+            </Button>
+          </UsageDocs>
         )}
       </Space>
     </Form>

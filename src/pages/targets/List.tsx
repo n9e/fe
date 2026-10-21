@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Table, Tooltip, Space, Input, Dropdown, Menu, Button, Modal, message, Select } from 'antd';
 import { ColumnsType } from 'antd/es/table';
@@ -30,6 +31,7 @@ import UpgradeAgent from 'plus:/parcels/Targets/UpgradeAgent';
 import VersionSelect from 'plus:/parcels/Targets/VersionSelect';
 // @ts-ignore
 import { extraColumns } from 'plus:/parcels/Targets';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 
 export const pageSizeOptions = ['10', '20', '50', '100'];
 
@@ -77,6 +79,7 @@ const Unknown = () => {
 };
 
 export default function List(props: IProps) {
+  const showUsageDocs = useShowUsageDocs();
   const { t, i18n } = useTranslation('targets');
   const pagination = usePagination({ PAGESIZE_KEY: 'targets' });
   const { darkMode } = useContext(CommonStateContext);
@@ -629,24 +632,30 @@ export default function List(props: IProps) {
         locale={{
           emptyText:
             gids === undefined || gids === '-2' ? (
-              <Trans
-                ns='targets'
-                i18nKey='all_no_data'
-                components={{
-                  a: (
-                    <a
-                      onClick={() => {
-                        DocumentDrawer({
-                          language: i18n.language,
-                          darkMode,
-                          title: t('categraf_doc'),
-                          documentPath: '/n9e-docs/categraf',
-                        });
-                      }}
-                    />
-                  ),
-                }}
-              />
+              showUsageDocs ? (
+                <Trans
+                  ns='targets'
+                  i18nKey='all_no_data'
+                  components={{
+                    a: (
+                      <UsageDocs>
+                        <a
+                          onClick={() => {
+                            DocumentDrawer({
+                              language: i18n.language,
+                              darkMode,
+                              title: t('categraf_doc'),
+                              documentPath: '/n9e-docs/categraf',
+                            });
+                          }}
+                        />
+                      </UsageDocs>
+                    ),
+                  }}
+                />
+              ) : (
+                t('meta_no_data')
+              )
             ) : undefined,
         }}
         onChange={(pagination, filters, sorter) => {

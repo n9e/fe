@@ -15,6 +15,7 @@ import VersionSwitch from './VersionSwitch';
 
 // @ts-ignore
 import NotifyChannelsTpl from 'plus:/parcels/AlertRule/NotifyChannelsTpl';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   item: SectionItem;
@@ -218,20 +219,22 @@ export default function index({ item, sectionKeys, sectionRefs, disabled, initia
               <div>
                 <Space align='baseline'>
                   {t('callbacks')}
-                  <Tooltip
-                    title={
-                      <Trans
-                        ns='alertRules'
-                        i18nKey='alertRules:callbacks_tip'
-                        components={{
-                          a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/msg-template/tpl_func/' target='_blank' />,
-                        }}
-                      />
-                    }
-                    overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'
-                  >
-                    <InfoCircleOutlined />
-                  </Tooltip>
+                  <UsageDocs>
+                    <Tooltip
+                      title={
+                        <Trans
+                          ns='alertRules'
+                          i18nKey='alertRules:callbacks_tip'
+                          components={{
+                            a: <a href='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/msg-template/tpl_func/' target='_blank' />,
+                          }}
+                        />
+                      }
+                      overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link'
+                    >
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  </UsageDocs>
                   <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
                 </Space>
                 {fields.map((field) => (
