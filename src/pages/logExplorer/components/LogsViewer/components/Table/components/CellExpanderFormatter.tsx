@@ -18,10 +18,10 @@ export default function CellExpanderFormatter({ expanded, onCellExpand }: CellEx
   }
 
   return (
-    <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
-      <div className='absolute inset-0 flex items-center justify-center cursor-pointer' onClick={handleClick}>
-        {expanded ? <TextSearchIcon className='text-[14px]' /> : <TextSearchIcon className='text-[14px]' />}
-      </div>
-    </Tooltip>
+    <div className='absolute inset-0 flex items-center justify-center cursor-pointer' onClick={handleClick}>
+      <Tooltip title={t('log_viewer_drawer_trigger_tip')}>
+        <span className='inline-flex items-center justify-center'>{expanded ? <TextSearchIcon className='text-[14px]' /> : <TextSearchIcon className='text-[14px]' />}</span>
+      </Tooltip>
+    </div>
   );
 }

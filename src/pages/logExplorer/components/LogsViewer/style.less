@@ -19,6 +19,11 @@
     position: relative;
   }
 
+  .n9e-log-row-detail-trigger {
+    width: 26px;
+    height: 26px;
+  }
+
   // Match the 35px RDG headers used by table and clustering modes.
   .n9e-log-explorer-raw-header {
     border-top: 1px solid var(--fc-border-color);
@@ -51,14 +56,14 @@
       align-items: center;
       gap: 8px;
 
-      > span {
+      > span:first-child {
         flex: 1;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      > svg {
-        flex-shrink: 0;
+      > .n9e-log-sort-indicator {
+        flex: 0 0 auto;
       }
     }
   }
@@ -66,6 +71,12 @@
   .n9e-log-explorer-raw-row {
     border-bottom: 1px solid var(--fc-border-color);
     font-size: 12px;
+
+    > .ant-table-row-expand-icon-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     &:hover {
       background: rgb(var(--fc-fill-5-rgb) / 0.2);
@@ -318,13 +329,24 @@
 .n9e-log-histogram {
   padding-bottom: 8px;
 }
+.n9e-log-explorer-page .log-explorer-query-row {
+  .ant-form-item,
+  .query-box-prefix-column {
+    margin-bottom: 8px;
+  }
+  .query-box-prefix-column .ant-form-item {
+    margin-bottom: 0;
+  }
+}
 .n9e-log-histogram-toolbar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px 8px;
   min-height: 28px;
-  margin: 4px 0;
+  flex: 1 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 .n9e-log-histogram-context {
   min-width: 0;
@@ -336,7 +358,13 @@
   }
 }
 .n9e-log-histogram-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 6px;
   min-width: 0;
+  max-width: 100%;
   margin-left: auto;
 }
 .n9e-log-histogram-meta-content.ant-space {
@@ -359,25 +387,14 @@
 
 .n9e-log-histogram-header {
   display: flex;
-  flex-direction: column;
-}
-.n9e-log-histogram-filters {
-  min-width: 0;
-  max-width: 100%;
-}
-.n9e-log-histogram-header-compact {
-  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 12px;
-  margin: 4px 0;
-  > .n9e-log-histogram-filters {
-    flex: 0 1 auto;
-    width: max-content;
-  }
-  > .n9e-log-histogram-toolbar {
-    flex: 0 0 auto;
-    max-width: 100%;
-    margin: 0 0 0 auto;
-  }
+  margin: 0 0 16px;
+}
+.n9e-log-histogram-filters {
+  flex: 0 1 auto;
+  width: max-content;
+  min-width: 0;
+  max-width: 100%;
 }

@@ -413,7 +413,7 @@ export default function FieldsItem(props: Props) {
               getUniqueCount: props.getUniqueCount ? () => props.getUniqueCount!(field) : undefined,
               statsScope: props.statsScope,
             })}
-          <Tooltip mouseEnterDelay={0.6} title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
+          <Tooltip mouseEnterDelay={0.6} overlayClassName='n9e-log-field-action-tip' title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
             <Button
               type='text'
               size='small'

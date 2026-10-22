@@ -1,4 +1,29 @@
 const zh_HK = {
+  guidance: {
+    stack_action_note: '註：所選欄位在查詢區間內，去重後的值需在 2～10 個之間。',
+    stack_action: '設定頂部趨勢圖表按此欄位的值堆疊展示。',
+    stack_intro_action: '展示堆疊趨勢。',
+    fields_search: '設定預設檢索欄位，設定後輸入欄位值即可查詢',
+    query_title: '查詢提示',
+    query_intro: '輸入 欄位名:值 進行查詢。',
+    default_search: '可在左側「可用欄位」設定預設檢索欄位，設定後輸入欄位值即可查詢。',
+    stack_title: '按欄位值堆疊展示趨勢圖',
+    stack_intro: '懸停左側欄位，點擊對應',
+    stack_effect: '所選欄位在查詢區間內，去重後的值需在 2～10 個之間。',
+    fields_title: '欄位操作',
+    fields_intro: '懸停欄位，點擊對應圖示：',
+    fields_display: '新增 / 移除查詢結果中展示的欄位',
+    fields_stack: '設定趨勢圖表按此欄位值堆疊展示（欄位需有 2～10 個不同值）',
+    docs: 'Query 模式使用說明',
+    close: '關閉提示',
+    sort_asc: '目前升序，點擊調整排序',
+    sort_desc: '目前降序，點擊調整排序',
+  },
+  query_error: {
+    title: '查詢條件格式不正確',
+    hint: '請輸入 欄位名:值 進行查詢，或在左側「可用欄位」設定預設檢索欄位後，再直接輸入欄位值進行查詢。',
+    more: '更多查詢語法參考',
+  },
   filter_editor: { cancel: '取消', confirm: '確定', disabled_tip: '保留此篩選條件，但查詢時暫不使用；取消勾選並點擊「確定」後恢復使用。' },
   field_stack: {
     close: '關閉提示',
@@ -51,6 +76,8 @@ const zh_HK = {
   field_popover_info_alert: '點擊數值可查看統計圖表和 SQL',
   field_search_placeholder: '搜索字段',
   field_list: {
+    remove_field: '移除查詢結果中展示的欄位',
+    add_field: '新增查詢結果中展示的欄位',
     show_fields: '顯示字段',
     available_fields: '可用字段',
   },

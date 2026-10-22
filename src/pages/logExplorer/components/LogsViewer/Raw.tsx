@@ -10,6 +10,7 @@ import { useClickAway } from 'ahooks';
 
 import NavigableDrawer from '@/components/NavigableDrawer';
 import useScrollParent from './utils/useScrollParent';
+import SortIndicator from './components/SortIndicator';
 
 import { NAME_SPACE } from '../../constants';
 import { OnValueFilterParams, FieldValueType } from './types';
@@ -448,9 +449,7 @@ const RawHeader = React.memo(function RawHeader({ showLines, showTime, timeColum
               <th className='cursor-pointer select-none' style={{ width: timeColumnWidth }} aria-sort={sortOrder === 'ascend' ? 'ascending' : 'descending'} onClick={onToggleSort}>
                 <span className='n9e-log-raw-header-sort'>
                   <span>{t('logs.settings.time')}</span>
-                  <svg viewBox='0 0 12 8' width='12' height='8' fill='currentColor' aria-hidden='true'>
-                    <path d={sortOrder === 'ascend' ? 'M0 8 6 0 12 8' : 'M0 0 6 8 12 0'} />
-                  </svg>
+                  <SortIndicator sortDirection={sortOrder === 'ascend' ? 'ASC' : 'DESC'} />
                 </span>
               </th>
             )}
@@ -517,7 +516,7 @@ const RawRow = React.memo(
         <div className='ant-table-row-expand-icon-cell' style={{ width: 48, flex: '0 0 48px' }}>
           <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
             <div
-              className='absolute inset-0 flex items-center justify-center cursor-pointer'
+              className='n9e-log-row-detail-trigger inline-flex items-center justify-center cursor-pointer'
               onClick={() => {
                 onOpenDrawer(index);
               }}
@@ -535,7 +534,7 @@ const RawRow = React.memo(
             }}
           >
             <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
-              <div className='absolute inset-0 flex items-center'>{linesColumnFormat ? linesColumnFormat(index + 1) : index + 1}</div>
+              <span className='inline-flex items-center'>{linesColumnFormat ? linesColumnFormat(index + 1) : index + 1}</span>
             </Tooltip>
           </div>
         )}
@@ -548,9 +547,9 @@ const RawRow = React.memo(
             }}
           >
             <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
-              <div className='absolute inset-0 flex items-center px-2'>
+              <span className='inline-flex items-center px-2'>
                 {timeFieldColumnFormat ? timeFieldColumnFormat(item[timeField]) : moment(item[timeField]).format('MM-DD HH:mm:ss.SSS')}
-              </div>
+              </span>
             </Tooltip>
           </div>
         )}

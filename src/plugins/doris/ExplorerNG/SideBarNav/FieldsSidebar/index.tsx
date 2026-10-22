@@ -70,6 +70,7 @@ export default function index(props: IProps) {
   return (
     <div className='h-full flex flex-col flex-shrink-0'>
       <FieldsList
+        helpCapabilities={{ defaultSearch: queryValues?.syntax !== 'sql', stack: true }}
         loading={loading}
         organizeFieldNames={organizeFields}
         disableEmptyValueClick={false}
@@ -177,7 +178,7 @@ export default function index(props: IProps) {
                   setTopNVisible(false);
                 }}
               />
-              <Tooltip mouseEnterDelay={0.6} title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}>
+              <Tooltip mouseEnterDelay={0.6} overlayClassName='n9e-log-field-action-tip' title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}>
                 <Button
                   aria-label={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}
                   aria-pressed={searchActive}

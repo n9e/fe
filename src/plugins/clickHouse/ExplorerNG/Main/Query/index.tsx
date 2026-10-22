@@ -382,6 +382,7 @@ export default function index(props: Props) {
               filterFields={(fieldKeys) => {
                 return filteredFields(fieldKeys, organizeFields);
               }}
+              supportsStacking
               histogramAddonBeforeRender={
                 stackByField ? (
                   <Popover

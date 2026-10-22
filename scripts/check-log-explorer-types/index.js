@@ -23,6 +23,22 @@ const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, workspace, u
 if (parsed.errors.length) fail(parsed.errors);
 
 const scopes = [
+  'src/components/SideMenu/index.tsx',
+  'src/pages/logExplorer/components/LogsViewer/components/Table/components/CellExpanderFormatter.tsx',
+  'src/pages/logExplorer/components/LogsViewer/utils/getColumnsFromFields.tsx',
+  'src/pages/logExplorer/index.tsx',
+  'src/pages/logExplorer/components/QueryInput.tsx',
+  'src/pages/logExplorer/components/LogsViewer/components/Table/index.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/index.tsx',
+  'src/plugins/clickHouse/ExplorerNG/Main/Query/index.tsx',
+  'src/pages/logExplorer/components/Guidance',
+  'src/pages/logExplorer/components/LogsViewer/components/SortIndicator.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/QueryInput.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/queryErrorPolicy.ts',
+  'src/plugins/doris/ExplorerNG/Main/Query/queryErrorPolicy.test.ts',
+  'src/plugins/doris/ExplorerNG/Main/Query/useQuerySyntaxError.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/useQuerySyntaxError.test.tsx',
+  'src/plugins/doris/services.ts',
   'src/pages/logExplorer/components/LogsViewer/index.tsx',
   'src/pages/logExplorer/components/LogsViewer/Raw.tsx',
   'src/pages/logExplorer/components/LogsViewer/Clustering/Table.tsx',

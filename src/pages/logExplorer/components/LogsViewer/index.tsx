@@ -14,6 +14,7 @@ import { NAME_SPACE } from '../../constants';
 import { Field } from '../../components/FieldsList/types';
 import FullscreenButton from '../../components/FullscreenButton';
 import HistogramChart from './components/HistogramChart';
+import { StackHelp } from '../Guidance';
 import HistogramActionButton from './components/HistogramActionButton';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
@@ -74,6 +75,7 @@ interface Props {
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
   stacked?: boolean;
+  supportsStacking?: boolean;
   colWidths?: { [key: string]: number };
   tableColumnsWidthCacheKey?: string;
   showPageLoadMode?: boolean;
@@ -329,16 +331,21 @@ export default function LogsViewer(props: Props) {
           <>
             {!hideHistogram && (
               <div ref={histogramRef} className='n9e-log-histogram flex-shrink-0'>
-                <div className={`n9e-log-histogram-header${!histogramVisible ? ' n9e-log-histogram-header-compact' : ''}`}>
+                <div className='n9e-log-histogram-header'>
                   {props.histogramFilters && <div className='n9e-log-histogram-filters'>{props.histogramFilters}</div>}
                   <div className='n9e-log-histogram-toolbar'>
-                    <div className='n9e-log-histogram-context' hidden={!histogramVisible}>
-                      <Space>
-                        {histogramAddonBeforeRender}
-                        <Spin spinning={histogramLoading} size='small' />
-                      </Space>
+                    <div className='n9e-log-histogram-meta'>
+                      <div className='n9e-log-histogram-context' hidden={!histogramVisible || (!histogramAddonBeforeRender && !histogramLoading && !props.supportsStacking)}>
+                        <Space size={6} align='center'>
+                          {histogramAddonBeforeRender}
+                          {histogramLoading && <Spin size='small' />}
+                          {props.supportsStacking && histogramVisible && (
+                            <StackHelp ready={!stacked && !loading && !histogramLoading && !!histogram?.some((series) => series.data.length > 0)} />
+                          )}
+                        </Space>
+                      </div>
+                      {renderHistogramAddonAfterRender ? renderHistogramAddonAfterRender(histogramActions) : histogramActions}
                     </div>
-                    <div className='n9e-log-histogram-meta'>{renderHistogramAddonAfterRender ? renderHistogramAddonAfterRender(histogramActions) : histogramActions}</div>
                   </div>
                 </div>
                 <div id={histogramId} className='h-[120px] flex-shrink-0' hidden={!histogramVisible}>

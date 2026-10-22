@@ -17,6 +17,7 @@ import { getLocalActiveKey } from './utils/getLocalActiveKey';
 import getDefaultDatasourceCate from './utils/getDefaultDatasourceCate';
 import { isLogExplorerDatasourceCateSupported } from './utils/datasourceAvailability';
 import Header from './Header';
+import { GuidanceProvider } from './components/Guidance';
 import Explorer from './Explorer';
 
 interface TabItem {
@@ -131,7 +132,7 @@ function TabExplorer({
 
 export default function index() {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, profile } = useContext(CommonStateContext);
   const location = useLocation();
   const history = useHistory();
   const params = queryString.parse(location.search) as { [index: string]: string | null };
@@ -264,19 +265,21 @@ export default function index() {
       }
       doc={IS_ENT ? '/docs/content/flashcat/log/discover/what-is-log-discover/' : undefined}
     >
-      <div className='n9e n9e-log-explorer-page'>
-        {_.map(items, (item, itemIndex) => {
-          // P2 方案A：不在 LRU 保活范围内的页签直接卸载（切回时基于 formValues 恢复重查）
-          if (!mountedKeys.has(item.key)) {
-            return null;
-          }
-          return (
-            <div key={item.key} className='h-full w-full' style={{ display: item.key === activeKey ? 'block' : 'none' }}>
-              <TabExplorer item={item} itemIndex={itemIndex} active={item.key === activeKey} setItems={setItems} persistItems={persistItems} />
-            </div>
-          );
-        })}
-      </div>
+      <GuidanceProvider userKey={String(profile?.id ?? 'anonymous')}>
+        <div className='n9e n9e-log-explorer-page'>
+          {_.map(items, (item, itemIndex) => {
+            // P2 方案A：不在 LRU 保活范围内的页签直接卸载（切回时基于 formValues 恢复重查）
+            if (!mountedKeys.has(item.key)) {
+              return null;
+            }
+            return (
+              <div key={item.key} className='h-full w-full' style={{ display: item.key === activeKey ? 'block' : 'none' }}>
+                <TabExplorer item={item} itemIndex={itemIndex} active={item.key === activeKey} setItems={setItems} persistItems={persistItems} />
+              </div>
+            );
+          })}
+        </div>
+      </GuidanceProvider>
     </PageLayout>
   );
 }

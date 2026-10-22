@@ -9,6 +9,7 @@ import RowDetail from './components/RowDetail';
 
 import './style.less';
 import useExternalGridScroll from '../../utils/useExternalGridScroll';
+import SortIndicator from '../SortIndicator';
 
 declare type Maybe<T> = T | undefined | null;
 
@@ -177,6 +178,7 @@ export default function Table<Row>(props: Props<Row>) {
     <div ref={shellRef} style={{ height: totalHeight }} className='n9e-log-grid-shell'>
       <DataGrid
         ref={gridRef}
+        renderers={{ sortIcon: SortIndicator }}
         style={{ height: viewportHeight, position: 'sticky', top, overflowY: 'hidden' }}
         rowKeyGetter={(row) => row.__id}
         columns={ajustedColumns}

@@ -77,6 +77,7 @@ export default function index(props: IProps) {
   return (
     <div className='h-full flex flex-col flex-shrink-0'>
       <FieldsList
+        helpCapabilities={{ stack: true }}
         typeMap={fieldTypeMap}
         loading={loading}
         organizeFieldNames={organizeFields}

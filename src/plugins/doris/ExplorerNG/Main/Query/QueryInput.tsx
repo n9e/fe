@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { Space, Form, Popover, Tooltip, Button } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
@@ -15,6 +14,7 @@ import { NAME_SPACE } from '../../../constants';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from '../../SideBarNav/FieldsSidebar/DefaultSearchIcon';
 import QueryInputAddonAfter from '../../components/QueryInputAddonAfter';
 import UsageDocs from '@/components/UsageDocs';
+import { HelpTip, useGuidance } from '@/pages/logExplorer/components/Guidance';
 
 interface Props {
   snapRangeRef: React.MutableRefObject<{
@@ -40,15 +40,20 @@ export default function QueryInputCpt(props: Props) {
 
   const { snapRangeRef, executeQuery, defaultSearchField, setDefaultSearchField, queryExtra, noticeBanner, queryBoxRef, onQueryEdit } = props;
 
+  const guide = useGuidance('query', !defaultSearchField);
+
   return (
     <QueryBoxColumn className='min-w-0 doris-log-query-controls' prefixed={!!queryExtra} below={noticeBanner}>
       <InputGroupWithFormItem
         label={
-          <Space>
+          <span className='n9e-log-help-label'>
             {t(`${logExplorerNS}:query`)}
             <UsageDocs>
-              <InfoCircleOutlined
-                onClick={() => {
+              <HelpTip
+                kind='query'
+                guide={guide}
+                defaultSearch
+                onDocs={() => {
                   DocumentDrawer({
                     language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
                     darkMode,
@@ -59,7 +64,7 @@ export default function QueryInputCpt(props: Props) {
                 }}
               />
             </UsageDocs>
-          </Space>
+          </span>
         }
         addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
       >
@@ -70,6 +75,9 @@ export default function QueryInputCpt(props: Props) {
             name={['query', 'query']}
           >
             <QueryInput
+              onFocus={() => guide.schedule(800)}
+              onInput={guide.cancel}
+              onBlur={guide.stopPending}
               onEnterPress={() => {
                 snapRangeRef.current = {
                   from: undefined,

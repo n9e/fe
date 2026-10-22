@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import { NAME_SPACE } from '../../constants';
 import FieldsItem from './FieldsItem';
+import { FieldsHelp } from '../Guidance';
 import { TYPE_MAP } from './constants';
 import { Field, StatsResult, FieldActionOptions } from './types';
 
@@ -17,6 +18,7 @@ export type { Field } from './types';
 
 interface Props {
   typeMap?: Record<string, string>;
+  helpCapabilities?: { defaultSearch?: boolean; stack?: boolean };
   organizeFieldNames?: string[];
   onOperClick: (field: string, type: 'show' | 'available') => void;
   fields: Field[];
@@ -127,11 +129,12 @@ export default function index(props: Props) {
             </div>
           )}
           <div>
-            <div className='font-bold ml-2 mb-2'>
+            <div className='n9e-log-help-label font-bold ml-2 mb-2'>
               <Space className='cursor-pointer' onClick={() => setAvailableFieldsCollapsed(!availableFieldsCollapsed)}>
                 {availableFieldsCollapsed ? <RightOutlined /> : <DownOutlined />}
                 {t('field_list.available_fields')}
               </Space>
+              <FieldsHelp {...props.helpCapabilities} />
             </div>
             <div style={{ display: availableFieldsCollapsed ? 'none' : 'block' }}>
               {_.map(

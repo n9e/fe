@@ -14,6 +14,7 @@ interface Props {
   onEnterPress?: (value?: string) => void;
   onBlur?: () => void;
   onFocus?: () => void;
+  onInput?: () => void;
 }
 
 export default function QueryInput(props: Props) {
@@ -49,6 +50,7 @@ export default function QueryInput(props: Props) {
       placeholder={props.placeholder}
       value={currentValue}
       onChange={(e) => {
+        props.onInput?.();
         setCurrentValue(e.target.value);
       }}
       onBlur={() => {

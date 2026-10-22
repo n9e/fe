@@ -1,4 +1,5 @@
 import request from '@/utils/request';
+import type { RequestOptionsInit } from 'umi-request';
 import { RequestMethod } from '@/store/common';
 import { DorisDBParams, DorisDBTableParams } from './types';
 import { Field, FieldSampleParams, FilterConfig, AggregateConfig } from './ExplorerNG/types';
@@ -114,24 +115,28 @@ export function getDorisIndex(data: BaseParams & { database: string; table: stri
   });
 }
 
-export function getDorisHistogram(data: {
-  cate: string;
-  datasource_id: number;
-  query: [
-    {
-      database: string;
-      table: string;
-      time_field: string;
-      from: number;
-      to: number;
-      query: string;
-      query_builder_filter?: FilterConfig[];
-      group_by?: string;
-      default_field?: string;
-    },
-  ];
-}): Promise<any[]> {
+export function getDorisHistogram(
+  data: {
+    cate: string;
+    datasource_id: number;
+    query: [
+      {
+        database: string;
+        table: string;
+        time_field: string;
+        from: number;
+        to: number;
+        query: string;
+        query_builder_filter?: FilterConfig[];
+        group_by?: string;
+        default_field?: string;
+      },
+    ];
+  },
+  options?: Pick<RequestOptionsInit, 'errorHandler'>,
+): Promise<any[]> {
   return request('/api/n9e-plus/doris-histogram', {
+    ...options,
     method: RequestMethod.Post,
     data: {
       ...data,
@@ -143,28 +148,32 @@ export function getDorisHistogram(data: {
   }).then((res) => res.dat || []);
 }
 
-export function getDorisLogsQuery(data: {
-  cate: string;
-  datasource_id: number;
-  query: {
-    database: string;
-    table: string;
-    time_field: string;
-    query: string;
-    query_builder_filter?: FilterConfig[];
-    from: number;
-    to: number;
-    lines: number;
-    offset: number;
-    reverse: boolean;
-    default_field?: string;
-    highlight?: boolean;
-  }[];
-}): Promise<{
+export function getDorisLogsQuery(
+  data: {
+    cate: string;
+    datasource_id: number;
+    query: {
+      database: string;
+      table: string;
+      time_field: string;
+      query: string;
+      query_builder_filter?: FilterConfig[];
+      from: number;
+      to: number;
+      lines: number;
+      offset: number;
+      reverse: boolean;
+      default_field?: string;
+      highlight?: boolean;
+    }[];
+  },
+  options?: Pick<RequestOptionsInit, 'errorHandler'>,
+): Promise<{
   list: { [index: string]: string }[];
   total: number;
 }> {
   return request('/api/n9e-plus/doris-logs-query', {
+    ...options,
     method: RequestMethod.Post,
     data: {
       ...data,

@@ -147,14 +147,14 @@ export default function getColumnsFromFields(params: {
         const idx = getRowIndex(row);
         return (
           <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
-            <div
-              className='cursor-pointer'
+            <span
+              className='inline-flex cursor-pointer'
               onClick={() => {
                 setLogViewerDrawerState?.({ visible: true, currentIndex: idx });
               }}
             >
               {timeFieldColumnFormat ? timeFieldColumnFormat(row[time_field]) : moment(row[time_field]).format('MM-DD HH:mm:ss.SSS')}
-            </div>
+            </span>
           </Tooltip>
         );
       },
@@ -171,14 +171,14 @@ export default function getColumnsFromFields(params: {
         const idx = getRowIndex(row);
         return (
           <Tooltip title={i18next.t('log_explorer:log_viewer_drawer_trigger_tip')}>
-            <div
-              className='cursor-pointer'
+            <span
+              className='inline-flex cursor-pointer'
               onClick={() => {
                 setLogViewerDrawerState?.({ visible: true, currentIndex: idx });
               }}
             >
               {linesColumnFormat ? linesColumnFormat(idx + 1) : idx + 1}
-            </div>
+            </span>
           </Tooltip>
         );
       },
