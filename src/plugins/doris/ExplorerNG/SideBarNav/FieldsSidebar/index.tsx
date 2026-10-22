@@ -39,6 +39,7 @@ export default function index(props: IProps) {
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
   const refreshFlag = Form.useWatch('refreshFlag');
+  const isSQL = queryValues?.syntax === 'sql';
   const statsCacheKey = JSON.stringify([
     datasourceValue,
     _.pick(queryValues, ['database', 'table', 'time_field', 'range', 'query', 'query_builder_filter', 'syntax']),
@@ -71,21 +72,25 @@ export default function index(props: IProps) {
   return (
     <div className='h-full flex flex-col flex-shrink-0'>
       <FieldsList
-        helpCapabilities={{ defaultSearch: queryValues?.syntax !== 'sql', stack: true }}
+        helpCapabilities={isSQL ? false : { defaultSearch: true, stack: true }}
         loading={loading}
-        organizeFieldNames={organizeFields}
+        organizeFieldNames={isSQL ? undefined : organizeFields}
         disableEmptyValueClick={false}
-        onOperClick={(field, type) => {
-          if (type === 'show') {
-            setOrganizeFields(
-              _.filter(organizeFields, (item) => {
-                return item !== field;
-              }),
-            );
-          } else if (type === 'available') {
-            setOrganizeFields(_.uniq(_.concat(organizeFields, [field])));
-          }
-        }}
+        onOperClick={
+          isSQL
+            ? undefined
+            : (field, type) => {
+                if (type === 'show') {
+                  setOrganizeFields(
+                    _.filter(organizeFields, (item) => {
+                      return item !== field;
+                    }),
+                  );
+                } else if (type === 'available') {
+                  setOrganizeFields(_.uniq(_.concat(organizeFields, [field])));
+                }
+              }
+        }
         fields={data}
         onValueFilter={
           queryValues?.syntax === 'sql'
@@ -155,40 +160,48 @@ export default function index(props: IProps) {
             ) as any,
           };
         }}
-        renderStatsPopoverTitleExtra={({ index, getUniqueCount, statsScope, setTopNVisible }) => {
-          const active = stackByField === index.field;
-          const searchActive = defaultSearchField === index.field;
-          const title = t(active ? 'query.stack_tip_unpin' : 'query.stack_tip_pin');
-          return (
-            <Space>
-              <FieldStackButton
-                active={active}
-                title={title}
-                icon={<PinIcon className='text-[14px]' />}
-                getUniqueCount={getUniqueCount}
-                statsScope={statsScope}
-                onChange={() => {
-                  setStackByField(active ? undefined : index.field);
-                  setTopNVisible(false);
-                }}
-              />
-              <Tooltip mouseEnterDelay={0.6} overlayClassName='n9e-log-field-action-tip' title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}>
-                <Button
-                  aria-label={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}
-                  aria-pressed={searchActive}
-                  className={searchActive ? 'n9e-log-field-search-active' : undefined}
-                  icon={<DefaultSearchIcon className='text-[14px]' />}
-                  type='text'
-                  size='small'
-                  onClick={() => {
-                    setDefaultSearchField(searchActive ? undefined : index.field);
-                    setTopNVisible(false);
-                  }}
-                />
-              </Tooltip>
-            </Space>
-          );
-        }}
+        renderStatsPopoverTitleExtra={
+          isSQL
+            ? undefined
+            : ({ index, getUniqueCount, statsScope, setTopNVisible }) => {
+                const active = stackByField === index.field;
+                const searchActive = defaultSearchField === index.field;
+                const title = t(active ? 'query.stack_tip_unpin' : 'query.stack_tip_pin');
+                return (
+                  <Space>
+                    <FieldStackButton
+                      active={active}
+                      title={title}
+                      icon={<PinIcon className='text-[14px]' />}
+                      getUniqueCount={getUniqueCount}
+                      statsScope={statsScope}
+                      onChange={() => {
+                        setStackByField(active ? undefined : index.field);
+                        setTopNVisible(false);
+                      }}
+                    />
+                    <Tooltip
+                      mouseEnterDelay={0.6}
+                      overlayClassName='n9e-log-field-action-tip'
+                      title={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}
+                    >
+                      <Button
+                        aria-label={t(searchActive ? 'query.default_search_tip_2' : 'query.default_search_tip_1')}
+                        aria-pressed={searchActive}
+                        className={searchActive ? 'n9e-log-field-search-active' : undefined}
+                        icon={<DefaultSearchIcon className='text-[14px]' />}
+                        type='text'
+                        size='small'
+                        onClick={() => {
+                          setDefaultSearchField(searchActive ? undefined : index.field);
+                          setTopNVisible(false);
+                        }}
+                      />
+                    </Tooltip>
+                  </Space>
+                );
+              }
+        }
         onStatisticClick={(type, options) => {
           const range = parseRange(queryValues.range);
 

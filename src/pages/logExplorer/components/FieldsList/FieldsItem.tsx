@@ -16,7 +16,7 @@ const DEFAULT_TOP_NUMBER = 5;
 
 interface Props {
   operType: 'show' | 'available';
-  onOperClick: () => void;
+  onOperClick?: () => void;
   typeMap: Record<string, string>;
   field: Field;
   enableStats: boolean;
@@ -419,15 +419,17 @@ export default function FieldsItem(props: Props) {
               getUniqueCount: props.getUniqueCount ? () => props.getUniqueCount!(field) : undefined,
               statsScope: props.statsScope,
             })}
-          <Tooltip mouseEnterDelay={0.6} overlayClassName='n9e-log-field-action-tip' title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
-            <Button
-              type='text'
-              size='small'
-              aria-label={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}
-              icon={operIconMap[operType]}
-              onClick={onOperClick}
-            />
-          </Tooltip>
+          {onOperClick && (
+            <Tooltip mouseEnterDelay={0.6} overlayClassName='n9e-log-field-action-tip' title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
+              <Button
+                type='text'
+                size='small'
+                aria-label={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}
+                icon={operIconMap[operType]}
+                onClick={onOperClick}
+              />
+            </Tooltip>
+          )}
         </span>
       </div>
     </Popover>

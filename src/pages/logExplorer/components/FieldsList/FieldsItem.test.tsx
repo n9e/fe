@@ -126,3 +126,11 @@ it('retains its resize observer across renders and measures changed pressed acti
     global.ResizeObserver = original;
   }
 });
+
+it('keeps the field statistics accessible without a field display action', async () => {
+  const fetchStats = jest.fn().mockResolvedValue(result);
+  render(<FieldsItem operType='available' enableStats field={field} typeMap={{ string: 'string' }} fetchStats={fetchStats} />);
+  expect(screen.queryByRole('button', { name: 'field_list.add_field' })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByTitle('severity'));
+  await waitFor(() => expect(fetchStats).toHaveBeenCalledTimes(1));
+});
