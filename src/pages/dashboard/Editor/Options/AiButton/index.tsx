@@ -105,11 +105,9 @@ export default function AiButtonOptions() {
           const style = getFieldValue([...namePrefix, 'style']);
           return (
             <>
-              {style === 'icon' ? null : (
-                <Form.Item label={t('panel.custom.aiButton.text')} name={[...namePrefix, 'text']}>
-                  <Input placeholder={t('panel.custom.aiButton.text_placeholder', { name: DEFAULT_LABEL })} />
-                </Form.Item>
-              )}
+              <Form.Item label={t('panel.custom.aiButton.text')} tooltip={t('panel.custom.aiButton.text_tip')} name={[...namePrefix, 'text']}>
+                <Input placeholder={t('panel.custom.aiButton.text_placeholder', { name: DEFAULT_LABEL })} />
+              </Form.Item>
               {style === 'antd' ? (
                 <Form.Item label={t('panel.custom.aiButton.type')} name={[...namePrefix, 'type']}>
                   <Select

@@ -8,13 +8,6 @@ import type { IPanel } from '../../../types';
 
 const mockOpen = jest.fn();
 
-jest.mock('@/App', () => {
-  const ReactActual = jest.requireActual('react');
-  return {
-    CommonStateContext: ReactActual.createContext({ aiStatus: true }),
-  };
-});
-
 jest.mock('@/utils/constant', () => ({
   IS_ENT: false,
 }));
@@ -59,7 +52,7 @@ test('renders the capsule, icon and antd button styles', () => {
   capsule.unmount();
 
   const icon = renderButton({ style: 'icon', text: 'Ask AI' });
-  const iconButton = screen.getByRole('button', { name: 'Nightingale AI' });
+  const iconButton = screen.getByRole('button', { name: 'Ask AI' });
   const images = iconButton.querySelectorAll('img');
   expect(images).toHaveLength(2);
   expect(images[0]).toHaveAttribute('src', 'ai_chat_icon.svg');

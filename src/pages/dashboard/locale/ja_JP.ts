@@ -637,6 +637,7 @@ const ja_JP = {
         style_icon: 'アイコン',
         style_antd: 'Ant Design',
         text: 'ボタンテキスト',
+        text_tip: 'アイコンスタイルでは、ホバー時のツールチップに表示されます。それ以外のスタイルでは、ボタン上に表示されます。',
         text_placeholder: '空の場合は {{name}} を表示',
         type: 'ボタンタイプ',
         prompt: 'プロンプト',

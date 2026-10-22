@@ -639,6 +639,7 @@ const en_US = {
         style_icon: 'Icon',
         style_antd: 'Ant Design',
         text: 'Button text',
+        text_tip: 'For the Icon style, this text appears in the hover tooltip. For other styles, it appears on the button.',
         text_placeholder: 'Shows {{name}} when empty',
         type: 'Button type',
         prompt: 'Prompt',

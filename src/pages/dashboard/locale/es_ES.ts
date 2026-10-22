@@ -558,6 +558,7 @@ const es_ES = {
         style_icon: 'Icono',
         style_antd: 'Ant Design',
         text: 'Texto del botón',
+        text_tip: 'En el estilo de icono, este texto aparece en la ayuda al pasar el cursor. En los demás estilos, aparece en el botón.',
         text_placeholder: 'Muestra {{name}} si está vacío',
         type: 'Tipo de botón',
         prompt: 'Prompt',

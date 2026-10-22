@@ -642,6 +642,7 @@ const zh_CN = {
         style_icon: '图标',
         style_antd: 'Ant Design',
         text: '按钮文字',
+        text_tip: '选择图标样式时，作为图标悬浮提示文字；其他样式时，显示在按钮上。',
         text_placeholder: '为空时显示 {{name}}',
         type: '按钮类型',
         prompt: '提示词',

@@ -552,6 +552,7 @@ const ko_KR = {
         style_icon: '아이콘',
         style_antd: 'Ant Design',
         text: '버튼 텍스트',
+        text_tip: '아이콘 스타일에서는 마우스를 올렸을 때 툴팁에 표시됩니다. 다른 스타일에서는 버튼에 표시됩니다.',
         text_placeholder: '비어 있으면 {{name}} 표시',
         type: '버튼 유형',
         prompt: '프롬프트',
