@@ -18,9 +18,9 @@ export type { Field } from './types';
 
 interface Props {
   typeMap?: Record<string, string>;
-  helpCapabilities?: { defaultSearch?: boolean; stack?: boolean };
+  helpCapabilities?: false | { defaultSearch?: boolean; stack?: boolean };
   organizeFieldNames?: string[];
-  onOperClick: (field: string, type: 'show' | 'available') => void;
+  onOperClick?: (field: string, type: 'show' | 'available') => void;
   fields: Field[];
   enableStats?: boolean;
   disableEmptyValueClick?: boolean;
@@ -108,9 +108,7 @@ export default function index(props: Props) {
                       <FieldsItem
                         key={item.field}
                         operType='show'
-                        onOperClick={() => {
-                          onOperClick(item.field, 'show');
-                        }}
+                        onOperClick={onOperClick ? () => onOperClick(item.field, 'show') : undefined}
                         field={item}
                         disableEmptyValueClick={disableEmptyValueClick}
                         onValueFilter={onValueFilter}
@@ -135,7 +133,7 @@ export default function index(props: Props) {
                 {availableFieldsCollapsed ? <RightOutlined /> : <DownOutlined />}
                 {t('field_list.available_fields')}
               </Space>
-              <FieldsHelp {...props.helpCapabilities} />
+              {props.helpCapabilities !== false && <FieldsHelp {...props.helpCapabilities} />}
             </div>
             <div style={{ display: availableFieldsCollapsed ? 'none' : 'block' }}>
               {_.map(
@@ -150,9 +148,7 @@ export default function index(props: Props) {
                   return (
                     <FieldsItem
                       key={item.field}
-                      onOperClick={() => {
-                        onOperClick(item.field, 'available');
-                      }}
+                      onOperClick={onOperClick ? () => onOperClick(item.field, 'available') : undefined}
                       operType='available'
                       field={item}
                       disableEmptyValueClick={disableEmptyValueClick}
