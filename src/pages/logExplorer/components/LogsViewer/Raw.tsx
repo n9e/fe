@@ -4,7 +4,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, Empty, Space } from 'antd';
-import { CaretDownOutlined, CaretRightOutlined, CaretUpOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretRightOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Virtuoso } from 'react-virtuoso';
 import { useClickAway } from 'ahooks';
 
@@ -433,31 +433,24 @@ interface RawHeaderProps {
 
 /**
  * P1-2: Origin 模式自定义表头（替代 antd Table 的 thead）。
- * 复用 antd 的 thead/th/sorter 类名以获得一致的表头样式；时间列排序为本地状态切换，回调仍走 onReverseChange。
+ * 样式与表格/聚类的 RDG 表头保持一致；时间列排序仍走 onReverseChange。
  */
 const RawHeader = React.memo(function RawHeader({ showLines, showTime, timeColumnWidth, sortOrder, onToggleSort }: RawHeaderProps) {
   const { t } = useTranslation(NAME_SPACE);
   return (
     <div className='n9e-log-explorer-raw-header flex-shrink-0 overflow-hidden'>
       <table className='w-full' style={{ tableLayout: 'fixed' }}>
-        <thead className='ant-table-thead'>
+        <thead>
           <tr>
             <th className='ant-table-row-expand-icon-cell' style={{ width: 48 }} />
             {showLines && <th style={{ width: 50 }}>{t('logs.settings.lines')}</th>}
             {showTime && (
-              <th className='ant-table-column-sort ant-table-column-has-sorters cursor-pointer select-none' style={{ width: timeColumnWidth }} onClick={onToggleSort}>
-                <span className='ant-table-column-sorters'>
-                  <span className='ant-table-column-title'>{t('logs.settings.time')}</span>
-                  <span className='ant-table-column-sorter'>
-                    <span className='ant-table-column-sorter-inner'>
-                      <span className={`ant-table-column-sorter-up ${sortOrder === 'ascend' ? 'active' : ''}`}>
-                        <CaretUpOutlined />
-                      </span>
-                      <span className={`ant-table-column-sorter-down ${sortOrder === 'descend' ? 'active' : ''}`}>
-                        <CaretDownOutlined />
-                      </span>
-                    </span>
-                  </span>
+              <th className='cursor-pointer select-none' style={{ width: timeColumnWidth }} aria-sort={sortOrder === 'ascend' ? 'ascending' : 'descending'} onClick={onToggleSort}>
+                <span className='n9e-log-raw-header-sort'>
+                  <span>{t('logs.settings.time')}</span>
+                  <svg viewBox='0 0 12 8' width='12' height='8' fill='currentColor' aria-hidden='true'>
+                    <path d={sortOrder === 'ascend' ? 'M0 8 6 0 12 8' : 'M0 0 6 8 12 0'} />
+                  </svg>
                 </span>
               </th>
             )}
