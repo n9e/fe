@@ -28,7 +28,7 @@ import ResultsScrollListener from './ResultsScrollListener';
 import usePinnedHistogram from './utils/usePinnedHistogram';
 import DrilldownBtn, { type DrilldownInitialValues } from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
-interface Props {
+export interface Props {
   /** 时间字段 */
   timeField?: string;
   /** 直方图数据 */
@@ -72,6 +72,12 @@ interface Props {
   histogramAddonBeforeRender?: React.ReactNode;
   renderHistogramAddonAfterRender?: (toggleNode: React.ReactNode) => React.ReactNode;
   optionsExtraRender?: React.ReactNode;
+  /** 日志结果工具栏中的扩展操作，紧跟全屏按钮展示。 */
+  resultActions?: React.ReactNode;
+  /** 固定操作列扩展。detail 是现有的查看详情按钮。 */
+  rowActionsRender?: (row: Record<string, any>, index: number, detail: React.ReactNode) => React.ReactNode;
+  /** 隐藏行号上的查看详情提示；操作列仍保留独立提示。 */
+  hideLineNumberDetailTooltip?: boolean;
   showDateField?: boolean;
   stacked?: boolean;
   supportsStacking?: boolean;
@@ -169,6 +175,9 @@ export default function LogsViewer(props: Props) {
     histogramAddonBeforeRender,
     renderHistogramAddonAfterRender,
     optionsExtraRender,
+    resultActions,
+    rowActionsRender,
+    hideLineNumberDetailTooltip,
     showDateField = true,
     stacked = false,
     colWidths,
@@ -411,6 +420,7 @@ export default function LogsViewer(props: Props) {
                 setOrganizeFields={setOrganizeFields}
               />
               <FullscreenButton />
+              {logMode !== 'clustering' && resultActions}
               <Spin spinning={loading} size='small' />
             </Space>
             {logMode === 'clustering' && isClusteringEnabled ? (
@@ -449,6 +459,8 @@ export default function LogsViewer(props: Props) {
                   timeColumnWidth={timeColumnWidth}
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
+                  rowActionsRender={rowActionsRender}
+                  hideLineNumberDetailTooltip={hideLineNumberDetailTooltip}
                   logViewerExtraRender={logViewerExtraRender}
                   logViewerFilterFields={logViewerFilterFields}
                   logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}
@@ -486,6 +498,8 @@ export default function LogsViewer(props: Props) {
                   timeColumnWidth={timeColumnWidth}
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
+                  rowActionsRender={rowActionsRender}
+                  hideLineNumberDetailTooltip={hideLineNumberDetailTooltip}
                   logViewerExtraRender={logViewerExtraRender}
                   logViewerFilterFields={logViewerFilterFields}
                   logViewerRenderCustomTagsArea={logViewerRenderCustomTagsArea}

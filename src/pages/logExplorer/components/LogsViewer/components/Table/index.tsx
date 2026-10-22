@@ -31,6 +31,7 @@ interface Props<Row> {
     expandedRowRender?: (row: Row) => React.ReactNode;
     expandIcon?: (params: { expanded: boolean; onExpand: (expanded: boolean) => void; row: RowExtra<Row> }) => React.ReactNode;
     onExpandIconClick?: (row: RowExtra<Row>) => void;
+    rowActionsRender?: (row: Row, detail: React.ReactNode) => React.ReactNode;
   };
   sortColumns?: Maybe<readonly SortColumn[]>;
   onSortColumnsChange?: Maybe<(sortColumns: SortColumn[]) => void>;
@@ -120,8 +121,9 @@ export default function Table<Row>(props: Props<Row>) {
       const extraColumn: Column<RowExtra<Row>> = {
         key: 'expanded',
         name: '',
-        minWidth: 30,
-        width: 30,
+        minWidth: expandable.rowActionsRender ? 64 : 30,
+        width: expandable.rowActionsRender ? 64 : 30,
+        cellClass: expandable.rowActionsRender ? 'n9e-log-row-actions-cell' : undefined,
         resizable: false,
         frozen: true,
         colSpan(args) {
@@ -140,7 +142,7 @@ export default function Table<Row>(props: Props<Row>) {
             );
           }
 
-          return (
+          const detail = (
             <CellExpanderFormatter
               expanded={row.__expanded}
               onCellExpand={() => {
@@ -152,13 +154,14 @@ export default function Table<Row>(props: Props<Row>) {
               }}
             />
           );
+          return expandable.rowActionsRender ? expandable.rowActionsRender(row, detail) : detail;
         },
       };
       return [extraColumn, ...baseColumns];
     }
 
     return baseColumns;
-  }, [columns, handleHeightChange, rowKeyGetterExtra]);
+  }, [columns, expandable, handleHeightChange, rowKeyGetterExtra]);
 
   const shellRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<DataGridHandle>(null);

@@ -5,7 +5,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useRequest, useGetState } from 'ahooks';
 
-import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import { DatasourceCateEnum, IS_ENT, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS, DEFAULT_FLATTEN_DEPTH } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
@@ -26,6 +26,7 @@ import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
 import { HandleValueFilterParams } from '../../types';
 import QueryBuilderFilters from './QueryBuilderFilters';
 import useQuerySyntaxError from './useQuerySyntaxError';
+import { bindDorisLogAnalysisRows, captureDorisLogAnalysisRequest, useDorisLogAnalysisViewerProps } from 'plus:/parcels/DorisLogAnalysis';
 
 // @ts-ignore
 import DownloadModal from '@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal';
@@ -181,6 +182,7 @@ export default function index(props: Props) {
         ],
       };
       queryStrRef.current = JSON.stringify(reqData);
+      const logAnalysisSnapshot = IS_ENT ? captureDorisLogAnalysisRequest(reqData) : undefined;
       return getDorisLogsQuery(reqData)
         .then((res) => {
           if (fixedRangeRef.current === false) {
@@ -204,6 +206,7 @@ export default function index(props: Props) {
               ___id___: _.uniqueId('log_id_'),
             };
           });
+          if (IS_ENT) bindDorisLogAnalysisRows(newLogs, logAnalysisSnapshot);
           if (!queryRequest?.signal.aborted) queryRequest?.complete({ empty: newLogs.length === 0, count: res.total ?? newLogs.length });
           if (appendRef.current) {
             appendRef.current = false;
@@ -270,6 +273,14 @@ export default function index(props: Props) {
     any
   >(service, {
     refreshDeps: [JSON.stringify(serviceParams)],
+  });
+
+  const logAnalysisViewerProps = useDorisLogAnalysisViewerProps({
+    enabled: IS_ENT,
+    logs: data?.list || [],
+    loading,
+    total: data?.total,
+    lineOffset: pageLoadMode === 'infiniteScroll' ? 0 : serviceParams.pageSize * (serviceParams.current - 1),
   });
 
   const histogramService = () => {
@@ -592,6 +603,7 @@ export default function index(props: Props) {
                 return { isIndex: !!indexName, indexName };
               }}
               range={queryValues?.range}
+              {...logAnalysisViewerProps}
             />
           ) : loading || histogramLoading ? (
             <div className='flex justify-center'>
