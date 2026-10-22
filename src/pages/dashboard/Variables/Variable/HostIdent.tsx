@@ -140,6 +140,9 @@ export default function HostIdent(props: Props) {
               } else if (_.includes(v, 'all')) {
                 val = _.without(v, 'all');
               }
+            } else if (!multi && v === undefined) {
+              // 单选清空时 antd 传入 undefined，转为 '' 以便缓存清空状态，下次访问仍保持清空
+              val = '';
             }
             setValue(val);
             updateVariable(name, {
