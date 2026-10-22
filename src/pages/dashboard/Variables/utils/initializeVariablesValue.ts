@@ -8,7 +8,8 @@ type VariableRuntimeValue = string | number | (string | null)[] | null | undefin
 /**
  * 初始化变量的值
  * 从 URL 参数、localStorage 中读取变量值
- * 除 textbox 外，变量值为空时设置为 undefined，这里不设置为 null 是为了兼容 input 和 select 组件
+ * 除 textbox 外，未赋值的空值设置为 undefined，这里不设置为 null 是为了兼容 input 和 select 组件
+ * localStorage 中的显式清空（原文为 '' 或 '[]'）按当前单选/多选恢复为 '' 或 []，不再当作未赋值
  * @param variables 变量列表
  * @param queryParams 查询参数
  * @param params 其他参数
@@ -27,11 +28,16 @@ export default function initializeVariablesValue(
     const variableName = variablesItem.name;
     const isTextbox = variablesItem.type === 'textbox';
     let variableValue: VariableRuntimeValue = queryParams[variableName];
+    // localStorage 原文为 '' 或 '[]' 时，表示用户明确清空过，需要和“从未赋值”区分开
+    let explicitlyCleared = false;
     // 如果没有固定 URL 参数值，则从 localStorage 读取缓存值
     if (queryParams.__variable_value_fixed === undefined) {
       if (variableValue === undefined) {
         const cachedValue = localStorage.getItem(`dashboard_v6_${dashboardId}_${variableName}`);
         variableValue = cachedValue;
+        if (cachedValue === '' || cachedValue === '[]') {
+          explicitlyCleared = true;
+        }
         if (cachedValue) {
           try {
             if (cachedValue.startsWith('[')) {
@@ -53,6 +59,9 @@ export default function initializeVariablesValue(
       if (variableValue === null || variableValue === undefined) {
         variableValue = variablesItem.defaultValue ?? '';
       }
+    } else if (explicitlyCleared && variablesItem.type !== 'datasource') {
+      // 与当前单选/多选对齐，兼容清空后在编辑里切换了 multi
+      variableValue = variablesItem.multi ? [] : '';
     } else if (variableValue === null || variableValue === undefined || variableValue === '' || (Array.isArray(variableValue) && variableValue.length === 0)) {
       // 如果值为空（null, undefined, '', []）则置为 undefined
       variableValue = undefined;

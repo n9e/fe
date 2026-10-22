@@ -289,6 +289,33 @@ test('fixed URL values survive an absent option', async () => {
   expect(replaceTemplateVariables('${project}')).toBe('project-outside');
 });
 
+test('an explicitly cleared cached value stays empty after options load', async () => {
+  localStorage.setItem('dashboard_v6_42_project', '');
+  queryMock.mockResolvedValue(projects);
+  const initialized = initializeVariablesValue([projectVariable({ defaultValue: 'project-2' })], {}, { dashboardId: 42 }) as IVariable[];
+
+  mountRuntime(initialized);
+
+  await waitFor(() => expect(state().options).toEqual(projects));
+  expect(state().value).toBe('');
+  expect(screen.queryByText('Development', { selector: '.ant-select-selection-item' })).not.toBeInTheDocument();
+});
+
+test('clearing a multi-value survives a range refresh', async () => {
+  queryMock.mockResolvedValue(projects);
+  mountRuntime([projectVariable({ multi: true, allOption: true, defaultValue: 'project-1' })]);
+  await waitFor(() => expect(state().value).toBe('project-1'));
+
+  const clearIcon = document.querySelector('.ant-select-clear');
+  expect(clearIcon).not.toBeNull();
+  fireEvent.mouseDown(clearIcon!);
+  await waitFor(() => expect(state().value).toEqual([]));
+
+  act(() => setGlobalState('range', { start: 'now-2h', end: 'now' }));
+  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(2));
+  expect(state().value).toEqual([]);
+});
+
 test('non-fixed stale cache value falls back to the first available option', async () => {
   localStorage.setItem('dashboard_v6_42_project', 'project-removed');
   queryMock.mockResolvedValue(projects);
