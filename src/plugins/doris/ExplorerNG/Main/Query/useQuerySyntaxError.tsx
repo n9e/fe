@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
@@ -15,7 +15,9 @@ export default function useQuerySyntaxError(refreshFlag: string | undefined) {
   const key = `doris-query-syntax-${React.useId()}`;
   const alive = useRef(true);
   const latestRun = useRef(refreshFlag);
-  latestRun.current = refreshFlag;
+  useLayoutEffect(() => {
+    latestRun.current = refreshFlag;
+  }, [refreshFlag]);
   useEffect(() => {
     alive.current = true;
     return () => {

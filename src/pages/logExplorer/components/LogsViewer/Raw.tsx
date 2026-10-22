@@ -515,14 +515,16 @@ const RawRow = React.memo(
       <div className='n9e-log-explorer-raw-row flex items-stretch w-full'>
         <div className='ant-table-row-expand-icon-cell' style={{ width: 48, flex: '0 0 48px' }}>
           <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
-            <div
-              className='n9e-log-row-detail-trigger inline-flex items-center justify-center cursor-pointer'
+            <button
+              type='button'
+              aria-label={t('log_viewer_drawer_trigger_tip')}
+              className='n9e-log-detail-button n9e-log-row-detail-trigger inline-flex items-center justify-center cursor-pointer'
               onClick={() => {
                 onOpenDrawer(index);
               }}
             >
               <TextSearchIcon className='text-[14px]' />
-            </div>
+            </button>
           </Tooltip>
         </div>
         {showLines && (

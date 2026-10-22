@@ -58,3 +58,28 @@ it('closes the old guidance on a new query and prevents late notifications after
   expect(() => oldHandler(parserError as any)).toThrow('query_error.hint');
   expect(notification.error).not.toHaveBeenCalled();
 });
+
+it('does not let an abandoned suspense render replace the committed run', () => {
+  let handler!: ReturnType<typeof useQuerySyntaxError>['errorHandler'];
+  const pending = new Promise<void>(() => {});
+  function Fixture({ run, suspend }: { run: string; suspend: boolean }) {
+    const options = useQuerySyntaxError(run);
+    if (suspend) throw pending;
+    handler = options.errorHandler;
+    return null;
+  }
+  const view = render(
+    <React.Suspense fallback={null}>
+      <Fixture run='committed' suspend={false} />
+    </React.Suspense>,
+  );
+  const committed = handler;
+  view.rerender(
+    <React.Suspense fallback={null}>
+      <Fixture run='abandoned' suspend />
+    </React.Suspense>,
+  );
+  (notification.error as jest.Mock).mockClear();
+  expect(() => committed(parserError as any)).toThrow('query_error.hint');
+  expect(notification.error).toHaveBeenCalledTimes(1);
+});

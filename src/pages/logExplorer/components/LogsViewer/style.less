@@ -1,3 +1,15 @@
+.n9e-log-detail-button {
+  border: 0;
+  border-radius: 3px;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  &:focus-visible {
+    outline: 2px solid var(--fc-primary-color);
+    outline-offset: -2px;
+  }
+}
+
 .n9e-log-explorer-raw-table {
   // react-virtuoso 替换 antd Table 后不再有 .ant-table-container，
   // 在此补回原表格容器的外框与圆角。

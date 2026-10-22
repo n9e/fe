@@ -32,12 +32,12 @@
 .n9e-log-help-close {
   width: 20px;
   height: 20px;
-  color: rgba(255, 255, 255, 0.75);
+  color: fade(@colorWhite, 75%);
   &:hover {
-    color: #fff;
+    color: @colorWhite;
   }
   &:focus-visible {
-    outline-color: #fff;
+    outline-color: @colorWhite;
   }
 }
 .n9e-log-help-popover.ant-tooltip {
@@ -73,7 +73,8 @@
 .n9e-log-help-content {
   font-size: 12px;
   line-height: 1.6;
-  color: inherit;
+  // Match inverse Tooltip text in the light, gold and dark system themes.
+  color: @colorWhite;
   p {
     margin: 6px 0 0;
   }
@@ -95,7 +96,7 @@
   flex-basis: 32px;
 }
 .n9e-log-help-note {
-  color: rgba(255, 255, 255, 0.8);
+  color: fade(@colorWhite, 80%);
 }
 .n9e-log-help-inline-icon {
   display: inline-flex;
