@@ -77,6 +77,7 @@ interface Props {
   hideTypeIcon?: boolean;
 }
 
+/** Build structured log columns and connect row details to the shared grid. */
 function Table(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {
@@ -178,7 +179,7 @@ function Table(props: Props) {
   );
 
   return (
-    <div className='min-h-0 h-full' ref={drawerRef}>
+    <div className='min-h-0' ref={drawerRef}>
       <RDGTable
         className='n9e-event-logs-table'
         rowKeyGetter={(row) => {

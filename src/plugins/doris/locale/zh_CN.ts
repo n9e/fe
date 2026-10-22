@@ -80,7 +80,7 @@ const zh_CN = {
       table_tip: '可用于创建 Doris 的告警规则、记录规则、创建北极星指标。',
     },
     defaultSearchField: '默认检索字段',
-    default_search_tip_1: '设置为默认检索字段',
+    default_search_tip_1: '设置默认检索字段，设置后输入字段值即可查询',
     default_search_tip_2: '取消默认检索字段',
     default_search_by_tip: '默认检索字段',
     datasource_disabled_tip: '请先选择数据源',

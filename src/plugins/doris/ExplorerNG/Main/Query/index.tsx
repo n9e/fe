@@ -15,7 +15,7 @@ import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStruct
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
-import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
+import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram } from '../../../services';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -25,9 +25,10 @@ import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
 import { HandleValueFilterParams } from '../../types';
 import QueryBuilderFilters from './QueryBuilderFilters';
+import useQuerySyntaxError from './useQuerySyntaxError';
 
 // @ts-ignore
-import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
+import DownloadModal from '@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal';
 
 interface Props {
   tableSelector: {
@@ -59,11 +60,15 @@ interface Props {
   defaultSearchField?: string;
 }
 
+/** Connect doris log queries to shared results, stacking and pagination controls. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
 
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
+  const queryRequestOptions = useQuerySyntaxError(refreshFlag);
+  // Keep the request-capture boundary used by enterprise row/toolbar AI integration.
+  const getDorisLogsQuery = (data: Parameters<typeof queryDorisLogs>[0]) => queryDorisLogs(data, queryRequestOptions);
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
   const queryStrRef = useRef<string>('');
@@ -271,23 +276,26 @@ export default function index(props: Props) {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues && queryValues.database && queryValues.table && queryValues.time_field && queryValues.range) {
       const range = parseRange(queryValues.range);
-      return getDorisHistogram({
-        cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        query: [
-          {
-            database: queryValues.database,
-            table: queryValues.table,
-            time_field: queryValues.time_field,
-            from: moment(range.start).valueOf(),
-            to: moment(range.end).valueOf(),
-            query: queryValues.query,
-            query_builder_filter: queryValues.query_builder_filter,
-            group_by: stackByField,
-            default_field: defaultSearchField,
-          },
-        ],
-      })
+      return getDorisHistogram(
+        {
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          query: [
+            {
+              database: queryValues.database,
+              table: queryValues.table,
+              time_field: queryValues.time_field,
+              from: moment(range.start).valueOf(),
+              to: moment(range.end).valueOf(),
+              query: queryValues.query,
+              query_builder_filter: queryValues.query_builder_filter,
+              group_by: stackByField,
+              default_field: defaultSearchField,
+            },
+          ],
+        },
+        queryRequestOptions,
+      )
         .then((res) => {
           return {
             data: _.map(res, (item) => {
@@ -359,11 +367,14 @@ export default function index(props: Props) {
 
   return (
     <>
-      <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
+      {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && (
+        <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
+      )}
       {refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
+              histogramFilters={<QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />}
               logClusting={{
                 enabled: true,
                 queryStrRef,
@@ -400,6 +411,7 @@ export default function index(props: Props) {
               filterFields={(fieldKeys) => {
                 return filteredFields(fieldKeys, organizeFields);
               }}
+              supportsStacking
               histogramAddonBeforeRender={
                 stackByField ? (
                   <Popover
@@ -437,7 +449,7 @@ export default function index(props: Props) {
               renderHistogramAddonAfterRender={(toggleNode) => {
                 if (data) {
                   return (
-                    <Space>
+                    <Space className='n9e-log-histogram-meta-content' size={6} wrap>
                       {rangeRef.current && (
                         <>
                           {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}

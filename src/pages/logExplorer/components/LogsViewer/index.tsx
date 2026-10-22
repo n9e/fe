@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext, useContext, useMemo, useCallback } from 'react';
 import { Spin, Space, Radio } from 'antd';
+import { Pin, ChartNoAxesColumn } from 'lucide-react';
 import _ from 'lodash';
 import moment, { Moment } from 'moment';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +14,8 @@ import { NAME_SPACE } from '../../constants';
 import { Field } from '../../components/FieldsList/types';
 import FullscreenButton from '../../components/FullscreenButton';
 import HistogramChart from './components/HistogramChart';
+import { StackHelp } from '../Guidance';
+import HistogramActionButton from './components/HistogramActionButton';
 import OriginSettings from './components/OriginSettings';
 import Raw from './Raw';
 import Table from './Table';
@@ -21,6 +24,8 @@ import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
+import ResultsScrollListener from './ResultsScrollListener';
+import usePinnedHistogram from './utils/usePinnedHistogram';
 import DrilldownBtn, { type DrilldownInitialValues } from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
 interface Props {
@@ -63,11 +68,13 @@ interface Props {
   filterFields?: (fieldKeys: string[]) => string[];
   organizeFields?: string[];
   setOrganizeFields?: (value?: string[]) => void;
+  histogramFilters?: React.ReactNode;
   histogramAddonBeforeRender?: React.ReactNode;
   renderHistogramAddonAfterRender?: (toggleNode: React.ReactNode) => React.ReactNode;
   optionsExtraRender?: React.ReactNode;
   showDateField?: boolean;
   stacked?: boolean;
+  supportsStacking?: boolean;
   colWidths?: { [key: string]: number };
   tableColumnsWidthCacheKey?: string;
   showPageLoadMode?: boolean;
@@ -135,7 +142,9 @@ interface LogsViewerState {
 }
 export const LogsViewerStateContext = createContext({} as LogsViewerState);
 
+/** Coordinate result modes, histogram controls, pinned regions and fullscreen pagination. */
 export default function LogsViewer(props: Props) {
+  const resultsRef = React.useRef<HTMLDivElement>(null);
   const { t } = useTranslation(NAME_SPACE);
   const { isPlus } = useContext(CommonStateContext);
   const {
@@ -186,7 +195,10 @@ export default function LogsViewer(props: Props) {
     hideTypeIcon = false,
   } = props;
   const [options, setOptions] = useState(props.options);
+  const [histogramPinned, setHistogramPinned] = useState(false);
   const [histogramVisible, setHistogramVisible] = useState(true);
+  const histogramId = React.useId();
+  const histogramRef = React.useRef<HTMLDivElement>(null);
   const isClusteringEnabled = !!logClusting?.enabled;
   const logMode = options.logMode === 'clustering' && !isClusteringEnabled ? 'origin' : options.logMode;
   const viewerOptions = logMode === options.logMode ? options : { ...options, logMode };
@@ -267,45 +279,59 @@ export default function LogsViewer(props: Props) {
     };
   }, [id_key, raw_key, props.fieldConfig, props.indexData, props.range, props.getAddToQueryInfo, drilldownContext, openAddDrilldownLink, enableLogTextSelectMenu]);
 
+  usePinnedHistogram(histogramRef, histogramPinned && !hideHistogram && !patternHistogramState.visible);
+  const histogramActions = (
+    <span className='inline-flex items-center gap-1'>
+      <HistogramActionButton
+        title={t(histogramVisible ? 'histogram_hide' : 'histogram_show')}
+        icon={
+          <ChartNoAxesColumn size={14} strokeWidth={1.5} aria-hidden='true'>
+            {histogramVisible && <path d='m3 3 18 18' />}
+          </ChartNoAxesColumn>
+        }
+        expanded={histogramVisible}
+        controls={histogramId}
+        onClick={() => setHistogramVisible(!histogramVisible)}
+      />
+      <HistogramActionButton
+        title={t(histogramPinned ? 'histogram_unpin' : 'histogram_pin')}
+        icon={<Pin size={14} strokeWidth={1.5} fill={histogramPinned ? 'currentColor' : 'none'} />}
+        active={histogramPinned}
+        onClick={() => setHistogramPinned(!histogramPinned)}
+      />
+    </span>
+  );
+
   return (
     <LogsViewerStateContext.Provider value={logsViewerState}>
       <>
+        <div data-log-pinned-backdrop aria-hidden='true' />
+        {(hideHistogram || (patternHistogramState.visible && isClusteringEnabled)) && props.histogramFilters}
         {patternHistogramState.visible && isClusteringEnabled ? (
           <ClusteringHistogram {...patternHistogramState} setPatternHistogramState={setPatternHistogramState} />
         ) : (
           <>
             {!hideHistogram && (
-              <div
-                className={classNames('flex-shrink-0', {
-                  'h-[130px]': histogramVisible,
-                  'h-[30px]': !histogramVisible,
-                })}
-              >
-                <div className='mt-1 px-2 flex justify-between h-[19px] overflow-hidden'>
-                  <Space>
-                    <span>{t('clustering.all_log_statistics')}</span>
-                    {histogramAddonBeforeRender}
-                    <Spin spinning={histogramLoading} size='small' />
-                  </Space>
-
-                  {renderHistogramAddonAfterRender?.(
-                    <a
-                      onClick={() => {
-                        setHistogramVisible(!histogramVisible);
-                      }}
-                    >
-                      {histogramVisible ? t('histogram_hide') : t('histogram_show')}
-                    </a>,
-                  )}
+              <div ref={histogramRef} className='n9e-log-histogram flex-shrink-0'>
+                <div className='n9e-log-histogram-header'>
+                  {props.histogramFilters && <div className='n9e-log-histogram-filters'>{props.histogramFilters}</div>}
+                  <div className='n9e-log-histogram-toolbar'>
+                    <div className='n9e-log-histogram-meta'>
+                      <div className='n9e-log-histogram-context' hidden={!histogramVisible || (!histogramAddonBeforeRender && !histogramLoading && !props.supportsStacking)}>
+                        <Space size={6} align='center'>
+                          {histogramAddonBeforeRender}
+                          {histogramLoading && <Spin size='small' />}
+                          {props.supportsStacking && histogramVisible && (
+                            <StackHelp ready={!stacked && !loading && !histogramLoading && !!histogram?.some((series) => series.data.length > 0)} />
+                          )}
+                        </Space>
+                      </div>
+                      {renderHistogramAddonAfterRender ? renderHistogramAddonAfterRender(histogramActions) : histogramActions}
+                    </div>
+                  </div>
                 </div>
-                <div
-                  className={classNames('flex-shrink-0', {
-                    'h-[120px]': histogramVisible,
-                    block: histogramVisible,
-                    hidden: !histogramVisible,
-                  })}
-                >
-                  {props.range && histogram && (
+                <div id={histogramId} className='h-[120px] flex-shrink-0' hidden={!histogramVisible}>
+                  {histogramVisible && props.range && histogram && (
                     <HistogramChart
                       series={histogram}
                       stacked={stacked}
@@ -331,8 +357,8 @@ export default function LogsViewer(props: Props) {
             )}
           </>
         )}
-        <FullscreenButton.Provider>
-          <div className='n9e-log-explorer-toolbar flex justify-between items-center gap-2 pb-2'>
+        <FullscreenButton.Provider autoHeight>
+          <div data-log-toolbar className='n9e-log-explorer-toolbar flex justify-between items-center gap-1 pb-2'>
             <Space className='n9e-log-explorer-toolbar-main'>
               {addonBefore}
               {showLogMode && (
@@ -387,10 +413,19 @@ export default function LogsViewer(props: Props) {
               <FullscreenButton />
               <Spin spinning={loading} size='small' />
             </Space>
-            {logMode === 'clustering' && isClusteringEnabled ? <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} /> : optionsExtraRender}
+            {logMode === 'clustering' && isClusteringEnabled ? (
+              <div className='n9e-log-explorer-toolbar-extra' ref={clusteringExtraEleRef} />
+            ) : (
+              optionsExtraRender && <div className='n9e-log-explorer-toolbar-meta'>{optionsExtraRender}</div>
+            )}
           </div>
-          <div className='h-full min-h-0' onScrollCapture={onScrollCapture}>
-            <div className='n9e-antd-table-height-full'>
+          <div
+            ref={resultsRef}
+            data-log-results={logMode !== 'clustering' ? '' : undefined}
+            className='n9e-log-results'
+            onScrollCapture={logMode === 'clustering' ? onScrollCapture : undefined}
+          >
+            <div>
               {logMode === 'origin' && (
                 <Raw
                   id_key={id_key}
@@ -475,6 +510,8 @@ export default function LogsViewer(props: Props) {
               )}
             </div>
           </div>
+          {/* Mount after results so its ref exists before the listener's layout effect. */}
+          <ResultsScrollListener resultsRef={resultsRef} onScrollCapture={onScrollCapture} />
         </FullscreenButton.Provider>
         {isPlus && (
           <DrilldownBtn

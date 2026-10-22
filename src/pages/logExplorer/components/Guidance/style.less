@@ -1,0 +1,138 @@
+.n9e-log-help-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+}
+.n9e-log-help-trigger,
+.n9e-log-help-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--fc-text-3);
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  &:hover {
+    color: var(--fc-primary-color);
+  }
+  &:focus-visible {
+    outline: 1px solid var(--fc-primary-color);
+    outline-offset: 2px;
+  }
+}
+.n9e-log-help-trigger {
+  width: 14px;
+  height: 20px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+.n9e-log-help-close {
+  width: 20px;
+  height: 20px;
+  color: fade(@colorWhite, 75%);
+  &:hover {
+    color: @colorWhite;
+  }
+  &:focus-visible {
+    outline-color: @colorWhite;
+  }
+}
+.n9e-log-help-popover.ant-tooltip {
+  width: max-content;
+  max-width: min(560px, calc(100vw - 32px));
+  .ant-tooltip-inner {
+    padding: 10px 12px;
+  }
+}
+.n9e-log-field-action-tip.ant-tooltip {
+  width: max-content;
+  max-width: min(560px, calc(100vw - 32px));
+}
+.n9e-log-help-query-list {
+  list-style: disc;
+  padding-left: 16px;
+  margin: 0;
+  li {
+    margin-top: 6px;
+  }
+}
+.n9e-log-query-error p {
+  margin-bottom: 6px;
+}
+.n9e-log-query-doc-link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--fc-primary-color);
+  text-align: left;
+  cursor: pointer;
+}
+.n9e-log-help-content {
+  font-size: 12px;
+  line-height: 1.6;
+  // Match inverse Tooltip text in the light, gold and dark system themes.
+  color: @colorWhite;
+  p {
+    margin: 6px 0 0;
+  }
+}
+.n9e-log-help-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+}
+.n9e-log-help-row-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 14px;
+  font-size: 14px;
+}
+.n9e-log-help-fields .n9e-log-help-row-icon {
+  flex-basis: 32px;
+}
+.n9e-log-help-note {
+  color: fade(@colorWhite, 80%);
+}
+.n9e-log-help-inline-icon {
+  display: inline-flex;
+  font-size: 14px;
+  vertical-align: -2px;
+  margin-inline: 2px;
+}
+.n9e-log-field-stack-tip p {
+  margin: 0;
+  + p {
+    margin-top: 4px;
+  }
+}
+.n9e-log-help-title {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+.n9e-log-help-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.n9e-log-sort-indicator {
+  display: inline-flex;
+  vertical-align: middle;
+  color: var(--fc-text-3);
+  line-height: 1;
+}
+.n9e-log-explorer-raw-header th:hover .n9e-log-sort-indicator,
+.n9e-logs-viewer-rdg .rdg-header-sort-cell:hover .n9e-log-sort-indicator {
+  color: var(--fc-text-1);
+}

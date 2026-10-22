@@ -47,6 +47,7 @@ interface Props {
 
 const queryBuilderPinnedCache = window.localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY);
 
+/** Render doris query controls and the active result mode inside the pinned page region. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);
@@ -112,8 +113,8 @@ export default function index(props: Props) {
   });
 
   return (
-    <div className='flex flex-col h-full'>
-      <div className='flex-shrink-0 relative'>
+    <div data-log-query-main className='flex flex-col h-full'>
+      <div className='log-explorer-query-row flex-shrink-0 relative'>
         <Row gutter={SIZE} wrap>
           <Col flex='none'>
             <Form.Item name={['query', 'syntax']} initialValue='query' noStyle>

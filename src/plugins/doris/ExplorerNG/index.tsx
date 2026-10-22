@@ -31,6 +31,7 @@ interface Props {
   renderCommonSettings: RenderCommonSettings;
 }
 
+/** Coordinate Doris query state, field actions and validated query execution. */
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
@@ -104,7 +105,7 @@ export default function index(props: Props) {
     executeQuery();
   };
 
-  const handleSetDefaultSearchField = (index) => {
+  const handleSetDefaultSearchField = (index?: string) => {
     form.setFieldsValue({
       query: {
         defaultSearchField: index,
