@@ -546,6 +546,17 @@ const ko_KR = {
       iframe: {
         src: 'iframe 주소',
       },
+      aiButton: {
+        style: '버튼 스타일',
+        style_capsule: '캡슐',
+        style_icon: '아이콘',
+        style_antd: 'Ant Design',
+        text: '버튼 텍스트',
+        text_placeholder: '비어 있으면 {{name}} 표시',
+        type: '버튼 유형',
+        prompt: '프롬프트',
+        prompt_tip: '클릭하면 AI Chat을 열고 이 프롬프트를 자동으로 전송합니다. 비어 있으면 AI Chat만 엽니다.',
+      },
       heatmap: {
         xAxisField: 'X축',
         yAxisField: 'Y축',
@@ -714,6 +725,7 @@ __variable_value_fixed=true: 로컬 저장소 또는 옵션 기본값으로 대�
     gauge: '게이지 그래프',
     heatmap: '색상 블록 그래프',
     iframe: '삽입 문서 (iframe)',
+    aiButton: 'AI 버튼',
     row: '그룹',
     importPanel: '그래프 붙여넣기',
   },

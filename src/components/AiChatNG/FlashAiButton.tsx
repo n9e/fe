@@ -9,8 +9,8 @@ import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
-import { IAiChatPageInfo, IAiChatAction, AiChatExecuteQueryForQueryContent } from './types';
-import { useAiChatVisible, useAiExternalConfig, useAiHandleEvent, useParamsAiAction } from '../AiChat/utils/useHook';
+import { IAiChatPageInfo, IAiChatAction } from './types';
+import { useAiChatVisible, useAiExternalConfig, useParamsAiAction } from '../AiChat/utils/useHook';
 import { EPageType } from '../AiChat/config';
 
 function useFlashAiClickHandler() {
@@ -29,22 +29,15 @@ function useFlashAiClickHandler() {
   }, [i18n, openAiChat, cachedSessionId]);
 }
 
-function useAiEntClickHandler(options?: {
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
-  promptList?: string[];
-  queryPageFrom?: IAiChatPageInfo;
-  queryAction?: IAiChatAction;
-}) {
+function useAiEntClickHandler(options?: { promptList?: string[]; queryPageFrom?: IAiChatPageInfo; queryAction?: IAiChatAction }) {
   const [, setAiChatVisible] = useAiChatVisible();
-  const [, setAiHandleEvent] = useAiHandleEvent();
   const [, setAiExternalConfig] = useAiExternalConfig();
   const [, setParamsAiAction] = useParamsAiAction();
 
-  const { onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction } = options ?? {};
+  const { promptList, queryPageFrom, queryAction } = options ?? {};
 
   return React.useCallback(() => {
     setAiChatVisible(true);
-    setAiHandleEvent({ onExecuteQueryForQueryContent });
     setAiExternalConfig({ promptList });
     setParamsAiAction({
       page: EPageType.Custom,
@@ -59,7 +52,7 @@ function useAiEntClickHandler(options?: {
         forceDrawer: true,
       } as any,
     });
-  }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);
+  }, [setAiChatVisible, setAiExternalConfig, setParamsAiAction, promptList, queryPageFrom, queryAction]);
 }
 
 function FlashAiButtonContent() {
@@ -94,11 +87,10 @@ function AiButtonContent(props: {
   queryAction?: IAiChatAction;
   promptList?: string[];
   initialMessage?: string;
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   children?: React.ReactNode;
 }) {
   const { openAiChat } = useAiChatContext();
-  const { size, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, children } = props;
+  const { size, queryPageFrom, queryAction, promptList, initialMessage, children } = props;
 
   return (
     <Button
@@ -110,7 +102,6 @@ function AiButtonContent(props: {
           queryAction,
           promptList,
           initialMessage,
-          onExecuteQueryForQueryContent,
         });
       }}
     >
@@ -125,12 +116,11 @@ export function AiButton(props: {
   queryAction?: IAiChatAction;
   promptList?: string[];
   initialMessage?: string;
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   children?: React.ReactNode;
 }) {
-  const { size, queryPageFrom, queryAction, promptList, initialMessage, onExecuteQueryForQueryContent, children } = props;
+  const { size, queryPageFrom, queryAction, promptList, initialMessage, children } = props;
 
-  const handleEntClick = useAiEntClickHandler({ onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction });
+  const handleEntClick = useAiEntClickHandler({ promptList, queryPageFrom, queryAction });
 
   if (IS_ENT) {
     return (
@@ -143,17 +133,40 @@ export function AiButton(props: {
   return <AiButtonContent {...props} />;
 }
 
+export function useAiChatOpenWithPrompt(prompt?: string) {
+  const trimmedPrompt = prompt?.trim() || undefined;
+  const openWithoutPrompt = useFlashAiClickHandler();
+  const { openAiChat } = useAiChatContext();
+  const openEntChat = useAiEntClickHandler(trimmedPrompt ? { queryAction: { content: trimmedPrompt, prefillOnly: false } } : undefined);
+
+  return React.useCallback(() => {
+    if (IS_ENT) {
+      openEntChat();
+      return;
+    }
+    if (!trimmedPrompt) {
+      openWithoutPrompt();
+      return;
+    }
+    // 不传 chatId，让开源版新建会话。initialMessage 会在 ChatPanel 挂载后自动发送；
+    // context 会在携带 initialMessage 时递增 open key，侧拉板已打开时也能重新挂载并发送。
+    openAiChat({
+      queryPageFrom: buildPageFrom({ url: getCurrentPageUrl() }),
+      initialMessage: trimmedPrompt,
+    });
+  }, [openAiChat, openEntChat, openWithoutPrompt, trimmedPrompt]);
+}
+
 export function CustomAiButtonWrap({
   children,
   queryAction,
   queryPageFrom,
   promptList,
-  onExecuteQueryForQueryContent,
   ...rest
 }: // 这里 any 是因为作为 Wrap 会接受很多未知的 props，暂时不想一个个列举
 { children: React.ReactElement } & Record<string, any>) {
   if (IS_ENT) {
-    const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList, onExecuteQueryForQueryContent });
+    const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList });
 
     return <span {...rest}>{React.cloneElement(children, { onClick: handleEntClick } as any)}</span>;
   }

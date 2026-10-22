@@ -46,7 +46,6 @@ export default function ChatPanel(props: IAiChatProps) {
     initialMessage,
     continuationMessage,
     initialSkill,
-    onExecuteQueryForQueryContent,
     onChatChange,
     onError,
     welcomeSlot,
@@ -691,14 +690,13 @@ export default function ChatPanel(props: IAiChatProps) {
         key={`${messageItem.chat_id}-${messageItem.seq_id}`}
         message={messageItem}
         isStreaming={streamingLocator?.chat_id === messageItem.chat_id && streamingLocator?.seq_id === messageItem.seq_id}
-        onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
         onActionClick={sendUserMessage}
         onOKForFormSelectContent={sendUserMessage}
         maybeScrollToBottom={maybeScrollToBottom}
         pageActionOutcomes={pageActionOutcomes}
       />
     ));
-  }, [onExecuteQueryForQueryContent, maybeScrollToBottom, messages, pageActionOutcomes, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
+  }, [maybeScrollToBottom, messages, pageActionOutcomes, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
 
   const welcomeContent = typeof welcomeSlot === 'function' ? welcomeSlot((prompt) => sendUserMessage(undefined, prompt)) : welcomeSlot;
 

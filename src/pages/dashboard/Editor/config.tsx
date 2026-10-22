@@ -57,7 +57,13 @@ export const visualizations = [
   {
     type: 'iframe',
   },
+  {
+    type: 'aiButton',
+  },
 ];
+
+/** 不发起查询、没有序列数据也能渲染的图表类型 */
+export const NO_QUERY_PANEL_TYPES = ['text', 'iframe', 'aiButton'];
 
 export const IRefreshMap = {
   off: 'off',
@@ -220,6 +226,12 @@ export const defaultCustomValuesMap = {
     scheme: 'Blues',
   },
   iframe: {},
+  aiButton: {
+    style: 'capsule',
+    text: '',
+    type: 'primary',
+    prompt: '',
+  },
   barchart: {
     calc: 'lastNotNull',
     valueField: 'Value',
@@ -237,6 +249,7 @@ export const defaultOptionsValuesMap = {
   text: defaultOptionsValues,
   heatmap: defaultOptionsValues,
   iframe: defaultOptionsValues,
+  aiButton: defaultOptionsValues,
   barchart: defaultOptionsValues,
   gauge: {
     ...defaultOptionsValues,

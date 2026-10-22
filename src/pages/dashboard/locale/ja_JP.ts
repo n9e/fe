@@ -631,6 +631,17 @@ const ja_JP = {
       iframe: {
         src: 'iframeのURL',
       },
+      aiButton: {
+        style: 'ボタンスタイル',
+        style_capsule: 'カプセル',
+        style_icon: 'アイコン',
+        style_antd: 'Ant Design',
+        text: 'ボタンテキスト',
+        text_placeholder: '空の場合は {{name}} を表示',
+        type: 'ボタンタイプ',
+        prompt: 'プロンプト',
+        prompt_tip: 'クリックすると AI Chat を開き、このプロンプトを自動送信します。空の場合は AI Chat を開くだけです。',
+      },
       heatmap: {
         xAxisField: 'X軸',
         yAxisField: 'Y軸',
@@ -799,6 +810,7 @@ __variable_value_fixed=true：ローカルストレージや選択肢の既定�
     gauge: 'ゲージ',
     heatmap: 'ヒートマップ',
     iframe: '内蔵文書 (iframe)',
+    aiButton: 'AI ボタン',
     row: 'グループ',
     importPanel: 'グラフをインポート',
   },

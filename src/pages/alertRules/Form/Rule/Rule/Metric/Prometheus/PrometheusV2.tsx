@@ -108,21 +108,6 @@ export default function PrometheusV2(props: Props) {
                           },
                         }}
                         promptList={getExplorerPrompts(i18n.language)}
-                        onExecuteQueryForQueryContent={(promql) => {
-                          const ruleConfig = form.getFieldValue('rule_config') || {};
-                          const nextQueries = [...(ruleConfig.queries || [])];
-                          if (!nextQueries[field.name]) return;
-                          nextQueries[field.name] = {
-                            ...nextQueries[field.name],
-                            query: promql,
-                          };
-                          form.setFieldsValue({
-                            rule_config: {
-                              ...ruleConfig,
-                              queries: nextQueries,
-                            },
-                          });
-                        }}
                       />
                     </div>
                   </div>
