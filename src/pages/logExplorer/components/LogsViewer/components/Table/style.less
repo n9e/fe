@@ -36,13 +36,23 @@
     }
 
     .rdg-cell {
+      z-index: 3;
+      background: var(--rdg-header-background-color);
       border-inline-end: 1px solid var(--fc-border-base);
+
+      &.rdg-cell-frozen {
+        z-index: 4;
+      }
     }
   }
 
   .rdg-row {
     .rdg-cell {
       border-right: none;
+    }
+
+    .n9e-log-row-actions-cell {
+      padding-inline: 0;
     }
   }
 

@@ -67,6 +67,8 @@ interface Props {
   timeColumnWidth?: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  rowActionsRender?: (row: Record<string, any>, index: number, detail: React.ReactNode) => React.ReactNode;
+  hideLineNumberDetailTooltip?: boolean;
   id_key: string;
   raw_key: string;
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
@@ -425,6 +427,7 @@ const RawCell = React.memo(
 );
 
 interface RawHeaderProps {
+  hasRowActions: boolean;
   showLines: boolean;
   showTime: boolean;
   timeColumnWidth: number;
@@ -436,14 +439,14 @@ interface RawHeaderProps {
  * P1-2: Origin 模式自定义表头（替代 antd Table 的 thead）。
  * 样式与表格/聚类的 RDG 表头保持一致；时间列排序仍走 onReverseChange。
  */
-const RawHeader = React.memo(function RawHeader({ showLines, showTime, timeColumnWidth, sortOrder, onToggleSort }: RawHeaderProps) {
+const RawHeader = React.memo(function RawHeader({ hasRowActions, showLines, showTime, timeColumnWidth, sortOrder, onToggleSort }: RawHeaderProps) {
   const { t } = useTranslation(NAME_SPACE);
   return (
     <div className='n9e-log-explorer-raw-header flex-shrink-0 overflow-hidden'>
       <table className='w-full' style={{ tableLayout: 'fixed' }}>
         <thead>
           <tr>
-            <th className='ant-table-row-expand-icon-cell' style={{ width: 48 }} />
+            <th className='ant-table-row-expand-icon-cell' style={{ width: hasRowActions ? 64 : 48 }} />
             {showLines && <th style={{ width: 50 }}>{t('logs.settings.lines')}</th>}
             {showTime && (
               <th className='cursor-pointer select-none' style={{ width: timeColumnWidth }} aria-sort={sortOrder === 'ascend' ? 'ascending' : 'descending'} onClick={onToggleSort}>
@@ -477,6 +480,8 @@ interface RawRowProps {
   timeColumnWidth: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  rowActionsRender?: Props['rowActionsRender'];
+  hideLineNumberDetailTooltip?: boolean;
   showTime: boolean;
   showLines: boolean;
   onOpenDrawer: (index: number) => void;
@@ -506,6 +511,8 @@ const RawRow = React.memo(
       timeColumnWidth,
       timeFieldColumnFormat,
       linesColumnFormat,
+      rowActionsRender,
+      hideLineNumberDetailTooltip,
       showTime,
       showLines,
       onOpenDrawer,
@@ -513,19 +520,38 @@ const RawRow = React.memo(
 
     return (
       <div className='n9e-log-explorer-raw-row flex items-stretch w-full'>
-        <div className='ant-table-row-expand-icon-cell' style={{ width: 48, flex: '0 0 48px' }}>
-          <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
-            <button
-              type='button'
-              aria-label={t('log_viewer_drawer_trigger_tip')}
-              className='n9e-log-detail-button n9e-log-row-detail-trigger inline-flex items-center justify-center cursor-pointer'
-              onClick={() => {
-                onOpenDrawer(index);
-              }}
-            >
-              <TextSearchIcon className='text-[14px]' />
-            </button>
-          </Tooltip>
+        <div className='ant-table-row-expand-icon-cell' style={{ width: rowActionsRender ? 64 : 48, flex: rowActionsRender ? '0 0 64px' : '0 0 48px' }}>
+          {rowActionsRender ? (
+            rowActionsRender(
+              item,
+              index,
+              <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
+                <button
+                  type='button'
+                  aria-label={t('log_viewer_drawer_trigger_tip')}
+                  className='n9e-log-detail-button n9e-log-row-detail-trigger inline-flex items-center justify-center cursor-pointer'
+                  onClick={() => {
+                    onOpenDrawer(index);
+                  }}
+                >
+                  <TextSearchIcon className='text-[14px]' />
+                </button>
+              </Tooltip>,
+            )
+          ) : (
+            <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
+              <button
+                type='button'
+                aria-label={t('log_viewer_drawer_trigger_tip')}
+                className='n9e-log-detail-button n9e-log-row-detail-trigger inline-flex items-center justify-center cursor-pointer'
+                onClick={() => {
+                  onOpenDrawer(index);
+                }}
+              >
+                <TextSearchIcon className='text-[14px]' />
+              </button>
+            </Tooltip>
+          )}
         </div>
         {showLines && (
           <div
@@ -535,7 +561,7 @@ const RawRow = React.memo(
               onOpenDrawer(index);
             }}
           >
-            <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
+            <Tooltip title={hideLineNumberDetailTooltip ? undefined : t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
               <span className='inline-flex items-center'>{linesColumnFormat ? linesColumnFormat(index + 1) : index + 1}</span>
             </Tooltip>
           </div>
@@ -582,6 +608,8 @@ const RawRow = React.memo(
       prevProps.showExistsAction === nextProps.showExistsAction &&
       prevProps.showTime === nextProps.showTime &&
       prevProps.showLines === nextProps.showLines &&
+      prevProps.rowActionsRender === nextProps.rowActionsRender &&
+      prevProps.hideLineNumberDetailTooltip === nextProps.hideLineNumberDetailTooltip &&
       prevProps.timeColumnWidth === nextProps.timeColumnWidth &&
       prevProps.timeField === nextProps.timeField &&
       prevProps.onOpenDrawer === nextProps.onOpenDrawer
@@ -606,6 +634,8 @@ function Raw(props: Props) {
     timeColumnWidth = 140,
     timeFieldColumnFormat,
     linesColumnFormat,
+    rowActionsRender,
+    hideLineNumberDetailTooltip,
     id_key,
     raw_key,
     logViewerExtraRender,
@@ -675,7 +705,14 @@ function Raw(props: Props) {
   return (
     <div className='min-h-0' ref={drawerRef}>
       <div className='n9e-event-logs-table n9e-log-explorer-raw-table min-h-0 flex flex-col'>
-        <RawHeader showLines={showLines} showTime={showTime} timeColumnWidth={timeColumnWidth} sortOrder={sortOrder} onToggleSort={handleToggleSort} />
+        <RawHeader
+          hasRowActions={!!rowActionsRender}
+          showLines={showLines}
+          showTime={showTime}
+          timeColumnWidth={timeColumnWidth}
+          sortOrder={sortOrder}
+          onToggleSort={handleToggleSort}
+        />
         {/* Virtuoso 默认 scroller 内联 height:100%，用 flex-1 包装层提供确定高度 */}
         <div className='flex-1 min-h-0'>
           <Virtuoso
@@ -706,6 +743,8 @@ function Raw(props: Props) {
                   timeColumnWidth={timeColumnWidth}
                   timeFieldColumnFormat={timeFieldColumnFormat}
                   linesColumnFormat={linesColumnFormat}
+                  rowActionsRender={rowActionsRender}
+                  hideLineNumberDetailTooltip={hideLineNumberDetailTooltip}
                   showTime={showTime}
                   showLines={showLines}
                   onOpenDrawer={openLogViewer}
