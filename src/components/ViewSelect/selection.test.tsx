@@ -1,11 +1,15 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import ViewSelect from './index';
 import { getViews } from './services';
 
 jest.mock('./services', () => ({ getViews: jest.fn() }));
-jest.mock('./FormModal', () => () => null);
+let mockReload: () => void;
+jest.mock('./FormModal', () => (props: any) => {
+  mockReload = props.run;
+  return null;
+});
 jest.mock('./DropdownTrigger', () => () => null);
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock('antd', () => {
@@ -22,7 +26,11 @@ jest.mock('antd', () => {
     Menu: Container,
     Modal: {},
     message: {},
-    Select: ({ value, options, placeholder }: any) => <div data-testid='selection'>{options.find((option: any) => option.value === value)?.labelName ?? placeholder}</div>,
+    Select: ({ value, options, placeholder }: any) => (
+      <div data-testid='selection' data-value={value ?? ''}>
+        {options.find((option: any) => option.value === value)?.labelName ?? placeholder}
+      </div>
+    ),
   };
 });
 
@@ -48,6 +56,54 @@ function setup(value = 17) {
   );
   return { onChange, onSelect };
 }
+
+it('retains a newly saved selection while the old views are reloading', async () => {
+  let resolve!: (views: any[]) => void;
+  (getViews as jest.Mock).mockResolvedValueOnce([savedView]).mockImplementationOnce(
+    () =>
+      new Promise((done) => {
+        resolve = done;
+      }),
+  );
+  function Fixture() {
+    const [selected, setSelected] = React.useState<number | undefined>(17);
+    return (
+      <>
+        <button
+          onClick={() => {
+            mockReload();
+            setSelected(18);
+          }}
+        >
+          save
+        </button>
+        <ViewSelect
+          value={selected}
+          onChange={setSelected}
+          validateSelection
+          page='/log/explorer'
+          filters={{ searchText: '' }}
+          setFilters={jest.fn()}
+          modalState={{ visible: false }}
+          setModalState={jest.fn()}
+          getFilterValues={() => ({})}
+          renderOptionExtra={() => null}
+          placeholder='日志视图'
+        />
+      </>
+    );
+  }
+  render(<Fixture />);
+  await waitFor(() => expect(screen.getByTestId('selection')).toHaveTextContent(savedView.name));
+  act(() => {
+    screen.getByRole('button', { name: 'save' }).click();
+  });
+  expect(screen.getByTestId('selection')).toHaveAttribute('data-value', '18');
+  await act(async () => {
+    resolve([{ ...savedView, id: 18, name: '新视图' }]);
+  });
+  await waitFor(() => expect(screen.getByTestId('selection')).toHaveTextContent('新视图'));
+});
 
 it('restores the name once views load without applying the saved query', async () => {
   let resolve!: (views: any[]) => void;

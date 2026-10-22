@@ -23,6 +23,14 @@ const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, workspace, u
 if (parsed.errors.length) fail(parsed.errors);
 
 const scopes = [
+  'src/components/ViewSelect/index.tsx',
+  'src/components/ViewSelect/selection.test.tsx',
+  'src/pages/logExplorer/components/LogsViewer/ResultsScrollListener.tsx',
+  'src/pages/logExplorer/components/LogsViewer/fullscreenScroll.test.tsx',
+  'src/plugins/doris/ExplorerNG/index.tsx',
+  'src/plugins/doris/ExplorerNG/defaultSearchField.test.tsx',
+  'src/plugins/doris/ExplorerNG/components/QueryBuilder/Filters',
+  'src/plugins/clickHouse/ExplorerNG/components/QueryBuilder/Filters',
   'src/components/SideMenu/index.tsx',
   'src/pages/logExplorer/components/LogsViewer/components/Table/components/CellExpanderFormatter.tsx',
   'src/pages/logExplorer/components/LogsViewer/utils/getColumnsFromFields.tsx',
@@ -50,8 +58,15 @@ const scopes = [
   'src/plugins/elasticsearch/ExplorerNG/components/FiltersBuilder',
 ];
 const plusScope = 'src/plus/datasource/cloudwatchLogs/ExplorerNG/SideBarNav/FieldsSidebar';
-if (fs.existsSync(path.join(workspace, plusScope))) scopes.push(plusScope);
-else if (args.includes('--with-plus')) throw new Error(`Missing enterprise source: ${plusScope}`);
+if (fs.existsSync(path.join(workspace, plusScope))) {
+  scopes.push(plusScope, 'src/plus/datasource/logExplorerScroll.test.ts');
+  for (const source of ['aliyunSLS', 'bceBLS', 'cloudwatchLogs', 'huaweiLTS', 'tencentCLS', 'volcTLS']) {
+    scopes.push(`src/plus/datasource/${source}/ExplorerNG/Main/index.tsx`);
+  }
+  for (const source of ['bceBLS', 'huaweiLTS', 'tencentCLS', 'volcTLS']) {
+    scopes.push(`src/plus/datasource/${source}/ExplorerNG/utils/tableElementMethods.ts`);
+  }
+} else if (args.includes('--with-plus')) throw new Error(`Missing enterprise source: ${plusScope}`);
 
 const files = [];
 const collect = (file) => {

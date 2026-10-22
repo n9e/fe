@@ -35,6 +35,9 @@ const zh_HK = {
   histogram_show: '顯示圖表',
   histogram_pin: '固定頂部區域',
   histogram_unpin: '取消頂部區域固定',
+  histogram_pin_tip: '固定後，上下滾動頁面時，查詢區域、趨勢圖、結果工具欄和表頭將保持可見。',
+  histogram_unpin_tip: '取消固定後，查詢區域、趨勢圖和結果工具欄將恢復隨頁面上下滾動。',
+  sidebar: { title: '過濾條件', expand: '展開過濾條件', collapse: '收起過濾條件' },
   title: '日誌檢索',
   tab: {
     rename: '重命名',

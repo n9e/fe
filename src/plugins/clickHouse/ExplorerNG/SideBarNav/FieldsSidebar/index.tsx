@@ -8,7 +8,7 @@ import { DatasourceCateEnum } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import FieldsList from '@/pages/logExplorer/components/FieldsList';
 import FieldStackButton from '@/pages/logExplorer/components/FieldsList/FieldStackButton';
-import { parseUniqueCount } from '@/pages/logExplorer/components/FieldsList/useFieldStatsCache';
+import { parseUniqueCount, parseOptionalUniqueCount } from '@/pages/logExplorer/components/FieldsList/useFieldStatsCache';
 import { format } from '@/pages/dashboard/Renderer/utils/byteConverter';
 
 import { Field, HandleValueFilterParams } from '../../types';
@@ -28,6 +28,7 @@ interface IProps {
   setStackByField: (field?: string) => void;
 }
 
+/** Provide clickHouse field statistics with strict count validation and retryable failures. */
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, stackByField, setStackByField } = props;
@@ -111,64 +112,57 @@ export default function index(props: IProps) {
           return parseUniqueCount(result.list.find((item) => item.ref === 'unique_count')?.unique_count);
         }}
         fetchStats={async (record) => {
-          try {
-            const field = _.find(data, { field: record.field });
-            let funcs = ['exist_ratio', 'unique_count', 'max', 'min', 'avg', 'median', 'p95', 'sum', 'top5'];
-            if (!isCKNumberType(record.type, field?.normalized_type)) {
-              funcs = ['exist_ratio', 'unique_count', 'top5'];
-            }
-            const result = await queryField(record, funcs);
-            const top5Result = _.filter(result.list, (item) => {
-              return item.ref === 'top5';
-            });
-            const statsResult = _.map(
-              _.filter(result.list, (item) => {
-                return item.ref !== 'top5';
-              }),
-              (item) => {
-                const statName = item.ref;
-                const statValue = _.toNumber(item?.[item.ref]);
-                if (!_.isNaN(statValue) && _.isNumber(statValue)) {
-                  return {
-                    [statName]: format(statValue, {
-                      type: 'si',
-                      decimals: 2,
-                    }).text,
-                  };
-                } else {
-                  return {
-                    [statName]: '-',
-                  };
-                }
-              },
-            );
-
-            return {
-              uniqueCount: parseUniqueCount(result.list.find((item) => item.ref === 'unique_count')?.unique_count),
-              topN: _.map(top5Result, (item) => {
-                return {
-                  value: item[record.field],
-                  percent: _.toNumber(item.ratio),
-                  count: _.toNumber(item.count),
-                };
-              }),
-              stats: _.reduce(
-                statsResult,
-                (result, item) => {
-                  return {
-                    ...result,
-                    ...item,
-                  };
-                },
-                {},
-              ) as any,
-            };
-          } catch (error) {
-            return {
-              topN: [],
-              stats: {},
-            };
+          const field = _.find(data, { field: record.field });
+          let funcs = ['exist_ratio', 'unique_count', 'max', 'min', 'avg', 'median', 'p95', 'sum', 'top5'];
+          if (!isCKNumberType(record.type, field?.normalized_type)) {
+            funcs = ['exist_ratio', 'unique_count', 'top5'];
           }
+          const result = await queryField(record, funcs);
+          const top5Result = _.filter(result.list, (item) => {
+            return item.ref === 'top5';
+          });
+          const statsResult = _.map(
+            _.filter(result.list, (item) => {
+              return item.ref !== 'top5';
+            }),
+            (item) => {
+              const statName = item.ref;
+              const statValue = _.toNumber(item?.[item.ref]);
+              if (!_.isNaN(statValue) && _.isNumber(statValue)) {
+                return {
+                  [statName]: format(statValue, {
+                    type: 'si',
+                    decimals: 2,
+                  }).text,
+                };
+              } else {
+                return {
+                  [statName]: '-',
+                };
+              }
+            },
+          );
+
+          return {
+            uniqueCount: parseOptionalUniqueCount(result.list.find((item) => item.ref === 'unique_count')?.unique_count),
+            topN: _.map(top5Result, (item) => {
+              return {
+                value: item[record.field],
+                percent: _.toNumber(item.ratio),
+                count: _.toNumber(item.count),
+              };
+            }),
+            stats: _.reduce(
+              statsResult,
+              (result, item) => {
+                return {
+                  ...result,
+                  ...item,
+                };
+              },
+              {},
+            ) as any,
+          };
         }}
         renderStatsPopoverTitleExtra={({ index, getUniqueCount, statsScope, setTopNVisible }) => {
           const active = stackByField === index.field;

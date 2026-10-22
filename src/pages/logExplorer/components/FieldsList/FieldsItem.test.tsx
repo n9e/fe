@@ -103,3 +103,26 @@ it('shows field information only over the label, and hides it when entering the 
   // AntD retains the popup DOM and hides it via this class (styles are mocked in Jest).
   await waitFor(() => expect(screen.getByText('field_tip').closest('.ant-tooltip')).toHaveClass('ant-tooltip-hidden'));
 });
+
+it('retains its resize observer across renders and measures changed pressed actions', async () => {
+  const original = global.ResizeObserver;
+  const disconnect = jest.fn();
+  const observe = jest.fn();
+  const resize = jest.fn().mockImplementation(() => ({ observe, disconnect }));
+  global.ResizeObserver = resize;
+  const bounds = jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ left: 60, right: 100, width: 72 } as DOMRect);
+  try {
+    const view = setup();
+    const row = view.container.querySelector<HTMLElement>('.n9e-log-field-row')!;
+    expect(row.style.getPropertyValue('--log-field-active-width')).toBe('0px');
+    view.rerender(<FieldsItem {...view.props} renderStatsPopoverTitleExtra={() => <button aria-pressed='true'>stack</button>} />);
+    await waitFor(() => expect(row.style.getPropertyValue('--log-field-active-width')).toBe('48px'));
+    expect(resize).toHaveBeenCalledTimes(1);
+    expect(disconnect).not.toHaveBeenCalled();
+    view.unmount();
+    expect(disconnect).toHaveBeenCalledTimes(1);
+  } finally {
+    bounds.mockRestore();
+    global.ResizeObserver = original;
+  }
+});

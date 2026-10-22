@@ -24,9 +24,8 @@ import ClusteringHistogram from './Clustering/Histogram';
 import { OptionsType, OnValueFilterParams } from './types';
 
 import './style.less';
-import useScrollParent from './utils/useScrollParent';
+import ResultsScrollListener from './ResultsScrollListener';
 import usePinnedHistogram from './utils/usePinnedHistogram';
-import { getScrollEventTarget } from './utils/scrollParent';
 import DrilldownBtn, { type DrilldownInitialValues } from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
 interface Props {
@@ -143,26 +142,9 @@ interface LogsViewerState {
 }
 export const LogsViewerStateContext = createContext({} as LogsViewerState);
 
+/** Coordinate result modes, histogram controls, pinned regions and fullscreen pagination. */
 export default function LogsViewer(props: Props) {
   const resultsRef = React.useRef<HTMLDivElement>(null);
-  const scrollParent = useScrollParent(resultsRef);
-  useEffect(() => {
-    if (!scrollParent || !props.onScrollCapture) return;
-    let frame = 0;
-    const handleScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        // Retained query tabs must not load more data while hidden.
-        if (resultsRef.current?.hasAttribute('data-log-results') && resultsRef.current.getClientRects().length) props.onScrollCapture?.();
-      });
-    };
-    const scrollTarget = getScrollEventTarget(scrollParent);
-    scrollTarget.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      scrollTarget.removeEventListener('scroll', handleScroll);
-    };
-  }, [scrollParent, props.onScrollCapture]);
   const { t } = useTranslation(NAME_SPACE);
   const { isPlus } = useContext(CommonStateContext);
   const {
@@ -528,6 +510,8 @@ export default function LogsViewer(props: Props) {
               )}
             </div>
           </div>
+          {/* Mount after results so its ref exists before the listener's layout effect. */}
+          <ResultsScrollListener resultsRef={resultsRef} onScrollCapture={onScrollCapture} />
         </FullscreenButton.Provider>
         {isPlus && (
           <DrilldownBtn
