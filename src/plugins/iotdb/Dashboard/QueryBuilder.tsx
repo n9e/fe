@@ -110,6 +110,13 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                   </Row>
                   <Row gutter={10}>
                     <Col flex='auto'>
+                      <Form.Item label='Database' {...restField} name={[field.name, 'query', 'database']}>
+                        <Input placeholder='Optional; uses datasource default database' />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={10}>
+                    <Col flex='auto'>
                       <Form.Item
                         label='Legend'
                         {...restField}

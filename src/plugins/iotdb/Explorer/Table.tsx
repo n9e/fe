@@ -25,6 +25,7 @@ export default function TableCpt(props: Props) {
   const range = Form.useWatch(['query', 'range'], form);
   const keys = Form.useWatch(['query', 'keys'], form);
   const query = Form.useWatch(['query', 'query'], form);
+  const database = Form.useWatch(['query', 'database'], form);
 
   useEffect(() => {
     if (datasourceCate && datasourceValue && query && range && refreshFlag) {
@@ -38,6 +39,7 @@ export default function TableCpt(props: Props) {
         query: [
           {
             query,
+            database,
             from: start,
             to: end,
             keys: keys || {},
@@ -68,7 +70,7 @@ export default function TableCpt(props: Props) {
           setRefreshFlag();
         });
     }
-  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
+  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, database, refreshFlag]);
 
   const formatCellValue = (columnName: string, value: any) => {
     if (datasourceCate === DatasourceCateEnum.iotdb && columnName === 'time' && value !== null && value !== undefined) {
