@@ -33,3 +33,17 @@ it('keeps the legacy grid behavior for callers outside the external scroll layou
   expect(isExternalLogAtBottom(document.querySelector('.grid'))).toBeUndefined();
   expect(getIsAtBottom('.grid', '.absent')).toBe(true);
 });
+
+it('recognizes the results end at the real scrollport bottom when the page has padding', () => {
+  const page = document.getElementById('page')!;
+  page.style.padding = '16px';
+  const results = document.querySelector<HTMLElement>('[data-log-results]')!;
+  Object.defineProperty(page, 'clientHeight', { value: 600 });
+  jest.spyOn(page, 'getBoundingClientRect').mockReturnValue({ top: 50 } as DOMRect);
+  jest.spyOn(results, 'getClientRects').mockReturnValue({ length: 1 } as DOMRectList);
+  const bounds = jest.spyOn(results, 'getBoundingClientRect');
+  bounds.mockReturnValue({ bottom: 666 } as DOMRect);
+  expect(getIsAtBottom('.grid', '.absent')).toBe(false);
+  bounds.mockReturnValue({ bottom: 650 } as DOMRect);
+  expect(getIsAtBottom('.grid', '.absent')).toBe(true);
+});

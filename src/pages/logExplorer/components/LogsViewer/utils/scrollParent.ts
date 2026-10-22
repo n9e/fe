@@ -38,10 +38,11 @@ export function getScrollViewport(parent: HTMLElement, element?: HTMLElement) {
   if (parent === document.scrollingElement) return { top: pinned, height: Math.max(0, window.innerHeight - pinned) };
   const style = getComputedStyle(parent);
   const paddingTop = parseFloat(style.paddingTop) || 0;
-  const paddingBottom = parseFloat(style.paddingBottom) || 0;
+  // Bottom padding scrolls with the content; it is not a fixed viewport inset.
+  // Subtracting it leaves the last row clipped and makes the results end unreachable.
   return {
     top: parent.getBoundingClientRect().top + parent.clientTop + paddingTop + pinned,
-    height: Math.max(0, parent.clientHeight - paddingTop - paddingBottom - pinned),
+    height: Math.max(0, parent.clientHeight - paddingTop - pinned),
   };
 }
 
