@@ -17,8 +17,10 @@ interface Coordination {
   seen: (kind: Kind) => boolean;
 }
 const Context = createContext<Coordination | null>(null);
+/** Namespace each guidance receipt by account and feature. */
 const key = (user: string, kind: Kind) => `log-explorer-guidance:v1:${user}:${kind}`;
 
+/** Suppress automatic guidance while typing or interacting with another overlay. */
 export function guidanceBusy(kind: Kind) {
   if (document.visibilityState === 'hidden') return true;
   if (kind !== 'query' && document.activeElement?.matches('input,textarea,[contenteditable="true"]')) return true;
@@ -27,6 +29,7 @@ export function guidanceBusy(kind: Kind) {
   );
 }
 
+/** Coordinate one active tip and one automatic tip per visit, persisting account receipts. */
 export function GuidanceProvider({ userKey, children }: { userKey: string; children: React.ReactNode }) {
   const [active, setActive] = useState<Active>(null);
   const current = useRef<Active>(null);
@@ -88,6 +91,7 @@ export function GuidanceProvider({ userKey, children }: { userKey: string; child
   return <Context.Provider value={{ active, open, close, seen }}>{children}</Context.Provider>;
 }
 
+/** Manage cancellable delayed tips, manual access and automatic dismissal. */
 export function useGuidance(kind: Kind, enabled = true) {
   const context = useContext(Context);
   const id = React.useId();
@@ -151,6 +155,7 @@ export function useGuidance(kind: Kind, enabled = true) {
 }
 
 type Guide = ReturnType<typeof useGuidance>;
+/** Align a real field-action icon with its concise explanation. */
 function TipRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className='n9e-log-help-row'>
@@ -162,6 +167,7 @@ function TipRow({ icon, children }: { icon: React.ReactNode; children: React.Rea
   );
 }
 
+/** Render shared help content with accessible closing and an optional documentation link. */
 export function HelpTip({
   kind,
   guide,
@@ -250,6 +256,7 @@ export function HelpTip({
   );
 }
 
+/** Schedule stacking guidance only after the chart becomes visible and ready. */
 export function StackHelp({ ready }: { ready: boolean }) {
   const guide = useGuidance('stack', ready);
   const schedule = guide.schedule;
@@ -277,6 +284,7 @@ export function StackHelp({ ready }: { ready: boolean }) {
   return <HelpTip kind='stack' guide={guide} />;
 }
 
+/** Describe only the field actions supported by this data source. */
 export function FieldsHelp({ defaultSearch, stack }: { defaultSearch?: boolean; stack?: boolean }) {
   const guide = useGuidance('fields');
   return <HelpTip kind='fields' guide={guide} defaultSearch={defaultSearch} stack={stack} />;

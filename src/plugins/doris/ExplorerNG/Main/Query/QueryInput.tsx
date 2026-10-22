@@ -34,6 +34,7 @@ interface Props {
   onQueryEdit?: (query?: string) => void;
 }
 
+/** Combine the Doris query editor, default-field control and lightweight syntax guidance. */
 export default function QueryInputCpt(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);

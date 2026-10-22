@@ -10,6 +10,7 @@ interface CellExpanderFormatterProps {
   onCellExpand: () => void;
 }
 
+/** Keep the details click target while anchoring its tooltip to the actual icon. */
 export default function CellExpanderFormatter({ expanded, onCellExpand }: CellExpanderFormatterProps) {
   const { t } = useTranslation(NAME_SPACE);
   function handleClick(e: React.MouseEvent<HTMLSpanElement>) {

@@ -5,6 +5,7 @@ import type { SortIconProps } from 'react-data-grid';
 import { useTranslation } from 'react-i18next';
 import { NAME_SPACE } from '../../../constants';
 
+/** Show a thin direction arrow and explain the current time sort order. */
 export default function SortIndicator({ sortDirection }: SortIconProps) {
   const { t } = useTranslation(NAME_SPACE);
   if (!sortDirection) return null;

@@ -587,6 +587,7 @@ const RawRow = React.memo(
   },
 );
 
+/** Virtualize variable-height raw logs in the actual page or fullscreen scroll owner. */
 function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {

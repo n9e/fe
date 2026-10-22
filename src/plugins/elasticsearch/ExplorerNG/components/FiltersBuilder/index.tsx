@@ -64,6 +64,7 @@ function getFieldForTermsAgg(field?: Field) {
   return field.field;
 }
 
+/** Keep Elasticsearch filter changes in a draft until the user confirms. */
 function ConfigPopover(props: ConfigPopoverProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceValue, indexData, filters, onChange, executeQuery, children, data, index } = props;
@@ -285,6 +286,7 @@ function ConfigPopover(props: ConfigPopoverProps) {
   );
 }
 
+/** Render Elasticsearch filter chips with explicit confirm/cancel editing. */
 export default function FiltersBuilder(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { filters, onChange, executeQuery } = props;

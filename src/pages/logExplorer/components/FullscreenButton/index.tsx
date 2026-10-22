@@ -43,6 +43,7 @@ export default function FullscreenButton() {
   );
 }
 
+/** Own fullscreen state and the results scroll shell without remounting children. */
 function Provider(props: { children: React.ReactNode; autoHeight?: boolean }) {
   const [viewModalVisible, setViewModalVisible] = React.useState(false);
 

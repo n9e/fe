@@ -34,6 +34,7 @@ function categoryFormatter(category: string | null | undefined) {
   return category === null || category === '' ? `"${category}"` : category;
 }
 
+/** Render log-volume bars with zoom selection and tooltips above pinned controls. */
 const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs, categoryColors }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<Chart | null>(null);

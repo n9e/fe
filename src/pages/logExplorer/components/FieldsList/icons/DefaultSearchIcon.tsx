@@ -2,6 +2,7 @@ import React from 'react';
 import Icon from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
+/** Draw the target glyph used for the optional default search field. */
 const DefaultSearchSvg = () => (
   <svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
     <path
@@ -11,8 +12,10 @@ const DefaultSearchSvg = () => (
   </svg>
 );
 
+/** Expose the default-search glyph with standard Ant Design icon props. */
 const DefaultSearchIcon = (props: Partial<CustomIconComponentProps>) => <Icon component={DefaultSearchSvg} {...props} />;
 
+/** Draw the action glyph for clearing the selected default search field. */
 const UnDefaultSearchSvg = () => (
   <svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
     <path
@@ -22,6 +25,7 @@ const UnDefaultSearchSvg = () => (
   </svg>
 );
 
+/** Expose the clear-default glyph with standard Ant Design icon props. */
 const UnDefaultSearchIcon = (props: Partial<CustomIconComponentProps>) => <Icon component={UnDefaultSearchSvg} {...props} />;
 
 export { DefaultSearchIcon, UnDefaultSearchIcon };

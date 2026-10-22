@@ -38,6 +38,7 @@ export interface LogClusting {
   fieldCacheKey: string;
 }
 
+/** Render clustered results using the same page-owned grid scrolling as other modes. */
 export default function TableCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState, clusteringExtraEleRef } = props;

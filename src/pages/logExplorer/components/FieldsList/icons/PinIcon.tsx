@@ -2,6 +2,7 @@ import React from 'react';
 import Icon from '@ant-design/icons';
 import type { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
+/** Draw the histogram glyph used by field-stacking actions. */
 const PinSvg = () => (
   <svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
     <path
@@ -11,8 +12,10 @@ const PinSvg = () => (
   </svg>
 );
 
+/** Expose the stacking glyph for field buttons and their help content. */
 const PinIcon = (props: Partial<CustomIconComponentProps>) => <Icon component={PinSvg} {...props} />;
 
+/** Draw the remove-stacking action glyph. */
 const UnPinSvg = () => (
   <svg width='1em' height='1em' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
     <path
@@ -22,6 +25,7 @@ const UnPinSvg = () => (
   </svg>
 );
 
+/** Expose the remove-stacking glyph with standard Ant Design icon props. */
 const UnPinIcon = (props: Partial<CustomIconComponentProps>) => <Icon component={UnPinSvg} {...props} />;
 
 export { PinIcon, UnPinIcon };

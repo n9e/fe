@@ -9,6 +9,7 @@ import { Field } from '../../../types';
 import LogFieldValue from '../components/LogFieldValue';
 import { OptionsType, OnValueFilterParams, FieldValueType } from '../types';
 
+/** Build field, time and line columns with compact detail anchors and custom formatters. */
 export default function getColumnsFromFields(params: {
   id_key: string;
   colWidths?: { [key: string]: number };

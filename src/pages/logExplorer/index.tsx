@@ -130,6 +130,7 @@ function TabExplorer({
   );
 }
 
+/** Manage query tabs, saved-view selection and per-account help coordination. */
 export default function index() {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceList, groupedDatasourceList, profile } = useContext(CommonStateContext);

@@ -17,6 +17,7 @@ interface Props {
   onInput?: () => void;
 }
 
+/** Render the query editor while forwarding focus events for lightweight guidance. */
 export default function QueryInput(props: Props) {
   const [currentValue, setCurrentValue] = useState(props.value);
 

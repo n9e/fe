@@ -74,6 +74,7 @@ function isNoDataError(error: any) {
   return legacyMessage === 'no data';
 }
 
+/** Connect victorialogs raw results to shared scrolling and histogram controls. */
 export default function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { tableSelector, indexData, setExecuteLoading, executeQuery, onValueFilter, snapRangeResetKey } = props;

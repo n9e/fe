@@ -42,6 +42,7 @@ interface Props<Row> {
 const ROW_HEIGHT = 35;
 const ROW_EXPANDED_HEIGHT_DETAIL = 300;
 
+/** Connect the virtual grid to its page scroll owner and preserve column sizing. */
 export default function Table<Row>(props: Props<Row>) {
   const { theme = 'light', className, columns, rowKeyGetter, expandable, sortColumns, onSortColumnsChange, onScroll, getRowHeight, onColumnResize } = props;
   const [detailHeights, setDetailHeights] = useState<Map<number | string, number>>(new Map());

@@ -102,6 +102,7 @@ interface SideMenuProps {
   isGoldTheme?: boolean;
 }
 
+/** Render the resizable navigation and its hover-accessible account menu. */
 const SideMenu = (props: SideMenuProps) => {
   const { i18n, t } = useTranslation(['sideMenu', 'pageLayout', 'DarkModeSelect']);
   const history = useHistory();

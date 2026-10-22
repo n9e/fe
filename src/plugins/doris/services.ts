@@ -115,6 +115,7 @@ export function getDorisIndex(data: BaseParams & { database: string; table: stri
   });
 }
 
+/** Fetch and normalize trend series, optionally delegating request error presentation. */
 export function getDorisHistogram(
   data: {
     cate: string;
@@ -148,6 +149,7 @@ export function getDorisHistogram(
   }).then((res) => res.dat || []);
 }
 
+/** Execute Doris log queries with an optional request-local error handler. */
 export function getDorisLogsQuery(
   data: {
     cate: string;

@@ -1,4 +1,5 @@
 import { getExternalLogScroll, isExternalLogAtBottom } from '@/pages/logExplorer/components/LogsViewer/utils/scrollParent';
+/** Reset the actual results scroll owner, falling back to standalone table scrolling. */
 export function scrollToTop(logsAntdTableSelector: string, logsRgdTableSelector: string) {
   const external = getExternalLogScroll(document.querySelector(logsAntdTableSelector) || document.querySelector(logsRgdTableSelector));
   if (external) {
@@ -15,6 +16,7 @@ export function scrollToTop(logsAntdTableSelector: string, logsRgdTableSelector:
   }
 }
 
+/** Use visible external results bounds, preserving legacy table-height checks. */
 export function getIsAtBottom(logsAntdTableSelector: string, logsRgdTableSelector: string) {
   const externalBottom = isExternalLogAtBottom(document.querySelector(logsAntdTableSelector) || document.querySelector(logsRgdTableSelector));
   if (externalBottom !== undefined) return externalBottom;

@@ -77,6 +77,7 @@ interface Props {
   hideTypeIcon?: boolean;
 }
 
+/** Build structured log columns and connect row details to the shared grid. */
 function Table(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {

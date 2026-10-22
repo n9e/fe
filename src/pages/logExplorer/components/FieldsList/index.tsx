@@ -43,6 +43,7 @@ interface Props {
   ) => void;
 }
 
+/** Share query-scoped statistics and render displayed and available field groups. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {

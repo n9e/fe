@@ -11,6 +11,7 @@ interface Props extends Pick<FieldActionOptions, 'getUniqueCount' | 'statsScope'
   onChange: () => void;
 }
 
+/** Validate cardinality on explicit stack clicks; unpin without a request. */
 export default function FieldStackButton({ active, icon, title, getUniqueCount, statsScope, onChange }: Props) {
   const { t } = useTranslation('log_explorer');
   const noticeKey = `log-field-stack-${React.useId()}`;

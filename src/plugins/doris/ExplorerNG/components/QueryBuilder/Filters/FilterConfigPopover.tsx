@@ -31,6 +31,7 @@ interface Props {
   onAdd?: (data: FilterConfig) => void;
 }
 
+/** Edit a filter draft and apply it only after explicit validation and confirmation. */
 export default function ConfigPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { ignoreNextOutsideClick } = useContext(CommonStateContext);

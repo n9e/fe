@@ -91,6 +91,7 @@ interface Props {
   };
 }
 
+/** Connect elasticsearch raw results to shared scrolling and histogram controls. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const queryStrRef = useRef<string>('');

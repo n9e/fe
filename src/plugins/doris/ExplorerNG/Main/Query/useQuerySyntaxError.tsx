@@ -8,6 +8,7 @@ import UsageDocs from '@/components/UsageDocs';
 import { NAME_SPACE } from '@/pages/logExplorer/constants';
 import { createQueryErrorHandler } from './queryErrorPolicy';
 
+/** Coordinate query error guidance and ignore notifications from superseded requests. */
 export default function useQuerySyntaxError(refreshFlag: string | undefined) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);

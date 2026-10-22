@@ -26,6 +26,7 @@ interface Props {
   executeQuery: () => void;
 }
 
+/** Host loki query controls in the shared collapsible and pinned layout. */
 export default function Main(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);
