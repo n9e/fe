@@ -551,6 +551,17 @@ const id_ID = {
       iframe: {
         src: 'URL iframe',
       },
+      aiButton: {
+        style: 'Gaya tombol',
+        style_capsule: 'Kapsul',
+        style_icon: 'Ikon',
+        style_antd: 'Ant Design',
+        text: 'Teks tombol',
+        text_placeholder: 'Menampilkan {{name}} jika kosong',
+        type: 'Tipe tombol',
+        prompt: 'Prompt',
+        prompt_tip: 'Saat diklik, membuka AI Chat dan mengirim prompt ini. Jika kosong, hanya membuka AI Chat.',
+      },
       heatmap: {
         xAxisField: 'Sumbu X',
         yAxisField: 'Sumbu Y',
@@ -720,6 +731,7 @@ __variable_value_fixed=true: pertahankan nilai variabel dari URL tanpa mengganti
     gauge: 'Diagram pengukur',
     heatmap: 'Peta blok warna',
     iframe: 'Dokumen tersemat (iframe)',
+    aiButton: 'Tombol AI',
     row: 'Grup',
     importPanel: 'Tempel grafik',
   },

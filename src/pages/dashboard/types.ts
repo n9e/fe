@@ -81,7 +81,7 @@ export interface ITarget {
   hide?: boolean;
 }
 
-export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'tableNG' | 'pie' | 'hexbin' | 'barGauge' | 'text' | 'gauge' | 'iframe' | 'barchart' | 'heatmap';
+export type IType = 'row' | 'timeseries' | 'stat' | 'table' | 'tableNG' | 'pie' | 'hexbin' | 'barGauge' | 'text' | 'gauge' | 'iframe' | 'barchart' | 'heatmap' | 'aiButton';
 
 export interface IValueMapping {
   match: {
@@ -267,6 +267,14 @@ export interface ITextStyles {
 export interface IIframeStyles {
   version: string;
   src: string;
+}
+
+export interface IAiButtonStyles {
+  style: 'capsule' | 'icon' | 'antd';
+  text?: string;
+  /** 仅 style 为 antd 时生效，对应 antd Button 的 type */
+  type?: 'primary' | 'default' | 'dashed' | 'text' | 'link';
+  prompt?: string;
 }
 
 export interface IRow {

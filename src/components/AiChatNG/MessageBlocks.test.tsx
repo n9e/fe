@@ -115,5 +115,6 @@ describe('MessageItem in the dock', () => {
     const bubble = screen.getByText('问题').parentElement!;
     expect(bubble).toHaveClass('bg-primary/10');
     expect(bubble.parentElement).not.toHaveClass('justify-end');
+    expect(screen.getAllByText('message.empty_response')).toHaveLength(1);
   });
 });

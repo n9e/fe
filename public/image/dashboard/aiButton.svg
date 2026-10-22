@@ -1,0 +1,13 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="18" y="62" width="164" height="76" rx="38" fill="url(#aiButtonGradient)"/>
+<circle cx="62" cy="100" r="16" fill="white" fill-opacity="0.95"/>
+<path d="M62 88.5L64.2 95.8L71.5 98L64.2 100.2L62 107.5L59.8 100.2L52.5 98L59.8 95.8L62 88.5Z" fill="#7C4DFF"/>
+<path d="M86 90H146" stroke="white" stroke-width="8" stroke-linecap="round"/>
+<path d="M86 110H128" stroke="white" stroke-width="8" stroke-linecap="round" stroke-opacity="0.75"/>
+<defs>
+<linearGradient id="aiButtonGradient" x1="18" y1="100" x2="182" y2="100" gradientUnits="userSpaceOnUse">
+<stop stop-color="#9470FF"/>
+<stop offset="1" stop-color="#5B8DEF"/>
+</linearGradient>
+</defs>
+</svg>

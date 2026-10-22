@@ -133,6 +133,30 @@ export function AiButton(props: {
   return <AiButtonContent {...props} />;
 }
 
+export function useAiChatOpenWithPrompt(prompt?: string) {
+  const trimmedPrompt = prompt?.trim() || undefined;
+  const openWithoutPrompt = useFlashAiClickHandler();
+  const { openAiChat } = useAiChatContext();
+  const openEntChat = useAiEntClickHandler(trimmedPrompt ? { queryAction: { content: trimmedPrompt, prefillOnly: false } } : undefined);
+
+  return React.useCallback(() => {
+    if (IS_ENT) {
+      openEntChat();
+      return;
+    }
+    if (!trimmedPrompt) {
+      openWithoutPrompt();
+      return;
+    }
+    // 不传 chatId，让开源版新建会话。initialMessage 会在 ChatPanel 挂载后自动发送；
+    // context 会在携带 initialMessage 时递增 open key，侧拉板已打开时也能重新挂载并发送。
+    openAiChat({
+      queryPageFrom: buildPageFrom({ url: getCurrentPageUrl() }),
+      initialMessage: trimmedPrompt,
+    });
+  }, [openAiChat, openEntChat, openWithoutPrompt, trimmedPrompt]);
+}
+
 export function CustomAiButtonWrap({
   children,
   queryAction,
