@@ -69,12 +69,13 @@ function Graph(props: {
   height: number;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
+  xRange: [number, number];
   unit: string;
   showResetZoomBtn: boolean;
   setShowResetZoomBtn: (show: boolean) => void;
 }) {
   const { darkMode } = useContext(CommonStateContext);
-  const { width, height, frames, baseSeries, unit, showResetZoomBtn, setShowResetZoomBtn } = props;
+  const { width, height, frames, baseSeries, xRange, unit, showResetZoomBtn, setShowResetZoomBtn } = props;
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const uplotRef = useRef<any>();
@@ -96,7 +97,7 @@ function Graph(props: {
         }),
       ],
       cursor: cursorBuider({}),
-      scales: scalesBuilder({}),
+      scales: scalesBuilder({ xRange }),
       series: seriesBuider({
         baseSeries,
         colors: hexPalette,
@@ -145,7 +146,7 @@ function Graph(props: {
         ],
       },
     };
-  }, [width, height, darkMode, JSON.stringify(baseSeries), unit]);
+  }, [width, height, darkMode, JSON.stringify(baseSeries), JSON.stringify(xRange), unit]);
 
   return (
     <div className='relative'>
@@ -187,6 +188,7 @@ export default function Metric(props: Props) {
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const [timeseriesLoading, setTimeseriesLoading] = useState(false);
   const [series, setSeries] = useState<any[]>([]);
+  const [xRange, setXRange] = useState<[number, number]>([0, 0]);
   const [options, setOptions] = useState({
     ...getOptionsFromLocalstorage(METRIC_TABLE_OPTIONS_CACHE_KEY, {
       logMode: 'table',
@@ -330,6 +332,9 @@ export default function Metric(props: Props) {
       return;
     }
     const range = parseRange(queryValues.range);
+    const start = moment(range.start).unix();
+    const end = moment(range.end).unix();
+    const xRange: [number, number] = [start, end];
     const valueKey = _.isEmpty(queryValues?.keys?.valueKey) ? inferredKeys.valueKey : queryValues.keys.valueKey;
     const labelKey = _.isEmpty(queryValues?.keys?.labelKey) ? inferredKeys.labelKey : queryValues.keys.labelKey;
     const keys = {
@@ -343,8 +348,8 @@ export default function Metric(props: Props) {
       query: [
         {
           query: _.trim(queryValues.query),
-          start: moment(range.start).unix(),
-          end: moment(range.end).unix(),
+          start,
+          end,
           keys,
           ref: 'A',
         },
@@ -362,12 +367,14 @@ export default function Metric(props: Props) {
           };
         });
         setSeries(nextSeries);
+        setXRange(xRange);
         setDataRefresh(_.uniqueId('dataRefresh_'));
       })
       .catch((err) => {
         if (requestId !== timeseriesRequestIdRef.current) return;
         console.error('victorialogs dsQuery failed:', err);
         setSeries([]);
+        setXRange(xRange);
         setDataRefresh(_.uniqueId('dataRefresh_'));
       })
       .finally(() => {
@@ -624,6 +631,7 @@ export default function Metric(props: Props) {
                     height={eleSize.height}
                     frames={frames}
                     baseSeries={seriesData}
+                    xRange={xRange}
                     unit={unit}
                     showResetZoomBtn={showResetZoomBtn}
                     setShowResetZoomBtn={setShowResetZoomBtn}

@@ -16,10 +16,15 @@ import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
 import Cluster from '../../components/items/Cluster';
 import MTLS from '../../components/items/MTLS';
+import { isChineseLanguage } from '@/utils/n9eSiteDoc';
 import prom_installation from './prom_installation.md';
 
+// 非中文界面使用 Prometheus 官方发布地址，中文界面保留国内下载镜像
+const PROM_MIRROR_URL = 'download.flashcat.cloud/prometheus-2.50.1.linux-amd64.tar.gz';
+const PROM_OFFICIAL_URL = 'https://github.com/prometheus/prometheus/releases/download/v2.50.1/prometheus-2.50.1.linux-amd64.tar.gz';
+
 export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
-  const { t } = useTranslation('datasourceManage');
+  const { t, i18n } = useTranslation('datasourceManage');
   const [form] = Form.useForm();
   const clusterRef = useRef<any>();
   const { groupedDatasourceList } = useContext(CommonStateContext);
@@ -178,7 +183,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             }}
           />
         </div>
-        <Markdown content={prom_installation} />
+        <Markdown content={isChineseLanguage(i18n.language) ? prom_installation : prom_installation.replace(PROM_MIRROR_URL, PROM_OFFICIAL_URL)} />
       </Drawer>
     </Form>
   );

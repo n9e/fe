@@ -72,7 +72,7 @@ export default function index(props: IProps) {
                     name={[...namePrefix, 'unit']}
                   >
                     <CustomUnitPicker
-                      placeholder='SI prefixes'
+                      placeholder='SI short'
                       allowClear
                       showSearch
                       hideSIOption

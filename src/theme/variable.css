@@ -65,6 +65,10 @@
   --fc-border-color2: hsla(240, 5%, 89%);
   --fc-border-base: hsla(240, 5%, 89%, 0.4);
   --fc-antd-border-color: #d9d9d9; /* 用于 跟antd button 连结的边框 */
+  /* 与 antd 禁用态一致，供自定义控件复用 */
+  --fc-disabled-color: rgba(0, 0, 0, 0.5);
+  --fc-disabled-bg: #f5f5f5;
+  --fc-disabled-checked-bg: #e6e6e6;
   --fc-background-color-light: rgba(250, 250, 250, 1);
   --fc-card-border: #f0f0f0;
   --fc-border-radius-base: 8px;
@@ -316,6 +320,9 @@
   --fc-border-color2: rgba(255, 255, 255, 0.08);
   --fc-border-base: rgba(255, 255, 255, 0.03);
   --fc-antd-border-color: #ccccdc33;
+  --fc-disabled-color: rgba(255, 255, 255, 0.3);
+  --fc-disabled-bg: rgba(255, 255, 255, 0.08);
+  --fc-disabled-checked-bg: rgba(255, 255, 255, 0.2);
   --fc-background-color-light: rgba(255, 255, 255, 0.04);
   --fc-card-border: #393c4d;
 
@@ -490,6 +497,7 @@
   --fc-gold-text: #222;
   --fc-text-link: #4880ff;
   --fc-primary-bg: #fff2cb;
+  --fc-disabled-color: rgba(0, 0, 0, 0.25);
 }
 
 .theme-light-blue {
@@ -499,4 +507,5 @@
   --fc-primary-color: #427af4;
   --fc-text-link: #2d5bcf;
   --fc-primary-bg: #eef6fe;
+  --fc-disabled-color: rgba(0, 0, 0, 0.25);
 }

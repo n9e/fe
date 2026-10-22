@@ -54,6 +54,7 @@ const en_US = {
       status_done: 'Completed',
       status3: 'Canceled',
       status4: 'Generated with warnings',
+      status_failed: 'Failed',
       datasource: 'Data source',
       current_datasource: 'Current data source',
       all_datasources: 'All data sources',

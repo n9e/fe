@@ -41,12 +41,13 @@ function Graph(props: {
   height: number;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
+  xRange: [number, number];
   showResetZoomBtn: boolean;
   unit: string;
   setShowResetZoomBtn: (show: boolean) => void;
 }) {
   const { darkMode } = useContext(CommonStateContext);
-  const { width, height, frames, baseSeries, showResetZoomBtn, unit, setShowResetZoomBtn } = props;
+  const { width, height, frames, baseSeries, xRange, showResetZoomBtn, unit, setShowResetZoomBtn } = props;
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const uplotRef = useRef<any>();
@@ -73,7 +74,7 @@ function Graph(props: {
         }),
       ],
       cursor: cursorBuider({}),
-      scales: scalesBuilder({}),
+      scales: scalesBuilder({ xRange }),
       series: seriesBuider({
         baseSeries,
         colors: hexPalette,
@@ -127,7 +128,7 @@ function Graph(props: {
         ],
       },
     };
-  }, [width, height, darkMode, JSON.stringify(baseSeries), unit]);
+  }, [width, height, darkMode, JSON.stringify(baseSeries), JSON.stringify(xRange), unit]);
 
   return (
     <div className='relative'>
@@ -165,15 +166,21 @@ export default function TimeseriesCpt(props: Props) {
   const [activeLegend, setActiveLegend] = useState<string>();
   const [dataRefresh, setDataRefresh] = useState(_.uniqueId('dataRefresh_'));
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<{ frames: AlignedData; baseSeries: BaseSeriesItem[] }>({
+  const [data, setData] = useState<{ frames: AlignedData; baseSeries: BaseSeriesItem[]; xRange: [number, number] }>({
     frames: [],
     baseSeries: [],
+    xRange: [0, 0],
   });
 
   useEffect(() => {
     if (refreshFlag) {
       form.validateFields().then((values) => {
         const query = values.query;
+        const range = parseRange(query.range);
+        const from = moment(range.start).unix();
+        const to = moment(range.end).unix();
+        // ClickHouse 聚合桶可能将结束边界向上取整到下一秒；保留该秒以展示接口返回的端点数据。
+        const xRange: [number, number] = [from, to + 1];
         if (query.keys.valueKey) {
           query.keys.valueKey = _.join(query.keys.valueKey, ' ');
         }
@@ -185,8 +192,8 @@ export default function TimeseriesCpt(props: Props) {
           datasource_id: values.datasourceValue,
           query: [
             {
-              from: moment(parseRange(query.range).start).unix(),
-              to: moment(parseRange(query.range).end).unix(),
+              from,
+              to,
               sql: replaceTemplateVariables(_.trim(query.sql), query.range, width),
               keys: query.keys,
             },
@@ -206,11 +213,11 @@ export default function TimeseriesCpt(props: Props) {
               };
             });
             const { frames, baseSeries } = getDataFrameAndBaseSeries(series);
-            setData({ frames, baseSeries });
+            setData({ frames, baseSeries, xRange });
             setDataRefresh(_.uniqueId('dataRefresh_'));
           })
           .catch(() => {
-            setData({ frames: [[]], baseSeries: [] });
+            setData({ frames: [[]], baseSeries: [], xRange });
             setDataRefresh(_.uniqueId('dataRefresh_'));
           })
           .finally(() => {
@@ -368,6 +375,7 @@ export default function TimeseriesCpt(props: Props) {
                       height={eleSize.height}
                       frames={data.frames}
                       baseSeries={seriesData}
+                      xRange={data.xRange}
                       showResetZoomBtn={showResetZoomBtn}
                       unit={unit}
                       setShowResetZoomBtn={setShowResetZoomBtn}

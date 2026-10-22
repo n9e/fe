@@ -48,6 +48,7 @@ test('fullscreen header only renders the dashboard title and time range picker',
         isPreview={false}
         isBuiltin={false}
         isAuthorized
+        onToggleFullscreen={jest.fn()}
         editable
         updateAtRef={{ current: undefined }}
         allowedLeave

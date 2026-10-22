@@ -55,6 +55,7 @@ export default function SkillDetailPanel(props: Props) {
 
   const isGit = item.source_type === 'git';
   const isBuiltin = item.builtin === true;
+  const showBuiltinReplaceButton = isBuiltin && !isGit && !!profile.admin;
   const gitInfo = item.git_info;
   // 非内置 skill 的编辑/替换/删除按权限门控；内置 skill 仍按下方原有 admin 逻辑。
   const canModify = !isBuiltin && canModifySkill(item, profile);
@@ -118,11 +119,7 @@ export default function SkillDetailPanel(props: Props) {
   };
 
   const showUpdateButton = isGit;
-  const showOverflowMenu = (() => {
-    if (isBuiltin && isGit) return false;
-    if (isBuiltin && !isGit) return !!profile.admin;
-    return true;
-  })();
+  const showOverflowMenu = !isBuiltin;
   const replaceMenuKey = isGit ? 'git-replace' : 'zip-upload';
 
   const handleReplaceClick = () => {
@@ -133,25 +130,38 @@ export default function SkillDetailPanel(props: Props) {
     }
   };
 
+  // 内置 skill 的替换入口共用同一按钮：非 git 由 showBuiltinReplaceButton 控制，git 放在下方更新按钮组内。
+  // 注意两处可见条件不同（见各自调用点），不要合并。
+  const builtinReplaceButton = (
+    <Button
+      size='small'
+      icon={<UploadOutlined />}
+      onClick={() => {
+        setUploadModalVisible(true);
+      }}
+    >
+      {t('upload_skill_update')}
+    </Button>
+  );
+
+  // 下拉菜单仅在非内置 skill 下渲染，菜单项无需再判断 isBuiltin。
   const overflowMenu = (
     <Menu>
-      {((!isBuiltin && canModify) || (isBuiltin && !isGit && !!profile.admin)) && (
+      {canModify && (
         <Menu.Item key={replaceMenuKey} onClick={handleReplaceClick}>
           <Space>
-            {isGit || !isBuiltin ? <EditOutlined /> : <UploadOutlined />}
-            {isGit || !isBuiltin ? t('upload_skill_modify') : t('upload_skill_update')}
+            <EditOutlined />
+            {t('upload_skill_modify')}
           </Space>
         </Menu.Item>
       )}
-      {!isBuiltin && (
-        <Menu.Item key='download' onClick={handleDownload}>
-          <Space>
-            <DownloadOutlined />
-            {t('download_skill')}
-          </Space>
-        </Menu.Item>
-      )}
-      {!isBuiltin && canModify && (
+      <Menu.Item key='download' onClick={handleDownload}>
+        <Space>
+          <DownloadOutlined />
+          {t('download_skill')}
+        </Space>
+      </Menu.Item>
+      {canModify && (
         <Menu.Item
           key='delete'
           disabled={item.enabled}
@@ -308,6 +318,7 @@ export default function SkillDetailPanel(props: Props) {
               <Switch size='small' checked={item.enabled} onChange={onToggleEnabled} />
             </>
           )}
+          {showBuiltinReplaceButton && builtinReplaceButton}
           {showUpdateButton &&
             (isBuiltin ? (
               <>
@@ -319,15 +330,7 @@ export default function SkillDetailPanel(props: Props) {
                 <Button size='small' icon={<ReloadOutlined />} onClick={onBuiltinGitUpdate} loading={builtinGitUpdating}>
                   {t('git.update_btn')}
                 </Button>
-                <Button
-                  size='small'
-                  icon={<UploadOutlined />}
-                  onClick={() => {
-                    setUploadModalVisible(true);
-                  }}
-                >
-                  {t('upload_skill_update')}
-                </Button>
+                {builtinReplaceButton}
               </>
             ) : (
               <>

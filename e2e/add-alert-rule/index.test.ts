@@ -14,6 +14,7 @@ import { fillRuleStep } from './steps/rule';
 import { fillPipelineStep } from './steps/pipeline';
 import { fillEffectiveStep } from './steps/effective';
 import { fillNotifyStep } from './steps/notify';
+import { assertHostRuleConditions } from './queries/host';
 
 const ALERT_RULE_CONFIGS = loadAlertRuleConfigs<AlertRuleConfig>(path.resolve(__dirname, 'configs'));
 
@@ -144,7 +145,11 @@ test.describe('add alert rule', () => {
       }
 
       // 等待 SPA 渲染完成后再调用 Midscene，避免 agent 初始化时因页面路由切换导致 style 注入失败
-      await aiWaitFor('告警规则新增表单已显示，页面中有基础配置、数据源、告警条件等区域');
+      if (uiConfig.cate === 'host') {
+        await expect(page.locator('[data-section-key="basic"]'), 'host add form').toBeAttached();
+      } else {
+        await aiWaitFor('告警规则新增表单已显示，页面中有基础配置、数据源、告警条件等区域');
+      }
 
       // Phase: 基础配置
       await fillBasicStep(page, uiConfig, aiTap);
@@ -169,7 +174,11 @@ test.describe('add alert rule', () => {
         return request.method() === 'POST' && /\/api\/n9e\/busi-group\/\d+\/alert-rules$/.test(response.url());
       });
 
-      await aiTap('保存按钮');
+      if (uiConfig.cate === 'host') {
+        await page.getByRole('button', { name: /保\s*存/ }).click();
+      } else {
+        await aiTap('保存按钮');
+      }
       const saveResponse = await saveResponsePromise;
       expect(saveResponse.ok()).toBeTruthy();
       const saveBody = await saveResponse.json().catch(() => undefined);
@@ -209,6 +218,12 @@ test.describe('add alert rule', () => {
 
         expect(createdRule, `Created alert rule not found in group ${alertRuleConfig.group_id}. Save response: ${JSON.stringify(saveBody)}`).toBeTruthy();
         assertAlertRuleMatchesConfig(createdRule, buildExpectedAlertRule(alertRuleConfig, uiConfig, refs));
+
+        if (uiConfig.cate === 'host' && createdRule.id) {
+          await page.goto(`${BASE_URL}/alert-rules/edit/${createdRule.id}`);
+          await expect(page.locator('[data-section-key="basic"]'), 'host edit form').toBeAttached();
+          await assertHostRuleConditions(page, uiConfig);
+        }
 
         await recordToReport(`${uiConfig.cate} alert rule created`, {
           content: `Created and verified rule ${uiConfig.name}`,

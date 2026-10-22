@@ -8,6 +8,7 @@ import { getNotifyChannels, putNotifyChannels } from '../services';
 import { ChannelType } from '../types';
 import AddModal from './AddModal';
 import EditModal from './EditModal';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function Channels() {
   const { t, i18n } = useTranslation('notificationSettings');
@@ -46,19 +47,21 @@ export default function Channels() {
               >
                 {t('channels.add')}
               </Button>
-              <a
-                style={{ fontSize: 12 }}
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language,
-                    title: t('common:document_link'),
-                    type: 'iframe',
-                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/',
-                  });
-                }}
-              >
-                {t('common:document_link')}
-              </a>
+              <UsageDocs>
+                <a
+                  style={{ fontSize: 12 }}
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language,
+                      title: t('common:document_link'),
+                      type: 'iframe',
+                      documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/alert-notify/notify-channel/',
+                    });
+                  }}
+                >
+                  {t('common:document_link')}
+                </a>
+              </UsageDocs>
             </Space>
           );
         }}

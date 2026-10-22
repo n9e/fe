@@ -4,6 +4,7 @@ import { fillTimePickerInput, setAntFormItemSwitch, selectAntFormItemOption } fr
 import type { AiTap, AiWaitFor } from '../../types';
 import type { NormalizedAlertRuleConfig, NormalizedTimeRange } from '../types';
 import { openFormNgSection } from '../helpers';
+import { isFullDayTimeRange } from '../../../src/pages/alertRules/Form/serviceCalConfigs';
 
 const DEFAULT_DAYS = ['0', '1', '2', '3', '4', '5', '6'];
 
@@ -59,9 +60,11 @@ async function ensureServiceCalConfigCount(page: Page, count: number) {
   }
 }
 
-async function selectServiceCalendar(page: Page, serviceCalName: string, configIndex: number) {
+async function selectServiceCalendar(page: Page, serviceCalName: string, configIndex: number, legacy: boolean) {
   const effectiveSection = page.locator('[data-section-key="effective"]');
-  const combobox = effectiveSection.locator(`xpath=(.//*[normalize-space(.)="服务日历"]/following::*[@role="combobox"])[${configIndex + 1}]`);
+  const combobox = legacy
+    ? effectiveSection.locator(`xpath=(.//*[normalize-space(.)="服务日历"]/following::*[@role="combobox"])[${configIndex + 1}]`)
+    : effectiveSection.getByRole('combobox', { name: /服务日历/ });
   await expect(combobox, `service calendar combobox ${configIndex}`).toBeVisible();
   const selectRoot = combobox.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " ant-select ")][1]');
   await selectRoot.locator('.ant-select-selector').click();
@@ -77,10 +80,10 @@ async function selectServiceCalendar(page: Page, serviceCalName: string, configI
 }
 
 /**
- * 填写生效配置步骤：时区、生效窗口、enable_in_bg。
+ * 填写生效配置步骤：时区、生效窗口、服务日历和 enable_in_bg。
  *
  * 仅在 uiConfig.effectiveIsDefault 为 false 时执行。
- * 服务日历暂未接入（为 Plus 专属功能），如配置中包含服务日历将跳过。
+ * 全天服务日历使用新版多选框；非全天存量配置保留分组和每日时段旧控件。
  */
 export async function fillEffectiveStep(page: Page, uiConfig: NormalizedAlertRuleConfig, aiTap: AiTap, _aiWaitFor: AiWaitFor) {
   if (uiConfig.effectiveIsDefault) {
@@ -105,16 +108,21 @@ export async function fillEffectiveStep(page: Page, uiConfig: NormalizedAlertRul
 
   if (uiConfig.serviceCalConfigs.length > 0) {
     await expect(page.getByText('服务日历').first(), 'service calendar field').toBeVisible();
-    await ensureServiceCalConfigCount(page, uiConfig.serviceCalConfigs.length);
+    const legacy = uiConfig.serviceCalConfigs.some((config) => !isFullDayTimeRange(config.timeRange));
+    if (legacy) {
+      await ensureServiceCalConfigCount(page, uiConfig.serviceCalConfigs.length);
+    }
     for (const [configIndex, serviceCalConfig] of uiConfig.serviceCalConfigs.entries()) {
       for (const serviceCalName of serviceCalConfig.serviceCalNames) {
-        await selectServiceCalendar(page, serviceCalName, configIndex);
+        await selectServiceCalendar(page, serviceCalName, configIndex, legacy);
       }
 
-      const serviceTimeOffset = uiConfig.effectiveTimeRanges.length * 2 + configIndex * 2;
-      const timeInputs = page.locator('.ant-picker input:visible');
-      await fillTimePickerInput(timeInputs.nth(serviceTimeOffset), serviceCalConfig.timeRange.start, `service calendar start time ${configIndex}`);
-      await fillTimePickerInput(timeInputs.nth(serviceTimeOffset + 1), serviceCalConfig.timeRange.end, `service calendar end time ${configIndex}`);
+      if (legacy) {
+        const serviceTimeOffset = uiConfig.effectiveTimeRanges.length * 2 + configIndex * 2;
+        const timeInputs = page.locator('.ant-picker input:visible');
+        await fillTimePickerInput(timeInputs.nth(serviceTimeOffset), serviceCalConfig.timeRange.start, `service calendar start time ${configIndex}`);
+        await fillTimePickerInput(timeInputs.nth(serviceTimeOffset + 1), serviceCalConfig.timeRange.end, `service calendar end time ${configIndex}`);
+      }
     }
   }
 }

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { basePrefix, CommonStateContext } from '@/App';
 import { allCates, getCateDisplayLabel, Cate } from '@/components/AdvancedWrap/utils';
 import TemplateMatchPanel from '@/components/TemplateMatch';
+import UsageDocs from '@/components/UsageDocs';
 
 import { getNextActions } from '../nextActions';
 import { helpLinkMap } from '../config';
@@ -218,9 +219,11 @@ export default function NextStepModal(props: Props) {
       return (
         <>
           {docUrl && (
-            <Button type='primary' href={docUrl} target='_blank'>
-              {t('result.view_doc_btn')}
-            </Button>
+            <UsageDocs>
+              <Button type='primary' href={docUrl} target='_blank'>
+                {t('result.view_doc_btn')}
+              </Button>
+            </UsageDocs>
           )}
           <Button icon={<ReloadOutlined />} onClick={reprobe}>
             {t('result.reprobe_btn')}

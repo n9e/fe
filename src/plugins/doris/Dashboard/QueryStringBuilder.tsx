@@ -15,6 +15,7 @@ import { getDorisIndex, Field } from '../services';
 import DatabaseSelect from '../Explorer/Query/DatabaseSelect';
 import TableSelect from '../Explorer/Query/TableSelect';
 import DateFieldSelect from '../Explorer/Query/DateFieldSelect';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   field: any;
@@ -115,17 +116,19 @@ export default function QueryStringBuilder(props: Props) {
         label={
           <Space>
             {t('query.query')}
-            <InfoCircleOutlined
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  darkMode,
-                  title: t('common:document_link'),
-                  type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
-                });
-              }}
-            />
+            <UsageDocs>
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('common:document_link'),
+                    type: 'iframe',
+                    documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
+                  });
+                }}
+              />
+            </UsageDocs>
           </Space>
         }
         {...restField}

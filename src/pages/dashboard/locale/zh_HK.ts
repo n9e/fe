@@ -403,7 +403,7 @@ const zh_HK = {
       title: '高階設定',
       unit: '單位',
       unit_tip: `
-        <0>預設會做 SI Prefixes 處理，如不想預設的處理可選擇 none 關閉</0>
+        <0>預設使用 SI short（SI 前綴自動縮放，1000 進位）；如不需要，可選擇 none 關閉</0>
         <1>Data(SI): 基數為 1000, 單位為 B、kB、MB、GB、TB、PB、EB、ZB、YB</1>
         <2>Data(IEC): 基數為 1024, 單位為 B、KiB、MiB、GiB、TiB、PiB、EiB、ZiB、YiB</2>
         <3>bits: b</3>
@@ -738,6 +738,20 @@ const zh_HK = {
     deletePanel_confirm: '是否刪除圖表：{{name}}',
     invalidPanelType: '無效的圖表類型',
     fullscreen: {
+      parameters: {
+        tooltip: `內建 URL 參數：
+viewMode=fullscreen：進入全螢幕展示。
+__show_header=true：全螢幕時顯示標題列和時間選擇器。
+__show_variables=true：全螢幕時顯示變數區域。
+__readonly=true：全螢幕唯讀，停用編輯、拖曳/縮放與遷移提示。
+__disable_fullscreen_exit=true：關閉「按 ESC 退出」提示和 Esc 退出。
+__disable_variables=region,host：停用指定名稱的變數控制項。
+__from=...&__to=...：設定全域時間範圍。
+__refresh=30：設定自動重新整理週期（秒）。
+__timezone=Asia/Shanghai：設定時區。
+themeMode=light|dark：設定主題。
+__variable_value_fixed=true：固定 URL 中的變數值，不使用本機快取或候選預設值覆蓋。`,
+      },
       notification: {
         esc: '按 ESC 鍵退出全螢幕模式',
         theme: '主題模式',

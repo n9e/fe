@@ -25,7 +25,10 @@ export interface FullscreenDisplayOptions {
   showHeader: boolean;
   showVariables: boolean;
   readonly: boolean;
+  disableExit: boolean;
 }
+
+export const isFullscreenExitDisabled = (query: DashboardLocationQuery): boolean => getQueryValue(query.__disable_fullscreen_exit) === 'true';
 
 /**
  * 解析全屏仪表盘的展示控制参数。
@@ -40,6 +43,7 @@ export const getFullscreenDisplayOptions = (query: DashboardLocationQuery): Full
     showHeader: isFullscreen && isEnabled('__show_header'),
     showVariables: isFullscreen && isEnabled('__show_variables'),
     readonly: isFullscreen && isEnabled('__readonly'),
+    disableExit: isFullscreen && isFullscreenExitDisabled(query),
   };
 };
 

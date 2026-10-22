@@ -1,3 +1,5 @@
+import { basePrefix } from '@/App';
+
 const cacheKey = 'darkMode';
 const urlParamKey = 'themeMode';
 
@@ -32,7 +34,7 @@ export function initTheme() {
   const darkMode = getDarkMode();
 
   // 登录页不设置主题类名，由登录页自己处理
-  if (!location.pathname.startsWith('/login')) {
+  if (!location.pathname.startsWith(`${basePrefix}/login`)) {
     document.body.className = darkMode ? 'theme-dark' : 'theme-light';
   }
 }

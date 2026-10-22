@@ -20,7 +20,7 @@ export default function HostIdent(props: Props) {
   const [range] = useGlobalState('range');
   const [dashboardMeta] = useGlobalState('dashboardMeta');
 
-  const { hide, item: variable, variableValueFixed, value, setValue } = props;
+  const { disabled, hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, options, multi, allOption } = variable;
 
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -125,6 +125,7 @@ export default function HostIdent(props: Props) {
       >
         <Select
           allowClear
+          disabled={disabled}
           mode={multi ? 'tags' : undefined}
           style={{
             width: '180px',

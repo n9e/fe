@@ -1,4 +1,5 @@
 const en_US = {
+  useCustomUnit: 'Use this custom unit: {{unit}}',
   unitDesc: {
     none: 'raw value, no unit conversion',
     sishort: 'using the SI standard for conversion. e.g. 1K equals 1000.',

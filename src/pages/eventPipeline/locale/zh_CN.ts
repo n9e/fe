@@ -175,6 +175,7 @@ const zh_CN = {
       script: '脚本执行',
       event_recover: '故障自愈',
       alert_shot: '告警截图',
+      flashai_automation: 'FlashAI 自动化',
     },
     category: {
       rewrite: '改写事件',
@@ -196,6 +197,7 @@ const zh_CN = {
       annotation_qd: '按数据查询结果给事件附加信息',
       event_recover: '触发自愈任务',
       alert_shot: '对仪表盘 / 网页截图并附到告警',
+      flashai_automation: '用当前事件触发一项 FlashAI 自动化',
     },
     delete_confirm: '确认删除这个处理器？',
     switch_type_confirm: '切换类型会清空当前处理器的配置，确认切换？',
@@ -203,6 +205,14 @@ const zh_CN = {
     move_up: '上移',
     move_down: '下移',
     copy_tip: '复制此处理器',
+  },
+  flashai_automation: {
+    cron_id: '自动化任务',
+    manage: '管理 FlashAI 自动化',
+    placeholder: '选择允许工作流触发的自动化',
+    no_options: '暂无可用的 FlashAI 自动化。请检查任务的总开关和工作流触发开关。',
+    selected_unavailable: '已选任务当前不可用或你已无权查看，执行时可能失败。',
+    event_context_tip: '执行时会把当前告警的规则、级别、状态、标签和附加信息发送给 FlashAI。',
   },
   form_section: {
     filter: {

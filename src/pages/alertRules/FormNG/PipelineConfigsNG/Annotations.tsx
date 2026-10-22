@@ -7,6 +7,7 @@ import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import CardContainer, { CardContainerHeader } from '@/pages/alertRules/FormNG/components/CardContainer';
 import { ANNOTATIONS_ENRICH_QUERIES_DOC_URL } from '@/pages/alertRules/constants';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function Annotations() {
   const { t, i18n } = useTranslation('alertRules');
@@ -29,19 +30,21 @@ export default function Annotations() {
                 <InfoCircleOutlined />
               </Tooltip>
               <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
-              <a
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language,
-                    darkMode,
-                    type: 'iframe',
-                    title: t('common:page_help'),
-                    documentPath: ANNOTATIONS_ENRICH_QUERIES_DOC_URL,
-                  });
-                }}
-              >
-                {t('common:page_help')}
-              </a>
+              <UsageDocs>
+                <a
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language,
+                      darkMode,
+                      type: 'iframe',
+                      title: t('common:page_help'),
+                      documentPath: ANNOTATIONS_ENRICH_QUERIES_DOC_URL,
+                    });
+                  }}
+                >
+                  {t('common:page_help')}
+                </a>
+              </UsageDocs>
             </Space>
             {fields.map((field) => (
               <CardContainer className='pb-0' key={field.key} onClose={() => remove(field.name)}>

@@ -23,7 +23,7 @@ import { getDashboardVariablePlugin } from '../plugins';
 export default function Query(props: Props) {
   const { datasourceList } = useContext(CommonStateContext);
   const [range] = useGlobalState('range');
-  const { hide, item: variable, variableValueFixed, value, setValue } = props;
+  const { disabled, hide, item: variable, variableValueFixed, value, setValue } = props;
   const { name, label, multi, allOption, options, width } = variable;
   const selectPresentation = getDashboardVariablePlugin(variable.datasource?.cate)?.selectPresentation?.(variable.query);
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -191,6 +191,7 @@ export default function Query(props: Props) {
       >
         <Select
           allowClear
+          disabled={disabled}
           mode={multi ? 'multiple' : undefined}
           style={{
             width: width || '180px',

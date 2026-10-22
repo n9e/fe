@@ -44,6 +44,7 @@ export default function ChatPanel(props: IAiChatProps) {
     queryAction,
     promptList,
     initialMessage,
+    continuationMessage,
     initialSkill,
     onChatChange,
     onError,
@@ -488,6 +489,7 @@ export default function ChatPanel(props: IAiChatProps) {
   }, [cancelScheduledStreamRender, cleanupPolling, stopStream, slim]);
 
   const initialMessageSentRef = useRef(false);
+  const sentContinuationIdsRef = useRef(new Set<string | number>());
   const acceptedChatIdsRef = useRef(new Set<string>());
 
   const createNewChat = useCallback(
@@ -641,6 +643,15 @@ export default function ChatPanel(props: IAiChatProps) {
     }
   }, [initialMessage, sendUserMessage]);
 
+  useEffect(() => {
+    if (!continuationMessage?.content.trim() || sentContinuationIdsRef.current.has(continuationMessage.id) || submitting || pendingTurnRef.current || !activeRef.current) {
+      return;
+    }
+
+    sentContinuationIdsRef.current.add(continuationMessage.id);
+    void sendUserMessage(undefined, continuationMessage.content);
+  }, [continuationMessage, sendUserMessage, submitting]);
+
   const handleStop = useCallback(() => {
     const pending = pendingTurnRef.current;
     const locator = pending?.locator ?? streamBufferRef.current.locator;
@@ -743,6 +754,11 @@ export default function ChatPanel(props: IAiChatProps) {
   // status and looks like the send did nothing useful.
   const suggestionsOpen = slim && !collapsed && !hasConversation && !submitting && prompts.length > 0 && !inputValue.trim();
   const highlighted = prompts[Math.min(highlight, prompts.length - 1)];
+  // The host's suggested next message, offered while the composer is empty and
+  // idle: the placeholder carries it in primary and a Tab key beside it fills it
+  // in. Not while sending, when the placeholder is the draft hint and the
+  // suggestion belongs to the turn just replaced.
+  const offered = slim && !submitting && !inputValue.trim() ? suggestion : undefined;
   const sendPrompt = (value: string) => {
     void sendUserMessage(undefined, value);
   };
@@ -833,7 +849,7 @@ export default function ChatPanel(props: IAiChatProps) {
           className={cn(
             slim
               ? cn(
-                  'ai-query-dock-input flex w-full items-center gap-2 border bg-transparent px-2 py-[3px]',
+                  'ai-query-dock-input flex w-full items-center gap-2 border px-2 py-[3px]',
                   // The bar and whatever floats under it read as one surface.
                   listHidden && !suggestionsOpen ? 'rounded-lg' : 'rounded-t-lg rounded-b-none border-b-0',
                 )
@@ -874,10 +890,9 @@ export default function ChatPanel(props: IAiChatProps) {
                     sendPrompt(highlighted.value);
                     return;
                   }
-                } else if (slim && suggestion && !inputValue.trim() && event.key === 'Tab' && !event.shiftKey) {
-                  // The placeholder is the model's suggested next message; Tab takes it.
+                } else if (offered && event.key === 'Tab' && !event.shiftKey) {
                   event.preventDefault();
-                  setInputValue(suggestion);
+                  setInputValue(offered);
                   return;
                 }
                 if (event.key !== 'Enter') return;
@@ -891,12 +906,30 @@ export default function ChatPanel(props: IAiChatProps) {
               }}
               className={
                 slim
-                  ? 'min-w-0 flex-1 bg-transparent px-2 py-[3px] text-sm text-main placeholder:text-[13px] placeholder:text-placeholder'
+                  ? cn(
+                      'min-w-0 flex-1 bg-transparent px-2 py-[3px] text-sm text-main placeholder:text-[13px]',
+                      offered ? 'placeholder:text-primary' : 'placeholder:text-placeholder',
+                    )
                   : 'bg-transparent px-5 py-3.5 text-base text-main placeholder:text-[14px] placeholder:text-placeholder'
               }
             />
             {slim ? (
               <>
+                {offered && (
+                  <button
+                    type='button'
+                    className='ai-query-dock-suggestion-key inline-flex shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap border-0 bg-transparent px-0.5 text-xs text-main hover:text-title'
+                    // mousedown, not click: the composer keeps focus, as in the suggestion list.
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                      setInputValue(offered);
+                      composerRef.current?.focus();
+                    }}
+                  >
+                    <kbd>Tab</kbd>
+                    <span>{t('dock.key_fill')}</span>
+                  </button>
+                )}
                 {sendButton}
                 {inputSuffix}
               </>

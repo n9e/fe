@@ -66,12 +66,13 @@ function Graph(props: {
   height: number;
   frames: AlignedData;
   baseSeries: BaseSeriesItem[];
+  xRange: [number, number];
   unit: string;
   showResetZoomBtn: boolean;
   setShowResetZoomBtn: (show: boolean) => void;
 }) {
   const { darkMode } = useContext(CommonStateContext);
-  const { width, height, frames, baseSeries, unit, showResetZoomBtn, setShowResetZoomBtn } = props;
+  const { width, height, frames, baseSeries, xRange, unit, showResetZoomBtn, setShowResetZoomBtn } = props;
   const xScaleInitMinMaxRef = useRef<[number, number]>();
   const yScaleInitMinMaxRef = useRef<[number, number]>();
   const uplotRef = useRef<any>();
@@ -93,7 +94,7 @@ function Graph(props: {
         }),
       ],
       cursor: cursorBuider({}),
-      scales: scalesBuilder({}),
+      scales: scalesBuilder({ xRange }),
       series: seriesBuider({
         baseSeries,
         colors: hexPalette,
@@ -142,7 +143,7 @@ function Graph(props: {
         ],
       },
     };
-  }, [width, height, darkMode, JSON.stringify(baseSeries), unit]);
+  }, [width, height, darkMode, JSON.stringify(baseSeries), JSON.stringify(xRange), unit]);
 
   return (
     <div className='relative'>
@@ -184,6 +185,7 @@ export default function Metric(props: Props) {
   const [showResetZoomBtn, setShowResetZoomBtn] = useState(false);
   const [timeseriesLoading, setTimeseriesLoading] = useState(false);
   const [series, setSeries] = useState<any[]>([]);
+  const [xRange, setXRange] = useState<[number, number]>([0, 0]);
   const [options, setOptions] = useState({
     ...getOptionsFromLocalstorage(METRIC_TABLE_OPTIONS_CACHE_KEY, {
       logMode: 'table',
@@ -316,6 +318,9 @@ export default function Metric(props: Props) {
       return;
     }
     const range = parseRange(queryValues.range);
+    const from = moment(range.start).valueOf();
+    const to = moment(range.end).valueOf();
+    const xRange: [number, number] = [Math.floor(from / 1000), Math.ceil(to / 1000)];
     setTimeseriesLoading(true);
     dsQuery({
       cate: DatasourceCateEnum.loki,
@@ -323,8 +328,8 @@ export default function Metric(props: Props) {
       query: [
         {
           query: _.trim(queryValues.query),
-          start: moment(range.start).valueOf(),
-          end: moment(range.end).valueOf(),
+          start: from,
+          end: to,
           ref: 'A',
         },
       ],
@@ -341,12 +346,14 @@ export default function Metric(props: Props) {
           };
         });
         setSeries(nextSeries);
+        setXRange(xRange);
         setDataRefresh(_.uniqueId('dataRefresh_'));
       })
       .catch((err) => {
         if (requestId !== timeseriesRequestIdRef.current) return;
         console.error('loki dsQuery failed:', err);
         setSeries([]);
+        setXRange(xRange);
         setDataRefresh(_.uniqueId('dataRefresh_'));
       })
       .finally(() => {
@@ -542,6 +549,7 @@ export default function Metric(props: Props) {
                     height={eleSize.height}
                     frames={frames}
                     baseSeries={seriesData}
+                    xRange={xRange}
                     unit={unit}
                     showResetZoomBtn={showResetZoomBtn}
                     setShowResetZoomBtn={setShowResetZoomBtn}

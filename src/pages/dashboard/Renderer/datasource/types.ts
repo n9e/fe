@@ -78,6 +78,8 @@ export interface DashboardTimeSeries {
   data: Array<[timestampSeconds: number, value: number | null]>;
   mode: 'timeSeries';
   target?: ITarget;
+  /** 仅用于绘图时决定共同横轴占位；表达式由依赖查询推导。 */
+  datasourceCate?: string;
   isExp: boolean;
   bucketInterval?: number;
 }

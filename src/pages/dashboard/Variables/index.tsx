@@ -8,6 +8,7 @@ import { useGlobalState } from '../globalState';
 import EditModal from './EditModal';
 import Main from './Main';
 import type { VariableQueryParam } from './utils/initializeVariablesValue';
+import getDisabledVariableNames from './utils/getDisabledVariableNames';
 
 import './style.less';
 
@@ -26,6 +27,7 @@ export default function index(props: Props) {
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const [editing, setEditing] = useState<boolean>(false);
   const hasCalledInitializedRef = React.useRef<boolean>(false);
+  const disabledVariableNames = React.useMemo(() => getDisabledVariableNames(queryParams.__disable_variables), [queryParams.__disable_variables]);
 
   // 追踪 Query 变量的初始化状态
   React.useEffect(() => {
@@ -89,7 +91,7 @@ export default function index(props: Props) {
 
   return (
     <div className='n9e-dashboard-variables-container'>
-      <Main variableValueFixed={Boolean(queryParams.__variable_value_fixed)} loading={false} renderBtns={renderBtns} />
+      <Main variableValueFixed={Boolean(queryParams.__variable_value_fixed)} disabledVariableNames={disabledVariableNames} loading={false} renderBtns={renderBtns} />
       <EditModal visible={editing} setVisible={setEditing} onChange={onChange} />
     </div>
   );

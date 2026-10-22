@@ -433,6 +433,16 @@ describe('ChatPanel turn cancellation and completion', () => {
     fireEvent.keyDown(box, { key: 'Tab' });
     expect(box.value).toBe('Group by env instead');
   });
+
+  it('offers the suggested follow-up in primary with a Tab key that fills it', () => {
+    render(<ChatPanel variant='slim' queryPageFrom={{ url: '/metric/explorer' }} placeholder='Group by env instead' suggestion='Group by env instead' />);
+    const box = screen.getByRole('textbox') as HTMLTextAreaElement;
+    expect(box).toHaveClass('placeholder:text-primary');
+    fireEvent.mouseDown(screen.getByRole('button', { name: /Tab/ }));
+    expect(box.value).toBe('Group by env instead');
+    expect(box).toHaveClass('placeholder:text-placeholder');
+    expect(screen.queryByRole('button', { name: /Tab/ })).toBeNull();
+  });
 });
 
 describe('ChatPanel initial skill reference', () => {
@@ -464,6 +474,24 @@ describe('ChatPanel initial skill reference', () => {
     await send('group by host', 2);
     expect(services.sendMessage.mock.calls[1][0].query.content).toBe('group by host');
     expect(services.sendMessage.mock.calls[1][0].query.references).toBeUndefined();
+  });
+
+  it('sends each host continuation once after the current turn is idle', async () => {
+    const { rerender } = render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} continuationMessage={{ id: 1, content: 'repair the failed pattern' }} />);
+
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.queryByLabelText('input.stop')).toBeNull());
+    expect(services.sendMessage.mock.calls[0][0].query.content).toBe('repair the failed pattern');
+
+    rerender(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} continuationMessage={{ id: 1, content: 'repair the failed pattern' }} />);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(services.sendMessage).toHaveBeenCalledTimes(1);
+
+    rerender(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} continuationMessage={{ id: 2, content: 'ask me for the missing field' }} />);
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(2));
+    expect(services.sendMessage.mock.calls[1][0].query.content).toBe('ask me for the missing field');
   });
 
   it('keeps the first-message reference when sending fails and is retried', async () => {

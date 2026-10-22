@@ -6,6 +6,7 @@ import { useDebounceFn } from 'ahooks';
 import _ from 'lodash';
 import moment from 'moment';
 
+import { basePrefix } from '@/App';
 import { postSourceToken } from '@/services/common';
 import { SIZE } from '@/utils/constant';
 import { copy2ClipBoard } from '@/utils';
@@ -28,7 +29,9 @@ export default function SharingLinkModal(props: Props) {
   const [expireValue, setExpireValue] = useState<number>(7);
   const [expireUnit, setExpireUnit] = useState<string>('day'); // day, hour
   const [token, setToken] = useState<string>();
-  const linkSrc = allowAnonymous ? `${window.location.origin}/share/alert-his-events/${eventId}?__token=${token}` : `${window.location.origin}/alert-his-events/${eventId}`;
+  const linkSrc = allowAnonymous
+    ? `${window.location.origin}${basePrefix}/share/alert-his-events/${eventId}?__token=${token}`
+    : `${window.location.origin}${basePrefix}/alert-his-events/${eventId}`;
 
   const { run: fetchToken } = useDebounceFn(
     () => {

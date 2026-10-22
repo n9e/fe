@@ -14,16 +14,15 @@
  * limitations under the License.
  *
  */
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import { getPageFromSearch } from '@/utils/urlPage';
 import querystring from 'query-string';
 import _ from 'lodash';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
-import { Button, Space, Dropdown, Menu, notification, Input, Modal, message, Tooltip } from 'antd';
+import { Button, Space, Dropdown, Menu, Input, Modal, message, Tooltip } from 'antd';
 import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { useKeyPress } from 'ahooks';
 
 import { TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import { GRAFANA_REFRESH_OPTIONS } from '@/components/TimeRangePicker/AutoRefresh';
@@ -75,6 +74,9 @@ interface IProps {
   hideTitle?: boolean;
   /** 全屏展示时只保留仪表盘标题与时间选择器。 */
   fullscreenHeaderOnly?: boolean;
+  /** 是否加载普通标题栏使用的仪表盘列表。 */
+  loadDashboardList?: boolean;
+  onToggleFullscreen: () => void;
 }
 
 const cachePageTitle = document.title || 'Nightingale';
@@ -109,19 +111,20 @@ export default function Title(props: IProps) {
     hideGoList,
     hideTitle,
     fullscreenHeaderOnly = false,
+    loadDashboardList = true,
+    onToggleFullscreen,
   } = props;
   const history = useHistory();
   const location = useLocation();
   const { siteInfo, dashboardSaveMode } = useContext(CommonStateContext);
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
   const query = querystring.parse(location.search);
-  const { viewMode, __public__ } = query;
+  const { __public__ } = query;
   // 从列表进入详情时 URL 带 __page 参数，返回列表时回到原页；其他入口回列表第一页
   const currentPage = getPageFromSearch(location.search, '__page');
   const goListPath = props.gobackPath || (currentPage > 1 ? `/dashboards?__page=${currentPage}` : '/dashboards');
   // AI 分析仅在正常已保存的仪表盘下展示：匿名公开、模板预览、内置组件场景要么调不通 assistant 接口，要么没有真实 dashboard_id
   const showAiAnalysis = !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id;
-  const isClickTrigger = useRef(false);
   const [dashboardList, setDashboardList] = useState<IDashboard[]>([]);
   const [dashboardListDropdownSearch, setDashboardListDropdownSearch] = useState('');
   const [dashboardListDropdownVisible, setDashboardListDropdownVisible] = useState(false);
@@ -189,41 +192,20 @@ export default function Title(props: IProps) {
     />
   );
 
-  useKeyPress('esc', () => {
-    if (query.viewMode === 'fullscreen') {
-      history.replace({
-        pathname: location.pathname,
-        search: querystring.stringify(_.omit(query, ['viewMode', 'themeMode'])),
-      });
-      notification.close('dashboard_fullscreen');
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 500);
-    }
-  });
-
-  useEffect(() => {
-    if (query.viewMode === 'fullscreen' && isClickTrigger.current) {
-      notification.info({
-        key: 'dashboard_fullscreen',
-        message: (
-          <div>
-            <div>{t('detail.fullscreen.notification.esc')}</div>
-          </div>
-        ),
-        duration: 3,
-      });
-    }
-  }, [query.viewMode]);
+  const fullscreenParametersTooltip = <div className='max-w-[520px] whitespace-pre-line'>{t('detail.fullscreen.parameters.tooltip')}</div>;
 
   useEffect(() => {
     // __public__: true 为公开仪表盘，公开仪表盘不需要获取分组下的仪表盘列表
-    if (__public__ !== 'true' && dashboard.group_id && isPreview === false) {
-      getBusiGroupsDashboards(_.toString(dashboard.group_id)).then((res) => {
-        setDashboardList(res);
-      });
+    if (loadDashboardList && __public__ !== 'true' && dashboard.group_id && isPreview === false) {
+      getBusiGroupsDashboards(_.toString(dashboard.group_id))
+        .then((res) => {
+          setDashboardList(res);
+        })
+        .catch(() => {
+          setDashboardList([]);
+        });
     }
-  }, [__public__, dashboard?.group_id]);
+  }, [__public__, dashboard.group_id, isPreview, loadDashboardList]);
 
   if (fullscreenHeaderOnly) {
     return (
@@ -476,25 +458,15 @@ export default function Title(props: IProps) {
                 />
               </Tooltip>
             )}
-            <Tooltip title={dashboard.configs?.mode === 'iframe' ? t('embeddedDashboards:exitFullScreen_tip') : undefined}>
-              <Button
-                onClick={() => {
-                  const newQuery = _.omit(querystring.parse(window.location.search), ['viewMode', 'themeMode']);
-                  if (!viewMode) {
-                    newQuery.viewMode = 'fullscreen';
-                    isClickTrigger.current = true;
-                  }
-                  history.replace({
-                    pathname: location.pathname,
-                    search: querystring.stringify(newQuery),
-                  });
-                  // TODO: 解决仪表盘 layout resize 问题
-                  setTimeout(() => {
-                    window.dispatchEvent(new Event('resize'));
-                  }, 500);
-                }}
-                icon={<FullscreenOutlined />}
-              />
+            <Tooltip
+              title={
+                <>
+                  {dashboard.configs?.mode === 'iframe' && <div className='mb-2'>{t('embeddedDashboards:exitFullScreen_tip')}</div>}
+                  {fullscreenParametersTooltip}
+                </>
+              }
+            >
+              <Button onClick={onToggleFullscreen} icon={<FullscreenOutlined />} />
             </Tooltip>
           </Space>
         </div>

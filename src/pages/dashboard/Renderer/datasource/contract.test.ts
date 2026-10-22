@@ -751,6 +751,290 @@ describe('dashboard unified query contract', () => {
     });
   });
 
+  it('only completes missing Prometheus step points and preserves non-Prometheus sparse timestamps', () => {
+    const targets: ITarget[] = [
+      { refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 } },
+      { refId: 'B', kind: 'query', datasource: { cate: 'doris', id: 2 } },
+    ];
+    const request = {
+      from: 100,
+      to: 130,
+      queries: [
+        {
+          kind: 'query' as const,
+          ref_id: 'A',
+          datasource: { cate: 'prometheus', id: 1 },
+          result_type: 'time_series' as const,
+          query: { expr: 'up', step: 15 },
+        },
+        {
+          kind: 'query' as const,
+          ref_id: 'B',
+          datasource: { cate: 'doris', id: 2 },
+          result_type: 'time_series' as const,
+          query: { sql: 'SELECT 1' },
+        },
+      ],
+    };
+    const response = {
+      results: [
+        {
+          ref_id: 'A',
+          status: 'success' as const,
+          result_type: 'time_series' as const,
+          series: [
+            {
+              labels: {},
+              samples: [
+                [100, 1],
+                [130, 3],
+              ] as Array<[number, number | null]>,
+            },
+          ],
+        },
+        {
+          ref_id: 'B',
+          status: 'success' as const,
+          result_type: 'time_series' as const,
+          series: [
+            {
+              labels: {},
+              samples: [
+                [100, 10],
+                [130, 30],
+              ] as Array<[number, number | null]>,
+            },
+          ],
+        },
+      ],
+    };
+
+    const normalized = normalizeDashboardQueryResponse(response, targets, request);
+
+    expect(normalized.series[0].data).toEqual([
+      [100, 1],
+      [115, null],
+      [130, 3],
+    ]);
+    expect(normalized.series[1].data).toEqual([
+      [100, 10],
+      [130, 30],
+    ]);
+  });
+
+  it('does not complete Prometheus step points when span nulls is enabled', () => {
+    const targets: ITarget[] = [{ refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 } }];
+    const request = {
+      from: 100,
+      to: 130,
+      queries: [
+        {
+          kind: 'query' as const,
+          ref_id: 'A',
+          datasource: { cate: 'prometheus', id: 1 },
+          result_type: 'time_series' as const,
+          query: { expr: 'up', step: 15 },
+        },
+      ],
+    };
+    const response = {
+      results: [
+        {
+          ref_id: 'A',
+          status: 'success' as const,
+          result_type: 'time_series' as const,
+          series: [
+            {
+              labels: {},
+              samples: [
+                [100, 1],
+                [130, 3],
+              ] as Array<[number, number | null]>,
+            },
+          ],
+        },
+      ],
+    };
+
+    const normalized = normalizeDashboardQueryResponse(response, targets, request, { spanNulls: true });
+
+    expect(normalized.series[0].data).toEqual([
+      [100, 1],
+      [130, 3],
+    ]);
+  });
+
+  it('inherits Prometheus alignment category and step from a Prometheus-only expression', () => {
+    const targets: ITarget[] = [
+      { refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 } },
+      { refId: 'B', kind: 'expression', expression: '$A * 2' },
+    ];
+    const request = {
+      from: 100,
+      to: 130,
+      queries: [
+        {
+          kind: 'query' as const,
+          ref_id: 'A',
+          datasource: { cate: 'prometheus', id: 1 },
+          result_type: 'time_series' as const,
+          query: { expr: 'up', step: 15 },
+        },
+        { kind: 'expression' as const, ref_id: 'B', expression: '$A * 2' },
+      ],
+    };
+    const normalized = normalizeDashboardQueryResponse(
+      {
+        results: [
+          {
+            ref_id: 'B',
+            status: 'success' as const,
+            result_type: 'time_series' as const,
+            series: [
+              {
+                labels: {},
+                samples: [
+                  [100, 2],
+                  [130, 6],
+                ] as Array<[number, number | null]>,
+              },
+            ],
+          },
+        ],
+      },
+      targets,
+      request,
+    );
+
+    expect(normalized.series[0]).toMatchObject({
+      datasourceCate: 'prometheus',
+      data: [
+        [100, 2],
+        [115, null],
+        [130, 6],
+      ],
+    });
+  });
+
+  it('does not assign Prometheus semantics to an expression with non-Prometheus dependencies', () => {
+    const targets: ITarget[] = [
+      { refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 } },
+      { refId: 'B', kind: 'query', datasource: { cate: 'doris', id: 2 } },
+      { refId: 'C', kind: 'expression', expression: '$A + $B' },
+    ];
+    const request = {
+      from: 100,
+      to: 130,
+      queries: [
+        {
+          kind: 'query' as const,
+          ref_id: 'A',
+          datasource: { cate: 'prometheus', id: 1 },
+          result_type: 'time_series' as const,
+          query: { expr: 'up', step: 15 },
+        },
+        {
+          kind: 'query' as const,
+          ref_id: 'B',
+          datasource: { cate: 'doris', id: 2 },
+          result_type: 'time_series' as const,
+          query: { sql: 'select value' },
+        },
+        { kind: 'expression' as const, ref_id: 'C', expression: '$A + $B' },
+      ],
+    };
+    const normalized = normalizeDashboardQueryResponse(
+      {
+        results: [
+          {
+            ref_id: 'C',
+            status: 'success' as const,
+            result_type: 'time_series' as const,
+            series: [
+              {
+                labels: {},
+                samples: [
+                  [100, 3],
+                  [130, 9],
+                ] as Array<[number, number | null]>,
+              },
+            ],
+          },
+        ],
+      },
+      targets,
+      request,
+    );
+
+    expect(normalized.series[0]).toMatchObject({
+      datasourceCate: undefined,
+      data: [
+        [100, 3],
+        [130, 9],
+      ],
+    });
+  });
+
+  it('does not fall back to the expression target datasource when its dependencies are not all Prometheus', () => {
+    const targets: ITarget[] = [
+      { refId: 'A', kind: 'query', datasource: { cate: 'prometheus', id: 1 } },
+      { refId: 'B', kind: 'query', datasource: { cate: 'doris', id: 2 } },
+      // 手工编辑面板 JSON 时才可能出现：表达式 target 自带 datasource。
+      { refId: 'C', kind: 'expression', expression: '$A + $B', datasource: { cate: 'prometheus', id: 1 } },
+    ];
+    const request = {
+      from: 100,
+      to: 130,
+      queries: [
+        {
+          kind: 'query' as const,
+          ref_id: 'A',
+          datasource: { cate: 'prometheus', id: 1 },
+          result_type: 'time_series' as const,
+          query: { expr: 'up', step: 15 },
+        },
+        {
+          kind: 'query' as const,
+          ref_id: 'B',
+          datasource: { cate: 'doris', id: 2 },
+          result_type: 'time_series' as const,
+          query: { sql: 'select value' },
+        },
+        { kind: 'expression' as const, ref_id: 'C', expression: '$A + $B' },
+      ],
+    };
+    const normalized = normalizeDashboardQueryResponse(
+      {
+        results: [
+          {
+            ref_id: 'C',
+            status: 'success' as const,
+            result_type: 'time_series' as const,
+            series: [
+              {
+                labels: {},
+                samples: [
+                  [100, 3],
+                  [130, 9],
+                ] as Array<[number, number | null]>,
+              },
+            ],
+          },
+        ],
+      },
+      targets,
+      request,
+    );
+
+    expect(normalized.series[0]).toMatchObject({
+      datasourceCate: undefined,
+      data: [
+        [100, 3],
+        [130, 9],
+      ],
+    });
+  });
+
   it('associates expanded Elasticsearch value queries with their original target', () => {
     const target: ITarget = {
       refId: 'A',

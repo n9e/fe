@@ -54,6 +54,7 @@ const zh_HK = {
       status_done: '已完成',
       status3: '已取消',
       status4: '已生成（部分欄位未匯出）',
+      status_failed: '失敗',
       datasource: '數據源',
       current_datasource: '當前數據源',
       all_datasources: '全部數據源',

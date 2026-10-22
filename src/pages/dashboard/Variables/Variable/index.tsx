@@ -13,6 +13,7 @@ import Query from './Query';
 import Textbox from './Textbox';
 
 interface Props {
+  disabled: boolean;
   variableValueFixed: boolean;
   item: IVariable;
   value: IVariable['value'];

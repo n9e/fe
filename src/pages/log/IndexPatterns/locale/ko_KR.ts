@@ -32,7 +32,7 @@ const ko_KR = {
       timeRangeFormat: '시작·종료 시각 (서식 지정): 기본 변수에 $__time_format__=YYYY-MM-DD HH:mm:ss 매개변수를 더합니다',
       timeRangeOffset:
         '시작·종료 시각 (시간 이동): 기본 변수에 $__start_time_margin__=-100000과 $__end_time_margin__=100000 매개변수를 더합니다. 단위는 밀리초이며 양수는 앞으로, 음수는 뒤로 옮깁니다',
-      localUrl: '이 시스템 주소: $local_url이며 프로토콜과 도메인을 포함합니다. 예: “https://flashcat.cloud”',
+      localUrl: '이 시스템 주소: $local_url이며 프로토콜, 도메인 및 배포 접두사를 포함합니다. 예: “https://flashcat.cloud”',
       localProtocol: '이 시스템 프로토콜: $local_protocol이며 예로 “http:”나 “https:”가 있습니다',
       localDomain: '이 시스템 도메인: $local_domain이며 예로 flashcat.cloud가 있습니다',
       mappingParams: '매개변수 매핑 표: $__mapping_para__이며 매핑 표에 설정한 모든 매개변수를 뜻합니다',
@@ -75,7 +75,7 @@ const ko_KR = {
           urlTemplateTip1: '예를 들어 추적 시스템으로 이동: http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplateTip2: '링크는 이동 링크에서 설정하고 수정하세요. 이동 링크에 같은 필드의 링크가 이미 있으면 여기 설정은 적용되지 않습니다.',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
+          urlTemplatePlaceholder1: '$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: '레이블 템플릿',
           labelTemplatePlaceholder: '{{value}}',
         },

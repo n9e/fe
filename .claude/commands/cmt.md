@@ -147,7 +147,19 @@ If the user chooses to fix: make only requested fixes, re-review, and ask again.
 
 #### 4.3 Verify
 
-After user approval, run focused verification:
+After user approval, run focused verification.
+
+**Step 1 — Mandatory type check:**
+
+```bash
+npx tsc --noEmit
+```
+
+This step is mandatory. If it fails, stop immediately and ask whether to fix or continue. Do not run further verification and do not commit.
+
+**Step 2 — Additional focused verification:**
+
+After the type check passes, run the smallest useful command:
 
 ```bash
 npm test -- --runInBand

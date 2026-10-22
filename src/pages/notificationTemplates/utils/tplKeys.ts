@@ -41,6 +41,24 @@ export interface ChannelLike {
 /** 邮件类媒介的字段是固定的一对，不从 body 推导（smtp 压根没有 HTTP body） */
 export const SMTP_TPL_KEYS = ['subject', 'content'];
 
+/**
+ * 原生对接的媒介（后端 provider 自己组包，没有 HTTP body）的字段也是固定的：
+ * Jira 的 title 是工单标题，content 是描述（恢复时的评论也用它渲染）；JSM 的 title 是告警 message，content 是描述
+ */
+export const NATIVE_TPL_KEYS: Record<string, string[]> = {
+  jira: ['title', 'content'],
+  discord: ['content'],
+  teams: ['content'],
+  twilio: ['content'],
+  pushover: ['content'],
+  ntfy: ['content'],
+  splunk_oncall: ['title', 'content'],
+  line: ['content'],
+  slackwebhook: ['content'],
+  mattermostwebhook: ['content'],
+  jsm_alert: ['title', 'content'],
+};
+
 // 同时兼容 {{$tpl.title}} 与 {{ $tpl.title }}
 const TPL_REF_REGEXP = /\{\{-?\s*\$tpl\.([a-zA-Z0-9_]+)\s*-?\}\}/g;
 
@@ -72,9 +90,7 @@ export function extractTplKeysFromBody(body?: string): string[] {
 function collectTplTexts(channel?: ChannelLike): string[] {
   const http = channel?.request_config?.http_request_config;
   if (!http) return [];
-  return [http.request?.body, http.url, ...pairValues(http.headers), ...pairValues(http.request?.parameters)].filter(
-    (text): text is string => typeof text === 'string',
-  );
+  return [http.request?.body, http.url, ...pairValues(http.headers), ...pairValues(http.request?.parameters)].filter((text): text is string => typeof text === 'string');
 }
 
 /** 取出 map / {key,value}[] 两种形态里的值 */
@@ -95,6 +111,10 @@ export function getExpectedTplKeys(channel?: ChannelLike): ExpectedTplKeys {
 
   if (requestType === 'smtp') {
     return { keys: [...SMTP_TPL_KEYS], source: 'fixed' };
+  }
+
+  if (requestType && NATIVE_TPL_KEYS[requestType]) {
+    return { keys: [...NATIVE_TPL_KEYS[requestType]], source: 'fixed' };
   }
 
   // 这两类直接用 event 字段构造 payload，后端跳过模板渲染
@@ -153,6 +173,30 @@ const TITLE_LIKE_KEYS = ['title', 'subject'];
  * 新建模板时落到空白编辑器、让用户从零手写 Go template 是最大的上手障碍。
  */
 export function buildStarterContent(channel: ChannelLike | undefined, texts: StarterTexts): Record<string, string> {
+  if (channel?.request_type === 'teams') {
+    return {
+      // Status/title, target/value, time and action buttons are supplied by the card.
+      content: `{{if $event.RuleNote}}{{$event.RuleNote}}{{end}}{{$first := true}}{{range $k, $v := $labels}}{{if and (ne $k "rulename") (or (ne $k "ident") (not $event.TargetIdent))}}{{if $first}}{{if $event.RuleNote}}
+
+{{end}}**${texts.tags}**  {{else}} · {{end}}{{$first = false}}{{if eq $k "__name__"}}{{$v}}{{else}}{{$k}}={{$v}}{{end}}{{end}}{{end}}`,
+    };
+  }
+  if (channel?.request_type === 'twilio') {
+    return {
+      content:
+        'Nightingale: S{{$event.Severity}} {{if $event.IsRecovered}}Recovered{{else}}Triggered{{end}}. {{$event.RuleName}}.{{if $event.TargetIdent}} Target: {{$event.TargetIdent}}.{{end}}{{if and $event.TriggerValue (not $event.IsRecovered)}} Value: {{$event.TriggerValue}}.{{end}}',
+    };
+  }
+  if (channel?.request_type === 'pushover' || channel?.request_type === 'ntfy' || channel?.request_type === 'line') {
+    return {
+      // 级别、状态和规则名在通知标题里，事件详情链接由媒介带上；手机推送的预览只有几行，正文保持简短
+      content: [
+        `{{if not $event.IsRecovered}}${texts.triggerValue}: {{$event.TriggerValue}}\n{{end}}${texts.tags}: {{$event.TagsJSON}}`,
+        `${texts.time}: {{if $event.IsRecovered}}{{timeformat $event.LastEvalTime}}{{else}}{{timeformat $event.TriggerTime}}{{end}}{{if $event.RuleNote}}`,
+        `{{$event.RuleNote}}{{end}}`,
+      ].join('\n'),
+    };
+  }
   const { keys } = getExpectedTplKeys(channel);
   if (_.isEmpty(keys)) return {};
 

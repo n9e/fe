@@ -115,6 +115,13 @@ describe('getExpectedTplKeys', () => {
     expect(getExpectedTplKeys({ request_type: 'smtp' })).toEqual({ keys: SMTP_TPL_KEYS, source: 'fixed' });
   });
 
+  it('原生对接的 jira 走固定字段：title 是工单标题，content 是描述', () => {
+    expect(getExpectedTplKeys({ request_type: 'jira' })).toEqual({ keys: ['title', 'content'], source: 'fixed' });
+    const starter = buildStarterContent({ request_type: 'jira' }, TEXTS);
+    expect(Object.keys(starter)).toEqual(['title', 'content']);
+    expect(starter.title).not.toContain('\n');
+  });
+
   it('flashduty / pagerduty 不需要模板', () => {
     expect(getExpectedTplKeys({ request_type: 'flashduty' })).toEqual({ keys: [], source: 'none' });
     expect(getExpectedTplKeys({ request_type: 'pagerduty' })).toEqual({ keys: [], source: 'none' });
@@ -182,6 +189,47 @@ describe('与 normalizeFormValues 的契约', () => {
 });
 
 describe('buildStarterContent', () => {
+  it('Teams keeps only editable notes and labels because metadata and actions are rendered by the card', () => {
+    const { content } = buildStarterContent({ request_type: 'teams' }, TEXTS);
+    expect(content).toContain('{{$event.RuleNote}}');
+    expect(content).toContain('$labels');
+    expect(content).toContain(TEXTS.tags);
+    expect(content).not.toContain('{{$event.RuleName}}');
+    expect(content).not.toContain('{{$event.TriggerValue}}');
+    expect(content).not.toContain('/share/');
+  });
+
+  it('Teams and Twilio expose a plain content template, with a short speech-safe Twilio starter', () => {
+    for (const request_type of ['teams', 'twilio']) {
+      expect(getExpectedTplKeys({ request_type }).keys).toEqual(['content']);
+    }
+    const content = buildStarterContent({ request_type: 'twilio' }, TEXTS);
+    expect(Object.keys(content)).toEqual(['content']);
+    expect(content.content).toContain('Recovered');
+    expect(content.content).toContain('Triggered');
+    expect(content.content).not.toContain('/share/');
+    expect(content.content).not.toContain('**');
+  });
+
+  it('Pushover / ntfy / LINE 的起步正文是不带标记的短文本', () => {
+    for (const request_type of ['pushover', 'ntfy', 'line']) {
+      expect(getExpectedTplKeys({ request_type }).keys).toEqual(['content']);
+      const content = buildStarterContent({ request_type }, TEXTS);
+      expect(Object.keys(content)).toEqual(['content']);
+      expect(content.content).toContain(`${TEXTS.triggerValue}: {{$event.TriggerValue}}`);
+      expect(content.content).not.toMatch(/<b>|\*\*|htmlEscape/);
+      expect(content.content).not.toContain('/alert-his-events/');
+      expect(content.content.split('\n').length).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it('Splunk On-Call 有标题和正文两个字段', () => {
+    expect(getExpectedTplKeys({ request_type: 'splunk_oncall' }).keys).toEqual(['title', 'content']);
+    const content = buildStarterContent({ request_type: 'splunk_oncall' }, TEXTS);
+    expect(Object.keys(content)).toEqual(['title', 'content']);
+    expect(content.title.split('\n')).toHaveLength(1);
+  });
+
   it('按 body 推导出的字段生成内容，标题字段只有一行', () => {
     const channel = {
       request_type: 'http',

@@ -10,6 +10,7 @@ import Variable from './Variable';
 
 interface Props {
   variableValueFixed: boolean;
+  disabledVariableNames?: Set<string>;
   loading: boolean;
   renderBtns?: () => React.ReactNode;
 }
@@ -19,7 +20,7 @@ export default function Main(props: Props) {
   const location = useLocation();
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
-  const { variableValueFixed, loading, renderBtns } = props;
+  const { variableValueFixed, disabledVariableNames, loading, renderBtns } = props;
   const shouldUpdateUrl = useRef(false);
 
   // 只提取 name 和 value，用于优化 useEffect 依赖
@@ -74,7 +75,7 @@ export default function Main(props: Props) {
         }}
       >
         {_.map(variablesWithOptions, (item) => {
-          return <Variable key={item.name} variableValueFixed={variableValueFixed} item={item} value={item.value} />;
+          return <Variable key={item.name} disabled={disabledVariableNames?.has(item.name) ?? false} variableValueFixed={variableValueFixed} item={item} value={item.value} />;
         })}
       </VariableManagerProvider>
       {renderBtns && renderBtns()}

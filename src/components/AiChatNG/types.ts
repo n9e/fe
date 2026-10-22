@@ -237,6 +237,11 @@ export interface IAiChatProps {
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);
   promptList?: Array<string | { label: string; value: string }>;
   initialMessage?: string;
+  /**
+   * A host-requested follow-up turn. A new `id` is sent once after the panel
+   * becomes idle; omitting this prop preserves the existing chat behaviour.
+   */
+  continuationMessage?: { id: string | number; content: string };
   /** Reference this skill in the first accepted message of a conversation. */
   initialSkill?: string;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;

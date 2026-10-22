@@ -33,7 +33,7 @@ const pt_BR = {
       timeRangeFormat: 'Início e fim (formatados): acrescente o parâmetro $__time_format__=YYYY-MM-DD HH:mm:ss às variáveis básicas',
       timeRangeOffset:
         'Início e fim (com deslocamento): acrescente os parâmetros $__start_time_margin__=-100000 e $__end_time_margin__=100000 às variáveis básicas, em milissegundos; valores positivos deslocam para frente e negativos para trás',
-      localUrl: 'Endereço deste sistema: $local_url, com protocolo e domínio, por exemplo “https://flashcat.cloud”',
+      localUrl: 'Endereço deste sistema: $local_url, com protocolo, domínio e prefixo de implantação, por exemplo “https://flashcat.cloud”',
       localProtocol: 'Protocolo deste sistema: $local_protocol, por exemplo “http:” ou “https:”',
       localDomain: 'Domínio deste sistema: $local_domain, por exemplo flashcat.cloud',
       mappingParams: 'Tabela de parâmetros: $__mapping_para__, que representa todos os parâmetros configurados na tabela de mapeamento',
@@ -76,7 +76,7 @@ const pt_BR = {
           urlTemplateTip1: 'Por exemplo, para abrir um sistema de tracing: http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplateTip2: 'Configure e edite os links em "Links de navegação". Se lá já houver um link para este mesmo campo, a configuração feita aqui não terá efeito.',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
+          urlTemplatePlaceholder1: '$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: 'Modelo de rótulo',
           labelTemplatePlaceholder: '{{value}}',
         },

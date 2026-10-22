@@ -329,7 +329,7 @@ const pt_BR = {
       title: 'Configurações avançadas',
       unit: 'Unidade',
       unit_tip:
-        '\n        <0>Por padrão os prefixos SI são aplicados; escolha none para desativá-los</0>\n        <1>Data(SI): base 1000, unidades B, kB, MB, GB, TB, PB, EB, ZB, YB</1>\n        <2>Data(IEC): base 1024, unidades B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB</2>\n        <3>bits: b</3>\n        <4>bytes: B</4>\n      ',
+        '\n        <0>Por padrão, os valores usam o formato SI short (escala automática com prefixos SI, base 1000). Se quiser desativar, escolha none</0>\n        <1>Data(SI): base 1000, unidades B, kB, MB, GB, TB, PB, EB, ZB, YB</1>\n        <2>Data(IEC): base 1024, unidades B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB</2>\n        <3>bits: b</3>\n        <4>bytes: B</4>\n      ',
       datetime: 'Formato de data/hora',
       min: 'Mínimo',
       max: 'Máximo',
@@ -654,6 +654,20 @@ const pt_BR = {
     deletePanel_confirm: 'Excluir o gráfico {{name}}?',
     invalidPanelType: 'Tipo de gráfico inválido',
     fullscreen: {
+      parameters: {
+        tooltip: `Parâmetros de URL integrados:
+viewMode=fullscreen: entrar na visualização em tela cheia.
+__show_header=true: mostrar o cabeçalho e o seletor de tempo em tela cheia.
+__show_variables=true: mostrar as variáveis do dashboard em tela cheia.
+__readonly=true: tornar a tela cheia somente leitura; desabilita edição, arrastar/redimensionar e avisos de migração.
+__disable_fullscreen_exit=true: desabilitar a dica e a saída com Esc.
+__disable_variables=region,host: desabilitar os controles das variáveis nomeadas.
+__from=...&__to=...: definir o intervalo de tempo global.
+__refresh=30: definir o intervalo de atualização automática em segundos.
+__timezone=Asia/Shanghai: definir o fuso horário.
+themeMode=light|dark: definir o tema.
+__variable_value_fixed=true: preservar os valores das variáveis da URL sem substituí-los pelo armazenamento local ou padrões das opções.`,
+      },
       notification: {
         esc: 'Pressione ESC para sair da tela cheia',
         theme: 'Alternar tema',

@@ -403,7 +403,7 @@ const zh_CN = {
       title: '高级设置',
       unit: '单位',
       unit_tip: `
-        <0>默认会做 SI Prefixes 处理，如不想默认的处理可选择 none 关闭</0>
+        <0>默认使用 SI short（SI 前缀自动缩放，1000 进位）；如不需要，可选择 none 关闭</0>
         <1>Data(SI): 基数为 1000, 单位为 B、kB、MB、GB、TB、PB、EB、ZB、YB</1>
         <2>Data(IEC): 基数为 1024, 单位为 B、KiB、MiB、GiB、TiB、PiB、EiB、ZiB、YiB</2>
         <3>bits: b</3>
@@ -738,6 +738,20 @@ const zh_CN = {
     deletePanel_confirm: '是否删除图表：{{name}}',
     invalidPanelType: '无效的图表类型',
     fullscreen: {
+      parameters: {
+        tooltip: `内置 URL 参数：
+viewMode=fullscreen：进入全屏展示。
+__show_header=true：全屏时显示标题栏和时间选择器。
+__show_variables=true：全屏时显示变量区域。
+__readonly=true：全屏只读，禁用编辑、拖拽/缩放与迁移提示。
+__disable_fullscreen_exit=true：关闭“按 ESC 退出”提示和 Esc 退出。
+__disable_variables=region,host：禁用指定名称的变量控件。
+__from=...&__to=...：设置全局时间范围。
+__refresh=30：设置自动刷新周期（秒）。
+__timezone=Asia/Shanghai：设置时区。
+themeMode=light|dark：设置主题。
+__variable_value_fixed=true：固定 URL 中的变量值，不使用本地缓存或候选默认值覆盖。`,
+      },
       notification: {
         esc: '按 ESC 键退出全屏模式',
         theme: '主题切换',

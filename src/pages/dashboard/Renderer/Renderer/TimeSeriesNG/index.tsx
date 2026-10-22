@@ -43,6 +43,11 @@ interface Props {
 
 const PADDING = 8;
 
+const dashboardDataFrameOptions = {
+  getAlignmentPlaceholder: (series: Pick<OldSeriesItem, 'datasourceCate' | 'target'>) =>
+    series.datasourceCate === 'prometheus' || series.target?.datasource?.cate === 'prometheus' ? null : undefined,
+};
+
 export default function index(props: Props) {
   const { darkMode: appDarkMode } = useContext(CommonStateContext);
   // TODO 不建议，后面会删除。hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底
@@ -84,7 +89,7 @@ export default function index(props: Props) {
   const [activeLegend, setActiveLegend] = useState<string>(); // legendSelectMode === 'single'
   const [activeLegends, setActiveLegends] = useState<string[]>([]); // legendSelectMode === 'multiple'
   const { frames, baseSeries } = useMemo(() => {
-    return getDataFrameAndBaseSeries(mainProps.series as unknown as OldSeriesItem[]);
+    return getDataFrameAndBaseSeries(mainProps.series as unknown as OldSeriesItem[], dashboardDataFrameOptions);
   }, [dataDependency]);
   useEffect(() => {
     setDataRefresh(_.uniqueId('dataRefresh_'));

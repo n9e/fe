@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { Series } from 'uplot';
+import type { ITarget } from '@/pages/dashboard/types';
 import getSerieName from '../../../utils/getSerieName';
 
 interface ResultItem {
@@ -9,19 +10,24 @@ interface ResultItem {
     refId: string;
     name: string;
     metric: { [key: string]: string };
-    values: [Ts: number, Value: number][]; // [unixTimestamp, value]
-    target: { legend: string };
+    values: [Ts: number, Value: number | null][]; // [unixTimestamp, value]
+    target: Pick<ITarget, 'datasource' | 'legend'>;
     isExp: boolean;
   }[];
 }
 
-interface OldSeriesItem {
+interface AlignmentSeries {
+  target?: Pick<ITarget, 'datasource'>;
+  datasourceCate?: string;
+}
+
+interface OldSeriesItem extends AlignmentSeries {
   id: string;
   refId: string;
   offset?: number;
   metric: { [key: string]: string };
-  target?: { expr: string; legend: string };
-  data: [Ts: number, Value: number][]; // [unixTimestamp, value]
+  target?: Pick<ITarget, 'datasource' | 'expr' | 'legend'>;
+  data: [Ts: number, Value: number | null][]; // [unixTimestamp, value]
   name?: string;
   isExp?: boolean;
   bucketInterval?: number;
@@ -31,15 +37,29 @@ export type { OldSeriesItem };
 
 export type DataFrame = [xValues: number[], ...yValues: (number | null | undefined)[][]];
 
+export interface DataFrameOptions {
+  /**
+   * 默认 null，兼容 Explorer 等既有调用方的 uPlot 断线行为。
+   * Dashboard 可按数据源语义覆盖：Prometheus 为 null，非 Prom 为 undefined。
+   */
+  getAlignmentPlaceholder?: (series: AlignmentSeries) => null | undefined;
+}
+
+const defaultAlignmentPlaceholder = () => null;
+
 /**
  * Convert the result to a DataFrame
  * @param result ResultItem[]
  * @returns DataFrame
  */
-export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
+export function getDataFrameAndBaseSeriesByResult(
+  result: ResultItem[],
+  options: DataFrameOptions = {},
+): {
   frames: DataFrame;
   baseSeries: Series[];
 } {
+  const getAlignmentPlaceholder = options.getAlignmentPlaceholder ?? defaultAlignmentPlaceholder;
   const timestamps: number[] = [];
   const frames: DataFrame = [[]];
   const baseSeries: Series[] = [];
@@ -62,11 +82,10 @@ export function getDataFrameAndBaseSeriesByResult(result: ResultItem[]): {
   timestamps.sort((a, b) => a - b);
   frames[0] = timestamps;
 
-  // Create frames — use null (not undefined) as initial value so uPlot's
-  // findGaps (=== null) can detect gaps across the entire missing region.
+  // 通用工具默认保留 null；Dashboard 通过 options 传入数据源级别策略。
   for (const item of result) {
     for (const data of item.data) {
-      const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
+      const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), getAlignmentPlaceholder(data));
       for (const [ts, value] of data.values) {
         const index = timestamps.indexOf(ts);
         frame[index] = value;
@@ -96,10 +115,14 @@ export interface BaseSeriesItem {
  * @param oldSeries OldSeriesItem[]
  * @returns DataFrame
  */
-export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
+export default function getDataFrameAndBaseSeries(
+  oldSeries: OldSeriesItem[],
+  options: DataFrameOptions = {},
+): {
   frames: DataFrame;
   baseSeries: BaseSeriesItem[];
 } {
+  const getAlignmentPlaceholder = options.getAlignmentPlaceholder ?? defaultAlignmentPlaceholder;
   const timestamps: number[] = [];
   const frames: DataFrame = [[]];
   const baseSeries: BaseSeriesItem[] = [];
@@ -134,10 +157,9 @@ export default function getDataFrameAndBaseSeries(oldSeries: OldSeriesItem[]): {
   timestamps.sort((a, b) => a - b);
   frames[0] = timestamps;
 
-  // Create frames — use null (not undefined) as initial value so uPlot's
-  // findGaps (=== null) can detect gaps across the entire missing region.
+  // 通用工具默认保留 null；Dashboard 通过 options 传入数据源级别策略。
   for (const item of oldSeries) {
-    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), null);
+    const frame: (number | null | undefined)[] = _.fill(Array(timestamps.length), getAlignmentPlaceholder(item));
     if (item.data) {
       for (const [ts, value] of item.data) {
         const index = timestamps.indexOf(ts);

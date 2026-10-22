@@ -15,6 +15,7 @@ import { NAME_SPACE, SQL_SIDEBAR_CACHE_KEY, DATE_TYPE_LIST, DORIS_SQL_MODE_DOC_U
 import { getDorisIndex } from '../../services';
 import QueryBuilder from './QueryBuilder';
 import Content from './Content';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   submode: string;
@@ -106,17 +107,19 @@ export default function index(props: Props) {
           executeQuery={handleExecuteQuery}
           datasourceValue={datasourceValue}
           labelInfo={
-            <InfoCircleOutlined
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                  darkMode,
-                  title: t('common:document_link'),
-                  type: 'iframe',
-                  documentPath: DORIS_SQL_MODE_DOC_URL,
-                });
-              }}
-            />
+            <UsageDocs>
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                    darkMode,
+                    title: t('common:document_link'),
+                    type: 'iframe',
+                    documentPath: DORIS_SQL_MODE_DOC_URL,
+                  });
+                }}
+              />
+            </UsageDocs>
           }
           submode={submode}
         />
@@ -200,28 +203,30 @@ export default function index(props: Props) {
             />
           </Space>
         </div>
-        <div>
-          <Trans
-            ns={NAME_SPACE}
-            i18nKey='query.warn_message_content_4'
-            components={{
-              a: (
-                <a
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                      darkMode,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: DORIS_SQL_MODE_DOC_URL,
-                      anchor: '#2-时间宏',
-                    });
-                  }}
-                />
-              ),
-            }}
-          />
-        </div>
+        <UsageDocs>
+          <div>
+            <Trans
+              ns={NAME_SPACE}
+              i18nKey='query.warn_message_content_4'
+              components={{
+                a: (
+                  <a
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                        darkMode,
+                        title: t('common:document_link'),
+                        type: 'iframe',
+                        documentPath: DORIS_SQL_MODE_DOC_URL,
+                        anchor: '#2-时间宏',
+                      });
+                    }}
+                  />
+                ),
+              }}
+            />
+          </div>
+        </UsageDocs>
       </Modal>
     </div>
   );

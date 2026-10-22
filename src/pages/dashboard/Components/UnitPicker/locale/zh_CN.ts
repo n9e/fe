@@ -1,4 +1,5 @@
 const zh_CN = {
+  useCustomUnit: '使用该自定义单位: {{unit}}',
   unitDesc: {
     none: '原始值, 不做单位转换',
     sishort: '使用 SI 标准换算, 比如 1K=1000',

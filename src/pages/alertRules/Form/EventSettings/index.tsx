@@ -8,6 +8,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import { CommonStateContext } from '@/App';
 import Relabel from './Relabel';
 import { name } from './Relabel';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function index({ initialValues }) {
   const { t, i18n } = useTranslation('alertRules');
@@ -29,19 +30,21 @@ export default function index({ initialValues }) {
           {t('relabel.title')}
           {collapsed ? <RightOutlined /> : <DownOutlined />}
           {!collapsed && (
-            <a
-              onClick={(event) => {
-                event.stopPropagation();
-                DocumentDrawer({
-                  language: i18n.language,
-                  darkMode,
-                  title: t('relabel.help_btn'),
-                  documentPath: '/n9e-docs/alert-event-relabel',
-                });
-              }}
-            >
-              {t('relabel.help_btn')}
-            </a>
+            <UsageDocs>
+              <a
+                onClick={(event) => {
+                  event.stopPropagation();
+                  DocumentDrawer({
+                    language: i18n.language,
+                    darkMode,
+                    title: t('relabel.help_btn'),
+                    documentPath: '/n9e-docs/alert-event-relabel',
+                  });
+                }}
+              >
+                {t('relabel.help_btn')}
+              </a>
+            </UsageDocs>
           )}
         </Space>
       }

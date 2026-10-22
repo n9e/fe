@@ -106,7 +106,6 @@ export default function AiQueryDock(props: AiQueryDockProps) {
   const [chatId, setChatId] = useState<string>();
   const [turn, setTurn] = useState<IAiChatTurn>();
   const [expanded, setExpanded] = useState(true);
-  const readingRef = useRef(false);
   const [sendError, setSendError] = useState<string>();
   const [busy, setBusy] = useState(false);
   const handleError = useCallback((error: Error) => setSendError(error.message), []);
@@ -121,14 +120,13 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     setTurn(undefined);
     setSendError(undefined);
     setStartedAt(undefined);
-    readingRef.current = false;
     setExpanded(true);
     onNewConversation?.();
   };
 
-  // Delivery folds the list so the chart is free; everything else leaves
-  // expansion alone. New steps must not yank the list open again — the user
-  // chose to collapse, and only their click (or Esc's inverse) opens it.
+  // A successful page action has already waited for the page query result.
+  // Fold the conversation then so the result is visible, even if the user
+  // opened or read the conversation while the action was running.
   const handleTurn = useCallback((next: IAiChatTurn) => {
     setTurn(next);
     setSendError(undefined);
@@ -137,15 +135,12 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       return;
     }
     setStartedAt(undefined);
-    if (delivered(next.message) && next.actionOutcome?.ok && !readingRef.current) setExpanded(false);
+    if (delivered(next.message) && next.actionOutcome?.ok) setExpanded(false);
   }, []);
 
   useSoleOpenDock(open, onClose);
   // Also wired to the status text: it is the biggest target on the row.
-  const toggleExpanded = () => {
-    readingRef.current = !expanded;
-    setExpanded(!expanded);
-  };
+  const toggleExpanded = () => setExpanded(!expanded);
 
   useEffect(() => {
     if (!open) return;
@@ -156,7 +151,6 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     if (!open || !expanded || (!turn && !busy)) return;
     const collapseOutside = (event: MouseEvent) => {
       if (!(event.target instanceof Node) || rootRef.current?.contains(event.target)) return;
-      readingRef.current = false;
       setExpanded(false);
     };
     document.addEventListener('click', collapseOutside, true);
@@ -199,6 +193,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     } else if (lastResponseType(message) === 'input_request') {
       const response = message.response?.[message.response.length - 1];
       const question = (response?.param as IAiChatInputRequest | undefined)?.question?.trim() || response?.content?.trim();
+      // The model is waiting on the user: the dot asks for attention, not idle gray.
+      tone = 'warn';
       status = t('dock.asked');
       detail = question || undefined;
     } else {
@@ -245,7 +241,6 @@ export default function AiQueryDock(props: AiQueryDockProps) {
         event.stopPropagation();
         // Two levels: an open conversation closes first, the dock second.
         if (expanded && turn) {
-          readingRef.current = false;
           setExpanded(false);
           return;
         }
@@ -261,9 +256,6 @@ export default function AiQueryDock(props: AiQueryDockProps) {
         prepareTurn={() => {
           setSendError(undefined);
           return prepareTurn?.();
-        }}
-        onConversationInteract={() => {
-          if (expanded) readingRef.current = true;
         }}
         onError={handleError}
         collapsed={!expanded}

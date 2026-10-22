@@ -62,7 +62,7 @@ const en_US = {
       timeRangeFormat: 'Start and end time (formatted): append $__time_format__=YYYY-MM-DD HH:mm:ss to the base variables',
       timeRangeOffset:
         'Start and end time (time offset): append $__start_time_margin__=-100000 and $__end_time_margin__=100000 to the base variables. Unit: milliseconds; positive values offset forward, negative values offset backward',
-      localUrl: 'System address: $local_url, including protocol and domain, such as "https://flashcat.cloud"',
+      localUrl: 'System address: $local_url, including protocol, domain and deployment prefix, such as "https://flashcat.cloud"',
       localProtocol: 'System protocol: $local_protocol, such as "http:" or "https:"',
       localDomain: 'System domain: $local_domain, such as flashcat.cloud',
       mappingParams: 'Parameter mapping table: $__mapping_para__, representing all parameters configured in the parameter mapping table',
@@ -117,7 +117,7 @@ const en_US = {
           urlTemplateTip1: 'For example, tracing: http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplateTip2: `Please configure and modify links in the "Link" section. If a link for the same field is configured in the "Link" section, this configuration is ignored.`,
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
+          urlTemplatePlaceholder1: '$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: 'Label template',
           labelTemplatePlaceholder: '{{value}}',
         },
