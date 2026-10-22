@@ -557,6 +557,7 @@ const pt_BR = {
         style_icon: 'Ícone',
         style_antd: 'Ant Design',
         text: 'Texto do botão',
+        text_tip: 'No estilo Ícone, este texto aparece na dica ao passar o cursor. Nos outros estilos, aparece no botão.',
         text_placeholder: 'Mostra {{name}} quando vazio',
         type: 'Tipo do botão',
         prompt: 'Prompt',

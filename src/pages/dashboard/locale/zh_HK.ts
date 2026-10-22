@@ -642,6 +642,7 @@ const zh_HK = {
         style_icon: '圖標',
         style_antd: 'Ant Design',
         text: '按鈕文字',
+        text_tip: '選擇圖標樣式時，作為圖標懸浮提示文字；其他樣式時，顯示在按鈕上。',
         text_placeholder: '為空時顯示 {{name}}',
         type: '按鈕類型',
         prompt: '提示詞',

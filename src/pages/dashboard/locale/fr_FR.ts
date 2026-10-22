@@ -561,6 +561,7 @@ const fr_FR = {
         style_icon: 'Icône',
         style_antd: 'Ant Design',
         text: 'Texte du bouton',
+        text_tip: "Avec le style Icône, ce texte apparaît dans l'infobulle au survol. Avec les autres styles, il apparaît sur le bouton.",
         text_placeholder: 'Affiche {{name}} si vide',
         type: 'Type de bouton',
         prompt: 'Invite',

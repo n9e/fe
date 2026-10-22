@@ -557,6 +557,7 @@ const id_ID = {
         style_icon: 'Ikon',
         style_antd: 'Ant Design',
         text: 'Teks tombol',
+        text_tip: 'Pada gaya Ikon, teks ini muncul sebagai tooltip saat diarahkan. Pada gaya lain, teks tampil di tombol.',
         text_placeholder: 'Menampilkan {{name}} jika kosong',
         type: 'Tipe tombol',
         prompt: 'Prompt',
