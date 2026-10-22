@@ -13,7 +13,6 @@ import QueryBoxPrefix, { QueryBoxColumn } from '@/components/QueryBoxPrefix';
 import { NAME_SPACE } from '../../../constants';
 import { DefaultSearchIcon, UnDefaultSearchIcon } from '../../SideBarNav/FieldsSidebar/DefaultSearchIcon';
 import QueryInputAddonAfter from '../../components/QueryInputAddonAfter';
-import UsageDocs from '@/components/UsageDocs';
 import { HelpTip, useGuidance } from '@/pages/logExplorer/components/Guidance';
 
 interface Props {
@@ -49,22 +48,20 @@ export default function QueryInputCpt(props: Props) {
         label={
           <span className='n9e-log-help-label'>
             {t(`${logExplorerNS}:query`)}
-            <UsageDocs>
-              <HelpTip
-                kind='query'
-                guide={guide}
-                defaultSearch
-                onDocs={() => {
-                  DocumentDrawer({
-                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                    darkMode,
-                    title: t('common:document_link'),
-                    type: 'iframe',
-                    documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
-                  });
-                }}
-              />
-            </UsageDocs>
+            <HelpTip
+              kind='query'
+              guide={guide}
+              defaultSearch
+              onDocs={() => {
+                DocumentDrawer({
+                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                  darkMode,
+                  title: t('common:document_link'),
+                  type: 'iframe',
+                  documentPath: 'https://flashcat.cloud/docs/content/flashcat/log/discover/what-is-query-mode-in-doris-discover/',
+                });
+              }}
+            />
           </span>
         }
         addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}

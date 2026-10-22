@@ -1,6 +1,6 @@
 .ant-input-group.ant-input-group-compact.input-group-with-form-item.doris-sql-input-container-with-builder {
   .input-group-with-form-item-label {
-    border: 1px solid var(--fc-antd-border-color) !important;
+    border: 1px solid var(--fc-fill-primary) !important;
     position: relative !important;
     z-index: 3 !important; // 大于 query builder 的 z-index: 2
     border-radius: var(--fc-border-radius-base) !important;
@@ -19,19 +19,15 @@
       bottom: -6px;
       left: -1px;
       background-color: var(--fc-fill-2);
-      border-left: 1px solid var(--fc-antd-border-color);
-      border-right: 1px solid var(--fc-antd-border-color);
-    }
-  }
-}
-
-.ant-input-group.ant-input-group-compact.input-group-with-form-item.doris-sql-input-container-with-builder-unpinned {
-  .input-group-with-form-item-label {
-    border: 1px solid var(--fc-fill-primary) !important;
-
-    &::after {
       border-left: 1px solid var(--fc-fill-primary);
       border-right: 1px solid var(--fc-fill-primary);
     }
   }
+}
+
+// The prefixed editor normally reserves the form row's bottom margin. While
+// the builder is open, its own 4px gap must be the only spacing below the row,
+// keeping the label's connector attached in pinned and unpinned states.
+.n9e-log-explorer-page .log-explorer-query-row .doris-log-sql-controls-with-builder.query-box-prefix-column {
+  margin-bottom: 0;
 }

@@ -45,8 +45,6 @@ interface Props {
   keepEditorInFlow?: boolean;
 }
 
-const queryBuilderPinnedCache = window.localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY);
-
 /** Render doris query controls and the active result mode inside the pinned page region. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
@@ -84,7 +82,7 @@ export default function index(props: Props) {
   const time_field = Form.useWatch(['query', 'time_field']);
 
   const [executeLoading, setExecuteLoading] = useState(false);
-  const [queryBuilderPinned, setQueryBuilderPinned] = useState(queryBuilderPinnedCache ? queryBuilderPinnedCache === 'true' : true); // 是否固定显示
+  const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => window.localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY) === 'true'); // 是否固定显示
   const [queryBuilderVisible, setQueryBuilderVisible] = useState(false); // 不固定时，控制显示隐藏
   const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
   // 当 builder 生成的 sql 同时设置时序图的 value/label keys 的 options，只有 builder 生成 sql 时才更新
@@ -226,7 +224,7 @@ export default function index(props: Props) {
             </Badge>
           </Col>
           <Col flex='none'>
-            <MainMoreOperations />
+            <MainMoreOperations attachedBuilder={syntax === 'sql' && queryBuilderPinned} />
           </Col>
         </Row>
         {syntax === 'sql' && (
