@@ -29,6 +29,7 @@ interface Props {
   defaultFormValuesControl?: DefaultFormValuesControl;
 }
 
+/** Skip retained-tab updates only when query, selection and layout inputs are unchanged. */
 function areExplorerPropsEqual(prev: Props, next: Props) {
   return (
     prev.active === next.active &&
@@ -39,6 +40,7 @@ function areExplorerPropsEqual(prev: Props, next: Props) {
   );
 }
 
+/** Host one retained query tab and preserve its sidebar state while switching tabs. */
 function Explorer(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceList, datasourceCateOptions, groupedDatasourceList, logsDefaultRange } = useContext(CommonStateContext);
@@ -264,7 +266,7 @@ function Explorer(props: Props) {
 
   return (
     <div className={`h-full log-explorer-content explorer-container-${tabKey}`}>
-      <div className='h-full bg-fc-100 border border-fc-300 rounded-lg p-4'>
+      <div className='h-full'>
         <Form form={form} layout='vertical' className='h-full'>
           <Form.Item name='datasourceCate' hidden>
             <div />

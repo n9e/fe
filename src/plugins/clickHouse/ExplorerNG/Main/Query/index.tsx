@@ -61,6 +61,7 @@ interface Props {
   setStackByField: (field?: string) => void;
 }
 
+/** Connect clickHouse log queries to shared results, stacking and pagination controls. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
 
@@ -382,6 +383,7 @@ export default function index(props: Props) {
               filterFields={(fieldKeys) => {
                 return filteredFields(fieldKeys, organizeFields);
               }}
+              supportsStacking
               histogramAddonBeforeRender={
                 stackByField ? (
                   <Popover

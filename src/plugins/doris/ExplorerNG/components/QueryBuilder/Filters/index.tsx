@@ -22,6 +22,7 @@ interface Props {
   onChange?: (values: FilterConfig[]) => void;
 }
 
+/** Render applied filters and discard unfinished drafts when their editor closes. */
 export default function Filters(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { size = 'middle', indexData, fieldSampleParams, value, onChange } = props;

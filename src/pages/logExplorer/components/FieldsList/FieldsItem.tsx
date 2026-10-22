@@ -71,6 +71,7 @@ const isEmptyValue = (value: string | null) => {
   return value === '' || value === null || value === 'null';
 };
 
+/** Render field actions and load retryable statistics only when the label is opened. */
 export default function FieldsItem(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {
@@ -124,11 +125,16 @@ export default function FieldsItem(props: Props) {
       row.style.setProperty('--log-field-active-width', `${activeWidth}px`);
     };
     measure();
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(measure);
-    observer.observe(actions);
-    return () => observer.disconnect();
-  });
+    const resize = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    resize?.observe(actions);
+    // Pressed state and action availability can change without resizing the group.
+    const mutations = new MutationObserver(measure);
+    mutations.observe(actions, { attributes: true, attributeFilter: ['aria-pressed'], childList: true, subtree: true });
+    return () => {
+      resize?.disconnect();
+      mutations.disconnect();
+    };
+  }, [field.field]);
 
   const loadStats = () => {
     if (!enableStats || !fetchStats || !field.indexable || statsLoaded.current || statsRequest.current) return;
@@ -413,7 +419,7 @@ export default function FieldsItem(props: Props) {
               getUniqueCount: props.getUniqueCount ? () => props.getUniqueCount!(field) : undefined,
               statsScope: props.statsScope,
             })}
-          <Tooltip mouseEnterDelay={0.6} title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
+          <Tooltip mouseEnterDelay={0.6} overlayClassName='n9e-log-field-action-tip' title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
             <Button
               type='text'
               size='small'

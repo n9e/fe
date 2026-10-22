@@ -8,12 +8,14 @@ export function getScrollParent(element: HTMLElement): HTMLElement {
   return (document.scrollingElement as HTMLElement) || document.documentElement;
 }
 
+/** Locate shared results and their actual page or fullscreen scroll owner. */
 export function getExternalLogScroll(element: Element | null) {
   const results = element?.closest<HTMLElement>('[data-log-results]');
   if (!results) return null;
   return { results, parent: getScrollParent(results) };
 }
 
+/** Compare visible results against the owner viewport; return undefined for legacy callers. */
 export function isExternalLogAtBottom(element: Element | null): boolean | undefined {
   const external = getExternalLogScroll(element);
   if (!external) return undefined;
@@ -30,6 +32,7 @@ export function getPinnedLogHeight(element: HTMLElement, parent: HTMLElement) {
   return main && parent.contains(main) ? Number(main.dataset.logPinnedHeight) || 0 : 0;
 }
 
+/** Resolve the visible viewport after accounting for padding and pinned headers. */
 export function getScrollViewport(parent: HTMLElement, element?: HTMLElement) {
   const pinned = element ? getPinnedLogHeight(element, parent) : 0;
   if (parent === document.scrollingElement) return { top: pinned, height: Math.max(0, window.innerHeight - pinned) };
@@ -42,6 +45,7 @@ export function getScrollViewport(parent: HTMLElement, element?: HTMLElement) {
   };
 }
 
+/** Use window events for document scrolling and element events for nested owners. */
 export function getScrollEventTarget(parent: HTMLElement): HTMLElement | Window {
   return parent === document.scrollingElement ? window : parent;
 }

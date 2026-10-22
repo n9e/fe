@@ -9,6 +9,7 @@ import RowDetail from './components/RowDetail';
 
 import './style.less';
 import useExternalGridScroll from '../../utils/useExternalGridScroll';
+import SortIndicator from '../SortIndicator';
 
 declare type Maybe<T> = T | undefined | null;
 
@@ -41,6 +42,7 @@ interface Props<Row> {
 const ROW_HEIGHT = 35;
 const ROW_EXPANDED_HEIGHT_DETAIL = 300;
 
+/** Connect the virtual grid to its page scroll owner and preserve column sizing. */
 export default function Table<Row>(props: Props<Row>) {
   const { theme = 'light', className, columns, rowKeyGetter, expandable, sortColumns, onSortColumnsChange, onScroll, getRowHeight, onColumnResize } = props;
   const [detailHeights, setDetailHeights] = useState<Map<number | string, number>>(new Map());
@@ -177,6 +179,7 @@ export default function Table<Row>(props: Props<Row>) {
     <div ref={shellRef} style={{ height: totalHeight }} className='n9e-log-grid-shell'>
       <DataGrid
         ref={gridRef}
+        renderers={{ sortIcon: SortIndicator }}
         style={{ height: viewportHeight, position: 'sticky', top, overflowY: 'hidden' }}
         rowKeyGetter={(row) => row.__id}
         columns={ajustedColumns}

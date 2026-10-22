@@ -6,6 +6,7 @@ import HistogramActionButton from './HistogramActionButton';
 
 type Props = Omit<React.ComponentProps<typeof DownloadModal>, 'renderTrigger'>;
 
+/** Adapt supported data-source download dialogs to the shared histogram icon button. */
 export default function HistogramDownloadModal(props: Props) {
   const { t } = useTranslation('explorer');
   return (

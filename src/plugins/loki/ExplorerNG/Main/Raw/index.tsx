@@ -89,6 +89,7 @@ function formatTimestamp(value?: string | number) {
   return moment(value).format('MM-DD HH:mm:ss.SSS');
 }
 
+/** Connect loki raw results to shared scrolling and histogram controls. */
 export default function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { indexData, setExecuteLoading, executeQuery, snapRangeResetKey } = props;

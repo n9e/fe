@@ -40,6 +40,7 @@ interface Props<FilterValues> {
 
 const VERSION = '1.0.0';
 
+/** Manage saved views, retaining selections during reload and validating settled results. */
 export default function index<FilterValues>(props: Props<FilterValues>) {
   const { t } = useTranslation('viewSelect');
   const {
@@ -326,7 +327,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
               };
             })}
             optionLabelProp='labelName'
-            value={props.validateSelection && !views?.some((view) => view.id === selected) ? undefined : selected}
+            value={props.validateSelection && (!views || (!loading && !views.some((view) => view.id === selected))) ? undefined : selected}
             onChange={(val) => {
               setSelected(val);
               if (onSelect) {

@@ -14,6 +14,7 @@ interface Props {
 
 const SideBarContext = createContext<{ collapsed: boolean; toggle: () => void } | null>(null);
 
+/** Render the shared accessible expand/collapse control. */
 function ToggleButton({ collapsed, toggle }: { collapsed: boolean; toggle: () => void }) {
   const { t } = useTranslation(NAME_SPACE);
   const action = t(collapsed ? 'sidebar.expand' : 'sidebar.collapse');
@@ -38,6 +39,7 @@ export function SideBarCollapseButton() {
   return state && !state.collapsed ? <ToggleButton {...state} /> : null;
 }
 
+/** Preserve sidebar children and width across collapses and retained query tabs. */
 export default function SideBar({ ns, children }: Props) {
   // Share the retained sidebar's state when switching between main and pre builds.
   const collapseKey = `ng-${ns}-explorer-sidebar-collapse-retained-v2`;

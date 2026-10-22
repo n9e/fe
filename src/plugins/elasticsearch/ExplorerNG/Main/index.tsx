@@ -66,6 +66,7 @@ interface Props {
   };
 }
 
+/** Host elasticsearch query controls in the shared collapsible and pinned layout. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);

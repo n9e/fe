@@ -4,12 +4,13 @@ import moment from 'moment';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, Empty, Space } from 'antd';
-import { CaretDownOutlined, CaretRightOutlined, CaretUpOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretRightOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Virtuoso } from 'react-virtuoso';
 import { useClickAway } from 'ahooks';
 
 import NavigableDrawer from '@/components/NavigableDrawer';
 import useScrollParent from './utils/useScrollParent';
+import SortIndicator from './components/SortIndicator';
 
 import { NAME_SPACE } from '../../constants';
 import { OnValueFilterParams, FieldValueType } from './types';
@@ -433,31 +434,22 @@ interface RawHeaderProps {
 
 /**
  * P1-2: Origin 模式自定义表头（替代 antd Table 的 thead）。
- * 复用 antd 的 thead/th/sorter 类名以获得一致的表头样式；时间列排序为本地状态切换，回调仍走 onReverseChange。
+ * 样式与表格/聚类的 RDG 表头保持一致；时间列排序仍走 onReverseChange。
  */
 const RawHeader = React.memo(function RawHeader({ showLines, showTime, timeColumnWidth, sortOrder, onToggleSort }: RawHeaderProps) {
   const { t } = useTranslation(NAME_SPACE);
   return (
     <div className='n9e-log-explorer-raw-header flex-shrink-0 overflow-hidden'>
       <table className='w-full' style={{ tableLayout: 'fixed' }}>
-        <thead className='ant-table-thead'>
+        <thead>
           <tr>
             <th className='ant-table-row-expand-icon-cell' style={{ width: 48 }} />
             {showLines && <th style={{ width: 50 }}>{t('logs.settings.lines')}</th>}
             {showTime && (
-              <th className='ant-table-column-sort ant-table-column-has-sorters cursor-pointer select-none' style={{ width: timeColumnWidth }} onClick={onToggleSort}>
-                <span className='ant-table-column-sorters'>
-                  <span className='ant-table-column-title'>{t('logs.settings.time')}</span>
-                  <span className='ant-table-column-sorter'>
-                    <span className='ant-table-column-sorter-inner'>
-                      <span className={`ant-table-column-sorter-up ${sortOrder === 'ascend' ? 'active' : ''}`}>
-                        <CaretUpOutlined />
-                      </span>
-                      <span className={`ant-table-column-sorter-down ${sortOrder === 'descend' ? 'active' : ''}`}>
-                        <CaretDownOutlined />
-                      </span>
-                    </span>
-                  </span>
+              <th className='cursor-pointer select-none' style={{ width: timeColumnWidth }} aria-sort={sortOrder === 'ascend' ? 'ascending' : 'descending'} onClick={onToggleSort}>
+                <span className='n9e-log-raw-header-sort'>
+                  <span>{t('logs.settings.time')}</span>
+                  <SortIndicator sortDirection={sortOrder === 'ascend' ? 'ASC' : 'DESC'} />
                 </span>
               </th>
             )}
@@ -523,14 +515,16 @@ const RawRow = React.memo(
       <div className='n9e-log-explorer-raw-row flex items-stretch w-full'>
         <div className='ant-table-row-expand-icon-cell' style={{ width: 48, flex: '0 0 48px' }}>
           <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
-            <div
-              className='absolute inset-0 flex items-center justify-center cursor-pointer'
+            <button
+              type='button'
+              aria-label={t('log_viewer_drawer_trigger_tip')}
+              className='n9e-log-detail-button n9e-log-row-detail-trigger inline-flex items-center justify-center cursor-pointer'
               onClick={() => {
                 onOpenDrawer(index);
               }}
             >
               <TextSearchIcon className='text-[14px]' />
-            </div>
+            </button>
           </Tooltip>
         </div>
         {showLines && (
@@ -542,7 +536,7 @@ const RawRow = React.memo(
             }}
           >
             <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
-              <div className='absolute inset-0 flex items-center'>{linesColumnFormat ? linesColumnFormat(index + 1) : index + 1}</div>
+              <span className='inline-flex items-center'>{linesColumnFormat ? linesColumnFormat(index + 1) : index + 1}</span>
             </Tooltip>
           </div>
         )}
@@ -555,9 +549,9 @@ const RawRow = React.memo(
             }}
           >
             <Tooltip title={t('log_viewer_drawer_trigger_tip')} getPopupContainer={getRawRowTooltipContainer}>
-              <div className='absolute inset-0 flex items-center px-2'>
+              <span className='inline-flex items-center px-2'>
                 {timeFieldColumnFormat ? timeFieldColumnFormat(item[timeField]) : moment(item[timeField]).format('MM-DD HH:mm:ss.SSS')}
-              </div>
+              </span>
             </Tooltip>
           </div>
         )}
@@ -595,6 +589,7 @@ const RawRow = React.memo(
   },
 );
 
+/** Virtualize variable-height raw logs in the actual page or fullscreen scroll owner. */
 function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {

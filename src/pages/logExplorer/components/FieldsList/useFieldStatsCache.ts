@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { Field, StatsResult } from './types';
 
+/** Validate raw cardinality; display abbreviations are never valid counts. */
 export function parseUniqueCount(value: unknown): number {
   if (typeof value !== 'number' && (typeof value !== 'string' || !value.trim())) throw new Error('Missing cardinality');
   const count = Number(value);
@@ -8,8 +9,16 @@ export function parseUniqueCount(value: unknown): number {
   return count;
 }
 
-// One cache per query scope, shared by displayed/available fields and both actions.
-// Re-rendering a provider with inline fetch callbacks must not invalidate it.
+/** Keep successful detailed statistics when optional cardinality is unavailable. */
+export function parseOptionalUniqueCount(value: unknown): number | undefined {
+  try {
+    return parseUniqueCount(value);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Cache statistics per query scope, evict failures, and deduplicate count checks. */
 export default function useFieldStatsCache(key: string | undefined, fetchStats?: (field: Field) => Promise<StatsResult>, fetchUniqueCount?: (field: Field) => Promise<number>) {
   const latest = useRef({ fetchStats, fetchUniqueCount });
   latest.current = { fetchStats, fetchUniqueCount };

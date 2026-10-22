@@ -10,6 +10,7 @@ interface Props {
   controls?: string;
 }
 
+/** Render a compact labeled histogram action with optional pressed or expanded state. */
 export default function HistogramActionButton({ title, icon, onClick, active, expanded, controls }: Props) {
   return (
     <Tooltip placement='topRight' title={title}>

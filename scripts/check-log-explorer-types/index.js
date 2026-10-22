@@ -23,7 +23,34 @@ const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, workspace, u
 if (parsed.errors.length) fail(parsed.errors);
 
 const scopes = [
+  'src/components/ViewSelect/index.tsx',
+  'src/components/ViewSelect/selection.test.tsx',
+  'src/pages/logExplorer/components/LogsViewer/ResultsScrollListener.tsx',
+  'src/pages/logExplorer/components/LogsViewer/fullscreenScroll.test.tsx',
+  'src/plugins/doris/ExplorerNG/index.tsx',
+  'src/plugins/doris/ExplorerNG/defaultSearchField.test.tsx',
+  'src/plugins/doris/ExplorerNG/components/QueryBuilder/Filters',
+  'src/plugins/clickHouse/ExplorerNG/components/QueryBuilder/Filters',
+  'src/components/SideMenu/index.tsx',
+  'src/pages/logExplorer/components/LogsViewer/components/Table/components/CellExpanderFormatter.tsx',
+  'src/pages/logExplorer/components/LogsViewer/components/Table/components/CellExpanderFormatter.test.tsx',
+  'src/pages/logExplorer/components/LogsViewer/utils/getColumnsFromFields.tsx',
+  'src/pages/logExplorer/index.tsx',
+  'src/pages/logExplorer/components/QueryInput.tsx',
+  'src/pages/logExplorer/components/LogsViewer/components/Table/index.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/index.tsx',
+  'src/plugins/clickHouse/ExplorerNG/Main/Query/index.tsx',
+  'src/pages/logExplorer/components/Guidance',
+  'src/pages/logExplorer/components/LogsViewer/components/SortIndicator.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/QueryInput.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/queryErrorPolicy.ts',
+  'src/plugins/doris/ExplorerNG/Main/Query/queryErrorPolicy.test.ts',
+  'src/plugins/doris/ExplorerNG/Main/Query/useQuerySyntaxError.tsx',
+  'src/plugins/doris/ExplorerNG/Main/Query/useQuerySyntaxError.test.tsx',
+  'src/plugins/doris/services.ts',
   'src/pages/logExplorer/components/LogsViewer/index.tsx',
+  'src/pages/logExplorer/components/LogsViewer/Raw.tsx',
+  'src/pages/logExplorer/components/LogsViewer/Raw.accessibility.test.tsx',
   'src/pages/logExplorer/components/LogsViewer/Clustering/Table.tsx',
   'src/pages/logExplorer/components/LogsViewer/utils/useExternalGridScroll.test.tsx',
   'src/pages/logExplorer/components/FieldsList',
@@ -33,8 +60,15 @@ const scopes = [
   'src/plugins/elasticsearch/ExplorerNG/components/FiltersBuilder',
 ];
 const plusScope = 'src/plus/datasource/cloudwatchLogs/ExplorerNG/SideBarNav/FieldsSidebar';
-if (fs.existsSync(path.join(workspace, plusScope))) scopes.push(plusScope);
-else if (args.includes('--with-plus')) throw new Error(`Missing enterprise source: ${plusScope}`);
+if (fs.existsSync(path.join(workspace, plusScope))) {
+  scopes.push(plusScope, 'src/plus/datasource/logExplorerScroll.test.ts');
+  for (const source of ['aliyunSLS', 'bceBLS', 'cloudwatchLogs', 'huaweiLTS', 'tencentCLS', 'volcTLS']) {
+    scopes.push(`src/plus/datasource/${source}/ExplorerNG/Main/index.tsx`);
+  }
+  for (const source of ['bceBLS', 'huaweiLTS', 'tencentCLS', 'volcTLS']) {
+    scopes.push(`src/plus/datasource/${source}/ExplorerNG/utils/tableElementMethods.ts`);
+  }
+} else if (args.includes('--with-plus')) throw new Error(`Missing enterprise source: ${plusScope}`);
 
 const files = [];
 const collect = (file) => {

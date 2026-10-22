@@ -1,7 +1,22 @@
+.n9e-log-detail-button {
+  border: 0;
+  border-radius: 3px;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  &:focus-visible {
+    outline: 2px solid var(--fc-primary-color);
+    outline-offset: -2px;
+  }
+}
+
 .n9e-log-explorer-raw-table {
   // react-virtuoso 替换 antd Table 后不再有 .ant-table-container，
   // 在此补回原表格容器的外框与圆角。
   border: 1px solid var(--fc-border-color);
+  // The header owns the top edge so it stays visible when pinned; the shell
+  // still supplies the sides and bottom without drawing a second top line.
+  border-top: 0;
   border-radius: 8px;
   // Clip the rounded shell without creating a scroll container that would
   // prevent the raw header from sticking to the page viewport.
@@ -16,19 +31,52 @@
     position: relative;
   }
 
-  // P1-2: Origin 模式虚拟列表（react-virtuoso）自定义表头与行，样式对齐原 antd Table
+  .n9e-log-row-detail-trigger {
+    width: 26px;
+    height: 26px;
+  }
+
+  // Match the 35px RDG headers used by table and clustering modes.
   .n9e-log-explorer-raw-header {
+    border-top: 1px solid var(--fc-border-color);
+    border-radius: 7px 7px 0 0;
+
     table {
       border-spacing: 0;
     }
 
-    // 覆盖 antd 默认 th 的 16px 内边距，对齐 ant-table-small 的 8px。
     th {
-      padding: 8px;
+      height: 35px;
+      padding: 0 8px;
+      color: var(--fc-text-2);
+      background: var(--fc-fill-3);
+      border-bottom: 1px solid #f0f0f0;
       font-size: 12px;
-      font-weight: 500;
-      line-height: 1;
+      font-weight: 700;
+      line-height: 34px;
+      text-align: left;
+      vertical-align: middle;
       white-space: nowrap;
+
+      &:not(:first-child):not(:last-child) {
+        border-inline-end: 1px solid var(--fc-border-base);
+      }
+    }
+
+    .n9e-log-raw-header-sort {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      > span:first-child {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      > .n9e-log-sort-indicator {
+        flex: 0 0 auto;
+      }
     }
   }
 
@@ -36,10 +84,20 @@
     border-bottom: 1px solid var(--fc-border-color);
     font-size: 12px;
 
+    > .ant-table-row-expand-icon-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     &:hover {
       background: rgb(var(--fc-fill-5-rgb) / 0.2);
     }
   }
+}
+
+.theme-dark .n9e-log-explorer-raw-header th {
+  border-bottom-color: #393c4d;
 }
 
 .n9e-log-explorer-log-viewer-tabs {
@@ -283,13 +341,24 @@
 .n9e-log-histogram {
   padding-bottom: 8px;
 }
+.n9e-log-explorer-page .log-explorer-query-row {
+  .ant-form-item,
+  .query-box-prefix-column {
+    margin-bottom: 8px;
+  }
+  .query-box-prefix-column .ant-form-item {
+    margin-bottom: 0;
+  }
+}
 .n9e-log-histogram-toolbar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 4px 8px;
   min-height: 28px;
-  margin: 4px 0;
+  flex: 1 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 .n9e-log-histogram-context {
   min-width: 0;
@@ -301,7 +370,13 @@
   }
 }
 .n9e-log-histogram-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 6px;
   min-width: 0;
+  max-width: 100%;
   margin-left: auto;
 }
 .n9e-log-histogram-meta-content.ant-space {
@@ -324,25 +399,14 @@
 
 .n9e-log-histogram-header {
   display: flex;
-  flex-direction: column;
-}
-.n9e-log-histogram-filters {
-  min-width: 0;
-  max-width: 100%;
-}
-.n9e-log-histogram-header-compact {
-  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 12px;
-  margin: 4px 0;
-  > .n9e-log-histogram-filters {
-    flex: 0 1 auto;
-    width: max-content;
-  }
-  > .n9e-log-histogram-toolbar {
-    flex: 0 0 auto;
-    max-width: 100%;
-    margin: 0 0 0 auto;
-  }
+  margin: 0 0 16px;
+}
+.n9e-log-histogram-filters {
+  flex: 0 1 auto;
+  width: max-content;
+  min-width: 0;
+  max-width: 100%;
 }
