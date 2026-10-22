@@ -58,7 +58,14 @@ declare module 'plus:/parcels/DorisLogAnalysis' {
 
   export function captureDorisLogAnalysisRequest(request: unknown): unknown;
   export function bindDorisLogAnalysisRows(rows: object[], snapshot: unknown): void;
-  export function useDorisLogAnalysisViewerProps(options: { enabled: boolean; logs: Record<string, unknown>[]; loading: boolean; total?: number; lineOffset: number }): {
+  export function useDorisLogAnalysisViewerProps(options: {
+    enabled: boolean;
+    logs: Record<string, unknown>[];
+    loading: boolean;
+    total?: number;
+    lineOffset: number;
+    loadMode: 'pagination' | 'infiniteScroll';
+  }): {
     resultActions?: ReactNode;
     rowActionsRender?: (row: Record<string, any>, index: number, detail: ReactNode) => ReactNode;
     linesColumnFormat?: (line: number) => ReactNode;

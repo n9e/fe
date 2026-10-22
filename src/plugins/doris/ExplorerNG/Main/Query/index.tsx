@@ -281,6 +281,7 @@ export default function index(props: Props) {
     loading,
     total: data?.total,
     lineOffset: pageLoadMode === 'infiniteScroll' ? 0 : serviceParams.pageSize * (serviceParams.current - 1),
+    loadMode: pageLoadMode,
   });
 
   const histogramService = () => {
