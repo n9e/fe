@@ -26,7 +26,10 @@ removes those actions. Base files excluded by incremental sync, including
   cover the header border. The left sidebar remains stationary.
 - Expanded and collapsed sidebars retain form state. Every query row reserves
   room for the expand button through `log-explorer-query-row`; verify all six
-  enterprise data sources as well as the open-source adapters.
+  enterprise data sources as well as the open-source adapters. Check actual
+  mouse clicks after collapsing, both pinned and unpinned: empty query-row
+  padding must not intercept the button. Button size and alignment stay the
+  same in light and dark themes.
 - Histogram visibility is independent of pinning. Hide stack context when the
   chart is hidden; keep the stack help available after selecting a field.
   Filter and time controls share a row when space permits and wrap when needed.
