@@ -175,11 +175,6 @@ const OperateForm: React.FC<Props> = ({ type, initialValues = {} }) => {
                           },
                         }}
                         promptList={getExplorerPrompts(i18n.language)}
-                        onExecuteQueryForQueryContent={(promql) => {
-                          form.setFieldsValue({
-                            prom_ql: promql,
-                          });
-                        }}
                       />
                     </Form.Item>
                   </div>

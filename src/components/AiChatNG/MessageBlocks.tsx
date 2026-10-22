@@ -6,7 +6,6 @@ import { Sparkles } from 'lucide-react';
 
 import { IS_ENT } from '@/utils/constant';
 import {
-  AiChatExecuteQueryForQueryContent,
   AiChatPageActionOutcomes,
   EAiChatContentType,
   IAiChatAction,
@@ -72,7 +71,6 @@ function TypedGreeting({ prefix, brand }: { prefix: string; brand: string }) {
 interface IAiChatResponseBlocksProps {
   message: IAiChatMessage;
   isStreaming: boolean;
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onActionClick: (action: IAiChatAction) => void;
   onOKForFormSelectContent: (action: IAiChatAction, overrideContent: string) => void;
   maybeScrollToBottom?: (behavior?: ScrollBehavior) => void;
@@ -174,7 +172,7 @@ export function CurStepBlock({ curStep }: { curStep: string }) {
 
 export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { message, isStreaming, onExecuteQueryForQueryContent, onActionClick, onOKForFormSelectContent, maybeScrollToBottom, pageActionOutcomes } = props;
+  const { message, isStreaming, onActionClick, onOKForFormSelectContent, maybeScrollToBottom, pageActionOutcomes } = props;
   const curStep = message.cur_step?.trim() || t('message.generating');
   const shouldShowCurStep = !message.is_finish && !message.err_code;
 
@@ -260,21 +258,7 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
           case EAiChatContentType.Hint:
             return <HintBlock key={`${response.content_type}-${index}`} response={response} />;
           case EAiChatContentType.Query:
-            return (
-              <QueryContentBlock
-                key={`${response.content_type}-${index}`}
-                query={response.content}
-                onExecute={
-                  onExecuteQueryForQueryContent
-                    ? () =>
-                        onExecuteQueryForQueryContent(response.content, {
-                          message,
-                          response,
-                        })
-                    : undefined
-                }
-              />
-            );
+            return <QueryContentBlock key={`${response.content_type}-${index}`} query={response.content} />;
           case EAiChatContentType.FormSelect:
             return (
               <FormSelectContentBlock
@@ -384,16 +368,7 @@ function shouldShowRunningStatusAtMessageBottom(isFinish?: boolean, responseList
   return bottomStatusContentTypes.includes(lastResponse.content_type as EAiChatContentType);
 }
 
-function MessageItemComponent({
-  message,
-  isStreaming,
-  onExecuteQueryForQueryContent,
-  onActionClick,
-  onOKForFormSelectContent,
-  maybeScrollToBottom,
-  pageActionOutcomes,
-  variant,
-}: IAiChatResponseBlocksProps) {
+function MessageItemComponent({ message, isStreaming, onActionClick, onOKForFormSelectContent, maybeScrollToBottom, pageActionOutcomes, variant }: IAiChatResponseBlocksProps) {
   const { t } = useTranslation(NAME_SPACE);
   const slim = variant === 'slim';
   const showInitialRunningStatus = shouldShowInitialRunningStatus(message.is_finish, message.response);
@@ -432,6 +407,27 @@ function MessageItemComponent({
             </span>
           </div>
         )}
+        <div className={cn('space-y-3', slim && 'min-w-0 flex-1', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
+          <ResponseBlocks
+            message={message}
+            isStreaming={isStreaming}
+            pageActionOutcomes={pageActionOutcomes}
+            onActionClick={onActionClick}
+            onOKForFormSelectContent={onOKForFormSelectContent}
+            maybeScrollToBottom={maybeScrollToBottom}
+          />
+          {!message.is_finish && (
+            <div className='inline-flex items-center w-fit text-main text-sm'>
+              {!!showInitialRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.generating')}</span>}
+              {!!showBottomRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.processing')}</span>}
+              <span className='inline-flex items-center gap-[3px]' aria-hidden='true'>
+                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse' />
+                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:160ms]' />
+                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:320ms]' />
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

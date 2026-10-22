@@ -145,6 +145,7 @@ export default function index(props: IProps) {
   const timestampRef = useRef(timestamp);
   const submittedRef = useRef(submitted);
   const revisionRef = useRef(0);
+  const modelResetTokenRef = useRef(0);
   const pending = usePendingQuery();
   const [queryPaused, setQueryPaused] = useState(false);
   const invalidate = () => {
@@ -243,6 +244,7 @@ export default function index(props: IProps) {
       fill: (next, nextRange) => {
         pending.abort();
         setQueryPaused(true);
+        if (next !== valueRef.current) modelResetTokenRef.current += 1;
         change(next);
         if (nextRange) updateRange(nextRange);
       },
@@ -328,6 +330,7 @@ export default function index(props: IProps) {
                   }}
                   showGlobalMetrics={showGlobalMetrics}
                   onChangeTrigger={['onBlur', 'onEnter']}
+                  modelResetToken={modelResetTokenRef.current}
                   value={value}
                   onDraftChange={(next) => {
                     if (next !== valueRef.current) {
