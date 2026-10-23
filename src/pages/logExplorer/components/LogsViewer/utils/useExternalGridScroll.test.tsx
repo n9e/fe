@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import type { DataGridHandle } from 'react-data-grid';
 import useExternalGridScroll from './useExternalGridScroll';
 
-function Fixture({ contentHeight = 350000, pinnedHeight = 0 }: { contentHeight?: number; pinnedHeight?: number }) {
+function Fixture({ contentHeight = 350000, pinnedHeight = 0, padding = 0 }: { contentHeight?: number; pinnedHeight?: number; padding?: number }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const elementRef = useRef<HTMLDivElement>(null);
@@ -23,7 +23,7 @@ function Fixture({ contentHeight = 350000, pinnedHeight = 0 }: { contentHeight?:
   }, []);
   const { top, viewportHeight: height } = useExternalGridScroll(shellRef, gridRef, contentHeight);
   return (
-    <div ref={parentRef} data-testid='page' style={{ overflowY: 'auto' }}>
+    <div ref={parentRef} data-testid='page' style={{ overflowY: 'auto', padding }}>
       <main data-log-query-main data-log-pinned-height={pinnedHeight || undefined}>
         <div ref={shellRef} style={{ height: contentHeight }}>
           <div ref={elementRef} data-testid='grid' style={{ height, top }} />
@@ -82,4 +82,15 @@ it('uses the actual height for a few clusters without introducing an extra viewp
   render(<Fixture contentHeight={142} pinnedHeight={180} />);
   await waitFor(() => expect(screen.getByTestId('grid')).toHaveStyle({ height: '142px', top: '180px' }));
   expect(screen.getByTestId('grid').scrollTop).toBe(0);
+});
+
+it('fully exposes the last row at the page bottom with padding and a pinned header', async () => {
+  render(<Fixture contentHeight={1087} pinnedHeight={100} padding={16} />);
+  const page = screen.getByTestId('page');
+  const grid = screen.getByTestId('grid');
+  await waitFor(() => expect(grid).toHaveStyle({ height: '484px' }));
+  // At the page end the shell bottom coincides with the physical viewport bottom.
+  page.scrollTop = 200 + 1087 - 600;
+  fireEvent.scroll(page);
+  expect(grid.scrollHeight - grid.clientHeight - grid.scrollTop).toBe(0);
 });

@@ -7,7 +7,7 @@ import useFieldStatsCache from './useFieldStatsCache';
 
 let mockProps: any;
 const mockRequest = jest.fn();
-const mockQuery = { database: 'logs', table: 'events', time_field: 'timestamp', query: 'service:api', range: {} };
+const mockQuery = { database: 'logs', table: 'events', time_field: 'timestamp', query: 'service:api', range: {}, syntax: 'query' };
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock('antd', () => ({
   ...jest.requireActual('antd'),
@@ -68,4 +68,22 @@ describe.each([
     await expect(result.current.getUniqueCount!(field)).resolves.toBe(3);
     expect(mockRequest.mock.calls[1][0].query.map((item: any) => item.func)).toEqual(['unique_count']);
   });
+});
+
+it('hides Query-only Doris actions and help in SQL mode and restores them when switching back', () => {
+  const view = render(<DorisSidebar {...props} organizeFields={['service']} />);
+  expect(mockProps.onOperClick).toEqual(expect.any(Function));
+  expect(mockProps.renderStatsPopoverTitleExtra).toEqual(expect.any(Function));
+  mockQuery.syntax = 'sql';
+  view.rerender(<DorisSidebar {...props} organizeFields={['service']} />);
+  expect(mockProps.onOperClick).toBeUndefined();
+  expect(mockProps.renderStatsPopoverTitleExtra).toBeUndefined();
+  expect(mockProps.organizeFieldNames).toBeUndefined();
+  expect(mockProps.helpCapabilities).toBe(false);
+  expect(mockProps.fetchStats).toEqual(expect.any(Function));
+  mockQuery.syntax = 'query';
+  view.rerender(<DorisSidebar {...props} organizeFields={['service']} />);
+  expect(mockProps.organizeFieldNames).toEqual(['service']);
+  expect(mockProps.onOperClick).toEqual(expect.any(Function));
+  expect(mockProps.helpCapabilities).toEqual({ defaultSearch: true, stack: true });
 });

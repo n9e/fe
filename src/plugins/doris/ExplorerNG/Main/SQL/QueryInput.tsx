@@ -52,11 +52,10 @@ export default forwardRef(function QueryInputCpt(props: Props, ref) {
   }));
 
   return (
-    <QueryBoxColumn className='min-w-0' prefixed={!!queryExtra} below={noticeBanner}>
+    <QueryBoxColumn className={classNames('min-w-0', { 'doris-log-sql-controls-with-builder': queryBuilderVisible })} prefixed={!!queryExtra} below={noticeBanner}>
       <InputGroupWithFormItem
         className={classNames({
           'doris-sql-input-container-with-builder': queryBuilderVisible,
-          'doris-sql-input-container-with-builder-unpinned': !queryBuilderPinned && queryBuilderVisible,
         })}
         label={
           <Space
