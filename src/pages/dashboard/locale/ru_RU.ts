@@ -603,6 +603,18 @@ const ru_RU = {
       iframe: {
         src: 'Адрес iframe',
       },
+      aiButton: {
+        style: 'Стиль кнопки',
+        style_capsule: 'Капсула',
+        style_icon: 'Иконка',
+        style_antd: 'Ant Design',
+        text: 'Текст кнопки',
+        text_tip: 'В стиле «Иконка» текст отображается во всплывающей подсказке при наведении, в остальных стилях — на кнопке.',
+        text_placeholder: 'Если пусто, показывается {{name}}',
+        type: 'Тип кнопки',
+        prompt: 'Подсказка',
+        prompt_tip: 'По клику открывает AI Chat и автоматически отправляет этот текст. Если пусто, только открывает AI Chat.',
+      },
       heatmap: {
         xAxisField: 'X-ось',
         yAxisField: 'Y-ось',
@@ -774,6 +786,7 @@ __variable_value_fixed=true: сохранять значения перемен�
     gauge: 'Спидометр',
     heatmap: 'Тепловая карта',
     iframe: 'Встроенный документ (iframe)',
+    aiButton: 'Кнопка AI',
     row: 'Группа',
     importPanel: 'Импорт панели',
   },

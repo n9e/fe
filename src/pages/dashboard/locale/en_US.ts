@@ -633,6 +633,18 @@ const en_US = {
       iframe: {
         src: 'Src',
       },
+      aiButton: {
+        style: 'Button style',
+        style_capsule: 'Capsule',
+        style_icon: 'Icon',
+        style_antd: 'Ant Design',
+        text: 'Button text',
+        text_tip: 'For the Icon style, this text appears in the hover tooltip. For other styles, it appears on the button.',
+        text_placeholder: 'Shows {{name}} when empty',
+        type: 'Button type',
+        prompt: 'Prompt',
+        prompt_tip: 'Opens AI Chat and sends this prompt. When empty, only opens AI Chat.',
+      },
       heatmap: {
         xAxisField: 'X-Axis',
         yAxisField: 'Y-Axis',
@@ -801,6 +813,7 @@ __variable_value_fixed=true: preserve variable values from the URL without repla
     gauge: 'Gauge',
     heatmap: 'Heatmap',
     iframe: 'Iframe',
+    aiButton: 'AI Button',
     row: 'Row',
     importPanel: 'Paste panel',
   },

@@ -552,6 +552,18 @@ const es_ES = {
       iframe: {
         src: 'Dirección del iframe',
       },
+      aiButton: {
+        style: 'Estilo del botón',
+        style_capsule: 'Cápsula',
+        style_icon: 'Icono',
+        style_antd: 'Ant Design',
+        text: 'Texto del botón',
+        text_tip: 'En el estilo de icono, este texto aparece en la ayuda al pasar el cursor. En los demás estilos, aparece en el botón.',
+        text_placeholder: 'Muestra {{name}} si está vacío',
+        type: 'Tipo de botón',
+        prompt: 'Prompt',
+        prompt_tip: 'Al hacer clic, abre AI Chat y envía este prompt. Si está vacío, solo abre AI Chat.',
+      },
       heatmap: {
         xAxisField: 'Eje X',
         yAxisField: 'Eje Y',
@@ -723,6 +735,7 @@ __variable_value_fixed=true: conservar los valores de variables de la URL sin su
     gauge: 'Indicador',
     heatmap: 'Mapa de bloques',
     iframe: 'Documento incrustado (iframe)',
+    aiButton: 'Botón de IA',
     row: 'Grupo',
     importPanel: 'Pegar gráfico',
   },

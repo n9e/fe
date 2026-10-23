@@ -25,7 +25,7 @@ import { useDeepCompareEffect } from 'ahooks';
 import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 
-import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap } from './config';
+import { visualizations, defaultValues, defaultCustomValuesMap, defaultOptionsValuesMap, NO_QUERY_PANEL_TYPES } from './config';
 import FormCpt, { EditorFormHandle } from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';
@@ -219,7 +219,7 @@ function index(props: IProps) {
         backgroundColor: 'var(--fc-fill-1)',
       }}
     >
-      {(initialValues?.targets?.length || _.includes(['text', 'iframe'], initialValues.type)) && (
+      {(initialValues?.targets?.length || _.includes(NO_QUERY_PANEL_TYPES, initialValues.type)) && (
         <FormCpt
           ref={formRef}
           initialValues={normalizeInitialValues(initialValues)}

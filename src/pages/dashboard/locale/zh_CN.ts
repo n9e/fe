@@ -636,6 +636,18 @@ const zh_CN = {
       iframe: {
         src: 'iframe 地址',
       },
+      aiButton: {
+        style: '按钮样式',
+        style_capsule: '胶囊',
+        style_icon: '图标',
+        style_antd: 'Ant Design',
+        text: '按钮文字',
+        text_tip: '选择图标样式时，作为图标悬浮提示文字；其他样式时，显示在按钮上。',
+        text_placeholder: '为空时显示 {{name}}',
+        type: '按钮类型',
+        prompt: '提示词',
+        prompt_tip: '点击按钮后打开 AI Chat 并自动发送该提示词。为空时只打开 AI Chat。',
+      },
       heatmap: {
         xAxisField: 'X轴',
         yAxisField: 'Y轴',
@@ -804,6 +816,7 @@ __variable_value_fixed=true：固定 URL 中的变量值，不使用本地缓存
     gauge: '仪表图',
     heatmap: '色块图',
     iframe: '内嵌文档 (iframe)',
+    aiButton: 'AI 按钮',
     row: '分组',
     importPanel: '粘贴图表',
   },

@@ -12,6 +12,7 @@ import { ITarget } from '../../types';
 import { getDefaultStepByTime } from '../../utils';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { completeBreakpoints, getSerieName } from './utils';
+import { NO_QUERY_PANEL_TYPES } from '../../Editor/config';
 
 interface IOptions {
   panelWidth?: number; // 面板宽度
@@ -240,7 +241,7 @@ export default async function prometheusQuery(options: IOptions): Promise<Result
     }
   }
   // @ts-ignore
-  if (datasourceValue !== 'number' && type !== 'text' && type !== 'iframe') {
+  if (datasourceValue !== 'number' && !_.includes(NO_QUERY_PANEL_TYPES, type)) {
     return Promise.reject({
       message: i18next.t('dashboard:detail.invalidDatasource'),
     });
