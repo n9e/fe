@@ -59,6 +59,8 @@ interface Props {
   timeColumnWidth?: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  rowActionsRender?: (row: Record<string, any>, index: number, detail: React.ReactNode) => React.ReactNode;
+  hideLineNumberDetailTooltip?: boolean;
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
@@ -99,6 +101,8 @@ function Table(props: Props) {
     timeColumnWidth,
     timeFieldColumnFormat,
     linesColumnFormat,
+    rowActionsRender,
+    hideLineNumberDetailTooltip,
     logViewerExtraRender,
     logViewerFilterFields,
     logViewerRenderCustomTagsArea,
@@ -134,6 +138,7 @@ function Table(props: Props) {
         timeColumnWidth,
         timeFieldColumnFormat,
         linesColumnFormat,
+        hideLineNumberDetailTooltip,
         adjustFieldValue,
         showExistsAction,
       }),
@@ -204,6 +209,12 @@ function Table(props: Props) {
             const idx = _.findIndex(data, { [id_key]: row[id_key] });
             setLogViewerDrawerState({ visible: true, currentIndex: idx });
           },
+          rowActionsRender: rowActionsRender
+            ? (row, detail) => {
+                const idx = _.findIndex(data, { [id_key]: row[id_key] });
+                return rowActionsRender(data[idx], idx, detail);
+              }
+            : undefined,
         }}
         onColumnResize={(idx, width) => {
           if (!tableColumnsWidthCacheKey) return;
