@@ -225,7 +225,7 @@ Provider 内部仍使用执行计数处理同一实例的重叠链：首条链�
 
 查询结果由 `processQueryOptions` 规范化。它同时接受标量数组（`['a', 'b']`）和对象数组（`[{ label, value }]`），统一产出 `{ label: string, value: string }[]` 并按 value 排序去重。`reg` 支持两种写法：普通字符串按全等匹配，`/pattern/flags` 按正则匹配；正则可以用命名捕获组 `(?<text>...)` 和 `(?<value>...)` 分别指定展示文本与实际值。
 
-options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 中就保留，否则回落到 `defaultValue`，再否则取第一项（多选且开了 All 时取 `['all']`）。URL 带 `__variable_value_fixed` 时跳过这套逻辑，保持传入值不变。
+options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 中就保留，显式清空值（单选 `''`、多选 `[]`）也保留，否则回落到 `defaultValue`，再否则取第一项（多选且开了 All 时取 `['all']`）。URL 带 `__variable_value_fixed` 时跳过这套逻辑，保持传入值不变。
 
 ## 插件机制
 
@@ -244,7 +244,7 @@ options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 
 | URL query               | 变量值变化时 `history.replace`                         | 分享链接、跨页携带                 |
 | localStorage            | 变量值变化时，键为 `dashboard_v6_{dashboardId}_{name}` | 同一用户下次访问时恢复上次选择     |
 
-`initializeVariablesValue` 在首次加载时按 URL 优先、localStorage 兜底的顺序恢复值，并做类型归一：datasource 变量转数字，多选转数组，单选取数组首项，空值统一为 `undefined`（textbox 例外，回落到 `defaultValue` 或空字符串）。URL 中带 `__variable_value_fixed` 时不读 localStorage，也不再自动补默认值。
+`initializeVariablesValue` 在首次加载时按 URL 优先、localStorage 兜底的顺序恢复值，并做类型归一：datasource 变量转数字，多选转数组，单选取数组首项。未赋值的空值统一为 `undefined`（textbox 例外，回落到 `defaultValue` 或空字符串）。localStorage 中的显式清空（`''` 或 `'[]'`）会按当前单选或多选恢复为 `''` 或 `[]`，下次进入页面保持清空，而不是回落到默认值。URL 中带 `__variable_value_fixed` 时不读 localStorage，也不再自动补默认值。
 
 ## 关键约束
 

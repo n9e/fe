@@ -201,6 +201,24 @@ test('a fixed value is preserved even when no options remain', () => {
   expect(getValueByOptions({ variableValueFixed: true, variable, itemOptions: [] })).toBe('project-outside');
 });
 
+test('an explicitly cleared value stays empty instead of falling back to the default', () => {
+  const itemOptions = processQueryOptions([
+    { label: 'Production', value: 'project-1' },
+    { label: 'Development', value: 'project-2' },
+  ]);
+  const variable: IVariable = {
+    name: 'project',
+    definition: '',
+    type: 'query',
+    datasource: { cate: 'gcm' },
+    defaultValue: 'project-2',
+  };
+
+  expect(getValueByOptions({ variableValueFixed: false, variable: { ...variable, value: '' }, itemOptions })).toBe('');
+  expect(getValueByOptions({ variableValueFixed: false, variable: { ...variable, multi: true, value: [] }, itemOptions })).toEqual([]);
+  expect(getValueByOptions({ variableValueFixed: false, variable, itemOptions })).toBe('project-2');
+});
+
 test('an unfixed value falls back to the first option when it is absent', () => {
   const itemOptions = processQueryOptions([
     { label: 'Production', value: 'project-1' },
