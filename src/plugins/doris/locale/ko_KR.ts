@@ -30,6 +30,7 @@ const ko_KR = {
     "time_field_tip": "<span>조회 조건에 시간 매크로를 써야 이 시간 선택기가 반영됩니다</span><br/>시간 매크로 사용법: <a>자세히</a>",
     "query": "조회 조건",
     "query_required": "조회 조건은 비워 둘 수 없습니다",
+    "historical_records": "기록",
     "advancedSettings": {
       "title": "보조 설정",
       "tags_placeholder": "Enter로 여러 개 입력",

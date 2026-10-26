@@ -33,6 +33,7 @@ const zh_CN = {
     time_field_tip: '<span>需在查询条件中使用时间宏才能联动此时间选择器</span><br/>时间宏使用介绍: <a>详情</a>',
     query: '查询条件',
     query_required: '查询条件不能为空',
+    historical_records: '历史记录',
     advancedSettings: {
       title: '辅助配置',
       tags_placeholder: '回车输入多个',

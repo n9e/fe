@@ -5,7 +5,26 @@ const ko_KR = {
   },
   "query": "조회 조건",
   "query_is_required": "조회 조건은 비워 둘 수 없습니다",
+  "sql_placeholder": "SQL 입력",
+  "sql_shortcut_hint": "Shift+Enter 줄바꿈 · Enter 쿼리",
   "execute": "쿼리",
+  "query_workspace": {
+    "assist": "폼 보조",
+    "assist_tip": "폼으로 쿼리를 작성한 뒤 변환하여 미리보기하거나 계속 직접 작성할 수 있습니다. 기존 쿼리는 폼으로 역변환되지 않습니다.",
+    "enable_assist": "먼저 폼 보조를 켜세요",
+    "builder": "폼 작성",
+    "preview": "{{language}} 미리보기",
+    "convert": "{{language}} 변환",
+    "continue": "이 {{language}}로 계속 작성",
+    "not_generated": "변환 대기",
+    "generating": "생성 중",
+    "modified": "폼이 변경되었습니다. 쿼리를 변환하세요",
+    "synced": "폼과 일치",
+    "empty": "폼을 설정한 뒤 “{{language}} 변환”을 클릭하면 미리보기가 생성됩니다",
+    "use_previous": "이전 변환 결과를 사용합니다. 최신 내용이 필요하면 다시 변환하세요",
+    "range_required": "시간 범위를 선택하세요",
+    "unlimited": "무제한",
+  },
   "mode": {
     "label": "모드",
     "raw_logs": "원본 로그",
@@ -124,7 +143,11 @@ const ko_KR = {
       },
       "topNSettings": {
         "title": "상위 N개 값 설정"
-      }
+      },
+      "flattenSettings": {
+        "title": "필드 평탄화 레벨",
+        "extra": "0: 파싱/평탄화 없이 필드 값을 원본 로그 문자열로 표시합니다\nN(≥1): 중첩 JSON을 최대 N단계까지 펼치고 그보다 깊은 부분은 통째로 표시합니다"
+      },
     },
     "fieldLabelTip": "이 필드는 통계가 꺼져 있어 통계 분석을 할 수 없습니다",
     "filterAnd": "\"{{token}}\"을(를) 이번 검색에 추가",

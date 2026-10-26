@@ -30,6 +30,11 @@ interface Props {
   setStackByField: (field?: string) => void;
   defaultSearchField?: string;
   setDefaultSearchField: (field?: string) => void;
+
+  /** Settings the statement depends on changed: the manual editor takes over from the builder. */
+  onQueryContextChange?: () => void;
+  /** A statement was generated for the user, e.g. from a field statistic. */
+  onGeneratedSql?: () => void;
 }
 
 export default function index(props: Props) {
@@ -47,6 +52,9 @@ export default function index(props: Props) {
     setStackByField,
     defaultSearchField,
     setDefaultSearchField,
+
+    onQueryContextChange,
+    onGeneratedSql,
   } = props;
 
   const form = Form.useFormInstance();
@@ -176,9 +184,13 @@ export default function index(props: Props) {
               disabled={disabled}
               datasourceValue={datasourceValue}
               onChange={() => {
+                // The statement names the database it runs against: drop it with the context it belonged to and
+                // go back to writing SQL by hand.
+                onQueryContextChange?.();
                 form.setFieldsValue({
                   refreshFlag: undefined,
                   query: {
+                    sql: undefined,
                     stackByField: undefined,
                     defaultSearchField: undefined,
                     table: undefined,
@@ -194,9 +206,11 @@ export default function index(props: Props) {
               datasourceValue={datasourceValue}
               database={database}
               onChange={() => {
+                onQueryContextChange?.();
                 form.setFieldsValue({
                   refreshFlag: undefined,
                   query: {
+                    sql: undefined,
                     stackByField: undefined,
                     defaultSearchField: undefined,
                     time_field: undefined,
@@ -212,7 +226,10 @@ export default function index(props: Props) {
                 return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
               })}
               onChange={() => {
-                executeQuery();
+                onQueryContextChange?.();
+                form.setFieldsValue({ refreshFlag: undefined, query: { sql: undefined } });
+                // The statement was just dropped, so only a search-mode filter still has something to run.
+                if (syntax !== 'sql') executeQuery();
               }}
             />
           </Form.Item>
@@ -229,6 +246,7 @@ export default function index(props: Props) {
             setStackByField={setStackByField}
             defaultSearchField={defaultSearchField}
             setDefaultSearchField={setDefaultSearchField}
+            onGeneratedSql={onGeneratedSql}
           />
         </div>
       </div>

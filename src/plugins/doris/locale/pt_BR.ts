@@ -30,6 +30,7 @@ const pt_BR = {
     "time_field_tip": "<span>Use uma macro de tempo na consulta para que este seletor tenha efeito</span><br/>Como usar as macros de tempo: <a>detalhes</a>",
     "query": "Condição de consulta",
     "query_required": "A condição de consulta não pode ficar vazia",
+    "historical_records": "Histórico",
     "advancedSettings": {
       "title": "Configurações auxiliares",
       "tags_placeholder": "Pressione Enter para adicionar vários",

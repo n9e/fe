@@ -282,7 +282,7 @@ export default function BuilderModal(props: Props) {
                   <Form.Item name='group_by' noStyle initialValue={[]}>
                     <Select
                       size='small'
-                      className='min-w-[160px] doris-query-builder-group-by-select'
+                      className='min-w-[160px] [&_.ant-select-selection-item]:h-[14.8px] [&_.ant-select-selection-item]:my-0'
                       dropdownClassName='doris-query-builder-popup'
                       options={_.map(indexData, (item) => {
                         return { label: item.field, value: item.field };

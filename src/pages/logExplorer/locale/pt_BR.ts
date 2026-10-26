@@ -5,7 +5,26 @@ const pt_BR = {
   },
   "query": "Condição de consulta",
   "query_is_required": "A condição de consulta não pode ficar vazia",
+  "sql_placeholder": "Insira SQL",
+  "sql_shortcut_hint": "Shift+Enter nova linha · Enter consulta",
   "execute": "Consulta",
+  "query_workspace": {
+    "assist": "Assistência por formulário",
+    "assist_tip": "Monte a consulta pelo formulário e, depois de converter, visualize ou continue escrevendo manualmente. Consultas existentes não são convertidas de volta para o formulário.",
+    "enable_assist": "Ative a assistência por formulário primeiro",
+    "builder": "Construção do formulário",
+    "preview": "Pré-visualização {{language}}",
+    "convert": "Converter {{language}}",
+    "continue": "Continuar escrevendo este {{language}}",
+    "not_generated": "Não convertido",
+    "generating": "Gerando",
+    "modified": "O formulário foi alterado; converta a consulta",
+    "synced": "Igual ao formulário",
+    "empty": "Configure o formulário e clique em “Converter {{language}}” para gerar a pré-visualização",
+    "use_previous": "Será usado o resultado da última conversão. Para obter o conteúdo mais recente, converta novamente.",
+    "range_required": "Selecione um intervalo de tempo",
+    "unlimited": "Sem limite",
+  },
   "mode": {
     "label": "Modo",
     "raw_logs": "Texto bruto do log",
@@ -124,7 +143,11 @@ const pt_BR = {
       },
       "topNSettings": {
         "title": "Configuração dos N valores mais frequentes"
-      }
+      },
+      "flattenSettings": {
+        "title": "Nível de achatamento de campos",
+        "extra": "0: sem análise nem achatamento, os valores dos campos são exibidos como as strings originais do log\nN (>=1): o JSON aninhado é expandido até N níveis, as partes mais profundas são exibidas por inteiro"
+      },
     },
     "fieldLabelTip": "As estatísticas não estão ativadas para este campo, então não é possível analisá-lo",
     "filterAnd": "Adicionar \"{{token}}\" a esta busca",

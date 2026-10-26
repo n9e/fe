@@ -5,7 +5,26 @@ const id_ID = {
   },
   "query": "Kondisi kueri",
   "query_is_required": "Kondisi kueri tidak boleh kosong",
+  "sql_placeholder": "Masukkan SQL",
+  "sql_shortcut_hint": "Shift+Enter baris baru · Enter kueri",
   "execute": "Kueri",
+  "query_workspace": {
+    "assist": "Bantuan formulir",
+    "assist_tip": "Susun kueri dengan formulir, lalu konversi untuk pratinjau atau lanjutkan menulis manual. Kueri yang sudah ada tidak diurai kembali ke formulir.",
+    "enable_assist": "Aktifkan bantuan formulir terlebih dahulu",
+    "builder": "Penyusunan formulir",
+    "preview": "Pratinjau {{language}}",
+    "convert": "Konversi {{language}}",
+    "continue": "Lanjutkan menulis {{language}} ini",
+    "not_generated": "Belum dikonversi",
+    "generating": "Membuat",
+    "modified": "Formulir berubah; konversi kueri",
+    "synced": "Sama dengan formulir",
+    "empty": "Atur formulir lalu klik “Konversi {{language}}” untuk membuat pratinjau",
+    "use_previous": "Akan menggunakan hasil konversi terakhir. Untuk konten terbaru, konversi ulang.",
+    "range_required": "Pilih rentang waktu",
+    "unlimited": "Tanpa batas",
+  },
   "mode": {
     "label": "Mode",
     "raw_logs": "Log mentah",
@@ -124,7 +143,11 @@ const id_ID = {
       },
       "topNSettings": {
         "title": "Pengaturan N nilai teratas"
-      }
+      },
+      "flattenSettings": {
+        "title": "Tingkat perataan bidang",
+        "extra": "0: tanpa penguraian atau perataan, nilai bidang ditampilkan sebagai string log asli\nN (>=1): JSON bersarang diperluas hingga N level, bagian yang lebih dalam ditampilkan utuh"
+      },
     },
     "fieldLabelTip": "Statistik tidak aktif pada field ini, sehingga analisis statistik tidak bisa dilakukan",
     "filterAnd": "Tambahkan \"{{token}}\" ke pencarian ini",
