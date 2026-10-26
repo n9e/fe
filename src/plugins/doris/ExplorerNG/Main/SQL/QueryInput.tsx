@@ -58,7 +58,7 @@ export default forwardRef(function QueryInputCpt({ executeQuery, onSelectSQL, qu
               className={classNames(
                 BOX_HEIGHT_CLASS,
                 'bg-fc-100 resize-none border-0 pl-0 pr-16 shadow-none [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar]:invisible [&::-webkit-scrollbar-thumb]:invisible [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-[rgba(0,0,0,0.1)] [&:hover::-webkit-scrollbar]:visible [&:hover::-webkit-scrollbar-thumb]:visible [&::-webkit-scrollbar-corner]:bg-transparent',
-                { 'pl-8': !!queryExtra },
+                { 'pl-7': !!queryExtra },
               )}
               onChange={onQueryEdit}
               placeholder={t('sql_placeholder')}

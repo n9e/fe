@@ -246,9 +246,13 @@ export default function index(props: Props) {
                 onQueryEdit={onQueryEdit}
               />
             }
-            previewExtra={syntax === 'sql' && workspace.assistEnabled ? queryExtra : undefined}
-            previewRef={syntax === 'sql' && workspace.assistEnabled ? queryBoxRef : undefined}
-            below={syntax === 'sql' ? noticeBanner : undefined}
+            below={
+              syntax === 'sql' && noticeBanner ? (
+                // The assistant belongs to the hand-written box: with the builder open the panel takes the room,
+                // so the dock stays mounted (its conversation lives in it) but off screen.
+                <div hidden={workspace.assistEnabled}>{noticeBanner}</div>
+              ) : undefined
+            }
           />
         </div>
       </div>

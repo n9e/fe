@@ -114,7 +114,7 @@ export default function QueryWorkspace(props: QueryWorkspaceProps) {
           </div>
         </div>
       </div>
-      <div className='pb-2 px-2 [&_.ant-form-item]:mb-0' hidden={assistEnabled}>
+      <div className='pb-2 px-1 [&_.ant-form-item]:mb-0' hidden={assistEnabled}>
         {editor}
       </div>
       {below}
