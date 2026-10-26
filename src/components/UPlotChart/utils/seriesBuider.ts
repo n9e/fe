@@ -130,7 +130,7 @@ export default function seriesBuider(props: Props) {
         paths = uPlot.paths.spline && uPlot.paths.spline();
       } else if (currentPathsType === 'bars') {
         const bucketInterval = _.get(item, ['n9e_internal', 'bucketInterval']);
-        if (_.isNumber(bucketInterval) && bucketInterval > 0) {
+        if (typeof bucketInterval === 'number' && bucketInterval > 0) {
           const barWidth = bucketInterval * defaultBarWidthFactor;
           paths =
             uPlot.paths.bars &&
@@ -147,7 +147,12 @@ export default function seriesBuider(props: Props) {
               },
             });
         } else {
-          paths = uPlot.paths.bars && uPlot.paths.bars();
+          paths =
+            uPlot.paths.bars &&
+            uPlot.paths.bars({
+              align: defaultBarAlignment,
+              size: [defaultBarWidthFactor],
+            });
         }
       }
 
