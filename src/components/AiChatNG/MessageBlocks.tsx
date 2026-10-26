@@ -386,12 +386,11 @@ function MessageItemComponent({ message, isStreaming, onActionClick, onOKForForm
           </div>
         </div>
       </div>
-      <div className={cn('space-y-3', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
+      <div className={cn('space-y-3', slim && 'min-w-0 flex-1', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
         <ResponseBlocks
           message={message}
           isStreaming={isStreaming}
           pageActionOutcomes={pageActionOutcomes}
-          onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
           onActionClick={onActionClick}
           onOKForFormSelectContent={onOKForFormSelectContent}
           maybeScrollToBottom={maybeScrollToBottom}
@@ -407,27 +406,6 @@ function MessageItemComponent({ message, isStreaming, onActionClick, onOKForForm
             </span>
           </div>
         )}
-        <div className={cn('space-y-3', slim && 'min-w-0 flex-1', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
-          <ResponseBlocks
-            message={message}
-            isStreaming={isStreaming}
-            pageActionOutcomes={pageActionOutcomes}
-            onActionClick={onActionClick}
-            onOKForFormSelectContent={onOKForFormSelectContent}
-            maybeScrollToBottom={maybeScrollToBottom}
-          />
-          {!message.is_finish && (
-            <div className='inline-flex items-center w-fit text-main text-sm'>
-              {!!showInitialRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.generating')}</span>}
-              {!!showBottomRunningStatus && <span className='mr-1.5'>{message.cur_step ?? t('message.processing')}</span>}
-              <span className='inline-flex items-center gap-[3px]' aria-hidden='true'>
-                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse' />
-                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:160ms]' />
-                <span className='inline-block w-[5px] h-[5px] rounded-full bg-primary animate-dot-pulse [animation-delay:320ms]' />
-              </span>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

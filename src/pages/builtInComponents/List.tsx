@@ -1,3 +1,4 @@
+import { useCanAccessFiremap } from '@/components/FiremapAccess';
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -26,6 +27,7 @@ const BUILT_IN_ACTIVE_TAB_KEY = 'builtin-drawer-active-tab';
 
 export default function index() {
   const { t } = useTranslation('builtInComponents');
+  const canAccessFiremap = useCanAccessFiremap();
   const history = useHistory();
   const { search } = useLocation();
   const query = queryString.parse(search);
@@ -37,6 +39,9 @@ export default function index() {
   // ?tab= 优先于上次停留的页签：从别处深链过来（如采集验证通过后的「导入仪表盘」）
   // 是带着明确目的的，不该被用户上一次看的页签盖掉
   const [activeTab, setActiveTab] = useState((query.tab as string) || localStorage.getItem(BUILT_IN_ACTIVE_TAB_KEY) || 'tab_instructions');
+  useEffect(() => {
+    if (!canAccessFiremap && activeTab === 'tab_firemap') setActiveTab('tab_instructions');
+  }, [canAccessFiremap, activeTab]);
   const [readmeEditabled, setReadmeEditabled] = useState(false);
   // 三步进度存在 localStorage 里，导入成功后递增这个信号让步骤条重读
   const [packFlag, setPackFlag] = useState(0);
@@ -295,7 +300,7 @@ export default function index() {
             <Tabs.TabPane tab={t('tab_alertRules')} key='tab_alertRules'>
               <AlertRules component_id={activeComponent.id} componentIdent={activeComponent.ident} onPackStepDone={() => setPackFlag((prev) => prev + 1)} />
             </Tabs.TabPane>
-            {IS_ENT && (
+            {IS_ENT && canAccessFiremap && (
               <Tabs.TabPane tab={t('tab_firemap')} key='tab_firemap'>
                 <Firemap component_id={activeComponent.id} />
               </Tabs.TabPane>

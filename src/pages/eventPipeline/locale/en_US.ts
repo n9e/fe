@@ -39,6 +39,7 @@ const en_US = {
     title: 'Workflows fit these three scenarios',
     denoise: 'Denoise: drop or inhibit low-severity or duplicate alerts before they notify',
     enrich: 'Enrich: attach business labels, an AI summary, or queried context to alerts',
+    enrich_without_ai: 'Enrich: attach business labels or queried context to alerts',
     dispatch: 'Dispatch: call back alerts to ticketing / automation systems, or run remediation scripts',
     more: 'Learn more',
   },
@@ -111,8 +112,10 @@ const en_US = {
     event_preview_title: 'Processed event',
     back_btn: 'Pick another event',
     back_btn_mock: 'Reconfigure mock event',
-    fidelity_note: 'A test run uses the API-trigger path and skips some live steps (such as filter matching), so the result may not exactly match a real alert. Verify with a real event.',
-    fidelity_note_mock: 'A test run uses the API-trigger path and skips some live steps (such as filter matching). This run used a mock event rather than a real alert, so verify with a real event before going live.',
+    fidelity_note:
+      'A test run uses the API-trigger path and skips some live steps (such as filter matching), so the result may not exactly match a real alert. Verify with a real event.',
+    fidelity_note_mock:
+      'A test run uses the API-trigger path and skips some live steps (such as filter matching). This run used a mock event rather than a real alert, so verify with a real event before going live.',
     mode: {
       history: 'History event',
       mock: 'Mock event',
@@ -150,7 +153,8 @@ const en_US = {
     source_labels: 'Source labels',
     separator: 'Separator',
     regex: 'Regex',
-    replace_hint: 'replace: takes the value of the source labels, extracts it with the regex, and writes it into the target label. Filling only target label and value tags the event with a fixed label. Leaving the target label empty makes this processor do nothing.',
+    replace_hint:
+      'replace: takes the value of the source labels, extracts it with the regex, and writes it into the target label. Filling only target label and value tags the event with a fixed label. Leaving the target label empty makes this processor do nothing.',
   },
   processor_message: {
     drop_hit: 'Condition matched — the event was dropped',
@@ -201,7 +205,7 @@ const en_US = {
       flashai_automation: 'Trigger a FlashAI automation with the current event',
     },
     delete_confirm: 'Delete this processor?',
-    switch_type_confirm: 'Switching type clears this processor\'s current config. Continue?',
+    switch_type_confirm: "Switching type clears this processor's current config. Continue?",
     drag_tip: 'Drag to reorder',
     move_up: 'Move up',
     move_down: 'Move down',
