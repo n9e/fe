@@ -544,7 +544,7 @@ it('does not mount a chat or fetch history without FlashAI access', () => {
   const services = jest.requireMock('./services');
   services.getMessageHistory.mockClear();
   services.createChat.mockClear();
-  render(<ChatPanel chatId='chat-1' initialMessage='do not send' />);
+  render(<ChatPanel chatId='chat-1' initialMessage='do not send' queryPageFrom={{ url: '/metric/explorer' }} />);
   expect(screen.queryByPlaceholderText('input.placeholder')).toBeNull();
   expect(services.getMessageHistory).not.toHaveBeenCalled();
   expect(services.createChat).not.toHaveBeenCalled();
