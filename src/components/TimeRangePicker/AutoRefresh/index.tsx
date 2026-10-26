@@ -4,11 +4,13 @@
 // 3. off时不触发
 // 4. 从off切换到5s时可以正常触发
 // 5. 切换到其他页面时，会关闭（不会出发之前的轮询）
-import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
-import { Dropdown, Button, Menu, Tooltip } from 'antd';
+import React, { useState, useEffect, useRef, useImperativeHandle, useCallback } from 'react';
+import { Dropdown, Button, Menu, Tooltip, message } from 'antd';
 import { DownOutlined, UpOutlined, SyncOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import './style.less';
+import { useTranslation } from 'react-i18next';
+import { useRefreshLoading } from '../RefreshScope';
 
 const refreshMap = {
   0: 'Off',
@@ -41,7 +43,8 @@ interface IProps {
   disabled?: boolean;
   tooltip?: React.ReactNode;
   intervalTooltip?: React.ReactNode;
-  onRefresh: () => void;
+  loading?: boolean;
+  onRefresh: () => void | Promise<unknown>;
   localKey?: string;
   intervalSeconds?: number;
   intervalOptions?: Record<number, string>;
@@ -49,61 +52,88 @@ interface IProps {
 }
 
 function Refresh(props: IProps, ref) {
+  const { t } = useTranslation('timePickerInteraction');
+  const scopeLoading = useRefreshLoading();
+  const [pending, setPending] = useState(false);
+  const busy = !!props.loading || scopeLoading || pending;
+  // Keep brief responses readable without delaying queries or changing their cadence.
+  const [feedback, setFeedback] = useState(false);
+  const feedbackStarted = useRef<number>();
+  const displayBusy = busy || feedback;
+  useEffect(() => {
+    if (busy) {
+      if (feedbackStarted.current === undefined) feedbackStarted.current = Date.now();
+      setFeedback(true);
+      return;
+    }
+    if (!feedback) return;
+    const remaining = Math.max(0, 800 - (Date.now() - (feedbackStarted.current ?? Date.now())));
+    const finish = () => {
+      feedbackStarted.current = undefined;
+      setFeedback(false);
+    };
+    if (remaining === 0) {
+      finish();
+      return;
+    }
+    const timer = setTimeout(finish, remaining);
+    return () => clearTimeout(timer);
+  }, [busy, feedback]);
+  const current = useRef({ ...props, busy, failedMessage: t('failed') });
+  current.current = { ...props, busy, failedMessage: t('failed') };
+  const inFlight = useRef(false);
+  const mounted = useRef(true);
   const intervalOptions = props.intervalOptions || refreshMap;
-  const intervalSecondsCache = props.localKey ? _.toNumber(window.localStorage.getItem(props.localKey)) : 0;
+  const intervalSecondsCache = props.localKey ? Number(window.localStorage.getItem(props.localKey)) || 0 : 0;
   const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds ?? intervalSecondsCache);
   const [visible, setVisible] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setTimeout> | undefined>();
-  const removeRef = useRef(false);
-  // 用 ref 保存最新的 onRefresh，避免 effect 因函数引用变化而重置 timer
-  const onRefreshRef = useRef(props.onRefresh);
-
-  // 每次渲染都同步最新的 onRefresh 到 ref
-  useEffect(() => {
-    onRefreshRef.current = props.onRefresh;
-  });
 
   useEffect(() => {
-    let cancelled = false;
-    if (intervalRef.current) {
-      clearTimeout(intervalRef.current);
-      intervalRef.current = undefined;
-    }
-
-    if (intervalSeconds) {
-      const loop = () => {
-        if (removeRef.current || cancelled) return;
-        intervalRef.current = setTimeout(() => {
-          if (removeRef.current || cancelled) return;
-          onRefreshRef.current();
-          loop();
-        }, intervalSeconds * 1000);
-      };
-      loop();
-    }
-
+    mounted.current = true;
     return () => {
-      cancelled = true;
-      if (intervalRef.current) {
-        clearTimeout(intervalRef.current);
-        intervalRef.current = undefined;
-      }
-    };
-  }, [intervalSeconds]); // 移除 props.onRefresh 依赖，改用 ref 避免 timer 被意外重置
-
-  useEffect(() => {
-    return () => {
-      removeRef.current = true;
-      if (intervalRef.current) {
-        clearTimeout(intervalRef.current);
-        intervalRef.current = undefined;
-      }
+      mounted.current = false;
     };
   }, []);
 
+  const refresh = useCallback(async () => {
+    if (current.current.disabled || current.current.busy || inFlight.current) return;
+    inFlight.current = true;
+    if (feedbackStarted.current === undefined) feedbackStarted.current = Date.now();
+    setFeedback(true);
+    try {
+      const result = current.current.onRefresh();
+      if (result && typeof result.then === 'function') {
+        setPending(true);
+        await result;
+      }
+    } catch (error) {
+      if (mounted.current) message.error(error instanceof Error ? error.message : current.current.failedMessage);
+    } finally {
+      inFlight.current = false;
+      if (mounted.current) setPending(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!intervalSeconds || props.disabled || busy) return;
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      timer = setTimeout(async () => {
+        await refresh();
+        if (!stopped) schedule();
+      }, intervalSeconds * 1000);
+    };
+    schedule();
+    return () => {
+      stopped = true;
+      clearTimeout(timer);
+    };
+  }, [intervalSeconds, props.disabled, busy, refresh]);
+
   useEffect(() => {
     setIntervalSeconds(props.intervalSeconds ?? intervalSecondsCache);
-  }, [props.intervalSeconds]);
+  }, [props.intervalSeconds, props.localKey]);
 
   useImperativeHandle(ref, () => ({
     closeRefresh() {
@@ -114,8 +144,19 @@ function Refresh(props: IProps, ref) {
 
   return (
     <div className='auto-refresh-container'>
-      <Tooltip title={props.tooltip}>
-        <Button disabled={props.disabled} icon={<SyncOutlined className={intervalSeconds ? 'rotate-icon' : ''} />} onClick={props.onRefresh} />
+      <Tooltip title={displayBusy ? t('refreshing') : props.tooltip || t('refresh')}>
+        <Button
+          className={`auto-refresh-button${displayBusy ? ' auto-refresh-button--updating' : ''}`}
+          aria-label={displayBusy ? t('refreshing') : t('refresh')}
+          aria-busy={busy}
+          disabled={props.disabled || displayBusy}
+          icon={<SyncOutlined className={displayBusy ? 'rotate-icon' : ''} />}
+          onClick={refresh}
+        >
+          <span className='auto-refresh-label' aria-hidden='true'>
+            <span>{t('refreshing')}</span>
+          </span>
+        </Button>
       </Tooltip>
       <Tooltip
         // 浮层落在展开后的菜单前两项上且层级更高，必须让它不参与命中测试，

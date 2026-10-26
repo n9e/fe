@@ -1,3 +1,4 @@
+import { useReportQueryLoading } from '@/components/TimeRangePicker/RefreshScope';
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { Select, Space, Tooltip } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
@@ -30,6 +31,7 @@ export default function Query(props: Props) {
   const [searchValue, setSearchValue] = useState('');
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  useReportQueryLoading(loading);
 
   const { getVariables, updateVariable, registerVariable, registeredVariables } = useVariableManager();
   const variableRef = useRef(variable);

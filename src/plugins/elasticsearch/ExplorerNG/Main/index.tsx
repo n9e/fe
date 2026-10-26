@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Form, Row, Col, Button, Segmented, Dropdown, Menu, Badge } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
@@ -217,6 +218,9 @@ export default function index(props: Props) {
           <Col flex='none'>
             <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
               <TimeRangePicker
+                resolvedRange={
+                  rangeRef.current?.from != null && rangeRef.current?.to != null ? { start: moment(rangeRef.current.from), end: moment(rangeRef.current.to) } : undefined
+                }
                 onChange={() => {
                   snapRangeRef.current = {
                     from: undefined,

@@ -28,11 +28,12 @@ import { GetTmpChartData } from '@/services/metric';
 import { TimeRangePickerWithRefresh, IRawTimeRange, isMathString } from '@/components/TimeRangePicker';
 import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 
+import { withRefreshScope } from '@/components/TimeRangePicker/RefreshScope';
 import Main from './Main';
 import './locale';
 import './index.less';
 
-export default function Chart() {
+function Chart() {
   const { t } = useTranslation('shareChart');
   const datasourceCateOptions = getAuthorizedDatasourceCates(undefined, true);
   const { ids } = useParams<{
@@ -74,7 +75,10 @@ export default function Chart() {
           }
           return { ...configs, ref: React.createRef() };
         });
-      datasourceCate.current = data[0].dataProps.datasourceCate === 'mixed' ? t('dashboard:query.mixed_datasource', 'Mixed') : _.find(datasourceCateOptions, { value: data[0].dataProps.datasourceCate })?.label;
+      datasourceCate.current =
+        data[0].dataProps.datasourceCate === 'mixed'
+          ? t('dashboard:query.mixed_datasource', 'Mixed')
+          : _.find(datasourceCateOptions, { value: data[0].dataProps.datasourceCate })?.label;
       datasourceName.current = data[0].dataProps.datasourceName;
       const curRange = data[0].dataProps.range;
       if (curRange) {
@@ -131,3 +135,5 @@ export default function Chart() {
     </div>
   );
 }
+
+export default withRefreshScope(Chart);

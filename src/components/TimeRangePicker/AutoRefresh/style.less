@@ -8,11 +8,6 @@
     border-style: solid !important;
     border-left: 0px !important;
   }
-
-  .ant-btn-icon-only {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-  }
 }
 
 @keyframes rotate {
@@ -27,4 +22,44 @@
 
 .rotate-icon {
   animation: rotate 2s linear infinite;
+}
+.auto-refresh-container .ant-btn.auto-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0 9px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+
+  .auto-refresh-label {
+    max-width: 0;
+    margin-left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 180ms ease, max-width 180ms ease, margin-left 180ms ease;
+  }
+  &--updating {
+    color: var(--fc-text-link);
+    .auto-refresh-label {
+      max-width: 8em;
+      margin-left: 6px;
+      opacity: 1;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auto-refresh-container .ant-btn.auto-refresh-button {
+    .rotate-icon {
+      animation: none;
+    }
+    .auto-refresh-label {
+      transition: none;
+    }
+  }
+}
+
+.auto-refresh-container .auto-refresh-button.auto-refresh-button--updating[disabled] {
+  color: var(--fc-text-link);
 }
