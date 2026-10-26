@@ -1,3 +1,4 @@
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import React, { useContext, useEffect, useState } from 'react';
 import { Card, Space, Form, Select, Tooltip, Modal, Tag } from 'antd';
 import { MinusCircleOutlined, CopyOutlined, UpCircleOutlined, DownCircleOutlined, DownOutlined } from '@ant-design/icons';
@@ -12,7 +13,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 // @ts-ignore
 import PlusProcessor, { options as PlusOptions } from 'plus:/parcels/eventPipeline';
 
-import { NS, getDefaultProcessorConfig, documentPathMap } from '../../../constants';
+import { NS, FLASH_AI_PROCESSOR_TYPES, getDefaultProcessorConfig, documentPathMap } from '../../../constants';
 import { getProcessorSummary } from '../../../components/getProcessorSummary';
 import TestModal from '../TestModal';
 import Relabel from './Relabel';
@@ -58,6 +59,7 @@ const TYPE_CATEGORY: Record<string, string> = {
 export default function NotifyConfig(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { darkMode } = useContext(CommonStateContext);
+  const canAccessFlashAi = useCanAccessFlashAiChat();
   const { disabled, fields, field, add, remove, move, dragHandle, expandSignal, validateForTest } = props;
   const [collapsed, setCollapsed] = useState(false);
 
@@ -73,8 +75,12 @@ export default function NotifyConfig(props: Props) {
   const form = Form.useFormInstance();
   const processorConfig = Form.useWatch(['processors', field.name]);
   const processorType = Form.useWatch(['processors', field.name, 'typ']);
+  const isRestrictedAiProcessor = FLASH_AI_PROCESSOR_TYPES.includes(processorType) && !canAccessFlashAi;
 
-  const availableTypes = _.concat(['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary'], IS_PLUS ? PlusOptions : []);
+  // 已有 AI 处理器保留类型与配置，避免编辑其他内容时误删；不能新增或复制。
+  const availableTypes = _.concat(['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary'], IS_PLUS ? PlusOptions : []).filter(
+    (type) => !FLASH_AI_PROCESSOR_TYPES.includes(type) || canAccessFlashAi || processorType === type,
+  );
   const typeLabel = processorType ? t(`processor.options.${processorType}`) : t('processor.title');
   const summaryText = getProcessorSummary(processorType, processorConfig?.config);
 
@@ -140,9 +146,11 @@ export default function NotifyConfig(props: Props) {
         !disabled && (
           <Space>
             {dragHandle && <Tooltip title={t('processor.drag_tip')}>{dragHandle}</Tooltip>}
-            <Tooltip title={t('processor.copy_tip')}>
-              <CopyOutlined onClick={() => add(_.cloneDeep(processorConfig), field.name + 1)} />
-            </Tooltip>
+            {!isRestrictedAiProcessor && (
+              <Tooltip title={t('processor.copy_tip')}>
+                <CopyOutlined onClick={() => add(_.cloneDeep(processorConfig), field.name + 1)} />
+              </Tooltip>
+            )}
             {fields.length > 1 && field.name !== 0 && (
               <Tooltip title={t('processor.move_up')}>
                 <UpCircleOutlined onClick={() => move(field.name, field.name - 1)} />
@@ -174,7 +182,7 @@ export default function NotifyConfig(props: Props) {
           label={
             <Space>
               {t('processor.typ')}
-              {documentPathMap[processorType] && (
+              {!isRestrictedAiProcessor && documentPathMap[processorType] && (
                 <UsageDocs>
                   <a
                     onClick={(event) => {
@@ -202,10 +210,10 @@ export default function NotifyConfig(props: Props) {
               return (
                 <Select.OptGroup key={category} label={t(`processor.category.${category}`)}>
                   {_.map(typesInCategory, (typ) => (
-                    <Select.Option key={typ} value={typ} label={t(`processor.options.${typ}`)}>
+                    <Select.Option key={typ} value={typ} label={t(`processor.options.${typ}`)} disabled={!canAccessFlashAi && FLASH_AI_PROCESSOR_TYPES.includes(typ)}>
                       <div className='leading-tight py-0.5'>
                         <div>{t(`processor.options.${typ}`)}</div>
-                        <div className='text-soft text-[12px]'>{t(`processor.options_desc.${typ}`)}</div>
+                        {(!FLASH_AI_PROCESSOR_TYPES.includes(typ) || canAccessFlashAi) && <div className='text-soft text-[12px]'>{t(`processor.options_desc.${typ}`)}</div>}
                       </div>
                     </Select.Option>
                   ))}
@@ -218,7 +226,7 @@ export default function NotifyConfig(props: Props) {
         {processorType === 'callback' && <Callback field={field} namePath={[field.name, 'config']} />}
         {processorType === 'event_update' && <Callback field={field} namePath={[field.name, 'config']} />}
         {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
-        {processorType === 'ai_summary' && <AISummary field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
+        {processorType === 'ai_summary' && canAccessFlashAi && <AISummary field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
         <PlusProcessor processorType={processorType} field={field} />
 
         <TestModal type='processor' config={processorConfig} onBeforeOpen={validateForTest ? () => validateForTest(['processors', field.name]) : undefined} />

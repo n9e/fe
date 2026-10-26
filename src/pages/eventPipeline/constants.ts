@@ -5,6 +5,8 @@ export const DOC_URL = 'https://flashcat.cloud/docs/content/flashcat-monitor/nig
 export const FILTER_SESSION_STORAGE_KEY = 'event-pipelines-filter';
 // 空状态与新建页共用的三类典型场景文案 key
 export const SCENARIO_KEYS = ['denoise', 'enrich', 'dispatch'] as const;
+// AI 摘要与自动化共用 FlashAI 权限，类型入口和试跑入口保持一致。
+export const FLASH_AI_PROCESSOR_TYPES = ['ai_summary', 'flashai_automation'];
 // 与后端 event_pipeline.name 的 varchar(128) 对齐：自动命名与克隆命名都不能超过它
 export const MAX_NAME_LENGTH = 128;
 // 试跑样例事件的默认级别，与后端 buildPipelineTestMockEvent 的兜底值保持一致
