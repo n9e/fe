@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
 import { IS_ENT } from '@/utils/constant';
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 
 import { useAiChatContext } from './context';
@@ -121,6 +122,8 @@ export function AiButton(props: {
   const { size, queryPageFrom, queryAction, promptList, initialMessage, children } = props;
 
   const handleEntClick = useAiEntClickHandler({ promptList, queryPageFrom, queryAction });
+  const canAccess = useCanAccessFlashAiChat();
+  if (IS_ENT && !canAccess) return null;
 
   if (IS_ENT) {
     return (
@@ -141,13 +144,13 @@ export function CustomAiButtonWrap({
   ...rest
 }: // 这里 any 是因为作为 Wrap 会接受很多未知的 props，暂时不想一个个列举
 { children: React.ReactElement } & Record<string, any>) {
+  const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList });
+  const handleClick = useFlashAiClickHandler();
+  const canAccess = useCanAccessFlashAiChat();
+  if (IS_ENT && !canAccess) return null;
   if (IS_ENT) {
-    const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList });
-
     return <span {...rest}>{React.cloneElement(children, { onClick: handleEntClick } as any)}</span>;
   }
-
-  const handleClick = useFlashAiClickHandler();
 
   return <span {...rest}>{React.cloneElement(children, { onClick: handleClick } as any)}</span>;
 }
