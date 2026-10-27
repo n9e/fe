@@ -178,6 +178,26 @@ const ru_RU = {
     sampled_tip: 'Количество логов слишком велико, текущий результат кластеризации основан на сэмплированных логах',
   },
   view_placeholder: 'Просмотр логов',
+  log_order_context: {
+    title: 'Контекст',
+    earlier: 'Раньше',
+    later: 'Позже',
+    back_to_anchor: 'Текущий лог',
+    rotated: 'Ротация файла',
+    no_more_before: 'Нет более ранних логов в пределах 1 часа; расширьте диапазон времени в поиске',
+    no_more_after: 'Нет более поздних логов в пределах 1 часа',
+    query_failed: 'Не удалось получить контекст',
+    organize_fields: 'Настройка полей',
+    organize_fields_tip: 'Показаны только поля {{fields}}',
+    all_fields: 'Доступные поля',
+    show_fields: 'Отображаемые поля',
+    show_fields_empty: 'Если поля не выбраны, показываются все',
+    filter_keywords: 'Фильтр',
+    filter_keywords_add: 'Добавить фильтр',
+    highlight_keywords: 'Подсветка',
+    highlight_keywords_add: 'Добавить подсветку',
+    stream_tip: 'Поток файла (ID, который сборщик назначает каждому файлу); контекст показывает строки этого потока в исходном порядке',
+  },
 };
 
 export default ru_RU;
