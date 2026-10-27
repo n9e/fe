@@ -589,7 +589,7 @@ export default function index(props: Props) {
               logViewerFilterFields={withoutLogOrderFields}
               logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
               logViewerExtraRender={(log) => (
-                <>
+                <Space>
                   <LogOrderContext
                     log={log?.___raw___}
                     timeField={queryValues?.time_field}
@@ -601,7 +601,7 @@ export default function index(props: Props) {
                       })
                     }
                   />
-                </>
+                </Space>
               )}
             />
           ) : loading || histogramLoading ? (
