@@ -9,6 +9,7 @@ import { normalizeTime } from './utils/index';
 import mappingsToFields, { mappingsToFullFields } from './utils/mappingsToFields';
 import flattenHits from './utils/flattenHits';
 import dslBuilder from './utils/dslBuilder';
+import type { LogContextPage, LogContextRequest } from '@/pages/logExplorer/components/LogOrderContext/utils';
 
 export function getIndices(datasourceValue: number, allow_hide_system_indices = false) {
   const params: any = {
@@ -158,24 +159,12 @@ export function getFullFields(
 
 const queryControllerMap = new Map();
 
-/** 锚点所在文件流前后的日志，按原文顺序返回 _source */
-export function getESContextLogs(data: {
-  cate: string;
-  datasource_id: number;
-  query: {
-    index: string;
-    time_field: string;
-    stream_id: string;
-    seq: string;
-    time: number;
-    direction: 'before' | 'after';
-    limit: number;
-  }[];
-}): Promise<{ [index: string]: any }[]> {
+/** 锚点所在文件流前后的日志（_source），按原文顺序返回；分页语义与 SLS 上下文一致，time 是毫秒时间戳字符串 */
+export function getESContextLogs(data: { cate: string; datasource_id: number; query: (LogContextRequest & { index: string; time_field: string })[] }): Promise<LogContextPage> {
   return request('/api/n9e-plus/es-context-logs-query', {
     method: RequestMethod.Post,
     data,
-  }).then((res) => _.map(res.dat?.list || [], (hit) => hit._source || {}));
+  }).then((res) => res.dat);
 }
 
 export function getLogsQuery(datasourceValue: number, requestBody: any, requestId: string) {
