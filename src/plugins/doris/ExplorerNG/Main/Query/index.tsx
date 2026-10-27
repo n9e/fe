@@ -590,22 +590,11 @@ export default function index(props: Props) {
                   <LogOrderContext
                     log={log.___raw___}
                     timeField={queryValues?.time_field}
-                    fetchContext={(anchor, direction, limit) =>
+                    fetchPage={(req) =>
                       getDorisContextLogs({
                         cate: DatasourceCateEnum.doris,
                         datasource_id: datasourceValue,
-                        query: [
-                          {
-                            database: queryValues?.database,
-                            table: queryValues?.table,
-                            time_field: queryValues?.time_field,
-                            stream_id: anchor.streamId,
-                            seq: anchor.seq,
-                            time: String(anchor.time),
-                            direction,
-                            limit,
-                          },
-                        ],
+                        query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
                       })
                     }
                   />

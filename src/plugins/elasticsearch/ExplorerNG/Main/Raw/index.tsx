@@ -442,21 +442,12 @@ export default function index(props: Props) {
                       <LogOrderContext
                         log={log.__n9e_raw_n9e__}
                         timeField={queryValues?.date_field}
-                        fetchContext={(anchor, direction, limit) =>
+                        formatTime={(time) => String(moment(time).valueOf())}
+                        fetchPage={(req) =>
                           getESContextLogs({
                             cate: DatasourceCateEnum.elasticsearch,
                             datasource_id: datasourceValue,
-                            query: [
-                              {
-                                index: queryValues?.index,
-                                time_field: queryValues?.date_field,
-                                stream_id: anchor.streamId,
-                                seq: anchor.seq,
-                                time: moment(anchor.time).valueOf(),
-                                direction,
-                                limit,
-                              },
-                            ],
+                            query: [{ ...req, index: queryValues?.index, time_field: queryValues?.date_field }],
                           })
                         }
                       />
