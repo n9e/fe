@@ -95,6 +95,7 @@ export function DynamicTags(props: DynamicTagsProps) {
           ref={inputRef}
           size='small'
           className='min-w-[80px]'
+          placeholder={newTagText}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onBlur={confirmInput}
@@ -128,7 +129,17 @@ export function DynamicTagsTrigger(props: DynamicTagsProps) {
   };
 
   if (inputVisible) {
-    return <Input ref={inputRef} className='min-w-[80px]' value={inputValue} onChange={(e) => setInputValue(e.target.value)} onBlur={confirmInput} onPressEnter={confirmInput} />;
+    return (
+      <Input
+        ref={inputRef}
+        className='min-w-[80px]'
+        placeholder={newTagText}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onBlur={confirmInput}
+        onPressEnter={confirmInput}
+      />
+    );
   }
   return (
     <Button onClick={() => setInputVisible(true)} icon={<PlusOutlined />}>
