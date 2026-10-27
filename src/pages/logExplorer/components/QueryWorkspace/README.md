@@ -11,7 +11,9 @@
 
 数据源在页面层创建 Hook，通过 `contextKey` 标识数据源、库表等上下文。构建表单或时间范围变化时调用 `markDirty()`；历史记录、AI 等直接写入语句前调用 `enterManual()`。库表切换会自动重置表单及预览，并使旧生成请求失效。
 
-工作区默认关闭辅助。`convert()` 只生成和应用，`run()` 在辅助模式下先生成再执行。关闭辅助保留表单；`continueWriting()` 应用上次预览并进入手写。重置只影响当前模式，不自动查询。
+工作区默认关闭辅助。`convert()` 只生成和应用，`run()` 在辅助模式下先生成再执行。关闭辅助保留表单、丢掉预览（回到辅助时是「待转换」而不是上次的转换结果）；`continueWriting()` 应用上次预览并进入手写。重置只影响当前模式，不自动查询。
+
+生成失败会清掉上一次的预览（那条语句已不可信），仅执行失败时保留刚应用的结果；失败文案由数据源的适配器决定，工作区只负责在预览列里展示。
 
 通过 `builder`、`editor` 注入数据源组件；`previewExtra`、`previewRef`、`below` 和 `queryButtonRef` 用于历史记录或 AI 等集成。`languageLabel`、`builderTitle`、`previewTitle` 可调整预览文案及标题；预览与手写编辑器同源（`SqlMonacoPreview`），只读展示生成的语句。
 

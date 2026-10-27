@@ -24,6 +24,8 @@ const zh_CN = {
     use_previous: '将使用上次转换的结果；如需最新内容，请先转换',
     range_required: '请选择时间范围',
     unlimited: '无限制',
+    collapse: '收起',
+    expand: '展开',
   },
   mode: {
     label: '模式',

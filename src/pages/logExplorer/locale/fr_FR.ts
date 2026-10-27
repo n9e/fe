@@ -24,6 +24,8 @@ const fr_FR = {
     "use_previous": "Le résultat de la dernière conversion sera utilisé. Pour obtenir le contenu le plus récent, convertissez à nouveau.",
     "range_required": "Sélectionnez une plage de temps",
     "unlimited": "Illimité",
+    "collapse": "Replier",
+    "expand": "Déplier",
   },
   "mode": {
     "label": "Mode",

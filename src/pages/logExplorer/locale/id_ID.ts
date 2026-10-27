@@ -24,6 +24,8 @@ const id_ID = {
     "use_previous": "Akan menggunakan hasil konversi terakhir. Untuk konten terbaru, konversi ulang.",
     "range_required": "Pilih rentang waktu",
     "unlimited": "Tanpa batas",
+    "collapse": "Ciutkan",
+    "expand": "Bentangkan",
   },
   "mode": {
     "label": "Mode",

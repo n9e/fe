@@ -24,6 +24,8 @@ const es_ES = {
     "use_previous": "Se usará el resultado de la última conversión. Para obtener el contenido más reciente, vuelva a convertir.",
     "range_required": "Seleccione un rango de tiempo",
     "unlimited": "Sin límite",
+    "collapse": "Contraer",
+    "expand": "Expandir",
   },
   "mode": {
     "label": "Modo",

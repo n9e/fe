@@ -328,6 +328,8 @@ export function buildSql(data: {
 }> {
   return request('/api/n9e-plus/doris-query-builder', {
     method: RequestMethod.Post,
+    // The query workspace shows this failure inline, so a global notification would only duplicate it.
+    silence: true,
     data: {
       ...data,
       query: data.query.map((query) => ({

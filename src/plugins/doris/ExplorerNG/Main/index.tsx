@@ -15,6 +15,7 @@ import { Field } from '../types';
 import MainMoreOperations from '../components/MainMoreOperations';
 import SQLFormatButton from '../components/SQLFormatButton';
 import { HandleValueFilterParams } from '../types';
+import getErrorMessage from '../utils/getErrorMessage';
 import QueryMain from './Query';
 import SQLMain from './SQL';
 import SQLQueryInput from './SQL/QueryInput';
@@ -200,7 +201,7 @@ export default function index(props: Props) {
             generating={workspace.generating}
             executeLoading={executeLoading}
             darkMode={darkMode}
-            error={workspace.error ? (workspace.error instanceof Error ? workspace.error.message : t('query.editMode.build_sql_failed')) : undefined}
+            error={workspace.error ? getErrorMessage(workspace.error, t('query.editMode.build_sql_failed')) : undefined}
             queryButtonRef={syntax === 'sql' ? queryButtonRef : undefined}
             onAssistChange={(enabled) => {
               onQueryEdit?.();

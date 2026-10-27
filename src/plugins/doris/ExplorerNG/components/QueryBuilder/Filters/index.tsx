@@ -27,17 +27,12 @@ export default function Filters(props: Props) {
   const { size = 'middle', indexData, fieldSampleParams, value, onChange } = props;
 
   return (
-    <Space
-      size={[SIZE, SIZE / 2]}
-      wrap
-      style={{
-        maxWidth: 'calc(100% - 200px)', // leave some space for other buttons
-      }}
-    >
+    <Space size={[SIZE, SIZE / 2]} wrap>
       {_.map(value, (item, index) => {
         if (!item.field || !item.operator) {
           return null;
         }
+        const valueText = Array.isArray(item.value) ? item.value.join(' AND ') : item.value ?? '';
         return (
           <ConfigPopover
             key={`${item.field}-${item.operator}-${item.value}-${index}`}
@@ -51,19 +46,21 @@ export default function Filters(props: Props) {
           >
             <Describe
               disabled={item.disabled}
+              title={`${item.field} ${item.operator} ${valueText}`.trim()}
               onClick={(e) => {
                 e.stopPropagation();
                 onChange?.(_.filter(value, (_, i) => i !== index));
               }}
             >
-              <Space className='text-hint'>
+              {/* One line: a long value widens the row and the panel scrolls, instead of wrapping inside the chip. */}
+              <div className='flex items-center gap-2 whitespace-nowrap text-hint'>
                 <span>{item.field}</span>
                 <span
                   dangerouslySetInnerHTML={{
                     __html: describeFieldValue(item.operator, item.value),
                   }}
                 />
-              </Space>
+              </div>
             </Describe>
           </ConfigPopover>
         );

@@ -70,7 +70,7 @@ it('preserves opaque metadata for other data-source adapters', async () => {
   expect(adapter.applyGenerated).toHaveBeenCalledWith(other);
 });
 
-it('preserves the preview and statement on build failure and never executes', async () => {
+it('drops the preview on a build failure and never executes', async () => {
   const { result, adapter, enable } = setup();
   enable();
   await act(async () => {
@@ -81,7 +81,8 @@ it('preserves the preview and statement on build failure and never executes', as
   await act(async () => {
     await result.current.run();
   });
-  expect(result.current.preview).toEqual(generated);
+  // A failed conversion leaves nothing to preview: the statement it was about to replace goes with it.
+  expect(result.current.preview).toBeUndefined();
   expect(result.current.error).toBe(error);
   expect(adapter.applyGenerated).toHaveBeenCalledTimes(1);
   expect(adapter.execute).not.toHaveBeenCalled();
@@ -193,6 +194,38 @@ it('drops the builder configuration in either mode without touching the statemen
   expect(adapter.resetBuilder).toHaveBeenCalledTimes(2);
   expect(adapter.clearStatement).not.toHaveBeenCalled();
   expect(result.current.assistEnabled).toBe(false);
+});
+
+it('drops the previewed statement when leaving the builder for hand-written SQL', async () => {
+  const { result, enable } = setup();
+  enable();
+  await act(async () => {
+    await result.current.convert();
+  });
+  expect(result.current.preview).toEqual(generated);
+
+  act(() => result.current.setAssistEnabled(false));
+  expect(result.current.preview).toBeUndefined();
+
+  enable();
+  // Back in the builder, nothing is claimed as already converted.
+  expect(result.current.preview).toBeUndefined();
+});
+
+it('keeps the preview when only the execution fails', async () => {
+  const { result, adapter, enable } = setup();
+  enable();
+  await act(async () => {
+    await result.current.convert();
+  });
+  expect(result.current.preview).toEqual(generated);
+
+  adapter.execute.mockRejectedValueOnce(new Error('query failed'));
+  await act(async () => {
+    await result.current.run();
+  });
+  expect(result.current.error).toBeInstanceOf(Error);
+  expect(result.current.preview).toEqual(generated);
 });
 
 it('does not apply a response after unmounting', async () => {

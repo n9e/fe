@@ -54,6 +54,37 @@ it('shows the manual editor and no conversion button while assistance is off', (
   expect(props.onExecute).toHaveBeenCalled();
 });
 
+it('folds the panel body from the toolbar and reveals it again for a conversion', () => {
+  const { props } = setup({ assistEnabled: true });
+  expect(screen.getByText('表单构建')).toBeVisible();
+
+  fireEvent.click(screen.getByRole('button', { name: '收起' }));
+  expect(screen.getByText('表单构建')).not.toBeVisible();
+
+  fireEvent.click(screen.getByRole('button', { name: /转换 SQL/ }));
+  // The conversion is reported below, so the panel comes back instead of updating out of sight.
+  expect(props.onConvert).toHaveBeenCalled();
+  expect(screen.getByText('表单构建')).toBeVisible();
+
+  fireEvent.click(screen.getByRole('button', { name: '收起' }));
+  fireEvent.click(screen.getByRole('button', { name: '展开' }));
+  expect(screen.getByText('表单构建')).toBeVisible();
+});
+
+it('reopens the folded panel when a generation fails, so the error is visible', () => {
+  const { props, rerender } = setup({ assistEnabled: true });
+  fireEvent.click(screen.getByRole('button', { name: '收起' }));
+  expect(screen.getByText('表单构建')).not.toBeVisible();
+
+  rerender(
+    <I18nextProvider i18n={i18n}>
+      <QueryWorkspace {...props} error='build failed' />
+    </I18nextProvider>,
+  );
+  expect(screen.getByText('build failed')).toBeVisible();
+  expect(screen.getByText('表单构建')).toBeVisible();
+});
+
 it('renders backend slots, conversion and empty preview controls in assisted mode', () => {
   const { props, container } = setup({ assistEnabled: true });
   expect(screen.getByText('表单构建')).toBeVisible();

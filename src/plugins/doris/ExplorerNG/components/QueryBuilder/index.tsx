@@ -86,7 +86,7 @@ export default function QueryBuilder(props: Props) {
           <div className='table-column' />
           <div className='table-row'>
             <div className='table-cell align-top'>
-              <div className='h-[24px] flex items-center'>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>
                 <Tooltip title={t('builder.filters.label_tip')}>
                   <Space size={SIZE / 2}>
                     <span>{t('builder.filters.label')}</span>
@@ -103,7 +103,7 @@ export default function QueryBuilder(props: Props) {
           </div>
           <div className='table-row'>
             <div className='table-cell align-top'>
-              <div className='h-[24px] flex items-center'>{t('builder.aggregates.label')}</div>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>{t('builder.aggregates.label')}</div>
             </div>
             <div className='table-cell'>
               <Form.Item name='aggregates' noStyle>
@@ -113,7 +113,7 @@ export default function QueryBuilder(props: Props) {
           </div>
           <div className='table-row'>
             <div className='table-cell align-top'>
-              <div className='h-[24px] flex items-center'>{t('builder.display_label')}</div>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>{t('builder.display_label')}</div>
             </div>
             <div className='table-cell'>
               <Space size={SIZE} wrap>
@@ -153,7 +153,7 @@ export default function QueryBuilder(props: Props) {
           </div>
           <div className='table-row mb-4'>
             <div className='table-cell align-top'>
-              <div className='h-[24px] flex items-center'>{t('builder.order_by.label')}</div>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>{t('builder.order_by.label')}</div>
             </div>
             <div className='table-cell'>
               <Form.Item name='order_by' noStyle>

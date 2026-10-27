@@ -15,6 +15,8 @@ const en_US = {
     use_previous: 'Uses the previous conversion. Convert again to use the latest form.',
     range_required: 'Please select a time range',
     unlimited: 'Unlimited',
+    collapse: 'Collapse',
+    expand: 'Expand',
   },
   title: 'Log explorer',
   tab: {

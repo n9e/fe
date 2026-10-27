@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Button, Empty, Space, Spin, Switch, Tooltip } from 'antd';
 import { CodeOutlined, CopyOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { RectangleEllipsis } from 'lucide-react';
+import { PanelTopClose, PanelTopOpen, RectangleEllipsis } from 'lucide-react';
 import { SqlMonacoPreview } from '@fc-components/monaco-editor';
 
 import { copy2ClipBoard } from '@/utils';
@@ -34,6 +34,13 @@ export default function QueryWorkspace(props: QueryWorkspaceProps) {
     onExecute,
     onContinueWriting,
   } = props;
+  const [collapsed, setCollapsed] = useState(false);
+  const hasError = Boolean(error);
+  const collapseLabel = collapsed ? t('query_workspace.expand') : t('query_workspace.collapse');
+  useEffect(() => {
+    // A failed generation is reported in the preview column: reveal it instead of leaving the button silent.
+    if (hasError) setCollapsed(false);
+  }, [hasError]);
   const busy = generating || executeLoading;
   const convertLabel = t('query_workspace.convert', { language: languageLabel });
   const previewStatus = generating
@@ -48,8 +55,19 @@ export default function QueryWorkspace(props: QueryWorkspaceProps) {
 
   return (
     <div className='mb-2 rounded-[var(--fc-border-radius-base)] border border-solid border-antd [&_[hidden]]:hidden'>
-      <div className='flex min-h-8 flex-wrap items-center justify-between gap-2 border-0 border-b border-solid border-antd px-1.5 py-1'>
+      <div className={`flex min-h-8 flex-wrap items-center justify-between gap-2 border-0 border-solid border-antd px-1.5 py-1 ${collapsed ? '' : 'border-b'}`}>
         <Space>
+          <Tooltip title={collapseLabel}>
+            <Button
+              size='small'
+              type='text'
+              className='flex h-6 w-6 items-center justify-center p-0'
+              aria-label={collapseLabel}
+              aria-expanded={!collapsed}
+              icon={collapsed ? <PanelTopOpen size={14} strokeWidth={1.5} /> : <PanelTopClose size={14} strokeWidth={1.5} />}
+              onClick={() => setCollapsed((previous) => !previous)}
+            />
+          </Tooltip>
           <Switch size='small' checked={assistEnabled} onChange={onAssistChange} aria-label={t('query_workspace.assist')} />
           <span>{t('query_workspace.assist')}</span>
           <Tooltip title={t('query_workspace.assist_tip')}>
@@ -61,7 +79,19 @@ export default function QueryWorkspace(props: QueryWorkspaceProps) {
             {t('common:btn.reset')}
           </Button>
           {assistEnabled && (
-            <Button size='small' type={dirty ? 'primary' : 'default'} ghost={dirty} shape={dirty ? 'round' : 'default'} icon={<CodeOutlined />} disabled={busy} onClick={onConvert}>
+            <Button
+              size='small'
+              type={dirty ? 'primary' : 'default'}
+              ghost={dirty}
+              shape={dirty ? 'round' : 'default'}
+              icon={<CodeOutlined />}
+              disabled={busy}
+              onClick={() => {
+                // The conversion is reported in the panel below: reveal it instead of updating it out of sight.
+                setCollapsed(false);
+                onConvert();
+              }}
+            >
               {dirty ? `${convertLabel} · ${convertSuffix}` : convertLabel}
             </Button>
           )}
@@ -70,8 +100,7 @@ export default function QueryWorkspace(props: QueryWorkspaceProps) {
           </Button>
         </Space>
       </div>
-      {error && <Alert className='mb-2' type='error' showIcon message={error} />}
-      <div className='grid h-[200px] grid-cols-2' hidden={!assistEnabled}>
+      <div className='grid h-[200px] grid-cols-2' hidden={!assistEnabled || collapsed}>
         <section className='flex min-h-0 min-w-0 flex-col'>
           <div className='flex min-h-8 shrink-0 items-center gap-2 border-0 border-b border-solid border-antd px-3'>
             <RectangleEllipsis size={14} strokeWidth={1.5} className='shrink-0' />
@@ -92,6 +121,8 @@ export default function QueryWorkspace(props: QueryWorkspaceProps) {
             {previewExtra}
           </div>
           <div className='flex min-h-0 flex-1 flex-col bg-fc-100 p-3'>
+            {/* A failed conversion belongs to the preview, not to the whole panel: keep it in this column. */}
+            {error && <Alert className='mb-3 shrink-0' type='error' showIcon message={error} />}
             <div className='best-looking-scroll min-h-0 flex-1 overflow-auto'>
               <Spin spinning={generating}>
                 {preview ? (
@@ -114,7 +145,7 @@ export default function QueryWorkspace(props: QueryWorkspaceProps) {
           </div>
         </div>
       </div>
-      <div className='pb-2 px-1 [&_.ant-form-item]:mb-0' hidden={assistEnabled}>
+      <div className='pb-2 px-1 [&_.ant-form-item]:mb-0' hidden={assistEnabled || collapsed}>
         {editor}
       </div>
       {below}

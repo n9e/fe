@@ -24,6 +24,8 @@ const ko_KR = {
     "use_previous": "이전 변환 결과를 사용합니다. 최신 내용이 필요하면 다시 변환하세요",
     "range_required": "시간 범위를 선택하세요",
     "unlimited": "무제한",
+    "collapse": "접기",
+    "expand": "펼치기",
   },
   "mode": {
     "label": "모드",

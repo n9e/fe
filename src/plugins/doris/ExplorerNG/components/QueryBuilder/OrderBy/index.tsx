@@ -43,15 +43,16 @@ export default function Aggregates(props: Props) {
             }}
           >
             <Describe
+              title={`${item.field} ${t(`builder.order_by.${item.direction}`)}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onChange?.(_.filter(value, (_, i) => i !== index));
               }}
             >
-              <Space className='text-hint'>
+              <div className='flex items-center gap-2 whitespace-nowrap text-hint'>
                 <span>{item.field}</span>
                 <strong className='text-main bg-fc-200 px-1'>{t(`builder.order_by.${item.direction}`)}</strong>
-              </Space>
+              </div>
             </Describe>
           </ConfigPopover>
         );

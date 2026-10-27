@@ -114,6 +114,26 @@ it('maps Doris generation without executing, then queries the latest form throug
   expect(buildSql).toHaveBeenLastCalledWith(expect.objectContaining({ query: [expect.objectContaining({ group_by: ['host'], limit: 10 })] }));
 });
 
+it('does not leave a query trigger behind when converting swaps the result view', async () => {
+  render(<Host />);
+  act(() => main.workspace.setAssistEnabled(true));
+  act(() => outerForm.setFieldsValue({ refreshFlag: 'refreshFlag_previous', query: { sqlVizType: 'table' } }));
+  await act(async () => {
+    await main.workspace.convert();
+  });
+  // The view switches to timeseries and remounts; the previous run's flag would make it query on its own.
+  expect(outerForm.getFieldValue(['query', 'sqlVizType'])).toBe('timeseries');
+  expect(outerForm.getFieldValue('refreshFlag')).toBeUndefined();
+  expect(setLocalQueryHistory).not.toHaveBeenCalled();
+
+  // Staying in the same view keeps the flag (and the results it already produced).
+  act(() => outerForm.setFieldsValue({ refreshFlag: 'refreshFlag_previous' }));
+  await act(async () => {
+    await main.workspace.convert();
+  });
+  expect(outerForm.getFieldValue('refreshFlag')).toBe('refreshFlag_previous');
+});
+
 it('keeps the auxiliary draft when toggling and resets only the current mode', async () => {
   render(<Host />);
   act(() => {

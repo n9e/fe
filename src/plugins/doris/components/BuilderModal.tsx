@@ -18,6 +18,7 @@ import Filters from '../ExplorerNG/components/QueryBuilder/Filters';
 import Aggregates from '../ExplorerNG/components/QueryBuilder/Aggregates';
 import OrderBy from '../ExplorerNG/components/QueryBuilder/OrderBy';
 import CommonStateContext from '../ExplorerNG/components/QueryBuilder/commonStateContext';
+import getErrorMessage from '../ExplorerNG/utils/getErrorMessage';
 import getMaxLabelWidth from '../ExplorerNG/components/QueryBuilder/utils/getMaxLabelWidth';
 
 export interface BuilderConfig {
@@ -167,8 +168,8 @@ export default function BuilderModal(props: Props) {
         .then((res) => {
           onConfirm(getDefaultBuilderConfig(values), res);
         })
-        .catch(() => {
-          message.error(t('query.editMode.build_sql_failed'));
+        .catch((err) => {
+          message.error(getErrorMessage(err, t('query.editMode.build_sql_failed')));
         })
         .finally(() => {
           setConfirmLoading(false);

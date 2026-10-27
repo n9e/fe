@@ -50,6 +50,12 @@ export default function useQueryWorkspace<Metadata>(options: Options<Metadata>):
     (enabled: boolean) => {
       if (assistRef.current === enabled) return;
       invalidate();
+      if (!enabled) {
+        // Leaving the builder for hand-written SQL: the conversion the preview showed no longer describes what
+        // the panel holds, so it goes with the mode instead of greeting the next visit as still converted.
+        previewRef.current = undefined;
+        setPreview(undefined);
+      }
       assistRef.current = enabled;
       setAssistState(enabled);
     },
@@ -88,8 +94,10 @@ export default function useQueryWorkspace<Metadata>(options: Options<Metadata>):
     setGenerating(true);
     setError(undefined);
     const isCurrent = () => revision.current === requestRevision && latest.current.contextKey === requestContext && assistRef.current;
+    let built = false;
     try {
       const result = await latest.current.build();
+      built = true;
       if (!isCurrent()) return;
       latest.current.applyGenerated(result);
       previewRef.current = result;
@@ -97,7 +105,15 @@ export default function useQueryWorkspace<Metadata>(options: Options<Metadata>):
       setDirty(false);
       if (execute && isCurrent()) await latest.current.execute();
     } catch (err) {
-      if (isCurrent()) setError(err);
+      if (isCurrent()) {
+        // A build that failed has nothing to preview: drop the statement it was about to replace. An execution
+        // failure keeps the statement it just applied.
+        if (!built) {
+          previewRef.current = undefined;
+          setPreview(undefined);
+        }
+        setError(err);
+      }
     } finally {
       if (activeRequest.current === requestRevision) {
         activeRequest.current = undefined;

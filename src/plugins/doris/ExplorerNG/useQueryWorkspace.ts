@@ -11,6 +11,7 @@ import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../constants';
 import { buildSql } from '../services';
+import getErrorMessage from './utils/getErrorMessage';
 import type { AggregateConfig, FilterConfig, OrderByConfig } from './types';
 
 export interface DorisBuilderValues {
@@ -78,12 +79,20 @@ export default function useDorisQueryWorkspace({ form, datasourceValue, execute,
             limit: values.limit ?? undefined,
           },
         ],
+      }).catch((err) => {
+        // Silenced requests reject with the response body and others with an Error: normalize both so the panel
+        // always shows the server's own message instead of a generic one.
+        throw new Error(getErrorMessage(err, t('query.editMode.build_sql_failed')));
       });
       return { statement: metadata.sql, metadata };
     },
     applyGenerated: ({ statement, metadata }) => {
       onQueryEdit(statement);
+      // Converting is not running: switching table/timeseries remounts the result view, and the previous run's
+      // flag would make it query this statement on its own. Keep the flag when the view is not swapped.
+      const viewSwitched = form.getFieldValue(['query', 'sqlVizType']) !== metadata.mode;
       form.setFieldsValue({
+        ...(viewSwitched ? { refreshFlag: undefined } : {}),
         query: { sql: statement, sqlVizType: metadata.mode, keys: { valueKey: metadata.value_key, labelKey: metadata.label_key } },
       });
     },
