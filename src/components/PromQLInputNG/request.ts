@@ -16,6 +16,10 @@ interface PromQLRequestDependencies {
   fetchFn?: typeof fetch;
 }
 
+export function isValidPromQLDatasourceValue(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0;
+}
+
 function getResourceUrl(resource: RequestInfo) {
   return typeof resource === 'string' ? resource : resource.url;
 }
