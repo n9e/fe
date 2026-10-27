@@ -5,61 +5,54 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import { NAME_SPACE } from '../../constants';
-import { LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD, getLogOrderAnchor, logGeneration, LogOrderAnchor } from './utils';
-
-export type LogContextDirection = 'before' | 'after';
+import { LOG_INDEX_FIELD, LOG_SEQ_FIELD, getLogOrderAnchor, logGeneration, mergeContextPage, LogContextPage, LogContextRequest } from './utils';
 
 interface Props {
   /** 原始行（未拍平），带两个原文顺序字段时才显示入口 */
   log?: Record<string, any>;
   timeField: string;
-  fetchContext: (anchor: LogOrderAnchor, direction: LogContextDirection, limit: number) => Promise<Record<string, any>[]>;
+  /** 把锚点时间换成该存储要的格式（Doris 原样字符串，ES 毫秒时间戳字符串） */
+  formatTime?: (time: string | number) => string;
+  fetchPage: (req: LogContextRequest) => Promise<LogContextPage>;
 }
 
-interface ContextRow {
-  key: string;
-  row: Record<string, any>;
-  anchor?: boolean;
-}
-
+// 与 SLS 上下文每次取的行数一致
 const STEP_LINES = 30;
 
 function rowText(row: Record<string, any>) {
   if (typeof row.message === 'string') return row.message;
-  return JSON.stringify(_.omit(row, [LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD]));
+  return JSON.stringify(_.omit(row, [LOG_INDEX_FIELD]));
 }
 
-/** 按原文顺序查看同一个文件流的前后日志 */
+/** 按原文顺序查看同一个文件流的前后日志，翻页语义与 SLS 上下文一致 */
 export default function LogOrderContext(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { log, timeField, fetchContext } = props;
+  const { log, timeField, formatTime = String, fetchPage } = props;
   const anchor = log ? getLogOrderAnchor(log, timeField) : undefined;
   const [open, setOpen] = useState(false);
-  const [rows, setRows] = useState<ContextRow[]>([]);
-  const [loading, setLoading] = useState<LogContextDirection | 'initial' | undefined>();
+  const [page, setPage] = useState<LogContextPage>();
+  const [loading, setLoading] = useState<'back' | 'forward' | 'initial' | undefined>();
   const anchorRef = useRef<HTMLDivElement>(null);
 
-  const load = async (direction: LogContextDirection, from: LogOrderAnchor): Promise<ContextRow[]> => {
+  const load = async (req: Omit<LogContextRequest, 'stream_id'>) => {
     try {
-      const list = await fetchContext(from, direction, STEP_LINES);
-      if (_.isEmpty(list)) message.info(t(direction === 'before' ? 'log_order_context.no_more_before' : 'log_order_context.no_more_after'));
-      return _.map(list, (row) => ({ key: `${row[LOG_STREAM_ID_FIELD]}/${row[LOG_SEQ_FIELD]}`, row }));
+      return await fetchPage({ ...req, stream_id: anchor!.streamId });
     } catch (e) {
       message.error(t('log_order_context.query_failed'));
-      return [];
+      return undefined;
     }
   };
 
   useEffect(() => {
-    if (!open || !anchor || !log) return;
+    if (!open || !anchor) return;
     setLoading('initial');
-    Promise.all([load('before', anchor), load('after', anchor)]).then(([before, after]) => {
-      setRows([...before, { key: `${anchor.streamId}/${anchor.seq}`, row: log, anchor: true }, ...after]);
+    load({ seq: anchor.seq, time: formatTime(anchor.time), cursor_index: 0, back_lines: STEP_LINES, forward_lines: STEP_LINES }).then((res) => {
+      setPage(res);
       setLoading(undefined);
     });
   }, [open]);
 
-  const initialLoaded = open && loading === undefined && rows.length > 0;
+  const initialLoaded = open && loading === undefined && !!page;
   useEffect(() => {
     if (initialLoaded) anchorRef.current?.scrollIntoView({ block: 'center' });
   }, [initialLoaded]);
@@ -68,19 +61,29 @@ export default function LogOrderContext(props: Props) {
 
   const close = () => {
     setOpen(false);
-    setRows([]);
+    setPage(undefined);
     setLoading(undefined);
   };
 
-  const loadMore = async (direction: LogContextDirection) => {
-    const edge = direction === 'before' ? _.first(rows) : _.last(rows);
-    const from = edge && getLogOrderAnchor(edge.row, timeField);
-    if (!from) return;
+  const loadMore = async (direction: 'back' | 'forward') => {
+    if (!page) return;
+    const cursor = direction === 'back' ? page.back_cursor : page.forward_cursor;
     setLoading(direction);
-    const more = await load(direction, from);
-    setRows((prev) => (direction === 'before' ? [...more, ...prev] : [...prev, ...more]));
+    const res = await load({
+      seq: cursor.seq,
+      time: cursor.time,
+      cursor_index: cursor.index,
+      back_lines: direction === 'back' ? STEP_LINES : 0,
+      forward_lines: direction === 'forward' ? STEP_LINES : 0,
+    });
     setLoading(undefined);
+    if (!res) return;
+    const limited = direction === 'back' ? res.back_scan_limited : res.forward_scan_limited;
+    if (limited) message.info(t(direction === 'back' ? 'log_order_context.no_more_before' : 'log_order_context.no_more_after'));
+    setPage((prev) => (prev ? mergeContextPage(prev, res, direction) : res));
   };
+
+  const rows = page?.logs || [];
 
   return (
     <>
@@ -104,13 +107,13 @@ export default function LogOrderContext(props: Props) {
         <div className='flex flex-col h-full' onClick={(e) => e.stopPropagation()}>
           <div className='flex-shrink-0 mb-2 pb-2 border-0 border-b border-solid border-fc-200'>
             <Space>
-              <Button loading={loading === 'before'} disabled={!!loading} onClick={() => loadMore('before')}>
+              <Button loading={loading === 'back'} disabled={!!loading || !page?.has_back} onClick={() => loadMore('back')}>
                 {t('log_order_context.earlier')}
               </Button>
               <Button disabled={rows.length === 0} onClick={() => anchorRef.current?.scrollIntoView({ block: 'center' })}>
                 {t('log_order_context.back_to_anchor')}
               </Button>
-              <Button loading={loading === 'after'} disabled={!!loading} onClick={() => loadMore('after')}>
+              <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
                 {t('log_order_context.later')}
               </Button>
             </Space>
@@ -120,25 +123,26 @@ export default function LogOrderContext(props: Props) {
               <Empty />
             ) : (
               <div className='font-mono text-[12px] leading-[20px]'>
-                {_.map(rows, (item, i) => {
+                {_.map(rows, (row, i) => {
                   const prev = rows[i - 1];
-                  const rotated = prev && logGeneration(prev.row[LOG_SEQ_FIELD]) !== logGeneration(item.row[LOG_SEQ_FIELD]);
+                  const rotated = prev && logGeneration(prev[LOG_SEQ_FIELD]) !== logGeneration(row[LOG_SEQ_FIELD]);
+                  const isAnchor = row[LOG_INDEX_FIELD] === 0;
                   return (
-                    <React.Fragment key={item.key}>
+                    <React.Fragment key={row[LOG_INDEX_FIELD]}>
                       {rotated && (
                         <Divider plain className='my-1 text-[12px]'>
                           {t('log_order_context.rotated')}
                         </Divider>
                       )}
                       <div
-                        ref={item.anchor ? anchorRef : undefined}
+                        ref={isAnchor ? anchorRef : undefined}
                         className='flex gap-3 px-2 whitespace-pre-wrap break-all'
-                        style={item.anchor ? { backgroundColor: 'var(--fc-primary-bg)' } : undefined}
+                        style={isAnchor ? { backgroundColor: 'var(--fc-primary-bg)' } : undefined}
                       >
                         <span className='shrink-0' style={{ color: 'var(--fc-text-4)' }}>
-                          {String(item.row[timeField] ?? '')}
+                          {String(row[timeField] ?? '')}
                         </span>
-                        <span>{rowText(item.row)}</span>
+                        <span>{rowText(row)}</span>
                       </div>
                     </React.Fragment>
                   );
