@@ -348,7 +348,7 @@ export default function EvalRecordsDrawer(props: Props) {
         return (
           <Space size={4}>
             {val > 0 && <Tag color='red'>{val}</Tag>}
-            {record.recover_total > 0 && <Tag color='green'>↓{record.recover_total}</Tag>}
+            {record.recover_total > 0 && <Tag color='green'>{record.recover_total}</Tag>}
           </Space>
         );
       },
