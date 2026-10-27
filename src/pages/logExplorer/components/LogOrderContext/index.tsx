@@ -7,7 +7,17 @@ import _ from 'lodash';
 import { DynamicTags, DynamicTagsTrigger, OrganizeFields, renderMarkedText } from '@/pages/logExplorer/components/ContextViewerParts';
 
 import { NAME_SPACE } from '../../constants';
-import { LOG_INDEX_FIELD, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD, getLogOrderAnchor, logGeneration, mergeContextPage, LogContextPage, LogContextRequest } from './utils';
+import {
+  LOG_INDEX_FIELD,
+  LOG_SEQ_FIELD,
+  LOG_STREAM_ID_FIELD,
+  getLogOrderAnchor,
+  logGeneration,
+  matchesAllKeywords,
+  mergeContextPage,
+  LogContextPage,
+  LogContextRequest,
+} from './utils';
 
 interface Props {
   /** 原始行（未拍平），带两个原文顺序字段时才显示入口 */
@@ -105,10 +115,7 @@ export default function LogOrderContext(props: Props) {
   const availableFields = useMemo(() => _.sortBy(_.uniq(_.flatMap(rows, (row) => _.keys(_.omit(row, hiddenFields))))), [page]);
   const filteredRows = useMemo(() => {
     if (_.isEmpty(filterKeywords)) return rows;
-    return _.filter(rows, (row) => {
-      const text = JSON.stringify(_.omit(row, hiddenFields));
-      return _.some(filterKeywords, (keyword) => _.includes(text, keyword));
-    });
+    return _.filter(rows, (row) => matchesAllKeywords(row, filterKeywords, hiddenFields));
   }, [page, filterKeywords]);
   // 代次变化即文件轮转，在新文件的第一行前标出
   const rotatedIndexes = useMemo(() => {
@@ -126,7 +133,12 @@ export default function LogOrderContext(props: Props) {
         width: 56,
         render: (row: Record<string, any>) => {
           const index = row[LOG_INDEX_FIELD];
-          return <span className={index < 0 ? 'text-red-500' : 'text-green-500'}>{index}</span>;
+          const color = index < 0 ? 'var(--fc-fill-error)' : index > 0 ? 'var(--fc-fill-success)' : 'var(--fc-primary-color)';
+          return (
+            <span className='font-semibold tabular-nums' style={{ color }}>
+              {index}
+            </span>
+          );
         },
       },
       {
