@@ -1,4 +1,4 @@
-import { esSupportsLogOrder, getLogOrderAnchor, logGeneration, mergeContextPage, LogContextPage } from './utils';
+import { esSupportsLogOrder, getLogOrderAnchor, logGeneration, matchesAllKeywords, mergeContextPage, LogContextPage } from './utils';
 
 describe('log order utils', () => {
   it('splits the generation out of a sequence above 2^53 without losing bits', () => {
@@ -59,5 +59,17 @@ describe('log order utils', () => {
     expect(merged.back_scan_limited).toBe(true);
     expect(merged.forward_cursor).toEqual(cur(1));
     expect(merged.has_forward).toBe(true);
+  });
+
+  it('narrows like grep a | grep b and matches values only', () => {
+    const hidden = ['__index_number__'];
+    const row = { message: 'load_id=e44d node=10.98.1.248:8060 say "hi"', host: 'lzs-doris-test-002', __index_number__: -18 };
+    const other = { message: 'load_id=e44d node=10.98.1.247:8060', host: 'lzs-doris-test-002', __index_number__: -17 };
+    expect(matchesAllKeywords(row, ['e44d', '10.98.1.248'], hidden)).toBe(true);
+    expect(matchesAllKeywords(other, ['e44d', '10.98.1.248'], hidden)).toBe(false);
+    expect(matchesAllKeywords(row, ['message'], hidden)).toBe(false);
+    expect(matchesAllKeywords(row, ['say "hi"'], hidden)).toBe(true);
+    expect(matchesAllKeywords(row, ['-18'], hidden)).toBe(false);
+    expect(matchesAllKeywords(row, [], hidden)).toBe(true);
   });
 });
