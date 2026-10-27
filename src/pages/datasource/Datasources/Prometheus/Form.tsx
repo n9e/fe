@@ -10,6 +10,7 @@ import Markdown from '@/components/Markdown';
 import Name from '../../components/items/Name';
 import HTTP from '../../components/items/HTTP';
 import BasicAuth from '../../components/items/BasicAuth';
+import AuthMethod from '../../components/items/AuthMethod';
 import SkipTLSVerify from '../../components/items/SkipTLSVerify';
 import Headers from '../../components/items/Headers';
 import Description from '../../components/items/Description';
@@ -89,7 +90,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             </>
           }
         />
-        <BasicAuth />
+        <AuthMethod types={['basic', 'sigv4', 'oauth2', 'azure']} basic={<BasicAuth hideTitle />} />
         <SkipTLSVerify />
         <div>
           <Space

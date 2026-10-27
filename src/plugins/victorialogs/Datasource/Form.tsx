@@ -9,6 +9,7 @@ import Name from '@/pages/datasource/components/items/Name';
 import Description from '@/pages/datasource/components/items/Description';
 import Footer from '@/pages/datasource/components/items/Footer';
 import BasicAuth from '@/pages/datasource/components/itemsNG/BasicAuth';
+import AuthMethod from '@/pages/datasource/components/items/AuthMethod';
 import Headers from '@/pages/datasource/components/itemsNG/Headers';
 import Cluster from '@/pages/datasource/components/itemsNG/Cluster';
 
@@ -48,7 +49,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
             </Form.Item>
           </Col>
         </Row>
-        <BasicAuth cate={cate} />
+        <AuthMethod types={['basic', 'oauth2', 'azure']} basic={<BasicAuth cate={cate} hideTitle />} />
         <Space className='mb-2'>
           <span>{t('form.skip_tls_verify')}</span>
           <Form.Item name={['settings', `${cate}.tls`, `${cate}.tls.skip_tls_verify`]} valuePropName='checked' noStyle>

@@ -6,17 +6,20 @@ interface Props {
   cate: string;
   showAuthEnable?: boolean;
   showTls?: boolean;
+  hideTitle?: boolean;
+  // false 时只渲染 TLS 开关（云鉴权时不需要用户名密码，但 TLS 设置仍然有效）
+  showFields?: boolean;
 }
 
 export default function BasicAuth(props: Props) {
   const { t } = useTranslation('datasourceManage');
-  const { cate, showAuthEnable, showTls } = props;
+  const { cate, showAuthEnable, showTls, hideTitle, showFields = true } = props;
   const authEnable = Form.useWatch(['settings', `${cate}.basic`, `${cate}.auth.enable`]);
 
   return (
     <>
-      <div className='page-title'>{t('form.auth')}</div>
-      {showAuthEnable && (
+      {!hideTitle && <div className='page-title'>{t('form.auth')}</div>}
+      {showFields && showAuthEnable && (
         <div className='mb-2'>
           <span className='mr-2'>{t('auth_enable')}</span>
           <Form.Item name={['settings', `${cate}.basic`, `${cate}.auth.enable`]} initialValue={true} valuePropName='checked' noStyle>
@@ -24,21 +27,25 @@ export default function BasicAuth(props: Props) {
           </Form.Item>
         </div>
       )}
-      <Form.Item name={['settings', `${cate}.basic`, `${cate}.is_encrypt`]} hidden initialValue={false}>
-        <div />
-      </Form.Item>
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item label={t('form.username')} name={['settings', `${cate}.basic`, `${cate}.user`]} rules={[{ required: authEnable }]}>
-            <Input autoComplete='off' />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item label={t('form.password')} name={['settings', `${cate}.basic`, `${cate}.password`]} rules={[{ required: authEnable }]}>
-            <Input.Password autoComplete='new-password' />
-          </Form.Item>
-        </Col>
-      </Row>
+      {showFields && (
+        <Form.Item name={['settings', `${cate}.basic`, `${cate}.is_encrypt`]} hidden initialValue={false}>
+          <div />
+        </Form.Item>
+      )}
+      {showFields && (
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item label={t('form.username')} name={['settings', `${cate}.basic`, `${cate}.user`]} rules={[{ required: authEnable }]}>
+              <Input autoComplete='off' />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={t('form.password')} name={['settings', `${cate}.basic`, `${cate}.password`]} rules={[{ required: authEnable }]}>
+              <Input.Password autoComplete='new-password' />
+            </Form.Item>
+          </Col>
+        </Row>
+      )}
       {showTls && (
         <div className='mb-4'>
           <span className='mr-2'>{t('skip_tls_verify')}</span>
