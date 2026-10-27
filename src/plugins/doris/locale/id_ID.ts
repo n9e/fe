@@ -30,6 +30,7 @@ const id_ID = {
     "time_field_tip": "<span>Makro waktu harus dipakai di dalam kueri agar pemilih waktu ini berpengaruh</span><br/>Cara memakai makro waktu: <a>selengkapnya</a>",
     "query": "Kondisi kueri",
     "query_required": "Kondisi kueri tidak boleh kosong",
+    "historical_records": "Riwayat",
     "advancedSettings": {
       "title": "Konfigurasi tambahan",
       "tags_placeholder": "Tekan Enter untuk menambahkan beberapa",

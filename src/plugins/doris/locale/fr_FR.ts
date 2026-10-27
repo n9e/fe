@@ -30,6 +30,7 @@ const fr_FR = {
     "time_field_tip": "<span>Ce sélecteur de période n'agit que si la requête utilise une macro temporelle</span><br/>Utilisation des macros temporelles : <a>en savoir plus</a>",
     "query": "Condition de requête",
     "query_required": "La condition de requête est obligatoire",
+    "historical_records": "Historique",
     "advancedSettings": {
       "title": "Réglages complémentaires",
       "tags_placeholder": "Entrée pour en saisir plusieurs",

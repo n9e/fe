@@ -34,6 +34,7 @@ const ja_JP = {
     time_field_tip: '<span>このタイムピッカーをリンクするには、クエリ条件で時間マクロを使用する必要があります</span><br/>時間マクロの使用方法の紹介: <a>詳細</a>',
     query: 'クエリ',
     query_required: 'クエリは必須です',
+    historical_records: '履歴記録',
     advancedSettings: {
       title: '高度な設定',
       tags_placeholder: '複数入力可能',

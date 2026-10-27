@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button } from 'antd';
+import { Form, Button, Tooltip } from 'antd';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -11,16 +11,25 @@ import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_
 
 interface Props {
   executeQuery: () => void;
+  onSelectSQL?: () => void;
 }
 
 export default function QueryInputAddonAfter(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { executeQuery } = props;
+  const { executeQuery, onSelectSQL } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const syntax = Form.useWatch(['query', 'syntax']);
 
   if (!datasourceValue) return null;
+
+  const historyButton = (
+    <Tooltip title={t('query.historical_records')}>
+      {/* The format button next to it draws 1px strokes, which read lighter than an antd filled glyph at the
+          same color: pin this icon to the soft text token so the two are seen at the same shade. */}
+      <Button size='small' type='text' className='flex h-6 w-6 items-center justify-center p-0' icon={<FileSearchOutlined className='text-soft' />} />
+    </Tooltip>
+  );
 
   if (syntax === 'query') {
     return (
@@ -52,7 +61,7 @@ export default function QueryInputAddonAfter(props: Props) {
         }}
         type='text'
       >
-        <Button size='small' type='text' icon={<FileSearchOutlined />} />
+        {historyButton}
       </ConditionHistoricalRecords>
     );
   }
@@ -63,6 +72,7 @@ export default function QueryInputAddonAfter(props: Props) {
         localKey={NG_SQL_CACHE_KEY}
         datasourceValue={datasourceValue}
         onSelect={(query) => {
+          onSelectSQL?.();
           form.setFieldsValue({
             refreshFlag: undefined,
             query: {
@@ -73,7 +83,7 @@ export default function QueryInputAddonAfter(props: Props) {
         }}
         type='text'
       >
-        <Button size='small' type='text' icon={<FileSearchOutlined />} />
+        {historyButton}
       </HistoricalRecords>
     );
   }

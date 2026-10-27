@@ -33,6 +33,7 @@ const zh_HK = {
     time_field_tip: '<span>需在查詢條件中使用時間宏才能聯動此時間選擇器</span><br/>時間宏使用介紹: <a>詳情</a>',
     query: '查詢條件',
     query_required: '查詢條件不能為空',
+    historical_records: '歷史記錄',
     advancedSettings: {
       title: '輔助配置',
       tags_placeholder: '回車輸入多個',

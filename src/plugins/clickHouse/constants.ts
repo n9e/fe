@@ -12,7 +12,6 @@ export const SQL_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY = 'ck-sql-logs-table-columns
 export const QUERY_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'ck-query-logs-organize-fields';
 
 export const PIN_INDEX_CACHE_KEY = 'ck_query_logs_pin_index';
-export const QUERY_BUILDER_PINNED_CACHE_KEY = 'ck-query-builder-pinned';
 export const DEFAULT_LOGS_PAGE_SIZE = 30;
 export const HIGHLIGHT_FIELD = '__highlight__';
 

@@ -34,6 +34,7 @@ const en_US = {
     time_field_tip: '<span>To link this time picker, you need to use a time macro in the query condition</span><br/>Introduction to time macro usage: <a>Details</a>',
     query: 'Query',
     query_required: 'Query is required',
+    historical_records: 'Historical records',
     advancedSettings: {
       title: 'Auxiliary settings',
       tags_placeholder: 'Enter multiple tags by pressing Enter',
