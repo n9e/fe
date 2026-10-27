@@ -17,6 +17,7 @@ import { getDateTokenDisplayValue } from '@/pages/logExplorer/components/LogsVie
 import { NAME_SPACE, LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
 import { getLogsQuery, getHistogram, getESContextLogs } from '../../../services';
 import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
 import { esSupportsLogOrder, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import dslBuilder from '../../../utils/dslBuilder';
 import { getHighlightHtml } from '../../../utils/highlight';
@@ -208,7 +209,7 @@ export default function index(props: Props) {
               [index: string]: string;
             };
             return {
-              ..._.omit(log, [LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD]),
+              ...log,
               __n9e_raw_n9e__: log as any,
               __n9e_id_n9e__: _.uniqueId('log_id_'),
             };
@@ -223,7 +224,7 @@ export default function index(props: Props) {
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newData, data?.colWidths),
-              fields: filterOutBuiltinFields(getFields(mergedList, queryValues.date_field)),
+              fields: omitLogOrderKeys(filterOutBuiltinFields(getFields(mergedList, queryValues.date_field))),
               highlights: mergedHighlights,
             };
           }
@@ -236,7 +237,7 @@ export default function index(props: Props) {
             total: res.total,
             hash: _.uniqueId('logs_'),
             colWidths: calcColWidthByData(newData),
-            fields: filterOutBuiltinFields(getFields(newData, queryValues.date_field)),
+            fields: omitLogOrderKeys(filterOutBuiltinFields(getFields(newData, queryValues.date_field))),
             highlights: nextHighlights,
           };
         })
@@ -382,7 +383,7 @@ export default function index(props: Props) {
 
   const handleFilterFields = useCallback(
     (fieldKeys: string[]) => {
-      return filteredFields(fieldKeys, organizeFields);
+      return filteredFields(omitLogOrderKeys(fieldKeys), organizeFields);
     },
     [organizeFields],
   );
@@ -436,6 +437,8 @@ export default function index(props: Props) {
               // props
               id_key='__n9e_id_n9e__'
               raw_key='__n9e_raw_n9e__'
+              logViewerFilterFields={withoutLogOrderFields}
+              logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
               logViewerExtraRender={
                 IS_PLUS
                   ? (log) => (

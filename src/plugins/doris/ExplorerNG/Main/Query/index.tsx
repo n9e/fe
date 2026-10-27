@@ -17,7 +17,8 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
 import { getDorisLogsQuery, getDorisHistogram, getDorisContextLogs } from '../../../services';
 import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
-import { getLogOrderAnchor, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
+import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
+import { getLogOrderAnchor } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -191,7 +192,7 @@ export default function index(props: Props) {
               // 不 parse、不拍平,行数据 = 原始字段值(剔除内部高亮字段,与 depth>0 的 ___raw___ 语义一致)
               const rawItem = _.omit(item, [HIGHLIGHT_FIELD]);
               return {
-                ..._.omit(rawItem, [LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD]),
+                ...rawItem,
                 ___raw___: rawItem,
                 ___id___: _.uniqueId('log_id_'),
               };
@@ -199,7 +200,7 @@ export default function index(props: Props) {
             const normalizedItem = normalizeLogStructures(_.omit(item, [HIGHLIGHT_FIELD]));
             return {
               // 层级语义:flattenDepth = N 表示嵌套 JSON 展开 N 层,对应 flatten 的 maxDepth = N + 1
-              ...(flatten(_.omit(normalizedItem, [LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD]), { maxDepth: flattenDepth + 1 }) || {}),
+              ...(flatten(normalizedItem, { maxDepth: flattenDepth + 1 }) || {}),
               ___raw___: normalizedItem,
               ___id___: _.uniqueId('log_id_'),
             };
@@ -403,7 +404,7 @@ export default function index(props: Props) {
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}
               filterFields={(fieldKeys) => {
-                return filteredFields(fieldKeys, organizeFields);
+                return filteredFields(omitLogOrderKeys(fieldKeys), organizeFields);
               }}
               histogramAddonBeforeRender={
                 stackByField ? (
@@ -585,6 +586,8 @@ export default function index(props: Props) {
                 return { isIndex: !!indexName, indexName };
               }}
               range={queryValues?.range}
+              logViewerFilterFields={withoutLogOrderFields}
+              logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
               logViewerExtraRender={(log) => (
                 <>
                   <LogOrderContext
