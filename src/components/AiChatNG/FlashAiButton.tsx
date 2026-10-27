@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 
 import { IS_ENT } from '@/utils/constant';
 import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
+import type { PromptReference } from '@/components/AiChat/PromptEditor';
 
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
@@ -133,28 +134,30 @@ export function AiButton(props: {
   return <AiButtonContent {...props} />;
 }
 
-export function useAiChatOpenWithPrompt(prompt?: string) {
-  const trimmedPrompt = prompt?.trim() || undefined;
-  const openWithoutPrompt = useFlashAiClickHandler();
-  const { openAiChat } = useAiChatContext();
-  const openEntChat = useAiEntClickHandler(trimmedPrompt ? { queryAction: { content: trimmedPrompt, prefillOnly: false } } : undefined);
+export function useAiChatOpenWithPrompt(prompt?: string, options?: { autoExecute?: boolean; reuseConversation?: boolean; references?: PromptReference[] }) {
+  const trimmedPrompt = prompt?.trim() || '';
+  const { openAiChat, cachedSessionId } = useAiChatContext();
+  const openEntChat = useAiEntClickHandler({
+    queryAction: {
+      content: trimmedPrompt,
+      prefillOnly: !options?.autoExecute,
+      createNew: !options?.reuseConversation,
+      reuseConversation: !!options?.reuseConversation,
+      references: options?.references,
+    } as IAiChatAction,
+  });
 
   return React.useCallback(() => {
     if (IS_ENT) {
       openEntChat();
       return;
     }
-    if (!trimmedPrompt) {
-      openWithoutPrompt();
-      return;
-    }
-    // 不传 chatId，让开源版新建会话。initialMessage 会在 ChatPanel 挂载后自动发送；
-    // context 会在携带 initialMessage 时递增 open key，侧拉板已打开时也能重新挂载并发送。
     openAiChat({
+      chatId: options?.reuseConversation ? cachedSessionId : undefined,
       queryPageFrom: buildPageFrom({ url: getCurrentPageUrl() }),
-      initialMessage: trimmedPrompt,
+      buttonLaunch: { content: trimmedPrompt, autoExecute: !!options?.autoExecute, reuseConversation: !!options?.reuseConversation },
     });
-  }, [openAiChat, openEntChat, openWithoutPrompt, trimmedPrompt]);
+  }, [openAiChat, openEntChat, cachedSessionId, trimmedPrompt, options?.autoExecute, options?.reuseConversation]);
 }
 
 export function CustomAiButtonWrap({

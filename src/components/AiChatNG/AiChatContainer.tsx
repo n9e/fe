@@ -24,6 +24,8 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
     promptList,
     initialMessage,
     initialMessageOpenKey,
+    buttonLaunch,
+    buttonChatKey,
     shareChatId,
     setShareReadonly,
     setShareChatId,
@@ -188,7 +190,9 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
     <div className='ai-chat-container h-full min-h-0'>
       {ensuredPageFrom && (
         <AiChat
-          key={`${ensuredPageFrom.url}-${JSON.stringify(ensuredPageFrom.param ?? {})}-${JSON.stringify(queryAction ?? {})}${initialMessage ? `-${initialMessageOpenKey}` : ''}`}
+          key={`${ensuredPageFrom.url}-${JSON.stringify(ensuredPageFrom.param ?? {})}-${JSON.stringify(queryAction ?? {})}${
+            initialMessage ? `-${initialMessageOpenKey}` : ''
+          }-${buttonChatKey}`}
           showClose
           onClose={closeAiChat}
           chatId={effectiveChatId}
@@ -196,6 +200,7 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
           queryAction={queryAction}
           promptList={promptList}
           initialMessage={initialMessage}
+          buttonLaunch={buttonLaunch}
           onChatChange={handleChatChange}
         />
       )}

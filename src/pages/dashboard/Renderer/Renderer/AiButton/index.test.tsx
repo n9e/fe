@@ -13,7 +13,7 @@ jest.mock('@/utils/constant', () => ({
 }));
 
 jest.mock('@/components/AiChatNG/FlashAiButton', () => ({
-  useAiChatOpenWithPrompt: (prompt?: string) => () => mockOpen(prompt),
+  useAiChatOpenWithPrompt: (prompt?: string, options?: unknown) => () => mockOpen(prompt, options),
 }));
 
 jest.mock('@/components/AiChat/images/ai-chat/ai_chat_icon.svg', () => ({
@@ -71,11 +71,28 @@ test('opens AI chat with the variable-replaced prompt', () => {
 
   fireEvent.click(screen.getByRole('button', { name: 'Ask AI' }));
 
-  expect(mockOpen).toHaveBeenCalledWith('check web-1 cpu');
+  expect(mockOpen).toHaveBeenCalledWith('check web-1 cpu', expect.objectContaining({ autoExecute: false, reuseConversation: false }));
 });
 
 test('uses the default label when button text is empty', () => {
   renderButton({ style: 'capsule', text: '' });
 
   expect(screen.getByRole('button', { name: 'Nightingale AI' })).toBeInTheDocument();
+});
+
+test.each(['small', 'middle', 'large'] as const)('applies %s size to every button style', (size) => {
+  const icon = renderButton({ style: 'icon', size });
+  expect(screen.getByRole('button')).toHaveStyle({ width: `${size === 'small' ? 24 : size === 'large' ? 40 : 32}px` });
+  icon.unmount();
+  const antd = renderButton({ style: 'antd', size });
+  expect(screen.getByRole('button')).toHaveClass(size === 'small' ? 'ant-btn-sm' : size === 'large' ? 'ant-btn-lg' : 'ant-btn');
+  antd.unmount();
+  renderButton({ style: 'capsule', size });
+  expect(screen.getByRole('button')).toHaveClass(size === 'small' ? 'ant-btn-sm' : size === 'large' ? 'ant-btn-lg' : 'ant-btn');
+});
+
+test('passes execution and conversation preferences to the launch handler', () => {
+  renderButton({ style: 'capsule', prompt: '$host', autoExecute: true, reuseConversation: true });
+  fireEvent.click(screen.getByRole('button'));
+  expect(mockOpen).toHaveBeenCalledWith('web-1', expect.objectContaining({ autoExecute: true, reuseConversation: true }));
 });
