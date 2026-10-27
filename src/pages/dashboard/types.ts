@@ -274,6 +274,10 @@ export interface IAiButtonStyles {
   text?: string;
   /** 仅 style 为 antd 时生效，对应 antd Button 的 type */
   type?: 'primary' | 'default' | 'dashed' | 'text' | 'link';
+  size?: 'small' | 'middle' | 'large';
+  autoExecute?: boolean;
+  reuseConversation?: boolean;
+  promptReferences?: import('@/components/AiChat/PromptEditor').PromptReference[];
   prompt?: string;
 }
 

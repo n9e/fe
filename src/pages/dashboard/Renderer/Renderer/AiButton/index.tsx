@@ -31,7 +31,13 @@ export default function AiButton(props: IProps) {
   const prompt = replaceTemplateVariables(typeof custom.prompt === 'string' ? custom.prompt : '', {
     scopedVars: values.scopedVars,
   });
-  const openAiChat = useAiChatOpenWithPrompt(prompt);
+  const openAiChat = useAiChatOpenWithPrompt(prompt, {
+    autoExecute: custom.autoExecute === true,
+    reuseConversation: custom.reuseConversation === true,
+    references: custom.promptReferences,
+  });
+  const size = custom.size === 'small' || custom.size === 'large' ? custom.size : 'middle';
+  const iconSize = size === 'small' ? 24 : size === 'large' ? 40 : 32;
   const buttonType = isAntdButtonType(custom.type) ? custom.type : 'primary';
   const gifIcon = <img src='/image/ai-chat/ai.gif' alt='' className='h-[14px] w-[14px] mr-2' />;
 
@@ -43,17 +49,23 @@ export default function AiButton(props: IProps) {
             type='button'
             aria-label={label}
             onClick={openAiChat}
-            className='flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0'
+            style={{ width: iconSize, height: iconSize }}
+            className='flex cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0'
           >
-            <AiCircleIcon />
+            <AiCircleIcon size={iconSize} />
           </button>
         </Tooltip>
       ) : style === 'antd' ? (
-        <Button type={buttonType} onClick={openAiChat}>
+        <Button type={buttonType} size={size} onClick={openAiChat}>
           {label}
         </Button>
       ) : (
-        <Button icon={gifIcon} onClick={openAiChat} className='!rounded-full border-violet-600 bg-violet-300 text-violet-1100 hover:border-violet-700 hover:bg-violet-400'>
+        <Button
+          icon={gifIcon}
+          size={size}
+          onClick={openAiChat}
+          className='!rounded-full border-violet-600 bg-violet-300 text-violet-1100 hover:border-violet-700 hover:bg-violet-400'
+        >
           {label}
         </Button>
       )}

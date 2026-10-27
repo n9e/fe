@@ -15,11 +15,12 @@
  *
  */
 import React from 'react';
-import { Button, Form, Input, Mentions, Select } from 'antd';
+import { Button, Form, Input, Select, Space, Switch } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
 import AiCircleIcon from '@/pages/dashboard/Components/AiCircleIcon';
+import PromptEditor from '@/components/AiChat/PromptEditor';
 import { useGlobalState } from '@/pages/dashboard/globalState';
 import { IS_ENT } from '@/utils/constant';
 
@@ -94,6 +95,8 @@ export default function AiButtonOptions() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const [variablesWithOptions] = useGlobalState('variablesWithOptions');
+  const form = Form.useFormInstance();
+  const references = Form.useWatch(['custom', 'promptReferences'], form);
 
   return (
     <Panel header={t('panel.custom.title')}>
@@ -125,16 +128,38 @@ export default function AiButtonOptions() {
           );
         }}
       </Form.Item>
-      <Form.Item label={t('panel.custom.aiButton.prompt')} tooltip={t('panel.custom.aiButton.prompt_tip')} name={[...namePrefix, 'prompt']}>
-        <Mentions prefix='$' rows={3}>
-          {_.map(variablesWithOptions, (item) => {
-            return (
-              <Mentions.Option key={item.name} value={item.name}>
-                {item.name}
-              </Mentions.Option>
-            );
-          })}
-        </Mentions>
+      <Space align='start'>
+        <Form.Item label={t('panel.custom.aiButton.size')} name={[...namePrefix, 'size']}>
+          <Select style={{ width: 100 }} options={['small', 'middle', 'large'].map((size) => ({ label: t(`panel.custom.aiButton.size_${size}`), value: size }))} />
+        </Form.Item>
+        <Form.Item label={t('panel.custom.aiButton.autoExecute')} name={[...namePrefix, 'autoExecute']} valuePropName='checked'>
+          <Switch />
+        </Form.Item>
+        <Form.Item label={t('panel.custom.aiButton.reuseConversation')} name={[...namePrefix, 'reuseConversation']} valuePropName='checked'>
+          <Switch />
+        </Form.Item>
+      </Space>
+      <Form.Item name={[...namePrefix, 'promptReferences']} hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item
+        label={t('panel.custom.aiButton.prompt')}
+        tooltip={{
+          overlayStyle: { maxWidth: 'min(480px, calc(100vw - 32px))' },
+          title: (
+            <div>
+              <div className='font-semibold'>{t('panel.custom.aiButton.prompt_variables_title')}</div>
+              <div style={{ whiteSpace: 'pre-line' }}>{t('panel.custom.aiButton.prompt_variables_tip')}</div>
+            </div>
+          ),
+        }}
+        name={[...namePrefix, 'prompt']}
+      >
+        <PromptEditor
+          variableNames={_.map(variablesWithOptions, (item) => item.name)}
+          references={references}
+          onReferencesChange={(promptReferences) => form.setFieldsValue({ custom: { promptReferences } })}
+        />
       </Form.Item>
     </Panel>
   );

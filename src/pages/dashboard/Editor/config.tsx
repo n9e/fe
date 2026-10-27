@@ -230,6 +230,9 @@ export const defaultCustomValuesMap = {
     style: 'capsule',
     text: '',
     type: 'primary',
+    size: 'middle',
+    autoExecute: false,
+    reuseConversation: false,
     prompt: '',
   },
   barchart: {
