@@ -117,4 +117,10 @@ describe('MessageItem in the dock', () => {
     expect(bubble.parentElement).not.toHaveClass('justify-end');
     expect(screen.getAllByText('message.empty_response')).toHaveLength(1);
   });
+
+  it('renders each response block only once', () => {
+    render(<MessageItem {...responseBlocksProps} message={message([{ content_type: EAiChatContentType.Markdown, content: '唯一回答', is_finish: true }], true)} variant='slim' />);
+
+    expect(screen.getAllByTestId('streaming-markdown')).toHaveLength(1);
+  });
 });
