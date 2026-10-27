@@ -12,7 +12,7 @@ import MetricsExplorer from '@/components/PromGraphCpt/components/MetricsExplore
 import { useSharedRequestCache } from '@/components/SharedRequestCache';
 
 import { interpolateString, instantInterpolateString, includesVariables, getRealStep } from './utils';
-import { requestPromQL } from './request';
+import { isValidPromQLDatasourceValue, requestPromQL } from './request';
 
 import './style.less';
 
@@ -24,7 +24,7 @@ export { interpolateString, instantInterpolateString, includesVariables, getReal
 
 interface MonacoEditorPromQLProps {
   readOnly?: boolean;
-  datasourceValue: number;
+  datasourceValue?: number;
   showBuiltinMetrics?: boolean;
   variablesNames?: string[];
   size?: 'small' | 'middle' | 'large';
@@ -79,6 +79,7 @@ export default function index(props: MonacoEditorPromQLProps) {
   } = props;
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
   const requestCache = useSharedRequestCache();
+  const enableRequests = isValidPromQLDatasourceValue(datasourceValue);
   const editorRef = React.useRef<MonacoEditor | null>(null);
   const syncingExternalValueRef = React.useRef(false);
   const lastModelResetTokenRef = React.useRef(modelResetToken);
@@ -145,8 +146,8 @@ export default function index(props: MonacoEditorPromQLProps) {
             value={value ?? ''}
             placeholder={placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
-            apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
-            enableRequests={datasourceValue !== undefined}
+            apiPrefix={enableRequests ? `${URL_PREFIX}/${datasourceValue}/api/v1` : undefined}
+            enableRequests={enableRequests}
             request={(resource, options) =>
               requestPromQL(resource, options, {
                 accessToken: localStorage.getItem('access_token') || '',
