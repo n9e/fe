@@ -24,6 +24,7 @@ const ja_JP = {
     use_previous: '前回の変換結果を使用します。最新の内容が必要な場合は再度変換してください',
     range_required: '時間範囲を選択してください',
     unlimited: '無制限',
+    build_failed: 'SQL の生成に失敗しました',
     collapse: '折りたたむ',
     expand: '展開',
   },

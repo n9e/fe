@@ -11,11 +11,12 @@ import { NAME_SPACE, NG_QUERY_CACHE_KEY, NG_QUERY_CACHE_PICK_KEYS, NG_SQL_CACHE_
 
 interface Props {
   executeQuery: () => void;
+  onSelectSQL?: () => void;
 }
 
 export default function QueryInputAddonAfter(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { executeQuery } = props;
+  const { executeQuery, onSelectSQL } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
   const syntax = Form.useWatch(['query', 'syntax']);
@@ -63,6 +64,7 @@ export default function QueryInputAddonAfter(props: Props) {
         localKey={NG_SQL_CACHE_KEY}
         datasourceValue={datasourceValue}
         onSelect={(query) => {
+          onSelectSQL?.();
           form.setFieldsValue({
             refreshFlag: undefined,
             query: {

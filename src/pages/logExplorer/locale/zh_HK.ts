@@ -24,6 +24,7 @@ const zh_HK = {
     use_previous: '將使用上次轉換的結果；如需最新內容，請先轉換',
     range_required: '請選擇時間範圍',
     unlimited: '無限制',
+    build_failed: 'SQL 生成失敗',
     collapse: '收起',
     expand: '展開',
   },

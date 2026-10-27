@@ -36,12 +36,15 @@ interface Props {
   };
 
   isOpenSearch?: boolean;
+
+  /** The index/date field changed: the builder and its statement belong to the old context. */
+  onQueryContextChange?: () => void;
 }
 
 export default function indexCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { esIndexMode } = useContext(CommonStateContext);
-  const { disabled, executeQuery, organizeFields, setOrganizeFields, onIndexDataChange, handleValueFilter, requestParams, isOpenSearch } = props;
+  const { disabled, executeQuery, organizeFields, setOrganizeFields, onIndexDataChange, handleValueFilter, requestParams, isOpenSearch, onQueryContextChange } = props;
 
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
 
@@ -255,8 +258,13 @@ export default function indexCpt(props: Props) {
                     )
                   }
                   onChange={() => {
+                    // The statement names the index it runs against: drop it with the context it belonged to.
+                    onQueryContextChange?.();
                     form.setFieldsValue({
                       refreshFlag: undefined,
+                      query: {
+                        sql: undefined,
+                      },
                     });
                   }}
                 />
@@ -281,7 +289,10 @@ export default function indexCpt(props: Props) {
                     };
                   })}
                   onChange={() => {
-                    executeQuery();
+                    onQueryContextChange?.();
+                    form.setFieldsValue({ refreshFlag: undefined, query: { sql: undefined } });
+                    // The statement was just dropped, so only a query-mode filter still has something to run.
+                    if (queryValues?.syntax !== 'sql') executeQuery();
                   }}
                 />
               </Form.Item>
@@ -381,9 +392,10 @@ export default function indexCpt(props: Props) {
                       queryValues.index = selected.name;
                       queryValues.allow_hide_system_indices = selected.allow_hide_system_indices;
                       queryValues.cross_cluster_enabled = selected.cross_cluster_enabled;
+                      onQueryContextChange?.();
                       form.setFieldsValue({
                         refreshFlag: undefined,
-                        query: queryValues,
+                        query: { ...queryValues, sql: undefined },
                         fieldConfig,
                       });
                     }

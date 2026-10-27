@@ -15,6 +15,7 @@ const en_US = {
     use_previous: 'Uses the previous conversion. Convert again to use the latest form.',
     range_required: 'Please select a time range',
     unlimited: 'Unlimited',
+    build_failed: 'Failed to generate SQL',
     collapse: 'Collapse',
     expand: 'Expand',
   },

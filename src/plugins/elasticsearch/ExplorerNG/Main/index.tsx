@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
-import { Form, Row, Col, Button, Segmented, Dropdown, Menu, Badge } from 'antd';
+import { Form, Row, Col, Button, Segmented, Dropdown, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -7,8 +7,10 @@ import { CommonStateContext } from '@/App';
 import { SIZE, DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS, QUERY_INPUT_MIN_WIDTH } from '@/pages/logExplorer/constants';
+import QueryWorkspace from '@/pages/logExplorer/components/QueryWorkspace';
+import getErrorMessage from '@/pages/logExplorer/components/QueryWorkspace/getErrorMessage';
 
-import { NAME_SPACE, QUERY_BUILDER_PINNED_CACHE_KEY } from '../../constants';
+import { NAME_SPACE } from '../../constants';
 import { Field, Interval } from '../types';
 import MainMoreOperations from '../components/MainMoreOperations';
 import FiltersBuilder from '../components/FiltersBuilder';
@@ -16,8 +18,9 @@ import { HandleValueFilterParams } from '../types';
 import RawMain from './Raw';
 import QueryQueryInput from './QueryInput';
 import SQLQueryInput from './SQL/QueryInput';
-
-import SQLQueryBuilder from './SQL/QueryBuilder';
+import QueryBuilder from './SQL/Builder';
+import type { ESQueryWorkspace } from '../useQueryWorkspace';
+import { defaultBuilderValues } from '../useQueryWorkspace';
 
 import SQLMain from './SQL';
 import { getESClusterInfo } from '../../services';
@@ -64,11 +67,12 @@ interface Props {
     reverse: boolean;
     refreshFlag: string | undefined;
   };
+  workspace: ESQueryWorkspace;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { logsDefaultRange } = useContext(CommonStateContext);
+  const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
 
   const {
     tabKey,
@@ -85,6 +89,7 @@ export default function index(props: Props) {
     serviceParams,
     setServiceParams,
     getServiceParams,
+    workspace,
   } = props;
 
   const logsAntdTableSelector = `.explorer-container-${tabKey} .n9e-event-logs-table .ant-table-body`;
@@ -92,18 +97,6 @@ export default function index(props: Props) {
 
   const [executeLoading, setExecuteLoading] = useState(false);
   const [supportsSQL, setSupportsSQL] = useState(false);
-  const [queryBuilderPinned, setQueryBuilderPinned] = useState(() => {
-    return localStorage.getItem(QUERY_BUILDER_PINNED_CACHE_KEY) === 'true';
-  });
-  const [queryBuilderVisible, setQueryBuilderVisible] = useState(false);
-  const [isContentChangedDotVisible, setIsContentChangedDotVisible] = useState(false);
-  const [timeseriesKeys, setTimeseriesKeys] = useState<{
-    value: string[];
-    label: string[];
-  }>({
-    value: [],
-    label: [],
-  });
 
   const queryInputRef = useRef<any>(null);
 
@@ -194,25 +187,7 @@ export default function index(props: Props) {
             />
           </Col>
           <Col flex='1 1 0' style={{ minWidth: QUERY_INPUT_MIN_WIDTH }}>
-            {isSQLMode ? (
-              <SQLQueryInput
-                ref={queryInputRef}
-                snapRangeRef={snapRangeRef}
-                executeQuery={executeQuery}
-                queryBuilderPinned={queryBuilderPinned}
-                queryBuilderVisible={queryBuilderVisible}
-                onLableClick={() => {
-                  if (queryBuilderPinned) {
-                    setQueryBuilderPinned(false);
-                    localStorage.setItem(QUERY_BUILDER_PINNED_CACHE_KEY, 'false');
-                  } else {
-                    setQueryBuilderVisible(!queryBuilderVisible);
-                  }
-                }}
-              />
-            ) : (
-              <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
-            )}
+            {!isSQLMode && <QueryQueryInput snapRangeRef={snapRangeRef} executeQuery={executeQuery} />}
           </Col>
           <Col flex='none'>
             <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
@@ -228,12 +203,11 @@ export default function index(props: Props) {
               />
             </Form.Item>
           </Col>
-          <Col flex='none'>
-            <Badge dot={isContentChangedDotVisible}>
+          {!isSQLMode && (
+            <Col flex='none'>
               <Button
                 type='primary'
                 onClick={() => {
-                  setIsContentChangedDotVisible(false);
                   snapRangeRef.current = {
                     from: undefined,
                     to: undefined,
@@ -244,44 +218,57 @@ export default function index(props: Props) {
               >
                 {t(`${logExplorerNS}:execute`)}
               </Button>
-            </Badge>
-          </Col>
+            </Col>
+          )}
           <Col flex='none'>
             <MainMoreOperations />
           </Col>
         </Row>
-        {IS_PLUS && isSQLMode && (
-          <SQLQueryBuilder
-            datasourceValue={datasourceValue}
-            index={queryValues?.index}
-            date_field={queryValues?.date_field}
-            sql={queryValues?.sql}
-            visible={queryBuilderVisible}
-            onClose={() => setQueryBuilderVisible(false)}
-            queryBuilderPinned={queryBuilderPinned}
-            setQueryBuilderPinned={(pinned) => {
-              setQueryBuilderPinned(pinned);
-              localStorage.setItem(QUERY_BUILDER_PINNED_CACHE_KEY, pinned ? 'true' : 'false');
-              if (pinned) {
-                setQueryBuilderVisible(true);
+        {isSQLMode && (
+          <div>
+            <QueryWorkspace
+              assistEnabled={workspace.assistEnabled}
+              preview={workspace.preview?.statement}
+              dirty={workspace.dirty}
+              generating={workspace.generating}
+              executeLoading={executeLoading}
+              darkMode={darkMode}
+              error={workspace.error ? getErrorMessage(workspace.error, t(`${logExplorerNS}:query_workspace.build_failed`)) : undefined}
+              onAssistChange={(enabled) => {
+                workspace.setAssistEnabled(enabled);
+              }}
+              onReset={() => {
+                workspace.reset();
+              }}
+              onConvert={() => {
+                void workspace.convert();
+              }}
+              onExecute={() => {
+                snapRangeRef.current = {
+                  from: undefined,
+                  to: undefined,
+                };
+                executeQuery();
+              }}
+              onContinueWriting={() => {
+                workspace.continueWriting();
+                requestAnimationFrame(() => queryInputRef.current?.focus());
+              }}
+              builder={
+                <QueryBuilder
+                  explorerForm={form}
+                  form={workspace.builderForm}
+                  datasourceValue={datasourceValue}
+                  index={queryValues?.index}
+                  date_field={queryValues?.date_field}
+                  onChange={() => {
+                    workspace.markDirty();
+                  }}
+                />
               }
-            }}
-            onExecute={(values) => {
-              setIsContentChangedDotVisible(false);
-              setTimeseriesKeys({
-                value: values?.value_key || [],
-                label: values?.label_key || [],
-              });
-            }}
-            onPreviewSQL={(values) => {
-              queryInputRef.current?.focus();
-              setIsContentChangedDotVisible(true);
-              setTimeseriesKeys({
-                value: values?.value_key || [],
-                label: values?.label_key || [],
-              });
-            }}
-          />
+              editor={<SQLQueryInput ref={queryInputRef} executeQuery={executeQuery} onSelectSQL={workspace.enterManual} />}
+            />
+          </div>
         )}
         {!isSQLMode && (
           <FiltersBuilder
@@ -312,7 +299,7 @@ export default function index(props: Props) {
           }}
           setExecuteLoading={setExecuteLoading}
           executeQuery={executeQuery}
-          timeseriesKeys={timeseriesKeys.value.length || timeseriesKeys.label.length ? timeseriesKeys : queryValues?.keys || { value: [], label: [] }}
+          timeseriesKeys={{ value: workspace.preview?.metadata.value_key || [], label: workspace.preview?.metadata.label_key || [] }}
         />
       ) : (
         <RawMain

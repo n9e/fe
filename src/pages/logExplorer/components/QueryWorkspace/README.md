@@ -19,4 +19,4 @@
 
 两种模式共用同一张卡片：32px 操作栏 + 200px 内容区。手写模式的内容区是 SQL 编辑器，辅助模式是等高的表单/预览双栏，切换时卡片高度不变。
 
-Doris 首次接入示例见 `src/plugins/doris/ExplorerNG/useQueryWorkspace.ts`。
+已接入的数据源：Doris（首个示例，`src/plugins/doris/ExplorerNG/useQueryWorkspace.ts`）、ClickHouse（`src/plugins/clickHouse/ExplorerNG/useQueryWorkspace.ts`）、Elasticsearch 的 SQL 模式（`src/plugins/elasticsearch/ExplorerNG/useQueryWorkspace.ts`）。三者共用 `getErrorMessage` 把后端 err 还原成提示文案。

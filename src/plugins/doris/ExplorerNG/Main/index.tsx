@@ -15,7 +15,7 @@ import { Field } from '../types';
 import MainMoreOperations from '../components/MainMoreOperations';
 import SQLFormatButton from '../components/SQLFormatButton';
 import { HandleValueFilterParams } from '../types';
-import getErrorMessage from '../utils/getErrorMessage';
+import getErrorMessage from '@/pages/logExplorer/components/QueryWorkspace/getErrorMessage';
 import QueryMain from './Query';
 import SQLMain from './SQL';
 import SQLQueryInput from './SQL/QueryInput';

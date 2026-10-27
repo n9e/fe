@@ -11,7 +11,7 @@ import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
 import { NAME_SPACE } from '../constants';
 import { buildSql } from '../services';
-import getErrorMessage from './utils/getErrorMessage';
+import getErrorMessage from '@/pages/logExplorer/components/QueryWorkspace/getErrorMessage';
 import type { AggregateConfig, FilterConfig, OrderByConfig } from './types';
 
 export interface DorisBuilderValues {

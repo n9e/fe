@@ -18,7 +18,7 @@ import Filters from '../ExplorerNG/components/QueryBuilder/Filters';
 import Aggregates from '../ExplorerNG/components/QueryBuilder/Aggregates';
 import OrderBy from '../ExplorerNG/components/QueryBuilder/OrderBy';
 import CommonStateContext from '../ExplorerNG/components/QueryBuilder/commonStateContext';
-import getErrorMessage from '../ExplorerNG/utils/getErrorMessage';
+import getErrorMessage from '@/pages/logExplorer/components/QueryWorkspace/getErrorMessage';
 import getMaxLabelWidth from '../ExplorerNG/components/QueryBuilder/utils/getMaxLabelWidth';
 
 export interface BuilderConfig {
