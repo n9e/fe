@@ -78,6 +78,9 @@ const zh_HK = {
     enabled: '啟用',
     disabled: '停用',
   },
+  prom_status_link: '狀態頁',
+  prom_status_tip: '查看該數據源 Prometheus 的運行與構建信息',
+  prom_status_open: '新視窗開啟',
   form: {
     advanced_settings: '高級設置',
     other: '其他',
