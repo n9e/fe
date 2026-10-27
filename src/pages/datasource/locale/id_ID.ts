@@ -89,10 +89,10 @@ const id_ID = {
       sigv4_service_tip:
         'Nama layanan AWS yang digunakan dalam tanda tangan: aps untuk Amazon Managed Service for Prometheus, es untuk Amazon OpenSearch Service, aoss untuk OpenSearch Serverless',
       credential_source: 'Sumber kredensial',
-      ambient_disabled: 'Dinonaktifkan oleh konfigurasi server (DatasourceAuth.DisableAmbientCredentials)',
+      ambient_disabled: 'Dinonaktifkan oleh konfigurasi server (DatasourceAuthPolicy.DisableAmbientCredentials)',
       aws_default_chain: 'Rantai kredensial default (IRSA / Pod Identity / peran instans / variabel lingkungan)',
       role_arn_tip: 'Opsional. Mengambil peran ini di atas sumber kredensial, untuk akses lintas akun',
-      assume_role_disabled: 'Dinonaktifkan oleh konfigurasi server (DatasourceAuth.DisableAssumeRole)',
+      assume_role_disabled: 'Dinonaktifkan oleh konfigurasi server (DatasourceAuthPolicy.DisableAssumeRole)',
       sts_endpoint: 'Endpoint STS',
       sts_endpoint_tip: 'Opsional. Menimpa endpoint STS, misalnya endpoint VPC atau FIPS',
       endpoint_params: 'Parameter tambahan permintaan token',

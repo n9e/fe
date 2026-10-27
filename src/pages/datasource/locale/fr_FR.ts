@@ -89,10 +89,10 @@ const fr_FR = {
       sigv4_service_tip:
         'Nom du service AWS utilisé dans la signature : aps pour Amazon Managed Service for Prometheus, es pour Amazon OpenSearch Service, aoss pour OpenSearch Serverless',
       credential_source: 'Source des identifiants',
-      ambient_disabled: 'Désactivé par la configuration du serveur (DatasourceAuth.DisableAmbientCredentials)',
+      ambient_disabled: 'Désactivé par la configuration du serveur (DatasourceAuthPolicy.DisableAmbientCredentials)',
       aws_default_chain: "Chaîne d'identifiants par défaut (IRSA / Pod Identity / rôle d'instance / variables d'environnement)",
       role_arn_tip: "Facultatif. Endosser ce rôle par-dessus la source des identifiants, pour l'accès inter-comptes",
-      assume_role_disabled: 'Désactivé par la configuration du serveur (DatasourceAuth.DisableAssumeRole)',
+      assume_role_disabled: 'Désactivé par la configuration du serveur (DatasourceAuthPolicy.DisableAssumeRole)',
       sts_endpoint: 'Endpoint STS',
       sts_endpoint_tip: "Facultatif. Remplace l'endpoint STS, par exemple un endpoint VPC ou FIPS",
       endpoint_params: 'Paramètres supplémentaires de la demande de jeton',

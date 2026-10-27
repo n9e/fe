@@ -89,10 +89,10 @@ const pt_BR = {
       sigv4_service_tip:
         'Nome do serviço AWS usado na assinatura: aps para Amazon Managed Service for Prometheus, es para Amazon OpenSearch Service, aoss para OpenSearch Serverless',
       credential_source: 'Origem das credenciais',
-      ambient_disabled: 'Desativado pela configuração do servidor (DatasourceAuth.DisableAmbientCredentials)',
+      ambient_disabled: 'Desativado pela configuração do servidor (DatasourceAuthPolicy.DisableAmbientCredentials)',
       aws_default_chain: 'Cadeia de credenciais padrão (IRSA / Pod Identity / função da instância / variáveis de ambiente)',
       role_arn_tip: 'Opcional. Assume esta função sobre a origem das credenciais, para acesso entre contas',
-      assume_role_disabled: 'Desativado pela configuração do servidor (DatasourceAuth.DisableAssumeRole)',
+      assume_role_disabled: 'Desativado pela configuração do servidor (DatasourceAuthPolicy.DisableAssumeRole)',
       sts_endpoint: 'Endpoint do STS',
       sts_endpoint_tip: 'Opcional. Substitui o endpoint do STS, por exemplo um endpoint de VPC ou FIPS',
       endpoint_params: 'Parâmetros extras da solicitação de token',
