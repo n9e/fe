@@ -62,8 +62,7 @@ export default function LogOrderContext(props: Props) {
 
   useEffect(() => {
     if (!open || !anchor) return;
-    // 同一文件流里来源字段每行都一样，默认只显示日志正文
-    setOrganizeFields(log && 'message' in log ? ['message'] : []);
+    setOrganizeFields([]);
     setLimited(undefined);
     scrollTarget.current = 'anchor';
     setLoading('initial');
@@ -146,22 +145,16 @@ export default function LogOrderContext(props: Props) {
         render: (row: Record<string, any>) => {
           const fields = _.omit(row, hiddenFields);
           const picked = _.isEmpty(organizeFields) ? fields : _.pick(fields, organizeFields);
-          // 只显示正文时省掉字段名，正文紧跟在时间后面
-          const onlyMessage = _.isEqual(_.keys(picked), ['message']);
           return (
             <div className='whitespace-pre-wrap break-all'>
               {rotatedIndexes.has(row[LOG_INDEX_FIELD]) && <Tag color='orange'>{t('log_order_context.rotated')}</Tag>}
               {row[timeField] != null && <span className='text-hint mr-2'>[{String(row[timeField])}]</span>}
-              {_.map(picked, (value, key) =>
-                onlyMessage ? (
-                  <span key={key}>{renderMarkedText(value, filterKeywords, highlightKeywords)}</span>
-                ) : (
-                  <span key={key} className='mr-3'>
-                    <span className='font-bold'>{renderMarkedText(key, filterKeywords, highlightKeywords)}</span>:{' '}
-                    <span className='text-gray-500'>{renderMarkedText(value, filterKeywords, highlightKeywords)}</span>
-                  </span>
-                ),
-              )}
+              {_.map(picked, (value, key) => (
+                <span key={key} className='mr-3'>
+                  <span className='font-bold'>{renderMarkedText(key, filterKeywords, highlightKeywords)}</span>:{' '}
+                  <span className='text-gray-500'>{renderMarkedText(value, filterKeywords, highlightKeywords)}</span>
+                </span>
+              ))}
             </div>
           );
         },
