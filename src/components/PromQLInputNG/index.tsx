@@ -9,8 +9,10 @@ import { CommonStateContext } from '@/App';
 import { N9E_PATHNAME } from '@/utils/constant';
 import BuiltinMetrics from '@/components/PromQLInput/BuiltinMetrics';
 import MetricsExplorer from '@/components/PromGraphCpt/components/MetricsExplorer';
+import { useSharedRequestCache } from '@/components/SharedRequestCache';
 
 import { interpolateString, instantInterpolateString, includesVariables, getRealStep } from './utils';
+import { requestPromQL } from './request';
 
 import './style.less';
 
@@ -76,6 +78,7 @@ export default function index(props: MonacoEditorPromQLProps) {
     onMetricUnitChange,
   } = props;
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
+  const requestCache = useSharedRequestCache();
   const editorRef = React.useRef<MonacoEditor | null>(null);
   const syncingExternalValueRef = React.useRef(false);
   const lastModelResetTokenRef = React.useRef(modelResetToken);
@@ -144,16 +147,12 @@ export default function index(props: MonacoEditorPromQLProps) {
             variablesNames={variablesNames}
             apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
             enableRequests={datasourceValue !== undefined}
-            request={(resource, options) => {
-              const params = options?.body?.toString();
-              const search = params ? `?${params}` : '';
-              return fetch(resource + search, {
-                method: 'Get',
-                headers: new Headers({
-                  Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-                }),
-              });
-            }}
+            request={(resource, options) =>
+              requestPromQL(resource, options, {
+                accessToken: localStorage.getItem('access_token') || '',
+                cache: requestCache,
+              })
+            }
             enableAutocomplete={enableAutocomplete}
             durationVariablesCompletion={durationVariablesCompletion}
             interpolateString={interpolateString}
