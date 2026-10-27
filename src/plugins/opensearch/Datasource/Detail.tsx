@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Row, Col } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
+import AuthTypeDetail from '@/pages/datasource/components/items/AuthTypeDetail';
 
 interface Props {
   data: any;
@@ -26,6 +27,7 @@ export default function Index(props: Props) {
         </Row>
       </div>
       <div className='page-title'>{t('form.auth')}</div>
+      <AuthTypeDetail auth={data?.auth} />
       <div className='flash-cat-block'>
         <Row gutter={16}>
           <Col span={12}>{t('form.username')}：</Col>
