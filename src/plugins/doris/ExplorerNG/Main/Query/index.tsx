@@ -15,7 +15,9 @@ import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStruct
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
-import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram } from '../../../services';
+import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram, getDorisContextLogs } from '../../../services';
+import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import { getLogOrderAnchor, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -160,6 +162,8 @@ export default function index(props: Props) {
         timeParams = snapRangeRef.current as { from: number; to: number };
       }
       rangeRef.current = timeParams;
+      // 滚动加载下一页时带上最后一行的排序值：表支持原文顺序时后端按它翻页，跨页不乱序也不用从头扫
+      const lastAnchor = appendRef.current ? getLogOrderAnchor(_.last(data?.list)?.___raw___ || {}, queryValues.time_field) : undefined;
       const queryStart = Date.now();
       const reqData = {
         cate: DatasourceCateEnum.doris,
@@ -178,6 +182,7 @@ export default function index(props: Props) {
             reverse: serviceParams.reverse,
             default_field: defaultSearchField,
             highlight: true,
+            search_after: lastAnchor ? { time: String(lastAnchor.time), stream_id: lastAnchor.streamId, seq: lastAnchor.seq } : undefined,
           },
         ],
       };
@@ -193,7 +198,7 @@ export default function index(props: Props) {
               // 不 parse、不拍平,行数据 = 原始字段值(剔除内部高亮字段,与 depth>0 的 ___raw___ 语义一致)
               const rawItem = _.omit(item, [HIGHLIGHT_FIELD]);
               return {
-                ...rawItem,
+                ..._.omit(rawItem, [LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD]),
                 ___raw___: rawItem,
                 ___id___: _.uniqueId('log_id_'),
               };
@@ -201,7 +206,7 @@ export default function index(props: Props) {
             const normalizedItem = normalizeLogStructures(_.omit(item, [HIGHLIGHT_FIELD]));
             return {
               // 层级语义:flattenDepth = N 表示嵌套 JSON 展开 N 层,对应 flatten 的 maxDepth = N + 1
-              ...(flatten(normalizedItem, { maxDepth: flattenDepth + 1 }) || {}),
+              ...(flatten(_.omit(normalizedItem, [LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD]), { maxDepth: flattenDepth + 1 }) || {}),
               ___raw___: normalizedItem,
               ___id___: _.uniqueId('log_id_'),
             };
@@ -605,6 +610,33 @@ export default function index(props: Props) {
               }}
               range={queryValues?.range}
               {...logAnalysisViewerProps}
+              logViewerExtraRender={(log) => (
+                <>
+                  {(logAnalysisViewerProps as { logViewerExtraRender?: (log: Record<string, any>) => React.ReactNode }).logViewerExtraRender?.(log)}
+                  <LogOrderContext
+                    log={log.___raw___}
+                    timeField={queryValues?.time_field}
+                    fetchContext={(anchor, direction, limit) =>
+                      getDorisContextLogs({
+                        cate: DatasourceCateEnum.doris,
+                        datasource_id: datasourceValue,
+                        query: [
+                          {
+                            database: queryValues?.database,
+                            table: queryValues?.table,
+                            time_field: queryValues?.time_field,
+                            stream_id: anchor.streamId,
+                            seq: anchor.seq,
+                            time: String(anchor.time),
+                            direction,
+                            limit,
+                          },
+                        ],
+                      })
+                    }
+                  />
+                </>
+              )}
             />
           ) : loading || histogramLoading ? (
             <div className='flex justify-center'>

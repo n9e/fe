@@ -15,7 +15,9 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 import { getDateTokenDisplayValue } from '@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/tokenValue';
 
 import { NAME_SPACE, LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
-import { getLogsQuery, getHistogram } from '../../../services';
+import { getLogsQuery, getHistogram, getESContextLogs } from '../../../services';
+import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import { esSupportsLogOrder, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import dslBuilder from '../../../utils/dslBuilder';
 import { getHighlightHtml } from '../../../utils/highlight';
 import { Field, Interval } from '../../types';
@@ -177,12 +179,11 @@ export default function index(props: Props) {
           kuery: queryValues.query,
           from: (serviceParams.current - 1) * serviceParams.pageSize,
           limit: serviceParams.pageSize,
-          sorter: [
-            {
-              field: queryValues.date_field,
-              order: serviceParams.reverse ? 'desc' : 'asc',
-            },
-          ],
+          // 时间相同时按文件流和序号排，同一文件的日志跨页也保持原文顺序
+          sorter: _.map(esSupportsLogOrder(indexData) ? [queryValues.date_field, LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD] : [queryValues.date_field], (field) => ({
+            field,
+            order: serviceParams.reverse ? 'desc' : 'asc',
+          })),
           _source: true,
           shouldHighlight: true,
         });
@@ -210,7 +211,7 @@ export default function index(props: Props) {
               [index: string]: string;
             };
             return {
-              ...log,
+              ..._.omit(log, [LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD]),
               __n9e_raw_n9e__: log as any,
               __n9e_id_n9e__: _.uniqueId('log_id_'),
             };
@@ -440,6 +441,33 @@ export default function index(props: Props) {
               // props
               id_key='__n9e_id_n9e__'
               raw_key='__n9e_raw_n9e__'
+              logViewerExtraRender={
+                IS_PLUS
+                  ? (log) => (
+                      <LogOrderContext
+                        log={log.__n9e_raw_n9e__}
+                        timeField={queryValues?.date_field}
+                        fetchContext={(anchor, direction, limit) =>
+                          getESContextLogs({
+                            cate: DatasourceCateEnum.elasticsearch,
+                            datasource_id: datasourceValue,
+                            query: [
+                              {
+                                index: queryValues?.index,
+                                time_field: queryValues?.date_field,
+                                stream_id: anchor.streamId,
+                                seq: anchor.seq,
+                                time: moment(anchor.time).valueOf(),
+                                direction,
+                                limit,
+                              },
+                            ],
+                          })
+                        }
+                      />
+                    )
+                  : undefined
+              }
               showExistsAction
               timeField={queryValues?.date_field}
               histogramLoading={histogramLoading}

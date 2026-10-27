@@ -167,6 +167,8 @@ export function getDorisLogsQuery(
       reverse: boolean;
       default_field?: string;
       highlight?: boolean;
+      /** 上一页最后一行的排序值；表支持原文顺序时代替 offset */
+      search_after?: { time: string; stream_id: string; seq: string };
     }[];
   },
   options?: Pick<RequestOptionsInit, 'errorHandler'>,
@@ -185,6 +187,27 @@ export function getDorisLogsQuery(
       })),
     },
   }).then((res) => res.dat || { list: [], total: 0 });
+}
+
+/** 锚点所在文件流前后的日志，按原文顺序返回 */
+export function getDorisContextLogs(data: {
+  cate: string;
+  datasource_id: number;
+  query: {
+    database: string;
+    table: string;
+    time_field: string;
+    stream_id: string;
+    seq: string;
+    time: string;
+    direction: 'before' | 'after';
+    limit: number;
+  }[];
+}): Promise<{ [index: string]: any }[]> {
+  return request('/api/n9e-plus/doris-context-logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat?.list || []);
 }
 
 export const getDsQuery2 = function (data: {

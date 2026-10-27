@@ -158,6 +158,26 @@ export function getFullFields(
 
 const queryControllerMap = new Map();
 
+/** 锚点所在文件流前后的日志，按原文顺序返回 _source */
+export function getESContextLogs(data: {
+  cate: string;
+  datasource_id: number;
+  query: {
+    index: string;
+    time_field: string;
+    stream_id: string;
+    seq: string;
+    time: number;
+    direction: 'before' | 'after';
+    limit: number;
+  }[];
+}): Promise<{ [index: string]: any }[]> {
+  return request('/api/n9e-plus/es-context-logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => _.map(res.dat?.list || [], (hit) => hit._source || {}));
+}
+
 export function getLogsQuery(datasourceValue: number, requestBody: any, requestId: string) {
   if (queryControllerMap.has(requestId)) {
     queryControllerMap.get(requestId).abort();

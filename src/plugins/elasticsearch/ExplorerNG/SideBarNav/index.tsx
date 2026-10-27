@@ -17,6 +17,7 @@ import { getIndices, getFullFields } from '../../services';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import FieldsSidebar from './FieldsSidebar';
+import { isLogOrderField } from '@/pages/logExplorer/components/LogOrderContext/utils';
 
 interface Props {
   disabled?: boolean;
@@ -94,7 +95,8 @@ export default function indexCpt(props: Props) {
               });
             }
           }
-          return fieldData;
+          // 原文顺序字段只用于排序和上下文；上层仍拿完整字段判断索引是否支持原文顺序
+          return _.filter(fieldData, (item) => !isLogOrderField(item.field));
         })
         .catch(() => {
           setDateFields([]);
