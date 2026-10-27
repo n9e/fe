@@ -76,7 +76,8 @@ export default function index(props: MonacoEditorPromQLProps) {
   } = props;
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
   const requestCache = useSharedRequestCache();
-  const enableRequests = isValidPromQLDatasourceValue(datasourceValue);
+  const validDatasourceValue = isValidPromQLDatasourceValue(datasourceValue) ? datasourceValue : undefined;
+  const enableRequests = validDatasourceValue !== undefined;
   const editorRef = React.useRef<MonacoEditor | null>(null);
   const [value, setValue, getValue] = useGetState<string | undefined>(props.value);
 
@@ -123,7 +124,7 @@ export default function index(props: MonacoEditorPromQLProps) {
             value={value}
             placeholder={placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
-            apiPrefix={enableRequests ? `${URL_PREFIX}/${datasourceValue}/api/v1` : undefined}
+            apiPrefix={enableRequests ? `${URL_PREFIX}/${validDatasourceValue}/api/v1` : undefined}
             enableRequests={enableRequests}
             request={(resource, options) =>
               requestPromQL(resource, options, {
@@ -172,7 +173,7 @@ export default function index(props: MonacoEditorPromQLProps) {
               onEditorDidMount?.(editor);
             }}
           />
-          {showGlobalMetrics && (
+          {showGlobalMetrics && validDatasourceValue !== undefined && (
             <span className='ant-input-suffix'>
               <Search
                 size={16}
@@ -185,19 +186,21 @@ export default function index(props: MonacoEditorPromQLProps) {
           )}
         </span>
       </div>
-      <MetricsExplorer
-        url={URL_PREFIX}
-        datasourceValue={datasourceValue}
-        show={metricsExplorerVisible}
-        updateShow={setMetricsExplorerVisible}
-        insertAtCursor={(val) => {
-          if (editorRef.current) {
-            const editor = editorRef.current;
-            editor.trigger('keyboard', 'type', { text: val });
-            editor.focus();
-          }
-        }}
-      />
+      {validDatasourceValue !== undefined && (
+        <MetricsExplorer
+          url={URL_PREFIX}
+          datasourceValue={validDatasourceValue}
+          show={metricsExplorerVisible}
+          updateShow={setMetricsExplorerVisible}
+          insertAtCursor={(val) => {
+            if (editorRef.current) {
+              const editor = editorRef.current;
+              editor.trigger('keyboard', 'type', { text: val });
+              editor.focus();
+            }
+          }}
+        />
+      )}
     </>
   );
 }
