@@ -37,6 +37,7 @@ export default function LogOrderContext(props: Props) {
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [filterKeywords, setFilterKeywords] = useState<string[]>([]);
   const [highlightKeywords, setHighlightKeywords] = useState<string[]>([]);
+  const [flashAnchor, setFlashAnchor] = useState(false);
   const scrollTarget = useRef<Direction | 'anchor'>('anchor');
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -193,7 +194,15 @@ export default function LogOrderContext(props: Props) {
                     {t('log_order_context.earlier')}
                   </Space>
                 </Button>
-                <Button disabled={rows.length === 0} onClick={scrollToAnchor}>
+                <Button
+                  disabled={rows.length === 0}
+                  onClick={() => {
+                    scrollToAnchor();
+                    // 当前行本就在视野里时不会滚动，闪一下才看得出按钮生效了
+                    setFlashAnchor(true);
+                    window.setTimeout(() => setFlashAnchor(false), 800);
+                  }}
+                >
                   {t('log_order_context.back_to_anchor')}
                 </Button>
                 <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
@@ -266,7 +275,18 @@ export default function LogOrderContext(props: Props) {
                 loading={loading === 'initial'}
                 dataSource={filteredRows}
                 columns={columns}
-                rowClassName={(row) => (row[LOG_INDEX_FIELD] === 0 ? 'bg-purple-950/[0.1]' : '')}
+                onRow={(row) =>
+                  row[LOG_INDEX_FIELD] === 0
+                    ? {
+                        // 主题色左边条 + 随主题变化的底色，暗色模式下也看得清
+                        style: {
+                          background: flashAnchor ? 'rgba(var(--fc-fill-primary-rgb), 0.35)' : 'var(--fc-primary-bg)',
+                          boxShadow: 'inset 3px 0 0 var(--fc-primary-color)',
+                          transition: 'background 0.6s',
+                        },
+                      }
+                    : {}
+                }
               />
             )}
           </div>
