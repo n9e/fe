@@ -180,6 +180,16 @@ const en_US = {
     loading_tip_suffix: ' for log search',
     sampled_tip: 'Log count is too large, the current clustering result is based on sampled logs',
   },
+  log_order_context: {
+    title: 'Context',
+    earlier: 'Earlier',
+    later: 'Later',
+    back_to_anchor: 'Back to this log',
+    rotated: 'File rotated',
+    no_more_before: 'No earlier logs within 1 hour; widen the time range in search to see more',
+    no_more_after: 'No later logs within 1 hour',
+    query_failed: 'Failed to query context',
+  },
   view_placeholder: 'Log view',
 };
 export default en_US;

@@ -175,6 +175,16 @@ const zh_HK = {
     loading_tip_suffix: '進行日誌檢索',
     sampled_tip: '日誌數量過多，當前聚類結果基於採樣日誌生成',
   },
+  log_order_context: {
+    title: '上下文',
+    earlier: '更早',
+    later: '更新',
+    back_to_anchor: '回到當前日誌',
+    rotated: '文件輪轉',
+    no_more_before: '1 小時內沒有更早的日誌，可以擴大時間範圍後在檢索裡查看',
+    no_more_after: '1 小時內沒有更新的日誌',
+    query_failed: '查詢上下文失敗',
+  },
   view_placeholder: '日誌視圖',
 };
 

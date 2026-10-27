@@ -176,6 +176,16 @@ const ja_JP = {
     loading_tip_suffix: 'ログ検索を行ってください',
     sampled_tip: 'ログ数が多すぎるため、現在の集約結果はサンプルログに基づいています',
   },
+  log_order_context: {
+    title: 'コンテキスト',
+    earlier: '前へ',
+    later: '次へ',
+    back_to_anchor: 'このログに戻る',
+    rotated: 'ファイルローテーション',
+    no_more_before: '1 時間以内に前のログはありません。検索で時間範囲を広げてください',
+    no_more_after: '1 時間以内に次のログはありません',
+    query_failed: 'コンテキストの取得に失敗しました',
+  },
   view_placeholder: 'ログビュー',
 };
 

@@ -179,6 +179,16 @@ const zh_CN = {
     loading_tip_suffix: '进行日志检索',
     sampled_tip: '日志数量过多，当前聚类结果基于采样日志生成',
   },
+  log_order_context: {
+    title: '上下文',
+    earlier: '更早',
+    later: '更新',
+    back_to_anchor: '回到当前日志',
+    rotated: '文件轮转',
+    no_more_before: '1 小时内没有更早的日志，可以扩大时间范围后在检索里查看',
+    no_more_after: '1 小时内没有更新的日志',
+    query_failed: '查询上下文失败',
+  },
   view_placeholder: '日志视图',
 };
 export default zh_CN;
