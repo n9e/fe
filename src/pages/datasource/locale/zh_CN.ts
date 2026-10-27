@@ -78,6 +78,9 @@ const zh_CN = {
     enabled: '启用',
     disabled: '停用',
   },
+  prom_status_link: '状态页',
+  prom_status_tip: '查看该数据源 Prometheus 的运行与构建信息',
+  prom_status_open: '新窗口打开',
   form: {
     advanced_settings: '高级设置',
     other: '其他',

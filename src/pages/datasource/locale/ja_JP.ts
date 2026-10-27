@@ -78,6 +78,9 @@ const ja_JP = {
     enabled: '有効',
     disabled: '無効',
   },
+  prom_status_link: 'ステータス',
+  prom_status_tip: 'この Prometheus のランタイムとビルド情報を表示',
+  prom_status_open: '新しいウィンドウで開く',
   form: {
     advanced_settings: '詳細設定',
     other: 'その他',

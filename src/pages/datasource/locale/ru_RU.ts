@@ -78,6 +78,9 @@ const ru_RU = {
     enabled: 'Включено',
     disabled: 'Отключено',
   },
+  prom_status_link: 'Статус',
+  prom_status_tip: 'Смотреть сведения о работе и сборке этого Prometheus',
+  prom_status_open: 'Открыть в новом окне',
   form: {
     advanced_settings: 'Расширенные настройки',
     other: 'Другое',
