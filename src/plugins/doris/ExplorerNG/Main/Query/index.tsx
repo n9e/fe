@@ -591,7 +591,7 @@ export default function index(props: Props) {
               logViewerExtraRender={(log) => (
                 <>
                   <LogOrderContext
-                    log={log.___raw___}
+                    log={log?.___raw___}
                     timeField={queryValues?.time_field}
                     fetchPage={(req) =>
                       getDorisContextLogs({
