@@ -448,7 +448,7 @@ export default function index(props: Props) {
                 IS_PLUS
                   ? (log) => (
                       <LogOrderContext
-                        log={log.__n9e_raw_n9e__}
+                        log={log?.__n9e_raw_n9e__}
                         timeField={queryValues?.date_field}
                         formatTime={(time) => String(moment(time).valueOf())}
                         fetchPage={(req) =>
