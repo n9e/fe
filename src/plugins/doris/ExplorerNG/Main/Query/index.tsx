@@ -614,7 +614,8 @@ export default function index(props: Props) {
               logViewerFilterFields={withoutLogOrderFields}
               logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
               logViewerExtraRender={(log) => (
-                <>
+                // 企业版的 AI 分析按钮自带 Space（inline-flex），并排的按钮要放进同一个 Space 才能垂直对齐
+                <Space>
                   {(logAnalysisViewerProps as { logViewerExtraRender?: (log: Record<string, any>) => React.ReactNode }).logViewerExtraRender?.(log)}
                   <LogOrderContext
                     log={log?.___raw___}
@@ -627,7 +628,7 @@ export default function index(props: Props) {
                       })
                     }
                   />
-                </>
+                </Space>
               )}
             />
           ) : loading || histogramLoading ? (
