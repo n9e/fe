@@ -1,5 +1,5 @@
 import { createSharedRequestCache } from '@/components/SharedRequestCache';
-import { requestPromQL } from './request';
+import { isValidPromQLDatasourceValue, requestPromQL } from './request';
 
 function successResponse(metric: string) {
   return new Response(JSON.stringify({ status: 'success', data: { [metric]: { help: metric, type: 'gauge' } } }), {
@@ -7,6 +7,15 @@ function successResponse(metric: string) {
     status: 200,
   });
 }
+
+it('只有正数数据源 ID 才允许发起 PromQL 请求', () => {
+  expect(isValidPromQLDatasourceValue(undefined)).toBe(false);
+  expect(isValidPromQLDatasourceValue(0)).toBe(false);
+  expect(isValidPromQLDatasourceValue(-1)).toBe(false);
+  expect(isValidPromQLDatasourceValue(Number.NaN)).toBe(false);
+  expect(isValidPromQLDatasourceValue('10282')).toBe(false);
+  expect(isValidPromQLDatasourceValue(10282)).toBe(true);
+});
 
 function metricNamesResponse() {
   return new Response(JSON.stringify({ status: 'success', data: ['up'] }), { status: 200 });
