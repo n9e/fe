@@ -15,7 +15,10 @@ import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStruct
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
-import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram } from '../../../services';
+import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram, getDorisContextLogs } from '../../../services';
+import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
+import { getLogOrderAnchor } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
@@ -160,6 +163,8 @@ export default function index(props: Props) {
         timeParams = snapRangeRef.current as { from: number; to: number };
       }
       rangeRef.current = timeParams;
+      // 滚动加载下一页时带上最后一行的排序值：表支持原文顺序时后端按它翻页，跨页不乱序也不用从头扫
+      const lastAnchor = appendRef.current ? getLogOrderAnchor(_.last(data?.list)?.___raw___ || {}, queryValues.time_field) : undefined;
       const queryStart = Date.now();
       const reqData = {
         cate: DatasourceCateEnum.doris,
@@ -178,6 +183,7 @@ export default function index(props: Props) {
             reverse: serviceParams.reverse,
             default_field: defaultSearchField,
             highlight: true,
+            search_after: lastAnchor ? { time: String(lastAnchor.time), stream_id: lastAnchor.streamId, seq: lastAnchor.seq } : undefined,
           },
         ],
       };
@@ -421,7 +427,7 @@ export default function index(props: Props) {
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}
               filterFields={(fieldKeys) => {
-                return filteredFields(fieldKeys, organizeFields);
+                return filteredFields(omitLogOrderKeys(fieldKeys), organizeFields);
               }}
               supportsStacking
               histogramAddonBeforeRender={
@@ -605,6 +611,24 @@ export default function index(props: Props) {
               }}
               range={queryValues?.range}
               {...logAnalysisViewerProps}
+              logViewerFilterFields={withoutLogOrderFields}
+              logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
+              logViewerExtraRender={(log) => (
+                <>
+                  {(logAnalysisViewerProps as { logViewerExtraRender?: (log: Record<string, any>) => React.ReactNode }).logViewerExtraRender?.(log)}
+                  <LogOrderContext
+                    log={log.___raw___}
+                    timeField={queryValues?.time_field}
+                    fetchPage={(req) =>
+                      getDorisContextLogs({
+                        cate: DatasourceCateEnum.doris,
+                        datasource_id: datasourceValue,
+                        query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
+                      })
+                    }
+                  />
+                </>
+              )}
             />
           ) : loading || histogramLoading ? (
             <div className='flex justify-center'>
