@@ -20,7 +20,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
-import { useDeepCompareEffect } from 'ahooks';
+import { useDeepCompareLayoutEffect } from 'ahooks';
 
 import { DatasourceCateEnum, SIZE } from '@/utils/constant';
 import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -112,9 +112,11 @@ function index(props: IProps) {
     }
   };
 
-  useDeepCompareEffect(() => {
+  // 每次关闭或重新打开都恢复面板配置，即使两次传入的 initialValues 内容相同。
+  useDeepCompareLayoutEffect(() => {
     const initialValuesCopy = _.cloneDeep(props.initialValues);
     initialValuesCopy.type = initialValuesCopy.type || defaultValues.type;
+    setRange(time);
     // TODO: 渲染 hexbin 配置时，colorRange 需要从 array 转换为 string
     if (initialValuesCopy.type === 'hexbin' && initialValuesCopy?.custom?.colorRange) {
       if (_.isArray(initialValuesCopy.custom.colorRange)) {
@@ -126,7 +128,7 @@ function index(props: IProps) {
     } else {
       setInitialValues(initialValuesCopy);
     }
-  }, [props.initialValues]);
+  }, [props.initialValues, visible]);
 
   return (
     <Modal
