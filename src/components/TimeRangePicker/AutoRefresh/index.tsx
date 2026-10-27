@@ -53,6 +53,7 @@ function Refresh(props: IProps, ref) {
   const intervalSecondsCache = props.localKey ? _.toNumber(window.localStorage.getItem(props.localKey)) : 0;
   const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds ?? intervalSecondsCache);
   const [visible, setVisible] = useState(false);
+  const [intervalTooltipVisible, setIntervalTooltipVisible] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | undefined>();
   const removeRef = useRef(false);
   // 用 ref 保存最新的 onRefresh，避免 effect 因函数引用变化而重置 timer
@@ -118,10 +119,12 @@ function Refresh(props: IProps, ref) {
         <Button disabled={props.disabled} icon={<SyncOutlined className={intervalSeconds ? 'rotate-icon' : ''} />} onClick={props.onRefresh} />
       </Tooltip>
       <Tooltip
-        // 浮层落在展开后的菜单前两项上且层级更高，必须让它不参与命中测试，
-        // 否则会吞掉这两项的点击；同时浮层不可悬浮，移向菜单时才能正常消失
         overlayStyle={{ maxWidth: 320, pointerEvents: 'none' }}
         title={props.intervalTooltip}
+        visible={intervalTooltipVisible && !visible}
+        onVisibleChange={(nextVisible) => setIntervalTooltipVisible(nextVisible && !visible)}
+        transitionName=''
+        destroyTooltipOnHide
       >
         <span>
           <Dropdown
@@ -130,6 +133,7 @@ function Refresh(props: IProps, ref) {
             visible={visible}
             onVisibleChange={(visible) => {
               setVisible(visible);
+              if (visible) setIntervalTooltipVisible(false);
             }}
             overlay={
               <Menu
