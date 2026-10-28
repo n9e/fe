@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Drawer, Empty, Space, Table, Tag, Tooltip, message } from 'antd';
-import { CloseOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Alert, Button, Drawer, Empty, Modal, Space, Table, Tag, Tooltip, message } from 'antd';
+import { CloseOutlined, EyeInvisibleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { DynamicTags, DynamicTagsTrigger, OrganizeFields, renderMarkedText } from '@/pages/logExplorer/components/ContextViewerParts';
+import TableColumnSelect from '@/components/TableColumnSelect';
+import { DynamicTags, DynamicTagsTrigger, renderMarkedText } from '@/pages/logExplorer/components/ContextViewerParts';
 
 import { NAME_SPACE } from '../../constants';
 import {
@@ -26,6 +27,8 @@ interface Props {
   /** 把锚点时间换成该存储要的格式（Doris 原样字符串，ES 毫秒时间戳字符串） */
   formatTime?: (time: string | number) => string;
   fetchPage: (req: LogContextRequest) => Promise<LogContextPage>;
+  /** 检索页外面的字段列设置，作为上下文的默认显示字段；空表示全部显示 */
+  organizeFields?: string[];
 }
 
 // 与 SLS 上下文每次取的行数一致
@@ -38,13 +41,14 @@ type Direction = 'back' | 'forward';
 /** 按原文顺序查看同一个文件流的前后日志，交互与 SLS 上下文一致 */
 export default function LogOrderContext(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { log, timeField, formatTime = String, fetchPage } = props;
+  const { log, timeField, formatTime = String, fetchPage, organizeFields: outerOrganizeFields } = props;
   const anchor = log ? getLogOrderAnchor(log, timeField) : undefined;
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState<LogContextPage>();
   const [loading, setLoading] = useState<Direction | 'initial' | undefined>();
   const [limited, setLimited] = useState<Direction | undefined>();
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
+  const [organizeDraft, setOrganizeDraft] = useState<string[]>();
   const [filterKeywords, setFilterKeywords] = useState<string[]>([]);
   const [highlightKeywords, setHighlightKeywords] = useState<string[]>([]);
   const [flashAnchor, setFlashAnchor] = useState(false);
@@ -62,7 +66,7 @@ export default function LogOrderContext(props: Props) {
 
   useEffect(() => {
     if (!open || !anchor) return;
-    setOrganizeFields([]);
+    setOrganizeFields(outerOrganizeFields ?? []);
     setLimited(undefined);
     scrollTarget.current = 'anchor';
     setLoading('initial');
@@ -144,7 +148,8 @@ export default function LogOrderContext(props: Props) {
         key: 'document',
         render: (row: Record<string, any>) => {
           const fields = _.omit(row, hiddenFields);
-          const picked = _.isEmpty(organizeFields) ? fields : _.pick(fields, organizeFields);
+          // 按字段列设置里的顺序显示
+          const picked = _.isEmpty(organizeFields) ? fields : _.fromPairs(_.compact(_.map(organizeFields, (f) => (f in fields ? [f, fields[f]] : undefined))));
           return (
             <div className='whitespace-pre-wrap break-all'>
               {rotatedIndexes.has(row[LOG_INDEX_FIELD]) && <Tag color='orange'>{t('log_order_context.rotated')}</Tag>}
@@ -217,18 +222,16 @@ export default function LogOrderContext(props: Props) {
                   </Space>
                 </Button>
               </Space>
-              <OrganizeFields
-                fields={availableFields}
-                organizeFields={organizeFields}
-                onChange={setOrganizeFields}
-                labels={{
-                  title: t('log_order_context.organize_fields'),
-                  tip: (fields) => t('log_order_context.organize_fields_tip', { fields }),
-                  allFields: t('log_order_context.all_fields'),
-                  showFields: t('log_order_context.show_fields'),
-                  showFieldsEmpty: t('log_order_context.show_fields_empty'),
-                }}
-              />
+              <Button onClick={() => setOrganizeDraft(organizeFields)}>
+                <Space>
+                  {t('logs.settings.organizeFields.title')}
+                  {!_.isEmpty(organizeFields) && (
+                    <Tooltip title={t('logs.settings.organizeFields.tip', { fields: _.join(organizeFields, '、') })}>
+                      <EyeInvisibleOutlined />
+                    </Tooltip>
+                  )}
+                </Space>
+              </Button>
               {_.isEmpty(filterKeywords) && <DynamicTagsTrigger newTagText={t('log_order_context.filter_keywords_add')} value={filterKeywords} onChange={setFilterKeywords} />}
               {_.isEmpty(highlightKeywords) && (
                 <DynamicTagsTrigger newTagText={t('log_order_context.highlight_keywords_add')} value={highlightKeywords} onChange={setHighlightKeywords} />
@@ -283,10 +286,9 @@ export default function LogOrderContext(props: Props) {
                 onRow={(row) =>
                   row[LOG_INDEX_FIELD] === 0
                     ? {
-                        // 主题色左边条 + 随主题变化的底色，暗色模式下也看得清
+                        // 主题色底色，透明度比 --fc-primary-bg 高，暗色模式下也看得清
                         style: {
-                          background: flashAnchor ? 'rgba(var(--fc-fill-primary-rgb), 0.35)' : 'var(--fc-primary-bg)',
-                          boxShadow: 'inset 3px 0 0 var(--fc-primary-color)',
+                          background: `rgb(var(--fc-fill-primary-rgb) / ${flashAnchor ? 0.3 : 0.12})`,
                           transition: 'background 0.6s',
                         },
                       }
@@ -296,6 +298,26 @@ export default function LogOrderContext(props: Props) {
             )}
           </div>
         </div>
+        <Modal
+          className='log-explorer-ignore-click-away'
+          title={t('logs.settings.organizeFields.title')}
+          visible={organizeDraft !== undefined}
+          onOk={() => {
+            setOrganizeFields(organizeDraft ?? []);
+            setOrganizeDraft(undefined);
+          }}
+          onCancel={() => setOrganizeDraft(undefined)}
+        >
+          <TableColumnSelect
+            options={_.map(availableFields, (item) => ({ label: item, value: item }))}
+            value={organizeDraft ?? []}
+            onChange={setOrganizeDraft}
+            sortable
+            showDropdown={false}
+            maxHeight={400}
+            showAll
+          />
+        </Modal>
       </Drawer>
     </>
   );
