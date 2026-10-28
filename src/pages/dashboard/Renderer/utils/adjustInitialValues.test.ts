@@ -14,4 +14,10 @@ describe('adjustInitialValues', () => {
     expect(initialValues.custom).toBeDefined();
     expect(initialValues.options).toBeDefined();
   });
+
+  it('leaves the aiButton title empty so the compact card is not covered by a header', () => {
+    const { initialValues } = adjustInitialValues('aiButton', {}, [], []);
+
+    expect(initialValues.name).toBe('');
+  });
 });

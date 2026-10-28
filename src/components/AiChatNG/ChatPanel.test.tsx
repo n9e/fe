@@ -533,3 +533,47 @@ describe('ChatPanel initial skill reference', () => {
     expect(services.sendMessage.mock.calls[0][0].query.references).toBeUndefined();
   });
 });
+
+describe('仪表盘按钮启动', () => {
+  it('prefills each launch and replaces the previous draft without sending', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    const { rerender } = render(<ChatPanel queryPageFrom={{ url: '/dashboards' }} buttonLaunch={{ id: 1, content: 'first', autoExecute: false }} />);
+    expect(screen.getByRole('textbox')).toHaveValue('first');
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'draft' } });
+    rerender(<ChatPanel queryPageFrom={{ url: '/dashboards' }} buttonLaunch={{ id: 2, content: 'second', autoExecute: false }} />);
+    expect(screen.getByRole('textbox')).toHaveValue('second');
+    expect(services.sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('does not send an empty launch', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    render(<ChatPanel queryPageFrom={{ url: '/dashboards' }} buttonLaunch={{ id: 1, content: '', autoExecute: true }} />);
+    expect(services.sendMessage).not.toHaveBeenCalled();
+  });
+
+  it('sends an automatic launch to the existing chat', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockClear();
+    services.sendMessage.mockResolvedValue({ chat_id: 'chat-existing', seq_id: 10 });
+    render(<ChatPanel chatId='chat-existing' queryPageFrom={{ url: '/dashboards' }} buttonLaunch={{ id: 1, content: 'check cpu', autoExecute: true }} />);
+    await waitFor(() =>
+      expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ chat_id: 'chat-existing', query: expect.objectContaining({ content: 'check cpu' }) })),
+    );
+  });
+
+  it('queues repeated automatic launches for the same conversation', async () => {
+    const services = jest.requireMock('./services');
+    services.sendMessage.mockReset();
+    let seq = 0;
+    services.sendMessage.mockImplementation(() => Promise.resolve({ chat_id: 'chat-existing', seq_id: ++seq }));
+    services.getMessageHistory.mockResolvedValue([]);
+    getMessageDetail.mockImplementation((locator) => Promise.resolve({ ...inProgress, ...locator, is_finish: true, response: [] }));
+    const { rerender } = render(<ChatPanel chatId='chat-existing' queryPageFrom={{ url: '/dashboards' }} buttonLaunch={{ id: 1, content: 'first', autoExecute: true }} />);
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+    rerender(<ChatPanel chatId='chat-existing' queryPageFrom={{ url: '/dashboards' }} buttonLaunch={{ id: 2, content: 'second', autoExecute: true }} />);
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(2));
+    expect(services.sendMessage.mock.calls.map(([request]: any[]) => request.query.content)).toEqual(['first', 'second']);
+  });
+});

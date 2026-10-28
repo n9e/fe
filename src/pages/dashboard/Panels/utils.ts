@@ -182,10 +182,18 @@ export function isValidPanelConfig(value: string) {
 const PANEL_W = 12;
 const PANEL_H = 4;
 
+export function getDefaultPanelSize(type?: string) {
+  if (type === 'aiButton') {
+    return { w: 4, h: 2 };
+  }
+  return { w: PANEL_W, h: PANEL_H };
+}
+
 // 新增 panel 到全局
 export function updatePanelsInsertNewPanelToGlobal(panels: IPanel[], panel: IPanel, type: 'row' | 'chart', useDefaultSize = true) {
-  const w = type === 'row' ? 24 : useDefaultSize ? PANEL_W : panel.layout.w ?? PANEL_W;
-  const h = type === 'row' ? 1 : useDefaultSize ? PANEL_H : panel.layout.h ?? PANEL_H;
+  const defaultSize = getDefaultPanelSize(panel.type);
+  const w = type === 'row' ? 24 : useDefaultSize ? defaultSize.w : panel.layout.w ?? PANEL_W;
+  const h = type === 'row' ? 1 : useDefaultSize ? defaultSize.h : panel.layout.h ?? PANEL_H;
   const maxItem = _.maxBy(panels, (item: IPanel) => {
     return item.layout.y + item.layout.h;
   });
@@ -210,8 +218,9 @@ export function updatePanelsInsertNewPanelToRow(panels: IPanel[], rowId: string,
     nextRowIdx = getRowIndex(panels, nextRow?.id);
   }
   const maxY = getRowPanelsMaxY(panels, rowId);
-  const w = useDefaultSize ? PANEL_W : panel.layout.w ?? PANEL_W;
-  const h = useDefaultSize ? PANEL_H : panel.layout.h ?? PANEL_H;
+  const defaultSize = getDefaultPanelSize(panel.type);
+  const w = useDefaultSize ? defaultSize.w : panel.layout.w ?? PANEL_W;
+  const h = useDefaultSize ? defaultSize.h : panel.layout.h ?? PANEL_H;
   const newPanel = {
     ...panel,
     layout: {

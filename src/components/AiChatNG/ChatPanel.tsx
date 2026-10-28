@@ -44,6 +44,7 @@ export default function ChatPanel(props: IAiChatProps) {
     queryAction,
     promptList,
     initialMessage,
+    buttonLaunch,
     continuationMessage,
     initialSkill,
     onChatChange,
@@ -642,6 +643,27 @@ export default function ChatPanel(props: IAiChatProps) {
       sendUserMessage(undefined, initialMessage);
     }
   }, [initialMessage, sendUserMessage]);
+
+  const [buttonQueue, setButtonQueue] = useState<Array<{ id: number; content: string }>>([]);
+  const seenButtonLaunches = useRef(new Set<number>());
+  useEffect(() => {
+    if (!buttonLaunch || seenButtonLaunches.current.has(buttonLaunch.id)) return;
+    seenButtonLaunches.current.add(buttonLaunch.id);
+    if (!buttonLaunch.content) return;
+    if (buttonLaunch.autoExecute) {
+      setButtonQueue((queue) => [...queue, { id: buttonLaunch.id, content: buttonLaunch.content }]);
+    } else {
+      setInputValue(buttonLaunch.content);
+      composerRef.current?.focus();
+    }
+  }, [buttonLaunch]);
+
+  useEffect(() => {
+    const next = buttonQueue[0];
+    if (!next || submitting || pendingTurnRef.current || !activeRef.current) return;
+    setButtonQueue((queue) => queue.slice(1));
+    void sendUserMessage(undefined, next.content);
+  }, [buttonQueue, sendUserMessage, submitting]);
 
   useEffect(() => {
     if (!continuationMessage?.content.trim() || sentContinuationIdsRef.current.has(continuationMessage.id) || submitting || pendingTurnRef.current || !activeRef.current) {
