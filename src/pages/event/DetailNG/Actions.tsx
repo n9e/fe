@@ -1,4 +1,3 @@
-import { useCanAccessFiremap } from '@/components/FiremapAccess';
 import React, { useState } from 'react';
 import { Space, Button, message } from 'antd';
 import { ShareAltOutlined } from '@ant-design/icons';
@@ -26,7 +25,6 @@ export default function getActions(options: Options) {
   const { t } = useTranslation('AlertCurEvents');
   const { eventDetail, showDeleteBtn, showSharingLink = true, showAckBtn, onDeleteSuccess, onRefresh } = options;
   const [sharingLinkModalVisible, setSharingLinkModalVisible] = useState(false);
-  const canAccessFiremap = useCanAccessFiremap();
 
   if (!eventDetail) {
     return [];
@@ -105,7 +103,7 @@ export default function getActions(options: Options) {
     return [
       <div className='action-btns'>
         <Space>
-          {eventDetail?.rule_prod === 'firemap' && canAccessFiremap && (
+          {eventDetail?.rule_prod === 'firemap' && (
             <Button
               type='primary'
               onClick={() => {

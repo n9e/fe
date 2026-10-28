@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { IS_ENT } from '@/utils/constant';
@@ -6,7 +6,6 @@ import { timeRangeUnix } from '@/components/TimeRangePicker';
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
 import { buildPageFrom } from '@/components/AiChatNG/recommend';
 import { NAME_SPACE } from '@/components/AiChatNG/constants';
-import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import AiQueryDock from './index';
 import { AiQueryDockTrigger } from './Trigger';
 import { useQueryDockActions } from './useQueryDockActions';
@@ -55,24 +54,16 @@ export interface AiQueryDockOptions<S extends DockSnapshot> {
  */
 export function useAiQueryDock<S extends DockSnapshot>(adapter: AiQueryDockAdapter, options: AiQueryDockOptions<S>) {
   const { t } = useTranslation(NAME_SPACE);
-  const hasPermission = useCanAccessFlashAiChat();
-  const canAccess = IS_ENT && hasPermission;
   const [open, setOpen] = useState(false);
   const latest = useRef({ adapter, options });
   latest.current = { adapter, options };
   const actions = useQueryDockActions({
-    enabled: open && canAccess,
+    enabled: IS_ENT && open,
     datasourceValue: options.datasourceValue,
     getControl: options.getControl,
     action: adapter.action,
   });
   const { cancel } = actions;
-  useEffect(() => {
-    if (!canAccess) {
-      cancel();
-      setOpen(false);
-    }
-  }, [canAccess, cancel]);
 
   // Read when a message is sent, not when rendered: the box, the window and
   // the data source may all have moved since. The chat reads it through a ref,
@@ -95,16 +86,15 @@ export function useAiQueryDock<S extends DockSnapshot>(adapter: AiQueryDockAdapt
   const promptList = useMemo(() => adapter.prompts.map((key) => ({ label: t(key), value: t(`${key}_query`) })), [t, adapter.prompts]);
 
   const toggle = () => {
-    if (!canAccess) return;
     options.onToggle?.();
     if (open) cancel();
     setOpen((previous) => !previous);
   };
 
   return {
-    open: open && canAccess,
-    trigger: canAccess ? <AiQueryDockTrigger open={open} onClick={toggle} /> : null,
-    dock: canAccess ? (
+    open,
+    trigger: IS_ENT ? <AiQueryDockTrigger open={open} onClick={toggle} /> : undefined,
+    dock: IS_ENT ? (
       <AiQueryDock
         open={open}
         pageFrom={pageFrom}
@@ -121,7 +111,7 @@ export function useAiQueryDock<S extends DockSnapshot>(adapter: AiQueryDockAdapt
           setOpen(false);
         }}
       />
-    ) : null,
+    ) : undefined,
     invalidateUndo: actions.invalidateUndo,
   };
 }

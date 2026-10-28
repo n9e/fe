@@ -1,4 +1,3 @@
-import { useCanAccessFiremap } from '@/components/FiremapAccess';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import moment from 'moment';
@@ -39,7 +38,6 @@ export default function DetailNG(props: Props) {
   const commonState = useContext(CommonStateContext);
   const { busiGroups, datasourceList } = commonState;
   const { data: eventDetail, showGraph, token } = props;
-  const canAccessFiremap = useCanAccessFiremap();
 
   const history = useHistory();
 
@@ -86,7 +84,6 @@ export default function DetailNG(props: Props) {
         const { spaceId, businessId, alertRuleId } = parseIdsFromTags(eventDetail.tags || []);
 
         if (eventDetail?.rule_prod === 'firemap') {
-          if (!canAccessFiremap) return content;
           return (
             <Link to={`/firemap?spaceId=${spaceId}&alertRuleId=${alertRuleId}`} target='_blank'>
               {content}
@@ -175,7 +172,6 @@ export default function DetailNG(props: Props) {
             key: 'rule_config',
             render(val) {
               const detail_url = _.get(val, 'detail_url');
-              if (eventDetail?.rule_prod === 'firemap' && !canAccessFiremap) return detail_url;
               return (
                 <a href={detail_url} target='_blank'>
                   {detail_url}

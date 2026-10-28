@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import DetailNG from '@/pages/event/DetailNG';
-import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 
-import { NS, MOCK_EVENT_DEFAULT_SEVERITY, FLASH_AI_PROCESSOR_TYPES } from '../../../constants';
+import { NS, MOCK_EVENT_DEFAULT_SEVERITY } from '../../../constants';
 import { eventProcessorTryrun, eventPipelineTryrun, TryrunEventSource } from '../../../services';
 import NodeResultsSteps, { NodeResult } from '../../../components/NodeResultsSteps';
 import humanizeProcessorMessage from '../../../utils/humanizeProcessorMessage';
@@ -51,14 +50,6 @@ type TestMode = 'history' | 'mock';
 const DEFAULT_MOCK_EVENT: MockEventState = { severity: MOCK_EVENT_DEFAULT_SEVERITY, isRecovered: false };
 
 export default function TestModal(props: Props) {
-  const canAccessFlashAi = useCanAccessFlashAiChat();
-  const processors = props.type === 'processor' ? [props.config] : props.config?.processors ?? [];
-  if (!canAccessFlashAi && processors.some((processor) => FLASH_AI_PROCESSOR_TYPES.includes(processor?.typ))) return null;
-  // 权限撤回时卸载已打开的试跑窗口，恢复权限后不会自动重开。
-  return <TestModalContent {...props} />;
-}
-
-function TestModalContent(props: Props) {
   const { t } = useTranslation(NS);
   const { type, config, size, disabled, onBeforeOpen } = props;
   const [visible, setVisible] = useState<boolean>(false);
@@ -97,7 +88,9 @@ function TestModalContent(props: Props) {
     if (testDisabled) return;
     setLoading(true);
     const eventSource: TryrunEventSource =
-      mode === 'mock' ? { use_mock_event: true, mock_severity: mockEvent.severity, mock_is_recovered: mockEvent.isRecovered } : { event_id: eventID as number };
+      mode === 'mock'
+        ? { use_mock_event: true, mock_severity: mockEvent.severity, mock_is_recovered: mockEvent.isRecovered }
+        : { event_id: eventID as number };
     const request =
       type === 'processor'
         ? eventProcessorTryrun({ ...eventSource, processor_config: normalizeProcessorConfig(config) })
@@ -177,7 +170,12 @@ function TestModalContent(props: Props) {
                   />
                 )}
                 {visible && (
-                  <EventsTable rowSelectionType='radio' selectedEventIds={eventID ? [eventID] : []} onChange={(ids) => setEventID(ids[0])} onTotalChange={setHistoryTotal} />
+                  <EventsTable
+                    rowSelectionType='radio'
+                    selectedEventIds={eventID ? [eventID] : []}
+                    onChange={(ids) => setEventID(ids[0])}
+                    onTotalChange={setHistoryTotal}
+                  />
                 )}
               </div>
               <div style={{ display: mode === 'mock' ? undefined : 'none' }}>

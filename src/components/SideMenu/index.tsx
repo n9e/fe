@@ -1,4 +1,3 @@
-import { useCanAccessFiremap } from '@/components/FiremapAccess';
 import React, { useCallback, useEffect, useMemo, useRef, useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Dropdown, Menu } from 'antd';
@@ -28,7 +27,6 @@ import QuickStart from 'plus:/components/quickStart';
 import QuickMenu from './QuickMenu';
 import OnboardingProgressBadge from '@/components/OnboardingProgress';
 import { MenuItem, DefaultLogos } from './types';
-import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import { getSidebarProfileDisplay } from './profile';
 import './menu.less';
 import './locale';
@@ -109,8 +107,6 @@ const SideMenu = (props: SideMenuProps) => {
   const history = useHistory();
   const commonState = useContext(CommonStateContext);
   const { darkMode, perms, installTs, profile, i18nList } = commonState;
-  const canAccessFlashAi = useCanAccessFlashAiChat();
-  const canAccessFiremap = useCanAccessFiremap();
   let { sideMenuBgMode } = commonState;
   if (darkMode) {
     sideMenuBgMode = 'dark';
@@ -203,18 +199,14 @@ const SideMenu = (props: SideMenuProps) => {
   useEffect(() => {
     const filteredMenus = menuList
       .map((menu) => {
-        if (menu.key === 'firemap' && !canAccessFiremap) return null;
         // Top-level leaf (no children): keep by its own key so MenuItem is clickable
         // (e.g. FlashAI). Do not treat it as an empty group to drop.
         if (!menu.children || menu.children.length === 0) {
           if (menu.key === '/nightingale-ai') return menu;
-          if (menu.key === '/flashai') return canAccessFlashAi ? menu : null;
           return perms?.includes(calcUrlPath(menu.key)) ? menu : null;
         }
         const filteredChildren = menu.children
           .map((child) => {
-            // Admin 保留灭火图入口；其它角色继续遵守各子菜单权限。
-            if (menu.key === 'firemap' && (profile?.admin || profile?.roles?.includes('Admin'))) return child;
             if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
               return child;
             }
@@ -245,7 +237,7 @@ const SideMenu = (props: SideMenuProps) => {
     // getMenuList must stay in deps: ENT builds recreate it when async inputs
     // (e.g. aiStatus) arrive; without it the FlashAI entry can be missed forever.
     // perms is also async after login — leaf visibility depends on it.
-  }, [i18n.language, embeddedProductMenu, getMenuList, perms, canAccessFlashAi, canAccessFiremap, profile]);
+  }, [i18n.language, embeddedProductMenu, getMenuList, perms]);
 
   const menuPaths = useMemo(
     () =>

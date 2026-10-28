@@ -1,9 +1,4 @@
 /** @jest-environment jsdom */
-let mockCanAccess = true;
-jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
-beforeEach(() => {
-  mockCanAccess = true;
-});
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
@@ -519,15 +514,4 @@ describe('ChatPanel initial skill reference', () => {
     expect(services.sendMessage.mock.calls[0][0].query.content).toBe('show memory usage');
     expect(services.sendMessage.mock.calls[0][0].query.references).toBeUndefined();
   });
-});
-
-it('does not mount a chat or fetch history without FlashAI access', () => {
-  mockCanAccess = false;
-  const services = jest.requireMock('./services');
-  services.getMessageHistory.mockClear();
-  services.createChat.mockClear();
-  render(<ChatPanel chatId='chat-1' initialMessage='do not send' queryPageFrom={{ url: '/metric/explorer' }} />);
-  expect(screen.queryByPlaceholderText('input.placeholder')).toBeNull();
-  expect(services.getMessageHistory).not.toHaveBeenCalled();
-  expect(services.createChat).not.toHaveBeenCalled();
 });
