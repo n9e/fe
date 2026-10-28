@@ -5,9 +5,6 @@
  * 供迁移与映射模块使用；N9E 侧输出仍以 @/pages/dashboard/types 的正式类型为准。
  */
 
-/** N9E dashboard 版本（与 @/pages/dashboard/config 的 DASHBOARD_VERSION 保持一致） */
-export const DASHBOARD_VERSION = '4.0.0';
-
 /** Grafana 查询 target（宽松） */
 export interface GrafanaTarget {
   refId?: string;

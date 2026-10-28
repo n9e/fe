@@ -31,7 +31,7 @@ const en_US = {
     recording_rules: 'Recording rules',
     logs_explorer: 'Logs',
     monitors: 'Monitors',
-    alerts_notifications: 'Alerts & Notifications',
+    alerts_notifications: 'Alerting',
     rules: 'Alert rules',
     alert_rules: 'Alert rules',
     alert_mutes: 'Muting rules',

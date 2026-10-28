@@ -12,7 +12,7 @@ import { ITarget } from '../../types';
 import { getDefaultStepByTime } from '../../utils';
 import replaceExpressionBracket from '../utils/replaceExpressionBracket';
 import { completeBreakpoints, getSerieName } from './utils';
-import { NO_QUERY_PANEL_TYPES } from '../../Editor/config';
+import { NO_QUERY_PANEL_TYPES } from '../registry/panelTypes';
 
 interface IOptions {
   panelWidth?: number; // 面板宽度

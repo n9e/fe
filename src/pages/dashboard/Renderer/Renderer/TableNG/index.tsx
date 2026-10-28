@@ -9,9 +9,10 @@ import { useClickAway } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import getFontFamily from '@/utils/getFontFamily';
-import { useGlobalState } from '@/pages/dashboard/globalState';
+import { DashboardRuntimeProvider, useDashboardRuntimeStoreIfAvailable, useGlobalState } from '@/pages/dashboard/globalState';
 import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 import useStableValue from '@/pages/dashboard/hooks/useStableValue';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOverride, IPanel, CellOptions } from '../../../types';
 import type { DashboardSeries } from '../../datasource/types';
@@ -88,6 +89,7 @@ interface Props {
 
 function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   const { t, i18n } = useTranslation('dashboard');
+  const replaceTemplateVariables = useReplaceTemplateVariables();
   const { siteInfo } = useContext(CommonStateContext);
   const {
     themeMode,
@@ -442,7 +444,7 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
           if (onCellClick) {
             onCellClick(cellEvent);
           } else {
-            cellClickCallback(cellEvent, { links: options.links, linksRef });
+            cellClickCallback(cellEvent, { links: options.links, linksRef, replaceTemplateVariables });
           }
         }}
       />
@@ -485,9 +487,26 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
   );
 }
 
-export default React.memo(React.forwardRef(index), (prevProps, nextProps) => {
+const TableNGContent = React.memo(React.forwardRef(index), (prevProps, nextProps) => {
   const omitKeys = ['series'];
   const otherPropsEqual = _.isEqual(_.omit(prevProps, omitKeys), _.omit(nextProps, omitKeys));
   const seriesPropEqual = _.isEqual(_.map(prevProps.series, 'id'), _.map(nextProps.series, 'id'));
   return otherPropsEqual && seriesPropEqual;
+});
+
+/**
+ * TableNG 面板。
+ *
+ * 资产视图等仪表盘外的调用方不会提供运行时容器，这里显式创建隔离实例，
+ * 避免写入 series/tableFields 时因缺少 Provider 直接抛错。
+ */
+export default React.forwardRef(function TableNG(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
+  const dashboardRuntimeStore = useDashboardRuntimeStoreIfAvailable();
+  const content = <TableNGContent {...props} ref={ref} />;
+
+  if (!dashboardRuntimeStore) {
+    return <DashboardRuntimeProvider>{content}</DashboardRuntimeProvider>;
+  }
+
+  return content;
 });
