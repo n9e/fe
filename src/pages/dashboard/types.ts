@@ -225,6 +225,7 @@ export interface IHexbinStyles {
   version: string;
   textMode: 'valueAndName' | 'name' | 'value';
   calc: string;
+  valueField?: string;
   colorRange: string[]; // 三个颜色值
   colorDomainAuto: boolean;
   colorDomain: number[]; // 自定义 [min, max]
@@ -241,8 +242,11 @@ export interface IPieStyles {
 
 export interface IBarGaugeStyles {
   version: string;
-  displayMode: 'basic' | 'lcd';
+  displayMode: 'basic' | 'gradient' | 'lcd';
   calc: string;
+  showMode?: 'calculate' | 'allValues';
+  fields?: string[];
+  limit?: number;
   valueField?: string;
   nameField?: string;
   maxValue: number;
@@ -250,7 +254,36 @@ export interface IBarGaugeStyles {
   serieWidth: number | null;
   sortOrder: 'none' | 'asc' | 'desc';
   detailUrl: string | undefined;
-  valueMode: 'color' | 'hidden';
+  valueMode: 'color' | 'text' | 'hidden';
+  orientation?: 'auto' | 'horizontal' | 'vertical';
+  namePlacement?: 'auto' | 'top' | 'bottom' | 'left' | 'hidden';
+  sizing?: 'auto' | 'manual';
+  minVizWidth?: number;
+  minVizHeight?: number;
+  maxVizHeight?: number;
+}
+
+export interface IGaugeStyles {
+  calc: string;
+  valueField?: string;
+  textMode: 'valueAndName' | 'value' | 'name' | 'none';
+  style?: 'arc' | 'circle';
+  neutralValue?: number;
+  segments?: number;
+  segmentSpacing?: number;
+  gradient?: boolean;
+  showThresholds?: boolean;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
+  barWidthFactor?: number;
+  barStyle?: 'flat' | 'rounded';
+  endpointMarker?: 'none' | 'point' | 'glow';
+  barGlow?: boolean;
+  centerGlow?: boolean;
+  showLabels?: boolean;
+  gaugeSize?: 'auto' | 'manual';
+  minVizWidth?: number;
+  minVizHeight?: number;
+  showSparkline?: boolean;
 }
 
 export interface ITextStyles {
@@ -312,6 +345,8 @@ export interface IPanel {
   repeat?: string;
   maxPerRow?: number;
   repeatPanelId?: string;
+  repeatedByRow?: boolean; // 仅运行时：随重复 row 生成的子面板
+  repeatSourceLayout?: Pick<IGridPos, 'x' | 'w'>; // 仅运行时：还原面板 repeat 修改的横向布局
   scopedVars?: ScopedVariables;
   maxDataPoints?: number; // 2025-10-20 新增
   queryOptionsTime?: IRawTimeRange; // 2025-10-20 新增， queryOptionsTime 会覆盖 time

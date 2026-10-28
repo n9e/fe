@@ -1,3 +1,4 @@
+import { DASHBOARD_VERSION } from '@/pages/dashboard/constants';
 import dashboardMigrator, { decodeLegacyDashboard } from './dashboardMigrator';
 
 describe('dashboard v4 migration', () => {
@@ -45,7 +46,7 @@ describe('dashboard v4 migration', () => {
       ],
     });
 
-    expect(migrated.version).toBe('4.1.0');
+    expect(migrated.version).toBe(DASHBOARD_VERSION);
     expect(migrated.panels[0]).toMatchObject({
       datasourceCate: 'prometheus',
       datasourceValue: '${metrics}',
@@ -271,20 +272,24 @@ describe('dashboard v4 migration', () => {
   it('preserves the Elasticsearch SQL query mode', () => {
     const migrated = dashboardMigrator({
       version: '4.0.0',
-      panels: [{
-        id: 'panel-es-sql',
-        version: '4.0.0',
-        type: 'tableNG',
-        datasourceCate: 'elasticsearch',
-        datasourceValue: 12,
-        targets: [{
-          refId: 'A',
-          kind: 'query',
-          query: { syntax: 'sql', mode: 'timeSeries', sql: 'SELECT time, value FROM logs', keys: { valueKey: ['value'], timeKey: 'time' } },
-        }],
-        custom: {},
-        options: {},
-      }],
+      panels: [
+        {
+          id: 'panel-es-sql',
+          version: '4.0.0',
+          type: 'tableNG',
+          datasourceCate: 'elasticsearch',
+          datasourceValue: 12,
+          targets: [
+            {
+              refId: 'A',
+              kind: 'query',
+              query: { syntax: 'sql', mode: 'timeSeries', sql: 'SELECT time, value FROM logs', keys: { valueKey: ['value'], timeKey: 'time' } },
+            },
+          ],
+          custom: {},
+          options: {},
+        },
+      ],
     });
 
     expect(migrated.panels[0].targets[0].query).toMatchObject({ syntax: 'sql', sql: 'SELECT time, value FROM logs' });
@@ -316,7 +321,7 @@ describe('dashboard v4 migration', () => {
     });
 
     expect(migrated).toMatchObject({
-      version: '4.1.0',
+      version: DASHBOARD_VERSION,
       panels: [
         { id: 'row-collapsed', collapsed: false },
         { id: 'chart', type: 'timeseries' },
@@ -332,7 +337,7 @@ describe('dashboard v4 migration', () => {
 
   it('skips legacy panel migrations when dashboard version is v4.1.0', () => {
     const migrated = dashboardMigrator({
-      version: '4.1.0',
+      version: DASHBOARD_VERSION,
       panels: [
         { id: 'row-current', type: 'row', version: '4.0.0', collapsed: true },
         { id: 'row-missing', type: 'row', version: '4.0.0' },
@@ -341,7 +346,7 @@ describe('dashboard v4 migration', () => {
     });
 
     expect(migrated).toMatchObject({
-      version: '4.1.0',
+      version: DASHBOARD_VERSION,
       panels: [
         { id: 'row-current', collapsed: true },
         { id: 'row-missing', collapsed: false },
@@ -350,6 +355,31 @@ describe('dashboard v4 migration', () => {
     });
     expect(migrated.panels[0]).not.toHaveProperty('version');
     expect(migrated.panels[1]).not.toHaveProperty('version');
+  });
+
+  it('adds the legacy 18px fixed height to pre-v4.2 bar gauges', () => {
+    const panel = dashboardMigrator({
+      version: '4.1.0',
+      panels: [{ id: 'ranking', type: 'barGauge', custom: {}, options: {}, targets: [] }],
+    }).panels[0];
+
+    expect(panel.custom).toMatchObject({
+      showMode: 'calculate',
+      orientation: 'horizontal',
+      namePlacement: 'left',
+      sizing: 'manual',
+      minVizHeight: 18,
+      maxVizHeight: 18,
+    });
+  });
+
+  it('keeps pre-v4.2 bar gauges horizontal with their legacy fixed row height', () => {
+    const panel = dashboardMigrator({
+      version: '4.1.0',
+      panels: [{ id: 'ranking', type: 'barGauge', custom: {}, options: {}, targets: [] }],
+    }).panels[0];
+
+    expect(panel.custom).toMatchObject({ orientation: 'horizontal', namePlacement: 'left', sizing: 'manual', minVizHeight: 18, maxVizHeight: 18 });
   });
 
   it('returns an empty dashboard for invalid input and drops invalid panels and targets', () => {

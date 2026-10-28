@@ -105,7 +105,7 @@ export default function index(props: Props) {
               onClick={() => {
                 add(
                   {
-                    color: 'rgb(255, 101, 107)',
+                    color: 'red-9',
                     value: 0,
                     type: '', // 只是为了不让合并默认值的时候被覆盖
                   },
@@ -130,7 +130,7 @@ export default function index(props: Props) {
                       >
                         <Input.Group key={key} compact style={{ marginBottom: 5 }}>
                           <Form.Item noStyle {...restField} name={[name, 'color']}>
-                            <ColorPicker />
+                            <ColorPicker builtin />
                           </Form.Item>
                           <Form.Item noStyle {...restField} name={[name, 'type']} hidden>
                             <div />

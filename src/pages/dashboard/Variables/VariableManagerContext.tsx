@@ -6,31 +6,11 @@ import { useGlobalState } from '@/pages/dashboard/globalState';
 
 import { IVariable as Variable, VariableExecutionMeta, DependencyGraph } from './types';
 
+import { extractDependencies } from './utils/variableDependencies';
+
+export { extractDependencies } from './utils/variableDependencies';
+
 let nextVariableExecutionSessionId = 0;
-
-export function extractDependencies(str: string, validVars?: Set<string>): string[] {
-  // 正则表达式匹配$变量名格式
-  // 匹配规则：
-  // - 支持 $var 格式：$ 符号后跟一个或多个字母、数字、下划线
-  // - 支持 ${var} 格式：$ 符号后跟大括号，内部为一个或多个字母、数字、下划线
-  // - 支持 [[var]]，与变量插值支持的语法一致
-  const regex = /\$\{([a-zA-Z0-9_]+)\}|\$([a-zA-Z0-9_]+)|\[\[([a-zA-Z0-9_]+)\]\]/g;
-  let match;
-  const dependencies = new Set<string>();
-
-  while ((match = regex.exec(str)) !== null) {
-    // 三个捕获组分别对应 ${var}、$var 和 [[var]]
-    const varName = match[1] || match[2] || match[3];
-    if (varName) {
-      if (validVars && !validVars.has(varName)) {
-        continue;
-      }
-      dependencies.add(varName);
-    }
-  }
-
-  return Array.from(dependencies);
-}
 
 // 生成稳定的 JSON 字符串，确保相同的对象产生相同的字符串
 function stringifyStable(obj: unknown): string {

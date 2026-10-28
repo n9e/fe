@@ -25,7 +25,7 @@ import ValueMappings from '../ValueMappings';
 import StandardOptions from '../StandardOptions';
 import { useGlobalState } from '../../../globalState';
 import CellOptions from '../../Options/TableNG/CellOptions';
-import { defaultThreshold } from '../../config';
+import { defaultThreshold } from '../../../Renderer/registry/defaults';
 import { ITarget } from '../../../types';
 
 interface Props {
