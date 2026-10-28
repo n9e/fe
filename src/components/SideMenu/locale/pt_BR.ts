@@ -29,7 +29,7 @@ const pt_BR = {
     "recording_rules": "Regras de registro",
     "logs_explorer": "Logs",
     "monitors": "Alertas",
-    "alerts_notifications": "Notificações de alerta",
+    "alerts_notifications": "Alertas",
     "rules": "Gerenciamento de regras",
     "alert_rules": "Regras de alerta",
     "alert_mutes": "Regras de silenciamento",
