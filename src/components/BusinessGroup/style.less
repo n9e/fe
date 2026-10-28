@@ -233,13 +233,19 @@
     margin-left: auto;
     gap: 4px;
     flex: 0 0 auto;
-    .ant-btn {
+    // Outrank themed icon-button dimensions as well as the base button layout.
+    .ant-btn.ant-btn-sm.ant-btn-icon-only {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 24px;
       height: 24px;
       padding: 0;
+      line-height: 1;
+      > svg {
+        display: block;
+        flex-shrink: 0;
+      }
     }
   }
 }
