@@ -10,6 +10,7 @@ import { getNotificationChannelTypes } from '@/pages/notificationChannels/consta
 import { refreshOnboardingProgress } from '@/components/OnboardingProgress/useOnboardingProgress';
 import { writeOnboardingMarker } from '@/components/OnboardingProgress/detect';
 import { localizeDocUrl } from '@/utils/docUrl';
+import UsageDocs from '@/components/UsageDocs';
 
 import { NOTIFY_CHANNEL_DOC, NS } from '../constants';
 import { formatTestSendResponse } from './interpretResponse';
@@ -132,9 +133,11 @@ export default function SendTestAlertModal({ notifyRuleId, onCancel }: Props) {
       <Link to='/notification-channels' target='_blank'>
         {t('test.go_check_channel')}
       </Link>
-      <a href={localizeDocUrl(NOTIFY_CHANNEL_DOC, i18n.language)} target='_blank' rel='noreferrer'>
-        {t('test.channel_doc')}
-      </a>
+      <UsageDocs>
+        <a href={localizeDocUrl(NOTIFY_CHANNEL_DOC, i18n.language)} target='_blank' rel='noreferrer'>
+          {t('test.channel_doc')}
+        </a>
+      </UsageDocs>
     </Space>
   );
 

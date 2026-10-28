@@ -25,7 +25,9 @@ import filteredFields, { filterOutBuiltinFields } from '../../utils/filteredFiel
 import { HandleValueFilterParams } from '../../types';
 
 // @ts-ignore
-import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
+import DownloadModal from '@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal';
+
+const MAX_RESULT_WINDOW = 10000; // ES 默认最大返回 10000 条数据，超过需要设置 index.max_result_window
 
 export function getFields(logs, DateField) {
   const fields: string[] = [];
@@ -40,6 +42,7 @@ export function getFields(logs, DateField) {
 }
 
 interface Props {
+  histogramFilters?: React.ReactNode;
   tableSelector: {
     antd: string;
     rgd: string;
@@ -88,10 +91,12 @@ interface Props {
   };
 }
 
+/** Connect elasticsearch raw results to shared scrolling and histogram controls. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const queryStrRef = useRef<string>('');
   const {
+    histogramFilters,
     tableSelector,
     indexData,
     rangeRef,
@@ -281,6 +286,7 @@ export default function index(props: Props) {
   >(service, {
     refreshDeps: [JSON.stringify(serviceParams)],
   });
+  const total = Math.min(data?.total ?? 0, MAX_RESULT_WINDOW);
 
   const histogramService = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
@@ -420,10 +426,12 @@ export default function index(props: Props) {
 
   return (
     <>
+      {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && histogramFilters}
       {refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
+              histogramFilters={histogramFilters}
               // state context
               fieldConfig={currentFieldConfig}
               indexData={indexData}
@@ -452,7 +460,7 @@ export default function index(props: Props) {
               renderHistogramAddonAfterRender={(toggleNode) => {
                 if (data) {
                   return (
-                    <Space>
+                    <Space className='n9e-log-histogram-meta-content' size={6} wrap>
                       {rangeRef.current && (
                         <>
                           {moment(rangeRef.current?.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current?.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
@@ -562,7 +570,7 @@ export default function index(props: Props) {
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
                       size='small'
-                      total={data?.total}
+                      total={total}
                       current={serviceParams.current}
                       pageSize={serviceParams.pageSize}
                       onChange={(current, pageSize) => {
@@ -586,7 +594,7 @@ export default function index(props: Props) {
                   ) : (
                     <Space size={4}>
                       <span>{t(`${logExplorerNS}:logs.count`)} :</span>
-                      <span>{data?.total}</span>
+                      <span>{total}</span>
                     </Space>
                   )}
                 </Space>
@@ -597,7 +605,7 @@ export default function index(props: Props) {
                 const isAtBottom = getIsAtBottom(tableSelector.antd, tableSelector.rgd);
                 if (isAtBottom) {
                   const currentServiceParams = getServiceParams();
-                  if (data && data.list.length < data.total) {
+                  if (data && data.list.length < total) {
                     appendRef.current = true;
                     fixedRangeRef.current = true;
                     setServiceParams((prev) => ({

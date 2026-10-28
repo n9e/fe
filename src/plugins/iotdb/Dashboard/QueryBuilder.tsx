@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React from 'react';
 import { Form, Row, Col, Input, Button, Tooltip } from 'antd';
 import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -56,9 +57,11 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                               title={
                                 <span>
                                   {t('db_iotdb:query.query_tip1')}
-                                  <a target='_blank' href='https://iotdb.apache.org/UserGuide/latest-Table/API/SQL-Manual.html'>
-                                    {t('db_iotdb:query.query_tip2')}
-                                  </a>
+                                  <UsageDocs>
+                                    <a target='_blank' href='https://iotdb.apache.org/UserGuide/latest-Table/API/SQL-Manual.html'>
+                                      {t('db_iotdb:query.query_tip2')}
+                                    </a>
+                                  </UsageDocs>
                                 </span>
                               }
                             >
@@ -69,12 +72,12 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                         {...restField}
                         name={[field.name, 'query', 'query']}
                         validateTrigger={['onBlur']}
-                          rules={[
-                            {
-                              required: true,
-                              message: t('db_iotdb:query.query_msg'),
-                            },
-                          ]}
+                        rules={[
+                          {
+                            required: true,
+                            message: t('db_iotdb:query.query_msg'),
+                          },
+                        ]}
                         style={{ flex: 1 }}
                       >
                         <Input />

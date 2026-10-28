@@ -13,6 +13,7 @@ import LuceneQueryInput from '@/plugins/elasticsearch/components/LuceneQueryInpu
 
 import { NAME_SPACE } from '../../constants';
 import QueryInputAddonAfter from '../components/QueryInputAddonAfter';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   snapRangeRef: React.MutableRefObject<{
@@ -38,19 +39,21 @@ export default function QueryInputCpt(props: Props) {
       label={
         <Space>
           {t(`${logExplorerNS}:query`)}
-          <Tooltip title={t('common:page_help')}>
-            <QuestionCircleOutlined
-              onClick={() => {
-                DocumentDrawer({
-                  language: i18n.language,
-                  darkMode,
-                  title: t('common:page_help'),
-                  type: 'iframe',
-                  documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/logs/elasticserch/',
-                });
-              }}
-            />
-          </Tooltip>
+          <UsageDocs>
+            <Tooltip title={t('common:page_help')}>
+              <QuestionCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    language: i18n.language,
+                    darkMode,
+                    title: t('common:page_help'),
+                    type: 'iframe',
+                    documentPath: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/logs/elasticserch/',
+                  });
+                }}
+              />
+            </Tooltip>
+          </UsageDocs>
         </Space>
       }
       addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}

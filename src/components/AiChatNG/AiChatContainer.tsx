@@ -23,7 +23,6 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
     queryAction,
     promptList,
     initialMessage,
-    onExecuteQueryForQueryContent,
     shareChatId,
     setShareReadonly,
     setShareChatId,
@@ -196,7 +195,6 @@ export default function AiChatContainer(props: IAiChatContainerProps) {
           queryAction={queryAction}
           promptList={promptList}
           initialMessage={initialMessage}
-          onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
           onChatChange={handleChatChange}
         />
       )}

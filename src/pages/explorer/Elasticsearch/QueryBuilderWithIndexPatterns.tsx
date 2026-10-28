@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useDebounceFn } from 'ahooks';
@@ -185,16 +186,18 @@ export default function QueryBuilder(props: Props) {
             label={
               <>
                 {t('datasource:es.filter')}{' '}
-                <a
-                  href={
-                    syntax === 'Lucene'
-                      ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
-                      : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
-                  }
-                  target='_blank'
-                >
-                  <QuestionCircleOutlined />
-                </a>
+                <UsageDocs>
+                  <a
+                    href={
+                      syntax === 'Lucene'
+                        ? 'https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax'
+                        : 'https://www.elastic.co/guide/en/kibana/current/kuery-query.html'
+                    }
+                    target='_blank'
+                  >
+                    <QuestionCircleOutlined />
+                  </a>
+                </UsageDocs>
               </>
             }
             addonAfter={

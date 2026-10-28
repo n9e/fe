@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { EditorView } from '@codemirror/view';
 
+import { basePrefix } from '@/App';
 import { SIZE } from '@/utils/constant';
 import { getRoles, getTeamInfoList } from '@/services/manage';
 import CodeMirror from '@/components/CodeMirror';
@@ -12,6 +13,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 
 import { SSOConfigType } from './types';
 import { putSSOConfig } from './services';
+import UsageDocs from '@/components/UsageDocs';
 
 export const documentMap = {
   OAuth2: 'https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/system-configuration/sso/oauth2/',
@@ -60,8 +62,8 @@ export default function Item(props: Props) {
     <Form form={form} layout='vertical'>
       {item.name === 'feishu' ? (
         <>
-          <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}/callback/feishu`}>
-            <Input placeholder={`${window.location.origin}/callback/feishu`} />
+          <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}${basePrefix}/callback/feishu`}>
+            <Input placeholder={`${window.location.origin}${basePrefix}/callback/feishu`} />
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
             <Switch size='small' />
@@ -168,8 +170,8 @@ export default function Item(props: Props) {
         </>
       ) : item.name === 'dingtalk' ? (
         <>
-          <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}/callback/dingtalk`}>
-            <Input placeholder={`${window.location.origin}/callback/dingtalk`} />
+          <Form.Item name={['setting', 'redirect_url']} label={t('callback_url')} initialValue={`${window.location.origin}${basePrefix}/callback/dingtalk`}>
+            <Input placeholder={`${window.location.origin}${basePrefix}/callback/dingtalk`} />
           </Form.Item>
           <Form.Item label={t('dingtalk_setting.enable')} name={['setting', 'enable']} valuePropName='checked' initialValue={false}>
             <Switch size='small' />
@@ -314,19 +316,21 @@ export default function Item(props: Props) {
           {t('common:btn.save')}
         </Button>
         {activeKey && documentMap[activeKey] && (
-          <Button
-            type='link'
-            onClick={() => {
-              DocumentDrawer({
-                language: i18n.language,
-                title: t('common:document_link'),
-                type: 'iframe',
-                documentPath: documentMap[activeKey],
-              });
-            }}
-          >
-            {t('common:document_link')}
-          </Button>
+          <UsageDocs>
+            <Button
+              type='link'
+              onClick={() => {
+                DocumentDrawer({
+                  language: i18n.language,
+                  title: t('common:document_link'),
+                  type: 'iframe',
+                  documentPath: documentMap[activeKey],
+                });
+              }}
+            >
+              {t('common:document_link')}
+            </Button>
+          </UsageDocs>
         )}
       </Space>
     </Form>

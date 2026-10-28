@@ -193,7 +193,7 @@ const es_ES = {
     "explore_hint": "Abre la consulta instantánea en una pestaña nueva, con este origen de datos ya seleccionado",
     "create_dashboard_hint": "Abre la lista de dashboards en una pestaña nueva; elige el grupo de negocio para crear uno",
     "create_alert_hint": "Abre la lista de reglas de alerta en una pestaña nueva; elige el grupo de negocio para crear una",
-    "pro_only": "Requiere la edición empresarial",
+    "pro_only": "Aún no se admite",
     "type_unsupported": "Este tipo de origen de datos aún no admite esta acción",
     "ds_disabled": "Este origen de datos está desactivado",
     "ds_disabled_desc": "Mientras esté desactivado, no se ejecuta el diagnóstico y las reglas de alerta que lo usan no se evalúan.",

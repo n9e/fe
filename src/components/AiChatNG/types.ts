@@ -176,13 +176,6 @@ export interface IAiChatHiddenFeature {
   header?: boolean;
 }
 
-export interface IAiChatQueryContentContext {
-  message: IAiChatMessage;
-  response: IAiChatMessageResponse;
-}
-
-export type AiChatExecuteQueryForQueryContent = (query: string, context: IAiChatQueryContentContext) => void;
-
 /** One user turn as the panel sees it: running from the moment the message is
  *  accepted, done once the backend marks it finished, stopped or failed. */
 export interface IAiChatTurn {
@@ -244,9 +237,13 @@ export interface IAiChatProps {
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);
   promptList?: Array<string | { label: string; value: string }>;
   initialMessage?: string;
+  /**
+   * A host-requested follow-up turn. A new `id` is sent once after the panel
+   * becomes idle; omitting this prop preserves the existing chat behaviour.
+   */
+  continuationMessage?: { id: string | number; content: string };
   /** Reference this skill in the first accepted message of a conversation. */
   initialSkill?: string;
-  onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
   onChatChange?: (chat?: IAiChatHistoryItem) => void;
   onError?: (error: Error) => void;
 }

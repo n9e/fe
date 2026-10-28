@@ -80,7 +80,7 @@ const zh_HK = {
       table_tip: '可用於建立 Doris 的告警規則、記錄規則、建立北極星指標。',
     },
     defaultSearchField: '默認檢索字段',
-    default_search_tip_1: '設置為默認檢索字段',
+    default_search_tip_1: '設定預設檢索欄位，設定後輸入欄位值即可查詢',
     default_search_tip_2: '取消默認檢索字段',
     default_search_by_tip: '默認檢索字段',
     datasource_disabled_tip: '請先選擇數據源',

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useLayoutEffect } from 'react';
 import { Search } from 'lucide-react';
 import { PromQLMonacoEditor } from '@fc-components/monaco-editor';
 import _ from 'lodash';
@@ -9,8 +9,10 @@ import { CommonStateContext } from '@/App';
 import { N9E_PATHNAME } from '@/utils/constant';
 import BuiltinMetrics from '@/components/PromQLInput/BuiltinMetrics';
 import MetricsExplorer from '@/components/PromGraphCpt/components/MetricsExplorer';
+import { useSharedRequestCache } from '@/components/SharedRequestCache';
 
 import { interpolateString, instantInterpolateString, includesVariables, getRealStep } from './utils';
+import { requestPromQL } from './request';
 
 import './style.less';
 
@@ -41,6 +43,8 @@ interface MonacoEditorPromQLProps {
   onEnter?: (value?: string) => void;
   onBlur?: (value?: string) => void;
   onEditorDidMount?: (editor: MonacoEditor) => void;
+  /** Changing this token resets Monaco's model for one external query fill. */
+  modelResetToken?: number;
   onMetricUnitChange?: (unit: string) => void; // 用于内置指标启用时选择指标获取对应的 unit
 }
 
@@ -70,11 +74,33 @@ export default function index(props: MonacoEditorPromQLProps) {
     onEnter,
     onBlur,
     onEditorDidMount,
+    modelResetToken,
     onMetricUnitChange,
   } = props;
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
+  const requestCache = useSharedRequestCache();
   const editorRef = React.useRef<MonacoEditor | null>(null);
+  const syncingExternalValueRef = React.useRef(false);
+  const lastModelResetTokenRef = React.useRef(modelResetToken);
   const [value, setValue, getValue] = useGetState<string | undefined>(props.value);
+
+  useLayoutEffect(() => {
+    if (modelResetToken === undefined || modelResetToken === lastModelResetTokenRef.current) return;
+    lastModelResetTokenRef.current = modelResetToken;
+    const editor = editorRef.current;
+    const nextValue = props.value ?? '';
+    // react-monaco-editor applies controlled changes with pushEditOperations.
+    // A programmatic query fill can leave Monaco's tracked selection invalid
+    // there; setValue resets the model before that passive effect runs.
+    if (editor && editor.getValue() !== nextValue) {
+      syncingExternalValueRef.current = true;
+      try {
+        editor.setValue(nextValue);
+      } finally {
+        syncingExternalValueRef.current = false;
+      }
+    }
+  }, [props.value, modelResetToken]);
 
   useEffect(() => {
     if (props.value !== value) {
@@ -116,25 +142,22 @@ export default function index(props: MonacoEditorPromQLProps) {
             readOnly={readOnly}
             size={size}
             theme={darkMode ? 'dark' : 'light'}
-            value={value}
+            value={value ?? ''}
             placeholder={placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
             apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
             enableRequests={datasourceValue !== undefined}
-            request={(resource, options) => {
-              const params = options?.body?.toString();
-              const search = params ? `?${params}` : '';
-              return fetch(resource + search, {
-                method: 'Get',
-                headers: new Headers({
-                  Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-                }),
-              });
-            }}
+            request={(resource, options) =>
+              requestPromQL(resource, options, {
+                accessToken: localStorage.getItem('access_token') || '',
+                cache: requestCache,
+              })
+            }
             enableAutocomplete={enableAutocomplete}
             durationVariablesCompletion={durationVariablesCompletion}
             interpolateString={interpolateString}
             onChange={(newValue) => {
+              if (syncingExternalValueRef.current) return;
               setValue(newValue);
               if (newValue !== props.value) onDraftChange?.(newValue);
               // 如果 onChangeTrigger 没有设置或为空，则直接触发 onChange

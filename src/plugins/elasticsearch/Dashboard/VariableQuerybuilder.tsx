@@ -7,6 +7,7 @@ import { useDebounceFn } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import UsageDocs from '@/components/UsageDocs';
 import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import { getFullFields, Field } from '@/pages/explorer/Elasticsearch/services';
 import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
@@ -86,18 +87,20 @@ export default function VariableQuerybuilder({ variables }: { variables?: IVaria
         label={
           <Space size={4}>
             {t('var.definition')}
-            <Tooltip title={t('common:click_to_view_doc')}>
-              <QuestionCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language,
-                    darkMode,
-                    title: t('var.definition'),
-                    documentPath: '/n9e-docs/dashboards/variables/query/elasticsearch',
-                  });
-                }}
-              />
-            </Tooltip>
+            <UsageDocs>
+              <Tooltip title={t('common:click_to_view_doc')}>
+                <QuestionCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language,
+                      darkMode,
+                      title: t('var.definition'),
+                      documentPath: '/n9e-docs/dashboards/variables/query/elasticsearch',
+                    });
+                  }}
+                />
+              </Tooltip>
+            </UsageDocs>
           </Space>
         }
         name='definition'

@@ -355,7 +355,7 @@ const id_ID = {
       title: 'Pengaturan lanjutan',
       unit: 'Satuan',
       unit_tip:
-        '\n        <0>Awalan SI diterapkan secara bawaan; pilih none untuk mematikannya</0>\n        <1>Data (SI): basis 1000, dengan satuan B, kB, MB, GB, TB, PB, EB, ZB, YB</1>\n        <2>Data (IEC): basis 1024, dengan satuan B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB</2>\n        <3>bit: b</3>\n        <4>byte: B</4>\n      ',
+        '\n        <0>Secara default, nilai menggunakan format SI short (skala otomatis dengan prefiks SI, basis 1000). Pilih none untuk menonaktifkannya</0>\n        <1>Data (SI): basis 1000, dengan satuan B, kB, MB, GB, TB, PB, EB, ZB, YB</1>\n        <2>Data (IEC): basis 1024, dengan satuan B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB</2>\n        <3>bit: b</3>\n        <4>byte: B</4>\n      ',
       datetime: 'Format waktu',
       min: 'Minimum',
       max: 'Maksimum',

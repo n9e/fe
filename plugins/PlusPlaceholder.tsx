@@ -83,6 +83,9 @@ const getTLSProject = async () => {
 const getTLSTopic = async () => {
   return {};
 };
+const captureDorisLogAnalysisRequest = (_request?: unknown) => undefined;
+const bindDorisLogAnalysisRows = (_rows?: object[], _snapshot?: unknown) => {};
+const useDorisLogAnalysisViewerProps = (_options?: unknown) => ({});
 const getProject = async () => {
   return {};
 };
@@ -128,6 +131,9 @@ export {
   getCLSTopic,
   getTLSProject,
   getTLSTopic,
+  captureDorisLogAnalysisRequest,
+  bindDorisLogAnalysisRows,
+  useDorisLogAnalysisViewerProps,
   getProject,
   getTopic,
 };

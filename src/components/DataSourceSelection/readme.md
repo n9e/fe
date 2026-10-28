@@ -45,7 +45,7 @@ const currentSources = sources.filter((source) => source.type === selectedType);
 <DataSourceTypeList types={types} value={selectedType} onChange={setSelectedType} />
 ```
 
-类型格式为 `{ value: string, label: ReactNode, icon?: ReactNode }`。可通过 `typeFilter` 筛选类型，通过 `disabled` 禁止更换类型。
+类型格式为 `{ value: string, label: ReactNode, icon?: ReactNode }`。可通过 `typeFilter` 筛选类型，通过 `disabled` 禁止更换类型。禁用规则与项目 Ant Design 4.21 一致：组件自身或外层 `Form`、`ConfigProvider` 任一禁用时均不可切换，显式 `disabled={false}` 不会解除外层禁用；禁用样式与 `Radio.Button` 一致（置灰文字底色、边框回到基础色、选中项底色加深）。
 
 ## 实例卡片列表
 
@@ -86,6 +86,7 @@ const currentSources = sources.filter((source) => source.type === selectedType);
 
 ```sh
 npx jest --runInBand --runTestsByPath \
+  src/components/DataSourceSelection/DataSourceTypeList/index.test.tsx \
   src/plus/pages/DiallAnalysis/pages/AddDial/BaseInfo.test.tsx \
   src/plus/pages/DiallAnalysis/pages/AddDial/index.test.tsx \
   src/plus/pages/DiallAnalysis/services/index.test.ts

@@ -14,9 +14,8 @@
   --rdg-border-color: #f0f0f0;
   --rdg-background-color: var(--fc-fill-2);
   --rdg-header-background-color: var(--fc-fill-3);
-  --rdg-row-hover-background-color: #EAE8F2;
+  --rdg-row-hover-background-color: #eae8f2;
   --rdg-font-size: 12px;
-
 
   .rdg-header-row {
     position: relative;
@@ -37,7 +36,13 @@
     }
 
     .rdg-cell {
+      z-index: 3;
+      background: var(--rdg-header-background-color);
       border-inline-end: 1px solid var(--fc-border-base);
+
+      &.rdg-cell-frozen {
+        z-index: 4;
+      }
     }
   }
 
@@ -45,11 +50,15 @@
     .rdg-cell {
       border-right: none;
     }
+
+    .n9e-log-row-actions-cell {
+      padding-inline: 0;
+    }
   }
 
   /* 移除选中单元格的轮廓 */
   .rdg-cell:focus,
-  .rdg-cell[aria-selected="true"] {
+  .rdg-cell[aria-selected='true'] {
     outline: none;
     box-shadow: none;
   }
@@ -95,4 +104,10 @@
       background-clip: content-box;
     }
   }
+}
+
+// AI row actions remove padding from the first cell. In clustering that cell
+// is a line number instead; retain the standard 8px header/body alignment.
+.n9e-logs-viewer-rdg .rdg-row > .rdg-cell.n9e-log-line-number-cell {
+  padding-inline: 8px !important;
 }

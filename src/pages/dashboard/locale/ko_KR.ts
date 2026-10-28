@@ -350,7 +350,7 @@ const ko_KR = {
       title: '고급 설정',
       unit: '단위',
       unit_tip:
-        '\n        <0>기본적으로 SI 접두사를 적용하며, 원하지 않으면 none을 골라 끌 수 있습니다</0>\n        <1>Data(SI): 기준은 1000이며 단위는 B, kB, MB, GB, TB, PB, EB, ZB, YB입니다</1>\n        <2>Data(IEC): 기준은 1024이며 단위는 B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB입니다</2>\n        <3>bit: b</3>\n        <4>byte: B</4>\n      ',
+        '\n        <0>기본적으로 SI short 형식을 사용합니다(SI 접두어로 자동 크기 조정, 기준 1000). 사용하지 않으려면 none을 선택하세요</0>\n        <1>Data(SI): 기준은 1000이며 단위는 B, kB, MB, GB, TB, PB, EB, ZB, YB입니다</1>\n        <2>Data(IEC): 기준은 1024이며 단위는 B, KiB, MiB, GiB, TiB, PiB, EiB, ZiB, YiB입니다</2>\n        <3>bit: b</3>\n        <4>byte: B</4>\n      ',
       datetime: '시간 형식',
       min: '최솟값',
       max: '최댓값',

@@ -13,12 +13,13 @@ describe('BusinessGroup scrollbar style', () => {
     expect(businessGroupStyle).not.toContain('scrollbar-width: thin;');
   });
 
-  it('keeps the shared scrollbar styling theme-neutral', () => {
+  it('uses a visible scrollbar thumb in dark mode', () => {
     expect(defaultThemeStyle).toContain('.best-looking-scroll {');
     expect(defaultThemeStyle).toContain('.best-looking-scrollbar();');
     expect(scrollbarThemeStyle).toContain('background-color: rgba(0, 0, 0, 0.1);');
     expect(scrollbarThemeStyle).not.toContain('--best-looking-scrollbar-thumb');
     expect(scrollbarThemeStyle).not.toContain('scrollbar-color:');
-    expect(darkThemeStyle).not.toMatch(/\.best-looking-scroll\s*\{/);
+    expect(darkThemeStyle).toContain('.best-looking-scroll {');
+    expect(darkThemeStyle).toContain('background-color: rgba(136, 136, 136, 0.7);');
   });
 });

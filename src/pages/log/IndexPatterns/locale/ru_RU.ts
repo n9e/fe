@@ -33,7 +33,7 @@ const ru_RU = {
       timeRangeFormat: 'Время начала и окончания (форматированное): к базовым переменным добавляется параметр $__time_format__=YYYY-MM-DD HH:mm:ss',
       timeRangeOffset:
         'Время начала и окончания (смещение времени): к базовым переменным добавляются параметры $__start_time_margin__=-100000 и $__end_time_margin__=100000, единица — миллисекунды, положительные значения смещают вперёд, отрицательные — назад',
-      localUrl: 'Адрес данной системы: $local_url, включает протокол и домен, например "https://flashcat.cloud"',
+      localUrl: 'Адрес данной системы: $local_url, включает протокол, домен и префикс развёртывания, например "https://flashcat.cloud"',
       localProtocol: 'Протокол данной системы: $local_protocol, например "http:" или "https:"',
       localDomain: 'Домен данной системы: $local_domain, например flashcat.cloud',
       mappingParams: 'Таблица сопоставления параметров: $__mapping_para__, представляет все параметры, настроенные в таблице сопоставления параметров',
@@ -78,7 +78,7 @@ const ru_RU = {
           urlTemplateTip2:
             'Настройка и изменение ссылок выполняются в разделе «Ссылка перехода»; если для того же поля настроена ссылка в «Ссылке перехода», данная настройка не будет действовать.',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
+          urlTemplatePlaceholder1: '$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: 'Шаблон метки',
           labelTemplatePlaceholder: '{{value}}',
         },

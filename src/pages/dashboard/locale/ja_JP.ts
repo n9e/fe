@@ -427,7 +427,7 @@ const ja_JP = {
       title: '高度な設定',
       unit: '単位',
       unit_tip:
-        '\n        <0>デフォルトでは SI Prefixes が適用されます。デフォルトの処理をしたくない場合は none を選択してください</0>\n        <1>Data(SI): 基数は1000、単位はB、kB、MB、GB、TB、PB、EB、ZB、YB</1>\n        <2>Data(IEC): 基数は1024、単位はB、KiB、MiB、GiB、TiB、PiB、EiB、ZiB、YiB</2>\n        <3>bits: b</3>\n        <4>bytes: B</4>\n      ',
+        '\n        <0>デフォルトでは SI short 形式を使用します（SI 接頭辞による自動スケーリング、基数 1000）。無効にするには none を選択してください</0>\n        <1>Data(SI): 基数は1000、単位はB、kB、MB、GB、TB、PB、EB、ZB、YB</1>\n        <2>Data(IEC): 基数は1024、単位はB、KiB、MiB、GiB、TiB、PiB、EiB、ZiB、YiB</2>\n        <3>bits: b</3>\n        <4>bytes: B</4>\n      ',
       datetime: '時間のフォーマット',
       min: '最小値',
       max: '最大値',

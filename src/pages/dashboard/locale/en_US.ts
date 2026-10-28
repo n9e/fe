@@ -433,7 +433,7 @@ const en_US = {
     standardOptions: {
       title: 'Standard options',
       unit: 'Unit',
-      unit_tip: 'The default is SI prefixes; setting None disables the default processing',
+      unit_tip: 'By default, values use SI short formatting (automatic SI-prefix scaling, base 1000). Choose none to disable it.',
       datetime: 'Date format',
       min: 'Min',
       max: 'Max',

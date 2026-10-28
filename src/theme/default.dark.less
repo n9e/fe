@@ -22,8 +22,8 @@
     }
   }
 
-  .ant-table-tbody>tr.ant-table-row:hover>td,
-  .ant-table-tbody>tr>td.ant-table-cell-row-hover {
+  .ant-table-tbody > tr.ant-table-row:hover > td,
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
     // 原本 rgba(204, 204, 220, 0.08) 带透明度的颜色会导致启用 fixed column 时被遮挡的内容透出问题
     background: #262626 !important;
   }
@@ -78,14 +78,14 @@
   }
 
   .renderer-timeseries-legend-list {
-    &>div.disabled {
-      color: #74778A
+    & > div.disabled {
+      color: #74778a;
     }
   }
 
-  .react-grid-item>.react-resizable-handle::after {
-    border-right: 2px solid #46495C;
-    border-bottom: 2px solid #46495C;
+  .react-grid-item > .react-resizable-handle::after {
+    border-right: 2px solid #46495c;
+    border-bottom: 2px solid #46495c;
   }
 
   .is-active {
@@ -124,4 +124,9 @@
     background: unset;
   }
 
+  .best-looking-scroll {
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(136, 136, 136, 0.7);
+    }
+  }
 }

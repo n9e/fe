@@ -114,4 +114,51 @@ describe('canGoBackInApp', () => {
     markInAppNavigation();
     expect(canGoBackInApp()).toBe(true);
   });
+
+  describe('across full page loads', () => {
+    /**
+     * Re-evaluates the module, i.e. one full page load. `type` is the navigation type the
+     * browser records; `historyLength` is the tab's history length after the load.
+     */
+    function loadPage(type: NavigationTimingType, historyLength: number) {
+      Object.defineProperty(performance, 'getEntriesByType', { configurable: true, value: () => [{ type }] });
+      jest.spyOn(window.history, 'length', 'get').mockReturnValue(historyLength);
+      let page: typeof import('./pageError') | undefined;
+      jest.isolateModules(() => {
+        page = jest.requireActual<typeof import('./pageError')>('./pageError');
+      });
+      page!.markInAppNavigation();
+      return page!;
+    }
+
+    beforeEach(() => {
+      // Every case starts in a fresh tab
+      sessionStorage.clear();
+    });
+
+    afterEach(() => {
+      delete (performance as Partial<Performance>).getEntriesByType;
+      jest.restoreAllMocks();
+    });
+
+    it('goes back to the app page the user typed a new address over', () => {
+      loadPage('navigate', 1);
+
+      expect(loadPage('navigate', 2).canGoBackInApp()).toBe(true);
+    });
+
+    it('stays put when a fresh tab reloads its first app page', () => {
+      // Chrome counts the New Tab page as an entry, hence 2
+      loadPage('navigate', 2);
+
+      expect(loadPage('reload', 2).canGoBackInApp()).toBe(false);
+    });
+
+    it('stays put in a tab the app opened with window.open', () => {
+      // The new tab copied its opener's sessionStorage but has a single history entry
+      loadPage('navigate', 1);
+
+      expect(loadPage('navigate', 1).canGoBackInApp()).toBe(false);
+    });
+  });
 });

@@ -35,6 +35,15 @@ src/
 - 同一组件中应避免多次调用同一有副作用的转换函数，优先提取变量复用计算结果。
 - **类型收窄优先使用原生接口**：用 `Array.isArray` 代替 `_.isArray`，用 `typeof x === 'number'` 代替 `_.isNumber`，用 `x == null` 代替 `_.isNil`，以此类推。lodash 的类型守卫函数在缺少 `@types/lodash` 时不会被 TypeScript 识别为类型守卫，导致 `unknown` 类型无法收窄。
 
+## React Router 路由与部署前缀
+
+- 项目使用 React Router 的 `basename` 支持子路径部署。应用内路由路径应使用 Router 提供的路径：例如部署前缀为 `/flashcat` 时，`useLocation().pathname` 和 React Router `history.location.pathname` 是 `/dial-analysis`，而 `window.location.pathname` / 全局 `location.pathname` 是浏览器完整路径 `/flashcat/dial-analysis`。
+- 构造应用内跳转、调用 React Router 的 `history.push` / `history.replace`，或保留当前路由路径时，使用 Router 的相对路径（如 `useLocation()` 或 `history.location`）。不要把全局 `location.pathname` 直接当作 Router 路径，也不要给 Router 路径手动再拼 `basename`，否则可能出现 `/flashcat/flashcat/polaris` 这样的重复前缀。
+- `useLocation()` 是当前渲染对应的路由快照。异步请求等延迟回调需要读取执行时的最新路径或查询串时，使用对应 Router history 的 `history.location`，避免使用闭包中的旧值覆盖后来更新的路由状态。
+- 只有确实需要浏览器完整 URL（例如整页跳转、刷新或生成带部署前缀的浏览器级地址）时才使用 `window.location` / 全局 `location`；注意它们与 Router 的路由路径语义不同。`window.history` 的原生 History API 也不等同于 React Router 的 `history`。
+- 构造复制、分享、保存或自定义组件使用的 URL 时，先区分 Router 路径、应用相对 URL 和完整 URL；优先复用 `src/utils/appUrl.ts` 的 `getAppBaseUrl` / `addAppBasePrefix`，不要随手拼接 `basePrefix`。这些 helper 会避免重复前缀，并让绝对 URL 保持原样。
+- `$local_url` 已包含协议、域名和部署前缀；替换后不要再给结果加前缀。Vite 前缀插件只处理它识别的浏览器 URL 接收点，不会处理复制到剪贴板、显示在输入框、存入对象或经自定义组件传递的 URL；这些场景需要显式构造。
+
 ## 数据与错误
 
 - 异步请求须有错误处理（`try/catch`、`.catch`、`onError` 等，与现有模式一致）。
@@ -98,3 +107,10 @@ Less/CSS 侧要求：
 - 避免在测试数据中使用 `as any`。如测试数据与函数签名不匹配，优先用 `satisfies` 验证结构。
 - 测试数据中如含 mock 函数（`jest.fn()`），不适合加 `as const`，保持原样。
 - 不要在测试文件中定义与源码重复的本地类型/接口。
+
+### 告警规则表单 E2E
+
+- 修改告警规则新增/编辑表单的字段、默认值、校验、序列化或回填行为时，必须同步更新 `e2e/add-alert-rule/` 下的 config-driven E2E 用例。
+- `e2e/add-alert-rule/configs/*.json` 是用例输入；配置中的有效字段应贯穿 normalizer、对应的 step/query handler 和 API 持久化断言。涉及编辑回显时，也要验证回填结果。不要静默跳过配置字段或为了通过测试而删减断言；确属 UI/API 转换的差异，应在 expected-value builder 中说明。
+- 必须保证 `base`、`prometheus-v1`、`prometheus-v2`、`es-index`、`es-index-pattern` 和 `host` 这组核心回归用例可运行且通过。其他数据源配置也应在条件允许时维护和运行，但由于测试数据源或数据可能不稳定，属于尽力维护，不作为强制门槛。
+- 改完后检查 Playwright 用例收集，并运行核心配置：`E2E_CONFIGS=base,prometheus-v1,prometheus-v2,es-index,es-index-pattern,host npm run e2e-test`；其他数据源配置在测试数据稳定时再运行。

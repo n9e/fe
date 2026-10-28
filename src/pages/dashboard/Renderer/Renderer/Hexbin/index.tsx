@@ -23,6 +23,7 @@ import { basePrefix } from '@/App';
 import HoneycombChart from '@/components/HoneycombChart';
 import type { HoneycombCell } from '@/components/HoneycombChart';
 import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import { addAppBasePrefix } from '@/utils/appUrl';
 
 import type { IHexbinStyles, IPanel, ScopedVariables } from '../../../types';
 import getCalculatedValuesBySeries from '../../utils/getCalculatedValuesBySeries';
@@ -136,7 +137,7 @@ const HexbinContent: React.FunctionComponent<HoneyCombProps> = (props) => {
         scopedVars[`__field.labels.${key}`] = { value };
       });
       const detail = replaceTemplateVariables(detailUrl, { scopedVars });
-      window.open(basePrefix + detail, '_blank');
+      window.open(addAppBasePrefix(detail, basePrefix), '_blank');
     },
     [detailUrl, replaceTemplateVariables],
   );

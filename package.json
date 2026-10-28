@@ -1,13 +1,13 @@
 {
   "name": "n9e-fe",
-  "version": "v9.1.1",
+  "version": "v9.3.0",
   "scripts": {
     "dev": "vite --port 8765 --host",
     "dev:advanced": "vite --port 8765 --host --mode advanced",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "build:advanced": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build --mode advanced",
-    "build:prefix": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 VITE_PREFIX=/flashcat vite build --mode advanced",
-    "build:prefix_advanced": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 VITE_PREFIX=/flashcat vite build --mode advanced",
+    "build:prefix": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 \"VITE_PREFIX=${VITE_PREFIX-/flashcat}\" vite build --mode advanced",
+    "build:prefix_advanced": "node comb_feats ${npm_config_custom_options} && cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && cross-env NODE_OPTIONS=--max-old-space-size=8192 \"VITE_PREFIX=${VITE_PREFIX-/flashcat}\" vite build --mode advanced",
     "serve": "vite preview",
     "test": "jest",
     "e2e-test": "playwright test e2e/"
@@ -40,7 +40,7 @@
     "@fc-components/monaco-editor": "^0.6.2",
     "@fc-components/use-antd-resizable-header": "^2.8.16",
     "@fc-plot/ts-graph": "^0.27.2",
-    "@flashcatcloud/ai-kit": "^0.5.0",
+    "@flashcatcloud/ai-kit": "^0.5.1",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@turf/bbox": "^6.5.0",
@@ -120,7 +120,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@midscene/web": "^1.10.0",
+    "@midscene/web": "^1.15.3",
     "@playwright/test": "^1.61.1",
     "@rollup/pluginutils": "^4.1.1",
     "@testing-library/dom": "^10.4.1",

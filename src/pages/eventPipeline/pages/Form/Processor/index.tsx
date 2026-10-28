@@ -19,6 +19,7 @@ import Relabel from './Relabel';
 import Callback from './Callback';
 import EventDrop from './EventDrop';
 import AISummary from './AISummary';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   disabled?: boolean;
@@ -52,6 +53,7 @@ const TYPE_CATEGORY: Record<string, string> = {
   script: 'dispatch',
   event_recover: 'dispatch',
   alert_shot: 'dispatch',
+  flashai_automation: 'dispatch',
 };
 
 export default function NotifyConfig(props: Props) {
@@ -174,20 +176,22 @@ export default function NotifyConfig(props: Props) {
             <Space>
               {t('processor.typ')}
               {documentPathMap[processorType] && (
-                <a
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    DocumentDrawer({
-                      language: i18n.language,
-                      darkMode,
-                      type: 'iframe',
-                      title: t('processor.help_btn'),
-                      documentPath: documentPathMap[processorType],
-                    });
-                  }}
-                >
-                  {t('processor.help_btn')}
-                </a>
+                <UsageDocs>
+                  <a
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      DocumentDrawer({
+                        language: i18n.language,
+                        darkMode,
+                        type: 'iframe',
+                        title: t('processor.help_btn'),
+                        documentPath: documentPathMap[processorType],
+                      });
+                    }}
+                  >
+                    {t('processor.help_btn')}
+                  </a>
+                </UsageDocs>
               )}
             </Space>
           }

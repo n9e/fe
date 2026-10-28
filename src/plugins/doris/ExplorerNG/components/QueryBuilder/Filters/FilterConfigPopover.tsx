@@ -1,5 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { Popover, Row, Col, Form, Select, Alert, Checkbox } from 'antd';
+import { Popover, Row, Col, Form, Select, Alert, Checkbox, Button, Space, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import { useRequest } from 'ahooks';
@@ -30,6 +31,7 @@ interface Props {
   onAdd?: (data: FilterConfig) => void;
 }
 
+/** Edit a filter draft and apply it only after explicit validation and confirmation. */
 export default function ConfigPopover(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { ignoreNextOutsideClick } = useContext(CommonStateContext);
@@ -71,6 +73,20 @@ export default function ConfigPopover(props: Props) {
     },
   );
 
+  const close = () => {
+    ignoreNextOutsideClick?.();
+    setVisible(false);
+    form.resetFields();
+  };
+  const confirm = (values: FilterConfig) => {
+    if (LIKE_OPERATORS.includes(values.operator!) && typeof values.value === 'string' && values.value && !values.value.startsWith('%') && !values.value.endsWith('%')) {
+      values.value = `%${values.value}%`;
+    }
+    close();
+    if (data) onChange?.(values);
+    else onAdd?.(values);
+  };
+
   return (
     <Popover
       overlayClassName='doris-query-builder-popup'
@@ -78,41 +94,15 @@ export default function ConfigPopover(props: Props) {
       placement='bottom'
       visible={visible}
       onVisibleChange={(v) => {
+        if (!v) return close();
         ignoreNextOutsideClick?.();
-        setVisible(v);
-        // popover 关闭时，获取表单数据并传递给父组件
-        if (v === false) {
-          form.validateFields().then((values) => {
-            // 如果是 LIKE 操作符，处理 value 值，添加 % 通配符
-            if (_.includes(LIKE_OPERATORS, values.operator) && values.value && !_.startsWith(values.value, '%') && !_.endsWith(values.value, '%')) {
-              values.value = `%${values.value}%`;
-            }
-            if (data) {
-              onChange?.(values as FilterConfig);
-            } else {
-              form.resetFields(); // 新增筛选器时，重置表单
-              onAdd?.(values as FilterConfig);
-            }
-          });
-        } else if (v === true) {
-          // popover 打开时，初始化表单数据
-          if (data) {
-            form.setFieldsValue({
-              field: data?.field,
-              operator: data?.operator,
-              value: data?.value,
-              disabled: data?.disabled || false,
-            });
-          } else {
-            form.setFieldsValue({
-              disabled: false,
-            });
-          }
-        }
+        form.resetFields();
+        form.setFieldsValue(data ? _.cloneDeep({ field: data.field, operator: data.operator, value: data.value, disabled: data.disabled || false }) : { disabled: false });
+        setVisible(true);
       }}
       content={
         <div className='w-[400px]'>
-          <Form form={form} layout='vertical'>
+          <Form form={form} layout='vertical' onFinish={confirm}>
             <Row gutter={SIZE}>
               <Col span={12}>
                 <Form.Item
@@ -185,9 +175,35 @@ export default function ConfigPopover(props: Props) {
               )}
               <FilterConfigValue operator={operator} fieldSample={fieldSample} />
               <Col span={24}>
-                <Form.Item name='disabled' valuePropName='checked' initialValue={false} className='mb-0'>
-                  <Checkbox>{t('builder.filters.disabled')}</Checkbox>
-                </Form.Item>
+                <div className='flex items-center justify-between gap-4'>
+                  <Form.Item name='disabled' valuePropName='checked' initialValue={false} className='mb-0'>
+                    <Checkbox aria-label={t('builder.filters.disabled')}>
+                      <span className='inline-flex items-center gap-1 align-middle'>
+                        <span>{t('builder.filters.disabled')}</span>
+                        <Tooltip title={t('log_explorer:filter_editor.disabled_tip')}>
+                          <QuestionCircleOutlined
+                            tabIndex={0}
+                            aria-label={t('log_explorer:filter_editor.disabled_tip')}
+                            className='text-hint cursor-help'
+                            style={{ fontSize: 12 }}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    </Checkbox>
+                  </Form.Item>
+                  <Space size={4}>
+                    <Button type='text' size='small' onClick={close}>
+                      {t('log_explorer:filter_editor.cancel')}
+                    </Button>
+                    <Button type='link' size='small' onClick={() => form.submit()}>
+                      {t('log_explorer:filter_editor.confirm')}
+                    </Button>
+                  </Space>
+                </div>
               </Col>
             </Row>
           </Form>

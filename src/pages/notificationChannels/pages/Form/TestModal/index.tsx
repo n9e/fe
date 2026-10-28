@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Button, Segmented, Alert, Select, Input, Form, FormInstance, Space, Result } from 'antd';
+import { Modal, Button, Segmented, Alert, Select, Input, Form, FormInstance, Space, Result, Checkbox } from 'antd';
 import { ExperimentOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -13,6 +13,7 @@ import { NS } from '../../../constants';
 import { testItem } from '../../../services';
 import { ChannelItem } from '../../../types';
 import { normalizeFormValues } from '../../../utils/normalizeValues';
+import { isNativeRequestType } from '../../../utils/native';
 
 interface Props {
   form: FormInstance;
@@ -21,6 +22,19 @@ interface Props {
 }
 
 type TestMode = 'history' | 'mock';
+
+// 规则侧只有一个「发给谁」参数的原生媒介：未保存的媒介在测试弹窗里临时填一个
+const SIMPLE_RULE_PARAMS: Record<string, { key: string; placeholder: string; secret: boolean }> = {
+  pushover: { key: 'user_key', placeholder: 'uQiRzpo4DXghDmr9QzzfQu27cmVRsG', secret: true },
+  ntfy: { key: 'topic', placeholder: 'ops-alerts-x7Kq2', secret: true },
+  splunk_oncall: { key: 'routing_key', placeholder: 'database', secret: false },
+  line: { key: 'to', placeholder: 'U4af4980629...', secret: true },
+};
+const WEBHOOK_PLACEHOLDERS: Record<string, string> = {
+  teams: 'https://<workflow-host>/workflows/.../invoke?...',
+  slackwebhook: 'https://hooks.slack.com/services/T.../B.../...',
+  mattermostwebhook: 'https://mattermost.example.com/hooks/<id>',
+};
 
 const DEFAULT_MOCK_EVENT: MockEventState = { severity: 2, isRecovered: false };
 
@@ -42,12 +56,25 @@ export default function TestModal(props: Props) {
   // "pagerduty requires at least one routing key in sendtos" 必然失败——
   // 报错还指向一个用户在本页面看不到的概念。
   const [pagerdutyKeys, setPagerdutyKeys] = useState<string[]>([]);
+  // Jira 的项目和工作类型在通知规则里是下拉选的，那份下拉要已保存的媒介 id 才能拉到，这里让用户手填
+  const [jiraProject, setJiraProject] = useState('');
+  const [jiraIssueType, setJiraIssueType] = useState('');
+  // Discord 的 Webhook 地址在通知规则里填，未保存的媒介在这里临时填一个
+  const [discordParams, setDiscordParams] = useState<Record<string, string>>({ target: 'channel' });
+  // JSM 的 API 集成 key 也在通知规则里填，这里临时填一个
+  const [jsmApiKey, setJsmApiKey] = useState('');
+  // Slack / Mattermost 的 Webhook 地址同样在通知规则里填
+  const [webhookUrl, setWebhookUrl] = useState('');
+  // Pushover 的 User Key、ntfy 的 Topic、Splunk On-Call 的 Routing Key、LINE 的接收方 ID
+  const [simpleParam, setSimpleParam] = useState('');
+  // 默认连恢复一起测：一次验证建单、评论和关单
+  const [withRecovery, setWithRecovery] = useState(true);
   const [userIds, setUserIds] = useState<number[]>([]);
   const [userGroupIds, setUserGroupIds] = useState<number[]>([]);
   const [userOptions, setUserOptions] = useState<{ label: string; value: number }[]>([]);
   const [teamOptions, setTeamOptions] = useState<{ label: string; value: number }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; error_message: string }>();
+  const [result, setResult] = useState<{ success: boolean; error_message: string; detail?: string }>();
 
   // 必须用 useWatch 订阅：在 render 里裸调 getFieldsValue 拿到的是「上一次因别的原因重渲染时」
   // 的快照，首屏可能为空——表现为参数输入框不渲染、script 媒介的测试按钮没被禁用
@@ -59,6 +86,14 @@ export default function TestModal(props: Props) {
   // 等于从请求体直取任意代码执行，必须先保存（保存动作有权限门与 create_by 审计）
   const scriptBlocked = requestType === 'script';
   const isPagerduty = requestType === 'pagerduty';
+  const isJira = requestType === 'jira';
+  const isDiscord = requestType === 'discord';
+  const isJSMAlert = requestType === 'jsm_alert';
+  const isChatWebhook = !!requestType && requestType in WEBHOOK_PLACEHOLDERS;
+  const simpleRuleParam = requestType ? SIMPLE_RULE_PARAMS[requestType] : undefined;
+  const isSplunkOnCall = requestType === 'splunk_oncall';
+  // 支持「同时测试恢复」的媒介：恢复时有独立动作（Jira 关单、JSM 关告警、Splunk On-Call 解决事件）
+  const supportsRecoveryTest = isJira || isJSMAlert || isSplunkOnCall;
 
   const starterTexts: StarterTexts = {
     ruleName: tt('starter.rule_name'),
@@ -103,6 +138,13 @@ export default function TestModal(props: Props) {
     setSelectedEventIds([]);
     setParams({});
     setPagerdutyKeys([]);
+    setJiraProject('');
+    setJiraIssueType('');
+    setDiscordParams({ target: 'channel' });
+    setJsmApiKey('');
+    setWebhookUrl('');
+    setSimpleParam('');
+    setWithRecovery(true);
     setUserIds([]);
     setUserGroupIds([]);
     setResult(undefined);
@@ -121,16 +163,22 @@ export default function TestModal(props: Props) {
       config,
       notify_config: {
         params: {
-          ...params,
+          ...(isNativeRequestType(requestType) ? {} : params),
           ...(userIds.length ? { user_ids: userIds } : {}),
           ...(userGroupIds.length ? { user_group_ids: userGroupIds } : {}),
           // 后端按 []string 反序列化（GetNotifyConfigParams 的 pagerduty_integration_keys 分支），
           // 传裸字符串会反序列化失败并静默退化成「没有 routing key」
           ...(isPagerduty && pagerdutyKeys.length ? { pagerduty_integration_keys: pagerdutyKeys } : {}),
+          ...(isJira ? { project_key: _.trim(jiraProject), issue_type: _.trim(jiraIssueType) } : {}),
+          ...(isDiscord ? _.omitBy(_.mapValues(discordParams, _.trim), _.isEmpty) : {}),
+          ...(isJSMAlert ? { api_key: _.trim(jsmApiKey) } : {}),
+          ...(isChatWebhook ? { webhook_url: _.trim(webhookUrl) } : {}),
+          ...(simpleRuleParam ? { [simpleRuleParam.key]: _.trim(simpleParam) } : {}),
         },
         severities: [mockEvent.severity],
       },
       tpl_content: tplContent,
+      ...(supportsRecoveryTest && withRecovery ? { with_recovery: true } : {}),
     })
       .then((res) => {
         setResult(res);
@@ -146,7 +194,14 @@ export default function TestModal(props: Props) {
 
   // PagerDuty 没有 routing key 就一定失败，与其发一个必败请求再展示一句用户看不懂的
   // 英文报错，不如先把按钮拦住
-  const testDisabled = (mode === 'history' && _.isEmpty(selectedEventIds)) || (isPagerduty && _.isEmpty(pagerdutyKeys));
+  const testDisabled =
+    (mode === 'history' && _.isEmpty(selectedEventIds)) ||
+    (isPagerduty && _.isEmpty(pagerdutyKeys)) ||
+    (isJira && (!_.trim(jiraProject) || !_.trim(jiraIssueType))) ||
+    (isDiscord && !_.trim(discordParams.webhook_url)) ||
+    (isJSMAlert && !_.trim(jsmApiKey)) ||
+    (isChatWebhook && !_.trim(webhookUrl)) ||
+    (!!simpleRuleParam && !_.trim(simpleParam));
 
   return (
     <>
@@ -202,7 +257,8 @@ export default function TestModal(props: Props) {
         {view === 'settings' && (
           <>
             <Alert className='mb-4' type='info' showIcon message={t('test.desc')} />
-            {!_.isEmpty(customParams) && (
+            {/* 原生媒介（Discord 等）声明的规则参数由下面的专用输入负责，不再重复显示通用输入框 */}
+            {!_.isEmpty(customParams) && !isNativeRequestType(requestType) && (
               <div className='mb-4'>
                 <div className='mb-2 font-bold'>{t('test.params_title')}</div>
                 <div className='grid grid-cols-2 gap-3'>
@@ -239,6 +295,89 @@ export default function TestModal(props: Props) {
                   value={pagerdutyKeys}
                   onChange={setPagerdutyKeys}
                 />
+              </div>
+            )}
+            {isJira && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.jira_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.jira_tip')}</div>
+                <div className='grid grid-cols-2 gap-3'>
+                  <Input value={jiraProject} placeholder={t('test.jira_project_placeholder')} onChange={(e) => setJiraProject(e.target.value)} />
+                  <Input value={jiraIssueType} placeholder={t('test.jira_issue_type_placeholder')} onChange={(e) => setJiraIssueType(e.target.value)} />
+                </div>
+                <Checkbox className='mt-2' checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
+                  {t('test.with_recovery')}
+                </Checkbox>
+              </div>
+            )}
+            {isDiscord && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.discord_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.discord_tip')}</div>
+                <div className='grid grid-cols-2 gap-3'>
+                  <Input.Password
+                    autoComplete='new-password'
+                    value={discordParams.webhook_url}
+                    placeholder='https://discord.com/api/webhooks/<id>/<token>'
+                    onChange={(e) => setDiscordParams((prev) => ({ ...prev, webhook_url: e.target.value }))}
+                  />
+                  <Select
+                    value={discordParams.target}
+                    options={[
+                      { label: t('test.discord_target_channel'), value: 'channel' },
+                      { label: t('test.discord_target_forum_post'), value: 'forum_post' },
+                      { label: t('test.discord_target_thread'), value: 'thread' },
+                    ]}
+                    onChange={(v) => setDiscordParams((prev) => ({ ...prev, target: v }))}
+                  />
+                  {discordParams.target === 'forum_post' && (
+                    <Input
+                      value={discordParams.thread_name}
+                      placeholder={t('test.discord_thread_name_placeholder')}
+                      onChange={(e) => setDiscordParams((prev) => ({ ...prev, thread_name: e.target.value }))}
+                    />
+                  )}
+                  {discordParams.target === 'thread' && (
+                    <Input
+                      value={discordParams.thread_id}
+                      placeholder={t('test.discord_thread_id_placeholder')}
+                      onChange={(e) => setDiscordParams((prev) => ({ ...prev, thread_id: e.target.value }))}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+            {isChatWebhook && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.webhook_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.webhook_tip')}</div>
+                <Input.Password autoComplete='new-password' value={webhookUrl} placeholder={WEBHOOK_PLACEHOLDERS[requestType]} onChange={(e) => setWebhookUrl(e.target.value)} />
+              </div>
+            )}
+            {simpleRuleParam && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t(`test.${requestType}_title`)}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t(`test.${requestType}_tip`)}</div>
+                {simpleRuleParam.secret ? (
+                  <Input.Password autoComplete='new-password' value={simpleParam} placeholder={simpleRuleParam.placeholder} onChange={(e) => setSimpleParam(e.target.value)} />
+                ) : (
+                  <Input value={simpleParam} placeholder={simpleRuleParam.placeholder} onChange={(e) => setSimpleParam(e.target.value)} />
+                )}
+                {isSplunkOnCall && (
+                  <Checkbox className='mt-2' checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
+                    {t('test.splunk_oncall_with_recovery')}
+                  </Checkbox>
+                )}
+              </div>
+            )}
+            {isJSMAlert && (
+              <div className='mb-4'>
+                <div className='mb-2 font-bold'>{t('test.jsm_title')}</div>
+                <div className='mb-1 text-soft text-[12px]'>{t('test.jsm_tip')}</div>
+                <Input.Password autoComplete='new-password' value={jsmApiKey} placeholder={t('test.jsm_api_key_placeholder')} onChange={(e) => setJsmApiKey(e.target.value)} />
+                <Checkbox className='mt-2' checked={withRecovery} onChange={(e) => setWithRecovery(e.target.checked)}>
+                  {t('test.jsm_with_recovery')}
+                </Checkbox>
               </div>
             )}
             {contactKey && (
@@ -313,7 +452,22 @@ export default function TestModal(props: Props) {
             title={result?.success ? t('test.result_success') : t('test.result_failed')}
             subTitle={
               result?.success ? (
-                t('test.result_success_desc')
+                result?.detail ? (
+                  // 原生媒介回填的动作说明（如 Jira 工单链接），链接可点
+                  <pre className='mt-2 mb-0 whitespace-pre-wrap break-all text-left text-[12px]'>
+                    {_.map(_.split(result.detail, /(https?:\/\/\S+)/), (part, i) =>
+                      /^https?:\/\//.test(part) ? (
+                        <a key={i} href={part} target='_blank' rel='noreferrer'>
+                          {part}
+                        </a>
+                      ) : (
+                        <React.Fragment key={i}>{part}</React.Fragment>
+                      ),
+                    )}
+                  </pre>
+                ) : (
+                  t('test.result_success_desc')
+                )
               ) : (
                 // 第三方的报错原文对排障最有用，完整展示、不截断
                 <pre className='mt-2 mb-0 whitespace-pre-wrap break-all text-left text-[12px]'>{result?.error_message}</pre>

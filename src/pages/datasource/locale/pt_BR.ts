@@ -193,7 +193,7 @@ const pt_BR = {
     "explore_hint": "Abre a consulta instantânea em uma nova aba, já com esta fonte de dados selecionada",
     "create_dashboard_hint": "Abre a lista de dashboards em uma nova aba; escolha o grupo de negócio para criar um",
     "create_alert_hint": "Abre a lista de regras de alerta em uma nova aba; escolha o grupo de negócio para criar uma",
-    "pro_only": "Requer a edição empresarial",
+    "pro_only": "Ainda não suportado",
     "type_unsupported": "Este tipo de fonte de dados ainda não suporta esta ação",
     "ds_disabled": "Esta fonte de dados está desativada",
     "ds_disabled_desc": "Enquanto estiver desativada, o diagnóstico não roda e as regras de alerta que a usam não são avaliadas.",

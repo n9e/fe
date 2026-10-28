@@ -1,3 +1,4 @@
+import UsageDocs from '@/components/UsageDocs';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Input, Row, Col, Tooltip, AutoComplete, InputNumber, Select, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
@@ -131,9 +132,11 @@ export default function Query(props: Props) {
                   label={
                     <span>
                       {t('datasource:es.filter')}{' '}
-                      <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
-                        <QuestionCircleOutlined />
-                      </a>
+                      <UsageDocs>
+                        <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax ' target='_blank'>
+                          <QuestionCircleOutlined />
+                        </a>
+                      </UsageDocs>
                     </span>
                   }
                   addonAfter='Lucene'

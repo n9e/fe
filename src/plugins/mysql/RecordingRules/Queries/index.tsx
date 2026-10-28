@@ -13,6 +13,7 @@ import { NAME_SPACE } from '@/plugins/mysql/constants';
 import AdvancedSettings from '../../components/AdvancedSettings';
 import DocumentDrawer from '../../components/DocumentDrawer';
 import GraphPreview from '../../AlertRule/Queries/GraphPreview';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   datasourceValue: number;
@@ -36,13 +37,15 @@ export default function index(props: IProps) {
         label={
           <Space>
             {t('query.query')}
-            <InfoCircleOutlined
-              onClick={() => {
-                DocumentDrawer({
-                  darkMode,
-                });
-              }}
-            />
+            <UsageDocs>
+              <InfoCircleOutlined
+                onClick={() => {
+                  DocumentDrawer({
+                    darkMode,
+                  });
+                }}
+              />
+            </UsageDocs>
           </Space>
         }
       >
