@@ -1,12 +1,14 @@
 import React, { CSSProperties } from 'react';
-import { Tooltip, Space } from 'antd';
+import classNames from 'classnames';
 import _ from 'lodash';
 import Color from 'color';
 
-import replaceTemplateVariables from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import SeriesTooltip from '@/components/SeriesTooltip';
+import { useReplaceTemplateVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
 
 import { IOptions, IBarGaugeStyles, ScopedVariables } from '../../../../types';
 import { getSerieTextObj } from '../../../utils/getCalculatedValuesBySeries';
+import { getTooltipLegend } from '../utils';
 import type { BarGaugeValue } from '../utils';
 
 interface Props {
@@ -17,7 +19,9 @@ interface Props {
   minValue: number;
   maxValue: number;
   maxNameWidth: number;
+  maxValueWidth: number;
   maxBarWidth: number;
+  namePlacement?: 'top' | 'bottom' | 'left' | 'hidden';
 }
 
 const CELL_WIDTH = 10;
@@ -25,12 +29,13 @@ const CELL_HEIGHT = 16;
 const CELL_SPACING = 2;
 
 export default function LCDBar(props: Props) {
-  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxBarWidth } = props;
+  const replaceTemplateVariables = useReplaceTemplateVariables();
+  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxValueWidth, maxBarWidth, namePlacement = 'left' } = props;
   const { stat, metric } = item;
   const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;
   const name = nameField ? _.get(metric, nameField, item.name) : item.name;
   const valueRange = maxValue - minValue;
-  const cellCount = Math.floor(maxBarWidth / (CELL_WIDTH + CELL_SPACING));
+  const cellCount = Math.max(1, Math.floor(maxBarWidth / (CELL_WIDTH + CELL_SPACING)));
   const cells: JSX.Element[] = [];
 
   for (let i = 0; i < cellCount; i++) {
@@ -56,7 +61,7 @@ export default function LCDBar(props: Props) {
     } else {
       cellStyles.backgroundColor = Color(textObj.color).alpha(0.3).string();
     }
-    cells.push(<div key={i.toString()} style={cellStyles} className='renderer-bar-gauge-lcd-item-cells' />);
+    cells.push(<div key={i.toString()} style={cellStyles} className='n9e-renderer-bar-gauge-lcd-item-cells' />);
   }
 
   const scopedVars = {
@@ -68,52 +73,51 @@ export default function LCDBar(props: Props) {
   });
 
   return (
-    <Tooltip
-      mouseEnterDelay={0.5}
-      overlayClassName='ant-tooltip-max-width-600'
-      title={
-        <Space>
-          {name}
-          <Space size={2}>
-            {item.value}
-            {item.unit}
-          </Space>
-        </Space>
-      }
-    >
-      <div key={item.id} className='renderer-bar-gauge-lcd-item'>
-        <div
-          className='renderer-bar-gauge-item-name'
-          style={{
-            width: serieWidth ? `${serieWidth}%` : `${maxNameWidth + 4}px`, // 4px 是 省略号的宽度
-          }}
-        >
-          {detailUrl ? (
-            <a
-              target='_blank'
-              href={replaceTemplateVariables(detailUrl, {
-                scopedVars: scopedVars as unknown as ScopedVariables,
-              })}
-            >
-              {name}
-            </a>
-          ) : (
-            name
-          )}
-        </div>
-        <div className='renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
-        {valueMode === 'color' && (
+    <SeriesTooltip mouseEnterDelay={0.5} metrics={metric} legend={getTooltipLegend(item, name)} value={`${item.value ?? ''}${item.unit ?? ''}`}>
+      <div
+        key={item.id}
+        className={classNames('n9e-renderer-bar-gauge-lcd-item', {
+          'n9e-renderer-bar-gauge-item-name-top': namePlacement === 'top',
+          'n9e-renderer-bar-gauge-item-name-bottom': namePlacement === 'bottom',
+        })}
+      >
+        {namePlacement !== 'hidden' && (
           <div
-            className='renderer-bar-gauge-lcd-item-value'
+            className='n9e-renderer-bar-gauge-item-name'
             style={{
-              color: item.color,
+              width: namePlacement === 'left' ? (serieWidth ? `${serieWidth}%` : `${maxNameWidth + 4}px`) : undefined,
             }}
           >
-            {item.value}
-            {item.unit}
+            {detailUrl ? (
+              <a
+                target='_blank'
+                href={replaceTemplateVariables(detailUrl, {
+                  scopedVars: scopedVars as unknown as ScopedVariables,
+                })}
+              >
+                {name}
+              </a>
+            ) : (
+              name
+            )}
           </div>
         )}
+        <div className='n9e-renderer-bar-gauge-lcd-item-content'>
+          <div className='n9e-renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
+          {valueMode !== 'hidden' && (
+            <div
+              className='n9e-renderer-bar-gauge-lcd-item-value'
+              style={{
+                color: valueMode === 'text' ? (themeMode === 'dark' ? '#fff' : '#20222E') : item.color,
+                width: `${maxValueWidth}px`,
+              }}
+            >
+              {item.value}
+              {item.unit}
+            </div>
+          )}
+        </div>
       </div>
-    </Tooltip>
+    </SeriesTooltip>
   );
 }

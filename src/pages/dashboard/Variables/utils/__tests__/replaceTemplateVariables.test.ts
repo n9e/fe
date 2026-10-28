@@ -37,66 +37,38 @@ jest.mock(
   { virtual: true },
 );
 
-const getGlobalStateMock = jest.fn((key: string) => {
-  if (key === 'variablesWithOptions') {
-    return [
-      {
-        name: 'db',
-        type: 'datasource',
-        definition: 'prometheus',
-        defaultValue: '',
-        datasource: {
-          cate: 'prometheus',
-        },
-        value: undefined,
-      },
-      {
-        name: 'ident',
-        type: 'query',
-        definition: 'label_values(cpu_usage_idle, ident)',
-        defaultValue: '1',
-        datasource: {
-          cate: 'prometheus',
-          value: '${db}',
-        },
-        value: undefined,
-      },
-    ];
-  }
-
-  if (key === 'range') {
-    return undefined;
-  }
-
-  return undefined;
-});
-
-jest.mock(
-  '@/pages/dashboard/globalState',
-  () => ({
-    __esModule: true,
-    getGlobalState: (key: string) => getGlobalStateMock(key),
-  }),
-  { virtual: true },
-);
-
 import replaceTemplateVariables from '../replaceTemplateVariables';
 
-describe('replaceTemplateVariables', () => {
-  beforeEach(() => {
-    getGlobalStateMock.mockClear();
-  });
+const variables = [
+  {
+    name: 'db',
+    type: 'datasource',
+    definition: 'prometheus',
+    defaultValue: '',
+    datasource: { cate: 'prometheus' },
+    value: undefined,
+  },
+  {
+    name: 'ident',
+    type: 'query',
+    definition: 'label_values(cpu_usage_idle, ident)',
+    defaultValue: '1',
+    datasource: { cate: 'prometheus', value: '${db}' },
+    value: undefined,
+  },
+] as import('../../types').IVariable[];
 
+describe('replaceTemplateVariables', () => {
   test('should interpolate empty query variable as empty string in text content', () => {
-    expect(replaceTemplateVariables('ident: $ident ')).toBe('ident:  ');
+    expect(replaceTemplateVariables('ident: $ident ', { variables })).toBe('ident:  ');
   });
 
   test('should interpolate empty query variable as empty string in prometheus expr', () => {
-    expect(replaceTemplateVariables('cpu_usage_idle{ident="$ident"}')).toBe('cpu_usage_idle{ident=""}');
+    expect(replaceTemplateVariables('cpu_usage_idle{ident="$ident"}', { variables })).toBe('cpu_usage_idle{ident=""}');
   });
 
   test('should interpolate empty datasource variable as empty string', () => {
-    expect(replaceTemplateVariables('${db}')).toBe('');
+    expect(replaceTemplateVariables('${db}', { variables })).toBe('');
   });
 
   test('should support { value } shaped scopedVars', () => {

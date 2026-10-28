@@ -3,6 +3,7 @@ import semver from 'semver';
 
 import type { JsonObject, JsonValue } from '@/pages/dashboard/types';
 import { isJsonObject } from '@/pages/dashboard/utils/json';
+import { DASHBOARD_VERSION } from '@/pages/dashboard/constants';
 
 type LegacyDatasource = JsonObject & {
   cate: string;
@@ -223,6 +224,23 @@ const removePanelVersions = (panel: LegacyPanel): LegacyPanel => {
   return panelCopy;
 };
 
+const migrateBarGaugeToV42 = (panel: LegacyPanel): LegacyPanel => {
+  const panelWithChildren = Array.isArray(panel.panels) ? { ...panel, panels: panel.panels.map(migrateBarGaugeToV42) } : panel;
+  if (panelWithChildren.type !== 'barGauge') return panelWithChildren;
+  const custom = panelWithChildren.custom ?? {};
+  const customCopy = {
+    ...custom,
+    showMode: custom.showMode ?? 'calculate',
+    orientation: custom.orientation ?? 'horizontal',
+    namePlacement: custom.namePlacement ?? 'left',
+    sizing: custom.sizing ?? 'manual',
+    // 4.2.0 之前排行榜的行高固定为 18px。
+    minVizHeight: 18,
+    maxVizHeight: 18,
+  };
+  return { ...panelWithChildren, custom: customCopy };
+};
+
 export default function dashboardMigrator(data: unknown): LegacyDashboard {
   // 内嵌 Grafana 链接大盘没有 panels，且不参与数据源迁移；保留其完整配置。
   if (isJsonObject(data) && data.mode === 'iframe') {
@@ -233,7 +251,7 @@ export default function dashboardMigrator(data: unknown): LegacyDashboard {
     return { panels: [] };
   }
   const dashboardVersion = semver.coerce(dashboard.version) || '0.0.0';
-  const panels = semver.lt(dashboardVersion, '4.1.0')
+  const legacyPanels = semver.lt(dashboardVersion, '4.1.0')
     ? dashboard.panels.map((panel) => {
         const panelCopy = _.cloneDeep(panel);
         if (panel.version === '3.0.0' && panel.type === 'barGauge') {
@@ -267,9 +285,10 @@ export default function dashboardMigrator(data: unknown): LegacyDashboard {
         return migratedPanel.type === 'row' ? { ...migratedPanel, collapsed: migratedPanel.collapsed === undefined ? false : !migratedPanel.collapsed } : migratedPanel;
       })
     : dashboard.panels;
+  const panels = semver.lt(dashboardVersion, '4.2.0') ? legacyPanels.map(migrateBarGaugeToV42) : legacyPanels;
   return {
     ...dashboard,
-    version: '4.1.0',
+    version: DASHBOARD_VERSION,
     panels: panels.map(removePanelVersions).map((panel) => (panel.type === 'row' && panel.collapsed === undefined ? { ...panel, collapsed: false } : panel)),
   };
 }
