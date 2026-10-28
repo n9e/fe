@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { IS_ENT } from '@/utils/constant';
 import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
 import type { PromptReference } from '@/components/AiChat/PromptEditor';
+import type { IParamsAiAction } from '@/components/AiChat/store';
 
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
@@ -30,12 +31,12 @@ function useFlashAiClickHandler() {
   }, [i18n, openAiChat, cachedSessionId]);
 }
 
-function useAiEntClickHandler(options?: { promptList?: string[]; queryPageFrom?: IAiChatPageInfo; queryAction?: IAiChatAction }) {
+function useAiEntClickHandler(options?: { promptList?: string[]; queryPageFrom?: IAiChatPageInfo; queryAction?: IAiChatAction; custom?: IParamsAiAction['custom'] }) {
   const [, setAiChatVisible] = useAiChatVisible();
   const [, setAiExternalConfig] = useAiExternalConfig();
   const [, setParamsAiAction] = useParamsAiAction();
 
-  const { promptList, queryPageFrom, queryAction } = options ?? {};
+  const { promptList, queryPageFrom, queryAction, custom } = options ?? {};
 
   return React.useCallback(() => {
     setAiChatVisible(true);
@@ -48,12 +49,13 @@ function useAiEntClickHandler(options?: { promptList?: string[]; queryPageFrom?:
         createNew: true,
         ...queryPageFrom,
         ...queryAction,
+        ...custom,
         // After spreads: ConfigHost pages live on /flashai*, where AiChat stays
         // in page mode unless forceDrawer is set (knowledge / scheduled-task).
         forceDrawer: true,
-      } as any,
+      },
     });
-  }, [setAiChatVisible, setAiExternalConfig, setParamsAiAction, promptList, queryPageFrom, queryAction]);
+  }, [setAiChatVisible, setAiExternalConfig, setParamsAiAction, promptList, queryPageFrom, queryAction, custom]);
 }
 
 function FlashAiButtonContent() {
@@ -138,13 +140,13 @@ export function useAiChatOpenWithPrompt(prompt?: string, options?: { autoExecute
   const trimmedPrompt = prompt?.trim() || '';
   const { openAiChat, cachedSessionId } = useAiChatContext();
   const openEntChat = useAiEntClickHandler({
-    queryAction: {
+    custom: {
       content: trimmedPrompt,
       prefillOnly: !options?.autoExecute,
       createNew: !options?.reuseConversation,
       reuseConversation: !!options?.reuseConversation,
       references: options?.references,
-    } as IAiChatAction,
+    },
   });
 
   return React.useCallback(() => {
