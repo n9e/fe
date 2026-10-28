@@ -1,8 +1,8 @@
 /** @jest-environment jsdom */
 import React, { useEffect } from 'react';
-import { Form, Input } from 'antd';
+import { Form, Input, Modal } from 'antd';
 import type { FormInstance } from 'antd';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 
 import Processor from './index';
 import TestModal from '../TestModal';
@@ -38,17 +38,90 @@ jest.mock('../TestModal/MockEventPanel', () => () => null);
 
 type ProcessorValue = { typ?: string; config?: Record<string, unknown> };
 let form: FormInstance;
-function Host({ value = {} }: { value?: ProcessorValue }) {
+function Host({ value = {}, values = [value] }: { value?: ProcessorValue; values?: ProcessorValue[] }) {
   [form] = Form.useForm();
   return (
-    <Form form={form} initialValues={{ processors: [value] }}>
-      <Form.List name='processors'>{(fields, operations) => <Processor fields={fields} field={fields[0]} {...operations} />}</Form.List>
+    <Form form={form} initialValues={{ processors: values }}>
+      <Form.List name='processors'>
+        {(fields, operations) =>
+          fields.map((field) => (
+            <div key={field.key} data-testid={`processor-${field.name}`}>
+              <Processor fields={fields} field={field} {...operations} dragHandle={<span>drag handle</span>} />
+            </div>
+          ))
+        }
+      </Form.List>
     </Form>
   );
 }
 
 beforeEach(() => {
   mockCanAccess = true;
+  mockLoadModels.mockClear();
+});
+
+it.each(['ai_summary', 'flashai_automation'])('locks all mutations of an existing %s while preserving its submitted config', async (typ) => {
+  mockCanAccess = false;
+  const stored = { typ, config: { prompt_template: 'keep this', cron_id: 'job-7', nested: { enabled: true } } };
+  const values = [{ typ: 'callback' }, stored, { typ: 'event_drop' }];
+  render(<Host values={values} />);
+  const card = within(screen.getByTestId('processor-1'));
+  expect(card.getByRole('combobox')).toBeDisabled();
+  for (const name of ['copy', 'minus-circle', 'up-circle', 'down-circle']) expect(card.queryByRole('img', { name })).toBeNull();
+  expect(card.queryByText('drag handle')).toBeNull();
+  expect(within(screen.getByTestId('processor-0')).queryByRole('img', { name: 'down-circle' })).toBeNull();
+  expect(within(screen.getByTestId('processor-2')).queryByRole('img', { name: 'up-circle' })).toBeNull();
+  await act(async () => {
+    expect((await form.validateFields()).processors).toEqual(values);
+  });
+});
+
+it('keeps ordinary processors editable and movable within an unrestricted segment', () => {
+  mockCanAccess = false;
+  render(<Host values={[{ typ: 'callback' }, { typ: 'event_drop' }, { typ: 'ai_summary', config: { prompt_template: 'keep' } }]} />);
+  expect(within(screen.getByTestId('processor-0')).getByRole('combobox')).toBeEnabled();
+  fireEvent.click(within(screen.getByTestId('processor-0')).getByRole('img', { name: 'down-circle' }));
+  expect(form.getFieldsValue().processors.map((item) => item.typ)).toEqual(['event_drop', 'callback', 'ai_summary']);
+});
+
+it('does not delete an AI processor if permission is revoked while confirmation is open', () => {
+  let confirm: any;
+  const spy = jest.spyOn(Modal, 'confirm').mockImplementation((options) => {
+    confirm = options;
+    return { destroy: jest.fn(), update: jest.fn() };
+  });
+  const values = [{ typ: 'ai_summary', config: { prompt_template: 'keep' } }, { typ: 'callback' }];
+  try {
+    const { rerender } = render(<Host values={values} />);
+    fireEvent.click(within(screen.getByTestId('processor-0')).getByRole('img', { name: 'minus-circle' }));
+    mockCanAccess = false;
+    rerender(<Host values={values} />);
+    act(() => confirm.onOk());
+    expect(form.getFieldsValue().processors).toEqual(values);
+  } finally {
+    spy.mockRestore();
+  }
+});
+
+it('does not replace an AI processor if permission is revoked while type confirmation is open', () => {
+  let confirm: any;
+  const spy = jest.spyOn(Modal, 'confirm').mockImplementation((options) => {
+    confirm = options;
+    return { destroy: jest.fn(), update: jest.fn() };
+  });
+  const value = { typ: 'ai_summary', config: { prompt_template: 'keep', llm_config_id: 7 } };
+  try {
+    const { rerender } = render(<Host value={value} />);
+    fireEvent.mouseDown(screen.getByRole('combobox'));
+    fireEvent.click(screen.getByText('processor.options.callback'));
+    expect(confirm).toBeDefined();
+    mockCanAccess = false;
+    rerender(<Host value={value} />);
+    act(() => confirm.onOk());
+    expect(form.getFieldsValue().processors).toEqual([value]);
+  } finally {
+    spy.mockRestore();
+  }
 });
 
 it('removes both AI creation choices for users without FlashAI access and keeps ordinary processors', () => {
