@@ -1,79 +1,269 @@
+.page-wrapper .page-top-header .page-header-content:has(.log-explorer-ng-header) {
+  border-bottom: 0;
+
+  > div:first-child {
+    min-width: 0;
+  }
+
+  .page-header-title {
+    flex: 1;
+  }
+
+  .page-layout-page-doc-button {
+    flex-shrink: 0;
+  }
+}
+
 .log-explorer-ng-header {
+  min-width: 0;
   height: 50px;
-  line-height: 50px;
+  line-height: 1;
 
-  .log-explorer-ng-tabs {
-    .ant-tabs-nav {
-      margin-bottom: 0 !important;
-    }
+  // Outrank the global Ant Design theme selectors, including themes loaded later.
+  .log-explorer-ng-tabs.ant-tabs-card.ant-tabs-top {
+    font-weight: 400;
 
-    .ant-tabs-tab {
-      height: 51px !important;
-      margin-left: 0 !important;
-      margin-right: -1px !important;
-      background-color: var(--fc-fill-2) !important;
+    > .ant-tabs-nav {
+      height: 50px;
+      margin: 0;
 
-      &:hover {
-        .log-explorer-ng-tab-drag-handle {
-          opacity: 0.8;
+      &::before {
+        border: 0;
+      }
+
+      .ant-tabs-nav-list,
+      .ant-tabs-nav-operations {
+        align-items: center;
+        gap: 4px;
+      }
+
+      .ant-tabs-nav-list {
+        padding: 0 8px;
+      }
+
+      .ant-tabs-tab {
+        width: 104px;
+        min-width: 104px;
+        max-width: 104px;
+        height: 36px;
+        margin: 0;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--fc-text-2);
+        font-size: 14px;
+        line-height: 1;
+        transition: background-color 0.2s, color 0.2s;
+
+        &::after {
+          content: '';
+          position: absolute;
+          right: -3px;
+          top: 50%;
+          width: 1px;
+          height: 16px;
+          background: var(--fc-border-color);
+          transform: translateY(-50%);
+          pointer-events: none;
         }
 
-        .log-explorer-ng-tab-edit {
-          opacity: 1;
+        &:not(.ant-tabs-tab-active):hover,
+        &:not(.ant-tabs-tab-active):focus-within {
+          background: var(--fc-fill-4);
+
+          &.ant-tabs-tab-with-remove .log-explorer-ng-tab-label {
+            padding-right: 24px;
+          }
+
+          .ant-tabs-tab-remove {
+            opacity: 1;
+            pointer-events: auto;
+          }
+        }
+
+        &.ant-tabs-tab-active {
+          align-self: flex-end;
+          z-index: 1;
+          width: auto;
+          min-width: 144px;
+          max-width: 200px;
+          height: 43px;
+          padding: 0 8px 7px;
+          border-radius: 8px 8px 0 0;
+          background: var(--fc-fill-1);
+
+          &::before,
+          &::after {
+            content: '';
+            position: absolute;
+            top: auto;
+            bottom: 0;
+            width: 8px;
+            height: 8px;
+            opacity: 1;
+            transform: none;
+            pointer-events: none;
+          }
+
+          &::before {
+            left: -8px;
+            background: radial-gradient(circle at 0 0, transparent 8px, var(--fc-fill-1) 8.5px);
+          }
+
+          &::after {
+            right: -8px;
+            background: radial-gradient(circle at 100% 0, transparent 8px, var(--fc-fill-1) 8.5px);
+          }
+
+          .ant-tabs-tab-btn {
+            color: var(--fc-primary-color);
+            font-weight: 500;
+          }
+
+          .log-explorer-ng-tab-drag-handle,
+          .log-explorer-ng-tab-edit {
+            display: inline-flex;
+          }
+
+          .ant-tabs-tab-remove {
+            position: static;
+            margin-left: 4px;
+            opacity: 1;
+            pointer-events: auto;
+          }
+        }
+
+        // The previous tab owns the separator on the active tab's left edge.
+        &:has(+ .ant-tabs-tab-active)::after {
+          opacity: 0;
+        }
+
+        .ant-tabs-tab-btn {
+          display: flex;
+          flex: 1;
+          min-width: 0;
+          color: inherit;
+          line-height: 1;
+          text-shadow: none;
+        }
+
+        .anticon {
+          display: block;
+          flex-shrink: 0;
+          margin: 0;
+          font-size: 14px;
         }
       }
 
-      .anticon-edit {
-        margin-right: 0 !important;
-      }
-    }
-
-    .ant-tabs-tab-active {
-      border-top: 2px solid !important;
-      border-bottom: none !important;
-      background-color: var(--fc-fill-1) !important;
-    }
-
-    .ant-tabs-tab-remove {
-      margin-left: 0 !important;
-    }
-
-    .ant-tabs-nav-add {
-      position: relative;
-
-      .log-explorer-ng-tab-add-trigger {
+      .ant-tabs-tab-remove {
         position: absolute;
-        inset: 0;
-        display: flex;
+        right: 6px;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+        flex: none;
+        width: 24px;
+        height: 24px;
+        margin: 0;
+        padding: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--fc-text-3);
+        line-height: 1;
+        opacity: 0;
+        pointer-events: none;
+        transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+
+        &:hover,
+        &:focus-visible {
+          background: var(--fc-fill-5);
+          color: var(--fc-text-1);
+        }
       }
+
+      .ant-tabs-nav-add,
+      .ant-tabs-nav-more {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        min-width: 32px;
+        width: 32px;
+        height: 32px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--fc-text-3);
+        line-height: 1;
+        transition: background-color 0.2s, color 0.2s;
+
+        &:hover,
+        &:focus-visible {
+          background: var(--fc-fill-4);
+          color: var(--fc-text-1);
+        }
+      }
+
+      .ant-tabs-tab-btn,
+      .ant-tabs-tab-remove,
+      .ant-tabs-nav-add,
+      .ant-tabs-nav-more {
+        &:focus-visible {
+          outline: 1px solid var(--fc-primary-color);
+          outline-offset: -2px;
+        }
+      }
+
+      .ant-tabs-nav-add {
+        position: relative;
+
+        .log-explorer-ng-tab-add-trigger {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+
+    > .ant-tabs-content-holder {
+      display: none;
     }
 
     .log-explorer-ng-tab-label {
-      display: inline-flex;
+      display: flex;
+      flex: 1;
       align-items: center;
       gap: 4px;
-      max-width: 180px;
       min-width: 0;
+      line-height: 1;
     }
 
-    .log-explorer-ng-tab-drag-handle {
-      display: inline-flex;
+    .log-explorer-ng-tab-drag-handle,
+    .log-explorer-ng-tab-edit {
+      display: none;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      width: 14px;
-      height: 14px;
-      color: var(--fc-text-4);
-      cursor: grab;
-      opacity: 0;
-      transition: color 0.2s, opacity 0.2s;
+      width: 20px;
+      height: 24px;
+      border-radius: 6px;
+      color: var(--fc-text-3);
+      transition: background-color 0.2s, color 0.2s;
 
       &:hover {
-        color: var(--fc-text-2);
-        opacity: 1;
+        background: var(--fc-fill-4);
+        color: var(--fc-text-1);
       }
+    }
+
+    .log-explorer-ng-tab-drag-handle {
+      width: 16px;
+      cursor: grab;
 
       &:active {
         cursor: grabbing;
@@ -81,25 +271,71 @@
     }
 
     .log-explorer-ng-tab-name {
+      min-width: 0;
+      flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
     .log-explorer-ng-tab-edit {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 14px;
-      height: 14px;
-      color: var(--fc-text-3);
       cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.2s;
+    }
+  }
+}
 
-      &:hover {
-        color: var(--fc-text-1);
-      }
+// The overflow menu is rendered in a portal outside the header.
+.ant-tabs-dropdown:has(.log-explorer-ng-tab-label) {
+  max-width: calc(100vw - 32px);
+
+  .ant-tabs-dropdown-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    > span {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .log-explorer-ng-tab-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 144px;
+    max-width: 240px;
+  }
+
+  .log-explorer-ng-tab-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .log-explorer-ng-tab-edit,
+  .ant-tabs-dropdown-menu-item-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    border-radius: 6px;
+    color: var(--fc-text-3);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--fc-fill-4);
+      color: var(--fc-text-1);
+    }
+
+    .anticon {
+      margin: 0;
     }
   }
 }
@@ -109,13 +345,14 @@
   align-items: center;
   gap: 4px;
   max-width: 180px;
-  height: 32px;
+  height: 36px;
   padding: 0 12px;
   color: var(--fc-text-1);
   background-color: var(--fc-fill-1);
   border: 1px solid var(--fc-border-color);
-  border-radius: 4px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: grabbing;
   line-height: 1;
 
