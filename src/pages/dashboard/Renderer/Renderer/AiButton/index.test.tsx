@@ -26,6 +26,12 @@ jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   default: (value: string) => value.replace(/\$host/g, 'web-1'),
 }));
 
+const SIZE_EXPECTATIONS = {
+  small: { buttonClass: 'ant-btn-sm', circleSize: 24, capsuleIconSize: 12 },
+  middle: { buttonClass: 'ant-btn', circleSize: 32, capsuleIconSize: 14 },
+  large: { buttonClass: 'ant-btn-lg', circleSize: 40, capsuleIconSize: 16 },
+} as const;
+
 function renderButton(custom: IPanel['custom']) {
   const values = {
     id: 'ai-1',
@@ -81,14 +87,17 @@ test('uses the default label when button text is empty', () => {
 });
 
 test.each(['small', 'middle', 'large'] as const)('applies %s size to every button style', (size) => {
+  const expected = SIZE_EXPECTATIONS[size];
   const icon = renderButton({ style: 'icon', size });
-  expect(screen.getByRole('button')).toHaveStyle({ width: `${size === 'small' ? 24 : size === 'large' ? 40 : 32}px` });
+  expect(screen.getByRole('button')).toHaveStyle({ width: `${expected.circleSize}px` });
   icon.unmount();
   const antd = renderButton({ style: 'antd', size });
-  expect(screen.getByRole('button')).toHaveClass(size === 'small' ? 'ant-btn-sm' : size === 'large' ? 'ant-btn-lg' : 'ant-btn');
+  expect(screen.getByRole('button')).toHaveClass(expected.buttonClass);
   antd.unmount();
   renderButton({ style: 'capsule', size });
-  expect(screen.getByRole('button')).toHaveClass(size === 'small' ? 'ant-btn-sm' : size === 'large' ? 'ant-btn-lg' : 'ant-btn');
+  const capsuleButton = screen.getByRole('button');
+  expect(capsuleButton).toHaveClass(expected.buttonClass);
+  expect(capsuleButton.querySelector('img')).toHaveStyle({ width: `${expected.capsuleIconSize}px`, height: `${expected.capsuleIconSize}px` });
 });
 
 test('passes execution and conversation preferences to the launch handler', () => {
