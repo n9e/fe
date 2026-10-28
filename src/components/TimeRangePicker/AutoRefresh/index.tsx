@@ -87,6 +87,7 @@ function Refresh(props: IProps, ref) {
   const intervalSecondsCache = props.localKey ? Number(window.localStorage.getItem(props.localKey)) || 0 : 0;
   const [intervalSeconds, setIntervalSeconds] = useState(props.intervalSeconds ?? intervalSecondsCache);
   const [visible, setVisible] = useState(false);
+  const [intervalTooltipVisible, setIntervalTooltipVisible] = useState(false);
 
   useEffect(() => {
     mounted.current = true;
@@ -159,10 +160,12 @@ function Refresh(props: IProps, ref) {
         </Button>
       </Tooltip>
       <Tooltip
-        // 浮层落在展开后的菜单前两项上且层级更高，必须让它不参与命中测试，
-        // 否则会吞掉这两项的点击；同时浮层不可悬浮，移向菜单时才能正常消失
         overlayStyle={{ maxWidth: 320, pointerEvents: 'none' }}
         title={props.intervalTooltip}
+        visible={intervalTooltipVisible && !visible}
+        onVisibleChange={(nextVisible) => setIntervalTooltipVisible(nextVisible && !visible)}
+        transitionName=''
+        destroyTooltipOnHide
       >
         <span>
           <Dropdown
@@ -171,6 +174,7 @@ function Refresh(props: IProps, ref) {
             visible={visible}
             onVisibleChange={(visible) => {
               setVisible(visible);
+              if (visible) setIntervalTooltipVisible(false);
             }}
             overlay={
               <Menu

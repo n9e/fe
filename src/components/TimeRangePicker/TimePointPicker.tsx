@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DatePicker, Tooltip } from 'antd';
 import type { DatePickerProps } from 'antd';
 import moment from 'moment-timezone';
@@ -11,18 +11,25 @@ export default function TimePointPicker({
   timeDescription,
   tooltipContent,
   isLatest,
+  tooltipDisabled = false,
   ...props
-}: DatePickerProps & { timeDescription?: React.ReactNode; tooltipContent?: React.ReactNode; isLatest?: boolean }) {
+}: DatePickerProps & { timeDescription?: React.ReactNode; tooltipContent?: React.ReactNode; isLatest?: boolean; tooltipDisabled?: boolean }) {
   const { t } = useTranslation('timePickerInteraction');
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState(false);
+  const calendarOpen = props.open ?? open;
+  useEffect(() => {
+    if (calendarOpen || tooltipDisabled) setHover(false);
+  }, [calendarOpen, tooltipDisabled]);
   const value = props.value;
   const format = typeof props.format === 'string' ? props.format : '';
   const timeFormat = format.includes('SSS') ? 'HH:mm:ss.SSS' : format && !format.includes('ss') ? 'HH:mm' : 'HH:mm:ss';
   return (
     <Tooltip
-      visible={hover && !(props.open ?? open) && !!value?.isValid()}
-      onVisibleChange={setHover}
+      visible={hover && !calendarOpen && !tooltipDisabled && !!value?.isValid()}
+      onVisibleChange={(next) => setHover(next && !calendarOpen && !tooltipDisabled)}
+      transitionName=''
+      destroyTooltipOnHide
       overlayClassName='fc-time-range-tooltip'
       overlayStyle={{ pointerEvents: 'none', maxWidth: 'min(400px, 100vw)' }}
       title={

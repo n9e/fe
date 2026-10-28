@@ -11,6 +11,7 @@ jest.mock('@/utils/momentLocale', () => ({}));
 jest.mock('@/utils/constant', () => ({ IS_ENT: true }));
 import Picker from './TimeRangePicker';
 import AutoRefresh from './AutoRefresh';
+import TimePointPicker from './TimePointPicker';
 import { RefreshScope, useReportQueryLoading } from './RefreshScope';
 
 beforeEach(() => {
@@ -259,4 +260,68 @@ it.each([
   fireEvent.click(entry);
   expect(onChange.mock.calls[0][0].start.valueOf()).toBe(start.valueOf());
   expect(onChange.mock.calls[0][0].end.valueOf()).toBe(end.valueOf());
+});
+
+it('removes the interval tooltip immediately when opening the menu and keeps options clickable', async () => {
+  jest.useFakeTimers();
+  const onIntervalSecondsChange = jest.fn();
+  render(<AutoRefresh onRefresh={() => {}} intervalTooltip='interval help' onIntervalSecondsChange={onIntervalSecondsChange} />);
+  const trigger = screen.getByRole('button', { name: /Off/ });
+  fireEvent.mouseEnter(trigger);
+  act(() => {
+    jest.advanceTimersByTime(200);
+  });
+  expect(screen.getByRole('tooltip')).toHaveTextContent('interval help');
+  fireEvent.click(trigger);
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('menuitem', { name: '5s' }));
+  expect(onIntervalSecondsChange).toHaveBeenCalledWith(5);
+  expect(screen.getByRole('button', { name: /5s/ })).toBeInTheDocument();
+});
+
+it('hides the point summary immediately for the calendar and forwards the range footer action', () => {
+  jest.useFakeTimers();
+  const rangeAction = jest.fn();
+  render(<TimePointPicker value={moment('2026-10-20 08:00')} showTime showNow={false} renderExtraFooter={() => <button onClick={rangeAction}>adjust range</button>} />);
+  fireEvent.mouseEnter(document.querySelector('.ant-picker')!);
+  act(() => {
+    jest.advanceTimersByTime(200);
+  });
+  expect(screen.getByRole('tooltip')).toHaveTextContent('08:00:00');
+  fireEvent.mouseDown(screen.getByRole('textbox'));
+  fireEvent.mouseUp(screen.getByRole('textbox'));
+  fireEvent.click(screen.getByRole('textbox'));
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'adjust range' }));
+  expect(rangeAction).toHaveBeenCalledTimes(1);
+});
+
+it('suppresses point summaries while the external range editor is open without leaving a stale hover', () => {
+  jest.useFakeTimers();
+  const value = moment('2026-10-20 08:00');
+  const { rerender } = render(<TimePointPicker value={value} />);
+  const trigger = document.querySelector('.ant-picker')!;
+  fireEvent.mouseEnter(trigger);
+  act(() => {
+    jest.advanceTimersByTime(200);
+  });
+  expect(screen.getByRole('tooltip')).toBeInTheDocument();
+  rerender(<TimePointPicker value={value} tooltipDisabled />);
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  fireEvent.mouseEnter(trigger);
+  act(() => {
+    jest.advanceTimersByTime(200);
+  });
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  rerender(<TimePointPicker value={value} />);
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  fireEvent.mouseLeave(trigger);
+  act(() => {
+    jest.advanceTimersByTime(200);
+  });
+  fireEvent.mouseEnter(trigger);
+  act(() => {
+    jest.advanceTimersByTime(200);
+  });
+  expect(screen.getByRole('tooltip')).toBeInTheDocument();
 });
