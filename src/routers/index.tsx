@@ -207,7 +207,7 @@ export default function Content() {
         }
       >
         <Switch>
-          <Route path='/demo' component={Demo} />
+          {import.meta.env.DEV && <Route path='/demo' component={Demo} />}
           {import.meta.env.DEV && <Route path='/log-viewer-test' component={LogViewerTestPage} />}
           <Route path='/overview' component={Overview} />
           <Route path='/login' component={Login} exact />
