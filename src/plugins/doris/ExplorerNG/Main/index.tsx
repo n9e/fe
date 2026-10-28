@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useState, useContext, useRef } from 'react';
 import { Form, Row, Col, Button, Segmented, Badge } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -193,6 +194,9 @@ export default function index(props: Props) {
           <Col flex='none'>
             <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
               <TimeRangePicker
+                resolvedRange={
+                  rangeRef.current?.from != null && rangeRef.current?.to != null ? { start: moment(rangeRef.current.from), end: moment(rangeRef.current.to) } : undefined
+                }
                 showMillisecond
                 onChange={() => {
                   snapRangeRef.current = {

@@ -9,23 +9,30 @@
 }
 
 .flashcat-timeRangePicker {
-  width: 540px;
-  height: 330px !important;
-  overflow: hidden;
+  width: 520px;
+  max-width: calc(100vw - 24px);
+  height: 330px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  overflow-x: hidden;
 
   border-bottom: 1px solid var(--fc-border-color);
 }
 
 .flashcat-timeRangePicker-left {
-  padding: 16px;
+  padding: 12px 16px;
 }
 
 .flashcat-timeRangePicker-ranges {
   border-left: 1px solid var(--fc-border-color);
   padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
   ul {
-    height: 260px !important;
+    flex: 1;
+    min-height: 0;
     margin: 10px 0 0 0 !important;
     padding: 0;
     overflow-y: auto;
@@ -79,25 +86,80 @@
   color: #ff4d4f;
 }
 
+.fc-time-editor-columns {
+  display: grid;
+  height: 100%;
+  grid-template-columns: minmax(0, 300px) minmax(0, 220px);
+}
+.fc-time-editor-main,
+.fc-time-editor-presets {
+  min-width: 0;
+  min-height: 0;
+}
 .flashcat-timeRangePicker-absolute-history {
   margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--fc-border-color);
+  color: var(--fc-text-2);
 
   ul,
   li {
     padding: 0;
     margin: 0;
-  }
-
-  li {
-    height: 22px;
-    line-height: 22px;
     list-style: none;
-    padding-left: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: var(--fc-fill-3);
-    }
+  }
+  ul {
+    margin-top: 6px;
+  }
+}
+.fc-time-history-heading {
+  color: var(--fc-text-2);
+  font-weight: 500;
+}
+.fc-time-history-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 24px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fc-text-2);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+  > .anticon {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--fc-text-link);
+  }
+  &:hover:not(:disabled),
+  &:focus-visible {
+    color: var(--fc-text-link);
+    background: var(--fc-fill-3);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--fc-text-link);
+    outline-offset: -2px;
+  }
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  &__value {
+    min-width: 0;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 24px;
+  }
+  &__duration {
+    color: var(--fc-text-3);
   }
 }
 
@@ -127,6 +189,154 @@
     .anticon-down,
     .anticon-up {
       display: none;
+    }
+  }
+}
+
+.fc-time-editor-field {
+  display: block;
+  margin-bottom: 8px;
+  > .fc-time-editor-label {
+    display: block;
+    margin-bottom: 4px;
+  }
+}
+.fc-time-range-calendar-popover {
+  width: 296px;
+  max-width: calc(100vw - 24px);
+
+  .ant-popover-inner-content {
+    padding: 12px !important;
+  }
+}
+.fc-time-editor-field .ant-input-suffix {
+  color: var(--fc-text-3);
+}
+.fc-time-editor-hint {
+  color: var(--fc-text-3);
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+.fc-time-range-calendar-popover .fc-time-range-calendar {
+  width: 100%;
+  .ant-picker-panel {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--fc-border-color);
+    border-radius: 6px;
+  }
+  .ant-picker-panel > div {
+    width: 100%;
+    min-width: 0;
+  }
+  .ant-picker-panel .ant-picker-body {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .ant-picker-body .ant-picker-content {
+    width: 100%;
+    table-layout: fixed;
+  }
+  .ant-picker-panel .ant-picker-content th,
+  .ant-picker-panel .ant-picker-content td {
+    width: auto;
+    min-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
+  }
+  .ant-picker-cell-inner.fc-time-range-calendar__inside {
+    background: var(--fc-fill-3);
+  }
+  .ant-picker-cell-inner.fc-time-range-calendar__edge {
+    background: var(--fc-primary-color, #6c53b1);
+    color: #fff;
+  }
+}
+.fc-time-range-tooltip.ant-tooltip {
+  // Include a viewport gutter in the popup box so edge alignment keeps the content inset.
+  padding-inline: 12px;
+}
+.fc-time-range-tooltip.ant-tooltip .ant-tooltip-inner {
+  padding: 12px 14px;
+  background: #26262b;
+  color: #f3f3f5;
+}
+.fc-time-range-tooltip.ant-tooltip .ant-tooltip-arrow-content {
+  background: #26262b;
+}
+.fc-time-range-summary {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  line-height: 1.6;
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fc-text-link-light, #a186f4);
+    font-weight: 500;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  &__heading > span:last-child {
+    overflow-wrap: anywhere;
+  }
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    margin: 5px 0;
+  }
+  &__label {
+    opacity: 0.65;
+  }
+  &__row strong {
+    font-weight: 600;
+    color: var(--fc-text-link-light, #a186f4);
+  }
+  &__zone {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  &__zone > span {
+    opacity: 0.8;
+  }
+  &__zone > strong {
+    color: var(--fc-fill-gold, #ffbc0d);
+    font-size: 11px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  &__extra {
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    padding-top: 8px;
+    margin-top: 8px;
+  }
+}
+@media (max-width: 560px) {
+  .flashcat-timeRangePicker {
+    height: auto;
+  }
+  .flashcat-timeRangePicker-container .fc-time-editor-columns {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+  .flashcat-timeRangePicker-ranges {
+    height: 234px;
+    border-left: 0;
+    border-top: 1px solid var(--fc-border-color);
+    ul {
+      max-height: 160px;
     }
   }
 }

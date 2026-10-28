@@ -1,8 +1,9 @@
+import TimePointPicker from '@/components/TimeRangePicker/TimePointPicker';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import moment from 'moment';
 import _ from 'lodash';
-import { Input, DatePicker, Space, Button, message, Popover, Table as AntdTable } from 'antd';
+import { Input, Space, Button, message, Popover, Table as AntdTable } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { json2csv } from 'json-2-csv';
@@ -145,6 +146,7 @@ export default function Table(props: IProps) {
     resultType: 'matrix',
     result: [],
   });
+  const [evaluationTime, setEvaluationTime] = useState(() => timestamp ?? moment().unix());
   const [unit, setUnit] = useState(defaultUnit || 'sishort');
   const [internalSeriesFilterText, setInternalSeriesFilterText] = useState('');
   const [seriesFilterVisible, setSeriesFilterVisible] = useState(false);
@@ -159,8 +161,9 @@ export default function Table(props: IProps) {
   const controls = (
     <Space>
       <InputGroupWithFormItem label={t('promGraphCpt:time')}>
-        <DatePicker
-          value={timestamp ? moment.unix(timestamp) : undefined}
+        <TimePointPicker
+          value={moment.unix(timestamp ?? evaluationTime)}
+          allowClear={timestamp !== undefined}
           onChange={(val) => {
             setTimestamp(val ? val.unix() : undefined);
           }}
@@ -219,14 +222,17 @@ export default function Table(props: IProps) {
       queryRequest?.signal.addEventListener('abort', abort, { once: true });
       onQueryRequest?.();
       const queryStart = Date.now();
+      // Keep the displayed instant and query parameters aligned without pinning subsequent queries.
+      const queryTime = timestamp ?? Math.floor(queryStart / 1000);
+      setEvaluationTime(queryTime);
       setLoading(true);
       getPromData(
         `${url}/${datasourceValue}/api/v1/query`,
         {
-          time: timestamp || moment().unix(),
+          time: queryTime,
           query: instantInterpolateString({
             query: promql,
-            time: timestamp ? moment.unix(timestamp) : undefined,
+            time: moment.unix(queryTime),
           }),
         },
         controller.signal,

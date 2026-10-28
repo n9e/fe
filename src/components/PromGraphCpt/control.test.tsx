@@ -3,6 +3,8 @@ import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import PromQLInputNG from '@/components/PromQLInputNG';
 import PromGraph from './index';
+import Table from './Table';
+import moment from 'moment';
 import { getPromData } from './services';
 
 jest.mock('./services', () => ({ getPromData: jest.fn() }));
@@ -280,4 +282,41 @@ it('clears failed query feedback when undo restores an empty draft', async () =>
   act(() => controlRef.current.restore(snapshot));
   expect(screen.queryByText(/invalid expression/)).toBeNull();
   expect(screen.getByLabelText('query draft')).toHaveValue('');
+});
+
+it('displays the actual instant query time, advances with new queries, and preserves explicit historical times', async () => {
+  const clock = jest.spyOn(Date, 'now').mockReturnValue(new Date('2026-10-26T04:00:00Z').getTime());
+  const setTimestamp = jest.fn();
+  const props = { url: '/api', datasourceValue: 1, promql: 'up', loading: false, setLoading: jest.fn(), setErrorContent: jest.fn(), setTimestamp };
+  try {
+    const { rerender } = render(<Table {...props} refreshFlag='first' />);
+    const input = screen.getByPlaceholderText('promGraphCpt:evaluation_time');
+    const firstTime = Date.now() / 1000;
+    expect(input).toHaveValue(moment.unix(firstTime).format('YYYY-MM-DD HH:mm:ss'));
+    expect((getPromData as jest.Mock).mock.calls[0][1].time).toBe(firstTime);
+    await act(async () => requests[0].resolve(response('up')));
+    clock.mockReturnValue(Date.now() + 60000);
+    rerender(<Table {...props} refreshFlag='second' />);
+    expect((getPromData as jest.Mock).mock.calls[1][1].time).toBe(firstTime + 60);
+    expect(input).toHaveValue(moment.unix(firstTime + 60).format('YYYY-MM-DD HH:mm:ss'));
+    expect(setTimestamp).not.toHaveBeenCalled();
+    await act(async () => requests[1].resolve(response('up')));
+    const historicalTime = firstTime - 86400;
+    rerender(<Table {...props} timestamp={historicalTime} refreshFlag='third' />);
+    expect((getPromData as jest.Mock).mock.calls[2][1].time).toBe(historicalTime);
+    expect(input).toHaveValue(moment.unix(historicalTime).format('YYYY-MM-DD HH:mm:ss'));
+    await act(async () => requests[2].resolve(response('up')));
+    clock.mockReturnValue(Date.now() + 60000);
+    rerender(<Table {...props} timestamp={historicalTime} refreshFlag='fourth' />);
+    expect((getPromData as jest.Mock).mock.calls[3][1].time).toBe(historicalTime);
+    await act(async () => requests[3].resolve(response('up')));
+    fireEvent.mouseUp(document.querySelector('.ant-picker-clear')!);
+    expect(setTimestamp).toHaveBeenCalledWith(undefined);
+    rerender(<Table {...props} refreshFlag='fourth' />);
+    expect((getPromData as jest.Mock).mock.calls[4][1].time).toBe(firstTime + 120);
+    expect(input).toHaveValue(moment.unix(firstTime + 120).format('YYYY-MM-DD HH:mm:ss'));
+    await act(async () => requests[4].resolve(response('up')));
+  } finally {
+    clock.mockRestore();
+  }
 });

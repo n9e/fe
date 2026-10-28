@@ -60,6 +60,8 @@ export interface IRawTimeRange {
 }
 
 export interface ITimeRangePickerProps {
+  resolvedRange?: IRawTimeRange; // Actual query bounds, when supplied by the page
+  timeRangeTooltip?: React.ReactNode;
   noBorder?: boolean; // 用户 trigger button 的 type，noBorder 表示 type="text"
   limitHour?: number; // 限制小时数，超过这个小时数的快捷选项不显示或者禁用
   style?: object;
@@ -68,6 +70,7 @@ export interface ITimeRangePickerProps {
   dateFormat?: string;
   onChange?: (value: IRawTimeRange) => void;
   placeholder?: string;
+  emptyLabel?: string; // Display the meaning of an unset optional time filter
   allowClear?: boolean;
   onClear?: () => void;
   label?: React.ReactElement;
@@ -91,5 +94,6 @@ export interface ITimeRangePickerWithRefreshProps extends ITimeRangePickerProps 
   intervalSeconds?: number;
   intervalOptions?: Record<number, string>;
   onIntervalSecondsChange?: (value: number) => void;
-  onRefresh?: () => void;
+  loading?: boolean;
+  onRefresh?: () => void | Promise<unknown>;
 }

@@ -22,6 +22,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useAntdTable } from 'ahooks';
+import { useReportQueryLoading } from '@/components/TimeRangePicker/RefreshScope';
 import { CommonStateContext } from '@/App';
 import EnhancedTable from '@/components/EnhancedTable';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -164,6 +165,8 @@ export default function TableCpt(props: IProps) {
     defaultPageSize: 30,
     debounceWait: 500,
   });
+
+  useReportQueryLoading(!!tableProps.loading);
 
   return (
     <div className='event-content'>

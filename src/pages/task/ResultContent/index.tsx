@@ -189,6 +189,7 @@ const ResultContent: React.FC<Props> = ({ taskId, busiId, hideCloneTask, metaAli
           title={data.title}
           extra={
             <AutoRefresh
+              loading={loading}
               ref={AutoRefreshRef}
               disabled={data.done}
               onRefresh={() => {
