@@ -36,10 +36,12 @@ import DatasourceCheckbox from './DatasourceCheckbox';
 import AggrRuleDropdown from './AggrRuleDropdown';
 import AlertCard, { isEqualEventIds } from './AlertCard';
 import AlertTable from './AlertTable';
+import { useReportQueryLoading, withRefreshScope } from '@/components/TimeRangePicker/RefreshScope';
 import FullscreenList from './FullscreenList';
 
 const AlertCurEvent: React.FC = () => {
   const { t } = useTranslation(NS);
+  const { t: interactionT } = useTranslation('timePickerInteraction');
   const { feats } = useContext(CommonStateContext);
   const location = useLocation();
   const history = useHistory();
@@ -182,7 +184,11 @@ const AlertCurEvent: React.FC = () => {
     return requestParams;
   }, [filter.aggr_rule_id, JSON.stringify(params)]);
 
-  const { refresh: reloadRuleCards, data: ruleCardsData } = useRequest(
+  const {
+    refresh: reloadRuleCards,
+    data: ruleCardsData,
+    loading: ruleCardsLoading,
+  } = useRequest(
     () => {
       // ready 会保证这里不会在 undefined 时执行
       return getAlertCards(ruleCardsRequestParams as RuleCardsRequestParams);
@@ -208,6 +214,8 @@ const AlertCurEvent: React.FC = () => {
       },
     },
   );
+
+  useReportQueryLoading(ruleCardsLoading);
 
   const cardList = useMemo(() => {
     if (!filter.aggr_rule_id) return [];
@@ -321,6 +329,7 @@ const AlertCurEvent: React.FC = () => {
                       }}
                     />
                     <TimeRangePickerWithRefresh
+                      emptyLabel={interactionT('allTime')}
                       allowClear
                       value={filter.range}
                       onChange={(range) => setFilterPatch({ range })}
@@ -513,4 +522,4 @@ const AlertCurEvent: React.FC = () => {
   );
 };
 
-export default AlertCurEvent;
+export default withRefreshScope(AlertCurEvent);

@@ -32,6 +32,7 @@ import TimeRangePicker, { getDefaultValue } from '@/components/TimeRangePicker';
 import { IS_ENT } from '@/utils/constant';
 import { BusinessGroupSelectWithAll } from '@/components/BusinessGroup';
 import Card from './card';
+import { withRefreshScope } from '@/components/TimeRangePicker/RefreshScope';
 import Table from './Table';
 import './locale';
 import './index.less';
@@ -74,6 +75,7 @@ export function deleteAlertEventsModal(ids: number[], onSuccess = () => {}, t) {
 
 const Event: React.FC = () => {
   const { t } = useTranslation('AlertCurEvents');
+  const { t: interactionT } = useTranslation('timePickerInteraction');
   const [view, setView] = useState<'card' | 'list'>('card');
   const { feats } = useContext(CommonStateContext);
   const location = useLocation();
@@ -115,6 +117,7 @@ const Event: React.FC = () => {
           <Button icon={<AppstoreOutlined />} onClick={() => setView('card')} />
           <Button icon={<UnorderedListOutlined />} onClick={() => setView('list')} />
           <TimeRangePicker
+            emptyLabel={interactionT('allTime')}
             allowClear
             localKey={CACHE_KEY}
             value={filter.range}
@@ -278,4 +281,4 @@ const Event: React.FC = () => {
   );
 };
 
-export default Event;
+export default withRefreshScope(Event);

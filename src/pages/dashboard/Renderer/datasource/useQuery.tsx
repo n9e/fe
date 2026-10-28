@@ -1,3 +1,4 @@
+import { useReportQueryLoading } from '@/components/TimeRangePicker/RefreshScope';
 /*
  * Copyright 2022 Nightingale Team
  *
@@ -63,6 +64,7 @@ export default function useQuery(props: IProps) {
   });
 
   const hasRequestedRef = useRef(false);
+  useReportQueryLoading(state.loading);
   const requestSequenceRef = useRef(new DashboardRequestSequence());
   const controllerRef = useRef<AbortController>();
   const mountedRef = useRef(true);

@@ -94,6 +94,7 @@ export default function index() {
           <div className='flex items-center justify-between mb-4'>
             <Space wrap>
               <AutoRefresh
+                loading={!!tableProps.loading}
                 onRefresh={() => {
                   run({
                     current: params?.[0]?.current ?? 1,
