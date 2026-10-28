@@ -19,6 +19,12 @@ const DEFAULT_LABEL = IS_ENT ? 'FlashAI' : 'Nightingale AI';
 
 const ANTD_BUTTON_TYPES = ['primary', 'default', 'dashed', 'text', 'link'] as const;
 
+const SIZE_PRESETS = {
+  small: { circle: 24, capsuleIcon: 12 },
+  middle: { circle: 32, capsuleIcon: 14 },
+  large: { circle: 40, capsuleIcon: 16 },
+} as const;
+
 function isAntdButtonType(value: unknown): value is (typeof ANTD_BUTTON_TYPES)[number] {
   return typeof value === 'string' && (ANTD_BUTTON_TYPES as readonly string[]).includes(value);
 }
@@ -37,9 +43,9 @@ export default function AiButton(props: IProps) {
     references: custom.promptReferences,
   });
   const size = custom.size === 'small' || custom.size === 'large' ? custom.size : 'middle';
-  const iconSize = size === 'small' ? 24 : size === 'large' ? 40 : 32;
+  const { circle: circleSize, capsuleIcon: capsuleIconSize } = SIZE_PRESETS[size];
   const buttonType = isAntdButtonType(custom.type) ? custom.type : 'primary';
-  const gifIcon = <img src='/image/ai-chat/ai.gif' alt='' className='h-[14px] w-[14px] mr-2' />;
+  const gifIcon = <img src='/image/ai-chat/ai.gif' alt='' style={{ width: capsuleIconSize, height: capsuleIconSize }} className='mr-2' />;
 
   return (
     <div className='flex h-full w-full items-center justify-center'>
@@ -49,10 +55,10 @@ export default function AiButton(props: IProps) {
             type='button'
             aria-label={label}
             onClick={openAiChat}
-            style={{ width: iconSize, height: iconSize }}
+            style={{ width: circleSize, height: circleSize }}
             className='flex cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0'
           >
-            <AiCircleIcon size={iconSize} />
+            <AiCircleIcon size={circleSize} />
           </button>
         </Tooltip>
       ) : style === 'antd' ? (
