@@ -48,33 +48,35 @@ export default function AiButton(props: IProps) {
   const gifIcon = <img src='/image/ai-chat/ai.gif' alt='' style={{ width: capsuleIconSize, height: capsuleIconSize }} className='mr-2' />;
 
   return (
-    <div className='flex h-full w-full items-center justify-center'>
-      {style === 'icon' ? (
-        <Tooltip title={label}>
-          <button
-            type='button'
-            aria-label={label}
+    <div className='best-looking-scroll h-full w-full' style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+      <div className='flex h-full w-max min-w-full items-center justify-center'>
+        {style === 'icon' ? (
+          <Tooltip title={label}>
+            <button
+              type='button'
+              aria-label={label}
+              onClick={openAiChat}
+              style={{ width: circleSize, height: circleSize }}
+              className='flex cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0'
+            >
+              <AiCircleIcon size={circleSize} />
+            </button>
+          </Tooltip>
+        ) : style === 'antd' ? (
+          <Button type={buttonType} size={size} onClick={openAiChat}>
+            {label}
+          </Button>
+        ) : (
+          <Button
+            icon={gifIcon}
+            size={size}
             onClick={openAiChat}
-            style={{ width: circleSize, height: circleSize }}
-            className='flex cursor-pointer items-center justify-center rounded-full border-0 bg-transparent p-0'
+            className='!rounded-full border-violet-600 bg-violet-300 text-violet-1100 hover:border-violet-700 hover:bg-violet-400'
           >
-            <AiCircleIcon size={circleSize} />
-          </button>
-        </Tooltip>
-      ) : style === 'antd' ? (
-        <Button type={buttonType} size={size} onClick={openAiChat}>
-          {label}
-        </Button>
-      ) : (
-        <Button
-          icon={gifIcon}
-          size={size}
-          onClick={openAiChat}
-          className='!rounded-full border-violet-600 bg-violet-300 text-violet-1100 hover:border-violet-700 hover:bg-violet-400'
-        >
-          {label}
-        </Button>
-      )}
+            {label}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
