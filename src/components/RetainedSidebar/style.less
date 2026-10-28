@@ -66,7 +66,8 @@
       font-size: 12px;
       font-weight: 600;
     }
-    .ant-btn {
+    // Outrank themed icon-button dimensions as well as the base button layout.
+    .ant-btn.ant-btn-sm.ant-btn-icon-only {
       flex: 0 0 24px;
       width: 24px;
       height: 24px;
@@ -74,6 +75,11 @@
       align-items: center;
       justify-content: center;
       padding: 0;
+      line-height: 1;
+      > svg {
+        display: block;
+        flex-shrink: 0;
+      }
     }
   }
   &__actions {
