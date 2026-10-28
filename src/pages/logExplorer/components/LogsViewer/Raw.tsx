@@ -662,8 +662,7 @@ function Raw(props: Props) {
     (event) => {
       // 忽略点击发生在 ignore-click-away 内的情况
       // 还需要结合阻止事件冒泡一起使用
-      const target = (event && (event as Event).target) as HTMLElement | null;
-      if (shouldIgnoreLogViewerClickAway(target)) {
+      if (shouldIgnoreLogViewerClickAway(event as Event)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭

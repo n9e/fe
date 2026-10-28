@@ -164,8 +164,7 @@ function Table(props: Props) {
   useClickAway(
     (event) => {
       // 忽略点击发生在 log viewer drawer 内的情况
-      const target = (event && (event as Event).target) as HTMLElement | null;
-      if (shouldIgnoreLogViewerClickAway(target)) {
+      if (shouldIgnoreLogViewerClickAway(event as Event)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭

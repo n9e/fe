@@ -593,6 +593,7 @@ export default function index(props: Props) {
                   <LogOrderContext
                     log={log?.___raw___}
                     timeField={queryValues?.time_field}
+                    organizeFields={organizeFields}
                     fetchPage={(req) =>
                       getDorisContextLogs({
                         cate: DatasourceCateEnum.doris,
