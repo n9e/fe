@@ -21,6 +21,7 @@
 
   // Outrank the global Ant Design theme selectors, including themes loaded later.
   .log-explorer-ng-tabs.ant-tabs-card.ant-tabs-top {
+    flex: 0 1 auto;
     font-weight: 400;
 
     > .ant-tabs-nav {
@@ -39,6 +40,14 @@
 
       .ant-tabs-nav-list {
         padding: 0 8px;
+      }
+
+      // Keep one add button outside the clipped/translated tab list.
+      .ant-tabs-extra-content {
+        display: flex;
+        flex: none;
+        align-items: center;
+        margin-left: 4px;
       }
 
       .ant-tabs-tab {
@@ -182,7 +191,7 @@
         }
       }
 
-      .ant-tabs-nav-add,
+      .log-explorer-ng-tab-add,
       .ant-tabs-nav-more {
         display: inline-flex;
         align-items: center;
@@ -209,7 +218,7 @@
 
       .ant-tabs-tab-btn,
       .ant-tabs-tab-remove,
-      .ant-tabs-nav-add,
+      .log-explorer-ng-tab-add,
       .ant-tabs-nav-more {
         &:focus-visible {
           outline: 1px solid var(--fc-primary-color);
@@ -217,16 +226,8 @@
         }
       }
 
-      .ant-tabs-nav-add {
-        position: relative;
-
-        .log-explorer-ng-tab-add-trigger {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+      .log-explorer-ng-tab-add {
+        cursor: pointer;
       }
     }
 

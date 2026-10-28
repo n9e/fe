@@ -199,11 +199,12 @@ export default function Header(props: Props) {
     <div className='log-explorer-ng-header w-full flex items-center gap-4'>
       <span className='flex-shrink-0'>{t('title')}</span>
       <Tabs
-        className='log-explorer-ng-tabs min-w-0 flex-1'
+        className='log-explorer-ng-tabs min-w-0'
         size='small'
         type='editable-card'
         activeKey={activeKey}
-        addIcon={
+        hideAdd
+        tabBarExtraContent={
           <Dropdown
             overlay={
               <Menu>
@@ -220,15 +221,9 @@ export default function Header(props: Props) {
             trigger={['click']}
             placement='bottomLeft'
           >
-            <span
-              className='log-explorer-ng-tab-add-trigger'
-              onClick={(event) => {
-                // 阻止 editable-card 内置的新增事件，改由下拉菜单选择新增方式。
-                event.stopPropagation();
-              }}
-            >
+            <button type='button' className='log-explorer-ng-tab-add' aria-label={t('common:btn.add')} title={t('common:btn.add')}>
               <PlusOutlined />
-            </span>
+            </button>
           </Dropdown>
         }
         renderTabBar={(tabBarProps, DefaultTabBar) => (
