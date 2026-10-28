@@ -1,5 +1,5 @@
 import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Card, Space, Form, Select, Tooltip, Modal, Tag } from 'antd';
 import { MinusCircleOutlined, CopyOutlined, UpCircleOutlined, DownCircleOutlined, DownOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
@@ -13,7 +13,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 // @ts-ignore
 import PlusProcessor, { options as PlusOptions } from 'plus:/parcels/eventPipeline';
 
-import { NS, FLASH_AI_PROCESSOR_TYPES, getDefaultProcessorConfig, documentPathMap } from '../../../constants';
+import { NS, FLASH_AI_PROCESSOR_TYPES, canMoveProcessor, getDefaultProcessorConfig, documentPathMap } from '../../../constants';
 import { getProcessorSummary } from '../../../components/getProcessorSummary';
 import TestModal from '../TestModal';
 import Relabel from './Relabel';
@@ -76,6 +76,11 @@ export default function NotifyConfig(props: Props) {
   const processorConfig = Form.useWatch(['processors', field.name]);
   const processorType = Form.useWatch(['processors', field.name, 'typ']);
   const isRestrictedAiProcessor = FLASH_AI_PROCESSOR_TYPES.includes(processorType) && !canAccessFlashAi;
+  const readOnly = !!disabled || isRestrictedAiProcessor;
+  // 确认弹窗打开后权限仍可能变化，确认时必须读取最新权限。
+  const accessRef = useRef({ readOnly, canAccessFlashAi });
+  accessRef.current = { readOnly, canAccessFlashAi };
+  const canMove = (to: number) => !accessRef.current.readOnly && canMoveProcessor(form.getFieldValue('processors') || [], field.name, to, accessRef.current.canAccessFlashAi);
 
   // 已有 AI 处理器保留类型与配置，避免编辑其他内容时误删；不能新增或复制。
   const availableTypes = _.concat(['relabel', 'event_drop', 'event_update', 'callback', 'ai_summary'], IS_PLUS ? PlusOptions : []).filter(
@@ -95,11 +100,18 @@ export default function NotifyConfig(props: Props) {
   const onTypeChange = (newTyp: string) => {
     // Form.Item 先把新 typ 写进表单才调用这里，Form.useWatch 的值仍是切换前的那次渲染结果，正好当快照
     const snapshot = _.cloneDeep(processorConfig);
+    const canChangeType = () => !accessRef.current.readOnly && (accessRef.current.canAccessFlashAi || !FLASH_AI_PROCESSOR_TYPES.includes(newTyp));
+    if (!canChangeType()) {
+      replaceProcessor(snapshot);
+      return;
+    }
     const currentConfig = snapshot?.config;
     // 与「该类型的默认配置」比对来判断用户改没改过。默认值只能取自 getDefaultProcessorConfig，
     // 编辑器里的 initialValue 也引用同一份常量，否则这里会恒为 touched、每次切换都弹确认
     const touched = !_.isEmpty(currentConfig) && !_.isEqual(currentConfig, getDefaultProcessorConfig(snapshot?.typ, t));
-    const applyType = () => replaceProcessor({ ...snapshot, typ: newTyp, config: getDefaultProcessorConfig(newTyp, t) });
+    const applyType = () => {
+      if (canChangeType()) replaceProcessor({ ...snapshot, typ: newTyp, config: getDefaultProcessorConfig(newTyp, t) });
+    };
 
     if (!touched) {
       applyType();
@@ -117,10 +129,13 @@ export default function NotifyConfig(props: Props) {
   };
 
   const handleDelete = () => {
+    if (accessRef.current.readOnly) return;
     Modal.confirm({
       title: t('processor.delete_confirm'),
       okButtonProps: { danger: true },
-      onOk: () => remove(field.name),
+      onOk: () => {
+        if (!accessRef.current.readOnly) remove(field.name);
+      },
     });
   };
 
@@ -143,22 +158,20 @@ export default function NotifyConfig(props: Props) {
       data-processor-index={field.name}
       title={title}
       extra={
-        !disabled && (
+        !readOnly && (
           <Space>
             {dragHandle && <Tooltip title={t('processor.drag_tip')}>{dragHandle}</Tooltip>}
-            {!isRestrictedAiProcessor && (
-              <Tooltip title={t('processor.copy_tip')}>
-                <CopyOutlined onClick={() => add(_.cloneDeep(processorConfig), field.name + 1)} />
-              </Tooltip>
-            )}
-            {fields.length > 1 && field.name !== 0 && (
+            <Tooltip title={t('processor.copy_tip')}>
+              <CopyOutlined onClick={() => !accessRef.current.readOnly && add(_.cloneDeep(processorConfig), field.name + 1)} />
+            </Tooltip>
+            {canMove(field.name - 1) && (
               <Tooltip title={t('processor.move_up')}>
-                <UpCircleOutlined onClick={() => move(field.name, field.name - 1)} />
+                <UpCircleOutlined onClick={() => canMove(field.name - 1) && move(field.name, field.name - 1)} />
               </Tooltip>
             )}
-            {fields.length > 1 && field.name !== fields.length - 1 && (
+            {canMove(field.name + 1) && (
               <Tooltip title={t('processor.move_down')}>
-                <DownCircleOutlined onClick={() => move(field.name, field.name + 1)} />
+                <DownCircleOutlined onClick={() => canMove(field.name + 1) && move(field.name, field.name + 1)} />
               </Tooltip>
             )}
             {/* 最后一张卡不给删：删光后 processors 为 []，后端 Verify() 允许空数组，
@@ -203,7 +216,7 @@ export default function NotifyConfig(props: Props) {
             </Space>
           }
         >
-          <Select showSearch optionFilterProp='label' optionLabelProp='label' disabled={disabled} onChange={onTypeChange}>
+          <Select showSearch optionFilterProp='label' optionLabelProp='label' disabled={readOnly} onChange={onTypeChange}>
             {_.map(CATEGORY_ORDER, (category) => {
               const typesInCategory = _.filter(availableTypes, (typ) => (TYPE_CATEGORY[typ] ?? 'other') === category);
               if (_.isEmpty(typesInCategory)) return null;
@@ -227,7 +240,7 @@ export default function NotifyConfig(props: Props) {
         {processorType === 'event_update' && <Callback field={field} namePath={[field.name, 'config']} />}
         {processorType === 'event_drop' && <EventDrop field={field} namePath={[field.name, 'config']} />}
         {processorType === 'ai_summary' && canAccessFlashAi && <AISummary field={field} namePath={[field.name, 'config']} prefixNamePath={['processors']} />}
-        <PlusProcessor processorType={processorType} field={field} />
+        {!isRestrictedAiProcessor && <PlusProcessor processorType={processorType} field={field} />}
 
         <TestModal type='processor' config={processorConfig} onBeforeOpen={validateForTest ? () => validateForTest(['processors', field.name]) : undefined} />
       </div>
