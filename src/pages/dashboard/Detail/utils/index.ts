@@ -140,18 +140,19 @@ export const getDefaultTimeRange = (id: string | number, query: DashboardLocatio
           end: 'now',
         };
   if (query.__from && query.__to) {
-    if (isValid(query.__from as string) && isValid(query.__to as string)) {
-      return {
-        start: query.__from,
-        end: query.__to,
-      };
-    }
-    if (moment(_.toNumber(query.__from)).isValid() && moment(_.toNumber(query.__to)).isValid()) {
-      return {
-        start: moment(_.toNumber(query.__from)),
-        end: moment(_.toNumber(query.__to)),
-      };
-    }
+    // A manually edited bound becomes a timestamp while the other can remain "now".
+    // Parse each side independently so mixed ranges survive URL updates and reloads.
+    const parseBound = (raw: DashboardLocationQuery[string]) => {
+      const value = getQueryValue(raw);
+      if (!value?.trim()) return undefined;
+      if (isValid(value)) return value;
+      const timestamp = Number(value);
+      const parsed = moment(timestamp);
+      return Number.isFinite(timestamp) && parsed.isValid() ? parsed : undefined;
+    };
+    const start = parseBound(query.__from);
+    const end = parseBound(query.__to);
+    if (start !== undefined && end !== undefined) return { start, end };
     message.error(i18next.t('dashboard:detail.invalidTimeRange'));
     return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
   }

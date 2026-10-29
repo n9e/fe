@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { useSize } from 'ahooks';
 
 import { GetTmpChartData } from '@/services/metric';
-import { TimeRangePickerWithRefresh, IRawTimeRange, isMathString } from '@/components/TimeRangePicker';
+import { RefreshToolbar, TimeRangePickerWithRefresh, IRawTimeRange, isMathString } from '@/components/TimeRangePicker';
 import { getAuthorizedDatasourceCates } from '@/components/AdvancedWrap';
 
 import { withRefreshScope } from '@/components/TimeRangePicker/RefreshScope';
@@ -102,15 +102,17 @@ function Chart() {
           <div className='chart-container-header'>
             <div className='left'></div>
             <div className='right'>
-              <Space>
-                <span>
-                  {t('common:datasource.type')}：{datasourceCate.current}
-                </span>
-                <span>
-                  {t('common:datasource.id')}：{datasourceName.current}
-                </span>
-                <TimeRangePickerWithRefresh onChange={setRange} value={range} dateFormat='YYYY-MM-DD HH:mm:ss' />
-              </Space>
+              <RefreshToolbar>
+                <Space>
+                  <span>
+                    {t('common:datasource.type')}：{datasourceCate.current}
+                  </span>
+                  <span>
+                    {t('common:datasource.id')}：{datasourceName.current}
+                  </span>
+                  <TimeRangePickerWithRefresh onChange={setRange} value={range} dateFormat='YYYY-MM-DD HH:mm:ss' />
+                </Space>
+              </RefreshToolbar>
             </div>
           </div>
           <div ref={containerRef}>

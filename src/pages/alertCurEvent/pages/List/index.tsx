@@ -9,7 +9,7 @@ import { useDebounceFn, useRequest } from 'ahooks';
 import moment from 'moment';
 
 import PageLayout from '@/components/pageLayout';
-import { TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
+import { RefreshToolbar, TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { IS_PLUS } from '@/utils/constant';
@@ -269,7 +269,7 @@ const AlertCurEvent: React.FC = () => {
           <div className='fc-border h-full rounded-lg bg-fc-100'>
             <div className='h-full p-4'>
               <div className='flex flex-col h-full'>
-                <div className='mb-2 flex items-center justify-between'>
+                <div className='mb-2 flex items-center justify-between auto-refresh-toolbar-row'>
                   <Space>
                     <Space>
                       <Segmented
@@ -313,34 +313,36 @@ const AlertCurEvent: React.FC = () => {
                       }}
                     />
                   </Space>
-                  <Space>
-                    <span className='whitespace-nowrap'>{t('tag_display')}: </span>
-                    <Segmented
-                      value={tagDisplayMode}
-                      options={[
-                        { label: t('tag_display_all'), value: 'all' },
-                        { label: t('tag_display_compact'), value: 'compact' },
-                        { label: t('tag_display_off'), value: 'off' },
-                      ]}
-                      onChange={(value) => {
-                        const next = value as AlertEventTagsDisplayMode;
-                        setTagDisplayMode(next);
-                        writeAlertEventTagsDisplayMode(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
-                      }}
-                    />
-                    <TimeRangePickerWithRefresh
-                      emptyLabel={interactionT('allTime')}
-                      allowClear
-                      value={filter.range}
-                      onChange={(range) => setFilterPatch({ range })}
-                      onRefresh={() => setRefreshFlag(_.uniqueId('refresh_'))}
-                      localKey={TIME_RANGE_CACHE_KEY}
-                      dateFormat='YYYY-MM-DD HH:mm:ss'
-                    />
-                    <Tooltip title={t('dashboard:full_screen')}>
-                      <Button icon={<FullscreenOutlined />} onClick={toggleFullscreen} />
-                    </Tooltip>
-                  </Space>
+                  <RefreshToolbar>
+                    <Space>
+                      <span className='whitespace-nowrap'>{t('tag_display')}: </span>
+                      <Segmented
+                        value={tagDisplayMode}
+                        options={[
+                          { label: t('tag_display_all'), value: 'all' },
+                          { label: t('tag_display_compact'), value: 'compact' },
+                          { label: t('tag_display_off'), value: 'off' },
+                        ]}
+                        onChange={(value) => {
+                          const next = value as AlertEventTagsDisplayMode;
+                          setTagDisplayMode(next);
+                          writeAlertEventTagsDisplayMode(ALERT_CUR_EVENT_TAGS_EXPANDED_TABLE_KEY, next);
+                        }}
+                      />
+                      <TimeRangePickerWithRefresh
+                        emptyLabel={interactionT('allTime')}
+                        allowClear
+                        value={filter.range}
+                        onChange={(range) => setFilterPatch({ range })}
+                        onRefresh={() => setRefreshFlag(_.uniqueId('refresh_'))}
+                        localKey={TIME_RANGE_CACHE_KEY}
+                        dateFormat='YYYY-MM-DD HH:mm:ss'
+                      />
+                      <Tooltip title={t('dashboard:full_screen')}>
+                        <Button icon={<FullscreenOutlined />} onClick={toggleFullscreen} />
+                      </Tooltip>
+                    </Space>
+                  </RefreshToolbar>
                 </div>
                 <div className='flex flex-1 min-h-0'>
                   {/* 左侧筛选区 */}

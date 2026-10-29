@@ -94,6 +94,8 @@ export default function index() {
           <div className='flex items-center justify-between mb-4'>
             <Space wrap>
               <AutoRefresh
+                align='start'
+                after={<TimeRangePicker value={range} onChange={setRange} dateFormat={format} />}
                 loading={!!tableProps.loading}
                 onRefresh={() => {
                   run({
@@ -102,7 +104,6 @@ export default function index() {
                   });
                 }}
               />
-              <TimeRangePicker value={range} onChange={setRange} dateFormat={format} />
               <Input.Search placeholder={t('executions.search_placeholder')} onSearch={(val) => setFilters((prev) => ({ ...prev, pipeline_name: val }))} allowClear />
               <Select
                 allowClear

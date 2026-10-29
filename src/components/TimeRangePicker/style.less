@@ -340,3 +340,27 @@
     }
   }
 }
+
+.fc-time-zone-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  > .ant-space {
+    min-width: 0;
+    overflow: hidden;
+  }
+  &__description {
+    color: var(--fc-text-3);
+  }
+  &__offset {
+    flex-shrink: 0;
+    color: color-mix(in srgb, var(--fc-fill-gold) 50%, var(--fc-text-1));
+    line-height: 20px;
+    font-weight: 500;
+    font-size: 11px;
+    background: rgb(var(--fc-fill-warning-rgb) / 0.1);
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+}
