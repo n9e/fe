@@ -223,6 +223,8 @@ const zh_CN = {
     earlier: '更早',
     later: '更新',
     back_to_anchor: '当前日志',
+    raw_layout: '原文排版',
+    raw_layout_tip: '只显示字段值，不带时间和字段名，用等宽字体保留缩进',
     rotated: '文件轮转',
     no_more_before: '1 小时内没有更早的日志，可以扩大时间范围后在检索里查看',
     no_more_after: '1 小时内没有更新的日志',

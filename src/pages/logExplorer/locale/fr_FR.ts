@@ -183,6 +183,8 @@ const fr_FR = {
     earlier: 'Plus anciens',
     later: 'Plus récents',
     back_to_anchor: 'Log actuel',
+    raw_layout: 'Mise en page brute',
+    raw_layout_tip: "Affiche uniquement les valeurs, sans heure ni noms de champ, en police à chasse fixe qui conserve l'indentation",
     rotated: 'Fichier tourné',
     no_more_before: 'Aucun log plus ancien dans l’heure ; élargissez la plage de temps dans la recherche',
     no_more_after: 'Aucun log plus récent dans l’heure',

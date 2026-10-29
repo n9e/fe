@@ -181,6 +181,8 @@ const ja_JP = {
     earlier: '前へ',
     later: '次へ',
     back_to_anchor: '現在のログ',
+    raw_layout: '原文レイアウト',
+    raw_layout_tip: '時刻とフィールド名を省いて値のみを等幅フォントで表示し、インデントを保持します',
     rotated: 'ファイルローテーション',
     no_more_before: '1 時間以内に前のログはありません。検索で時間範囲を広げてください',
     no_more_after: '1 時間以内に次のログはありません',
