@@ -182,7 +182,7 @@ const zh_HK = {
     back_to_anchor: '當前日誌',
     raw_layout: '原文排版',
     raw_layout_tip: '只顯示欄位值，不帶時間和欄位名，用等寬字體保留縮排',
-    filter_keywords_tip: '只顯示包含該關鍵字的日誌行，區分大小寫；新增多個時需同時包含。直接輸入值即可，例如 ERROR 或訂單號',
+    filter_keywords_tip: '只顯示包含該關鍵字的日誌行，不區分大小寫；新增多個時需同時包含。直接輸入值即可，例如 ERROR 或訂單號',
     highlight_keywords_tip: '在日誌中標黃顯示該關鍵字，不影響顯示哪些行，不區分大小寫。直接輸入值即可',
     keyword_placeholder: '輸入關鍵字，回車確認',
     rotated: '文件輪轉',
