@@ -1,6 +1,7 @@
 import React from 'react';
 import { Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+// @ts-ignore
 import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
 import HistogramActionButton from './HistogramActionButton';
 
