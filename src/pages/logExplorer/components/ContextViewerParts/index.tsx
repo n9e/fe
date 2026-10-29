@@ -9,12 +9,16 @@ import { CloseSquareOutlined, EyeInvisibleOutlined, PlusOutlined, PlusSquareOutl
 
 export interface DynamicTagsProps {
   newTagText?: string;
+  /** 悬停在添加按钮上时的说明 */
+  tip?: string;
+  placeholder?: string;
   value?: string[];
   onChange?: (tags: string[]) => void;
 }
 
 export function DynamicTags(props: DynamicTagsProps) {
-  const { newTagText = 'New Tag', value = [], onChange } = props;
+  const { newTagText = 'New Tag', tip, placeholder = newTagText, value = [], onChange } = props;
+  const inputWidth = props.placeholder ? 'w-[220px]' : 'min-w-[80px]';
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [editInputIndex, setEditInputIndex] = useState(-1);
@@ -94,24 +98,27 @@ export function DynamicTags(props: DynamicTagsProps) {
         <Input
           ref={inputRef}
           size='small'
-          className='min-w-[80px]'
-          placeholder={newTagText}
+          className={inputWidth}
+          placeholder={placeholder}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onBlur={confirmInput}
           onPressEnter={confirmInput}
         />
       ) : (
-        <Tag className='cursor-pointer' onClick={() => setInputVisible(true)}>
-          <PlusOutlined /> {newTagText}
-        </Tag>
+        <Tooltip title={tip}>
+          <Tag className='cursor-pointer' onClick={() => setInputVisible(true)}>
+            <PlusOutlined /> {newTagText}
+          </Tag>
+        </Tooltip>
       )}
     </Space>
   );
 }
 
 export function DynamicTagsTrigger(props: DynamicTagsProps) {
-  const { newTagText = 'New Tag', value = [], onChange } = props;
+  const { newTagText = 'New Tag', tip, placeholder = newTagText, value = [], onChange } = props;
+  const inputWidth = props.placeholder ? 'w-[220px]' : 'min-w-[80px]';
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<InputRef>(null);
@@ -132,8 +139,8 @@ export function DynamicTagsTrigger(props: DynamicTagsProps) {
     return (
       <Input
         ref={inputRef}
-        className='min-w-[80px]'
-        placeholder={newTagText}
+        className={inputWidth}
+        placeholder={placeholder}
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onBlur={confirmInput}
@@ -142,9 +149,11 @@ export function DynamicTagsTrigger(props: DynamicTagsProps) {
     );
   }
   return (
-    <Button onClick={() => setInputVisible(true)} icon={<PlusOutlined />}>
-      {newTagText}
-    </Button>
+    <Tooltip title={tip}>
+      <Button onClick={() => setInputVisible(true)} icon={<PlusOutlined />}>
+        {newTagText}
+      </Button>
+    </Tooltip>
   );
 }
 
