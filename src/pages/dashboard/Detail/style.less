@@ -7,11 +7,14 @@
 .dashboard-detail-header {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   padding: 10px 10px 10px 10px;
 
   &-left {
     display: flex;
     align-items: center;
+    max-width: 100%;
 
     .back_icon {
       font-size: 14px;
@@ -37,9 +40,11 @@
 
   &-right {
     display: flex;
+    flex-shrink: 0;
+    margin-left: auto;
     height: 32px;
 
-    &>button {
+    & > button {
       margin-right: 10px;
     }
   }
@@ -96,7 +101,7 @@
 
   .ant-affix {
     .dashboard-detail-content-header-container {
-      box-shadow: 0 4px 4px rgba(0, 0, 0, .12);
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.12);
     }
   }
 
@@ -120,7 +125,7 @@
     .ant-tooltip-inner {
       a {
         color: #fff;
-        text-decoration: underline
+        text-decoration: underline;
       }
     }
   }
@@ -156,9 +161,9 @@
     }
   }
 
-  .react-grid-item>.react-resizable-handle::after {
-    border-right: 2px solid #E3E4E6;
-    border-bottom: 2px solid #E3E4E6;
+  .react-grid-item > .react-resizable-handle::after {
+    border-right: 2px solid #e3e4e6;
+    border-bottom: 2px solid #e3e4e6;
   }
 
   .scroll-container {
@@ -176,7 +181,6 @@
         border-radius: 10px;
         box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
         background: rgba(0, 0, 0, 0.5);
-        ;
       }
 
       .ant-table-body::-webkit-scrollbar-track {

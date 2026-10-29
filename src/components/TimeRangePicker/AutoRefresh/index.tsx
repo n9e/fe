@@ -40,6 +40,12 @@ export const GRAFANA_REFRESH_OPTIONS = {
 };
 
 interface IProps {
+  /** The whole control group keeps this edge fixed while the label expands. */
+  align?: 'start' | 'end';
+  mode?: 'live' | 'settings';
+  before?: React.ReactNode;
+  after?: React.ReactNode;
+  style?: React.CSSProperties;
   disabled?: boolean;
   tooltip?: React.ReactNode;
   intervalTooltip?: React.ReactNode;
@@ -54,12 +60,13 @@ interface IProps {
 function Refresh(props: IProps, ref) {
   const { t } = useTranslation('timePickerInteraction');
   const scopeLoading = useRefreshLoading();
+  const settings = props.mode === 'settings';
   const [pending, setPending] = useState(false);
-  const busy = !!props.loading || scopeLoading || pending;
+  const busy = !settings && (!!props.loading || scopeLoading || pending);
   // Keep brief responses readable without delaying queries or changing their cadence.
   const [feedback, setFeedback] = useState(false);
   const feedbackStarted = useRef<number>();
-  const displayBusy = busy || feedback;
+  const displayBusy = !settings && (busy || feedback);
   useEffect(() => {
     if (busy) {
       if (feedbackStarted.current === undefined) feedbackStarted.current = Date.now();
@@ -97,7 +104,7 @@ function Refresh(props: IProps, ref) {
   }, []);
 
   const refresh = useCallback(async () => {
-    if (current.current.disabled || current.current.busy || inFlight.current) return;
+    if (current.current.mode === 'settings' || current.current.disabled || current.current.busy || inFlight.current) return;
     inFlight.current = true;
     if (feedbackStarted.current === undefined) feedbackStarted.current = Date.now();
     setFeedback(true);
@@ -116,7 +123,7 @@ function Refresh(props: IProps, ref) {
   }, []);
 
   useEffect(() => {
-    if (!intervalSeconds || props.disabled || busy) return;
+    if (settings || !intervalSeconds || props.disabled || busy) return;
     let stopped = false;
     let timer: ReturnType<typeof setTimeout>;
     const schedule = () => {
@@ -130,7 +137,7 @@ function Refresh(props: IProps, ref) {
       stopped = true;
       clearTimeout(timer);
     };
-  }, [intervalSeconds, props.disabled, busy, refresh]);
+  }, [intervalSeconds, props.disabled, busy, refresh, settings]);
 
   useEffect(() => {
     setIntervalSeconds(props.intervalSeconds ?? intervalSecondsCache);
@@ -144,21 +151,33 @@ function Refresh(props: IProps, ref) {
   }));
 
   return (
-    <div className='auto-refresh-container'>
-      <Tooltip title={displayBusy ? t('refreshing') : props.tooltip || t('refresh')}>
-        <Button
-          className={`auto-refresh-button${displayBusy ? ' auto-refresh-button--updating' : ''}`}
-          aria-label={displayBusy ? t('refreshing') : t('refresh')}
-          aria-busy={busy}
-          disabled={props.disabled || displayBusy}
-          icon={<SyncOutlined className={displayBusy ? 'rotate-icon' : ''} />}
-          onClick={refresh}
-        >
-          <span className='auto-refresh-label' aria-hidden='true'>
-            <span>{t('refreshing')}</span>
+    <div
+      className={`auto-refresh-container auto-refresh-container--${props.align || 'end'}${settings ? ' auto-refresh-container--settings' : ''}${
+        displayBusy ? ' auto-refresh-container--updating' : ''
+      }`}
+      style={props.style}
+    >
+      {props.before && <span className='auto-refresh-adjacent auto-refresh-adjacent--before'>{props.before}</span>}
+      {!settings && (
+        <Tooltip title={displayBusy ? t('refreshing') : props.tooltip || t('refresh')}>
+          <span className='auto-refresh-trigger'>
+            <Button
+              className={`auto-refresh-button${displayBusy ? ' auto-refresh-button--updating' : ''}`}
+              aria-label={displayBusy ? t('refreshing') : t('refresh')}
+              aria-busy={busy}
+              disabled={props.disabled || displayBusy}
+              onClick={refresh}
+            >
+              <SyncOutlined className={displayBusy ? 'rotate-icon' : ''} />
+              <span className='auto-refresh-label' aria-hidden='true'>
+                <span>
+                  <span>{t('refreshing')}</span>
+                </span>
+              </span>
+            </Button>
           </span>
-        </Button>
-      </Tooltip>
+        </Tooltip>
+      )}
       <Tooltip
         overlayStyle={{ maxWidth: 320, pointerEvents: 'none' }}
         title={props.intervalTooltip}
@@ -167,7 +186,7 @@ function Refresh(props: IProps, ref) {
         transitionName=''
         destroyTooltipOnHide
       >
-        <span>
+        <span className='auto-refresh-interval'>
           <Dropdown
             disabled={props.disabled}
             trigger={['click']}
@@ -205,6 +224,14 @@ function Refresh(props: IProps, ref) {
           </Dropdown>
         </span>
       </Tooltip>
+      {props.after && <span className='auto-refresh-adjacent auto-refresh-adjacent--after'>{props.after}</span>}
+      {!settings && (
+        <span className='auto-refresh-reserve' aria-hidden='true'>
+          <span>
+            <span>{t('refreshing')}</span>
+          </span>
+        </span>
+      )}
     </div>
   );
 }

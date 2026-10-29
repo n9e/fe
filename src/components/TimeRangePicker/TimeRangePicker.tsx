@@ -27,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { InternalTimeZones } from '@/utils/datetime/types';
 import { getTimeZoneInfo } from '@/utils/datetime/timezones';
 
-import { isValid, describeTimeRange, valueAsString, isMathString, parseRange } from './utils';
+import { isValid, describeTimeRange, valueAsString, isMathString, parseRange, getRangeError } from './utils';
 import { IRawTimeRange, ITimeRangePickerProps } from './types';
 import { rangeOptions } from './config';
 import TimeZonePicker from './TimeZonePicker';
@@ -47,11 +47,11 @@ const getAbsoluteHistoryCache = () => {
   }
   return [];
 };
-const setAbsoluteHistoryCache = (range, dateFormat) => {
+const setAbsoluteHistoryCache = (range) => {
   const absoluteHistoryCache = getAbsoluteHistoryCache();
   const rangeClone = _.cloneDeep(range);
-  rangeClone.start = valueAsString(rangeClone.start, dateFormat);
-  rangeClone.end = valueAsString(rangeClone.end, dateFormat);
+  rangeClone.start = valueAsString(rangeClone.start, 'YYYY-MM-DD HH:mm:ss.SSS');
+  rangeClone.end = valueAsString(rangeClone.end, 'YYYY-MM-DD HH:mm:ss.SSS');
   const newAbsoluteHistoryCache = _.unionWith([rangeClone, ...absoluteHistoryCache], _.isEqual).slice(0, 4);
   try {
     const cacheStr = JSON.stringify(newAbsoluteHistoryCache);
@@ -107,7 +107,11 @@ export default function index(props: ITimeRangePickerProps) {
   const changeVisible = (next: boolean) => {
     if (disabled && next) return;
     if (next) {
-      setRange(value ? _.cloneDeep(value) : undefined);
+      setRange(
+        value
+          ? { ..._.cloneDeep(value), start: isMathString(value.start) ? value.start : moment(value.start), end: isMathString(value.end) ? value.end : moment(value.end) }
+          : undefined,
+      );
       setRangeStatus({});
       setSelecting(false);
       setSearchValue('');
@@ -131,9 +135,9 @@ export default function index(props: ITimeRangePickerProps) {
     return () => document.removeEventListener('keydown', closeOnEscape, true);
   }, [visible, calendarBound]);
 
-  const exceedHourLimit = limitHour && range ? moment().diff(moment(parseRange(range).start), 'hour') > limitHour : false;
+  const hasLookbackLimit = !!limitHour && Number.isFinite(limitHour) && limitHour > 0;
 
-  let remainingSeconds = Math.round((limitHour || 0) * 3600);
+  let remainingSeconds = Math.round((hasLookbackLimit ? limitHour! : 0) * 3600);
   const limitDuration = (
     [
       ['limitDays', 86400],
@@ -152,16 +156,22 @@ export default function index(props: ITimeRangePickerProps) {
   const limitHint = interactionT('rangeLimit', { duration: limitDuration });
 
   const inputFormat = showMillisecond ? 'YYYY-MM-DD HH:mm:ss.SSS' : showSecond ? 'YYYY-MM-DD HH:mm:ss' : dateFormat;
-  const invalidRange = !range?.start || !range?.end || !isValid(range.start) || !isValid(range.end);
+  const rangeError = getRangeError(range, limitHour);
+  const errorHint = (error: ReturnType<typeof getRangeError>) =>
+    error === 'lookback' ? limitHint : error === 'future' ? interactionT('futureTime') : error === 'reversed' ? t('start_gt_end_tip') : undefined;
+  const hint = errorHint(rangeError) || (hasLookbackLimit ? limitHint : undefined);
 
-  const startLargeThenEnd =
-    rangeStatus.start !== 'invalid' &&
-    rangeStatus.end !== 'invalid' &&
-    range &&
-    range.start &&
-    range.end &&
-    parseRange(range as IRawTimeRange).start &&
-    parseRange(range as IRawTimeRange).start!.isAfter(parseRange(range as IRawTimeRange).end);
+  // Revalidate on click as an absolute range can expire while the editor remains open.
+  const applyRange = (next: IRawTimeRange | undefined, cacheFormat?: string) => {
+    setRange(next ? { ...next } : undefined);
+    if (!next || getRangeError(next, limitHour)) return;
+    onChange({
+      start: isMathString(next.start) ? next.start : moment(next.start),
+      end: isMathString(next.end) ? next.end : moment(next.end),
+    });
+    if (cacheFormat) setAbsoluteHistoryCache(next);
+    changeVisible(false);
+  };
 
   return (
     <>
@@ -238,24 +248,10 @@ export default function index(props: ITimeRangePickerProps) {
                     ))}
                     <div>
                       <Space>
-                        <Button
-                          type='primary'
-                          onClick={() => {
-                            if (rangeStatus.start !== 'invalid' && rangeStatus.end !== 'invalid') {
-                              onChange({
-                                start: isMathString(range!.start) ? range!.start : moment(range!.start),
-                                end: isMathString(range!.end) ? range!.end : moment(range!.end),
-                              });
-                              setAbsoluteHistoryCache(range as IRawTimeRange, inputFormat);
-                              changeVisible(false);
-                            }
-                          }}
-                          disabled={!!exceedHourLimit || !!startLargeThenEnd || invalidRange || selecting}
-                          title={exceedHourLimit ? limitHint : startLargeThenEnd ? t('start_gt_end_tip') : undefined}
-                        >
+                        <Button type='primary' onClick={() => applyRange(range, inputFormat)} disabled={!!rangeError || selecting} title={errorHint(rangeError)}>
                           {interactionT('apply')}
                         </Button>
-                        {limitHour && <span>{limitHint} </span>}
+                        {hint && <span role={rangeError && rangeError !== 'invalid' ? 'alert' : undefined}>{hint}</span>}
                       </Space>
                     </div>
                     <div className='flashcat-timeRangePicker-absolute-history'>
@@ -265,7 +261,7 @@ export default function index(props: ITimeRangePickerProps) {
                       <ul>
                         {_.map(
                           _.filter(absoluteHistoryCache, (item) => {
-                            return item?.start && item?.end;
+                            return item?.start && item?.end && isValid(item.start) && isValid(item.end);
                           }),
                           (range, idx) => {
                             const newValue = {
@@ -273,8 +269,8 @@ export default function index(props: ITimeRangePickerProps) {
                               end: isMathString(range.end) ? range.end : moment(range.end),
                             };
                             const resolved = parseRange(newValue);
-                            const exceedHourLimit = limitHour ? moment().diff(moment(resolved.start), 'hour') > limitHour : false;
-                            const seconds = Math.max(0, Math.round(resolved.end!.diff(resolved.start, 'seconds', true)));
+                            const historyError = getRangeError(newValue, limitHour);
+                            const seconds = resolved.start?.isValid() && resolved.end?.isValid() ? Math.max(0, Math.round(resolved.end.diff(resolved.start, 'seconds', true))) : 0;
                             const minutes = Math.round(seconds / 60);
                             const hours = Math.round(seconds / 3600);
                             const duration: [string, number] =
@@ -290,14 +286,10 @@ export default function index(props: ITimeRangePickerProps) {
                                 <button
                                   type='button'
                                   className='fc-time-history-item'
-                                  disabled={!!exceedHourLimit}
-                                  title={exceedHourLimit ? limitHint : describeTimeRange(range, inputFormat)}
+                                  disabled={!!historyError}
+                                  title={errorHint(historyError) || describeTimeRange(range, inputFormat)}
                                   aria-label={`${interactionT('recentRanges')}: ${describeTimeRange(range, inputFormat)}`}
-                                  onClick={() => {
-                                    setRange(newValue);
-                                    onChange(newValue);
-                                    changeVisible(false);
-                                  }}
+                                  onClick={() => applyRange(newValue)}
                                 >
                                   <span className='fc-time-history-item__value'>
                                     {isMathString(range.start) || isMathString(range.end) ? (
@@ -305,7 +297,7 @@ export default function index(props: ITimeRangePickerProps) {
                                     ) : (
                                       <>
                                         <span className='fc-time-history-item__duration'>{interactionT(duration[0], { value: duration[1] })} ～ </span>
-                                        <span>{valueAsString(newValue.end, seconds < 60 ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm')}</span>
+                                        <span>{valueAsString(newValue.end, inputFormat)}</span>
                                       </>
                                     )}
                                   </span>
@@ -333,18 +325,7 @@ export default function index(props: ITimeRangePickerProps) {
                       {_.map(
                         _.filter(ajustTimeOptions ? ajustTimeOptions(rangeOptions) : rangeOptions, (item) => {
                           const display = t(`rangeOptions.${item.display}`);
-                          const exceedHourLimit = limitHour
-                            ? moment().diff(
-                                moment(
-                                  parseRange({
-                                    start: item.start,
-                                    end: item.end,
-                                  }).start,
-                                ),
-                                'hour',
-                              ) > limitHour
-                            : false;
-                          return display.toLowerCase().includes(searchValue.toLowerCase()) && !exceedHourLimit;
+                          return display.toLowerCase().includes(searchValue.toLowerCase()) && !getRangeError(item, limitHour);
                         }),
                         (item) => {
                           return (
@@ -358,10 +339,7 @@ export default function index(props: ITimeRangePickerProps) {
                                   start: item.start,
                                   end: item.end,
                                 };
-                                setRange(newValue);
-                                onChange(newValue);
-                                changeVisible(false);
-                                setAbsoluteHistoryCache(newValue, dateFormat);
+                                applyRange(newValue, dateFormat);
                               }}
                             >
                               {t(`rangeOptions.${item.display}`)}
@@ -394,6 +372,7 @@ export default function index(props: ITimeRangePickerProps) {
               value={value}
               resolvedRange={resolvedSnapshot as IRawTimeRange}
               timezone={timezone}
+              showSecond={inputFormat.includes('ss')}
               showMillisecond={showMillisecond}
               extra={props.timeRangeTooltip}
             />

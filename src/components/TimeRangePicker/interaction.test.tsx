@@ -178,6 +178,7 @@ it('allows manual bounds after an unfinished calendar selection', () => {
 });
 
 it('opens the calendar from either input and Escape closes only the calendar first', () => {
+  jest.useFakeTimers().setSystemTime(new Date('2026-11-10T04:00:00Z'));
   const onChange = jest.fn();
   render(<Picker value={{ start: moment('2026-10-01'), end: moment('2026-11-02') }} onChange={onChange} />);
   fireEvent.click(document.querySelector('.flashcat-timeRangePicker-target')!);
@@ -324,4 +325,65 @@ it('suppresses point summaries while the external range editor is open without l
     jest.advanceTimersByTime(200);
   });
   expect(screen.getByRole('tooltip')).toBeInTheDocument();
+});
+
+it('preserves the button and tooltip trigger across loading states without accepting duplicate refreshes', async () => {
+  jest.useFakeTimers();
+  let finish!: () => void;
+  const refresh = jest.fn(
+    () =>
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      }),
+  );
+  render(<AutoRefresh onRefresh={refresh} />);
+  const button = screen.getByRole('button', { name: 'refresh' });
+  const trigger = button.parentElement!;
+  fireEvent.click(button);
+  expect(screen.getByRole('button', { name: 'refreshing' })).toBe(button);
+  expect(button.parentElement).toBe(trigger);
+  expect(button).toHaveClass('auto-refresh-button--updating');
+  expect(button).toBeDisabled();
+  fireEvent.click(button);
+  expect(refresh).toHaveBeenCalledTimes(1);
+  fireEvent.mouseEnter(trigger);
+  act(() => {
+    jest.advanceTimersByTime(200);
+  });
+  expect(screen.getByRole('tooltip')).toHaveTextContent('refreshing');
+  await act(async () => {
+    finish();
+  });
+  act(() => {
+    jest.advanceTimersByTime(600);
+  });
+  expect(screen.getByRole('button', { name: 'refresh' })).toBe(button);
+  expect(button.parentElement).toBe(trigger);
+  expect(button).toBeEnabled();
+  expect(button).not.toHaveClass('auto-refresh-button--updating');
+});
+
+it('edits a configured frequency without starting queries or inheriting a page loading state', async () => {
+  jest.useFakeTimers();
+  const refresh = jest.fn();
+  const onIntervalSecondsChange = jest.fn();
+  const { rerender } = render(<AutoRefresh mode='settings' loading intervalSeconds={5} onRefresh={refresh} onIntervalSecondsChange={onIntervalSecondsChange} />);
+  expect(screen.queryByRole('button', { name: 'refreshing' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'refresh' })).toBeNull();
+  await act(async () => {
+    jest.advanceTimersByTime(15000);
+  });
+  expect(refresh).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: /5s/ }));
+  fireEvent.click(screen.getByRole('menuitem', { name: '10s' }));
+  expect(onIntervalSecondsChange).toHaveBeenCalledWith(10);
+  await act(async () => {
+    jest.advanceTimersByTime(20000);
+  });
+  expect(refresh).not.toHaveBeenCalled();
+  rerender(<AutoRefresh mode='live' intervalSeconds={10} onRefresh={refresh} />);
+  await act(async () => {
+    jest.advanceTimersByTime(10000);
+  });
+  expect(refresh).toHaveBeenCalledTimes(1);
 });

@@ -24,7 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Space, Dropdown, Menu, Input, Modal, message, Tooltip } from 'antd';
 import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined, ShareAltOutlined } from '@ant-design/icons';
 
-import { TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
+import { RefreshToolbar, TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import { GRAFANA_REFRESH_OPTIONS } from '@/components/TimeRangePicker/AutoRefresh';
 import { CommonStateContext } from '@/App';
 import { IS_ENT } from '@/utils/constant';
@@ -319,156 +319,158 @@ export default function Title(props: IProps) {
         </div>
 
         <div className='dashboard-detail-header-right'>
-          <Space>
-            {headerLeadingActions}
-            {isAuthorized && dashboardSaveMode === 'manual' && hasUnsavedChanges && (
-              <Button
-                type={allowedLeave ? 'default' : 'primary'}
-                onClick={() => {
-                  if (editable) {
-                    updateDashboard(dashboard.id, {
-                      name: dashboard.name,
-                      ident: dashboard.ident,
-                      tags: dashboard.tags,
-                      note: dashboard.note,
-                    });
-                    updateDashboardConfigs(dashboard.id, {
-                      configs: JSON.stringify(dashboard.configs),
-                    }).then((res) => {
-                      updateAtRef.current = res.update_at;
-                      message.success(t('detail.saved'));
-                      setHasUnsavedChanges(false);
-                      setAllowedLeave(true);
-                    });
-                  } else {
-                    message.warning(t('detail.expired'));
-                  }
-                }}
-              >
-                {t('settings.save')}
-              </Button>
-            )}
-            {!dashboard.configs ? null : dashboard.configs.mode !== 'iframe' ? (
-              <>
-                {isAuthorized && (
-                  <Dropdown
-                    trigger={['click']}
-                    overlay={
-                      <Menu
-                        items={_.map(_.concat([{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => ({
-                          key: item.type,
-                          label: (
-                            <Space align='center' style={{ lineHeight: 1 }}>
-                              {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
-                              {t(`visualizations.${item.type}`)}
-                            </Space>
-                          ),
-                          onClick: () => {
-                            if (item.type === 'importPanel') {
-                              void openImportPanelModal();
+          <RefreshToolbar>
+            <Space>
+              {headerLeadingActions}
+              {isAuthorized && dashboardSaveMode === 'manual' && hasUnsavedChanges && (
+                <Button
+                  type={allowedLeave ? 'default' : 'primary'}
+                  onClick={() => {
+                    if (editable) {
+                      updateDashboard(dashboard.id, {
+                        name: dashboard.name,
+                        ident: dashboard.ident,
+                        tags: dashboard.tags,
+                        note: dashboard.note,
+                      });
+                      updateDashboardConfigs(dashboard.id, {
+                        configs: JSON.stringify(dashboard.configs),
+                      }).then((res) => {
+                        updateAtRef.current = res.update_at;
+                        message.success(t('detail.saved'));
+                        setHasUnsavedChanges(false);
+                        setAllowedLeave(true);
+                      });
+                    } else {
+                      message.warning(t('detail.expired'));
+                    }
+                  }}
+                >
+                  {t('settings.save')}
+                </Button>
+              )}
+              {!dashboard.configs ? null : dashboard.configs.mode !== 'iframe' ? (
+                <>
+                  {isAuthorized && (
+                    <Dropdown
+                      trigger={['click']}
+                      overlay={
+                        <Menu
+                          items={_.map(_.concat([{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => ({
+                            key: item.type,
+                            label: (
+                              <Space align='center' style={{ lineHeight: 1 }}>
+                                {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
+                                {t(`visualizations.${item.type}`)}
+                              </Space>
+                            ),
+                            onClick: () => {
+                              if (item.type === 'importPanel') {
+                                void openImportPanelModal();
+                              } else {
+                                onAddPanel(item.type);
+                              }
+                            },
+                          }))}
+                        />
+                      }
+                    >
+                      <Button type='primary' ghost icon={<AddPanelIcon />}>
+                        {t('add_panel')}
+                      </Button>
+                    </Dropdown>
+                  )}
+                  {timeRangePicker}
+
+                  {isAuthorized && (
+                    <Button
+                      icon={<SettingOutlined />}
+                      onClick={() => {
+                        FormModal({
+                          action: 'edit',
+                          initialValues: dashboard,
+                          dashboardSaveMode,
+                          onOk: (values) => {
+                            if (dashboardSaveMode === 'manual') {
+                              const dashboardConfigs = {
+                                ...dashboard.configs,
+                                graphTooltip: values.graphTooltip,
+                                graphZoom: values.graphZoom,
+                              };
+                              handleUpdateDashboardConfigs(dashboard.id, {
+                                name: values.name,
+                                ident: values.ident,
+                                tags: _.join(values.tags, ' '),
+                                note: values.note,
+                                configs: JSON.stringify(dashboardConfigs),
+                              });
                             } else {
-                              onAddPanel(item.type);
+                              window.location.reload();
                             }
                           },
-                        }))}
-                      />
-                    }
-                  >
-                    <Button type='primary' ghost icon={<AddPanelIcon />}>
-                      {t('add_panel')}
-                    </Button>
-                  </Dropdown>
-                )}
-                {timeRangePicker}
-
-                {isAuthorized && (
-                  <Button
-                    icon={<SettingOutlined />}
-                    onClick={() => {
-                      FormModal({
-                        action: 'edit',
-                        initialValues: dashboard,
-                        dashboardSaveMode,
-                        onOk: (values) => {
-                          if (dashboardSaveMode === 'manual') {
-                            const dashboardConfigs = {
-                              ...dashboard.configs,
-                              graphTooltip: values.graphTooltip,
-                              graphZoom: values.graphZoom,
-                            };
-                            handleUpdateDashboardConfigs(dashboard.id, {
-                              name: values.name,
-                              ident: values.ident,
-                              tags: _.join(values.tags, ' '),
-                              note: values.note,
-                              configs: JSON.stringify(dashboardConfigs),
-                            });
-                          } else {
+                        });
+                      }}
+                    />
+                  )}
+                  <DashboardLinks
+                    editable={isAuthorized}
+                    value={dashboardLinks}
+                    onChange={(v) => {
+                      const dashboardConfigs = {
+                        ...dashboard.configs,
+                        links: v,
+                      };
+                      handleUpdateDashboardConfigs(dashboard.id, {
+                        ...dashboard,
+                        configs: JSON.stringify(dashboardConfigs),
+                      });
+                      setDashboardLinks(v);
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  {dashboard.configs?.showTimePicker === true && timeRangePicker}
+                  {isAuthorized && (
+                    <Button
+                      icon={<SettingOutlined />}
+                      onClick={() => {
+                        ImportGrafanaURLFormModal({
+                          initialValues: dashboard,
+                          onOk: () => {
                             window.location.reload();
-                          }
-                        },
-                      });
-                    }}
-                  />
-                )}
-                <DashboardLinks
-                  editable={isAuthorized}
-                  value={dashboardLinks}
-                  onChange={(v) => {
-                    const dashboardConfigs = {
-                      ...dashboard.configs,
-                      links: v,
-                    };
-                    handleUpdateDashboardConfigs(dashboard.id, {
-                      ...dashboard,
-                      configs: JSON.stringify(dashboardConfigs),
-                    });
-                    setDashboardLinks(v);
-                  }}
-                />
-              </>
-            ) : (
-              <>
-                {dashboard.configs?.showTimePicker === true && timeRangePicker}
-                {isAuthorized && (
-                  <Button
-                    icon={<SettingOutlined />}
-                    onClick={() => {
-                      ImportGrafanaURLFormModal({
-                        initialValues: dashboard,
-                        onOk: () => {
-                          window.location.reload();
-                        },
-                      });
-                    }}
-                  />
-                )}
-              </>
-            )}
-            {/* 必须带 isAuthorized：签发一条匿名链接比改看板更敏感，而 __public__
+                          },
+                        });
+                      }}
+                    />
+                  )}
+                </>
+              )}
+              {/* 必须带 isAuthorized：签发一条匿名链接比改看板更敏感，而 __public__
                 只在从列表页「公开」页签跳转时才写进 URL——直接用 /dashboards/<id>
                 打开公开看板时它不存在，非业务组成员照样会看到按钮，点开必然 403 */}
-            {isAuthorized && !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id && (
-              <Tooltip title={t('sharing_link.title')}>
-                <Button
-                  icon={<ShareAltOutlined />}
-                  onClick={() => {
-                    SharingLinkModal({ boardId: dashboard.id });
-                  }}
-                />
+              {isAuthorized && !isPreview && !isBuiltin && __public__ !== 'true' && !!dashboard.id && (
+                <Tooltip title={t('sharing_link.title')}>
+                  <Button
+                    icon={<ShareAltOutlined />}
+                    onClick={() => {
+                      SharingLinkModal({ boardId: dashboard.id });
+                    }}
+                  />
+                </Tooltip>
+              )}
+              <Tooltip
+                title={
+                  <>
+                    {dashboard.configs?.mode === 'iframe' && <div className='mb-2'>{t('embeddedDashboards:exitFullScreen_tip')}</div>}
+                    {fullscreenParametersTooltip}
+                  </>
+                }
+              >
+                <Button onClick={onToggleFullscreen} icon={<FullscreenOutlined />} />
               </Tooltip>
-            )}
-            <Tooltip
-              title={
-                <>
-                  {dashboard.configs?.mode === 'iframe' && <div className='mb-2'>{t('embeddedDashboards:exitFullScreen_tip')}</div>}
-                  {fullscreenParametersTooltip}
-                </>
-              }
-            >
-              <Button onClick={onToggleFullscreen} icon={<FullscreenOutlined />} />
-            </Tooltip>
-          </Space>
+            </Space>
+          </RefreshToolbar>
         </div>
       </div>
       <Modal
