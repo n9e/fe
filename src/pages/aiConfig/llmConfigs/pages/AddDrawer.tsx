@@ -36,6 +36,18 @@ export default function AddDrawer(props: Props) {
       onClose={onClose}
       footer={
         <Space>
+          <Button
+            type='primary'
+            onClick={() => {
+              form.validateFields().then((values) => {
+                postItem(adjustSubmitValues(values)).then(() => {
+                  onOk();
+                });
+              });
+            }}
+          >
+            {t('common:btn.ok')}
+          </Button>
           <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
           <Button
             loading={testLoading}
@@ -72,18 +84,6 @@ export default function AddDrawer(props: Props) {
             }}
           >
             {t('form.test_connection')}
-          </Button>
-          <Button
-            type='primary'
-            onClick={() => {
-              form.validateFields().then((values) => {
-                postItem(adjustSubmitValues(values)).then(() => {
-                  onOk();
-                });
-              });
-            }}
-          >
-            {t('common:btn.save')}
           </Button>
         </Space>
       }

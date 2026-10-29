@@ -17,7 +17,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { Drawer, Button, Form, Input, Row, Col, Table, Select, Switch, Modal, message } from 'antd';
+import { Drawer, Button, Form, Input, Row, Col, Table, Select, Switch, Modal, message, Space } from 'antd';
 import { useDebounceFn } from 'ahooks';
 import ModalHOC, { ModalWrapProps } from '@/components/ModalHOC';
 import { getFullIndices, getFullFields } from '@/pages/explorer/Elasticsearch/services';
@@ -112,38 +112,44 @@ function FormModal(props: Props & ModalWrapProps) {
     }
   }, [visible]);
 
+  const handleClose = () => {
+    const values = form.getFieldsValue();
+    let changed = false;
+    if (mode === 'edit') {
+      _.forEach(Object.keys(values), (key) => {
+        if (!_.isEqual(values[key], initialValues[key])) {
+          changed = true;
+          return false;
+        }
+      });
+    } else if (mode === 'create') {
+      changed = !_.isEmpty(_.omitBy(values, (v) => v === undefined || v === ''));
+    }
+    if (changed) {
+      Modal.confirm({
+        title: t('common:confirm.close_without_saving'),
+        onOk: destroy,
+      });
+    } else {
+      destroy();
+    }
+  };
+
   return (
     <Drawer
       width={1000}
       destroyOnClose
       title={t(`${mode}_title`)}
       visible={visible}
-      onClose={() => {
-        const values = form.getFieldsValue();
-        let changed = false;
-        if (mode === 'edit') {
-          _.forEach(Object.keys(values), (key) => {
-            if (!_.isEqual(values[key], initialValues[key])) {
-              changed = true;
-              return false;
-            }
-          });
-        } else if (mode === 'create') {
-          if (!_.isEmpty(_.omitBy(values, (v) => v === undefined || v === ''))) {
-            changed = true;
-          }
-        }
-        if (changed) {
-          Modal.confirm({
-            title: t('common:confirm.close_without_saving'),
-            onOk() {
-              destroy();
-            },
-          });
-        } else {
-          destroy();
-        }
-      }}
+      onClose={handleClose}
+      footer={
+        <Space>
+          <Button type='primary' onClick={() => form.submit()}>
+            {t('common:btn.ok')}
+          </Button>
+          <Button onClick={handleClose}>{t('common:btn.cancel')}</Button>
+        </Space>
+      }
       className='n9e-antd-drawer'
     >
       <Row gutter={32}>
@@ -257,12 +263,6 @@ function FormModal(props: Props & ModalWrapProps) {
             </Form.Item>
             <Form.Item name='note' label={t('common:table.note')}>
               <Input.TextArea />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type='primary' htmlType='submit'>
-                {mode === 'create' ? t('common:btn.create') : t('common:btn.save')}
-              </Button>
             </Form.Item>
           </Form>
         </Col>
