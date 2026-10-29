@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Button, Drawer, Empty, Modal, Space, Switch, Table, Tag, Tooltip, message } from 'antd';
 import { CloseOutlined, EyeInvisibleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import {
   LOG_INDEX_FIELD,
   LOG_SEQ_FIELD,
   LOG_STREAM_ID_FIELD,
+  detectSourceFields,
   getLogOrderAnchor,
   logGeneration,
   matchesAllKeywords,
@@ -33,8 +34,6 @@ interface Props {
 
 // 与 SLS 上下文每次取的行数一致
 const STEP_LINES = 30;
-// 采集端写入的来源字段，作为上下文的来源标签展示
-const SOURCE_FIELDS = ['agent_hostname', 'fcsource'];
 
 type Direction = 'back' | 'forward';
 
@@ -116,6 +115,9 @@ export default function LogOrderContext(props: Props) {
 
   const hiddenFields = [LOG_INDEX_FIELD, LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD, timeField];
   const rows = page?.logs || [];
+  // 来源标签不挡首屏：日志先渲染，空闲时再识别
+  const deferredRows = useDeferredValue(rows);
+  const sourceFields = useMemo(() => detectSourceFields(deferredRows, hiddenFields), [deferredRows]);
   const availableFields = useMemo(() => _.sortBy(_.uniq(_.flatMap(rows, (row) => _.keys(_.omit(row, hiddenFields))))), [page]);
   const filteredRows = useMemo(() => {
     if (_.isEmpty(filterKeywords)) return rows;
@@ -212,12 +214,17 @@ export default function LogOrderContext(props: Props) {
             {limited && <Alert className='mb-2' type='info' showIcon message={t(limited === 'back' ? 'log_order_context.no_more_before' : 'log_order_context.no_more_after')} />}
             <Space wrap>
               <Space size={2}>
-                <Button loading={loading === 'back'} disabled={!!loading || !page?.has_back} onClick={() => loadMore('back')}>
-                  <Space size={2}>
-                    <LeftOutlined />
-                    {t('log_order_context.earlier')}
-                  </Space>
-                </Button>
+                {/* 禁用的按钮收不到鼠标事件，包一层 span 才能在置灰时也显示原因 */}
+                <Tooltip title={t(page?.has_back ? 'log_order_context.earlier_tip' : 'log_order_context.earlier_disabled_tip', { n: STEP_LINES })}>
+                  <span>
+                    <Button loading={loading === 'back'} disabled={!!loading || !page?.has_back} onClick={() => loadMore('back')}>
+                      <Space size={2}>
+                        <LeftOutlined />
+                        {t('log_order_context.earlier')}
+                      </Space>
+                    </Button>
+                  </span>
+                </Tooltip>
                 <Button
                   disabled={rows.length === 0}
                   onClick={() => {
@@ -229,12 +236,16 @@ export default function LogOrderContext(props: Props) {
                 >
                   {t('log_order_context.back_to_anchor')}
                 </Button>
-                <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
-                  <Space size={0}>
-                    {t('log_order_context.later')}
-                    <RightOutlined />
-                  </Space>
-                </Button>
+                <Tooltip title={t(page?.has_forward ? 'log_order_context.later_tip' : 'log_order_context.later_disabled_tip', { n: STEP_LINES })}>
+                  <span>
+                    <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
+                      <Space size={0}>
+                        {t('log_order_context.later')}
+                        <RightOutlined />
+                      </Space>
+                    </Button>
+                  </span>
+                </Tooltip>
               </Space>
               <Button onClick={() => setOrganizeDraft(organizeFields)}>
                 <Space>
@@ -303,14 +314,11 @@ export default function LogOrderContext(props: Props) {
             )}
             <div className='mt-2'>
               <Space wrap size={[4, 4]}>
-                {_.map(
-                  _.filter(SOURCE_FIELDS, (field) => log?.[field]),
-                  (field) => (
-                    <Tag key={field}>
-                      {field}={log?.[field]}
-                    </Tag>
-                  ),
-                )}
+                {_.map(sourceFields, ([field, value]) => (
+                  <Tag key={field}>
+                    {field}={value}
+                  </Tag>
+                ))}
                 <Tooltip title={t('log_order_context.stream_tip')}>
                   <Tag>
                     {LOG_STREAM_ID_FIELD}={anchor.streamId}

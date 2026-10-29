@@ -1,4 +1,4 @@
-import { esSupportsLogOrder, getLogOrderAnchor, logGeneration, matchesAllKeywords, mergeContextPage, LogContextPage } from './utils';
+import { detectSourceFields, esSupportsLogOrder, getLogOrderAnchor, logGeneration, matchesAllKeywords, mergeContextPage, LogContextPage } from './utils';
 
 describe('log order utils', () => {
   it('splits the generation out of a sequence above 2^53 without losing bits', () => {
@@ -72,5 +72,25 @@ describe('log order utils', () => {
     expect(matchesAllKeywords(row, ['-18'], hidden)).toBe(false);
     expect(matchesAllKeywords(row, [], hidden)).toBe(true);
     expect(matchesAllKeywords(row, ['LOAD_ID', 'Say "HI"'], hidden)).toBe(true);
+  });
+
+  it('detects source fields as those identical on every row, whatever they are named', () => {
+    const hidden = ['__index_number__', '__log_seq__', 'ts'];
+    const rows = [0, 1, 2, 3, 4].map((i) => ({
+      __index_number__: i,
+      __log_seq__: String(i),
+      ts: i,
+      host: { name: 'web-1' },
+      src_ip: '10.0.0.1',
+      level: i === 3 ? 'WARN' : 'INFO',
+      message: `line ${i}`,
+      long: 'x'.repeat(65),
+      ...(i === 4 ? {} : { path: '/var/log/app.log' }),
+    }));
+    expect(detectSourceFields(rows, hidden)).toEqual([
+      ['host', '{"name":"web-1"}'],
+      ['src_ip', '10.0.0.1'],
+    ]);
+    expect(detectSourceFields(rows.slice(0, 4), hidden)).toEqual([]);
   });
 });
