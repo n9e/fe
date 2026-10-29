@@ -185,6 +185,9 @@ const es_ES = {
     later_tip: 'Cargar {{n}} líneas posteriores del mismo archivo',
     earlier_disabled_tip: 'No hay registros anteriores de este archivo en la hora previa; amplíe el rango de tiempo en la búsqueda para ver más',
     later_disabled_tip: 'No hay registros posteriores de este archivo en la hora siguiente',
+    no_fields_tip:
+      'Este registro no tiene __log_stream_id__ ni __log_seq__, así que su contexto en orden original no está disponible. Recopile los registros de archivo con un Categraf reciente y conserve ambos campos en los campos extraídos de la transformación',
+    no_time_tip: 'Este registro no tiene el campo de tiempo {{field}}, así que no se puede ubicar su contexto',
     back_to_anchor: 'Log actual',
     raw_layout: 'Diseño original',
     raw_layout_tip: 'Muestra solo los valores, sin hora ni nombres de campo, en fuente monoespaciada que conserva la sangría',

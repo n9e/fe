@@ -14,6 +14,7 @@ import {
   LOG_STREAM_ID_FIELD,
   detectSourceFields,
   getLogOrderAnchor,
+  logOrderUnavailableReason,
   logGeneration,
   matchesAllKeywords,
   mergeContextPage,
@@ -22,7 +23,7 @@ import {
 } from './utils';
 
 interface Props {
-  /** 原始行（未拍平），带两个原文顺序字段时才显示入口 */
+  /** 原始行（未拍平）；缺原文顺序字段或时间时入口置灰并说明原因 */
   log?: Record<string, any>;
   timeField: string;
   /** 把锚点时间换成该存储要的格式（Doris 原样字符串，ES 毫秒时间戳字符串） */
@@ -184,7 +185,18 @@ export default function LogOrderContext(props: Props) {
     [organizeFields, filterKeywords, highlightKeywords, rotatedIndexes, timeField, rawLayout],
   );
 
-  if (!anchor) return null;
+  if (!log) return null;
+  if (!anchor) {
+    const reason = logOrderUnavailableReason(log, timeField);
+    return (
+      <Tooltip title={t(`log_order_context.${reason}_tip`, { field: timeField })}>
+        {/* 禁用的按钮收不到鼠标事件，包一层 span 才能显示原因 */}
+        <span>
+          <Button disabled>{t('log_order_context.title')}</Button>
+        </span>
+      </Tooltip>
+    );
+  }
 
   const close = () => {
     setOpen(false);
