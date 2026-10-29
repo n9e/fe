@@ -48,3 +48,15 @@ it('explains why a paging button is greyed out and shows only the stream tag', a
   expect(screen.getByText('__log_stream_id__=s1')).toBeTruthy();
   expect(screen.queryByText(/agent_hostname=/)).toBeNull();
 });
+
+it('greys out the entry with a reason when the row has no order fields', async () => {
+  const { container } = render(<LogOrderContext log={{ timestamp: 1, message: 'x' }} timeField='timestamp' fetchPage={jest.fn()} />);
+  const entry = screen.getByRole('button', { name: 'log_order_context.title' });
+  expect(entry).toBeDisabled();
+  fireEvent.mouseEnter(entry.parentElement as HTMLElement);
+  expect(await screen.findByText('log_order_context.no_fields_tip')).toBeTruthy();
+
+  container.remove();
+  const empty = render(<LogOrderContext timeField='timestamp' fetchPage={jest.fn()} />);
+  expect(empty.container.innerHTML).toBe('');
+});

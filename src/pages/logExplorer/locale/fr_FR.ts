@@ -186,6 +186,9 @@ const fr_FR = {
     later_tip: 'Charger {{n}} lignes suivantes du même fichier',
     earlier_disabled_tip: "Aucun journal antérieur de ce fichier dans l'heure précédente ; élargissez la plage horaire dans la recherche pour en voir plus",
     later_disabled_tip: "Aucun journal plus récent de ce fichier dans l'heure suivante",
+    no_fields_tip:
+      'Ce journal n’a ni __log_stream_id__ ni __log_seq__ : son contexte dans l’ordre d’origine n’est pas disponible. Collectez les journaux de fichiers avec un Categraf récent et conservez ces deux champs dans les champs extraits de la transformation',
+    no_time_tip: 'Ce journal n’a pas de champ horaire {{field}} : son contexte ne peut pas être localisé',
     back_to_anchor: 'Log actuel',
     raw_layout: 'Mise en page brute',
     raw_layout_tip: "Affiche uniquement les valeurs, sans heure ni noms de champ, en police à chasse fixe qui conserve l'indentation",
