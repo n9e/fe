@@ -12,7 +12,7 @@ import NavigableDrawer from '@/components/NavigableDrawer';
 import useScrollParent from './utils/useScrollParent';
 import SortIndicator from './components/SortIndicator';
 
-import { NAME_SPACE } from '../../constants';
+import { LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY, NAME_SPACE } from '../../constants';
 import { OnValueFilterParams, FieldValueType } from './types';
 import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
@@ -764,6 +764,7 @@ function Raw(props: Props) {
       <NavigableDrawer
         defaultSize='middle'
         className='log-explorer-ignore-click-away'
+        sizeStorageKey={LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY}
         title={navigableDrawerTitle}
         extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'
