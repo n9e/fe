@@ -182,6 +182,8 @@ const ko_KR = {
     earlier: '이전',
     later: '이후',
     back_to_anchor: '현재 로그',
+    raw_layout: '원문 레이아웃',
+    raw_layout_tip: '시간과 필드 이름 없이 값만 고정폭 글꼴로 표시하여 들여쓰기를 유지합니다',
     rotated: '파일 로테이션',
     no_more_before: '1시간 내에 이전 로그가 없습니다. 검색에서 시간 범위를 넓혀 보세요',
     no_more_after: '1시간 내에 이후 로그가 없습니다',

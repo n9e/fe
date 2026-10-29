@@ -183,6 +183,8 @@ const id_ID = {
     earlier: 'Lebih awal',
     later: 'Lebih baru',
     back_to_anchor: 'Log saat ini',
+    raw_layout: 'Tata letak asli',
+    raw_layout_tip: 'Hanya menampilkan nilai field, tanpa waktu dan nama field, dengan font monospace yang mempertahankan indentasi',
     rotated: 'File dirotasi',
     no_more_before: 'Tidak ada log lebih awal dalam 1 jam; perluas rentang waktu di pencarian',
     no_more_after: 'Tidak ada log lebih baru dalam 1 jam',
