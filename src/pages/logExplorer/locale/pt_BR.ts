@@ -182,6 +182,8 @@ const pt_BR = {
     earlier: 'Anteriores',
     later: 'Posteriores',
     back_to_anchor: 'Log atual',
+    raw_layout: 'Layout original',
+    raw_layout_tip: 'Mostra apenas os valores, sem hora nem nomes de campo, em fonte monoespaçada que preserva a indentação',
     rotated: 'Arquivo rotacionado',
     no_more_before: 'Nenhum log anterior em 1 hora; amplie o intervalo de tempo na busca',
     no_more_after: 'Nenhum log posterior em 1 hora',
