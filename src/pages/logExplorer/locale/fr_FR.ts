@@ -185,6 +185,10 @@ const fr_FR = {
     back_to_anchor: 'Log actuel',
     raw_layout: 'Mise en page brute',
     raw_layout_tip: "Affiche uniquement les valeurs, sans heure ni noms de champ, en police à chasse fixe qui conserve l'indentation",
+    filter_keywords_tip:
+      "N'affiche que les lignes contenant ce mot-clé (insensible à la casse) ; avec plusieurs mots-clés, la ligne doit tous les contenir. Saisissez directement la valeur, par exemple ERROR ou un ID de commande",
+    highlight_keywords_tip: 'Surligne ce mot-clé en jaune sans changer les lignes affichées (insensible à la casse). Saisissez directement la valeur',
+    keyword_placeholder: 'Saisissez un mot-clé puis Entrée',
     rotated: 'Fichier tourné',
     no_more_before: 'Aucun log plus ancien dans l’heure ; élargissez la plage de temps dans la recherche',
     no_more_after: 'Aucun log plus récent dans l’heure',

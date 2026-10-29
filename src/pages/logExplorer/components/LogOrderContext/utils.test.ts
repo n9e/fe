@@ -71,5 +71,6 @@ describe('log order utils', () => {
     expect(matchesAllKeywords(row, ['say "hi"'], hidden)).toBe(true);
     expect(matchesAllKeywords(row, ['-18'], hidden)).toBe(false);
     expect(matchesAllKeywords(row, [], hidden)).toBe(true);
+    expect(matchesAllKeywords(row, ['LOAD_ID', 'Say "HI"'], hidden)).toBe(true);
   });
 });
