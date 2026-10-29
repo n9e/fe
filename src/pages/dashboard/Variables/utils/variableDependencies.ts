@@ -13,7 +13,7 @@ export function extractDependencies(str: string, validVars?: Set<string>): strin
   // - 支持 $var 格式：$ 符号后跟一个或多个字母、数字、下划线
   // - 支持 ${var} 格式：$ 符号后跟大括号，内部为一个或多个字母、数字、下划线
   // - 支持 [[var]]，与变量插值支持的语法一致
-  const regex = /\$\{([a-zA-Z0-9_]+)\}|\$([a-zA-Z0-9_]+)|\[\[([a-zA-Z0-9_]+)\]\]/g;
+  const regex = /\$\{([a-zA-Z0-9_]+)(?::[^}]*)?\}|\$([a-zA-Z0-9_]+)|\[\[([a-zA-Z0-9_]+)(?::[^\]]*)?\]\]/g;
   let match;
   const dependencies = new Set<string>();
 
@@ -38,7 +38,7 @@ export function getMissingVariableReferences(value: unknown, availableNames: Set
   const visit = (item: unknown) => {
     if (typeof item === 'string') {
       // Follow the same prefix matching as interpolation (for example $host_suffix).
-      extractDependencies(formatString(item, placeholders)).forEach((name) => {
+      extractDependencies(formatString(item, placeholders, { enableDorisSqlLike: true })).forEach((name) => {
         if (!name.startsWith(RESERVED_NAME_PREFIX)) missing.add(name);
       });
     } else if (Array.isArray(item)) {
