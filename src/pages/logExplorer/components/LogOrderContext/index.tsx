@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Button, Drawer, Empty, Modal, Space, Switch, Table, Tag, Tooltip, message } from 'antd';
 import { CloseOutlined, EyeInvisibleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import {
   LOG_INDEX_FIELD,
   LOG_SEQ_FIELD,
   LOG_STREAM_ID_FIELD,
+  detectSourceFields,
   getLogOrderAnchor,
   logGeneration,
   matchesAllKeywords,
@@ -114,6 +115,9 @@ export default function LogOrderContext(props: Props) {
 
   const hiddenFields = [LOG_INDEX_FIELD, LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD, timeField];
   const rows = page?.logs || [];
+  // 来源标签不挡首屏：日志先渲染，空闲时再识别
+  const deferredRows = useDeferredValue(rows);
+  const sourceFields = useMemo(() => detectSourceFields(deferredRows, hiddenFields), [deferredRows]);
   const availableFields = useMemo(() => _.sortBy(_.uniq(_.flatMap(rows, (row) => _.keys(_.omit(row, hiddenFields))))), [page]);
   const filteredRows = useMemo(() => {
     if (_.isEmpty(filterKeywords)) return rows;
@@ -310,6 +314,11 @@ export default function LogOrderContext(props: Props) {
             )}
             <div className='mt-2'>
               <Space wrap size={[4, 4]}>
+                {_.map(sourceFields, ([field, value]) => (
+                  <Tag key={field}>
+                    {field}={value}
+                  </Tag>
+                ))}
                 <Tooltip title={t('log_order_context.stream_tip')}>
                   <Tag>
                     {LOG_STREAM_ID_FIELD}={anchor.streamId}
