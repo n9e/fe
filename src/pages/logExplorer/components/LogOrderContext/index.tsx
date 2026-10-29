@@ -210,69 +210,69 @@ export default function LogOrderContext(props: Props) {
         <div className='flex flex-col h-full' onClick={(e) => e.stopPropagation()}>
           <div className='flex-shrink-0 mb-2 pb-2 border-0 border-b border-solid border-fc-200'>
             {limited && <Alert className='mb-2' type='info' showIcon message={t(limited === 'back' ? 'log_order_context.no_more_before' : 'log_order_context.no_more_after')} />}
-            <div className='flex items-start justify-between gap-2'>
-              <Space wrap>
-                <Space size={2}>
-                  <Button loading={loading === 'back'} disabled={!!loading || !page?.has_back} onClick={() => loadMore('back')}>
-                    <Space size={2}>
-                      <LeftOutlined />
-                      {t('log_order_context.earlier')}
-                    </Space>
-                  </Button>
-                  <Button
-                    disabled={rows.length === 0}
-                    onClick={() => {
-                      scrollToAnchor();
-                      // 当前行本就在视野里时不会滚动，闪一下才看得出按钮生效了
-                      setFlashAnchor(true);
-                      window.setTimeout(() => setFlashAnchor(false), 800);
-                    }}
-                  >
-                    {t('log_order_context.back_to_anchor')}
-                  </Button>
-                  <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
-                    <Space size={0}>
-                      {t('log_order_context.later')}
-                      <RightOutlined />
-                    </Space>
-                  </Button>
-                </Space>
-                <Button onClick={() => setOrganizeDraft(organizeFields)}>
-                  <Space>
-                    {t('logs.settings.organizeFields.title')}
-                    {!_.isEmpty(organizeFields) && (
-                      <Tooltip title={t('logs.settings.organizeFields.tip', { fields: _.join(organizeFields, '、') })}>
-                        <EyeInvisibleOutlined />
-                      </Tooltip>
-                    )}
+            <Space wrap>
+              <Space size={2}>
+                <Button loading={loading === 'back'} disabled={!!loading || !page?.has_back} onClick={() => loadMore('back')}>
+                  <Space size={2}>
+                    <LeftOutlined />
+                    {t('log_order_context.earlier')}
                   </Space>
                 </Button>
-                {_.isEmpty(filterKeywords) && (
-                  <DynamicTagsTrigger
-                    newTagText={t('log_order_context.filter_keywords_add')}
-                    tip={t('log_order_context.filter_keywords_tip')}
-                    placeholder={t('log_order_context.keyword_placeholder')}
-                    value={filterKeywords}
-                    onChange={setFilterKeywords}
-                  />
-                )}
-                {_.isEmpty(highlightKeywords) && (
-                  <DynamicTagsTrigger
-                    newTagText={t('log_order_context.highlight_keywords_add')}
-                    tip={t('log_order_context.highlight_keywords_tip')}
-                    placeholder={t('log_order_context.keyword_placeholder')}
-                    value={highlightKeywords}
-                    onChange={setHighlightKeywords}
-                  />
-                )}
+                <Button
+                  disabled={rows.length === 0}
+                  onClick={() => {
+                    scrollToAnchor();
+                    // 当前行本就在视野里时不会滚动，闪一下才看得出按钮生效了
+                    setFlashAnchor(true);
+                    window.setTimeout(() => setFlashAnchor(false), 800);
+                  }}
+                >
+                  {t('log_order_context.back_to_anchor')}
+                </Button>
+                <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
+                  <Space size={0}>
+                    {t('log_order_context.later')}
+                    <RightOutlined />
+                  </Space>
+                </Button>
               </Space>
-              <Tooltip title={t('log_order_context.raw_layout_tip')}>
-                <Space size={4} className='flex-shrink-0 leading-8 whitespace-nowrap'>
-                  <Switch size='small' checked={rawLayout} onChange={setRawLayout} />
-                  {t('log_order_context.raw_layout')}
+              <Button onClick={() => setOrganizeDraft(organizeFields)}>
+                <Space>
+                  {t('logs.settings.organizeFields.title')}
+                  {!_.isEmpty(organizeFields) && (
+                    <Tooltip title={t('logs.settings.organizeFields.tip', { fields: _.join(organizeFields, '、') })}>
+                      <EyeInvisibleOutlined />
+                    </Tooltip>
+                  )}
                 </Space>
+              </Button>
+              <Tooltip title={t('log_order_context.raw_layout_tip')}>
+                <Button aria-pressed={rawLayout} onClick={() => setRawLayout(!rawLayout)}>
+                  <Space size={6}>
+                    <Switch size='small' checked={rawLayout} className='pointer-events-none' />
+                    {t('log_order_context.raw_layout')}
+                  </Space>
+                </Button>
               </Tooltip>
-            </div>
+              {_.isEmpty(filterKeywords) && (
+                <DynamicTagsTrigger
+                  newTagText={t('log_order_context.filter_keywords_add')}
+                  tip={t('log_order_context.filter_keywords_tip')}
+                  placeholder={t('log_order_context.keyword_placeholder')}
+                  value={filterKeywords}
+                  onChange={setFilterKeywords}
+                />
+              )}
+              {_.isEmpty(highlightKeywords) && (
+                <DynamicTagsTrigger
+                  newTagText={t('log_order_context.highlight_keywords_add')}
+                  tip={t('log_order_context.highlight_keywords_tip')}
+                  placeholder={t('log_order_context.keyword_placeholder')}
+                  value={highlightKeywords}
+                  onChange={setHighlightKeywords}
+                />
+              )}
+            </Space>
             {!_.isEmpty(filterKeywords) && (
               <div className='mt-2'>
                 <Space>
