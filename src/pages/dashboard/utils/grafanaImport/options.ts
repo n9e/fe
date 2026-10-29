@@ -4,7 +4,7 @@
  */
 import _ from 'lodash';
 
-import { grafanaColorNameToHex, mapUnitToN9E } from './units';
+import { grafanaColorNameToBuiltinToken, mapUnitToN9E } from './units';
 import type { UnsupportedItem } from './types';
 
 export type ReportFn = (item: Omit<UnsupportedItem, 'path'> & { path?: string }) => void;
@@ -18,7 +18,7 @@ export function convertThresholdsGrafanaToN9E(config: any) {
     mode: thresholds?.mode ?? 'absolute',
     steps: _.map(thresholds?.steps, (step, idx: number) => ({
       ...step,
-      color: grafanaColorNameToHex(step?.color),
+      color: grafanaColorNameToBuiltinToken(step?.color),
       type: step?.value === null && idx === 0 ? 'base' : undefined,
     })),
   };
@@ -60,14 +60,14 @@ export function convertValueMappingsGrafanaToN9E(mappings: unknown, report?: Rep
         out.push({
           type: 'textValue',
           match: { textValue: String(key) },
-          result: { text: option?.text ?? '', color: grafanaColorNameToHex(option?.color) },
+          result: { text: option?.text ?? '', color: grafanaColorNameToBuiltinToken(option?.color) },
         });
       }
     } else if (mapping.type === 'range') {
       out.push({
         type: 'range',
         match: { from: mapping.options?.from, to: mapping.options?.to },
-        result: { text: mapping.options?.result?.text ?? '', color: grafanaColorNameToHex(mapping.options?.result?.color) },
+        result: { text: mapping.options?.result?.text ?? '', color: grafanaColorNameToBuiltinToken(mapping.options?.result?.color) },
       });
     } else if (mapping.type === 'special') {
       const match = mapping.options?.match;
@@ -75,7 +75,7 @@ export function convertValueMappingsGrafanaToN9E(mappings: unknown, report?: Rep
         out.push({
           type: 'specialValue',
           match: { specialValue: match },
-          result: { text: mapping.options?.result?.text ?? '', color: grafanaColorNameToHex(mapping.options?.result?.color) },
+          result: { text: mapping.options?.result?.text ?? '', color: grafanaColorNameToBuiltinToken(mapping.options?.result?.color) },
         });
       } else {
         report?.({

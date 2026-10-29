@@ -29,7 +29,7 @@ const id_ID = {
     "recording_rules": "Recording rules",
     "logs_explorer": "Log",
     "monitors": "Alert",
-    "alerts_notifications": "Notifikasi alert",
+    "alerts_notifications": "Alert",
     "rules": "Manajemen aturan",
     "alert_rules": "Aturan alert",
     "alert_mutes": "Aturan peredaman",

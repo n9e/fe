@@ -29,18 +29,18 @@ export default function BasicBar(props: Props) {
   }
 
   return (
-    <div className='renderer-table-ng-bar-gauge'>
-      <div className='renderer-table-ng-bar-gauge-item'>
-        <div className='renderer-table-ng-bar-gauge-item-value'>
+    <div className='n9e-renderer-table-ng-bar-gauge'>
+      <div className='n9e-renderer-table-ng-bar-gauge-item'>
+        <div className='n9e-renderer-table-ng-bar-gauge-item-value'>
           <div
-            className='renderer-table-ng-bar-gauge-item-value-bg'
+            className='n9e-renderer-table-ng-bar-gauge-item-value-bg'
             style={{
               backgroundColor: themeMode === 'dark' ? '#20222E' : '#F6F6F6',
             }}
           />
           <div
             ref={bgRef}
-            className='renderer-table-ng-bar-gauge-item-value-color-bg'
+            className='n9e-renderer-table-ng-bar-gauge-item-value-color-bg'
             style={{
               color: themeMode === 'dark' ? '#fff' : '#20222E',
               borderRight: `2px solid ${color}`,
@@ -52,7 +52,7 @@ export default function BasicBar(props: Props) {
         {valueMode !== 'hidden' && (
           <div
             ref={textRef}
-            className='renderer-table-ng-bar-gauge-item-value-text'
+            className='n9e-renderer-table-ng-bar-gauge-item-value-text'
             style={{
               color: valueMode === 'color' ? color : 'inherit',
               width: maxFieldTextWidth,

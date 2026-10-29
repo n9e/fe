@@ -9,8 +9,10 @@ import { CommonStateContext } from '@/App';
 import { N9E_PATHNAME } from '@/utils/constant';
 import BuiltinMetrics from '@/components/PromQLInput/BuiltinMetrics';
 import MetricsExplorer from '@/components/PromGraphCpt/components/MetricsExplorer';
+import { useSharedRequestCache } from '@/components/SharedRequestCache';
 
 import { interpolateString, instantInterpolateString, includesVariables, getRealStep } from './utils';
+import { isValidPromQLDatasourceValue, requestPromQL } from './request';
 
 import './style.less';
 
@@ -22,7 +24,7 @@ export { interpolateString, instantInterpolateString, includesVariables, getReal
 
 interface MonacoEditorPromQLProps {
   readOnly?: boolean;
-  datasourceValue: number;
+  datasourceValue?: number;
   showBuiltinMetrics?: boolean;
   variablesNames?: string[];
   size?: 'small' | 'middle' | 'large';
@@ -76,6 +78,9 @@ export default function index(props: MonacoEditorPromQLProps) {
     onMetricUnitChange,
   } = props;
   const [metricsExplorerVisible, setMetricsExplorerVisible] = useState(false);
+  const requestCache = useSharedRequestCache();
+  const validDatasourceValue = isValidPromQLDatasourceValue(datasourceValue) ? datasourceValue : undefined;
+  const enableRequests = validDatasourceValue !== undefined;
   const editorRef = React.useRef<MonacoEditor | null>(null);
   const syncingExternalValueRef = React.useRef(false);
   const lastModelResetTokenRef = React.useRef(modelResetToken);
@@ -142,18 +147,14 @@ export default function index(props: MonacoEditorPromQLProps) {
             value={value ?? ''}
             placeholder={placeholder || t('promQLInput:placeholder')}
             variablesNames={variablesNames}
-            apiPrefix={`${URL_PREFIX}/${datasourceValue}/api/v1`}
-            enableRequests={datasourceValue !== undefined}
-            request={(resource, options) => {
-              const params = options?.body?.toString();
-              const search = params ? `?${params}` : '';
-              return fetch(resource + search, {
-                method: 'Get',
-                headers: new Headers({
-                  Authorization: `Bearer ${localStorage.getItem('access_token') || ''}`,
-                }),
-              });
-            }}
+            apiPrefix={enableRequests ? `${URL_PREFIX}/${validDatasourceValue}/api/v1` : undefined}
+            enableRequests={enableRequests}
+            request={(resource, options) =>
+              requestPromQL(resource, options, {
+                accessToken: localStorage.getItem('access_token') || '',
+                cache: requestCache,
+              })
+            }
             enableAutocomplete={enableAutocomplete}
             durationVariablesCompletion={durationVariablesCompletion}
             interpolateString={interpolateString}
@@ -196,7 +197,7 @@ export default function index(props: MonacoEditorPromQLProps) {
               onEditorDidMount?.(editor);
             }}
           />
-          {showGlobalMetrics && (
+          {showGlobalMetrics && validDatasourceValue !== undefined && (
             <span className='ant-input-suffix'>
               <Search
                 size={16}
@@ -209,19 +210,21 @@ export default function index(props: MonacoEditorPromQLProps) {
           )}
         </span>
       </div>
-      <MetricsExplorer
-        url={URL_PREFIX}
-        datasourceValue={datasourceValue}
-        show={metricsExplorerVisible}
-        updateShow={setMetricsExplorerVisible}
-        insertAtCursor={(val) => {
-          if (editorRef.current) {
-            const editor = editorRef.current;
-            editor.trigger('keyboard', 'type', { text: val });
-            editor.focus();
-          }
-        }}
-      />
+      {validDatasourceValue !== undefined && (
+        <MetricsExplorer
+          url={URL_PREFIX}
+          datasourceValue={validDatasourceValue}
+          show={metricsExplorerVisible}
+          updateShow={setMetricsExplorerVisible}
+          insertAtCursor={(val) => {
+            if (editorRef.current) {
+              const editor = editorRef.current;
+              editor.trigger('keyboard', 'type', { text: val });
+              editor.focus();
+            }
+          }}
+        />
+      )}
     </>
   );
 }
