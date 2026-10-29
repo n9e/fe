@@ -27,6 +27,7 @@ import { IMatch } from '../types';
 import Form from './Form';
 import Export from './Export';
 import Collapse from './components/Collapse';
+import { RetainedSidebarActions } from '@/components/RetainedSidebar';
 
 interface IProps {
   datasourceValue: number;
@@ -71,10 +72,15 @@ export default function List(props: IProps) {
   }, [refreshFlag, props.datasourceValue]);
 
   return (
-    <Collapse collapseLocalStorageKey='quick_view_list_collapse' widthLocalStorageKey='quick_view_list_width' defaultWidth={240} tooltip={t('list.title')}>
+    <Collapse
+      collapseLocalStorageKey='quick_view_list_collapse'
+      widthLocalStorageKey='quick_view_list_width'
+      defaultWidth={240}
+      tooltip={t('list.title')}
+      summary={list.find((item) => item.id === active)?.name || ''}
+    >
       <div className='n9e-metric-views-list rounded-lg'>
-        <div className='n9e-metric-views-list-header'>
-          <div className='metric-page-title'>{t('list.title')}</div>
+        <RetainedSidebarActions>
           <a>
             <PlusSquareOutlined
               onClick={() => {
@@ -91,7 +97,7 @@ export default function List(props: IProps) {
               }}
             />
           </a>
-        </div>
+        </RetainedSidebarActions>
         <Input
           prefix={<SearchOutlined />}
           value={search}

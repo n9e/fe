@@ -227,3 +227,32 @@ export function getVaildBusinessGroup(
   }
   return businessGroupKey;
 }
+
+interface BusinessGroupSummaryNode {
+  key: string | number;
+  title: string;
+  children?: BusinessGroupSummaryNode[];
+}
+
+/** Resolve against the complete tree, so searching or collapsing never shortens the selected path. */
+export function getBusinessGroupSelectionLabel(
+  selected: string | undefined,
+  groups: { id: number; name: string }[],
+  separator: string,
+  presets: { value: string; label: string }[],
+  fallback: string,
+) {
+  const ids = getCleanBusinessGroupIds(selected);
+  const preset = presets.find((item) => item.value === ids);
+  if (preset) return preset.label;
+  const findPath = (nodes: BusinessGroupSummaryNode[], parents: string[] = []): string[] | undefined => {
+    for (const node of nodes) {
+      const path = [...parents, node.title.trim()];
+      if (String(node.key) === selected) return path;
+      const childPath = node.children && findPath(node.children, path);
+      if (childPath) return childPath;
+    }
+    return undefined;
+  };
+  return findPath(listToTree(groups, separator || '-'))?.join(' / ') || fallback;
+}
