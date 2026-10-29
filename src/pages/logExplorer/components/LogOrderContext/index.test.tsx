@@ -6,6 +6,8 @@ import LogOrderContext from './index';
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock('../../constants', () => ({ NAME_SPACE: 'log_explorer' }));
+// jsdom 没有实现 scrollTo，打开抽屉后会滚到当前行
+Element.prototype.scrollTo = jest.fn();
 
 const log = { __log_stream_id__: 's1', __log_seq__: '100', timestamp: 1793164672156, message: '> Could not find gaussdbjdbc' };
 const page = {
@@ -29,4 +31,20 @@ it('raw layout drops the time and field name and keeps leading spaces', async ()
   fireEvent.click(screen.getByRole('switch'));
   expect(row().textContent).toBe('     Searched in the following locations:');
   expect(row().className).toContain('font-mono');
+});
+
+it('explains why a paging button is greyed out and shows only the stream tag', async () => {
+  const withHost = { ...log, agent_hostname: 'host-a' };
+  render(<LogOrderContext log={withHost} timeField='timestamp' fetchPage={() => Promise.resolve({ ...page, has_back: true } as any)} />);
+  fireEvent.click(screen.getByRole('button', { name: 'log_order_context.title' }));
+  const later = await screen.findByRole('button', { name: /log_order_context.later/ });
+  await waitFor(() => expect(later).toBeDisabled());
+
+  fireEvent.mouseEnter(later.parentElement as HTMLElement);
+  expect(await screen.findByText('log_order_context.later_disabled_tip')).toBeTruthy();
+  fireEvent.mouseEnter(screen.getByRole('button', { name: /log_order_context.earlier/ }).parentElement as HTMLElement);
+  expect(await screen.findByText('log_order_context.earlier_tip')).toBeTruthy();
+
+  expect(screen.getByText('__log_stream_id__=s1')).toBeTruthy();
+  expect(screen.queryByText(/agent_hostname=/)).toBeNull();
 });

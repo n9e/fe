@@ -33,8 +33,6 @@ interface Props {
 
 // 与 SLS 上下文每次取的行数一致
 const STEP_LINES = 30;
-// 采集端写入的来源字段，作为上下文的来源标签展示
-const SOURCE_FIELDS = ['agent_hostname', 'fcsource'];
 
 type Direction = 'back' | 'forward';
 
@@ -212,12 +210,17 @@ export default function LogOrderContext(props: Props) {
             {limited && <Alert className='mb-2' type='info' showIcon message={t(limited === 'back' ? 'log_order_context.no_more_before' : 'log_order_context.no_more_after')} />}
             <Space wrap>
               <Space size={2}>
-                <Button loading={loading === 'back'} disabled={!!loading || !page?.has_back} onClick={() => loadMore('back')}>
-                  <Space size={2}>
-                    <LeftOutlined />
-                    {t('log_order_context.earlier')}
-                  </Space>
-                </Button>
+                {/* 禁用的按钮收不到鼠标事件，包一层 span 才能在置灰时也显示原因 */}
+                <Tooltip title={t(page?.has_back ? 'log_order_context.earlier_tip' : 'log_order_context.earlier_disabled_tip', { n: STEP_LINES })}>
+                  <span>
+                    <Button loading={loading === 'back'} disabled={!!loading || !page?.has_back} onClick={() => loadMore('back')}>
+                      <Space size={2}>
+                        <LeftOutlined />
+                        {t('log_order_context.earlier')}
+                      </Space>
+                    </Button>
+                  </span>
+                </Tooltip>
                 <Button
                   disabled={rows.length === 0}
                   onClick={() => {
@@ -229,12 +232,16 @@ export default function LogOrderContext(props: Props) {
                 >
                   {t('log_order_context.back_to_anchor')}
                 </Button>
-                <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
-                  <Space size={0}>
-                    {t('log_order_context.later')}
-                    <RightOutlined />
-                  </Space>
-                </Button>
+                <Tooltip title={t(page?.has_forward ? 'log_order_context.later_tip' : 'log_order_context.later_disabled_tip', { n: STEP_LINES })}>
+                  <span>
+                    <Button loading={loading === 'forward'} disabled={!!loading || !page?.has_forward} onClick={() => loadMore('forward')}>
+                      <Space size={0}>
+                        {t('log_order_context.later')}
+                        <RightOutlined />
+                      </Space>
+                    </Button>
+                  </span>
+                </Tooltip>
               </Space>
               <Button onClick={() => setOrganizeDraft(organizeFields)}>
                 <Space>
@@ -303,14 +310,6 @@ export default function LogOrderContext(props: Props) {
             )}
             <div className='mt-2'>
               <Space wrap size={[4, 4]}>
-                {_.map(
-                  _.filter(SOURCE_FIELDS, (field) => log?.[field]),
-                  (field) => (
-                    <Tag key={field}>
-                      {field}={log?.[field]}
-                    </Tag>
-                  ),
-                )}
                 <Tooltip title={t('log_order_context.stream_tip')}>
                   <Tag>
                     {LOG_STREAM_ID_FIELD}={anchor.streamId}
