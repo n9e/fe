@@ -62,10 +62,9 @@ export default function QueryBuilderCpt(props: Props) {
     >
       <div
         ref={eleRef}
-        className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
+        className={classNames('w-full border border-primary rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
           absolute: !queryBuilderPinned,
           'top-[32px]': !queryBuilderPinned,
-          'border-primary': !queryBuilderPinned,
           relative: queryBuilderPinned,
         })}
         style={{

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Collapse, Form, Input, InputNumber, Space, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -10,14 +10,19 @@ interface Props {
   proxyTip: string;
   /** 自建服务（如 Mattermost）才需要跳过证书校验 */
   insecureTip?: string;
+  /** 额外字段校验失败时调用 expand，避免错误被折叠隐藏。 */
+  extra?: (expand: () => void) => React.ReactNode;
 }
 
 /** 原生媒介共用的「高级设置」：代理、超时、重试，按需加跳过证书校验。字段都不设 initialValue，原因见 Jira.tsx。 */
-export default function NativeNetworkSettings({ names, proxyTip, insecureTip }: Props) {
+export default function NativeNetworkSettings({ names, proxyTip, insecureTip, extra }: Props) {
   const { t } = useTranslation(NS);
+  const [activeKey, setActiveKey] = useState<string | string[]>([]);
+  const expand = useCallback(() => setActiveKey(['advanced']), []);
   return (
-    <Collapse ghost className='n9e-collapse-advanced-settings'>
+    <Collapse ghost className='n9e-collapse-advanced-settings' activeKey={activeKey} onChange={setActiveKey}>
       <Collapse.Panel key='advanced' header={t('advanced_settings')} forceRender>
+        {extra?.(expand)}
         <Form.Item label={t('http_request_config.proxy')} tooltip={proxyTip} name={[...names, 'proxy']}>
           <Input placeholder='http://127.0.0.1:7890' />
         </Form.Item>

@@ -102,6 +102,7 @@ interface SideMenuProps {
   isGoldTheme?: boolean;
 }
 
+/** Render the resizable navigation and its hover-accessible account menu. */
 const SideMenu = (props: SideMenuProps) => {
   const { i18n, t } = useTranslation(['sideMenu', 'pageLayout', 'DarkModeSelect']);
   const history = useHistory();
@@ -350,7 +351,7 @@ const SideMenu = (props: SideMenuProps) => {
     effectiveSideMenuBgMode === 'theme' ? 'side-menu-profile-menu-on-theme' : effectiveSideMenuBgMode === 'dark' ? 'side-menu-profile-menu-on-dark' : '';
   const profileMenuClassName = cn('side-menu-profile-menu', profilePopupThemeClassName);
   const profileSubmenuClassName = cn('side-menu-profile-submenu', profilePopupThemeClassName);
-  const profileMenuAlign = { points: ['bl', 'tr'] as [string, string], offset: [collapsed ? 8 : -24, 0] as [number, number] };
+  const profileMenuAlign = { points: ['bl', 'br'] as [string, string], offset: [8, 0] as [number, number] };
   const handleProfileMenuVisibleChange = (open: boolean) => {
     setProfileMenuOpen(open);
     if (!open) {
@@ -498,6 +499,7 @@ const SideMenu = (props: SideMenuProps) => {
             <Dropdown
               overlay={profileMenu}
               trigger={['hover']}
+              mouseLeaveDelay={0.35}
               placement='topLeft'
               align={profileMenuAlign}
               visible={profileMenuOpen}

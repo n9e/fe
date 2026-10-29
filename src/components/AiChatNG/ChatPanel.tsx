@@ -44,8 +44,8 @@ export default function ChatPanel(props: IAiChatProps) {
     queryAction,
     promptList,
     initialMessage,
+    continuationMessage,
     initialSkill,
-    onExecuteQueryForQueryContent,
     onChatChange,
     onError,
     welcomeSlot,
@@ -489,6 +489,7 @@ export default function ChatPanel(props: IAiChatProps) {
   }, [cancelScheduledStreamRender, cleanupPolling, stopStream, slim]);
 
   const initialMessageSentRef = useRef(false);
+  const sentContinuationIdsRef = useRef(new Set<string | number>());
   const acceptedChatIdsRef = useRef(new Set<string>());
 
   const createNewChat = useCallback(
@@ -642,6 +643,15 @@ export default function ChatPanel(props: IAiChatProps) {
     }
   }, [initialMessage, sendUserMessage]);
 
+  useEffect(() => {
+    if (!continuationMessage?.content.trim() || sentContinuationIdsRef.current.has(continuationMessage.id) || submitting || pendingTurnRef.current || !activeRef.current) {
+      return;
+    }
+
+    sentContinuationIdsRef.current.add(continuationMessage.id);
+    void sendUserMessage(undefined, continuationMessage.content);
+  }, [continuationMessage, sendUserMessage, submitting]);
+
   const handleStop = useCallback(() => {
     const pending = pendingTurnRef.current;
     const locator = pending?.locator ?? streamBufferRef.current.locator;
@@ -680,14 +690,13 @@ export default function ChatPanel(props: IAiChatProps) {
         key={`${messageItem.chat_id}-${messageItem.seq_id}`}
         message={messageItem}
         isStreaming={streamingLocator?.chat_id === messageItem.chat_id && streamingLocator?.seq_id === messageItem.seq_id}
-        onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
         onActionClick={sendUserMessage}
         onOKForFormSelectContent={sendUserMessage}
         maybeScrollToBottom={maybeScrollToBottom}
         pageActionOutcomes={pageActionOutcomes}
       />
     ));
-  }, [onExecuteQueryForQueryContent, maybeScrollToBottom, messages, pageActionOutcomes, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
+  }, [maybeScrollToBottom, messages, pageActionOutcomes, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
 
   const welcomeContent = typeof welcomeSlot === 'function' ? welcomeSlot((prompt) => sendUserMessage(undefined, prompt)) : welcomeSlot;
 

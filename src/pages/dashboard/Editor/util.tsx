@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { defaultThreshold } from './config';
+import { defaultThreshold } from '../Renderer/registry/defaults';
 import { IPanel } from '../types';
 
 export const normalizeInitialValues = (values: IPanel): IPanel => {

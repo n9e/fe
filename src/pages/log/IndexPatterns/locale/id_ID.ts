@@ -32,7 +32,7 @@ const id_ID = {
       timeRangeFormat: 'Waktu mulai dan selesai dalam format tertentu: tambahkan parameter $__time_format__=YYYY-MM-DD HH:mm:ss pada variabel dasar',
       timeRangeOffset:
         'Waktu mulai dan selesai dengan pergeseran: tambahkan parameter $__start_time_margin__=-100000 dan $__end_time_margin__=100000 pada variabel dasar, dalam milidetik, dengan angka positif menggeser maju dan angka negatif menggeser mundur',
-      localUrl: 'Alamat sistem ini: $local_url, mencakup protokol dan domain, misalnya “https://flashcat.cloud”',
+      localUrl: 'Alamat sistem ini: $local_url, mencakup protokol, domain, dan prefiks deployment, misalnya “https://flashcat.cloud”',
       localProtocol: 'Protokol sistem ini: $local_protocol, misalnya “http:” atau “https:”',
       localDomain: 'Domain sistem ini: $local_domain, misalnya flashcat.cloud',
       mappingParams: 'Tabel pemetaan parameter: $__mapping_para__, mewakili semua parameter yang dikonfigurasi di tabel pemetaan',
@@ -75,7 +75,7 @@ const id_ID = {
           urlTemplateTip1: 'Misalnya menuju sistem pelacakan: http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
           urlTemplateTip2: 'Tautan dikonfigurasi dan diubah di Tautan navigasi. Bila tautan untuk field yang sama sudah ada di sana, konfigurasi di sini tidak berlaku.',
           urlTemplatePlaceholder: 'http://flashcat.cloud/trace?traceId={{value}}&dataSourceName=traceSystemName',
-          urlTemplatePlaceholder1: 'http://$local_url/dashboards/132?param1=$sample_field',
+          urlTemplatePlaceholder1: '$local_url/dashboards/132?param1=$sample_field',
           labelTemplate: 'Templat label',
           labelTemplatePlaceholder: '{{value}}',
         },

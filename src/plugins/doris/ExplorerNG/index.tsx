@@ -22,6 +22,7 @@ import Main from './Main';
 import { useDorisAiDock } from './aiDock';
 
 import './style.less';
+import UsageDocs from '@/components/UsageDocs';
 
 interface Props {
   tabKey: string;
@@ -30,6 +31,7 @@ interface Props {
   renderCommonSettings: RenderCommonSettings;
 }
 
+/** Coordinate Doris query state, field actions and validated query execution. */
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
   const { darkMode } = useContext(CommonStateContext);
@@ -103,7 +105,7 @@ export default function index(props: Props) {
     executeQuery();
   };
 
-  const handleSetDefaultSearchField = (index) => {
+  const handleSetDefaultSearchField = (index?: string) => {
     form.setFieldsValue({
       query: {
         defaultSearchField: index,
@@ -351,28 +353,30 @@ export default function index(props: Props) {
             />
           </Space>
         </div>
-        <div>
-          <Trans
-            ns={NAME_SPACE}
-            i18nKey='query.warn_message_content_4'
-            components={{
-              a: (
-                <a
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                      darkMode,
-                      title: t('common:document_link'),
-                      type: 'iframe',
-                      documentPath: DORIS_SQL_MODE_DOC_URL,
-                      anchor: '#2-时间宏',
-                    });
-                  }}
-                />
-              ),
-            }}
-          />
-        </div>
+        <UsageDocs>
+          <div>
+            <Trans
+              ns={NAME_SPACE}
+              i18nKey='query.warn_message_content_4'
+              components={{
+                a: (
+                  <a
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                        darkMode,
+                        title: t('common:document_link'),
+                        type: 'iframe',
+                        documentPath: DORIS_SQL_MODE_DOC_URL,
+                        anchor: '#2-时间宏',
+                      });
+                    }}
+                  />
+                ),
+              }}
+            />
+          </div>
+        </UsageDocs>
       </Modal>
     </>
   );

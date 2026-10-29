@@ -10,6 +10,7 @@ import { scrollToFirstError } from '@/utils';
 import { getPageFromSearch } from '@/utils/urlPage';
 import { Document } from '@/components/DocumentDrawer';
 import Splitter from '@/components/Splitter';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 
 import { NS, getChannelTypeMeta } from '../../constants';
 import { ChannelItem } from '../../types';
@@ -28,6 +29,10 @@ import Discord from './Discord';
 import SlackWebhook from './SlackWebhook';
 import Teams from './Teams';
 import Twilio from './Twilio';
+import Pushover from './Pushover';
+import Ntfy from './Ntfy';
+import SplunkOnCall from './SplunkOnCall';
+import Line from './Line';
 import MattermostWebhook from './MattermostWebhook';
 import JSMAlert from './JSMAlert';
 import TestModal from './TestModal';
@@ -38,6 +43,7 @@ interface Props {
 }
 
 export default function FormCpt(props: Props) {
+  const showUsageDocs = useShowUsageDocs();
   const { t } = useTranslation(NS);
   const location = useLocation();
   const [form] = Form.useForm();
@@ -52,7 +58,7 @@ export default function FormCpt(props: Props) {
   return (
     <Form form={form} layout='vertical' className='h-full'>
       <div className='h-full bg-fc-100'>
-        <Splitter>
+        <Splitter hideRight={!showUsageDocs}>
           <Splitter.Panel>
             <div className='h-full flex flex-col justify-between overflow-hidden'>
               <div className='h-full min-h-0 best-looking-scroll'>
@@ -172,6 +178,10 @@ export default function FormCpt(props: Props) {
                   <SlackWebhook />
                   <Teams />
                   <Twilio />
+                  <Pushover />
+                  <Ntfy />
+                  <SplunkOnCall />
+                  <Line />
                   <MattermostWebhook />
                   <JSMAlert />
                 </div>

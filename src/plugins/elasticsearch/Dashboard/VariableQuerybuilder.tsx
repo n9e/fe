@@ -7,11 +7,19 @@ import { useDebounceFn } from 'ahooks';
 
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
+import UsageDocs from '@/components/UsageDocs';
 import IndexSelect from '@/pages/dashboard/Editor/QueryEditor/Elasticsearch/IndexSelect';
 import { getFullFields, Field } from '@/pages/explorer/Elasticsearch/services';
 import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
-export default function VariableQuerybuilder() {
+/**
+ * ES/OpenSearch 变量查询构造器。
+ *
+ * `variables` 由外层 Querybuilder 传入（所属仪表盘实例的运行时变量）：
+ * 数据源值写成 `${datasource}` 时必须靠它解析出真实数据源 id，否则索引/时间字段无法加载。
+ */
+export default function VariableQuerybuilder({ variables }: { variables?: IVariable[] }) {
   const { t, i18n } = useTranslation('dashboard');
   const { darkMode, datasourceList } = useContext(CommonStateContext);
   const [dateFields, setDateFields] = useState<Field[]>([]);
@@ -21,6 +29,7 @@ export default function VariableQuerybuilder() {
   const indexValue = Form.useWatch(['config', 'index']);
   const currentdatasourceValue = replaceDatasourceVariables(datasourceValue, {
     datasourceList,
+    variables,
   });
 
   const { run: onIndexChange } = useDebounceFn(
@@ -78,18 +87,20 @@ export default function VariableQuerybuilder() {
         label={
           <Space size={4}>
             {t('var.definition')}
-            <Tooltip title={t('common:click_to_view_doc')}>
-              <QuestionCircleOutlined
-                onClick={() => {
-                  DocumentDrawer({
-                    language: i18n.language,
-                    darkMode,
-                    title: t('var.definition'),
-                    documentPath: '/n9e-docs/dashboards/variables/query/elasticsearch',
-                  });
-                }}
-              />
-            </Tooltip>
+            <UsageDocs>
+              <Tooltip title={t('common:click_to_view_doc')}>
+                <QuestionCircleOutlined
+                  onClick={() => {
+                    DocumentDrawer({
+                      language: i18n.language,
+                      darkMode,
+                      title: t('var.definition'),
+                      documentPath: '/n9e-docs/dashboards/variables/query/elasticsearch',
+                    });
+                  }}
+                />
+              </Tooltip>
+            </UsageDocs>
           </Space>
         }
         name='definition'

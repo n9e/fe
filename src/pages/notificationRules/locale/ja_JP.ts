@@ -191,6 +191,32 @@ const ja_JP = {
       bot_name: '名前',
       bot_name_tip: 'このキーの分かりやすい名前（チーム名など）。通知記録の宛先に表示され、他のルールでも名前でキーを再利用できます',
     },
+    native_param: {
+      history_placeholder: '値を貼り付けるか、クリックして以前入力したものを選択',
+      bot_name: '名前',
+      bot_name_tip: 'この送信先の分かりやすい名前です。通知記録に送信先として表示され、他のルールでもこの名前で再利用できます',
+    },
+    pushover: {
+      user_key: 'User Key / Group Key',
+      user_key_tip: 'Pushover ダッシュボードのユーザーキー、またはチーム全体に通知する配信グループのキーです。複数のキーはカンマで区切ります。{{.変数名}} を使用できます。',
+      user_key_invalid: 'キーは英数字 30 文字です。複数のキーはカンマで区切ってください',
+    },
+    ntfy: {
+      topic: 'Topic',
+      topic_tip: 'URL 全体ではなくトピック名だけを入力します。受信者は ntfy アプリで同じトピックを購読します。{{.変数名}} を使用できます。',
+      topic_invalid: '英数字・アンダースコア・ハイフンで 1〜64 文字',
+    },
+    splunk_oncall: {
+      routing_key: 'Routing Key',
+      routing_key_tip: 'Splunk On-Call の Settings → Routing Keys で確認できます。どのエスカレーションポリシーがアラートを受け取るかを決めます。{{.変数名}} を使用できます。',
+      routing_key_invalid: 'ルーティングキーのみを入力してください（空白やスラッシュは使用できません）',
+    },
+    line: {
+      to: '送信先 ID',
+      to_tip:
+        'ユーザー ID（U…）、グループ ID（C…）、複数人トーク ID（R…）のいずれかで、後ろに 32 桁の 16 進数が続きます。チャネルの Webhook イベントの source フィールドから取得でき、アプリに表示される LINE ID ではありません。{{.変数名}} を使用できます。',
+      to_invalid: 'U・C・R のいずれかで始まり、32 桁の 16 進数が続きます',
+    },
     teams: {
       webhook_url: 'Webhook URL',
       webhook_url_tip: 'Teams Workflows で Anyone がアクセスできる Webhook を作成し、クエリパラメータを含む完全な URL をここに貼り付けます。{{.変数名}} を使用できます。',

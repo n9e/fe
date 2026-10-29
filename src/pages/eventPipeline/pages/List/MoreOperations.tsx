@@ -4,14 +4,18 @@ import { Dropdown, Menu, Button, Modal, message } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
+import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { Export } from '@/components/ExportImport';
 
 import { NS } from '../../constants';
 import { Item, deleteItems, putItemsDisabled } from '../../services';
 
 interface MoreOperationsProps {
+  runMutation: ReturnType<typeof useRowMutation>['run'];
+  pendingIds: ReadonlySet<React.Key>;
   selectedRows: Item[];
-  /** 批量操作完成后刷新列表并清空选择 */
+  onStatusChange: (ids: number[], disabled: boolean) => void;
+  /** Refresh the list and clear selection after deletion. */
   onFinished?: () => void;
 }
 
@@ -49,11 +53,13 @@ export default function MoreOperations(props: MoreOperationsProps) {
     Modal.confirm({
       title: t(disabled ? 'batch.disable_confirm' : 'batch.enable_confirm', { count: targets.length }),
       onOk: () =>
-        putItemsDisabled(_.map(targets, 'id'), disabled)
-          .then(() => {
-            message.success(t('common:success.modify'));
-            onFinished?.();
-          })
+        props
+          .runMutation(_.map(targets, 'id'), () =>
+            putItemsDisabled(_.map(targets, 'id'), disabled).then(() => {
+              message.success(t('common:success.modify'));
+              props.onStatusChange(_.map(targets, 'id'), disabled);
+            }),
+          )
           .catch((err) => {
             console.error(err);
           }),
@@ -108,7 +114,7 @@ export default function MoreOperations(props: MoreOperationsProps) {
 
   return (
     <Dropdown overlay={overlay} trigger={['click']}>
-      <Button onClick={(e) => e.stopPropagation()}>
+      <Button disabled={selectedRows.some((row) => props.pendingIds.has(row.id))} onClick={(e) => e.stopPropagation()}>
         {t('common:btn.more')} <DownOutlined />
       </Button>
     </Dropdown>

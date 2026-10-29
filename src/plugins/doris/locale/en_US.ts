@@ -82,7 +82,7 @@ const en_US = {
       table_tip: 'Can be used to create Doris alert rules, recording rules, and Polaris metrics.',
     },
     defaultSearchField: 'Default search field',
-    default_search_tip_1: 'Set as default search field',
+    default_search_tip_1: 'Set the default search field to query by entering a field value',
     default_search_tip_2: 'Unset default search field',
     default_search_by_tip: 'Default search field',
     datasource_disabled_tip: 'Please select a data source first',

@@ -15,6 +15,7 @@ import { Field } from '@/plugins/doris/ExplorerNG/types';
 import RDGTable from '../components/Table';
 import { DatasourceCateEnum } from '@/utils/constant';
 import { PatternPopover, ConstPopover } from './Popover';
+import UsageDocs from '@/components/UsageDocs';
 interface Props {
   onValueFilter: (condition: OnValueFilterParams) => void;
   indexData: Field[];
@@ -37,6 +38,7 @@ export interface LogClusting {
   fieldCacheKey: string;
 }
 
+/** Render clustered results using the same page-owned grid scrolling as other modes. */
 export default function TableCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logClusting, indexData, options, clusteringOptionsEleRef, logs, logsHash, setPatternHistogramState, clusteringExtraEleRef } = props;
@@ -211,6 +213,7 @@ export default function TableCpt(props: Props) {
       cols.unshift({
         name: t('logs.settings.lines'),
         key: '___lines___',
+        cellClass: 'n9e-log-line-number-cell',
         width: 40,
         resizable: false,
         formatter: ({ row }) => {
@@ -336,26 +339,28 @@ export default function TableCpt(props: Props) {
           dropdownMatchSelectWidth={false}
         />
       </div>
-      <Button
-        className='document-open-button'
-        type='link'
-        size='small'
-        icon={<IconFont type='icon-ic_book_one' />}
-        onClick={() =>
-          DocumentDrawer({
-            title: t('common:page_help'),
-            type: 'iframe',
-            documentPath: '/docs/content/flashcat/log/discover/log-clustering/',
-          })
-        }
-      >
-        {t('common:page_help')}
-      </Button>
+      <UsageDocs>
+        <Button
+          className='document-open-button'
+          type='link'
+          size='small'
+          icon={<IconFont type='icon-ic_book_one' />}
+          onClick={() =>
+            DocumentDrawer({
+              title: t('common:page_help'),
+              type: 'iframe',
+              documentPath: '/docs/content/flashcat/log/discover/log-clustering/',
+            })
+          }
+        >
+          {t('common:page_help')}
+        </Button>
+      </UsageDocs>
     </Space>
   );
 
   return (
-    <div className='min-h-0 h-full'>
+    <div className='min-h-0'>
       {clusteringOptionsEleRef.current && createPortal(clusteringPortal, clusteringOptionsEleRef.current)}
       {clusteringExtraEleRef.current &&
         createPortal(
@@ -378,7 +383,7 @@ export default function TableCpt(props: Props) {
           clusteringExtraEleRef.current,
         )}
       {fullAggregateLoading ? (
-        <div className='h-full flex flex-col items-center justify-center bg-fc-200' style={{ minHeight: 300 }}>
+        <div className='flex flex-col items-center justify-center bg-fc-200' style={{ minHeight: 300 }}>
           <SyncOutlined spin style={{ fontSize: 64, color: 'var(--fc-text-4)' }} />
           <div className='mt-6 text-base font-bold'>{t('clustering.loading_title')}</div>
           <div className='mt-2 text-l2'>

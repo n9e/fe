@@ -43,12 +43,17 @@ const resolveTransformedFieldName = (sourceFieldName: string, transformations: u
 export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPanel {
   const fallback = _.cloneDeep(panel);
   try {
-    const result = fallback;
+    // 历史面板可能缺少 options，甚至传入非对象；缺失时按空对象继续升级。
+    // 若在这里抛错，会被下面的兜底吞掉，导致面板静默停留在 legacy Table。
+    // 这里校验入参 panel 而不是 fallback：对 fallback 做类型守卫会把它收窄成
+    // Record<string, unknown>（部分新版 TS），后续赋值与返回都要额外断言。
+    if (!isRecord(panel)) return fallback;
+    const result: IPanel = fallback;
     const custom = isRecord(result.custom) ? result.custom : {};
     const displayMode = typeof custom.displayMode === 'string' ? custom.displayMode : 'seriesToRows';
     const targets = asRecordArray(result.targets);
     const legacyLinks = asRecordArray(custom.links);
-    const existingOptionLinks = asRecordArray(result.options.links);
+    const existingOptionLinks = asRecordArray(isRecord(result.options) ? result.options.links : undefined);
     const valueFieldNames = targets.filter((target) => typeof target.refId === 'string' && target.refId).map((target) => `__value_#${target.refId}`);
     const valueFieldDisplayNames = targets.map((target, index) => (typeof target.legend === 'string' && target.legend ? target.legend : valueFieldNames[index]));
     const renameByName = Object.fromEntries(
@@ -66,19 +71,21 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
         type: 'none',
       },
     };
-    result.options = { ...result.options };
-    delete result.options.links;
-    result.targets = targets.map((target) => {
+    const nextOptions: Record<string, unknown> = { ...(isRecord(result.options) ? result.options : {}) };
+    delete nextOptions.links;
+    result.options = nextOptions;
+    const nextTargets = targets.map((target) => {
       if (displayMode === 'labelValuesToRows') {
         const { legend, ...targetWithoutLegend } = target;
         return { ...targetWithoutLegend, instant: true };
       }
       return { ...target, instant: true };
     }) as ITarget[];
+    result.targets = nextTargets;
     result.overrides = asRecordArray(result.overrides).map((override) => {
       const matcher = isRecord(override.matcher) ? override.matcher : undefined;
       if (matcher?.id !== 'byFrameRefID') return override;
-      const targetIndex = asRecordArray(result.targets).findIndex((target) => target.refId === matcher.value);
+      const targetIndex = nextTargets.findIndex((target) => target.refId === matcher.value);
       let fieldName: string | undefined;
       if (targetIndex >= 0) {
         if (displayMode === 'labelValuesToRows') {
@@ -86,7 +93,7 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
         } else if (valueFieldNames.length === 1) {
           fieldName = 'value';
         } else {
-          fieldName = `value_${result.targets[targetIndex].refId}`;
+          fieldName = `value_${nextTargets[targetIndex].refId}`;
         }
       }
       return {
@@ -173,7 +180,7 @@ export function upgradeTableToNG(panel: IPanel, availableFields?: string[]): IPa
       ...link,
       url: typeof link.url === 'string' ? replaceLegacyLinkVariables(link.url, valueFieldName) : link.url,
     })) as LinksItem[];
-    if (optionLinks.length) result.options.links = optionLinks;
+    if (optionLinks.length) nextOptions.links = optionLinks;
 
     return result;
   } catch (error) {

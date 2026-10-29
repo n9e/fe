@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext } from '@/App';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import { DORIS_SQL_MODE_DOC_URL, NAME_SPACE } from '../constants';
+import UsageDocs from '@/components/UsageDocs';
 
 export default function VariableQuerybuilder() {
   const { t, i18n } = useTranslation(NAME_SPACE);
@@ -15,20 +16,22 @@ export default function VariableQuerybuilder() {
       label={
         <Space>
           SQL
-          <a
-            onClick={() => {
-              DocumentDrawer({
-                language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                darkMode,
-                title: t('common:document_link'),
-                type: 'iframe',
-                documentPath: DORIS_SQL_MODE_DOC_URL,
-                anchor: '#2-时间宏',
-              });
-            }}
-          >
-            {t('common:document_link')}
-          </a>
+          <UsageDocs>
+            <a
+              onClick={() => {
+                DocumentDrawer({
+                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                  darkMode,
+                  title: t('common:document_link'),
+                  type: 'iframe',
+                  documentPath: DORIS_SQL_MODE_DOC_URL,
+                  anchor: '#2-时间宏',
+                });
+              }}
+            >
+              {t('common:document_link')}
+            </a>
+          </UsageDocs>
         </Space>
       }
       name={['query', 'query']}

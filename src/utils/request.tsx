@@ -23,7 +23,7 @@ const isServiceUnavailableError = (error: any) => {
 };
 
 /** 异常处理程序，所有的error都被这里处理，页面无法感知具体error */
-const errorHandler = (error: ResponseError<any>): Response => {
+export const errorHandler = (error: ResponseError<any>): Response => {
   // 忽略掉 setting getter-only property "data" 的错误
   // 这是 umi-request 的一个 bug，当触发 abort 时 catch callback 里面不能 set data
   if (error.name !== 'AbortError' && error.message !== 'setting getter-only property "data"' && !Request.isCancel(error)) {
@@ -249,7 +249,7 @@ request.interceptors.response.use(
                   const { access_token, refresh_token } = res.dat;
                   localStorage.setItem(AccessTokenKey, access_token);
                   localStorage.setItem('refresh_token', refresh_token);
-                  location.href = `${basePrefix}${location.pathname}${location.search}`;
+                  location.href = `${location.pathname}${location.search}`;
                 }
               })
               .catch(() => {

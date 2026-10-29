@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Popover, Progress, Space, Spin, Tooltip, Row, Button, Alert, Col, Statistic, Divider, Tag } from 'antd';
@@ -9,27 +9,23 @@ import { PRIMARY_COLOR } from '@/utils/constant';
 
 import { NAME_SPACE } from '../../constants';
 import renderFieldValue from '../../utils/renderFieldValue';
-import { Field, StatsResult } from './types';
+import { Field, StatsResult, FieldActionOptions } from './types';
 import QuickViewPopover from './QuickViewPopover';
 
 const DEFAULT_TOP_NUMBER = 5;
 
 interface Props {
   operType: 'show' | 'available';
-  onOperClick: () => void;
+  onOperClick?: () => void;
   typeMap: Record<string, string>;
   field: Field;
   enableStats: boolean;
   disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: string; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
-  renderStatsPopoverTitleExtra?: (options: {
-    index: Field;
-    stats?: {
-      [index: string]: number;
-    };
-    setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  }) => React.ReactNode;
+  getUniqueCount?: (field: Field) => Promise<number>;
+  statsScope?: object;
+  renderStatsPopoverTitleExtra?: (options: FieldActionOptions) => React.ReactNode;
   renderFieldNameExtra?: (field: Field) => React.ReactNode;
   onStatisticClick?: (
     type: string,
@@ -75,6 +71,7 @@ const isEmptyValue = (value: string | null) => {
   return value === '' || value === null || value === 'null';
 };
 
+/** Render field actions and load retryable statistics only when the label is opened. */
 export default function FieldsItem(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {
@@ -94,9 +91,76 @@ export default function FieldsItem(props: Props) {
   const [topNumber, setTopNumber] = useState<number>(DEFAULT_TOP_NUMBER);
   const [topNData, setTopNData] = useState<any[]>([]);
   const [topNLoading, setTopNLoading] = useState<boolean>(false);
-  const [stats, setStats] = useState<{
-    [index: string]: number;
-  }>();
+  const [stats, setStats] = useState<StatsResult['stats']>();
+
+  const statsRequest = useRef<Promise<StatsResult> | undefined>();
+  const statsLoaded = useRef(false);
+  const requestVersion = useRef(0);
+  const actionsRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    // The cache changes fetchStats when the datasource/query/time range changes.
+    requestVersion.current += 1;
+    statsRequest.current = undefined;
+    statsLoaded.current = false;
+    setStats(undefined);
+    setTopNData([]);
+    setTopNLoading(false);
+    setTopNVisible(false);
+    return () => {
+      requestVersion.current += 1;
+    };
+  }, [fetchStats, field.field]);
+
+  // Keep every action in a fixed slot; only reserve label space for visible actions.
+  useLayoutEffect(() => {
+    const actions = actionsRef.current;
+    const row = actions?.parentElement;
+    if (!actions || !row) return;
+    const measure = () => {
+      const bounds = actions.getBoundingClientRect();
+      const activeButtons = Array.from(actions.querySelectorAll('button[aria-pressed="true"]'));
+      const activeWidth = activeButtons.length ? bounds.right - Math.min(...activeButtons.map((button) => button.getBoundingClientRect().left)) + 8 : 0;
+      row.style.setProperty('--log-field-actions-width', `${bounds.width + 8}px`);
+      row.style.setProperty('--log-field-active-width', `${activeWidth}px`);
+    };
+    measure();
+    const resize = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    resize?.observe(actions);
+    // Pressed state and action availability can change without resizing the group.
+    const mutations = new MutationObserver(measure);
+    mutations.observe(actions, { attributes: true, attributeFilter: ['aria-pressed'], childList: true, subtree: true });
+    return () => {
+      resize?.disconnect();
+      mutations.disconnect();
+    };
+  }, [field.field]);
+
+  const loadStats = () => {
+    if (!enableStats || !fetchStats || !field.indexable || statsLoaded.current || statsRequest.current) return;
+    const version = requestVersion.current;
+    setTopNLoading(true);
+    const request = Promise.resolve().then(() => fetchStats(field));
+    statsRequest.current = request;
+    request
+      .then((res) => {
+        if (version !== requestVersion.current) return;
+        setTopNumber(res.topNumber ?? DEFAULT_TOP_NUMBER);
+        setTopNData(res.topN);
+        setStats(res.stats);
+        statsLoaded.current = true;
+      })
+      .catch(() => {
+        if (version !== requestVersion.current) return;
+        setTopNData([]);
+        setStats(undefined);
+      })
+      .finally(() => {
+        if (version !== requestVersion.current) return;
+        statsRequest.current = undefined;
+        setTopNLoading(false);
+      });
+  };
 
   return (
     <Popover
@@ -111,7 +175,6 @@ export default function FieldsItem(props: Props) {
           <Space>
             <span>{field.field}</span>
           </Space>
-          {topNVisible ? renderStatsPopoverTitleExtra?.({ index: field, stats, setTopNVisible }) : null}
         </div>
       }
       content={
@@ -299,70 +362,76 @@ export default function FieldsItem(props: Props) {
           </Spin>
         </div>
       }
-      onVisibleChange={async (visible) => {
+      onVisibleChange={(visible) => {
         if (enableStats && fetchStats && field.indexable) {
           setTopNVisible(visible);
-          if (visible) {
-            setTopNLoading(true);
-            fetchStats(field)
-              .then((res) => {
-                const { topNumber, topN, stats } = res;
-                setTopNumber(topNumber ?? DEFAULT_TOP_NUMBER);
-                setTopNData(topN);
-                setStats(stats);
-              })
-              .catch(() => {
-                setTopNData([]);
-                setStats({});
-              })
-              .finally(() => {
-                setTopNLoading(false);
-              });
-          } else {
-            setTopNData([]);
-            setStats({});
-          }
+          if (visible) loadStats();
         }
       }}
     >
-      <Tooltip
-        placement='left'
-        title={
-          <div className='break-all'>
-            {field.type2 && (
-              <div>
-                <Space align='start'>
-                  <span className='whitespace-nowrap'>{t('field_type')}:</span>
-                  {field.type2}
-                </Space>
-              </div>
+      <div className='n9e-log-field-row cursor-pointer min-h-[24px] flex items-center pl-2 pr-1 group'>
+        <Tooltip
+          placement='left'
+          mouseLeaveDelay={0}
+          overlayStyle={{ pointerEvents: 'none' }}
+          title={
+            <div className='break-all'>
+              {field.type2 && (
+                <div>
+                  <Space align='start'>
+                    <span className='whitespace-nowrap'>{t('field_type')}:</span>
+                    {field.type2}
+                  </Space>
+                </div>
+              )}
+              <div>{field.indexable === false ? t('unindexable') : t('field_tip')}</div>
+            </div>
+          }
+        >
+          <span className='n9e-log-field-label flex min-w-0 flex-1 items-center gap-[8px]'>
+            {field.type && (
+              <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
             )}
-            <div>{field.indexable === false ? t('unindexable') : t('field_tip')}</div>
-          </div>
-        }
-      >
-        <div className='cursor-pointer min-h-[24px] flex items-center gap-[8px] pl-2 pr-1 group'>
-          {field.type && (
-            <span className='w-[16px] h-[16px] flex-shrink-0 bg-fc-200 rounded flex justify-center items-center'>{typeIconMap[typeMap[field.type]] || <QuestionOutlined />}</span>
+            <span
+              style={{
+                minWidth: 0,
+                flex: '1 1 0',
+              }}
+              title={field.field}
+              className='truncate leading-[1.2] hover:text-gray-400'
+            >
+              {field.field} {renderFieldNameExtra?.(field)}
+            </span>
+          </span>
+        </Tooltip>
+        <span
+          ref={actionsRef}
+          className='n9e-log-field-actions flex items-center flex-shrink-0'
+          onClick={(event) => event.stopPropagation()}
+          onMouseDown={(event) => event.stopPropagation()}
+        >
+          {field.indexable &&
+            renderStatsPopoverTitleExtra?.({
+              index: field,
+              stats,
+              loading: topNLoading,
+              setTopNVisible,
+              getUniqueCount: props.getUniqueCount ? () => props.getUniqueCount!(field) : undefined,
+              statsScope: props.statsScope,
+            })}
+          {onOperClick && (
+            <Tooltip mouseEnterDelay={0.6} overlayClassName='n9e-log-field-action-tip' title={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}>
+              <Button
+                type='text'
+                size='small'
+                aria-label={t(operType === 'show' ? 'field_list.remove_field' : 'field_list.add_field')}
+                icon={operIconMap[operType]}
+                onClick={onOperClick}
+              />
+            </Tooltip>
           )}
-          <span
-            style={{
-              width: 'calc(100% - 26px)',
-            }}
-            className='break-all wrap-anywhere leading-[1.2] hover:text-gray-400'
-          >
-            {field.field} {renderFieldNameExtra?.(field)}
-          </span>
-          <span
-            className='cursor-pointer w-[20px] flex-shrink-0 invisible group-hover:visible'
-            onClick={() => {
-              onOperClick();
-            }}
-          >
-            {operIconMap[operType]}
-          </span>
-        </div>
-      </Tooltip>
+        </span>
+      </div>
     </Popover>
   );
 }

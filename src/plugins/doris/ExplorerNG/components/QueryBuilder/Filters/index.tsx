@@ -22,6 +22,7 @@ interface Props {
   onChange?: (values: FilterConfig[]) => void;
 }
 
+/** Render applied filters and discard unfinished drafts when their editor closes. */
 export default function Filters(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { size = 'middle', indexData, fieldSampleParams, value, onChange } = props;
@@ -31,7 +32,7 @@ export default function Filters(props: Props) {
       size={[SIZE, SIZE / 2]}
       wrap
       style={{
-        maxWidth: 'calc(100% - 200px)', // leave some space for other buttons
+        maxWidth: '100%',
       }}
     >
       {_.map(value, (item, index) => {

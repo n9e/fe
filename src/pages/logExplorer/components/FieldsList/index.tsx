@@ -6,8 +6,11 @@ import _ from 'lodash';
 
 import { NAME_SPACE } from '../../constants';
 import FieldsItem from './FieldsItem';
+import { FieldsHelp } from '../Guidance';
 import { TYPE_MAP } from './constants';
-import { Field, StatsResult } from './types';
+import { Field, StatsResult, FieldActionOptions } from './types';
+
+import useFieldStatsCache from './useFieldStatsCache';
 
 import './style.less';
 
@@ -15,21 +18,18 @@ export type { Field } from './types';
 
 interface Props {
   typeMap?: Record<string, string>;
+  helpCapabilities?: false | { defaultSearch?: boolean; stack?: boolean };
   organizeFieldNames?: string[];
-  onOperClick: (field: string, type: 'show' | 'available') => void;
+  onOperClick?: (field: string, type: 'show' | 'available') => void;
   fields: Field[];
   enableStats?: boolean;
   disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: any; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
+  fetchUniqueCount?: (field: Field) => Promise<number>;
+  statsCacheKey?: string;
   loading?: boolean;
-  renderStatsPopoverTitleExtra?: (options: {
-    index: Field;
-    stats?: {
-      [index: string]: number;
-    };
-    setTopNVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  }) => React.ReactNode;
+  renderStatsPopoverTitleExtra?: (options: FieldActionOptions) => React.ReactNode;
   renderFieldNameExtra?: (field: Field) => React.ReactNode;
   onStatisticClick?: (
     type: string,
@@ -43,6 +43,7 @@ interface Props {
   ) => void;
 }
 
+/** Share query-scoped statistics and render displayed and available field groups. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {
@@ -59,6 +60,7 @@ export default function index(props: Props) {
     renderFieldNameExtra,
     onStatisticClick,
   } = props;
+  const statsCache = useFieldStatsCache(props.statsCacheKey, fetchStats, props.fetchUniqueCount);
   const [fieldsSearch, setFieldsSearch] = useState('');
   const [showFieldsCollapsed, setShowFieldsCollapsed] = useState(false);
   const [availableFieldsCollapsed, setAvailableFieldsCollapsed] = useState(false);
@@ -106,15 +108,15 @@ export default function index(props: Props) {
                       <FieldsItem
                         key={item.field}
                         operType='show'
-                        onOperClick={() => {
-                          onOperClick(item.field, 'show');
-                        }}
+                        onOperClick={onOperClick ? () => onOperClick(item.field, 'show') : undefined}
                         field={item}
                         disableEmptyValueClick={disableEmptyValueClick}
                         onValueFilter={onValueFilter}
                         typeMap={typeMap}
-                        fetchStats={fetchStats}
+                        fetchStats={statsCache.fetchStats}
                         enableStats={enableStats}
+                        getUniqueCount={statsCache.getUniqueCount}
+                        statsScope={statsCache}
                         renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                         renderFieldNameExtra={renderFieldNameExtra}
                         onStatisticClick={onStatisticClick}
@@ -126,11 +128,12 @@ export default function index(props: Props) {
             </div>
           )}
           <div>
-            <div className='font-bold ml-2 mb-2'>
+            <div className='n9e-log-help-label font-bold ml-2 mb-2'>
               <Space className='cursor-pointer' onClick={() => setAvailableFieldsCollapsed(!availableFieldsCollapsed)}>
                 {availableFieldsCollapsed ? <RightOutlined /> : <DownOutlined />}
                 {t('field_list.available_fields')}
               </Space>
+              {props.helpCapabilities !== false && <FieldsHelp {...props.helpCapabilities} />}
             </div>
             <div style={{ display: availableFieldsCollapsed ? 'none' : 'block' }}>
               {_.map(
@@ -145,16 +148,16 @@ export default function index(props: Props) {
                   return (
                     <FieldsItem
                       key={item.field}
-                      onOperClick={() => {
-                        onOperClick(item.field, 'available');
-                      }}
+                      onOperClick={onOperClick ? () => onOperClick(item.field, 'available') : undefined}
                       operType='available'
                       field={item}
                       disableEmptyValueClick={disableEmptyValueClick}
                       onValueFilter={onValueFilter}
                       typeMap={typeMap}
-                      fetchStats={fetchStats}
+                      fetchStats={statsCache.fetchStats}
                       enableStats={enableStats}
+                      getUniqueCount={statsCache.getUniqueCount}
+                      statsScope={statsCache}
                       renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                       renderFieldNameExtra={renderFieldNameExtra}
                       onStatisticClick={onStatisticClick}

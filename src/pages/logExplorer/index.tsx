@@ -17,12 +17,14 @@ import { getLocalActiveKey } from './utils/getLocalActiveKey';
 import getDefaultDatasourceCate from './utils/getDefaultDatasourceCate';
 import { isLogExplorerDatasourceCateSupported } from './utils/datasourceAvailability';
 import Header from './Header';
+import { GuidanceProvider } from './components/Guidance';
 import Explorer from './Explorer';
 
 interface TabItem {
   key: string;
   isInited?: boolean;
   formValues?: any;
+  selectedViewId?: number;
   /** 新增页签标记（仅运行时存在，不持久化）：激活时跳过自动查询 */
   isNewTab?: boolean;
 }
@@ -82,6 +84,17 @@ function TabExplorer({
     [setItems, item.key, persistItems],
   );
 
+  const setSelectedViewId = useCallback(
+    (selectedViewId: number | undefined) => {
+      setItems((prev) => {
+        if (_.find(prev, { key: item.key })?.selectedViewId === selectedViewId) return prev;
+        persistItems();
+        return prev.map((i) => (i.key === item.key ? { ...i, selectedViewId } : i));
+      });
+    },
+    [setItems, item.key, persistItems],
+  );
+
   // P2 方案A：页签切走时由 Explorer 调用，快照当前表单值（含未执行的修改）
   const handleSnapshot = useCallback(
     (formValues: any) => {
@@ -104,6 +117,8 @@ function TabExplorer({
       tabKey={item.key}
       tabIndex={itemIndex}
       defaultFormValuesControl={{
+        selectedViewId: item.selectedViewId,
+        setSelectedViewId,
         isInited: item?.isInited,
         setIsInited,
         defaultFormValues: item?.formValues,
@@ -115,9 +130,10 @@ function TabExplorer({
   );
 }
 
+/** Manage query tabs, saved-view selection and per-account help coordination. */
 export default function index() {
   const { t } = useTranslation(NAME_SPACE);
-  const { datasourceList, groupedDatasourceList } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, profile } = useContext(CommonStateContext);
   const location = useLocation();
   const history = useHistory();
   const params = queryString.parse(location.search) as { [index: string]: string | null };
@@ -189,9 +205,12 @@ export default function index() {
     persistItemsRef.current?.();
   }, []);
   useEffect(() => {
+    const flush = () => persistItemsRef.current?.flush();
+    // A browser refresh does not run React's unmount cleanup.
+    window.addEventListener('pagehide', flush);
     return () => {
-      // 页面卸载前 flush，避免防抖窗口内的最后一次写入丢失
-      persistItemsRef.current?.flush();
+      window.removeEventListener('pagehide', flush);
+      flush();
     };
   }, []);
 
@@ -247,19 +266,21 @@ export default function index() {
       }
       doc={IS_ENT ? '/docs/content/flashcat/log/discover/what-is-log-discover/' : undefined}
     >
-      <div className='n9e'>
-        {_.map(items, (item, itemIndex) => {
-          // P2 方案A：不在 LRU 保活范围内的页签直接卸载（切回时基于 formValues 恢复重查）
-          if (!mountedKeys.has(item.key)) {
-            return null;
-          }
-          return (
-            <div key={item.key} className='h-full w-full' style={{ display: item.key === activeKey ? 'block' : 'none' }}>
-              <TabExplorer item={item} itemIndex={itemIndex} active={item.key === activeKey} setItems={setItems} persistItems={persistItems} />
-            </div>
-          );
-        })}
-      </div>
+      <GuidanceProvider userKey={String(profile?.id ?? 'anonymous')}>
+        <div className='n9e n9e-log-explorer-page'>
+          {_.map(items, (item, itemIndex) => {
+            // P2 方案A：不在 LRU 保活范围内的页签直接卸载（切回时基于 formValues 恢复重查）
+            if (!mountedKeys.has(item.key)) {
+              return null;
+            }
+            return (
+              <div key={item.key} className='h-full w-full' style={{ display: item.key === activeKey ? 'block' : 'none' }}>
+                <TabExplorer item={item} itemIndex={itemIndex} active={item.key === activeKey} setItems={setItems} persistItems={persistItems} />
+              </div>
+            );
+          })}
+        </div>
+      </GuidanceProvider>
     </PageLayout>
   );
 }

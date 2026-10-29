@@ -27,7 +27,7 @@ src/pages/dashboard/Variables/
 │   ├── Textbox.tsx              # textbox：自由输入
 │   └── HostIdent.tsx            # hostIdent：调用 getMonObjectList
 ├── EditModal/                   # 变量编辑弹窗
-│   ├── index.tsx                # 变量列表：增删改排序，保存时写回全局态并回调 onChange
+│   ├── index.tsx                # 变量列表：增删改排序，保存时写回实例运行时状态并回调 onChange
 │   ├── Variable/                # 各类型的编辑表单
 │   ├── Querybuilder.tsx         # 按 cate 渲染对应的查询构造器
 │   └── Preview.tsx              # 编辑态「数据预览」
@@ -57,8 +57,8 @@ flowchart TD
   VarComp --> Dispatch["datasource.ts 按 cate 分发"]
   Dispatch --> Builtin["src/plugins 下的 prometheus / elasticsearch / clickHouse"]
   Dispatch --> Plus["plus:/parcels/Dashboard/variableDatasource"]
-  VarComp --> Store["globalState.variablesWithOptions"]
-  Provider --> Execution["globalState.variableExecution\n会话、执行中状态、稳定版本"]
+  VarComp --> Store["DashboardRuntimeStore.variablesWithOptions"]
+  Provider --> Execution["DashboardRuntimeStore.variableExecution\n会话、执行中状态、稳定版本"]
   Edit --> Store
   Store --> Interp["replaceTemplateVariables 插值"]
   Interp --> Render["Panels / Renderer 面板查询"]
@@ -96,13 +96,13 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-  Persist["dashboard.configs.var 持久化配置"] -->|"载入时去掉 options"| Runtime["globalState.variablesWithOptions 运行时全局态"]
+  Persist["dashboard.configs.var 持久化配置"] -->|"载入时去掉 options"| Runtime["DashboardRuntimeStore.variablesWithOptions 实例运行时状态"]
   Runtime -->|"保存时去掉 value 和 options"| Persist
   Runtime --> Local["Variable 组件本地 value 用于输入过程"]
   Local -->|"选择完成"| Runtime
 ```
 
-`Detail.tsx` 在保存时会 `_.omit(item, ['value', 'options'])`，因此 `value` 和 `options` 只存在于运行时。组件本地 `value` 是为了让多选下拉在展开期间不逐项触发查询，收起或单选时才写回全局态。
+`Detail.tsx` 在保存时会 `_.omit(item, ['value', 'options'])`，因此 `value` 和 `options` 只存在于运行时。组件本地 `value` 是为了让多选下拉在展开期间不逐项触发查询，收起或单选时才写回实例运行时状态。
 
 ## 运行时执行模型
 
@@ -185,21 +185,21 @@ sequenceDiagram
 
 ### 执行会话与卸载保护
 
-面板查询位于 `VariableManagerProvider` 外，需要订阅 `globalState.variableExecution` 才能在变量链执行期间暂停。该状态包含：
+面板查询位于 `VariableManagerProvider` 外，需要订阅所属实例的 `variableExecution` 才能在变量链执行期间暂停。该状态包含：
 
 - `sessionId`：每个 Provider 挂载时领取的递增会话 ID；
 - `isExecuting`：当前会话是否仍有变量执行链；
 - `revision`：当前会话从执行中变为稳定时递增，供面板以最终变量值触发一次查询。
 
-Provider 内部仍使用执行计数处理同一实例的重叠链：首条链开始时设为执行中，计数归零时才恢复稳定。Provider 卸载时，若自己仍是全局当前会话，会主动把状态复位为稳定；已经卸载的实例随后收到异步响应时，不会再写入全局执行状态。这样路由切换或配置更新留下的旧链，不能让新仪表盘长期暂停或提前恢复面板查询。
+Provider 内部仍使用执行计数处理同一实例的重叠链：首条链开始时设为执行中，计数归零时才恢复稳定。Provider 卸载时，若自己仍是实例当前会话，会主动把状态复位为稳定；已经卸载的实例随后收到异步响应时，不会再写入实例执行状态。这样路由切换或配置更新留下的旧链，不能让新仪表盘长期暂停或提前恢复面板查询。
 
-这不是多仪表盘实例隔离：`globalState.ts` 还共享变量、时间范围、仪表盘元数据和 series 等状态，同一 React 树内当前只支持一个仪表盘运行时实例。完整限制见同级 [README.md](./README.md) 的“运行时状态与多实例限制”。
+变量、时间范围、仪表盘元数据和 series 等状态都由 `DashboardRuntimeProvider` 按实例隔离，同一 React 树内的多个仪表盘实例互不影响；缺少 Provider 时直接抛错，不会回落到共享状态。完整约束见同级 [README.md](./README.md) 的「运行时边界」。
 
 ### 时间范围变化
 
 时间范围变化时，`refreshQueryVariablesForRangeChange` 会按拓扑序重跑全部已注册的 `query` 变量。
 
-这里有一个容易出错的时序：`Detail.tsx` 的本地 `range` 是通过 effect 同步到 globalState 的，Provider 首次渲染时拿到的还是默认值 `now-1h`，之后才被改写成仪表盘的真实范围，而此时变量列表通常还是空的。因此：
+这里有一个容易出错的时序：`Detail.tsx` 的本地 `range` 是通过 effect 同步到实例运行时 store 的，Provider 首次渲染时拿到的还是默认值 `now-1h`，之后才被改写成仪表盘的真实范围，而此时变量列表通常还是空的。因此：
 
 - 变量尚未完成首轮执行时，时间范围变化**不做任何处理**，因为首轮执行本来就会使用最新的时间范围；
 - 首轮执行开始时，reconcile 会把当前时间范围签名记为已处理，防止随后触发一轮重复刷新。
@@ -225,7 +225,7 @@ Provider 内部仍使用执行计数处理同一实例的重叠链：首条链�
 
 查询结果由 `processQueryOptions` 规范化。它同时接受标量数组（`['a', 'b']`）和对象数组（`[{ label, value }]`），统一产出 `{ label: string, value: string }[]` 并按 value 排序去重。`reg` 支持两种写法：普通字符串按全等匹配，`/pattern/flags` 按正则匹配；正则可以用命名捕获组 `(?<text>...)` 和 `(?<value>...)` 分别指定展示文本与实际值。
 
-options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 中就保留，否则回落到 `defaultValue`，再否则取第一项（多选且开了 All 时取 `['all']`）。URL 带 `__variable_value_fixed` 时跳过这套逻辑，保持传入值不变。
+options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 中就保留，显式清空值（单选 `''`、多选 `[]`）也保留，否则回落到 `defaultValue`，再否则取第一项（多选且开了 All 时取 `['all']`）。URL 带 `__variable_value_fixed` 时跳过这套逻辑，保持传入值不变。
 
 ## 插件机制
 
@@ -244,7 +244,7 @@ options 就绪后由 `getValueByOptions` 决定值：已有值且仍在 options 
 | URL query               | 变量值变化时 `history.replace`                         | 分享链接、跨页携带                 |
 | localStorage            | 变量值变化时，键为 `dashboard_v6_{dashboardId}_{name}` | 同一用户下次访问时恢复上次选择     |
 
-`initializeVariablesValue` 在首次加载时按 URL 优先、localStorage 兜底的顺序恢复值，并做类型归一：datasource 变量转数字，多选转数组，单选取数组首项，空值统一为 `undefined`（textbox 例外，回落到 `defaultValue` 或空字符串）。URL 中带 `__variable_value_fixed` 时不读 localStorage，也不再自动补默认值。
+`initializeVariablesValue` 在首次加载时按 URL 优先、localStorage 兜底的顺序恢复值，并做类型归一：datasource 变量转数字，多选转数组，单选取数组首项。未赋值的空值统一为 `undefined`（textbox 例外，回落到 `defaultValue` 或空字符串）。localStorage 中的显式清空（`''` 或 `'[]'`）会按当前单选或多选恢复为 `''` 或 `[]`，下次进入页面保持清空，而不是回落到默认值。URL 中带 `__variable_value_fixed` 时不读 localStorage，也不再自动补默认值。
 
 ## 关键约束
 

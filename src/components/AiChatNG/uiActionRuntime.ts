@@ -1,5 +1,8 @@
+import React from 'react';
 import i18next from 'i18next';
+import { Modal } from 'antd';
 import { createDomFeedback, getSharedActionRuntime } from '@flashcatcloud/ai-kit/actions';
+import type { ConfirmRequest } from '@flashcatcloud/ai-kit/actions';
 
 import { NAME_SPACE } from './constants';
 
@@ -9,6 +12,57 @@ function accent(): string | undefined {
   if (typeof document === 'undefined') return undefined;
   const value = getComputedStyle(document.documentElement).getPropertyValue('--fc-fill-primary-rgb').trim();
   return value ? value.split(/\s+/).join(',') : undefined;
+}
+
+/** Render the confirmation contract declared by a page action. */
+export function confirmUiAction(request: ConfirmRequest): Promise<boolean> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const settle = (approved: boolean) => {
+      if (settled) return;
+      settled = true;
+      resolve(approved);
+    };
+
+    const separatorIndex = request.prompt.indexOf('\n\n');
+    const title = separatorIndex === -1 ? request.prompt : request.prompt.slice(0, separatorIndex);
+    const detail = separatorIndex === -1 ? '' : request.prompt.slice(separatorIndex + 2);
+
+    Modal.confirm({
+      title,
+      ...(detail
+        ? {
+            width: 720,
+            content: React.createElement(
+              'div',
+              {
+                style: {
+                  marginTop: 16,
+                  maxHeight: 320,
+                  overflow: 'auto',
+                  padding: 12,
+                  border: '1px solid var(--fc-border-color, #d9d9d9)',
+                  borderRadius: 6,
+                  background: 'var(--fc-fill-2, #f5f5f5)',
+                  fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                  fontSize: 13,
+                  lineHeight: 1.6,
+                  whiteSpace: 'pre-wrap',
+                  overflowWrap: 'anywhere',
+                },
+              },
+              detail,
+            ),
+          }
+        : {}),
+      okText: request.actionLabel || i18next.t('common:btn.ok'),
+      cancelText: i18next.t('common:btn.cancel'),
+      closable: true,
+      maskClosable: true,
+      onOk: () => settle(true),
+      onCancel: () => settle(false),
+    });
+  });
 }
 
 /**
@@ -35,6 +89,7 @@ function accent(): string | undefined {
  * the page, so both copies resolve to one registry.
  */
 export const uiActionRuntime = getSharedActionRuntime({
+  confirm: confirmUiAction,
   // Ring the target and glide a cursor onto it. Writing a form field takes a
   // millisecond, so without this an action is indistinguishable from the page
   // glitching. The banner and the frame say it out loud: the assistant is

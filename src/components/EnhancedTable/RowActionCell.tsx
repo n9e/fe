@@ -8,6 +8,28 @@ import type { RowAction, RowActions } from './types';
 
 const visibleOnly = (list?: RowAction[]) => (list || []).filter((a) => a.visible !== false);
 
+export const DEFAULT_ACTION_MAX_ICONS = 4;
+
+/**
+ * Split a row's actions into surfaced icon buttons and kebab leftovers.
+ * Kebab actions expand into icon buttons when the whole row fits within `maxIcons`
+ * (danger items last); `node` and `collapsed: true` items always stay in the kebab.
+ * Rows exceeding the limit keep today's layout: inline icons + full kebab.
+ */
+export function splitRowActions(actions: RowActions, maxIcons = DEFAULT_ACTION_MAX_ICONS) {
+  const inline = visibleOnly(actions.inline);
+  const menu = visibleOnly(actions.menu);
+  const pinned = menu.filter((a) => a.node || a.collapsed);
+  const expandable = menu.filter((a) => !a.node && !a.collapsed);
+  if (inline.length + expandable.length > maxIcons) {
+    return { icons: inline, kebab: menu };
+  }
+  return {
+    icons: [...inline, ...expandable.filter((a) => !a.danger), ...expandable.filter((a) => a.danger)],
+    kebab: pinned,
+  };
+}
+
 function getInlineTooltipTitle(action: RowAction) {
   if (!action.tooltip) return action.text;
   if (!action.text) return action.tooltip;
@@ -98,19 +120,18 @@ function renderMenuItem(action: RowAction, key: string, onAction: () => void) {
   );
 }
 
-export function RowActionCell({ actions }: { actions: RowActions }) {
+export function RowActionCell({ actions, maxIcons }: { actions: RowActions; maxIcons?: number }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const inline = visibleOnly(actions.inline);
-  const menu = visibleOnly(actions.menu);
-  if (!inline.length && !menu.length) return null;
+  const { icons, kebab } = splitRowActions(actions, maxIcons);
+  if (!icons.length && !kebab.length) return null;
 
-  const normal = menu.filter((a) => !a.danger);
-  const danger = menu.filter((a) => a.danger);
+  const normal = kebab.filter((a) => !a.danger);
+  const danger = kebab.filter((a) => a.danger);
 
   return (
     <div className='fc-table-action-cell'>
-      {inline.map((a, i) => renderInlineAction(a, a.key ?? `inline-${i}`))}
-      {menu.length > 0 && (
+      {icons.map((a, i) => renderInlineAction(a, a.key ?? `inline-${i}`))}
+      {kebab.length > 0 && (
         <Dropdown
           trigger={['click']}
           placement='bottomRight'

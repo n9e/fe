@@ -19,6 +19,7 @@ import { ANNOTATIONS_ENRICH_QUERIES_DOC_URL } from '@/pages/alertRules/constants
 
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../constants';
 import GraphPreview from '../GraphPreview';
+import UsageDocs from '@/components/UsageDocs';
 
 interface IProps {
   prefixField?: any;
@@ -53,19 +54,21 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                     });
                   }}
                 />
-                <a
-                  onClick={() => {
-                    DocumentDrawer({
-                      language: i18n.language,
-                      darkMode,
-                      type: 'iframe',
-                      title: t('common:page_help'),
-                      documentPath: ANNOTATIONS_ENRICH_QUERIES_DOC_URL,
-                    });
-                  }}
-                >
-                  {t('common:page_help')}
-                </a>
+                <UsageDocs>
+                  <a
+                    onClick={() => {
+                      DocumentDrawer({
+                        language: i18n.language,
+                        darkMode,
+                        type: 'iframe',
+                        title: t('common:page_help'),
+                        documentPath: ANNOTATIONS_ENRICH_QUERIES_DOC_URL,
+                      });
+                    }}
+                  >
+                    {t('common:page_help')}
+                  </a>
+                </UsageDocs>
               </Space>
             </div>
             <div className='mb-4'>
@@ -84,16 +87,18 @@ export default function index({ prefixField = {}, fullPrefixName = [], prefixNam
                             label={
                               <Space>
                                 {t(`${NAME_SPACE}:query.query`)}
-                                <InfoCircleOutlined
-                                  onClick={() => {
-                                    DocumentDrawer({
-                                      language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                                      title: t('common:document_title'),
-                                      type: 'iframe',
-                                      documentPath: DORIS_SQL_MODE_DOC_URL,
-                                    });
-                                  }}
-                                />
+                                <UsageDocs>
+                                  <InfoCircleOutlined
+                                    onClick={() => {
+                                      DocumentDrawer({
+                                        language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                                        title: t('common:document_title'),
+                                        type: 'iframe',
+                                        documentPath: DORIS_SQL_MODE_DOC_URL,
+                                      });
+                                    }}
+                                  />
+                                </UsageDocs>
                               </Space>
                             }
                           >

@@ -5,8 +5,12 @@ import { act } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
 import Main from './Main';
-import { getGlobalState, setGlobalState } from '../../../globalState';
+import type { RenderResult } from '@testing-library/react';
+import { DashboardRuntimeProvider } from '../../../globalState';
 import type { DashboardMeta } from '../../../globalState';
+import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
+
+const { getGlobalState, setGlobalState } = dashboardTestRuntimeStore;
 
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (value: string) => value }) }));
@@ -22,7 +26,7 @@ jest.mock('@/components/TimeRangePicker', () => ({
   parseRange: () => ({ start: 0, end: 0 }),
   timeRangeUnix: () => ({}),
 }));
-jest.mock('../../../Editor/config', () => ({ defaultOptionsValues: { thresholds: { mode: 'absolute' } }, calcsOptions: [] }));
+jest.mock('../../registry/defaults', () => ({ defaultOptionsValues: { thresholds: { mode: 'absolute' } }, calcsOptions: [] }));
 jest.mock('./components/ResetZoomButton', () => () => null);
 jest.mock('./components/Annotation/AddButton', () => () => null);
 jest.mock('./components/Annotation/annotationsPlugin', () => ({
@@ -32,6 +36,7 @@ jest.mock('./components/Annotation/annotationsPlugin', () => ({
 }));
 
 const tooltipCalls: Array<{ graphTooltip?: string; id?: string }> = [];
+const axisBuilderCalls: Array<{ theme?: string }> = [];
 const renderedCharts: string[] = [];
 
 jest.mock('@/components/UPlotChart', () => {
@@ -42,6 +47,10 @@ jest.mock('@/components/UPlotChart', () => {
     tooltipPlugin: (options: { graphTooltip?: string; id?: string }) => {
       tooltipCalls.push(options);
       return actual.tooltipPlugin(options);
+    },
+    axisBuilder: (options: { theme?: string }) => {
+      axisBuilderCalls.push(options);
+      return actual.axisBuilder(options);
     },
     default: ({ id }: { id: string }) => {
       renderedCharts.push(id);
@@ -57,33 +66,51 @@ const baseMeta = {
   graphZoom: 'default',
 } as DashboardMeta;
 
-function setup() {
+/**
+ * props 必须在多次渲染间保持稳定：baseSeries 等直接位于重建图表的 useMemo 依赖数组中，
+ * 每次渲染新建数组会让该 memo 无条件重算，测试就无法守住 darkMode 这一项依赖。
+ */
+const panelProps = {
+  id: 'test-panel',
+  frames: [[1000, 2000]] as never,
+  baseSeries: [] as never,
+  width: 400,
+  height: 200,
+  panel: { type: 'timeseries', custom: {}, options: {}, targets: [] } as never,
+  series: [] as never,
+  annotations: [] as never,
+};
+
+function renderMain(darkMode = false) {
   return render(
-    <MemoryRouter>
-      <Main
-        id='test-panel'
-        frames={[[1000, 2000]] as never}
-        baseSeries={[]}
-        darkMode={false}
-        width={400}
-        height={200}
-        panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
-        series={[]}
-        annotations={[]}
-      />
-    </MemoryRouter>,
+    <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+      <MemoryRouter>
+        <Main {...panelProps} darkMode={darkMode} />
+      </MemoryRouter>
+    </DashboardRuntimeProvider>,
+  );
+}
+
+function rerenderMain(utils: RenderResult, darkMode: boolean) {
+  utils.rerender(
+    <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+      <MemoryRouter>
+        <Main {...panelProps} darkMode={darkMode} />
+      </MemoryRouter>
+    </DashboardRuntimeProvider>,
   );
 }
 
 describe('graphTooltip runtime propagation to timeseries charts', () => {
   beforeEach(() => {
     tooltipCalls.length = 0;
+    axisBuilderCalls.length = 0;
     renderedCharts.length = 0;
     setGlobalState('dashboardMeta', { ...baseMeta, graphTooltip: 'default' });
   });
 
   it('rebuilds the chart with the new mode when dashboardMeta.graphTooltip changes at runtime', () => {
-    const utils = setup();
+    const utils = renderMain();
 
     expect(tooltipCalls.length).toBeGreaterThan(0);
     expect(tooltipCalls[tooltipCalls.length - 1].graphTooltip).toBe('default');
@@ -91,22 +118,37 @@ describe('graphTooltip runtime propagation to timeseries charts', () => {
     act(() => {
       setGlobalState('dashboardMeta', { ...(getGlobalState('dashboardMeta') as DashboardMeta), graphTooltip: 'sharedTooltip' });
     });
-    utils.rerender(
-      <MemoryRouter>
-        <Main
-          id='test-panel'
-          frames={[[1000, 2000]] as never}
-          baseSeries={[]}
-          darkMode={false}
-          width={400}
-          height={200}
-          panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
-          series={[]}
-          annotations={[]}
-        />
-      </MemoryRouter>,
-    );
+    rerenderMain(utils, false);
 
     expect(tooltipCalls[tooltipCalls.length - 1].graphTooltip).toBe('sharedTooltip');
+  });
+
+  it('rebuilds axis options with the new theme when darkMode changes at runtime', () => {
+    const utils = renderMain(false);
+
+    expect(axisBuilderCalls[axisBuilderCalls.length - 1]).toEqual(expect.objectContaining({ theme: 'light' }));
+
+    rerenderMain(utils, true);
+
+    expect(axisBuilderCalls[axisBuilderCalls.length - 1]).toEqual(expect.objectContaining({ theme: 'dark' }));
+  });
+
+  it('resizes without rebuilding the chart options when only width changes', () => {
+    const utils = renderMain();
+    const tooltipCallCount = tooltipCalls.length;
+    const axisBuilderCallCount = axisBuilderCalls.length;
+
+    act(() => {
+      utils.rerender(
+        <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+          <MemoryRouter>
+            <Main {...panelProps} width={500} darkMode={false} />
+          </MemoryRouter>
+        </DashboardRuntimeProvider>,
+      );
+    });
+
+    expect(tooltipCalls.length).toBe(tooltipCallCount);
+    expect(axisBuilderCalls.length).toBe(axisBuilderCallCount);
   });
 });

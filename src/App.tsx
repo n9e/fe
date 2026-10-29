@@ -15,6 +15,7 @@
  *
  */
 import '@/utils/chunkGuard';
+import type { ContentMode } from '@/components/UsageDocs/guideVisibility';
 import React, { useEffect, useState, createContext, useRef } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // Modal 会被注入的代码所使用，请不要删除
@@ -97,6 +98,8 @@ interface SiteInfo {
 }
 
 export interface ICommonState {
+  hideUsageDocs?: boolean;
+  emptyMode?: ContentMode;
   datasourceCateOptions: Cate[];
   groupedDatasourceList: {
     [index: string]: Datasource[];
@@ -145,7 +148,6 @@ export interface ICommonState {
   setDarkMode: (mode: boolean) => void;
   dashboardDefaultRangeIndex?: string;
   esIndexMode: string;
-  dashboardSaveMode: 'auto' | 'manual';
   perms?: string[];
   screenTemplates?: string[];
   tablePaginationPosition?: string; // 表格分页位置
@@ -250,7 +252,6 @@ function App() {
       setCommonState((state) => ({ ...state, darkMode: mode }));
     },
     esIndexMode: 'all',
-    dashboardSaveMode: 'manual',
     screenTemplates: [],
     installTs: 0,
     logsDefaultRange: { start: 'now-1h', end: 'now' },
@@ -265,7 +266,7 @@ function App() {
   };
 
   useEffect(() => {
-    if (location.pathname === '/out-of-service') {
+    if (location.pathname === `${basePrefix}/out-of-service`) {
       initialized.current = true;
       removePreloader();
       setCommonState({ ...commonState }); // 为了触发重新渲染
@@ -357,7 +358,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!location.pathname.startsWith('/login')) {
+    if (!location.pathname.startsWith(`${basePrefix}/login`)) {
       document.body.className = commonState.darkMode ? 'theme-dark' : 'theme-light';
       // TODO: 临时兼容 Class 组件的写法
       localStorage.setItem('n9e-dark-mode', _.toString(commonState.darkMode));

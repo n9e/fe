@@ -15,6 +15,7 @@ export interface NavigableDrawerProps extends DrawerProps {
    * false: 默认 Antd 行为，全屏弹出带遮罩
    */
   inlineMode?: boolean;
+  defaultSize?: SizeType;
 }
 
 type SizeType = 'small' | 'middle' | 'large';
@@ -33,6 +34,7 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   title,
   children,
   inlineMode = true, // 默认开启内联模式
+  defaultSize = 'small',
   mask,
   getContainer,
   style,
@@ -42,7 +44,7 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   ...restProps
 }) => {
   const { t } = useTranslation('navigableDrawer');
-  const [size, setSize] = React.useState<SizeType>('small');
+  const [size, setSize] = React.useState<SizeType>(defaultSize);
 
   // 计算内联模式的特定属性
   const inlineProps: Partial<DrawerProps> = inlineMode

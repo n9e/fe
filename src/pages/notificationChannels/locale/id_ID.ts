@@ -37,6 +37,10 @@ const id_ID = {
     },
   },
   request_configuration: {
+    pushover: 'Konfigurasi Pushover',
+    ntfy: 'Konfigurasi ntfy',
+    splunk_oncall: 'Konfigurasi Splunk On-Call',
+    line: 'Konfigurasi LINE',
     teams: 'Konfigurasi Microsoft Teams',
     twilio: 'Konfigurasi Twilio',
     jsm_alert: 'Konfigurasi JSM Alert',
@@ -183,6 +187,47 @@ const id_ID = {
     service_sid_invalid: 'Messaging Service SID harus berupa MG diikuti 32 karakter heksadesimal',
     phone_format: 'Gunakan format E.164, misalnya +14155552671',
   },
+  native_api_url: 'URL API',
+  native_api_url_tip: 'Kosongkan untuk memakai alamat resmi. Ubah hanya jika permintaan melewati gateway atau reverse proxy.',
+  native_api_url_invalid: 'Harus diawali http:// atau https://',
+  pushover_request_config: {
+    top_tip:
+      'Buat aplikasi di https://pushover.net/apps/build lalu tempel token API-nya di sini. Kunci pengguna atau kunci grup pengiriman yang menerima notifikasi diisi di tiap aturan notifikasi. Token mendukung {{.nama_variabel}}.',
+    token: 'Token API',
+    token_invalid: 'Token API terdiri dari 30 huruf atau angka',
+    sound: 'Suara',
+    sound_tip: 'Nama suara Pushover, misalnya siren. Kosongkan untuk memakai bawaan masing-masing penerima.',
+    proxy_tip: 'Isi jika Pushover hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
+  },
+  ntfy_request_config: {
+    top_tip:
+      'Kosongkan semuanya untuk mengirim ke server publik ntfy.sh tanpa autentikasi, atau isi server milik sendiri beserta kredensialnya. Topik diisi di tiap aturan notifikasi. Di server publik siapa pun yang tahu topiknya bisa membacanya, jadi pilih nama topik yang sulit ditebak.',
+    server_url: 'URL server',
+    server_url_tip: 'Alamat root server ntfy, tanpa topik. Kosongkan untuk memakai https://ntfy.sh.',
+    token: 'Token akses',
+    token_tip:
+      'Token yang dibuat di pengaturan akun ntfy (diawali tk_). Pakai token atau nama pengguna dan kata sandi; kosongkan keduanya untuk server tanpa autentikasi. Mendukung {{.nama_variabel}}.',
+    username: 'Nama pengguna',
+    password: 'Kata sandi',
+    auth_conflict: 'Pakai token akses atau nama pengguna dan kata sandi, jangan keduanya',
+    basic_incomplete: 'Isi nama pengguna dan kata sandi sekaligus',
+    proxy_tip: 'Isi jika ntfy hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
+    insecure_tip: 'Aktifkan untuk server ntfy milik sendiri dengan sertifikat self-signed',
+  },
+  splunk_oncall_request_config: {
+    top_tip:
+      'Alert dikirim ke Splunk On-Call (dulu VictorOps) melalui integrasi REST endpoint. Kunci API milik seluruh organisasi dan diatur di sini; kunci routing menentukan tim mana yang dipanggil dan diisi di tiap aturan notifikasi. Saat alert pulih, insidennya diselesaikan.',
+    api_key: 'API Key',
+    api_key_tip: 'Di Splunk On-Call buka Integrations → 3rd Party Integrations → REST - Generic. Kuncinya adalah bagian URL setelah /alert/. Mendukung {{.nama_variabel}}.',
+    proxy_tip: 'Isi jika Splunk On-Call hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
+  },
+  line_request_config: {
+    top_tip:
+      'Notifikasi dikirim oleh Akun Resmi LINE melalui Messaging API (LINE Notify sudah dihentikan). Atur token akses channel di sini; penerima (ID pengguna, grup, atau obrolan multi-orang) diisi di tiap aturan notifikasi. Pengguna harus menambahkan akun resmi sebagai teman, dan grup harus mengundangnya.',
+    channel_access_token: 'Channel access token',
+    channel_access_token_tip: 'LINE Developers Console → channel Anda → Messaging API → Channel access token (long-lived). Mendukung {{.nama_variabel}}.',
+    proxy_tip: 'Isi jika LINE hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Satu URL webhook mengarah ke satu channel Slack, jadi URL diisi di aturan notifikasi dan media ini bisa mengirim ke banyak channel. Pengaturan di sini adalah nilai default untuk semua aturan. Dapatkan URL dengan membuat app di https://api.slack.com/apps lalu mengaktifkan Incoming Webhooks.',
@@ -247,6 +292,10 @@ const id_ID = {
   },
   types_select_placeholder: 'Jenis',
   types: {
+    pushover: 'Pushover',
+    ntfy: 'ntfy',
+    splunk_oncall: 'Splunk On-Call',
+    line: 'LINE',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
@@ -277,6 +326,15 @@ const id_ID = {
     script: 'Script',
   },
   test: {
+    pushover_title: 'User Key / Group Key',
+    pushover_tip: 'Setelah disimpan, nilai ini diisi di aturan notifikasi; isi di sini hanya untuk pengujian.',
+    ntfy_title: 'Topic',
+    ntfy_tip: 'Setelah disimpan, nilai ini diisi di aturan notifikasi; isi di sini hanya untuk pengujian.',
+    splunk_oncall_title: 'Routing Key',
+    splunk_oncall_tip: 'Setelah disimpan, nilai ini diisi di aturan notifikasi; isi di sini hanya untuk pengujian.',
+    splunk_oncall_with_recovery: 'Uji juga pemulihan (selesaikan insiden)',
+    line_title: 'ID penerima',
+    line_tip: 'Setelah disimpan, nilai ini diisi di aturan notifikasi; isi di sini hanya untuk pengujian.',
     jsm_title: 'Kunci integrasi API JSM',
     jsm_tip: 'Setelah disimpan, kunci diisi di aturan notifikasi; isi satu di sini untuk menguji. Alert sungguhan dibuat di tim integrasi ini.',
     jsm_api_key_placeholder: 'Kunci API integrasi',

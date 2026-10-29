@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { AutoComplete, Button, Checkbox, Col, Form, Popover, Row, Select, Space, Tooltip } from 'antd';
-import { CloseOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloseOutlined, InfoCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
 import _ from 'lodash';
@@ -64,6 +64,7 @@ function getFieldForTermsAgg(field?: Field) {
   return field.field;
 }
 
+/** Keep Elasticsearch filter changes in a draft until the user confirms. */
 function ConfigPopover(props: ConfigPopoverProps) {
   const { t } = useTranslation(NAME_SPACE);
   const { datasourceValue, indexData, filters, onChange, executeQuery, children, data, index } = props;
@@ -130,36 +131,24 @@ function ConfigPopover(props: ConfigPopoverProps) {
     },
   );
 
-  const save = (afterSave?: () => void) => {
-    form
-      .validateFields()
-      .then((values) => {
-        const nextFilter = toQueryFilter(values);
-        const nextFilters = data && typeof index === 'number' ? _.map(filters || [], (item, i) => (i === index ? nextFilter : item)) : [...(filters || []), nextFilter];
-        onChange(nextFilters);
-        form.resetFields();
-        executeQuery();
-      })
-      .catch(() => {})
-      .finally(() => {
-        afterSave?.();
-      });
+  const close = () => {
+    setVisible(false);
+    form.resetFields();
   };
 
-  const saveAndClose = () => {
-    save(() => {
-      setVisible(false);
-    });
+  const confirm = (values: Parameters<typeof toQueryFilter>[0]) => {
+    const nextFilter = toQueryFilter(values);
+    const nextFilters = data && typeof index === 'number' ? _.map(filters || [], (item, i) => (i === index ? nextFilter : item)) : [...(filters || []), nextFilter];
+    close();
+    onChange(nextFilters);
+    executeQuery();
   };
 
   const handleVisibleChange = (nextVisible: boolean) => {
-    if (nextVisible) {
-      form.setFieldsValue(data ? toBuilderValues(data) : { operator: '=', disabled: false });
-      setVisible(true);
-      return;
-    }
-
-    saveAndClose();
+    if (!nextVisible) return close();
+    form.resetFields();
+    form.setFieldsValue(data ? _.cloneDeep(toBuilderValues(data)) : { operator: '=', disabled: false });
+    setVisible(true);
   };
 
   return (
@@ -170,7 +159,7 @@ function ConfigPopover(props: ConfigPopoverProps) {
       onVisibleChange={handleVisibleChange}
       content={
         <div className='w-[400px]'>
-          <Form form={form} layout='vertical'>
+          <Form form={form} layout='vertical' onFinish={confirm}>
             <Row gutter={SIZE}>
               <Col span={12}>
                 <Form.Item
@@ -257,9 +246,35 @@ function ConfigPopover(props: ConfigPopoverProps) {
                 </Col>
               )}
               <Col span={24}>
-                <Form.Item name='disabled' valuePropName='checked' initialValue={false} className='mb-0'>
-                  <Checkbox>{t('builder.filters.disabled')}</Checkbox>
-                </Form.Item>
+                <div className='flex items-center justify-between gap-4'>
+                  <Form.Item name='disabled' valuePropName='checked' initialValue={false} className='mb-0'>
+                    <Checkbox aria-label={t('builder.filters.disabled')}>
+                      <span className='inline-flex items-center gap-1 align-middle'>
+                        <span>{t('builder.filters.disabled')}</span>
+                        <Tooltip title={t('log_explorer:filter_editor.disabled_tip')}>
+                          <QuestionCircleOutlined
+                            tabIndex={0}
+                            aria-label={t('log_explorer:filter_editor.disabled_tip')}
+                            className='text-hint cursor-help'
+                            style={{ fontSize: 12 }}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                            }}
+                          />
+                        </Tooltip>
+                      </span>
+                    </Checkbox>
+                  </Form.Item>
+                  <Space size={4}>
+                    <Button type='text' size='small' onClick={close}>
+                      {t('log_explorer:filter_editor.cancel')}
+                    </Button>
+                    <Button type='link' size='small' onClick={() => form.submit()}>
+                      {t('log_explorer:filter_editor.confirm')}
+                    </Button>
+                  </Space>
+                </div>
               </Col>
             </Row>
           </Form>
@@ -271,12 +286,13 @@ function ConfigPopover(props: ConfigPopoverProps) {
   );
 }
 
+/** Render Elasticsearch filter chips with explicit confirm/cancel editing. */
 export default function FiltersBuilder(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { filters, onChange, executeQuery } = props;
 
   return (
-    <div className='flex items-start gap-2 mb-2'>
+    <div className='flex items-start gap-2'>
       <Tooltip title={t('builder.filters.label_tip')}>
         <Space className='h-[24px] flex-shrink-0 text-hint cursor-help'>
           <span>{t('builder.filters.label')}</span>

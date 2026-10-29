@@ -37,6 +37,10 @@ const es_ES = {
     },
   },
   request_configuration: {
+    pushover: 'Configuración de Pushover',
+    ntfy: 'Configuración de ntfy',
+    splunk_oncall: 'Configuración de Splunk On-Call',
+    line: 'Configuración de LINE',
     teams: 'Configuración de Microsoft Teams',
     twilio: 'Configuración de Twilio',
     jsm_alert: 'Configuración de JSM Alert',
@@ -185,6 +189,47 @@ const es_ES = {
     service_sid_invalid: 'El Messaging Service SID debe ser MG seguido de 32 caracteres hexadecimales',
     phone_format: 'Usa el formato E.164, por ejemplo +14155552671',
   },
+  native_api_url: 'URL de la API',
+  native_api_url_tip: 'Déjalo vacío para usar la dirección oficial. Cámbiala solo si las peticiones pasan por una pasarela o un proxy inverso.',
+  native_api_url_invalid: 'Debe empezar por http:// o https://',
+  pushover_request_config: {
+    top_tip:
+      'Crea una aplicación en https://pushover.net/apps/build y pega aquí su token de API. La clave de usuario o de grupo de entrega que recibe las notificaciones se indica en cada regla de notificación. El token admite {{.nombre_variable}}.',
+    token: 'Token de API',
+    token_invalid: 'El token de API tiene 30 letras o dígitos',
+    sound: 'Sonido',
+    sound_tip: 'Nombre de un sonido de Pushover, como siren. Déjalo vacío para usar el predeterminado de cada destinatario.',
+    proxy_tip: 'Indícalo si a Pushover solo se llega a través de un proxy, por ejemplo http://127.0.0.1:7890',
+  },
+  ntfy_request_config: {
+    top_tip:
+      'Déjalo todo vacío para publicar en el servidor público ntfy.sh sin autenticación, o indica tu servidor propio y sus credenciales. El topic se indica en cada regla de notificación. En un servidor público cualquiera que conozca el topic puede leerlo, así que elige un nombre difícil de adivinar.',
+    server_url: 'URL del servidor',
+    server_url_tip: 'Dirección raíz del servidor ntfy, sin el topic. Déjalo vacío para usar https://ntfy.sh.',
+    token: 'Token de acceso',
+    token_tip:
+      'Token creado en los ajustes de la cuenta de ntfy (empieza por tk_). Usa un token o bien un usuario y contraseña; deja ambos vacíos en servidores sin autenticación. Admite {{.nombre_variable}}.',
+    username: 'Usuario',
+    password: 'Contraseña',
+    auth_conflict: 'Usa un token de acceso o un usuario y contraseña, no ambos',
+    basic_incomplete: 'Indica tanto el usuario como la contraseña',
+    proxy_tip: 'Indícalo si a ntfy solo se llega a través de un proxy, por ejemplo http://127.0.0.1:7890',
+    insecure_tip: 'Actívalo para un servidor ntfy propio con certificado autofirmado',
+  },
+  splunk_oncall_request_config: {
+    top_tip:
+      'Las alertas se envían a Splunk On-Call (antes VictorOps) mediante la integración REST endpoint. La clave de API pertenece a toda la organización y se configura aquí; la clave de enrutamiento decide a qué equipo se avisa y se indica en cada regla de notificación. Cuando la alerta se recupera, el incidente se resuelve.',
+    api_key: 'API Key',
+    api_key_tip: 'En Splunk On-Call abre Integrations → 3rd Party Integrations → REST - Generic. La clave es la parte de la URL que sigue a /alert/. Admite {{.nombre_variable}}.',
+    proxy_tip: 'Indícalo si a Splunk On-Call solo se llega a través de un proxy, por ejemplo http://127.0.0.1:7890',
+  },
+  line_request_config: {
+    top_tip:
+      'Las notificaciones las envía una cuenta oficial de LINE mediante la Messaging API (LINE Notify se ha descontinuado). Configura aquí el token de acceso del canal; el destinatario (ID de usuario, de grupo o de chat de varias personas) se indica en cada regla de notificación. Los usuarios deben añadir la cuenta oficial como amiga y los grupos deben invitarla.',
+    channel_access_token: 'Channel access token',
+    channel_access_token_tip: 'LINE Developers Console → tu canal → Messaging API → Channel access token (long-lived). Admite {{.nombre_variable}}.',
+    proxy_tip: 'Indícalo si a LINE solo se llega a través de un proxy, por ejemplo http://127.0.0.1:7890',
+  },
   slackwebhook_request_config: {
     top_tip:
       'Una URL de webhook corresponde a un canal de Slack, por eso se indica en la regla de notificación y este medio puede enviar a cualquier número de canales. Estos ajustes son valores por defecto compartidos por todas las reglas. Obtén la URL creando una app en https://api.slack.com/apps y activando Incoming Webhooks.',
@@ -249,6 +294,10 @@ const es_ES = {
   },
   types_select_placeholder: 'Tipo',
   types: {
+    pushover: 'Pushover',
+    ntfy: 'ntfy',
+    splunk_oncall: 'Splunk On-Call',
+    line: 'LINE',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
@@ -279,6 +328,15 @@ const es_ES = {
     script: 'Script',
   },
   test: {
+    pushover_title: 'User Key / Group Key',
+    pushover_tip: 'Una vez guardado, este valor se indica en la regla de notificación; introduce uno aquí solo para probar.',
+    ntfy_title: 'Topic',
+    ntfy_tip: 'Una vez guardado, este valor se indica en la regla de notificación; introduce uno aquí solo para probar.',
+    splunk_oncall_title: 'Routing Key',
+    splunk_oncall_tip: 'Una vez guardado, este valor se indica en la regla de notificación; introduce uno aquí solo para probar.',
+    splunk_oncall_with_recovery: 'Probar también la recuperación (resolver el incidente)',
+    line_title: 'ID del destinatario',
+    line_tip: 'Una vez guardado, este valor se indica en la regla de notificación; introduce uno aquí solo para probar.',
     jsm_title: 'Clave de la integración de API de JSM',
     jsm_tip: 'Tras guardar, la clave se indica en la regla de notificación; introduce una aquí para probar. Se crea una alerta real en el equipo de esta integración.',
     jsm_api_key_placeholder: 'Clave de API de la integración',
