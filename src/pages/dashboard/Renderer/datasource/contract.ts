@@ -37,6 +37,7 @@ function interpolateQueryValue(
   step: number | undefined,
   scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined,
   variables?: import('@/pages/dashboard/Variables/types').IVariable[],
+  enableDorisSqlLike = false,
 ): unknown {
   if (typeof value === 'string') {
     return replaceTemplateVariables(value, {
@@ -44,15 +45,16 @@ function interpolateQueryValue(
       step,
       scopedVars,
       variables,
+      enableDorisSqlLike,
     });
   }
   if (Array.isArray(value)) {
-    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars, variables));
+    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars, variables, enableDorisSqlLike));
   }
   if (value && typeof value === 'object') {
     return Object.keys(value).reduce<Record<string, unknown>>((result, key) => {
       if (!FORBIDDEN_REQUEST_FIELDS.has(key)) {
-        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars, variables);
+        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars, variables, enableDorisSqlLike);
       }
       return result;
     }, {});
@@ -102,7 +104,7 @@ function getDatasourceQueryPayload(target: ITarget, cate: string, options: Build
       scopedVars: options.scopedVars,
     });
   }
-  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars, options.variables);
+  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars, options.variables, cate === 'doris');
 }
 
 export interface BuildDashboardQueryRequestOptions {

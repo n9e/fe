@@ -14,6 +14,13 @@ import { formatString, formatDatasource } from './formatString';
 
 export type { IVariable } from '../types';
 
+// scopedVars 的 text 只能还原为单个选项标签；数组值继续按值插值。
+function buildScopedVarOptions(text: string | undefined, value: IVariable['value']) {
+  if (text == null) return undefined;
+  if (typeof value !== 'string' && typeof value !== 'number') return undefined;
+  return [{ label: text, value }];
+}
+
 export default function replaceTemplateVariables(
   str: string,
   params?: {
@@ -26,6 +33,7 @@ export default function replaceTemplateVariables(
     scopedVars?: ScopedVariables;
     /** Runtime variables supplied by an owning dashboard instance. */
     variables?: IVariable[];
+    enableDorisSqlLike?: boolean;
   },
 ) {
   // 如果 str 为空，如果没有包含变量则直接返回
@@ -35,7 +43,7 @@ export default function replaceTemplateVariables(
   }
 
   const variablesWithOptions = params?.variables ?? [];
-  const { scopedVars } = params || {};
+  const { scopedVars, enableDorisSqlLike } = params || {};
   const range = params?.range;
 
   let extVariables: IVariable[] = getBuiltInVariables(range, params);
@@ -45,10 +53,13 @@ export default function replaceTemplateVariables(
       extVariables,
       _.map(scopedVars, (value, key) => {
         // scopedVars 的值有两种形态：{ value } 对象（ScopedVariable）或原始值（扁平映射），统一在这里归一化
-        const normalizedValue = _.isPlainObject(value) ? value.value : (value as IVariable['value']);
+        const isScopedVariable = value !== null && typeof value === 'object' && !Array.isArray(value);
+        const normalizedValue = isScopedVariable ? value.value : (value as IVariable['value']);
+        const normalizedText = isScopedVariable && typeof value.text === 'string' ? value.text : undefined;
         return {
           name: key,
           value: normalizedValue,
+          options: buildScopedVarOptions(normalizedText, normalizedValue),
         } as IVariable;
       }),
     );
@@ -57,7 +68,7 @@ export default function replaceTemplateVariables(
   const data = adjustData(_.concat(variablesWithOptions ?? [], extVariables), {
     datasourceList: [],
   });
-  const result = formatString(str, data);
+  const result = formatString(str, data, { enableDorisSqlLike });
   return result;
 }
 

@@ -17,7 +17,7 @@ jest.mock('@/App', () => {
   };
 });
 jest.mock('@/utils/constant', () => ({
-  DatasourceCateEnum: { prometheus: 'prometheus', elasticsearch: 'elasticsearch', mysql: 'mysql', gcm: 'gcm' },
+  DatasourceCateEnum: { prometheus: 'prometheus', elasticsearch: 'elasticsearch', mysql: 'mysql', doris: 'doris', gcm: 'gcm' },
   IS_PLUS: true,
 }));
 jest.mock('@/components/TimeRangePicker', () => ({
@@ -42,7 +42,6 @@ jest.mock('../EditModal/Querybuilder', () => ({
   ),
 }));
 jest.mock('../Variable/Constant', () => () => null);
-jest.mock('../Variable/Custom', () => () => null);
 jest.mock('../Variable/Datasource', () => () => null);
 jest.mock('../Variable/DatasourceIdentifier', () => () => null);
 jest.mock('../Variable/HostIdent', () => () => null);
@@ -73,6 +72,14 @@ const projectVariable = (partial: Partial<IVariable> = {}): IVariable => ({
   definition: '',
   datasource: { cate: 'gcm', value: 1 },
   ...partial,
+});
+const serversVariable = (): IVariable => ({
+  name: 'servers',
+  type: 'custom',
+  definition: "web-01,db'o1,api.02",
+  datasource: { cate: 'custom' },
+  multi: true,
+  value: ['web-01'],
 });
 
 function mountRuntime(variables: IVariable[], fixed?: boolean) {
@@ -224,6 +231,44 @@ test('SQL macros are passed to the datasource instead of being treated as missin
   expect(document.querySelector('.anticon-warning')).not.toBeInTheDocument();
 });
 
+test('formatted Doris references rerun dependent query variables and escape SQL values', async () => {
+  queryMock.mockResolvedValue(projects);
+  const sql = 'SELECT description FROM logs WHERE ${servers:sql_like_or:description}';
+  mountRuntime([
+    serversVariable(),
+    projectVariable({
+      name: 'doris_matches',
+      datasource: { cate: 'doris', value: 1 },
+      definition: sql,
+      query: { query: sql, nested: { filter: '${servers:sql_like_and:logs.description}' } },
+    }),
+  ]);
+
+  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(1));
+  expect(queryMock).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      datasourceCate: 'doris',
+      query: expect.objectContaining({
+        query: "SELECT description FROM logs WHERE description LIKE '%web-01%'",
+        nested: { filter: "logs.description LIKE '%web-01%'" },
+      }),
+    }),
+  );
+
+  await selectOption("db'o1", 0);
+  fireEvent.blur(screen.getAllByRole('combobox')[0]);
+  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(2));
+  expect(state('servers').value).toEqual(['web-01', "db'o1"]);
+  expect(queryMock).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      query: expect.objectContaining({
+        query: "SELECT description FROM logs WHERE description LIKE '%web-01%' OR description LIKE '%db''o1%'",
+        nested: { filter: "logs.description LIKE '%web-01%' AND logs.description LIKE '%db''o1%'" },
+      }),
+    }),
+  );
+});
+
 test('real dependency chain receives the project value, not its display label', async () => {
   queryMock.mockImplementation(async ({ query }) => (query.project_id ? [{ label: `Metric for ${query.project_id}`, value: `metric/${query.project_id}` }] : projects));
   mountRuntime([projectVariable(), projectVariable({ name: 'metric', query: { project_id: '${project}' } })]);
@@ -355,7 +400,7 @@ test('query failure then recovery clears stale options and restores display labe
   expect(state().options).toEqual(projects);
 });
 
-function EditorHarness({ variable }: { variable: IVariable }) {
+function EditorHarness({ variable, variablesWithOptions = [] }: { variable: IVariable; variablesWithOptions?: IVariable[] }) {
   const [form] = Form.useForm();
   const footer = React.useRef<HTMLDivElement>(null);
   const [ready, setReady] = React.useState(false);
@@ -370,11 +415,61 @@ function EditorHarness({ variable }: { variable: IVariable }) {
         <Form.Item name={['datasource', 'value']} hidden>
           <Input />
         </Form.Item>
-        {ready && <QueryEditor formatedReg={variable.reg || ''} datasourceVars={[]} variablesWithOptions={[]} footerExtraRef={footer} />}
+        {ready && <QueryEditor formatedReg={variable.reg || ''} datasourceVars={[]} variablesWithOptions={variablesWithOptions} footerExtraRef={footer} />}
       </Form>
     </>
   );
 }
+
+test('Doris query-variable editor exposes multi and All controls without a wildcard All value', () => {
+  const variable = projectVariable({
+    datasource: { cate: 'doris', value: 1 },
+    multi: true,
+    allOption: true,
+    allValue: '',
+  });
+
+  render(
+    <ConfigProvider virtual={false}>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={variable} />
+      </DashboardRuntimeProvider>
+    </ConfigProvider>,
+  );
+
+  expect(screen.getByText('var.multi')).toBeInTheDocument();
+  expect(screen.getByText('var.allOption')).toBeInTheDocument();
+  const allValueInput = screen.getByText('var.allValue').closest('.ant-form-item')?.querySelector('input');
+  expect(allValueInput).toHaveAttribute('placeholder', '');
+});
+
+test('Doris variable preview interpolates SQL LIKE conditions before querying', async () => {
+  queryMock.mockResolvedValue(projects);
+  const sql = 'SELECT description FROM logs WHERE ${servers:sql_like_or:description}';
+  const variable = projectVariable({
+    name: 'doris_matches',
+    datasource: { cate: 'doris', value: 1 },
+    definition: sql,
+  });
+
+  render(
+    <ConfigProvider virtual={false}>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={variable} variablesWithOptions={[serversVariable()]} />
+      </DashboardRuntimeProvider>
+    </ConfigProvider>,
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'common:btn.data_preview' }));
+
+  await waitFor(() =>
+    expect(queryMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        datasourceCate: 'doris',
+        query: expect.objectContaining({ query: "SELECT description FROM logs WHERE description LIKE '%web-01%'" }),
+      }),
+    ),
+  );
+});
 
 test.each([
   ['/project-/', projects],
