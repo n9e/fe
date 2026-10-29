@@ -186,6 +186,9 @@ const id_ID = {
     later_tip: 'Muat {{n}} baris berikutnya dari file yang sama',
     earlier_disabled_tip: 'Tidak ada log sebelumnya dari file ini dalam 1 jam sebelumnya; perluas rentang waktu di pencarian untuk melihat lebih banyak',
     later_disabled_tip: 'Tidak ada log berikutnya dari file ini dalam 1 jam berikutnya',
+    no_fields_tip:
+      'Log ini tidak memiliki __log_stream_id__ atau __log_seq__, sehingga konteks dalam urutan asli tidak tersedia. Kumpulkan log file dengan Categraf terbaru dan pertahankan kedua field di field ekstraksi transformasi log',
+    no_time_tip: 'Log ini tidak memiliki field waktu {{field}}, sehingga konteksnya tidak dapat ditemukan',
     back_to_anchor: 'Log saat ini',
     raw_layout: 'Tata letak asli',
     raw_layout_tip: 'Hanya menampilkan nilai field, tanpa waktu dan nama field, dengan font monospace yang mempertahankan indentasi',

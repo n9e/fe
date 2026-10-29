@@ -183,6 +183,8 @@ const zh_HK = {
     later_tip: '在同一檔案中向後載入 {{n}} 行',
     earlier_disabled_tip: '前 1 小時內同一檔案沒有更早的日誌；更遠的日誌請擴大時間範圍後在檢索裡查看',
     later_disabled_tip: '後 1 小時內同一檔案沒有更新的日誌',
+    no_fields_tip: '這條日誌沒有 __log_stream_id__、__log_seq__，無法按原文順序查看上下文。需要用新版 Categraf 採集檔案日誌，並在日誌轉換的「日誌提取欄位」裡保留這兩個欄位',
+    no_time_tip: '這條日誌沒有時間欄位 {{field}}，無法定位上下文',
     back_to_anchor: '當前日誌',
     raw_layout: '原文排版',
     raw_layout_tip: '只顯示欄位值，不帶時間和欄位名，用等寬字體保留縮排',
