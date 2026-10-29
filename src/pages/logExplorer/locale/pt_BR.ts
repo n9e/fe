@@ -184,6 +184,10 @@ const pt_BR = {
     back_to_anchor: 'Log atual',
     raw_layout: 'Layout original',
     raw_layout_tip: 'Mostra apenas os valores, sem hora nem nomes de campo, em fonte monoespaçada que preserva a indentação',
+    filter_keywords_tip:
+      'Mostra apenas as linhas que contêm esta palavra-chave (diferencia maiúsculas); com várias, a linha precisa conter todas. Digite o valor diretamente, por exemplo ERROR ou um ID de pedido',
+    highlight_keywords_tip: 'Destaca a palavra-chave em amarelo sem mudar quais linhas aparecem (não diferencia maiúsculas). Digite o valor diretamente',
+    keyword_placeholder: 'Digite uma palavra-chave e pressione Enter',
     rotated: 'Arquivo rotacionado',
     no_more_before: 'Nenhum log anterior em 1 hora; amplie o intervalo de tempo na busca',
     no_more_after: 'Nenhum log posterior em 1 hora',
