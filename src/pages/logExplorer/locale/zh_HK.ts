@@ -219,6 +219,8 @@ const zh_HK = {
     earlier: '更早',
     later: '更新',
     back_to_anchor: '當前日誌',
+    raw_layout: '原文排版',
+    raw_layout_tip: '只顯示欄位值，不帶時間和欄位名，用等寬字體保留縮排',
     rotated: '文件輪轉',
     no_more_before: '1 小時內沒有更早的日誌，可以擴大時間範圍後在檢索裡查看',
     no_more_after: '1 小時內沒有更新的日誌',

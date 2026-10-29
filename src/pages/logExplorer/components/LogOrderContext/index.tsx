@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Drawer, Empty, Modal, Space, Table, Tag, Tooltip, message } from 'antd';
+import { Alert, Button, Drawer, Empty, Modal, Space, Switch, Table, Tag, Tooltip, message } from 'antd';
 import { CloseOutlined, EyeInvisibleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -52,6 +52,7 @@ export default function LogOrderContext(props: Props) {
   const [filterKeywords, setFilterKeywords] = useState<string[]>([]);
   const [highlightKeywords, setHighlightKeywords] = useState<string[]>([]);
   const [flashAnchor, setFlashAnchor] = useState(false);
+  const [rawLayout, setRawLayout] = useState(false);
   const scrollTarget = useRef<Direction | 'anchor'>('anchor');
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -138,7 +139,7 @@ export default function LogOrderContext(props: Props) {
           const index = row[LOG_INDEX_FIELD];
           const color = index < 0 ? 'var(--fc-fill-error)' : index > 0 ? 'var(--fc-fill-success)' : 'var(--fc-primary-color)';
           return (
-            <span className='font-semibold tabular-nums' style={{ color }}>
+            <span className={`tabular-nums ${index === 0 ? 'font-semibold' : 'opacity-60'}`} style={{ color }}>
               {index}
             </span>
           );
@@ -150,9 +151,22 @@ export default function LogOrderContext(props: Props) {
           const fields = _.omit(row, hiddenFields);
           // 按字段列设置里的顺序显示
           const picked = _.isEmpty(organizeFields) ? fields : _.fromPairs(_.compact(_.map(organizeFields, (f) => (f in fields ? [f, fields[f]] : undefined))));
+          const rotated = rotatedIndexes.has(row[LOG_INDEX_FIELD]) && <Tag color='orange'>{t('log_order_context.rotated')}</Tag>;
+          if (rawLayout) {
+            return (
+              <div className='whitespace-pre-wrap break-all font-mono text-main'>
+                {rotated}
+                {_.map(picked, (value, key) => (
+                  <span key={key} className='mr-3'>
+                    {renderMarkedText(value, filterKeywords, highlightKeywords)}
+                  </span>
+                ))}
+              </div>
+            );
+          }
           return (
             <div className='whitespace-pre-wrap break-all'>
-              {rotatedIndexes.has(row[LOG_INDEX_FIELD]) && <Tag color='orange'>{t('log_order_context.rotated')}</Tag>}
+              {rotated}
               {row[timeField] != null && <span className='text-hint mr-2'>[{String(row[timeField])}]</span>}
               {_.map(picked, (value, key) => (
                 <span key={key} className='mr-3'>
@@ -165,7 +179,7 @@ export default function LogOrderContext(props: Props) {
         },
       },
     ],
-    [organizeFields, filterKeywords, highlightKeywords, rotatedIndexes, timeField],
+    [organizeFields, filterKeywords, highlightKeywords, rotatedIndexes, timeField, rawLayout],
   );
 
   if (!anchor) return null;
@@ -232,6 +246,12 @@ export default function LogOrderContext(props: Props) {
                   )}
                 </Space>
               </Button>
+              <Tooltip title={t('log_order_context.raw_layout_tip')}>
+                <Space size={4}>
+                  <Switch size='small' checked={rawLayout} onChange={setRawLayout} />
+                  {t('log_order_context.raw_layout')}
+                </Space>
+              </Tooltip>
               {_.isEmpty(filterKeywords) && <DynamicTagsTrigger newTagText={t('log_order_context.filter_keywords_add')} value={filterKeywords} onChange={setFilterKeywords} />}
               {_.isEmpty(highlightKeywords) && (
                 <DynamicTagsTrigger newTagText={t('log_order_context.highlight_keywords_add')} value={highlightKeywords} onChange={setHighlightKeywords} />

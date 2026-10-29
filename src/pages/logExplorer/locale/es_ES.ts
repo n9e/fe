@@ -182,6 +182,8 @@ const es_ES = {
     earlier: 'Anteriores',
     later: 'Posteriores',
     back_to_anchor: 'Log actual',
+    raw_layout: 'Diseño original',
+    raw_layout_tip: 'Muestra solo los valores, sin hora ni nombres de campo, en fuente monoespaciada que conserva la sangría',
     rotated: 'Archivo rotado',
     no_more_before: 'No hay logs anteriores en 1 hora; amplíe el rango de tiempo en la búsqueda',
     no_more_after: 'No hay logs posteriores en 1 hora',
