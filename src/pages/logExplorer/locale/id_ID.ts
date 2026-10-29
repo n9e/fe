@@ -186,7 +186,7 @@ const id_ID = {
     raw_layout: 'Tata letak asli',
     raw_layout_tip: 'Hanya menampilkan nilai field, tanpa waktu dan nama field, dengan font monospace yang mempertahankan indentasi',
     filter_keywords_tip:
-      'Hanya tampilkan baris yang berisi kata kunci ini (peka huruf besar/kecil); jika lebih dari satu, baris harus berisi semuanya. Ketik nilainya langsung, misalnya ERROR atau ID pesanan',
+      'Hanya tampilkan baris yang berisi kata kunci ini (tidak peka huruf besar/kecil); jika lebih dari satu, baris harus berisi semuanya. Ketik nilainya langsung, misalnya ERROR atau ID pesanan',
     highlight_keywords_tip: 'Tandai kata kunci ini dengan warna kuning tanpa mengubah baris yang ditampilkan (tidak peka huruf besar/kecil). Ketik nilainya langsung',
     keyword_placeholder: 'Ketik kata kunci lalu tekan Enter',
     rotated: 'File dirotasi',
