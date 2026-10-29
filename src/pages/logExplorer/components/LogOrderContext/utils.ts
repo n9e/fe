@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 /** 采集端写入的文件流身份和原文顺序；__log_seq__ 高 23 位是代次，低 40 位是事件首字节位置，以字符串传输 */
 export const LOG_STREAM_ID_FIELD = '__log_stream_id__';
 export const LOG_SEQ_FIELD = '__log_seq__';
@@ -71,14 +73,33 @@ export function mergeContextPage(prev: LogContextPage, next: LogContextPage, dir
     : { ...prev, logs, forward_cursor: next.forward_cursor, has_forward: next.has_forward, forward_scan_limited: next.forward_scan_limited };
 }
 
+function valueText(value: unknown) {
+  return value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value ?? '');
+}
+
 /** 过滤词像 grep -i a | grep -i b 一样逐个收窄：每个词都要出现在某个字段值里，不区分大小写；只看值，不看字段名，不经过 JSON 转义 */
 export function matchesAllKeywords(row: Record<string, any>, keywords: string[], hiddenFields: string[]) {
   if (keywords.length === 0) return true;
   const values = Object.keys(row)
     .filter((key) => !hiddenFields.includes(key))
-    .map((key) => {
-      const value = row[key];
-      return (value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value ?? '')).toLowerCase();
-    });
+    .map((key) => valueText(row[key]).toLowerCase());
   return keywords.every((keyword) => values.some((value) => value.includes(keyword.toLowerCase())));
+}
+
+// 行太少时 level=INFO 这类碰巧相同的值会被误认成来源；太长的值不适合放进标签
+const SOURCE_MIN_ROWS = 5;
+const SOURCE_MAX_VALUE_LENGTH = 64;
+
+/** 同一文件流的每一行都相同的字段就是来源（主机、IP、文件等）。不按字段名写死，规则改名、改层级后照样认得出，删掉的自然不出现 */
+export function detectSourceFields(rows: Record<string, any>[], hiddenFields: string[]): [string, string][] {
+  if (rows.length < SOURCE_MIN_ROWS) return [];
+  let candidates = Object.keys(rows[0])
+    .filter((key) => !hiddenFields.includes(key))
+    .map((key): [string, string] => [key, valueText(rows[0][key])])
+    .filter(([, value]) => value !== '' && value.length <= SOURCE_MAX_VALUE_LENGTH);
+  for (const row of rows) {
+    candidates = candidates.filter(([key, value]) => valueText(row[key]) === value);
+    if (candidates.length === 0) break;
+  }
+  return _.sortBy(candidates, ([key]) => key);
 }
