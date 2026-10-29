@@ -71,14 +71,14 @@ export function mergeContextPage(prev: LogContextPage, next: LogContextPage, dir
     : { ...prev, logs, forward_cursor: next.forward_cursor, has_forward: next.has_forward, forward_scan_limited: next.forward_scan_limited };
 }
 
-/** 过滤词像 grep a | grep b 一样逐个收窄：每个词都要出现在某个字段值里；只看值，不看字段名，不经过 JSON 转义 */
+/** 过滤词像 grep -i a | grep -i b 一样逐个收窄：每个词都要出现在某个字段值里，不区分大小写；只看值，不看字段名，不经过 JSON 转义 */
 export function matchesAllKeywords(row: Record<string, any>, keywords: string[], hiddenFields: string[]) {
   if (keywords.length === 0) return true;
   const values = Object.keys(row)
     .filter((key) => !hiddenFields.includes(key))
     .map((key) => {
       const value = row[key];
-      return value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value ?? '');
+      return (value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value ?? '')).toLowerCase();
     });
-  return keywords.every((keyword) => values.some((value) => value.includes(keyword)));
+  return keywords.every((keyword) => values.some((value) => value.includes(keyword.toLowerCase())));
 }

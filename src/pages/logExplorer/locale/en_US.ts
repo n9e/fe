@@ -227,7 +227,7 @@ const en_US = {
     raw_layout: 'Raw layout',
     raw_layout_tip: 'Show field values only, without time and field names, in a monospace font that keeps indentation',
     filter_keywords_tip:
-      'Show only lines that contain this keyword (case-sensitive); with several keywords a line must contain all of them. Type the value itself, such as ERROR or an order ID',
+      'Show only lines that contain this keyword (case-insensitive); with several keywords a line must contain all of them. Type the value itself, such as ERROR or an order ID',
     highlight_keywords_tip: 'Mark this keyword in yellow without changing which lines are shown (case-insensitive). Type the value itself',
     keyword_placeholder: 'Type a keyword and press Enter',
     rotated: 'File rotated',

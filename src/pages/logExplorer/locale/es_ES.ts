@@ -185,7 +185,7 @@ const es_ES = {
     raw_layout: 'Diseño original',
     raw_layout_tip: 'Muestra solo los valores, sin hora ni nombres de campo, en fuente monoespaciada que conserva la sangría',
     filter_keywords_tip:
-      'Muestra solo las líneas que contienen esta palabra clave (distingue mayúsculas); con varias, la línea debe contenerlas todas. Escriba el valor directamente, por ejemplo ERROR o un ID de pedido',
+      'Muestra solo las líneas que contienen esta palabra clave (no distingue mayúsculas); con varias, la línea debe contenerlas todas. Escriba el valor directamente, por ejemplo ERROR o un ID de pedido',
     highlight_keywords_tip: 'Resalta en amarillo la palabra clave sin cambiar qué líneas se muestran (no distingue mayúsculas). Escriba el valor directamente',
     keyword_placeholder: 'Escriba una palabra clave y pulse Intro',
     rotated: 'Archivo rotado',
