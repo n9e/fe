@@ -51,6 +51,12 @@ export function getLogOrderAnchor(row: Record<string, any>, timeField: string): 
   return { streamId: String(streamId), seq: String(seq), time };
 }
 
+/** 拿不到锚点时说明原因：缺两个原文顺序字段（最常见，旧版采集或没保留），或缺时间字段 */
+export function logOrderUnavailableReason(row: Record<string, any>, timeField: string): 'no_fields' | 'no_time' | undefined {
+  if (getLogOrderAnchor(row, timeField)) return undefined;
+  return getLogOrderAnchor({ ...row, [timeField]: 0 }, timeField) ? 'no_time' : 'no_fields';
+}
+
 /** 代次变化即文件轮转；序号超过 2^53，必须用 BigInt */
 export function logGeneration(seq: unknown) {
   if (seq == null || !/^\d+$/.test(String(seq))) return undefined;

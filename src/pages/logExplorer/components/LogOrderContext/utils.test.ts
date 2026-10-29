@@ -1,4 +1,4 @@
-import { detectSourceFields, esSupportsLogOrder, getLogOrderAnchor, logGeneration, matchesAllKeywords, mergeContextPage, LogContextPage } from './utils';
+import { detectSourceFields, esSupportsLogOrder, logOrderUnavailableReason, getLogOrderAnchor, logGeneration, matchesAllKeywords, mergeContextPage, LogContextPage } from './utils';
 
 describe('log order utils', () => {
   it('splits the generation out of a sequence above 2^53 without losing bits', () => {
@@ -92,5 +92,13 @@ describe('log order utils', () => {
       ['src_ip', '10.0.0.1'],
     ]);
     expect(detectSourceFields(rows.slice(0, 4), hidden)).toEqual([]);
+  });
+
+  it('explains why a row has no context entry', () => {
+    const row = { ts: '2026-10-27 10:00:00', __log_stream_id__: 's-1', __log_seq__: '42' };
+    expect(logOrderUnavailableReason(row, 'ts')).toBeUndefined();
+    expect(logOrderUnavailableReason({ ts: row.ts, message: 'x' }, 'ts')).toBe('no_fields');
+    expect(logOrderUnavailableReason({ ...row, __log_seq__: 'abc' }, 'ts')).toBe('no_fields');
+    expect(logOrderUnavailableReason({ ...row, ts: undefined }, 'ts')).toBe('no_time');
   });
 });

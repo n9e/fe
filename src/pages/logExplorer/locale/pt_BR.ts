@@ -185,6 +185,9 @@ const pt_BR = {
     later_tip: 'Carregar {{n}} linhas posteriores do mesmo arquivo',
     earlier_disabled_tip: 'Nenhum log anterior deste arquivo na hora anterior; amplie o intervalo de tempo na busca para ver mais',
     later_disabled_tip: 'Nenhum log posterior deste arquivo na hora seguinte',
+    no_fields_tip:
+      'Este log não tem __log_stream_id__ nem __log_seq__, então o contexto na ordem original não está disponível. Colete os logs de arquivo com um Categraf recente e mantenha os dois campos nos campos extraídos da transformação',
+    no_time_tip: 'Este log não tem o campo de tempo {{field}}, então o contexto não pode ser localizado',
     back_to_anchor: 'Log atual',
     raw_layout: 'Layout original',
     raw_layout_tip: 'Mostra apenas os valores, sem hora nem nomes de campo, em fonte monoespaçada que preserva a indentação',
