@@ -185,6 +185,10 @@ const id_ID = {
     back_to_anchor: 'Log saat ini',
     raw_layout: 'Tata letak asli',
     raw_layout_tip: 'Hanya menampilkan nilai field, tanpa waktu dan nama field, dengan font monospace yang mempertahankan indentasi',
+    filter_keywords_tip:
+      'Hanya tampilkan baris yang berisi kata kunci ini (peka huruf besar/kecil); jika lebih dari satu, baris harus berisi semuanya. Ketik nilainya langsung, misalnya ERROR atau ID pesanan',
+    highlight_keywords_tip: 'Tandai kata kunci ini dengan warna kuning tanpa mengubah baris yang ditampilkan (tidak peka huruf besar/kecil). Ketik nilainya langsung',
+    keyword_placeholder: 'Ketik kata kunci lalu tekan Enter',
     rotated: 'File dirotasi',
     no_more_before: 'Tidak ada log lebih awal dalam 1 jam; perluas rentang waktu di pencarian',
     no_more_after: 'Tidak ada log lebih baru dalam 1 jam',
