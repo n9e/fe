@@ -32,7 +32,7 @@ export function isMathString(text: string | Moment | Date): boolean {
   }
 }
 
-export function parse(text?: string | Moment | Date | null, roundUp?: boolean): Moment | undefined {
+export function parse(text?: string | Moment | Date | null, roundUp?: boolean, now?: Moment): Moment | undefined {
   if (!text) {
     return undefined;
   }
@@ -53,7 +53,7 @@ export function parse(text?: string | Moment | Date | null, roundUp?: boolean): 
     let parseString;
 
     if (text.substring(0, 3) === 'now') {
-      time = moment();
+      time = now?.clone() ?? moment();
       mathString = text.substring('now'.length);
     } else {
       index = text.indexOf('||');
@@ -203,26 +203,19 @@ export function describeTimeRange(range: IRawTimeRange, dateFormat: string): str
     return i18next.t(`timeRangePicker:rangeOptions.${option.display}`);
   }
 
-  if (moment.isMoment(range.start) && moment.isMoment(range.end)) {
-    return moment(range.start).format(dateFormat) + ' ~ ' + moment(range.end).format(dateFormat);
+  // Only a single relative offset can be described as "Last N units".
+  // Absolute strings from history and compound expressions must retain both bounds.
+  if (range.end === 'now' && typeof range.start === 'string' && /^now-\d+[smhdwMy]$/.test(range.start)) {
+    return describeTextRange(range.start).display;
   }
 
-  if (moment.isMoment(range.start)) {
-    const parsed = parse(range.end);
-    return parsed ? moment(range.start).format(dateFormat) + ' ~ ' + range.end : '';
-  }
-
-  if (moment.isMoment(range.end)) {
-    const parsed = parse(range.start);
-    return parsed ? range.start + ' ~ ' + moment(range.end).format(dateFormat) : '';
-  }
-
-  if (range.end.toString() === 'now') {
-    const res = describeTextRange(range.start);
-    return res.display;
-  }
-
-  return range.start.toString() + ' ~ ' + range.end.toString();
+  return [range.start, range.end]
+    .map((value) => {
+      if (isMathString(value)) return value;
+      const parsed = parse(value);
+      return parsed?.isValid() ? parsed.format(dateFormat) : value.toString();
+    })
+    .join(' ~ ');
 }
 
 export const valueAsString = (value: Moment | string, dateFormat: string) => {
@@ -238,11 +231,23 @@ export const valueAsString = (value: Moment | string, dateFormat: string) => {
  * 相对范围（如 `now-1h` 到 `now`）的原始值不会随时间流逝改变；请求由 `refreshFlag`
  * 等执行信号触发时，应在服务函数中重新调用本方法取得当前绝对时间，不能只依赖原始 range 作为刷新依据。
  */
-export const parseRange = (range: IRawTimeRange) => {
+export const parseRange = (range: IRawTimeRange, now = moment()) => {
   return {
-    start: parse(range.start),
-    end: parse(range.end, true),
+    start: parse(range.start, false, now),
+    end: parse(range.end, true, now),
   };
+};
+
+// Picker limits are a rolling lookback window, not a maximum interval length.
+// Resolve both relative bounds against the same instant so now-8h is valid at an 8h limit.
+export const getRangeError = (range: IRawTimeRange | undefined, limitHour?: number, now = moment()): 'invalid' | 'reversed' | 'future' | 'lookback' | undefined => {
+  if (!range) return 'invalid';
+  const { start, end } = parseRange(range, now);
+  if (!start?.isValid() || !end?.isValid()) return 'invalid';
+  if (start.isAfter(end)) return 'reversed';
+  if (start.isAfter(now) || end.isAfter(now)) return 'future';
+  if (limitHour && Number.isFinite(limitHour) && limitHour > 0 && start.isBefore(now.clone().subtract(limitHour, 'hours'))) return 'lookback';
+  return undefined;
 };
 
 export const timeRangeUnix = (range: IRawTimeRange) => {

@@ -1,12 +1,81 @@
 .auto-refresh-container {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+  white-space: nowrap;
 
-  .ant-dropdown-trigger {
+  .auto-refresh-interval .ant-dropdown-trigger {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
     border-width: 1px !important;
     border-style: solid !important;
     border-left: 0px !important;
+  }
+
+  .auto-refresh-trigger {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .auto-refresh-interval,
+  .auto-refresh-adjacent {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .auto-refresh-adjacent--before {
+    margin-right: 8px;
+  }
+  .auto-refresh-adjacent--after {
+    margin-left: 8px;
+  }
+
+  // Keep the expansion allowance outside the complete time/refresh group.
+  // It exchanges exactly the label width, including in translated locales.
+  &--end .auto-refresh-reserve {
+    order: -1;
+  }
+  &--settings .auto-refresh-interval .ant-dropdown-trigger {
+    border-radius: 8px !important;
+    border-left: 1px solid var(--fc-border-color) !important;
+  }
+  .auto-refresh-label,
+  .auto-refresh-reserve {
+    display: grid;
+    flex-shrink: 0;
+    grid-template-columns: 0fr;
+    transition: grid-template-columns 180ms ease, opacity 180ms ease;
+
+    > span {
+      min-width: 0;
+      overflow: hidden;
+
+      > span {
+        display: block;
+        padding-left: 6px;
+        white-space: nowrap;
+      }
+    }
+  }
+  .auto-refresh-label {
+    opacity: 0;
+  }
+  .auto-refresh-reserve {
+    font-size: 12px;
+    font-weight: 400;
+    grid-template-columns: 1fr;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  &--updating {
+    .auto-refresh-label {
+      grid-template-columns: 1fr;
+      opacity: 1;
+    }
+    .auto-refresh-reserve {
+      grid-template-columns: 0fr;
+    }
   }
 }
 
@@ -23,43 +92,97 @@
 .rotate-icon {
   animation: rotate 2s linear infinite;
 }
+
 .auto-refresh-container .ant-btn.auto-refresh-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 32px;
+  font-size: 12px;
+  font-weight: 400;
   padding: 0 9px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 
-  .auto-refresh-label {
-    max-width: 0;
-    margin-left: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 180ms ease, max-width 180ms ease, margin-left 180ms ease;
+  .anticon {
+    flex-shrink: 0;
   }
-  &--updating {
-    color: var(--fc-text-link);
-    .auto-refresh-label {
-      max-width: 8em;
-      margin-left: 6px;
-      opacity: 1;
-    }
+  // Dark-theme .ant-btn > span must not replace the collapsing grid with inline-block.
+  > .auto-refresh-label {
+    display: grid;
+    margin-left: 0;
   }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .auto-refresh-container .ant-btn.auto-refresh-button {
+  .auto-refresh-container {
     .rotate-icon {
       animation: none;
     }
-    .auto-refresh-label {
+    .auto-refresh-label,
+    .auto-refresh-reserve {
       transition: none;
     }
   }
 }
 
-.auto-refresh-container .auto-refresh-button.auto-refresh-button--updating[disabled] {
+.auto-refresh-container .ant-btn.auto-refresh-button.auto-refresh-button--updating[disabled] {
   color: var(--fc-text-link);
+}
+
+// Preceding commands move together; the idle allowance belongs outside the toolbar.
+.auto-refresh-toolbar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+
+  .auto-refresh-reserve {
+    display: none;
+  }
+
+  > .auto-refresh-toolbar__reserve {
+    font-size: 12px;
+    font-weight: 400;
+    display: grid;
+    flex-shrink: 0;
+    grid-template-columns: 0fr;
+    visibility: hidden;
+    pointer-events: none;
+    transition: grid-template-columns 180ms ease;
+
+    > span {
+      min-width: 0;
+      overflow: hidden;
+      > span {
+        display: block;
+        padding-left: 6px;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  &:has(.auto-refresh-container:not(.auto-refresh-container--settings)) > .auto-refresh-toolbar__reserve {
+    grid-template-columns: 1fr;
+  }
+  &:has(.auto-refresh-container.auto-refresh-container--updating) > .auto-refresh-toolbar__reserve {
+    grid-template-columns: 0fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auto-refresh-toolbar > .auto-refresh-toolbar__reserve {
+    transition: none;
+  }
+}
+
+// Width changes may wrap whole groups, but refresh state cannot change the row height.
+.auto-refresh-toolbar-row {
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 8px;
+  > .auto-refresh-toolbar,
+  > .ant-col:last-child {
+    margin-left: auto;
+  }
 }

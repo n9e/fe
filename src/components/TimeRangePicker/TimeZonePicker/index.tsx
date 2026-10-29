@@ -136,12 +136,12 @@ function TimeZoneOption({ zone, timestamp }: { zone: TimeZone; timestamp: number
   const offset = formatUtcOffset(zone, timestamp);
 
   return (
-    <div className='flex justify-between items-center'>
+    <div className='fc-time-zone-option'>
       <Space>
         <span>{timeZoneInfo?.name}</span>
-        <span style={{ color: '#999' }}>{description}</span>
+        <span className='fc-time-zone-option__description'>{description}</span>
       </Space>
-      <span style={{ color: '#999' }}>{offset}</span>
+      <span className='fc-time-zone-option__offset'>{offset}</span>
     </div>
   );
 }

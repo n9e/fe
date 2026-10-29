@@ -33,6 +33,10 @@ export default function RangeCalendar({
   const last = anchor ? hover || anchor : parsed?.end;
   const start = first && last && first.isAfter(last, 'day') ? last : first;
   const end = first && last && first.isAfter(last, 'day') ? first : last;
+  const isDateDisabled = (day: Moment, now = moment()) => {
+    const earliest = limitHour && Number.isFinite(limitHour) && limitHour > 0 ? now.clone().subtract(limitHour, 'hours') : undefined;
+    return day.isAfter(now, 'day') || !!earliest?.isAfter(day.clone().endOf('day'));
+  };
   const locale = i18n.language === 'zh_CN' ? zh_CN : i18n.language === 'zh_HK' ? zh_TW : en_US;
 
   return (
@@ -44,9 +48,11 @@ export default function RangeCalendar({
         pickerValue={month}
         onPickerValueChange={setMonth}
         value={undefined}
-        disabledDate={(day) => !!limitHour && moment().startOf('day').diff(day, 'hour') > limitHour}
+        disabledDate={(day) => isDateDisabled(day)}
         onSelect={(day) => {
-          if (!anchor) {
+          const now = moment();
+          if (isDateDisabled(day, now)) return;
+          if (!anchor || isDateDisabled(anchor, now)) {
             onSelecting(true);
             setAnchor(day.clone());
             setHover(day.clone());
@@ -54,7 +60,16 @@ export default function RangeCalendar({
           }
           const earlier = day.isBefore(anchor, 'day') ? day : anchor;
           const later = day.isBefore(anchor, 'day') ? anchor : day;
-          onChange({ start: earlier.clone().startOf('day'), end: later.clone().endOf('day') });
+          const earliest = limitHour && Number.isFinite(limitHour) && limitHour > 0 ? now.clone().subtract(limitHour, 'hours') : undefined;
+          const start = earlier.clone().startOf('day');
+          const end = later.clone().endOf('day');
+          const seconds = Math.floor((limitHour || 0) * 3600);
+          const [unit, divisor]: [string, number] = seconds % 3600 === 0 ? ['h', 3600] : seconds % 60 === 0 ? ['m', 60] : ['s', 1];
+          // Keep clipped edges relative: the rolling boundary must not expire while editing the draft.
+          onChange({
+            start: earliest && start.isBefore(earliest) ? `now-${seconds / divisor}${unit}` : start,
+            end: end.isAfter(now) ? 'now' : end,
+          });
           onSelecting(false);
           setAnchor(undefined);
           setHover(undefined);
@@ -65,7 +80,7 @@ export default function RangeCalendar({
               'fc-time-range-calendar__edge': day.isSame(start, 'day') || day.isSame(end, 'day'),
               'fc-time-range-calendar__inside': start && end && day.isBetween(start, end, 'day', '[]'),
             })}
-            onMouseEnter={() => anchor && setHover(day.clone())}
+            onMouseEnter={() => anchor && !isDateDisabled(day) && setHover(day.clone())}
           >
             {day.date()}
           </div>

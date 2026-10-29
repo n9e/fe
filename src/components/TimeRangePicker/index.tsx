@@ -35,6 +35,7 @@ import AutoRefresh from './AutoRefresh';
 import './locale';
 
 export { AutoRefresh };
+export { default as RefreshToolbar } from './AutoRefresh/Toolbar';
 
 export default function index(props: ITimeRangePickerProps) {
   const { localKey, onChange } = props;
@@ -55,8 +56,8 @@ export default function index(props: ITimeRangePickerProps) {
             localKey,
             val
               ? JSON.stringify({
-                  start: valueAsString(val.start, dateFormat),
-                  end: valueAsString(val.end, dateFormat),
+                  start: valueAsString(val.start, 'YYYY-MM-DD HH:mm:ss.SSS'),
+                  end: valueAsString(val.end, 'YYYY-MM-DD HH:mm:ss.SSS'),
                 })
               : '',
           );

@@ -24,7 +24,7 @@ import queryString from 'query-string';
 import { useLocation, useHistory } from 'react-router-dom';
 import PageLayout from '@/components/pageLayout';
 import { deleteAlertEvents } from '@/services/warning';
-import { AutoRefresh } from '@/components/TimeRangePicker';
+import { RefreshToolbar, AutoRefresh } from '@/components/TimeRangePicker';
 import { CommonStateContext } from '@/App';
 import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
 import DatasourceSelect from '@/components/DatasourceSelect/DatasourceSelect';
@@ -202,52 +202,54 @@ const Event: React.FC = () => {
           />
         </Space>
         <Col
-          flex='100px'
+          flex='none'
           style={{
             display: 'flex',
             justifyContent: 'flex-end',
           }}
         >
-          {view === 'list' && (
-            <Dropdown
-              overlay={
-                <ul className='ant-dropdown-menu'>
-                  <li
-                    className='ant-dropdown-menu-item'
-                    onClick={() =>
-                      deleteAlertEventsModal(
-                        selectedRowKeys,
-                        () => {
-                          setSelectedRowKeys([]);
-                          setRefreshFlag(_.uniqueId('refresh_'));
-                        },
-                        t,
-                      )
-                    }
-                  >
-                    {t('common:btn.batch_delete')}
-                  </li>
-                  <BatchAckBtn
-                    selectedIds={selectedRowKeys}
-                    onOk={() => {
-                      setSelectedRowKeys([]);
-                      setRefreshFlag(_.uniqueId('refresh_'));
-                    }}
-                  />
-                </ul>
-              }
-              trigger={['click']}
-            >
-              <Button style={{ marginRight: 8 }} disabled={selectedRowKeys.length === 0}>
-                {t('batch_btn')}
-              </Button>
-            </Dropdown>
-          )}
-          <AutoRefresh
-            onRefresh={() => {
-              setRefreshFlag(_.uniqueId('refresh_'));
-            }}
-          />
+          <RefreshToolbar>
+            {view === 'list' && (
+              <Dropdown
+                overlay={
+                  <ul className='ant-dropdown-menu'>
+                    <li
+                      className='ant-dropdown-menu-item'
+                      onClick={() =>
+                        deleteAlertEventsModal(
+                          selectedRowKeys,
+                          () => {
+                            setSelectedRowKeys([]);
+                            setRefreshFlag(_.uniqueId('refresh_'));
+                          },
+                          t,
+                        )
+                      }
+                    >
+                      {t('common:btn.batch_delete')}
+                    </li>
+                    <BatchAckBtn
+                      selectedIds={selectedRowKeys}
+                      onOk={() => {
+                        setSelectedRowKeys([]);
+                        setRefreshFlag(_.uniqueId('refresh_'));
+                      }}
+                    />
+                  </ul>
+                }
+                trigger={['click']}
+              >
+                <Button style={{ marginRight: 8 }} disabled={selectedRowKeys.length === 0}>
+                  {t('batch_btn')}
+                </Button>
+              </Dropdown>
+            )}
+            <AutoRefresh
+              onRefresh={() => {
+                setRefreshFlag(_.uniqueId('refresh_'));
+              }}
+            />
+          </RefreshToolbar>
         </Col>
       </Row>
     );

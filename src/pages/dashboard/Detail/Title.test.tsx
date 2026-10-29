@@ -14,6 +14,7 @@ jest.mock('@/App', () => {
   };
 });
 jest.mock('@/components/TimeRangePicker', () => ({
+  RefreshToolbar: ({ children }) => <>{children}</>,
   TimeRangePickerWithRefresh: () => <div data-testid='time-range-picker' />,
   timeRangeUnix: jest.fn(),
 }));

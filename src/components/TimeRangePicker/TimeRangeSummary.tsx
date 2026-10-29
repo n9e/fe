@@ -10,12 +10,14 @@ export default function TimeRangeSummary({
   resolvedRange,
   timezone,
   showMillisecond,
+  showSecond = true,
   extra,
 }: {
   value?: IRawTimeRange;
   resolvedRange?: IRawTimeRange;
   timezone?: string;
   showMillisecond?: boolean;
+  showSecond?: boolean;
   extra?: React.ReactNode;
 }) {
   const { t } = useTranslation('timePickerInteraction');
@@ -23,13 +25,13 @@ export default function TimeRangeSummary({
   const snapshot = useMemo(() => (value ? parseRange(resolvedRange || value) : undefined), [JSON.stringify(value), JSON.stringify(resolvedRange)]);
   if (!snapshot?.start?.isValid() || !snapshot?.end?.isValid()) return null;
   const zone = timezone && timezone !== 'browser' ? (timezone === 'utc' ? 'UTC' : timezone) : moment.tz.guess();
-  const timeFormat = showMillisecond ? 'HH:mm:ss.SSS' : 'HH:mm:ss';
+  const timeFormat = showMillisecond ? 'HH:mm:ss.SSS' : showSecond ? 'HH:mm:ss' : 'HH:mm';
   const times = [snapshot.start.clone().tz(zone), snapshot.end.clone().tz(zone)];
   return (
     <div className='fc-time-range-summary'>
       <div className='fc-time-range-summary__heading'>
         <ClockCircleOutlined />
-        <span>{value ? describeTimeRange(value, 'YYYY-MM-DD HH:mm:ss') : ''}</span>
+        <span>{value ? describeTimeRange(value, `YYYY-MM-DD ${timeFormat}`) : ''}</span>
       </div>
       {times.map((time, index) => (
         <div className='fc-time-range-summary__row' key={index}>
