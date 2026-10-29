@@ -10,7 +10,7 @@ import { useClickAway } from 'ahooks';
 
 import NavigableDrawer from '@/components/NavigableDrawer';
 
-import { NAME_SPACE } from '../../constants';
+import { LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY, NAME_SPACE } from '../../constants';
 import { OnValueFilterParams, FieldValueType } from './types';
 import LogViewer from './components/LogViewer';
 import TextSearchIcon from './components/TextSearchIcon';
@@ -725,6 +725,8 @@ function Raw(props: Props) {
       </div>
       <NavigableDrawer
         className='log-explorer-ignore-click-away'
+        defaultSize='middle'
+        sizeStorageKey={LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY}
         title={navigableDrawerTitle}
         extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'
