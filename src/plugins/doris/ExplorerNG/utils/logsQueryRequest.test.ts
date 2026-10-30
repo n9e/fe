@@ -41,10 +41,10 @@ describe('buildDorisLogsQueryRequest', () => {
     expect(payload.query[0].search_after).toEqual({ time: '1700000000123', stream_id: 's1', seq: '100' });
   });
 
-  // 待确认问题：后端确认 search_after 生效后，有锚点就不能再带 offset，否则第二页会被二次跳过
-  it('does not send offset together with search_after', () => {
+  // 后端游标生效时忽略 offset；表排序键不支持游标时仍需要 offset 回退。
+  it('keeps offset as a fallback when the table cannot use search_after', () => {
     const payload = buildDorisLogsQueryRequest({ ...baseParams, searchAfter: { time: '2026-10-29 10:00:00.123', streamId: 's1', seq: '100' } });
 
-    expect(payload.query[0].offset).toBeUndefined();
+    expect(payload.query[0].offset).toBe(baseParams.offset);
   });
 });

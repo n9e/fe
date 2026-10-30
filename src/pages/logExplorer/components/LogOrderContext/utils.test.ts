@@ -138,32 +138,31 @@ const esMappingOf = (seqType: string) => ({
 const toFields = (mappings: Record<string, unknown>) => mappingsToFullFields(mappings as any);
 
 describe('ES 侧栏字段链路（_mapping -> mappingsToFullFields -> esSupportsLogOrder）', () => {
-  it('keyword 被归一化成 string，而 esSupportsLogOrder 只认 keyword', () => {
+  it('保留侧栏展示类型，并用原始类型判断排序能力', () => {
     const fields = toFields({ 'logs-2026.10.28': esMappingOf('long') });
     expect(_.find(fields, { field: '__log_stream_id__' })?.type).toBe('string');
     expect(_.find(fields, { field: '__log_seq__' })?.type).toBe('long');
   });
 
-  it('同一字段在多个索引里类型不同时只保留第一个类型', () => {
+  it('跨索引类型冲突时禁用排序，保留既有展示类型', () => {
     const fields = toFields({ 'logs-2026.10.28': esMappingOf('long'), 'logs-2026.10.29': esMappingOf('text') });
     expect(_.filter(fields, { field: '__log_seq__' })).toHaveLength(1);
-    expect(_.find(fields, { field: '__log_seq__' })?.type).toBe('long');
+    expect(_.find(fields, { field: '__log_seq__' })?.logOrderTypes).toEqual(['long', 'text']);
+    expect(esSupportsLogOrder(fields)).toBe(false);
   });
 
-  // 待确认问题：真实链路把 keyword 归一化成 string，而 esSupportsLogOrder 只认 keyword，ES 原文顺序排序永远不启用
   it('索引字段确实满足条件时应启用原文顺序排序', () => {
     expect(esSupportsLogOrder(toFields({ 'logs-2026.10.28': esMappingOf('long') }))).toBe(true);
   });
 });
 
 describe('空时间值', () => {
-  // 待确认问题：空串被当成可用时间，ES 的 formatTime 会把它变成 NaN 发给后端
   it('时间字段为空串时不应生成锚点', () => {
     expect(getLogOrderAnchor({ ts: '', __log_stream_id__: 's-1', __log_seq__: '42' }, 'ts')).toBeUndefined();
   });
 });
 
-describe('上下文分页响应缺字段', () => {
+describe('符合后端契约的空上下文页', () => {
   const prev: LogContextPage = {
     logs: [{ __index_number__: 0 }],
     back_cursor: { seq: '1', time: 't', index: 0 },
@@ -174,9 +173,50 @@ describe('上下文分页响应缺字段', () => {
     forward_scan_limited: false,
   };
 
-  // 待确认问题：接口没返回 logs/游标时，mergeContextPage 直接抛 TypeError，点“更早/更新”会崩
-  it('响应缺 logs 时应按空页合并而不是抛错', () => {
-    const pageWithoutLogs = { ...prev, logs: undefined } as unknown as LogContextPage;
-    expect(() => mergeContextPage(prev, pageWithoutLogs, 'back')).not.toThrow();
+  it('空页保留已有日志并更新这一侧游标和结束状态', () => {
+    const emptyPage: LogContextPage = { ...prev, logs: [], back_cursor: { seq: '0', time: 'earlier', index: -1 }, has_back: false };
+    const merged = mergeContextPage(prev, emptyPage, 'back');
+    expect(merged.logs).toEqual(prev.logs);
+    expect(merged.back_cursor).toEqual(emptyPage.back_cursor);
+    expect(merged.has_back).toBe(false);
+    expect(merged.forward_cursor).toEqual(prev.forward_cursor);
+  });
+});
+
+describe('原文排序能力边界', () => {
+  it.each([
+    ['long', 'text'],
+    ['text', 'long'],
+  ])('拒绝跨索引冲突，不依赖返回顺序 %s/%s', (first, second) => {
+    expect(esSupportsLogOrder(toFields({ a: esMappingOf(first), b: esMappingOf(second) }))).toBe(false);
+  });
+
+  it('多个索引类型一致时支持排序', () => {
+    expect(esSupportsLogOrder(toFields({ a: esMappingOf('long'), b: esMappingOf('long') }))).toBe(true);
+  });
+
+  it('stream 字段 keyword/text 冲突时拒绝排序', () => {
+    const other = esMappingOf('long');
+    other.mappings.properties.__log_stream_id__.type = 'text';
+    expect(esSupportsLogOrder(toFields({ a: esMappingOf('long'), b: other }))).toBe(false);
+  });
+
+  it('没有原始类型信息时不能把普通 string 当成 keyword', () => {
+    expect(
+      esSupportsLogOrder([
+        { field: '__log_stream_id__', type: 'string' },
+        { field: '__log_seq__', type: 'long' },
+      ]),
+    ).toBe(false);
+  });
+
+  it.each(['', '  ', '\t', null, undefined, NaN, Infinity, {}, false])('拒绝不可用时间 %p', (time) => {
+    const row = { ts: time, __log_stream_id__: 's-1', __log_seq__: '42' };
+    expect(getLogOrderAnchor(row, 'ts')).toBeUndefined();
+    expect(logOrderUnavailableReason(row, 'ts')).toBe('no_time');
+  });
+
+  it('时间戳 0 是有效锚点', () => {
+    expect(getLogOrderAnchor({ ts: 0, __log_stream_id__: 's-1', __log_seq__: '42' }, 'ts')?.time).toBe(0);
   });
 });
