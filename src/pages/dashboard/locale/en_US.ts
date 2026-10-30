@@ -822,6 +822,7 @@ __variable_value_fixed=true: preserve variable values from the URL without repla
     add: 'Add annotation',
     edit: 'Edit annotation',
     description: 'Description',
+    description_required: 'Description is required',
     tags: 'Tags',
     updated: 'Annotation updated',
     deleted: 'Annotation deleted',

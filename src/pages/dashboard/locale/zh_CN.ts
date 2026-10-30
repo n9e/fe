@@ -825,6 +825,7 @@ __variable_value_fixed=true：固定 URL 中的变量值，不使用本地缓存
     add: '添加注释',
     edit: '编辑注释',
     description: '描述',
+    description_required: '描述不能为空',
     tags: '标签',
     updated: '注释已更新',
     deleted: '注释已删除',
