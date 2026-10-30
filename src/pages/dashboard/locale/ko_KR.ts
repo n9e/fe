@@ -805,6 +805,7 @@ __variable_value_fixed=true: 로컬 저장소 또는 옵션 기본값으로 대�
     add: '주석 추가',
     edit: '주석 수정',
     description: '설명',
+    description_required: '설명을 입력하세요',
     tags: '레이블',
     updated: '주석을 수정했습니다',
     deleted: '주석을 삭제했습니다',

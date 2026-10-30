@@ -818,6 +818,7 @@ __variable_value_fixed=true : conserver les valeurs de variables de l’URL sans
     add: 'Ajouter une annotation',
     edit: "Modifier l'annotation",
     description: 'Description',
+    description_required: 'La description est obligatoire',
     tags: 'Étiquettes',
     updated: 'Annotation mise à jour',
     deleted: 'Annotation supprimée',

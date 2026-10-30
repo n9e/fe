@@ -890,6 +890,7 @@ __variable_value_fixed=true：ローカルストレージや選択肢の既定�
     add: '注釈を追加',
     edit: '注釈を編集',
     description: '説明',
+    description_required: '説明を入力してください',
     tags: 'タグ',
     updated: '注釈が更新されました',
     deleted: '注釈が削除されました',

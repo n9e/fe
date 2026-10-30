@@ -811,6 +811,7 @@ __variable_value_fixed=true: preservar os valores das variáveis da URL sem subs
     add: 'Adicionar anotação',
     edit: 'Editar anotação',
     description: 'Descrição',
+    description_required: 'A descrição é obrigatória',
     tags: 'Rótulos',
     updated: 'Anotação atualizada',
     deleted: 'Anotação excluída',

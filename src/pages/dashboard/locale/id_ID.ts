@@ -811,6 +811,7 @@ __variable_value_fixed=true: pertahankan nilai variabel dari URL tanpa mengganti
     add: 'Tambah anotasi',
     edit: 'Ubah anotasi',
     description: 'Deskripsi',
+    description_required: 'Deskripsi wajib diisi',
     tags: 'Label',
     updated: 'Anotasi diperbarui',
     deleted: 'Anotasi dihapus',
