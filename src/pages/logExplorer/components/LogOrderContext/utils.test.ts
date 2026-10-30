@@ -1,4 +1,18 @@
-import { detectSourceFields, esSupportsLogOrder, logOrderUnavailableReason, getLogOrderAnchor, logGeneration, matchesAllKeywords, mergeContextPage, LogContextPage } from './utils';
+import _ from 'lodash';
+
+import { mappingsToFullFields } from '@/plugins/elasticsearch/utils/mappingsToFields';
+
+import {
+  detectSourceFields,
+  esSupportsLogOrder,
+  filterLogOrderFields,
+  logOrderUnavailableReason,
+  getLogOrderAnchor,
+  logGeneration,
+  matchesAllKeywords,
+  mergeContextPage,
+  LogContextPage,
+} from './utils';
 
 describe('log order utils', () => {
   it('splits the generation out of a sequence above 2^53 without losing bits', () => {
@@ -29,6 +43,12 @@ describe('log order utils', () => {
       ]),
     ).toBe(false);
     expect(esSupportsLogOrder([])).toBe(false);
+  });
+
+  it('filters the two log order fields out of a field list', () => {
+    const fields = [{ field: 'message' }, { field: '__log_stream_id__' }, { field: '__log_seq__' }, { field: '@timestamp' }];
+    expect(filterLogOrderFields(fields)).toEqual([{ field: 'message' }, { field: '@timestamp' }]);
+    expect(filterLogOrderFields([])).toEqual([]);
   });
 
   it('merges a page into loaded context by row index and moves only that side', () => {
@@ -100,5 +120,103 @@ describe('log order utils', () => {
     expect(logOrderUnavailableReason({ ts: row.ts, message: 'x' }, 'ts')).toBe('no_fields');
     expect(logOrderUnavailableReason({ ...row, __log_seq__: 'abc' }, 'ts')).toBe('no_fields');
     expect(logOrderUnavailableReason({ ...row, ts: undefined }, 'ts')).toBe('no_time');
+  });
+});
+
+/** 索引侧栏字段来自 getFullFields -> mappingsToFullFields，而不是手写的 { type: 'keyword' } */
+const esMappingOf = (seqType: string) => ({
+  mappings: {
+    properties: {
+      '@timestamp': { type: 'date' },
+      message: { type: 'keyword' },
+      __log_stream_id__: { type: 'keyword' },
+      __log_seq__: { type: seqType },
+    },
+  },
+});
+
+const toFields = (mappings: Record<string, unknown>) => mappingsToFullFields(mappings as any);
+
+describe('ES 侧栏字段链路（_mapping -> mappingsToFullFields -> esSupportsLogOrder）', () => {
+  it('保留侧栏展示类型，并用原始类型判断排序能力', () => {
+    const fields = toFields({ 'logs-2026.10.28': esMappingOf('long') });
+    expect(_.find(fields, { field: '__log_stream_id__' })?.type).toBe('string');
+    expect(_.find(fields, { field: '__log_seq__' })?.type).toBe('long');
+  });
+
+  it('跨索引类型冲突时禁用排序，保留既有展示类型', () => {
+    const fields = toFields({ 'logs-2026.10.28': esMappingOf('long'), 'logs-2026.10.29': esMappingOf('text') });
+    expect(_.filter(fields, { field: '__log_seq__' })).toHaveLength(1);
+    expect(_.find(fields, { field: '__log_seq__' })?.logOrderTypes).toEqual(['long', 'text']);
+    expect(esSupportsLogOrder(fields)).toBe(false);
+  });
+
+  it('索引字段确实满足条件时应启用原文顺序排序', () => {
+    expect(esSupportsLogOrder(toFields({ 'logs-2026.10.28': esMappingOf('long') }))).toBe(true);
+  });
+});
+
+describe('空时间值', () => {
+  it('时间字段为空串时不应生成锚点', () => {
+    expect(getLogOrderAnchor({ ts: '', __log_stream_id__: 's-1', __log_seq__: '42' }, 'ts')).toBeUndefined();
+  });
+});
+
+describe('符合后端契约的空上下文页', () => {
+  const prev: LogContextPage = {
+    logs: [{ __index_number__: 0 }],
+    back_cursor: { seq: '1', time: 't', index: 0 },
+    forward_cursor: { seq: '1', time: 't', index: 0 },
+    has_back: true,
+    has_forward: true,
+    back_scan_limited: false,
+    forward_scan_limited: false,
+  };
+
+  it('空页保留已有日志并更新这一侧游标和结束状态', () => {
+    const emptyPage: LogContextPage = { ...prev, logs: [], back_cursor: { seq: '0', time: 'earlier', index: -1 }, has_back: false };
+    const merged = mergeContextPage(prev, emptyPage, 'back');
+    expect(merged.logs).toEqual(prev.logs);
+    expect(merged.back_cursor).toEqual(emptyPage.back_cursor);
+    expect(merged.has_back).toBe(false);
+    expect(merged.forward_cursor).toEqual(prev.forward_cursor);
+  });
+});
+
+describe('原文排序能力边界', () => {
+  it.each([
+    ['long', 'text'],
+    ['text', 'long'],
+  ])('拒绝跨索引冲突，不依赖返回顺序 %s/%s', (first, second) => {
+    expect(esSupportsLogOrder(toFields({ a: esMappingOf(first), b: esMappingOf(second) }))).toBe(false);
+  });
+
+  it('多个索引类型一致时支持排序', () => {
+    expect(esSupportsLogOrder(toFields({ a: esMappingOf('long'), b: esMappingOf('long') }))).toBe(true);
+  });
+
+  it('stream 字段 keyword/text 冲突时拒绝排序', () => {
+    const other = esMappingOf('long');
+    other.mappings.properties.__log_stream_id__.type = 'text';
+    expect(esSupportsLogOrder(toFields({ a: esMappingOf('long'), b: other }))).toBe(false);
+  });
+
+  it('没有原始类型信息时不能把普通 string 当成 keyword', () => {
+    expect(
+      esSupportsLogOrder([
+        { field: '__log_stream_id__', type: 'string' },
+        { field: '__log_seq__', type: 'long' },
+      ]),
+    ).toBe(false);
+  });
+
+  it.each(['', '  ', '\t', null, undefined, NaN, Infinity, {}, false])('拒绝不可用时间 %p', (time) => {
+    const row = { ts: time, __log_stream_id__: 's-1', __log_seq__: '42' };
+    expect(getLogOrderAnchor(row, 'ts')).toBeUndefined();
+    expect(logOrderUnavailableReason(row, 'ts')).toBe('no_time');
+  });
+
+  it('时间戳 0 是有效锚点', () => {
+    expect(getLogOrderAnchor({ ts: 0, __log_stream_id__: 's-1', __log_seq__: '42' }, 'ts')?.time).toBe(0);
   });
 });

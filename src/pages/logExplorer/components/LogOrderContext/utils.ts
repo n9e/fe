@@ -32,6 +32,24 @@ export interface LogContextPage {
   forward_scan_limited: boolean;
 }
 
+/** 校验接口响应后再写入页面状态，避免异常页破坏已有日志和翻页游标。 */
+export function isLogContextPage(value: unknown): value is LogContextPage {
+  const isRecord = (item: unknown): item is Record<string, unknown> => item !== null && typeof item === 'object' && !Array.isArray(item);
+  const isCursor = (item: unknown) =>
+    isRecord(item) && typeof item.time === 'string' && item.time.trim() !== '' && typeof item.seq === 'string' && /^\d+$/.test(item.seq) && Number.isSafeInteger(item.index);
+  return (
+    isRecord(value) &&
+    Array.isArray(value.logs) &&
+    value.logs.every((row) => isRecord(row) && Number.isSafeInteger(row[LOG_INDEX_FIELD])) &&
+    isCursor(value.back_cursor) &&
+    isCursor(value.forward_cursor) &&
+    typeof value.has_back === 'boolean' &&
+    typeof value.has_forward === 'boolean' &&
+    typeof value.back_scan_limited === 'boolean' &&
+    typeof value.forward_scan_limited === 'boolean'
+  );
+}
+
 export interface LogOrderAnchor {
   streamId: string;
   seq: string;
@@ -43,11 +61,17 @@ export function isLogOrderField(field: string) {
   return field === LOG_STREAM_ID_FIELD || field === LOG_SEQ_FIELD;
 }
 
+/** 原文顺序字段只用于排序和上下文，不作为可检索、可统计的字段展示 */
+export function filterLogOrderFields<T extends { field: string }>(fields: T[]): T[] {
+  return _.filter(fields, (item) => !isLogOrderField(item.field));
+}
+
 export function getLogOrderAnchor(row: Record<string, any>, timeField: string): LogOrderAnchor | undefined {
   const streamId = row[LOG_STREAM_ID_FIELD];
   const seq = row[LOG_SEQ_FIELD];
   const time = row[timeField];
-  if (streamId == null || streamId === '' || seq == null || !/^\d+$/.test(String(seq)) || time == null) return undefined;
+  if ((typeof time !== 'string' || time.trim() === '') && (typeof time !== 'number' || !Number.isFinite(time))) return undefined;
+  if (streamId == null || streamId === '' || seq == null || !/^\d+$/.test(String(seq))) return undefined;
   return { streamId: String(streamId), seq: String(seq), time };
 }
 
@@ -64,9 +88,18 @@ export function logGeneration(seq: unknown) {
 }
 
 /** ES 索引只有在两个字段映射成 keyword / long 时才能按原文顺序排序；没有平台模板时序号会被映射成 text，按它排序会报错 */
-export function esSupportsLogOrder(fields: { field: string; type: string }[]) {
-  const types = new Map(fields.map((f) => [f.field, f.type]));
-  return types.get(LOG_STREAM_ID_FIELD) === 'keyword' && types.get(LOG_SEQ_FIELD) === 'long';
+export function esSupportsLogOrder(fields: { field: string; type: string; logOrderTypes?: string[] }[]) {
+  const supports = (name: string, type: string) => {
+    const matches = fields.filter((field) => field.field === name);
+    return (
+      matches.length > 0 &&
+      matches.every((field) => {
+        const types = field.logOrderTypes ?? [field.type];
+        return types.length > 0 && types.every((value) => value === type);
+      })
+    );
+  };
+  return supports(LOG_STREAM_ID_FIELD, 'keyword') && supports(LOG_SEQ_FIELD, 'long');
 }
 
 /** 把翻页结果并入已加载的上下文：按行号去重排序（每页都会带回锚点行），只更新翻页那一侧的游标和状态 */
