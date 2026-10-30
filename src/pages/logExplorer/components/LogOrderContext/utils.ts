@@ -43,6 +43,11 @@ export function isLogOrderField(field: string) {
   return field === LOG_STREAM_ID_FIELD || field === LOG_SEQ_FIELD;
 }
 
+/** 原文顺序字段只用于排序和上下文，不作为可检索、可统计的字段展示 */
+export function filterLogOrderFields<T extends { field: string }>(fields: T[]): T[] {
+  return _.filter(fields, (item) => !isLogOrderField(item.field));
+}
+
 export function getLogOrderAnchor(row: Record<string, any>, timeField: string): LogOrderAnchor | undefined {
   const streamId = row[LOG_STREAM_ID_FIELD];
   const seq = row[LOG_SEQ_FIELD];

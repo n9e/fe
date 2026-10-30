@@ -1,4 +1,18 @@
-import { detectSourceFields, esSupportsLogOrder, logOrderUnavailableReason, getLogOrderAnchor, logGeneration, matchesAllKeywords, mergeContextPage, LogContextPage } from './utils';
+import _ from 'lodash';
+
+import { mappingsToFullFields } from '@/plugins/elasticsearch/utils/mappingsToFields';
+
+import {
+  detectSourceFields,
+  esSupportsLogOrder,
+  filterLogOrderFields,
+  logOrderUnavailableReason,
+  getLogOrderAnchor,
+  logGeneration,
+  matchesAllKeywords,
+  mergeContextPage,
+  LogContextPage,
+} from './utils';
 
 describe('log order utils', () => {
   it('splits the generation out of a sequence above 2^53 without losing bits', () => {
@@ -29,6 +43,12 @@ describe('log order utils', () => {
       ]),
     ).toBe(false);
     expect(esSupportsLogOrder([])).toBe(false);
+  });
+
+  it('filters the two log order fields out of a field list', () => {
+    const fields = [{ field: 'message' }, { field: '__log_stream_id__' }, { field: '__log_seq__' }, { field: '@timestamp' }];
+    expect(filterLogOrderFields(fields)).toEqual([{ field: 'message' }, { field: '@timestamp' }]);
+    expect(filterLogOrderFields([])).toEqual([]);
   });
 
   it('merges a page into loaded context by row index and moves only that side', () => {
@@ -100,5 +120,63 @@ describe('log order utils', () => {
     expect(logOrderUnavailableReason({ ts: row.ts, message: 'x' }, 'ts')).toBe('no_fields');
     expect(logOrderUnavailableReason({ ...row, __log_seq__: 'abc' }, 'ts')).toBe('no_fields');
     expect(logOrderUnavailableReason({ ...row, ts: undefined }, 'ts')).toBe('no_time');
+  });
+});
+
+/** 索引侧栏字段来自 getFullFields -> mappingsToFullFields，而不是手写的 { type: 'keyword' } */
+const esMappingOf = (seqType: string) => ({
+  mappings: {
+    properties: {
+      '@timestamp': { type: 'date' },
+      message: { type: 'keyword' },
+      __log_stream_id__: { type: 'keyword' },
+      __log_seq__: { type: seqType },
+    },
+  },
+});
+
+const toFields = (mappings: Record<string, unknown>) => mappingsToFullFields(mappings as any);
+
+describe('ES 侧栏字段链路（_mapping -> mappingsToFullFields -> esSupportsLogOrder）', () => {
+  it('keyword 被归一化成 string，而 esSupportsLogOrder 只认 keyword', () => {
+    const fields = toFields({ 'logs-2026.10.28': esMappingOf('long') });
+    expect(_.find(fields, { field: '__log_stream_id__' })?.type).toBe('string');
+    expect(_.find(fields, { field: '__log_seq__' })?.type).toBe('long');
+  });
+
+  it('同一字段在多个索引里类型不同时只保留第一个类型', () => {
+    const fields = toFields({ 'logs-2026.10.28': esMappingOf('long'), 'logs-2026.10.29': esMappingOf('text') });
+    expect(_.filter(fields, { field: '__log_seq__' })).toHaveLength(1);
+    expect(_.find(fields, { field: '__log_seq__' })?.type).toBe('long');
+  });
+
+  // 待确认问题：真实链路把 keyword 归一化成 string，而 esSupportsLogOrder 只认 keyword，ES 原文顺序排序永远不启用
+  it('索引字段确实满足条件时应启用原文顺序排序', () => {
+    expect(esSupportsLogOrder(toFields({ 'logs-2026.10.28': esMappingOf('long') }))).toBe(true);
+  });
+});
+
+describe('空时间值', () => {
+  // 待确认问题：空串被当成可用时间，ES 的 formatTime 会把它变成 NaN 发给后端
+  it('时间字段为空串时不应生成锚点', () => {
+    expect(getLogOrderAnchor({ ts: '', __log_stream_id__: 's-1', __log_seq__: '42' }, 'ts')).toBeUndefined();
+  });
+});
+
+describe('上下文分页响应缺字段', () => {
+  const prev: LogContextPage = {
+    logs: [{ __index_number__: 0 }],
+    back_cursor: { seq: '1', time: 't', index: 0 },
+    forward_cursor: { seq: '1', time: 't', index: 0 },
+    has_back: true,
+    has_forward: true,
+    back_scan_limited: false,
+    forward_scan_limited: false,
+  };
+
+  // 待确认问题：接口没返回 logs/游标时，mergeContextPage 直接抛 TypeError，点“更早/更新”会崩
+  it('响应缺 logs 时应按空页合并而不是抛错', () => {
+    const pageWithoutLogs = { ...prev, logs: undefined } as unknown as LogContextPage;
+    expect(() => mergeContextPage(prev, pageWithoutLogs, 'back')).not.toThrow();
   });
 });

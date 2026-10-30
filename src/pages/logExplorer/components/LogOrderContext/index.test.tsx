@@ -60,3 +60,12 @@ it('greys out the entry with a reason when the row has no order fields', async (
   const empty = render(<LogOrderContext timeField='timestamp' fetchPage={jest.fn()} />);
   expect(empty.container.innerHTML).toBe('');
 });
+
+// 待确认问题：时间字段为空串时锚点仍然成立，入口可点，但后端收到 time=NaN
+it('greys out the entry and explains the missing time when the time value is empty', async () => {
+  render(<LogOrderContext log={{ timestamp: '', __log_stream_id__: 's1', __log_seq__: '100' }} timeField='timestamp' fetchPage={jest.fn()} />);
+  const entry = screen.getByRole('button', { name: 'log_order_context.title' });
+  expect(entry).toBeDisabled();
+  fireEvent.mouseEnter(entry.parentElement as HTMLElement);
+  expect(await screen.findByText('log_order_context.no_time_tip')).toBeInTheDocument();
+});

@@ -7,6 +7,7 @@ import { N9E_PATHNAME, DatasourceCateEnum } from '@/utils/constant';
 
 import { normalizeTime } from './utils/index';
 import mappingsToFields, { mappingsToFullFields } from './utils/mappingsToFields';
+import buildFieldCapsFields from './utils/fieldCaps';
 import flattenHits from './utils/flattenHits';
 import dslBuilder from './utils/dslBuilder';
 import type { LogContextPage, LogContextRequest } from '@/pages/logExplorer/components/LogOrderContext/utils';
@@ -105,14 +106,7 @@ export function getFullFields(
       },
       silence: true,
     }).then((res) => {
-      const allFields = _.map(_.get(res, 'fields'), (fieldObject, name) => {
-        const keys = _.keys(fieldObject);
-        return {
-          field: name,
-          type: keys[0],
-          indexable: true,
-        };
-      });
+      const allFields = buildFieldCapsFields(_.get(res, 'fields'));
       return {
         allFields,
         fields: options.type ? _.filter(allFields, { type: options.type }) : [],
