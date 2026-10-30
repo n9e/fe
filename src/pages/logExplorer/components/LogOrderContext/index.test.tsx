@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 import React from 'react';
+import { message } from 'antd';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import LogOrderContext from './index';
@@ -17,6 +18,8 @@ const page = {
   ],
   back_cursor: { seq: '50', time: '1793164672156', index: -1 },
   forward_cursor: { seq: '100', time: '1793164672156', index: 0 },
+  back_scan_limited: false,
+  forward_scan_limited: false,
   has_back: false,
   has_forward: false,
 };
@@ -67,4 +70,58 @@ it('greys out the entry and explains the missing time when the time value is emp
   expect(entry).toBeDisabled();
   fireEvent.mouseEnter(entry.parentElement as HTMLElement);
   expect(await screen.findByText('log_order_context.no_time_tip')).toBeInTheDocument();
+});
+
+const invalidPages = [
+  ['missing logs', { ...page, logs: undefined }],
+  ['missing back cursor', { ...page, back_cursor: undefined }],
+  ['missing forward cursor', { ...page, forward_cursor: undefined }],
+  ['invalid cursor', { ...page, back_cursor: { seq: '50', time: 't' } }],
+  ['invalid log row', { ...page, logs: [null] }],
+  ['missing response', undefined],
+] as const;
+
+it.each(invalidPages)('rejects initial %s and can reopen to retry', async (_name, invalid) => {
+  const error = jest.spyOn(message, 'error').mockImplementation(() => (() => {}) as any);
+  const fetchPage = jest.fn().mockResolvedValueOnce(invalid).mockResolvedValueOnce(page);
+  try {
+    render(<LogOrderContext log={log} timeField='timestamp' fetchPage={fetchPage} />);
+    fireEvent.click(screen.getByRole('button', { name: 'log_order_context.title' }));
+    await waitFor(() => expect(error).toHaveBeenCalledWith('log_order_context.query_failed'));
+    expect(document.querySelector('.ant-spin-spinning')).toBeNull();
+    expect(screen.getByRole('button', { name: /log_order_context.earlier/ })).toBeDisabled();
+    fireEvent.click(screen.getByLabelText('close'));
+    fireEvent.click(screen.getByRole('button', { name: 'log_order_context.title' }));
+    await waitFor(() => expect(document.querySelector('tr[data-row-key="0"]')).not.toBeNull());
+    expect(fetchPage).toHaveBeenCalledTimes(2);
+  } finally {
+    error.mockRestore();
+  }
+});
+
+it.each(['back', 'forward'] as const)('keeps logs and cursors after invalid %s page and allows retry', async (direction) => {
+  const error = jest.spyOn(message, 'error').mockImplementation(() => (() => {}) as any);
+  const initial = { ...page, has_back: true, has_forward: true };
+  const fetchPage = jest
+    .fn()
+    .mockResolvedValueOnce(initial)
+    .mockResolvedValueOnce({ ...page, logs: undefined })
+    .mockResolvedValueOnce({ ...page, logs: [] });
+  try {
+    render(<LogOrderContext log={log} timeField='timestamp' fetchPage={fetchPage} />);
+    fireEvent.click(screen.getByRole('button', { name: 'log_order_context.title' }));
+    const button = screen.getByRole('button', { name: direction === 'back' ? /log_order_context.earlier/ : /log_order_context.later/ });
+    await waitFor(() => expect(button).not.toBeDisabled());
+    fireEvent.click(button);
+    await waitFor(() => expect(error).toHaveBeenCalledWith('log_order_context.query_failed'));
+    await waitFor(() => expect(button).not.toBeDisabled());
+    expect(document.querySelectorAll('tr[data-row-key]')).toHaveLength(2);
+    fireEvent.click(button);
+    await waitFor(() => expect(fetchPage).toHaveBeenCalledTimes(3));
+    expect(fetchPage.mock.calls[2][0]).toEqual(fetchPage.mock.calls[1][0]);
+    await waitFor(() => expect(button).toBeDisabled());
+    expect(document.querySelectorAll('tr[data-row-key]')).toHaveLength(2);
+  } finally {
+    error.mockRestore();
+  }
 });
