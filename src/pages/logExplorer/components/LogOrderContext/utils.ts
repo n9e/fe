@@ -32,6 +32,24 @@ export interface LogContextPage {
   forward_scan_limited: boolean;
 }
 
+/** 校验接口响应后再写入页面状态，避免异常页破坏已有日志和翻页游标。 */
+export function isLogContextPage(value: unknown): value is LogContextPage {
+  const isRecord = (item: unknown): item is Record<string, unknown> => item !== null && typeof item === 'object' && !Array.isArray(item);
+  const isCursor = (item: unknown) =>
+    isRecord(item) && typeof item.time === 'string' && item.time.trim() !== '' && typeof item.seq === 'string' && /^\d+$/.test(item.seq) && Number.isSafeInteger(item.index);
+  return (
+    isRecord(value) &&
+    Array.isArray(value.logs) &&
+    value.logs.every((row) => isRecord(row) && Number.isSafeInteger(row[LOG_INDEX_FIELD])) &&
+    isCursor(value.back_cursor) &&
+    isCursor(value.forward_cursor) &&
+    typeof value.has_back === 'boolean' &&
+    typeof value.has_forward === 'boolean' &&
+    typeof value.back_scan_limited === 'boolean' &&
+    typeof value.forward_scan_limited === 'boolean'
+  );
+}
+
 export interface LogOrderAnchor {
   streamId: string;
   seq: string;
