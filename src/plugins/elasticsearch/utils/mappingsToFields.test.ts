@@ -24,7 +24,7 @@ describe('mappingsToFullFields', () => {
     expect(_.find(fields, { field: '@timestamp' })?.type).toBe('date');
   });
 
-  it('keeps only the first type when indices map the same field differently', () => {
+  it('preserves display type but records all raw log order types', () => {
     const fields = mappingsToFullFields(
       asResponse({
         'logs-2026.10.28': { mappings: { properties: { __log_seq__: { type: 'long' } } } },
@@ -32,7 +32,7 @@ describe('mappingsToFullFields', () => {
       }),
     );
 
-    expect(_.filter(fields, { field: '__log_seq__' })).toEqual([expect.objectContaining({ field: '__log_seq__', type: 'long' })]);
+    expect(_.filter(fields, { field: '__log_seq__' })).toEqual([expect.objectContaining({ field: '__log_seq__', type: 'long', logOrderTypes: ['long', 'text'] })]);
   });
 
   it('walks nested properties and returns dotted field names', () => {
@@ -40,4 +40,19 @@ describe('mappingsToFullFields', () => {
 
     expect(_.find(fields, { field: 'http.method' })?.type).toBe('string');
   });
+});
+
+it('records implicit object mappings as a conflicting order-field type', () => {
+  const fields = mappingsToFullFields(
+    asResponse({
+      a: { mappings: { properties: { __log_seq__: { type: 'long' } } } },
+      b: { mappings: { properties: { __log_seq__: { properties: { value: { type: 'long' } } } } } },
+    }),
+  );
+  expect(fields.find((field) => field.field === '__log_seq__')?.logOrderTypes).toEqual(['long', 'object']);
+});
+
+it.each(['doc', '_doc', 'custom_type'])('retains order types with legacy document wrapper %s', (wrapper) => {
+  const fields = mappingsToFullFields(asResponse({ a: { mappings: { [wrapper]: { properties: { __log_stream_id__: { type: 'keyword' } } } } } }));
+  expect(fields.find((field) => field.field === '__log_stream_id__')).toMatchObject({ type: 'string', logOrderTypes: ['keyword'] });
 });

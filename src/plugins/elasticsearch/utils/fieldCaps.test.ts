@@ -12,13 +12,11 @@ describe('buildFieldCapsFields（跨集群 _field_caps 归一化）', () => {
 
     expect(fields).toEqual([
       { field: '@timestamp', type: 'date', indexable: true },
-      { field: '__log_stream_id__', type: 'keyword', indexable: true },
-      { field: '__log_seq__', type: 'long', indexable: true },
+      { field: '__log_stream_id__', type: 'keyword', indexable: true, logOrderTypes: ['keyword'] },
+      { field: '__log_seq__', type: 'long', indexable: true, logOrderTypes: ['long'] },
     ]);
   });
 
-  // 待确认问题：_field_caps 里 __log_seq__ 同时有 long/text 时只取 keys[0]（此处是 long），
-  // esSupportsLogOrder 会因此误判为可排序；排序打到 text 索引的 ES 会返回 400
   it('mixed types in field caps should not enable order sorting', () => {
     const fields = buildFieldCapsFields({
       __log_stream_id__: { keyword: {} },
@@ -27,4 +25,16 @@ describe('buildFieldCapsFields（跨集群 _field_caps 归一化）', () => {
 
     expect(esSupportsLogOrder(fields)).toBe(false);
   });
+});
+
+it.each([
+  { long: {}, text: {} },
+  { text: {}, long: {} },
+])('field caps conflicts do not depend on type order: %p', (types) => {
+  expect(esSupportsLogOrder(buildFieldCapsFields({ __log_stream_id__: { keyword: {} }, __log_seq__: types }))).toBe(false);
+});
+
+it('rejects mixed stream types and accepts consistent mappings', () => {
+  expect(esSupportsLogOrder(buildFieldCapsFields({ __log_stream_id__: { keyword: {}, text: {} }, __log_seq__: { long: {} } }))).toBe(false);
+  expect(esSupportsLogOrder(buildFieldCapsFields({ __log_stream_id__: { keyword: {} }, __log_seq__: { long: {} } }))).toBe(true);
 });

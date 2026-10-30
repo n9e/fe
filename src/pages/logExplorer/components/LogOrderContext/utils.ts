@@ -52,7 +52,8 @@ export function getLogOrderAnchor(row: Record<string, any>, timeField: string): 
   const streamId = row[LOG_STREAM_ID_FIELD];
   const seq = row[LOG_SEQ_FIELD];
   const time = row[timeField];
-  if (streamId == null || streamId === '' || seq == null || !/^\d+$/.test(String(seq)) || time == null) return undefined;
+  if ((typeof time !== 'string' || time.trim() === '') && (typeof time !== 'number' || !Number.isFinite(time))) return undefined;
+  if (streamId == null || streamId === '' || seq == null || !/^\d+$/.test(String(seq))) return undefined;
   return { streamId: String(streamId), seq: String(seq), time };
 }
 
@@ -69,9 +70,18 @@ export function logGeneration(seq: unknown) {
 }
 
 /** ES 索引只有在两个字段映射成 keyword / long 时才能按原文顺序排序；没有平台模板时序号会被映射成 text，按它排序会报错 */
-export function esSupportsLogOrder(fields: { field: string; type: string }[]) {
-  const types = new Map(fields.map((f) => [f.field, f.type]));
-  return types.get(LOG_STREAM_ID_FIELD) === 'keyword' && types.get(LOG_SEQ_FIELD) === 'long';
+export function esSupportsLogOrder(fields: { field: string; type: string; logOrderTypes?: string[] }[]) {
+  const supports = (name: string, type: string) => {
+    const matches = fields.filter((field) => field.field === name);
+    return (
+      matches.length > 0 &&
+      matches.every((field) => {
+        const types = field.logOrderTypes ?? [field.type];
+        return types.length > 0 && types.every((value) => value === type);
+      })
+    );
+  };
+  return supports(LOG_STREAM_ID_FIELD, 'keyword') && supports(LOG_SEQ_FIELD, 'long');
 }
 
 /** 把翻页结果并入已加载的上下文：按行号去重排序（每页都会带回锚点行），只更新翻页那一侧的游标和状态 */

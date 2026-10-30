@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+import { isLogOrderField } from '@/pages/logExplorer/components/LogOrderContext/utils';
+
 import { TYPE_MAP } from '../constants';
 import { Field } from '../ExplorerNG/types';
 
@@ -45,6 +47,7 @@ export function mappingsToFullFields(
   },
 ) {
   const fields: Field[] = [];
+  const logOrderTypes = new Map<string, Set<string>>();
   _.forEach(mappings, (item: any) => {
     function loop(mappings, prefix = '') {
       // mappings?.doc?.properties 兼容 6.x 版本接口
@@ -62,6 +65,12 @@ export function mappingsToFullFields(
       }
 
       _.forEach(properties, (item, key) => {
+        const field = `${prefix}${key}`;
+        if (isLogOrderField(field)) {
+          const types = logOrderTypes.get(field) ?? new Set<string>();
+          types.add(item.type ?? 'object');
+          logOrderTypes.set(field, types);
+        }
         if (item.type) {
           if (options.includeSubFields && item.type === 'text' && item.fields) {
             fields.push({
@@ -96,5 +105,8 @@ export function mappingsToFullFields(
     }
     loop(item.mappings);
   });
-  return _.sortBy(_.unionBy(fields, 'field'), 'field');
+  return _.sortBy(_.unionBy(fields, 'field'), 'field').map((field) => {
+    const types = logOrderTypes.get(field.field);
+    return types ? { ...field, logOrderTypes: [...types] } : field;
+  });
 }
