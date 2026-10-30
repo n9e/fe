@@ -17,6 +17,7 @@ import { getIndices, getFullFields } from '../../services';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import FieldsSidebar from './FieldsSidebar';
+import { filterLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/utils';
 
 interface Props {
   disabled?: boolean;
@@ -79,9 +80,11 @@ export default function indexCpt(props: Props) {
           });
           setDateFields(res.fields);
           onIndexDataChange(fieldData);
+          // 侧栏只展示可检索字段；indices 模式会提前 return，过滤后的数组必须在这里统一算好
+          const sidebarFieldData = filterLogOrderFields(fieldData);
           if (queryValues?.mode === 'indices') {
             const query = form.getFieldValue('query');
-            if (!query) return fieldData;
+            if (!query) return sidebarFieldData;
             const dateField = _.find(res.fields, { field: query.date_field })?.field;
             const defaultDateField = _.find(res.fields, { field: '@timestamp' })?.field || res.fields[0]?.field;
             const nextDateField = dateField || defaultDateField;
@@ -94,7 +97,7 @@ export default function indexCpt(props: Props) {
               });
             }
           }
-          return fieldData;
+          return sidebarFieldData;
         })
         .catch(() => {
           setDateFields([]);

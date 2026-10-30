@@ -15,7 +15,10 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 import { getDateTokenDisplayValue } from '@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/tokenValue';
 
 import { NAME_SPACE, LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
-import { getLogsQuery, getHistogram } from '../../../services';
+import { getLogsQuery, getHistogram, getESContextLogs } from '../../../services';
+import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
+import { esSupportsLogOrder, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import dslBuilder from '../../../utils/dslBuilder';
 import { getHighlightHtml } from '../../../utils/highlight';
 import { Field, Interval } from '../../types';
@@ -174,12 +177,11 @@ export default function index(props: Props) {
           kuery: queryValues.query,
           from: (serviceParams.current - 1) * serviceParams.pageSize,
           limit: serviceParams.pageSize,
-          sorter: [
-            {
-              field: queryValues.date_field,
-              order: serviceParams.reverse ? 'desc' : 'asc',
-            },
-          ],
+          // 时间相同时按文件流和序号排，同一文件的日志跨页也保持原文顺序
+          sorter: _.map(esSupportsLogOrder(indexData) ? [queryValues.date_field, LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD] : [queryValues.date_field], (field) => ({
+            field,
+            order: serviceParams.reverse ? 'desc' : 'asc',
+          })),
           _source: true,
           shouldHighlight: true,
         });
@@ -222,7 +224,7 @@ export default function index(props: Props) {
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newData, data?.colWidths),
-              fields: filterOutBuiltinFields(getFields(mergedList, queryValues.date_field)),
+              fields: omitLogOrderKeys(filterOutBuiltinFields(getFields(mergedList, queryValues.date_field))),
               highlights: mergedHighlights,
             };
           }
@@ -235,7 +237,7 @@ export default function index(props: Props) {
             total: res.total,
             hash: _.uniqueId('logs_'),
             colWidths: calcColWidthByData(newData),
-            fields: filterOutBuiltinFields(getFields(newData, queryValues.date_field)),
+            fields: omitLogOrderKeys(filterOutBuiltinFields(getFields(newData, queryValues.date_field))),
             highlights: nextHighlights,
           };
         })
@@ -381,7 +383,7 @@ export default function index(props: Props) {
 
   const handleFilterFields = useCallback(
     (fieldKeys: string[]) => {
-      return filteredFields(fieldKeys, organizeFields);
+      return filteredFields(omitLogOrderKeys(fieldKeys), organizeFields);
     },
     [organizeFields],
   );
@@ -435,6 +437,27 @@ export default function index(props: Props) {
               // props
               id_key='__n9e_id_n9e__'
               raw_key='__n9e_raw_n9e__'
+              logViewerFilterFields={withoutLogOrderFields}
+              logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
+              logViewerExtraRender={
+                IS_PLUS
+                  ? (log) => (
+                      <LogOrderContext
+                        log={log?.__n9e_raw_n9e__}
+                        timeField={queryValues?.date_field}
+                        organizeFields={organizeFields}
+                        formatTime={(time) => String(moment(time).valueOf())}
+                        fetchPage={(req) =>
+                          getESContextLogs({
+                            cate: DatasourceCateEnum.elasticsearch,
+                            datasource_id: datasourceValue,
+                            query: [{ ...req, index: queryValues?.index, time_field: queryValues?.date_field }],
+                          })
+                        }
+                      />
+                    )
+                  : undefined
+              }
               showExistsAction
               timeField={queryValues?.date_field}
               histogramLoading={histogramLoading}

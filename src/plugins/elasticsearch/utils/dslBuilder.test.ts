@@ -79,3 +79,38 @@ describe('elasticsearch dslBuilder filters', () => {
     });
   });
 });
+
+describe('elasticsearch dslBuilder sorter（原文顺序排序）', () => {
+  it('keeps every sorter field in order and pins unmapped_type', () => {
+    const body = getBody(
+      dslBuilder({
+        index: 'logs-*',
+        start: 1,
+        end: 2,
+        sorter: [
+          { field: '@timestamp', order: 'desc' },
+          { field: '__log_stream_id__', order: 'desc' },
+          { field: '__log_seq__', order: 'desc' },
+        ],
+      }),
+    );
+
+    expect(body.sort).toEqual([
+      { '@timestamp': { order: 'desc', unmapped_type: 'boolean' } },
+      { __log_stream_id__: { order: 'desc', unmapped_type: 'boolean' } },
+      { __log_seq__: { order: 'desc', unmapped_type: 'boolean' } },
+    ]);
+  });
+
+  it('does not add a sort when neither sorter nor order is provided', () => {
+    const body = getBody(
+      dslBuilder({
+        index: 'logs-*',
+        start: 1,
+        end: 2,
+      }),
+    );
+
+    expect(body.sort).toBeUndefined();
+  });
+});
