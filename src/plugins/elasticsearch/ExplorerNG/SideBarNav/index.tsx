@@ -72,7 +72,7 @@ export default function indexCpt(props: Props) {
         crossClusterEnabled: queryValues?.cross_cluster_enabled === 1,
       })
         .then((res) => {
-          const fieldData = _.map(res.allFields, (item) => {
+          const fieldData: Field[] = _.map(res.allFields, (item) => {
             return {
               ...item,
               indexable: true,
