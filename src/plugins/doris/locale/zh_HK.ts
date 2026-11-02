@@ -1,4 +1,5 @@
 const zh_HK = {
+  pagination_requires_order_keys: '目前資料表的排序鍵未以（所選時間欄位、__log_stream_id__、__log_seq__）開頭，無法保證穩定分頁。僅顯示首屏，請縮小查詢範圍或選擇相符的時間欄位。',
   quick_query: '快捷查詢',
   quick_query_tip: '快捷查詢 根據固定的SQL模闆，快速生成查詢語句，比如字段A大於0，只需要輸入 A > 0，通過點擊該按鈕可以快速切換到自定義模式，支持查看併修改SQL語句',
   custom_query: '自定義查詢',
