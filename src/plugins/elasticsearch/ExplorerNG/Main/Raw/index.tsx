@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Form, Space, Pagination, Empty, Popover, InputNumber, Select } from 'antd';
+import { Form, Space, Pagination, Empty, Popover, InputNumber, Select, Alert, Button } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -15,7 +15,7 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 import { getDateTokenDisplayValue } from '@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/tokenValue';
 
 import { NAME_SPACE, LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
-import { getLogsQuery, getHistogram, getESContextLogs } from '../../../services';
+import { getLogsQuery, getHistogram, getESContextLogs, getFullFields } from '../../../services';
 import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
 import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
 import { esSupportsLogOrder, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
@@ -151,7 +151,8 @@ export default function index(props: Props) {
   const fixedRangeRef = useRef<boolean>(false);
   const loadTimeRef = useRef<number | null>(null);
 
-  const service = () => {
+  const queryFieldsRef = useRef<{ key: string; fields: Promise<Field[]> }>();
+  const service = async () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues.range) {
       const range = parseRange(queryValues.range);
@@ -167,6 +168,30 @@ export default function index(props: Props) {
       }
       rangeRef.current = timeParams;
 
+      const fieldsKey = JSON.stringify([refreshFlag, datasourceValue, queryValues.index, queryValues.allow_hide_system_indices, queryValues.cross_cluster_enabled]);
+      let queryFields: Field[];
+      try {
+        // Pin metadata before page one so automatic queries and later pages use the same sort.
+        if (queryFieldsRef.current?.key !== fieldsKey) {
+          queryFieldsRef.current = {
+            key: fieldsKey,
+            fields: getFullFields(datasourceValue, queryValues.index, {
+              type: 'date',
+              allowHideSystemIndices: !!queryValues.allow_hide_system_indices,
+              crossClusterEnabled: queryValues.cross_cluster_enabled === 1,
+            }).then((res) => res.allFields),
+          };
+        }
+        const fieldsRequest = queryFieldsRef.current;
+        queryFields = await fieldsRequest.fields;
+        if (queryFieldsRef.current !== fieldsRequest) {
+          return { list: [], total: 0, hash: _.uniqueId('logs_'), fields: [], highlights: [] };
+        }
+      } catch (error) {
+        if (queryFieldsRef.current?.key === fieldsKey) queryFieldsRef.current = undefined;
+        throw error;
+      }
+
       let requestBody;
       try {
         requestBody = dslBuilder({
@@ -181,9 +206,10 @@ export default function index(props: Props) {
           from: (serviceParams.current - 1) * serviceParams.pageSize,
           limit: serviceParams.pageSize,
           // 时间相同时按文件流和序号排，同一文件的日志跨页也保持原文顺序
-          sorter: _.map(esSupportsLogOrder(indexData) ? [queryValues.date_field, LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD] : [queryValues.date_field], (field) => ({
+          sorter: _.map(esSupportsLogOrder(queryFields) ? [queryValues.date_field, LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD] : [queryValues.date_field], (field) => ({
             field,
             order: serviceParams.reverse ? 'desc' : 'asc',
+            unmappedType: field === LOG_STREAM_ID_FIELD ? 'keyword' : field === LOG_SEQ_FIELD ? 'long' : 'date',
           })),
           _source: true,
           shouldHighlight: true,
@@ -271,6 +297,7 @@ export default function index(props: Props) {
   const {
     data,
     loading,
+    error: metadataError,
     run: fetchLogs,
     mutate: setData,
   } = useRequest<
@@ -429,7 +456,18 @@ export default function index(props: Props) {
   return (
     <>
       {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && histogramFilters}
-      {refreshFlag ? (
+      {metadataError ? (
+        <Alert
+          type='error'
+          showIcon
+          message={t('metadata_load_failed')}
+          action={
+            <Button size='small' loading={loading} onClick={() => fetchLogs()}>
+              {t('metadata_retry')}
+            </Button>
+          }
+        />
+      ) : refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer

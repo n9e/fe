@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
+import { Form, Button, Space, Tooltip, Pagination, Empty, Popover, Alert } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -146,6 +146,7 @@ export default function index(props: Props) {
 
   type HighlightMap = Record<string, string[]>;
 
+  const [paginationSupported, setPaginationSupported] = useState<boolean>();
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     // 优先 form(视图恢复时 form 即时最新),其次 options,最后默认值
@@ -164,7 +165,8 @@ export default function index(props: Props) {
       }
       rangeRef.current = timeParams;
       // 滚动加载下一页时带上最后一行的排序值：表支持原文顺序时后端按它翻页，跨页不乱序也不用从头扫
-      const lastAnchor = appendRef.current ? getLogOrderAnchor(_.last(data?.list)?.___raw___ || {}, queryValues.time_field) : undefined;
+      const lastRaw = data?.list?.[data.list.length - 1]?.___raw___;
+      const lastAnchor = appendRef.current && lastRaw && typeof lastRaw === 'object' ? getLogOrderAnchor(lastRaw, queryValues.time_field) : undefined;
       const queryStart = Date.now();
       const reqData = {
         cate: DatasourceCateEnum.doris,
@@ -191,6 +193,7 @@ export default function index(props: Props) {
       const logAnalysisSnapshot = IS_ENT ? captureDorisLogAnalysisRequest(reqData) : undefined;
       return getDorisLogsQuery(reqData)
         .then((res) => {
+          setPaginationSupported(res.pagination_supported);
           if (fixedRangeRef.current === false) {
             loadTimeRef.current = Date.now() - queryStart;
           }
@@ -385,6 +388,7 @@ export default function index(props: Props) {
 
   return (
     <>
+      {paginationSupported === false && <Alert type='warning' showIcon message={t('pagination_requires_order_keys')} />}
       {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && (
         <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
       )}
@@ -511,6 +515,7 @@ export default function index(props: Props) {
                   )}
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
+                      disabled={paginationSupported === false}
                       showQuickJumper
                       size='small'
                       total={data?.total}
@@ -583,7 +588,7 @@ export default function index(props: Props) {
                 }
               }}
               onScrollCapture={() => {
-                if (loading || pageLoadMode !== 'infiniteScroll') return;
+                if (loading || paginationSupported === false || pageLoadMode !== 'infiniteScroll') return;
                 const isAtBottom = getIsAtBottom(tableSelector.antd, tableSelector.rgd);
                 if (isAtBottom) {
                   // 滚动到底后加载下一页
