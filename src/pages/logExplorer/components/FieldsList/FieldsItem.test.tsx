@@ -114,7 +114,7 @@ it('retains its resize observer across renders and measures changed pressed acti
   try {
     const view = setup();
     const row = view.container.querySelector<HTMLElement>('.n9e-log-field-row')!;
-    expect(row.style.getPropertyValue('--log-field-active-width')).toBe('0px');
+    await waitFor(() => expect(row.style.getPropertyValue('--log-field-active-width')).toBe('0px'));
     view.rerender(<FieldsItem {...view.props} renderStatsPopoverTitleExtra={() => <button aria-pressed='true'>stack</button>} />);
     await waitFor(() => expect(row.style.getPropertyValue('--log-field-active-width')).toBe('48px'));
     expect(resize).toHaveBeenCalledTimes(1);
