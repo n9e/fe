@@ -6,6 +6,7 @@ import Raw from './index';
 import { getFullFields, getLogsQuery } from '../../../services';
 
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: (range: any) => range }));
+jest.mock('@/utils/getTextWidth', () => () => 100);
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
 jest.mock('../../../services', () => ({ getFullFields: jest.fn(), getLogsQuery: jest.fn(), getHistogram: jest.fn().mockResolvedValue([]) }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (s: string) => s }), Trans: () => null }));
@@ -18,7 +19,7 @@ jest.mock('@/pages/logExplorer/components/LogOrderContext/LogOrderMeta', () => (
   omitLogOrderKeys: (x: any) => x,
   withoutLogOrderFields: (x: any) => x,
 }));
-jest.mock('@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal', () => () => null);
+jest.mock('plus:/components/LogDownload/DownloadModal', () => () => null, { virtual: true });
 jest.mock('@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/tokenValue', () => ({ getDateTokenDisplayValue: () => '' }));
 jest.mock('@/pages/logExplorer/components/LogsViewer', () => (props: any) => <div>{props.optionsExtraRender}</div>);
 jest.mock('@fc-components/es-query', () => ({ buildESQueryFromKuery: () => ({ filter: [] }) }));

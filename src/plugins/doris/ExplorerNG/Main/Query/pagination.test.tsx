@@ -10,6 +10,7 @@ jest.mock('../../../services', () => ({ getDorisLogsQuery: jest.fn(), getDorisHi
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (s: string) => s }), Trans: () => null }));
 jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { doris: 'doris' }, IS_ENT: false, IS_PLUS: false }));
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: (range: any) => range }));
+jest.mock('@/utils/getTextWidth', () => () => 100);
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
 jest.mock('@/pages/logExplorer/components/RenderValue/useFieldConfig', () => () => ({}));
 jest.mock('@/pages/logExplorer/components/LogOrderContext', () => () => null);
@@ -19,14 +20,13 @@ jest.mock('@/pages/logExplorer/components/LogOrderContext/LogOrderMeta', () => (
   omitLogOrderKeys: (x: any) => x,
   withoutLogOrderFields: (x: any) => x,
 }));
-jest.mock('@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal', () => () => null);
+jest.mock('plus:/components/LogDownload/DownloadModal', () => () => null, { virtual: true });
 jest.mock('@/pages/logExplorer/components/LogsViewer', () => (props: any) => (
   <div data-testid='viewer' onScrollCapture={props.onScrollCapture}>
     {props.optionsExtraRender}
   </div>
 ));
 jest.mock('./QueryBuilderFilters', () => () => null);
-jest.mock('./useQuerySyntaxError', () => () => ({}));
 jest.mock('../../utils/tableElementMethods', () => ({ scrollToTop: () => {}, getIsAtBottom: () => true }));
 jest.mock('plus:/parcels/DorisLogAnalysis', () => ({ bindDorisLogAnalysisRows: () => {}, captureDorisLogAnalysisRequest: () => {}, useDorisLogAnalysisViewerProps: () => ({}) }), {
   virtual: true,
