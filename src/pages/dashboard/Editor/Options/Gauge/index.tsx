@@ -24,7 +24,7 @@ export default function Gauge() {
   return (
     <>
       <GraphStyles />
-      <Thresholds />
+      <Thresholds showMode />
       <ValueMappings />
       <StandardOptions defaultMin={0} defaultMax={100} />
     </>

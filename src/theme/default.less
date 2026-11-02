@@ -1,3 +1,5 @@
+@import './scrollbar.less';
+
 /* antd */
 .n9e-antd-drawer.ant-drawer {
   .ant-drawer-header-title {
@@ -193,32 +195,7 @@ mark {
 
 .best-looking-scroll {
   overflow: auto; // 隐藏滚动条
-
-  &::-webkit-scrollbar {
-    width: 6px; // 竖向滚动条宽度
-    height: 6px; // 横向滚动条高度
-    visibility: hidden;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1); // 增加透明度
-    border-radius: 3px;
-    visibility: hidden;
-  }
-
-  &:hover {
-    &::-webkit-scrollbar {
-      visibility: visible;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      visibility: visible;
-    }
-  }
-
-  &::-webkit-scrollbar-corner {
-    background-color: transparent;
-  }
+  .best-looking-scrollbar();
 }
 
 .n9e-advanced-settings-collapse {

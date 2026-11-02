@@ -18,6 +18,8 @@ jest.mock('@/utils/constant', () => ({
   N9E_PATHNAME: 'n9e',
   DatasourceCateEnum: {},
 }));
+// ColorPicker 通过 @/App 读取当前主题，@/App 顶层同样使用 import.meta.env
+jest.mock('@/App', () => ({ CommonStateContext: require('react').createContext({ darkMode: false }) }));
 
 function renderHeader(name: number, showIndex: boolean, overrides: Record<string, unknown>[]) {
   function Harness() {

@@ -103,6 +103,7 @@ export default function index() {
                       <Col
                         span={8}
                         key={item}
+                        className='n9e-dashboard-editor-transformationNG-col'
                         onClick={() => {
                           let options = {};
                           if (item === 'organize') {

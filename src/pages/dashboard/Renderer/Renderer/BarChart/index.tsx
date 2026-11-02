@@ -60,13 +60,21 @@ export default function Bar(props: IProps) {
   const stableCustom = useStableValue(custom);
   const stableOptions = useStableValue(options);
   // custom 为 JsonObject（宽类型），按 bar chart 面板实际使用的结构收窄
-  const { calc, xAxisField, yAxisField, colorField, barMaxWidth } = custom as {
+  const {
+    calc,
+    xAxisField: configuredXAxisField,
+    yAxisField: configuredYAxisField,
+    colorField,
+    barMaxWidth,
+  } = custom as {
     calc?: string;
     xAxisField?: string;
     yAxisField?: string;
     colorField?: string;
     barMaxWidth?: number;
   };
+  const xAxisField = configuredXAxisField || 'Name';
+  const yAxisField = configuredYAxisField || 'Value';
   const calculatedValues = useMemo(
     () =>
       getCalculatedValuesBySeries(

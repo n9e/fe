@@ -1,0 +1,59 @@
+// 视觉与时序图 tooltip（UPlotChart/style.less 中的 .n9e-uplot-tooltip）保持一致
+.n9e-series-tooltip {
+  box-sizing: border-box;
+  max-width: 600px;
+  color: var(--fc-text-4);
+  background: var(--fc-fill-1);
+  border: 1px solid var(--fc-border-color);
+  border-radius: 3px;
+  box-shadow: 1px 1px 1px var(--fc-boxshadow-base-color);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: normal;
+  word-break: break-all;
+  .n9e-series-tooltip-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 4px 8px;
+    color: var(--fc-text-2);
+    font-weight: bolder;
+  }
+  .n9e-series-tooltip-labels {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+  }
+  .n9e-series-tooltip-header + .n9e-series-tooltip-labels {
+    border-top: 1px solid var(--fc-border-color);
+  }
+}
+
+.n9e-series-tooltip-overlay {
+  max-width: none;
+  .ant-tooltip-arrow {
+    display: none;
+  }
+  .ant-tooltip-inner {
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.n9e-series-tooltip-floating {
+  position: fixed;
+  z-index: 1000;
+  // fixed 元素的 auto 宽度会被右侧剩余空间压缩，先按内容宽度测量再做边界定位。
+  width: max-content;
+  // 保留浏览器的 min()，避免 Less 提前求值后丢失视口宽度约束。
+  max-width: ~'min(600px, calc(100vw - 24px))';
+  pointer-events: none;
+
+  .n9e-series-tooltip-value {
+    flex-shrink: 0;
+  }
+}

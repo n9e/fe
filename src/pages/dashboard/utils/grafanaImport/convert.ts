@@ -10,7 +10,8 @@ import { migrateDashboardSchema, DASHBOARD_SCHEMA_VERSION } from './migrate';
 import { convertVariablesGrafanaToN9E, type GroupedDatasourceList } from './variables';
 import { convertPanelsGrafanaToN9E } from './panels';
 import { convertLinksGrafanaToN9E, type ReportFn } from './options';
-import { DASHBOARD_VERSION, type ConvertResult, type UnsupportedItem } from './types';
+import { DASHBOARD_VERSION } from '../../constants';
+import type { ConvertResult, UnsupportedItem } from './types';
 
 /** 转换选项：datasourceList 用于给数据源变量补充默认值 */
 export interface ConvertOptions {
@@ -56,7 +57,7 @@ export function convertDashboardGrafanaToN9EWithReport(source: unknown, options?
   const links = convertLinksGrafanaToN9E(dashboard.links, report, '$.links');
   const panels = convertPanelsGrafanaToN9E(dashboard.panels, context, report);
 
-  // 3. 组装输出（真 4.0.0 结构）
+  // 3. 组装输出（当前 schema 结构）
   const tags = Array.isArray(dashboard.tags) ? dashboard.tags.filter((t): t is string => typeof t === 'string').join(' ') : '';
   const output = {
     name: dashboard.title ?? '',

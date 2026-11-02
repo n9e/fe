@@ -3,6 +3,8 @@ import { render } from '@testing-library/react';
 import type { RenderResult } from '@testing-library/react';
 
 import { CommonStateContext, ICommonState } from '@/App';
+import { DashboardRuntimeProvider } from '@/pages/dashboard/globalState';
+import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
 
 /**
  * 构造一个最小可用的 ICommonState，测试可按需覆盖。
@@ -39,7 +41,6 @@ export function createMockCommonState(overrides: Partial<ICommonState> = {}): IC
     darkMode: false,
     setDarkMode: () => {},
     esIndexMode: '',
-    dashboardSaveMode: 'manual',
     installTs: 0,
     logsDefaultRange: { start: 'now-1h', end: 'now' },
     ...overrides,
@@ -48,10 +49,14 @@ export function createMockCommonState(overrides: Partial<ICommonState> = {}): IC
   return commonState as ICommonState;
 }
 
-/** 返回一个包裹 CommonStateContext.Provider 的包装组件，可同时用于 render / renderHook */
+/** 返回包裹公共状态和测试专用仪表盘实例的组件，可同时用于 render / renderHook。 */
 export function createCommonStateWrapper(overrides: Partial<ICommonState> = {}) {
   const commonState = createMockCommonState(overrides);
-  return ({ children }: { children: React.ReactNode }) => <CommonStateContext.Provider value={commonState}>{children}</CommonStateContext.Provider>;
+  return ({ children }: { children: React.ReactNode }) => (
+    <CommonStateContext.Provider value={commonState}>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>{children}</DashboardRuntimeProvider>
+    </CommonStateContext.Provider>
+  );
 }
 
 interface RenderWithProvidersOptions {

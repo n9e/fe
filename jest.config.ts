@@ -115,10 +115,10 @@ const config: Config = {
   preset: 'ts-jest',
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
-    // ai-kit ships ESM only; it is the one dependency compiled for jest.
+    // ai-kit 与 react-hexgrid 发布 ESM，需要转换为 Jest 可加载的模块。
     '^.+\\.js$': ['ts-jest', { tsconfig: 'tsconfig.jest-deps.json' }],
   },
-  transformIgnorePatterns: ['/node_modules/(?!@flashcatcloud/ai-kit/)'],
+  transformIgnorePatterns: ['/node_modules/(?!@flashcatcloud/ai-kit/|react-hexgrid/)'],
 
   // Run tests from one or more projects
   // projects: undefined,

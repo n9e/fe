@@ -30,7 +30,13 @@ interface Props {
   action: 'create' | 'edit';
   busiId?: number;
   initialValues?: IDashboard;
-  dashboardSaveMode?: string;
+  /**
+   * 提交时是否调用创建/更新接口，默认为 true。
+   *
+   * 详情页的设置弹窗只修改页面内的本地配置（落库由顶栏保存按钮负责），
+   * 传 false；列表页的新建/编辑必须落库，保持默认。
+   */
+  persistOnSubmit?: boolean;
   onOk?: (values: DashboardFormValues) => void;
 }
 
@@ -62,7 +68,7 @@ function setDashboardFormFields(form: FormInstance, initialValues: IDashboard, c
 
 function index(props: Props & ModalWrapProps) {
   const { t } = useTranslation('dashboard');
-  const { visible, destroy, busiId, action, initialValues, dashboardSaveMode, onOk } = props;
+  const { visible, destroy, busiId, action, initialValues, persistOnSubmit = true, onOk } = props;
   const [form] = Form.useForm();
   const [dashboardConfigs, setDashboardConfigs] = useState<IDashboardConfig>();
   const [isConfigLoading, setIsConfigLoading] = useState(action === 'edit');
@@ -136,7 +142,8 @@ function index(props: Props & ModalWrapProps) {
         if (action === 'edit' && isConfigLoading) return;
 
         form.validateFields().then(async (values: DashboardFormValues) => {
-          if (dashboardSaveMode === 'manual') {
+          if (!persistOnSubmit) {
+            // 本地编辑：调用方接管配置更新，不发送请求
             if (onOk) {
               onOk(values);
             }

@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
-import type { DashboardDatasource, IPanel, ITarget } from '@/pages/dashboard/types';
+import type { DashboardDatasource, IPanel, ITarget, ScopedVariables } from '@/pages/dashboard/types';
 import { replaceDatasourceVariables } from '@/pages/dashboard/Variables/utils/replaceTemplateVariables';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
 interface ResolvedDatasource {
   cate: string;
@@ -15,8 +16,14 @@ export interface SharedPanelDatasource {
   datasourceName: string;
 }
 
-const resolveDatasource = (datasource: { cate: string; id: number | string }, datasourceList: DashboardDatasource[]): ResolvedDatasource | undefined => {
-  const id = replaceDatasourceVariables(datasource.id, { datasourceList });
+/** 将数据源配置解析为数值 ID，调用方明确提供所属仪表盘的变量运行时。 */
+const resolveDatasource = (
+  datasource: { cate: string; id: number | string },
+  datasourceList: DashboardDatasource[],
+  variables: IVariable[],
+  scopedVars?: ScopedVariables,
+): ResolvedDatasource | undefined => {
+  const id = replaceDatasourceVariables(datasource.id, { datasourceList, variables, scopedVars });
   if (typeof id !== 'number') return undefined;
 
   const matchedDatasource = _.find(datasourceList, { id });
@@ -32,14 +39,17 @@ const resolveDatasource = (datasource: { cate: string; id: number | string }, da
  * target 级数据源优先；没有 target 数据源时回退到兼容旧配置的面板级数据源。
  */
 export function resolveSharedPanelDatasource(
-  panel: Pick<IPanel, 'datasourceCate' | 'datasourceValue'>,
+  panel: Pick<IPanel, 'datasourceCate' | 'datasourceValue' | 'scopedVars'>,
   targets: ITarget[],
   datasourceList: DashboardDatasource[],
+  variables: IVariable[] = [],
 ): SharedPanelDatasource {
-  const targetDatasources = _.compact(_.map(targets, (target) => (target.datasource ? resolveDatasource(target.datasource, datasourceList) : undefined)));
+  const targetDatasources = _.compact(
+    _.map(targets, (target) => (target.datasource ? resolveDatasource(target.datasource, datasourceList, variables, panel.scopedVars) : undefined)),
+  );
   const legacyDatasource =
     panel.datasourceCate && panel.datasourceCate !== 'mixed' && panel.datasourceValue !== undefined
-      ? resolveDatasource({ cate: panel.datasourceCate, id: panel.datasourceValue }, datasourceList)
+      ? resolveDatasource({ cate: panel.datasourceCate, id: panel.datasourceValue }, datasourceList, variables, panel.scopedVars)
       : undefined;
   const datasources = targetDatasources.length > 0 ? targetDatasources : _.compact([legacyDatasource]);
   const datasourceCates = _.uniq(_.map(datasources, 'cate'));

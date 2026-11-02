@@ -10,7 +10,7 @@ jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (value: string) 
 jest.mock('@/App', () => {
   const React = require('react');
   return {
-    CommonStateContext: React.createContext({ siteInfo: {}, dashboardSaveMode: 'auto' }),
+    CommonStateContext: React.createContext({ siteInfo: {} }),
   };
 });
 jest.mock('@/components/TimeRangePicker', () => ({
@@ -23,7 +23,7 @@ jest.mock('@/components/AiChatNG/recommend', () => ({ getDashboardDetailPrompts:
 jest.mock('../globalState', () => ({ useGlobalState: () => [[]] }));
 jest.mock('../DashboardLinks', () => () => null);
 jest.mock('../config', () => ({ AddPanelIcon: () => null }));
-jest.mock('../Editor/config', () => ({ visualizations: [] }));
+jest.mock('../Renderer/registry/panelTypes', () => ({ visualizations: [] }));
 jest.mock('../List/FormModal', () => () => null);
 jest.mock('../List/ImportGrafanaURLFormModal', () => () => null);
 jest.mock('../List/SharingLinkModal', () => () => null);
@@ -50,11 +50,10 @@ test('fullscreen header only renders the dashboard title and time range picker',
         isAuthorized
         onToggleFullscreen={jest.fn()}
         editable
-        updateAtRef={{ current: undefined }}
         allowedLeave
         hasUnsavedChanges={false}
-        setAllowedLeave={jest.fn()}
-        setHasUnsavedChanges={jest.fn()}
+        saving={false}
+        onSave={jest.fn()}
         routerPromptRef={{ current: { showPrompt: jest.fn() } } as never}
       />
     </MemoryRouter>,

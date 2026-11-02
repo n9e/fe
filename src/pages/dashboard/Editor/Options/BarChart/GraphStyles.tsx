@@ -25,8 +25,11 @@ import { calcsOptions } from '../../config';
 export default function GraphStyles() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
+  const form = Form.useFormInstance();
+  const xAxisField = Form.useWatch([...namePrefix, 'xAxisField']);
+  const yAxisField = Form.useWatch([...namePrefix, 'yAxisField']);
   const [statFields, setStatFields] = useGlobalState('statFields');
-  const fieldsOptions = _.map(statFields, (item) => {
+  const fieldsOptions = _.map(_.uniq(['Name', ...statFields]), (item) => {
     return {
       label: item,
       value: item,
@@ -38,6 +41,15 @@ export default function GraphStyles() {
       setStatFields([]);
     };
   }, []);
+
+  useEffect(() => {
+    if (!xAxisField) {
+      form.setFields([{ name: [...namePrefix, 'xAxisField'], value: 'Name' }]);
+    }
+    if (!yAxisField) {
+      form.setFields([{ name: [...namePrefix, 'yAxisField'], value: 'Value' }]);
+    }
+  }, [form, xAxisField, yAxisField]);
 
   return (
     <Panel header={t('panel.custom.title')}>

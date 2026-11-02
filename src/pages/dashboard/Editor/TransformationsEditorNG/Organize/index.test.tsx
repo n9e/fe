@@ -5,8 +5,11 @@ import type { FormInstance } from 'antd';
 import { act, render, waitFor } from '@testing-library/react';
 
 import Organize from './index';
-import { setGlobalState } from '@/pages/dashboard/globalState';
+import { DashboardRuntimeProvider } from '@/pages/dashboard/globalState';
 import type { DashboardSeries } from '@/pages/dashboard/Renderer/datasource/types';
+import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
+
+const { setGlobalState } = dashboardTestRuntimeStore;
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'zh_CN' } }),
@@ -50,25 +53,27 @@ function renderOrganize(options: Record<string, unknown>, onFormReady: (form: Fo
       onFormReady(form);
     }, [form]);
     return (
-      <Form form={form}>
-        <Form.List name='transformationsNG' initialValue={[{ id: 'organize', options }]}>
-          {(fields) =>
-            fields.map((field) => {
-              const { name, key, ...resetField } = field;
-              return (
-                <Form.Item key={key} {...resetField} name={[name, 'options']}>
-                  <Organize
-                    field={field}
-                    onClose={() => {
-                      /* noop */
-                    }}
-                  />
-                </Form.Item>
-              );
-            })
-          }
-        </Form.List>
-      </Form>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <Form form={form}>
+          <Form.List name='transformationsNG' initialValue={[{ id: 'organize', options }]}>
+            {(fields) =>
+              fields.map((field) => {
+                const { name, key, ...resetField } = field;
+                return (
+                  <Form.Item key={key} {...resetField} name={[name, 'options']}>
+                    <Organize
+                      field={field}
+                      onClose={() => {
+                        /* noop */
+                      }}
+                    />
+                  </Form.Item>
+                );
+              })
+            }
+          </Form.List>
+        </Form>
+      </DashboardRuntimeProvider>
     );
   }
   return render(<Harness />);

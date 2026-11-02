@@ -25,6 +25,7 @@ jest.mock('@/components/TimeRangePicker/utils', () => ({
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
   default: (value: string) => value,
+  getBuiltInVariables: () => [],
   replaceDatasourceVariables: (value: number | string) => value,
 }));
 

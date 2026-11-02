@@ -6,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
+import type { DatasourceItem } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
 import getDefaultTargets from '@/pages/dashboard/utils/getDefaultTargets';
 import { IS_PLUS } from '@/utils/constant';
 import type { IVariable } from '@/pages/dashboard/Variables/types';
-import type { DashboardDatasource } from '@/pages/dashboard/types';
 
 import DatasourceSelectExtra from './DatasourceSelectExtra';
 
@@ -22,10 +22,33 @@ interface DatasourceSelectProps {
 
 export default function index({ datasourceCate, datasourceValue, variablesWithOptions }: DatasourceSelectProps) {
   const { t } = useTranslation('dashboard');
-  const { datasourceCateOptions } = useContext(CommonStateContext);
+  const { datasourceCateOptions, datasourceList } = useContext(CommonStateContext);
   const datasourceVars = _.filter(variablesWithOptions, (item) => {
     return _.includes(['datasource', 'datasourceIdentifier'], item.type);
   });
+  const getDatasourceOptions = (list: DatasourceItem[]) => {
+    const variableOptions = _.map(
+      datasourceVars,
+      (item): DatasourceItem => ({
+        id: `\${${item.name}}`,
+        name: `\${${item.name}}`,
+        plugin_type: item.definition,
+        is_default: false,
+      }),
+    );
+    const isSupported = (item: DatasourceItem) => {
+      const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
+      return cateData?.dashboard === true && (cateData.graphPro ? IS_PLUS : true);
+    };
+    const supportedVariableOptions = _.filter(variableOptions, isSupported);
+    const orderedDatasources = _.orderBy(_.filter(list, isSupported), ['is_default', 'plugin_type', 'weight'], ['desc', 'asc', 'asc']);
+
+    return _.concat(
+      supportedVariableOptions,
+      _.filter(orderedDatasources, { is_default: true }),
+      _.filter(orderedDatasources, (item) => !item.is_default),
+    );
+  };
   const chartForm = Form.useFormInstance();
   const mixedOptionLabel = (
     <Space align='center'>
@@ -52,27 +75,9 @@ export default function index({ datasourceCate, datasourceValue, variablesWithOp
           >
             <DatasourceSelectV3
               style={{ minWidth: 220 }}
+              datasourceList={datasourceList}
               datasourceCateList={datasourceCateOptions}
-              ajustDatasourceList={(list) => {
-                const data = _.filter(
-                  _.concat(
-                    _.map(datasourceVars, (item): { id: string | number; name: string; plugin_type: string; is_default: boolean; identifier?: string } => {
-                      return {
-                        id: `\${${item.name}}`,
-                        name: `\${${item.name}}`,
-                        plugin_type: item.definition,
-                        is_default: false,
-                      };
-                    }),
-                    list as DashboardDatasource[],
-                  ),
-                  (item) => {
-                    const cateData = _.find(datasourceCateOptions, { value: item.plugin_type });
-                    return cateData?.dashboard === true && (cateData.graphPro ? IS_PLUS : true);
-                  },
-                );
-                return data;
-              }}
+              ajustDatasourceList={getDatasourceOptions}
               additionalOptions={[
                 {
                   value: 'mixed',
