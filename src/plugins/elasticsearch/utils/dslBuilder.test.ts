@@ -114,3 +114,23 @@ describe('elasticsearch dslBuilder sorter（原文顺序排序）', () => {
     expect(body.sort).toBeUndefined();
   });
 });
+
+it('uses compatible unmapped types when old and ordered indices are mixed', () => {
+  const body = getBody(
+    dslBuilder({
+      index: 'logs-*',
+      start: 1,
+      end: 2,
+      sorter: [
+        { field: 'ts', order: 'desc', unmappedType: 'date' },
+        { field: '__log_stream_id__', order: 'desc', unmappedType: 'keyword' },
+        { field: '__log_seq__', order: 'desc', unmappedType: 'long' },
+      ],
+    }),
+  );
+  expect(body.sort.map((item) => Object.values(item)[0])).toEqual([
+    { order: 'desc', unmapped_type: 'date' },
+    { order: 'desc', unmapped_type: 'keyword' },
+    { order: 'desc', unmapped_type: 'long' },
+  ]);
+});
