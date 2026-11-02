@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Space, Tooltip, Pagination, Empty, Popover, Alert } from 'antd';
+import { Form, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -141,7 +141,6 @@ export default function index(props: Props) {
 
   type HighlightMap = Record<string, string[]>;
 
-  const [paginationSupported, setPaginationSupported] = useState<boolean>();
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     // 优先 form(视图恢复时 form 即时最新),其次 options,最后默认值
@@ -181,7 +180,6 @@ export default function index(props: Props) {
       queryStrRef.current = JSON.stringify(reqData);
       return getDorisLogsQuery(reqData)
         .then((res) => {
-          setPaginationSupported(res.pagination_supported);
           if (fixedRangeRef.current === false) {
             loadTimeRef.current = Date.now() - queryStart;
           }
@@ -363,7 +361,6 @@ export default function index(props: Props) {
 
   return (
     <>
-      {paginationSupported === false && <Alert type='warning' showIcon message={t('pagination_requires_order_keys')} />}
       <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
       {refreshFlag ? (
         <>
@@ -486,7 +483,6 @@ export default function index(props: Props) {
                   )}
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
-                      disabled={paginationSupported === false}
                       showQuickJumper
                       size='small'
                       total={data?.total}
@@ -559,7 +555,7 @@ export default function index(props: Props) {
                 }
               }}
               onScrollCapture={() => {
-                if (loading || paginationSupported === false || pageLoadMode !== 'infiniteScroll') return;
+                if (loading || pageLoadMode !== 'infiniteScroll') return;
                 const isAtBottom = getIsAtBottom(tableSelector.antd, tableSelector.rgd);
                 if (isAtBottom) {
                   // 滚动到底后加载下一页
