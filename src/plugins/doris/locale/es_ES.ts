@@ -1,4 +1,6 @@
 const es_ES = {
+  pagination_requires_order_keys:
+    'La paginación estable requiere claves de ordenación que comiencen con (campo de tiempo seleccionado, __log_stream_id__, __log_seq__). Solo está disponible la primera página. Reduzca el rango de búsqueda o seleccione el campo de tiempo correspondiente.',
   quick_query: 'Consulta rápida',
   quick_query_tip:
     'La consulta rápida genera el SQL a partir de una plantilla fija: para el campo A mayor que cero, basta con escribir A > 0. Este botón cambia al modo personalizado, donde puedes ver y editar el SQL',

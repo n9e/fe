@@ -21,6 +21,7 @@ export default function dslBuilder(params: {
   sorter?: {
     field: string;
     order: string;
+    unmappedType?: string;
   }[];
   fields?: string[];
   _source?: boolean;
@@ -81,9 +82,7 @@ export default function dslBuilder(params: {
     body.size = params.limit;
   }
   if (params.termsAgg) {
-    const aggName =
-      params.termsAgg.name ||
-      `top${params.termsAgg.size}_${String(params.termsAgg.field).replace(/[^A-Za-z0-9_]/g, '_')}`;
+    const aggName = params.termsAgg.name || `top${params.termsAgg.size}_${String(params.termsAgg.field).replace(/[^A-Za-z0-9_]/g, '_')}`;
     body.size = 0;
     _.set(body, ['aggs', aggName], {
       terms: {
@@ -100,7 +99,7 @@ export default function dslBuilder(params: {
       return {
         [item.field]: {
           order: item.order,
-          unmapped_type: 'boolean',
+          unmapped_type: item.unmappedType || 'boolean',
         },
       };
     });

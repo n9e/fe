@@ -176,6 +176,7 @@ export function getDorisLogsQuery(
 ): Promise<{
   list: { [index: string]: string }[];
   total: number;
+  pagination_supported?: boolean;
 }> {
   return request('/api/n9e-plus/doris-logs-query', {
     ...options,
