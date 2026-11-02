@@ -18,6 +18,7 @@ import {
   logGeneration,
   matchesAllKeywords,
   mergeContextPage,
+  isLogContextPage,
   LogContextPage,
   LogContextRequest,
 } from './utils';
@@ -58,7 +59,9 @@ export default function LogOrderContext(props: Props) {
 
   const load = async (req: Omit<LogContextRequest, 'stream_id'>) => {
     try {
-      return await fetchPage({ ...req, stream_id: anchor!.streamId });
+      const result = await fetchPage({ ...req, stream_id: anchor!.streamId });
+      if (!isLogContextPage(result)) throw new Error('Invalid log context response');
+      return result;
     } catch (e) {
       message.error(t('log_order_context.query_failed'));
       return undefined;

@@ -25,3 +25,5 @@ docs/*
 midscene_run/
 test-results/
 fe+plus.code-workspace
+
+!docs/private-cloud-visibility-and-permissions.md

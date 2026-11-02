@@ -4,6 +4,8 @@ import { Field as BaseField } from '@/pages/logExplorer/types';
 export type HandleValueFilterParams = (params: OnValueFilterParams) => void;
 
 export interface Field extends BaseField {
+  /** 原文排序字段在各索引中的原始类型，不受侧栏展示类型归一化影响。 */
+  logOrderTypes?: string[];
   searchable?: boolean;
   operators?: string[];
   aggregatable?: boolean;

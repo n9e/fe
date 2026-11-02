@@ -44,3 +44,9 @@
 - `sync-srm` intentionally excludes integrated base files such as `src/utils/request.tsx`. Changes to those files require a full integration refresh before acceptance; a successful incremental sync alone does not prove that new exports reached the generated workspace. After a full sync copies the primary plus checkout, restore this task's changed plus adapter/component files from its canonical feature worktree into the ignored cache and run `sync-srm` again. Never patch generated files directly.
 
 - Before pushing changes to FieldsList, field statistics/stacking providers, or filter editors, run `node --max-old-space-size=8192 scripts/check-log-explorer-types/index.js --with-plus` against the integrated source (or pass its workspace directory). Refresh the ignored plus cache from the canonical feature worktree first. This uses production TypeScript options, includes TSX tests and ambient declarations, and checks component/callback contracts; transpile-only Jest or `transpileModule` does not provide this assurance. The production config excludes `*.test.ts` but still compiles `*.test.tsx`; do not work around test fixture errors by disabling their checks.
+
+## 私有云品牌展示与功能权限
+
+- 新增或修改页面、入口、介绍文案、文档链接、空状态、自然语言查询及跨功能关联前，阅读 [私有云品牌展示与功能权限隐藏](docs/private-cloud-visibility-and-permissions.md)。
+- 品牌展示配置与 `/api/n9e-plus/self/perms` 产品权限分别判断；Admin 仅豁免功能权限，介绍仍受展示开关控制。复用文档中的公共 gate，并保留隐藏字段的已有配置。
+- 验收组件只在独立验收分支 / 工作区存在，不能进入正式发布；三个仓库同步维护该文档与相关入口覆盖。

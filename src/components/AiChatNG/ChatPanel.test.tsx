@@ -1,4 +1,9 @@
 /** @jest-environment jsdom */
+let mockCanAccess = true;
+jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
+beforeEach(() => {
+  mockCanAccess = true;
+});
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
@@ -576,4 +581,15 @@ describe('仪表盘按钮启动', () => {
     await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(2));
     expect(services.sendMessage.mock.calls.map(([request]: any[]) => request.query.content)).toEqual(['first', 'second']);
   });
+});
+
+it('does not mount a chat or fetch history without FlashAI access', () => {
+  mockCanAccess = false;
+  const services = jest.requireMock('./services');
+  services.getMessageHistory.mockClear();
+  services.createChat.mockClear();
+  render(<ChatPanel chatId='chat-1' initialMessage='do not send' queryPageFrom={{ url: '/metric/explorer' }} />);
+  expect(screen.queryByPlaceholderText('input.placeholder')).toBeNull();
+  expect(services.getMessageHistory).not.toHaveBeenCalled();
+  expect(services.createChat).not.toHaveBeenCalled();
 });

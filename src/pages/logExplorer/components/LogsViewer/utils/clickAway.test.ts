@@ -25,3 +25,13 @@ it('ignores a click inside the modal even when the clicked node is removed befor
 it('does not ignore a click outside', () => {
   expect(clickAndCapture(document.getElementById('out')!)).toBe(false);
 });
+
+it('ignores a click on the ignore container itself, not only its descendants', () => {
+  expect(clickAndCapture(document.querySelector('.log-explorer-ignore-click-away') as HTMLElement)).toBe(true);
+});
+
+it('throws when a caller still passes an element instead of the click event (signature changed)', () => {
+  const oldStyleCall = shouldIgnoreLogViewerClickAway as unknown as (target: HTMLElement | null) => boolean;
+
+  expect(() => oldStyleCall(document.getElementById('out'))).toThrow(TypeError);
+});

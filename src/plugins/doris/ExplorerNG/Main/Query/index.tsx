@@ -22,6 +22,7 @@ import { getLogOrderAnchor } from '@/pages/logExplorer/components/LogOrderContex
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
+import buildDorisLogsQueryRequest from '../../utils/logsQueryRequest';
 import filteredFields from '../../utils/filteredFields';
 import getValidIndexName from '../../utils/getValidIndexName';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
@@ -167,27 +168,21 @@ export default function index(props: Props) {
       const lastRaw = data?.list?.[data.list.length - 1]?.___raw___;
       const lastAnchor = appendRef.current && lastRaw && typeof lastRaw === 'object' ? getLogOrderAnchor(lastRaw, queryValues.time_field) : undefined;
       const queryStart = Date.now();
-      const reqData = {
+      const reqData = buildDorisLogsQueryRequest({
         cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        query: [
-          {
-            database: queryValues.database,
-            table: queryValues.table,
-            time_field: queryValues.time_field,
-            query: queryValues.query,
-            query_builder_filter: queryValues.query_builder_filter,
-            from: timeParams.from,
-            to: timeParams.to,
-            lines: serviceParams.pageSize,
-            offset: (serviceParams.current - 1) * serviceParams.pageSize,
-            reverse: serviceParams.reverse,
-            default_field: defaultSearchField,
-            highlight: true,
-            search_after: lastAnchor ? { time: String(lastAnchor.time), stream_id: lastAnchor.streamId, seq: lastAnchor.seq } : undefined,
-          },
-        ],
-      };
+        datasourceId: datasourceValue,
+        database: queryValues.database,
+        table: queryValues.table,
+        timeField: queryValues.time_field,
+        query: queryValues.query,
+        queryBuilderFilter: queryValues.query_builder_filter,
+        range: timeParams,
+        lines: serviceParams.pageSize,
+        offset: (serviceParams.current - 1) * serviceParams.pageSize,
+        reverse: serviceParams.reverse,
+        defaultField: defaultSearchField,
+        searchAfter: lastAnchor,
+      });
       queryStrRef.current = JSON.stringify(reqData);
       const logAnalysisSnapshot = IS_ENT ? captureDorisLogAnalysisRequest(reqData) : undefined;
       return getDorisLogsQuery(reqData)
