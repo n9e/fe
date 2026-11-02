@@ -123,3 +123,9 @@ describe('MessageItem in the dock', () => {
     expect(screen.getAllByTestId('streaming-markdown')).toHaveLength(1);
   });
 });
+
+// A duplicated legacy response wrapper also referenced a removed callback.
+test('MessageItem renders one copy of each answer', () => {
+  render(<MessageItem {...responseBlocksProps} message={message([{ content_type: EAiChatContentType.Markdown, content: 'Only one answer', is_finish: true }], true)} />);
+  expect(screen.getAllByTestId('streaming-markdown')).toHaveLength(1);
+});
