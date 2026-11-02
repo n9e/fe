@@ -72,26 +72,27 @@ afterEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
 });
-it.each([true, false])('only enables further paging when supported=%s', async (supported) => {
+it.each([true, false, undefined])('preserves offset paging when order support is %s', async (supported) => {
   (getDorisLogsQuery as jest.Mock).mockResolvedValue({ list: [{ ts: '2026-10-31 00:30:00', message: 'test' }], total: 1000, pagination_supported: supported });
   const view = render(<Harness />);
   const page = await view.findByTitle('2');
-  const before = (getDorisLogsQuery as jest.Mock).mock.calls.length;
   fireEvent.click(page);
-  if (supported) {
-    await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBeGreaterThan(before));
-    expect(view.queryByText('pagination_requires_order_keys')).toBeNull();
-  } else {
-    expect(view.getByText('pagination_requires_order_keys')).toBeTruthy();
-    expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBe(before);
-  }
+  await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.slice(-1)[0][0].query[0].offset).toBeGreaterThan(0));
+  expect(view.queryByText('pagination_requires_order_keys')).toBeNull();
 });
-it('does not load another batch in infinite scroll when unsupported', async () => {
-  localStorage.setItem(NG_QUERY_LOGS_OPTIONS_CACHE_KEY, JSON.stringify({ pageLoadMode: 'infiniteScroll' }));
-  (getDorisLogsQuery as jest.Mock).mockResolvedValue({ list: [{ ts: '2026-10-31 00:30:00', message: 'test' }], total: 1000, pagination_supported: false });
+it.each([false, true])('preserves infinite scrolling and selects the cursor only for rows with order fields: %s', async (ordered) => {
+  localStorage.setItem(`${NG_QUERY_LOGS_OPTIONS_CACHE_KEY}@options`, JSON.stringify({ pageLoadMode: 'infiniteScroll' }));
+  (getDorisLogsQuery as jest.Mock).mockResolvedValue({
+    list: [{ ts: '2026-10-31 00:30:00', message: 'test', ...(ordered ? { __log_stream_id__: 'file-1', __log_seq__: '9007199254740993' } : {}) }],
+    total: 1000,
+    pagination_supported: ordered,
+  });
   const view = render(<Harness />);
-  await view.findByText('pagination_requires_order_keys');
-  const before = (getDorisLogsQuery as jest.Mock).mock.calls.length;
+  await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBeGreaterThan(0));
+  await waitFor(() => expect(view.getByTestId('viewer')).toBeTruthy());
   fireEvent.scroll(view.getByTestId('viewer'));
-  expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBe(before);
+  await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.slice(-1)[0][0].query[0].offset).toBeGreaterThan(0));
+  expect((getDorisLogsQuery as jest.Mock).mock.calls.slice(-1)[0][0].query[0].search_after).toEqual(
+    ordered ? { time: '2026-10-31 00:30:00', stream_id: 'file-1', seq: '9007199254740993' } : undefined,
+  );
 });
