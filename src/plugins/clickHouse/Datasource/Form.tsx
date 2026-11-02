@@ -4,6 +4,8 @@ import { PlusCircleOutlined, MinusCircleOutlined, RightOutlined, DownOutlined } 
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { scrollToFirstError } from '@/utils';
+import TrimInput from '@/components/TrimInput';
+import urlNoSpacesRule from '@/pages/datasource/utils/urlNoSpacesRule';
 import Name from '@/pages/datasource/components/items/Name';
 import Footer from '@/pages/datasource/components/items/Footer';
 import Cluster from '@/pages/datasource/components/items/Cluster';
@@ -85,7 +87,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                               required: true,
                               message: t('form.url_required_msg'),
                             },
-                            { pattern: /(^\S)((.)*\S)?(\S*$)/, message: t('form.url_no_spaces_msg') },
+                            urlNoSpacesRule(),
                             () => ({
                               validator(_, value) {
                                 if (!value) return Promise.resolve();
@@ -97,7 +99,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
                             }),
                           ]}
                         >
-                          <Input placeholder='localhost:9200' className='w-full' />
+                          <TrimInput placeholder='localhost:9200' className='w-full' />
                         </Form.Item>
                       </Col>
                       {fields.length > 1 ? (
