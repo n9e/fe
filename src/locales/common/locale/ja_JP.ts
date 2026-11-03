@@ -273,7 +273,6 @@ const ja_JP = {
   'msg.sort.success': 'ソート成功',
   copy_success: 'コピー成功 {{num}} 件のレコード',
   request_fail_msg: 'ネットワークリクエストタイムアウト、しばらくしてから再試行してください',
-  trim_validator_msg: '前後にスペースがあります。手動で削除してください',
   tags_popover_title: '{{count}} 個',
 };
 

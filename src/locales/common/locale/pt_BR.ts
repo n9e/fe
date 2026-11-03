@@ -276,7 +276,6 @@ const pt_BR = {
   "msg.sort.success": "Reordenado com sucesso",
   "copy_success": "{{num}} registros copiados com sucesso",
   "request_fail_msg": "Tempo limite da requisição excedido. Tente novamente mais tarde",
-  "trim_validator_msg": "Há espaços no início ou no fim; remova-os manualmente",
   "tags_popover_title": "{{count}}"
 };
 
