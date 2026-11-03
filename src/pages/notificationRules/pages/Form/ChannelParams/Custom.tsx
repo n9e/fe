@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { AutoComplete, Form } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
+import { useRequest } from 'ahooks';
 import _ from 'lodash';
 
-import { getCustomParamsValues } from '@/pages/notificationRules/services';
+import { getCustomParamsCacheKey, getCustomParamsValues } from '@/pages/notificationRules/services';
+import type { CustomParamValue } from '@/pages/notificationRules/services';
+import { CUSTOM_PARAMS_CACHE_TIME, OPTIONS_CACHE_STALE_TIME } from '../../../constants';
 
 interface Props {
   prefixNamePath?: (string | number)[];
@@ -15,36 +18,38 @@ interface Props {
 }
 
 export default function Custom(props: Props) {
-  const { prefixNamePath = [], field, customParams } = props;
-  const form = Form.useFormInstance();
+  const { prefixNamePath = [], field } = props;
   const channel_id = Form.useWatch([...prefixNamePath, field.name, 'channel_id']);
-  const [paramsData, setParamsData] = React.useState<
-    {
-      __id__: string;
-      data: { name: string; cname: string; value: string }[];
-    }[]
-  >();
+  return <CustomInner key={channel_id ?? 'no-channel'} {...props} channelId={channel_id} />;
+}
 
-  useEffect(() => {
-    if (channel_id) {
-      getCustomParamsValues(channel_id)
-        .then((res) => {
-          setParamsData(
-            _.map(res, (item) => {
-              return {
-                __id__: _.uniqueId(),
-                data: _.sortBy(item, 'cname'),
-              };
-            }),
-          );
-        })
-        .catch(() => {
-          setParamsData([]);
-        });
-    } else {
-      setParamsData([]);
-    }
-  }, [channel_id]);
+function CustomInner(props: Props & { channelId?: number }) {
+  const { prefixNamePath = [], field, customParams, channelId } = props;
+  const form = Form.useFormInstance();
+  const { data, error } = useRequest<CustomParamValue[][], []>(
+    () => {
+      if (channelId == null) return Promise.resolve([]);
+      return getCustomParamsValues(channelId);
+    },
+    {
+      ready: channelId != null,
+      cacheKey: channelId != null ? getCustomParamsCacheKey(channelId) : undefined,
+      // 与凭证历史共用缓存键，复用已完成的参数结果，减少重复请求。
+      staleTime: OPTIONS_CACHE_STALE_TIME,
+      cacheTime: CUSTOM_PARAMS_CACHE_TIME,
+      onError: () => {},
+    },
+  );
+  const paramsData = useMemo(
+    () =>
+      _.map(error ? [] : data ?? [], (item) => {
+        return {
+          __id__: _.uniqueId(),
+          data: _.sortBy(item, 'cname'),
+        };
+      }),
+    [data, error],
+  );
 
   return (
     <div>

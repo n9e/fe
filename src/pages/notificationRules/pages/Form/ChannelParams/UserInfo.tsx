@@ -1,56 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Form, Select, Row, Col } from 'antd';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
+import { useRequest } from 'ahooks';
 import _ from 'lodash';
 
 import { getUserInfoList, getTeamInfoList } from '@/services/manage';
 import { SIZE } from '@/utils/constant';
 
-import { NS } from '../../../constants';
+import { NS, OPTIONS_CACHE_STALE_TIME } from '../../../constants';
 
 interface Props {
   prefixNamePath?: (string | number)[];
   field: FormListFieldData;
 }
 
+interface UserInfoItem {
+  id: number;
+  username: string;
+}
+
+interface UserGroupItem {
+  id: number;
+  name: string;
+}
+
+interface UserInfoResponse {
+  dat?: {
+    list?: UserInfoItem[];
+  };
+}
+
+interface UserGroupResponse {
+  dat?: UserGroupItem[];
+}
+
 export default function UserInfo(props: Props) {
   const { t } = useTranslation(NS);
   const { prefixNamePath = [], field } = props;
-  const [userOptions, setUserOptions] = useState<any[]>();
-  const [teamOptions, setTeamOptions] = useState<any[]>();
   const form = Form.useFormInstance();
-
-  useEffect(() => {
-    getUserInfoList({ limit: 5000 })
-      .then((res) => {
-        setUserOptions(
-          _.map(res?.dat?.list, (item) => {
-            return {
-              label: item.username,
-              value: item.id,
-            };
-          }),
-        );
-      })
-      .catch(() => {
-        setUserOptions([]);
-      });
-    getTeamInfoList({ limit: 5000, query: '' })
-      .then((res) => {
-        setTeamOptions(
-          _.map(res?.dat, (item) => {
-            return {
-              label: item.name,
-              value: item.id,
-            };
-          }),
-        );
-      })
-      .catch(() => {
-        setTeamOptions([]);
-      });
-  }, []);
+  const { data: userData, error: userError } = useRequest<UserInfoResponse, []>(() => getUserInfoList({ limit: 5000 }), {
+    cacheKey: 'notification-rule-user-info-list-5000',
+    staleTime: OPTIONS_CACHE_STALE_TIME,
+    onError: () => {},
+  });
+  const { data: teamData, error: teamError } = useRequest<UserGroupResponse, []>(() => getTeamInfoList({ limit: 5000, query: '' }), {
+    cacheKey: 'notification-rule-user-group-list-5000-empty-query',
+    staleTime: OPTIONS_CACHE_STALE_TIME,
+    onError: () => {},
+  });
+  const userOptions = useMemo(
+    () =>
+      _.map(userError ? [] : userData?.dat?.list ?? [], (item) => {
+        return {
+          label: item.username,
+          value: item.id,
+        };
+      }),
+    [userData, userError],
+  );
+  const teamOptions = useMemo(
+    () =>
+      _.map(teamError ? [] : teamData?.dat ?? [], (item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      }),
+    [teamData, teamError],
+  );
 
   return (
     <Row gutter={SIZE}>
