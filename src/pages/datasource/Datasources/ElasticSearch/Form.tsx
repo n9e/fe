@@ -7,6 +7,7 @@ import { scrollToFirstError } from '@/utils';
 import Name from '../../components/items/Name';
 import HTTP from '../../components/items/HTTP';
 import BasicAuth from '../../components/items/BasicAuth';
+import AuthMethod from '../../components/items/AuthMethod';
 import SkipTLSVerify from '../../components/items/SkipTLSVerify';
 import Headers from '../../components/items/Headers';
 import Description from '../../components/items/Description';
@@ -34,7 +35,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       <Card title={t(`${action}_title`)}>
         <Name />
         <HTTP placeholder='http://localhost:9200' multipleUrls />
-        <BasicAuth />
+        <AuthMethod types={['basic', 'sigv4', 'oauth2']} defaultSigV4Service='es' basic={<BasicAuth hideTitle />} />
         <SkipTLSVerify />
         <Headers />
         <div className='page-title' style={{ marginTop: 0 }}>

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { scrollToFirstError } from '@/utils';
 import Name from '@/pages/datasource/components/items/Name';
 import BasicAuth from '@/pages/datasource/components/itemsNG/BasicAuth';
+import AuthMethod from '@/pages/datasource/components/items/AuthMethod';
 import Headers from '@/pages/datasource/components/itemsNG/Headers';
 import Description from '@/pages/datasource/components/items/Description';
 import Footer from '@/pages/datasource/components/items/Footer';
@@ -43,7 +44,8 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       <Card title={t(`${action}_title`)}>
         <Name />
         <HTTPList />
-        <BasicAuth cate={cate} showTls />
+        <AuthMethod types={['basic', 'sigv4', 'oauth2']} defaultSigV4Service='es' basic={<BasicAuth cate={cate} hideTitle />} />
+        <BasicAuth cate={cate} showTls hideTitle showFields={false} />
         <Headers cate={cate} />
         <div className='page-title my-2'>{t('form.os.title')}</div>
         <Row gutter={16}>
