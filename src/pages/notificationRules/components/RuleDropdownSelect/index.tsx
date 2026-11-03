@@ -14,6 +14,7 @@ import { NS, CN } from '../../constants';
 import NotificationRuleForm from '../../pages/Form';
 import { normalizeInitialValues } from '../../utils/normalizeValues';
 import QuickCreateModal from './QuickCreateModal';
+import useNotificationRules from './useNotificationRules';
 
 const channelTypes = getNotificationChannelTypes();
 
@@ -416,7 +417,7 @@ interface Props {
   label?: React.ReactNode;
   rules?: Rule[];
   className?: string;
-  notificationRules: RuleItemData[];
+  notificationRules?: RuleItemData[];
   loading?: boolean;
   refresh?: () => void;
   isAuthorized?: boolean;
@@ -425,11 +426,20 @@ interface Props {
 export default function RuleDropdownSelect(props: Props) {
   const { t } = useTranslation(NS);
   const { name = 'notify_rule_ids', label = t('rule_select.label'), rules, className, notificationRules, loading, refresh, isAuthorized } = props;
+  const shouldFetchNotificationRules = notificationRules === undefined;
+  const fetchedNotificationRules = useNotificationRules(shouldFetchNotificationRules);
   const required = _.some(rules, (rule) => (rule as { required?: boolean })?.required);
 
   return (
     <Form.Item name={name} rules={rules} className={className}>
-      <Content label={label} required={required} notificationRules={notificationRules} loading={loading} refresh={refresh} isAuthorized={isAuthorized} />
+      <Content
+        label={label}
+        required={required}
+        notificationRules={notificationRules ?? fetchedNotificationRules.notificationRules}
+        loading={shouldFetchNotificationRules ? fetchedNotificationRules.loading : loading}
+        refresh={shouldFetchNotificationRules ? fetchedNotificationRules.refresh : refresh}
+        isAuthorized={shouldFetchNotificationRules ? fetchedNotificationRules.isAuthorized : isAuthorized}
+      />
     </Form.Item>
   );
 }
