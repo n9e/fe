@@ -75,7 +75,7 @@ if (import.meta.env.DEV) {
 }
 
 function getI18nextTranslations() {
-  const translations: any = import.meta.glob('../src/**/{locale,locales}/index.(ts|js)', { eager: true });
+  const translations: any = import.meta.glob('../src/**/{locale,locales}/index.{ts,js}', { eager: true });
   const result = {};
 
   languages.forEach((lang) => {
