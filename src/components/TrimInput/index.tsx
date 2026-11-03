@@ -7,7 +7,7 @@ type Field = HTMLInputElement | HTMLTextAreaElement;
 
 /**
  * Drop-in replacements for antd Input / TextArea / Password / AutoComplete that strip leading and trailing
- * whitespace when the field loses focus (and on Enter for single-line inputs).
+ * whitespace when the field loses focus (Input and Password also trim on Enter).
  * Trimming on change would make inner spaces impossible to type, so it is deferred to blur.
  * Use for names, URLs, keys and identifiers — not for free text, queries or separators.
  * Use inside Form.Item or with a controlled `value`: the trimmed value is reported through onChange.
