@@ -87,19 +87,32 @@ export function logGeneration(seq: unknown) {
   return (BigInt(String(seq)) >> BigInt(40)).toString();
 }
 
-/** ES 索引只有在两个字段映射成 keyword / long 时才能按原文顺序排序；没有平台模板时序号会被映射成 text，按它排序会报错 */
-export function esSupportsLogOrder(fields: { field: string; type: string; logOrderTypes?: string[] }[]) {
-  const supports = (name: string, type: string) => {
-    const matches = fields.filter((field) => field.field === name);
-    return (
-      matches.length > 0 &&
-      matches.every((field) => {
-        const types = field.logOrderTypes ?? [field.type];
-        return types.length > 0 && types.every((value) => value === type);
-      })
-    );
-  };
-  return supports(LOG_STREAM_ID_FIELD, 'keyword') && supports(LOG_SEQ_FIELD, 'long');
+type LogOrderFieldMeta = { field: string; type: string; logOrderTypes?: string[] };
+
+function logOrderRawTypes(field: LogOrderFieldMeta): string[] {
+  return field.logOrderTypes?.length ? field.logOrderTypes : [field.type];
+}
+
+function uniformLogOrderType(fields: LogOrderFieldMeta[], name: string): string | undefined {
+  const types = fields.filter((field) => field.field === name).flatMap(logOrderRawTypes);
+  if (!types.length || types.some((type) => type !== types[0])) return undefined;
+  return types[0];
+}
+
+/** seq 必须是 long。stream 为 keyword，或动态映射的 text。 */
+export function esSupportsLogOrder(fields: LogOrderFieldMeta[]) {
+  const stream = uniformLogOrderType(fields, LOG_STREAM_ID_FIELD);
+  return (stream === 'keyword' || stream === 'text') && uniformLogOrderType(fields, LOG_SEQ_FIELD) === 'long';
+}
+
+/** 检索排序和上下文 term 共用。text 用 .keyword，其余用主字段。 */
+export function esLogOrderStreamField(fields: LogOrderFieldMeta[]): string {
+  return uniformLogOrderType(fields, LOG_STREAM_ID_FIELD) === 'text' ? `${LOG_STREAM_ID_FIELD}.keyword` : LOG_STREAM_ID_FIELD;
+}
+
+export function esLogOrderSearchSortFields(fields: LogOrderFieldMeta[], timeField: string): string[] {
+  if (!esSupportsLogOrder(fields)) return [timeField];
+  return [timeField, esLogOrderStreamField(fields), LOG_SEQ_FIELD];
 }
 
 /** 把翻页结果并入已加载的上下文：按行号去重排序（每页都会带回锚点行），只更新翻页那一侧的游标和状态 */
