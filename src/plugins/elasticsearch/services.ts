@@ -154,7 +154,7 @@ export function getFullFields(
 const queryControllerMap = new Map();
 
 /** 锚点所在文件流前后的日志（_source），按原文顺序返回；分页语义与 SLS 上下文一致，time 是毫秒时间戳字符串 */
-export function getESContextLogs(data: { cate: string; datasource_id: number; query: (LogContextRequest & { index: string; time_field: string })[] }): Promise<LogContextPage> {
+export function getESContextLogs(data: { cate: string; datasource_id: number; query: (LogContextRequest & { index: string; time_field: string; stream_field?: string })[] }): Promise<LogContextPage> {
   return request('/api/n9e-plus/es-context-logs-query', {
     method: RequestMethod.Post,
     data,

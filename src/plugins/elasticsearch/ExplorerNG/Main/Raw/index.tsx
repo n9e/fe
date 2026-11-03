@@ -18,7 +18,7 @@ import { NAME_SPACE, LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, LOGS_TABLE_
 import { getLogsQuery, getHistogram, getESContextLogs, getFullFields } from '../../../services';
 import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
 import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
-import { esSupportsLogOrder, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
+import { esLogOrderSearchSortFields, esLogOrderStreamField, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import dslBuilder from '../../../utils/dslBuilder';
 import { getHighlightHtml } from '../../../utils/highlight';
 import { Field, Interval } from '../../types';
@@ -149,6 +149,7 @@ export default function index(props: Props) {
   const loadTimeRef = useRef<number | null>(null);
 
   const queryFieldsRef = useRef<{ key: string; fields: Promise<Field[]> }>();
+  const streamFieldRef = useRef(LOG_STREAM_ID_FIELD);
   const service = async () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues.range) {
@@ -184,6 +185,7 @@ export default function index(props: Props) {
         if (queryFieldsRef.current !== fieldsRequest) {
           return { list: [], total: 0, hash: _.uniqueId('logs_'), fields: [], highlights: [] };
         }
+        streamFieldRef.current = esLogOrderStreamField(queryFields);
       } catch (error) {
         if (queryFieldsRef.current?.key === fieldsKey) queryFieldsRef.current = undefined;
         throw error;
@@ -203,10 +205,10 @@ export default function index(props: Props) {
           from: (serviceParams.current - 1) * serviceParams.pageSize,
           limit: serviceParams.pageSize,
           // 时间相同时按文件流和序号排，同一文件的日志跨页也保持原文顺序
-          sorter: _.map(esSupportsLogOrder(queryFields) ? [queryValues.date_field, LOG_STREAM_ID_FIELD, LOG_SEQ_FIELD] : [queryValues.date_field], (field) => ({
+          sorter: _.map(esLogOrderSearchSortFields(queryFields, queryValues.date_field), (field) => ({
             field,
             order: serviceParams.reverse ? 'desc' : 'asc',
-            unmappedType: field === LOG_STREAM_ID_FIELD ? 'keyword' : field === LOG_SEQ_FIELD ? 'long' : 'date',
+            unmappedType: field === LOG_STREAM_ID_FIELD || field.endsWith('.keyword') ? 'keyword' : field === LOG_SEQ_FIELD ? 'long' : 'date',
           })),
           _source: true,
           shouldHighlight: true,
@@ -489,7 +491,7 @@ export default function index(props: Props) {
                           getESContextLogs({
                             cate: DatasourceCateEnum.elasticsearch,
                             datasource_id: datasourceValue,
-                            query: [{ ...req, index: queryValues?.index, time_field: queryValues?.date_field }],
+                            query: [{ ...req, index: queryValues?.index, time_field: queryValues?.date_field, stream_field: streamFieldRef.current }],
                           })
                         }
                       />

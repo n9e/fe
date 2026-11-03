@@ -4,6 +4,7 @@ import { mappingsToFullFields } from '@/plugins/elasticsearch/utils/mappingsToFi
 
 import {
   detectSourceFields,
+  esLogOrderStreamField,
   esSupportsLogOrder,
   filterLogOrderFields,
   logOrderUnavailableReason,
@@ -36,6 +37,24 @@ describe('log order utils', () => {
         { field: '__log_seq__', type: 'long' },
       ]),
     ).toBe(true);
+    expect(
+      esSupportsLogOrder([
+        { field: '__log_stream_id__', type: 'text', logOrderTypes: ['text'] },
+        { field: '__log_seq__', type: 'long', logOrderTypes: ['long'] },
+      ]),
+    ).toBe(true);
+    expect(
+      esLogOrderStreamField([
+        { field: '__log_stream_id__', type: 'text', logOrderTypes: ['text'] },
+        { field: '__log_seq__', type: 'long', logOrderTypes: ['long'] },
+      ]),
+    ).toBe('__log_stream_id__.keyword');
+    expect(
+      esLogOrderStreamField([
+        { field: '__log_stream_id__', type: 'keyword', logOrderTypes: ['keyword'] },
+        { field: '__log_seq__', type: 'long', logOrderTypes: ['long'] },
+      ]),
+    ).toBe('__log_stream_id__');
     expect(
       esSupportsLogOrder([
         { field: '__log_stream_id__', type: 'text' },
