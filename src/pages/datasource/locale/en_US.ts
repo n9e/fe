@@ -78,6 +78,9 @@ const en_US = {
     enabled: 'Enabled',
     disabled: 'Disabled',
   },
+  prom_status_link: 'Status page',
+  prom_status_tip: 'View runtime and build information for this Prometheus',
+  prom_status_open: 'Open in new window',
   form: {
     advanced_settings: 'Advanced settings',
     other: 'Other',

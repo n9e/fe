@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Drawer, Form, Space, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useRequest } from 'ahooks';
@@ -19,6 +19,10 @@ export default function EditDrawer(props: Props) {
   const { t } = useTranslation(NS);
   const { visible, onOk, onClose, id } = props;
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (!visible) form.resetFields();
+  }, [form, visible]);
 
   const { loading } = useRequest(
     () => {
@@ -44,7 +48,6 @@ export default function EditDrawer(props: Props) {
       onClose={onClose}
       footer={
         <Space>
-          <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
           <Button
             type='primary'
             onClick={() => {
@@ -56,8 +59,9 @@ export default function EditDrawer(props: Props) {
               });
             }}
           >
-            {t('common:btn.save')}
+            {t('common:btn.ok')}
           </Button>
+          <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
         </Space>
       }
       className='n9e-antd-drawer'
