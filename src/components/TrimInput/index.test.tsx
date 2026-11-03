@@ -3,14 +3,7 @@ import React from 'react';
 import { Form } from 'antd';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import TrimInput, { trimNormalize } from './index';
-
-describe('trimNormalize', () => {
-  it('trims strings and passes other values through', () => {
-    expect(trimNormalize(' t1 ')).toBe('t1');
-    expect(trimNormalize(undefined)).toBeUndefined();
-  });
-});
+import TrimInput from './index';
 
 function renderInForm(field: React.ReactNode, onValues: (values: any) => void) {
   return render(
@@ -67,6 +60,48 @@ describe('TrimInput', () => {
     const onChange = jest.fn();
     render(<TrimInput placeholder='f' value='x' onChange={onChange} />);
     fireEvent.blur(screen.getByPlaceholderText('f'));
+    expect(onChange).not.toHaveBeenCalled();
+  });
+});
+
+describe('TrimInput.AutoComplete', () => {
+  it('keeps spaces while typing and reports the trimmed value on blur to the form and the caller', () => {
+    let values: any = {};
+    const onChange = jest.fn();
+    renderInForm(<TrimInput.AutoComplete onChange={onChange} />, (v) => (values = v));
+    const el = screen.getByRole('combobox');
+
+    fireEvent.change(el, { target: { value: ' order ' } });
+    expect(values.v).toBe(' order ');
+    expect(onChange).toHaveBeenLastCalledWith(' order ', expect.anything());
+
+    fireEvent.blur(el);
+    expect(values.v).toBe('order');
+    expect(onChange).toHaveBeenLastCalledWith('order', expect.anything());
+  });
+
+  it('keeps inner spaces', () => {
+    let values: any = {};
+    renderInForm(<TrimInput.AutoComplete />, (v) => (values = v));
+    const el = screen.getByRole('combobox');
+
+    fireEvent.change(el, { target: { value: 'order detail' } });
+    fireEvent.blur(el);
+    expect(values.v).toBe('order detail');
+  });
+
+  it('searches with the trimmed keyword', () => {
+    const onSearch = jest.fn();
+    renderInForm(<TrimInput.AutoComplete onSearch={onSearch} />, () => {});
+
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: ' logs ' } });
+    expect(onSearch).toHaveBeenLastCalledWith('logs');
+  });
+
+  it('does not fire onChange on blur when nothing to trim', () => {
+    const onChange = jest.fn();
+    render(<TrimInput.AutoComplete value='x' onChange={onChange} />);
+    fireEvent.blur(screen.getByRole('combobox'));
     expect(onChange).not.toHaveBeenCalled();
   });
 });
