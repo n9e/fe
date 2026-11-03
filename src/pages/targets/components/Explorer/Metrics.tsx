@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
@@ -13,21 +13,27 @@ import { escapePromQLString } from '@/pages/dashboard/VariableConfig/utils';
 
 interface Props {
   selectedIdents: string[];
-  setExplorerDrawerData: (data: Record) => void;
+  setExplorerDrawerData: (data: Record | Record[]) => void;
+  inline?: boolean;
 }
 
 const FILTER_SESSION_STORAGE_KEY = 'hosts-metricsBuiltin-filter';
 
 export default function Metrics(props: Props) {
-  const { selectedIdents, setExplorerDrawerData } = props;
+  const { selectedIdents, setExplorerDrawerData, inline } = props;
   const { t, i18n } = useTranslation('metricsBuiltin');
-  const pagination = usePagination({ PAGESIZE_KEY: 'hosts-metricsBuiltin-pagesize' });
+  const filterStorageKey = inline ? 'firemap-hosts-metricsBuiltin-filter' : FILTER_SESSION_STORAGE_KEY;
+  const pagination = usePagination({
+    PAGESIZE_KEY: inline ? 'firemap-hosts-metricsBuiltin-pagesize' : 'hosts-metricsBuiltin-pagesize',
+    defaultPageSize: inline ? 20 : undefined,
+  });
+  const defaultSelectionStarted = useRef(false);
   let defaultFilter = {
     typ: 'Linux',
   } as Filter;
   try {
-    if (window.localStorage.getItem(FILTER_SESSION_STORAGE_KEY)) {
-      defaultFilter = JSON.parse(window.localStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
+    if (window.localStorage.getItem(filterStorageKey)) {
+      defaultFilter = JSON.parse(window.localStorage.getItem(filterStorageKey) || '{}');
     }
   } catch (e) {
     console.error(e);
@@ -52,6 +58,32 @@ export default function Metrics(props: Props) {
       defaultPageSize: pagination.pageSize,
     },
   );
+  const buildSelectedMetric = useCallback(
+    (record: Record): Promise<Record> => {
+      const selectedMetric = _.cloneDeep(record);
+      const labelFilter =
+        selectedIdents.length === 1
+          ? `{ident=${JSON.stringify(selectedIdents[0])}}`
+          : `{ident=~"${_.join(
+              _.map(selectedIdents, (item) => escapePromQLString(item)),
+              '|',
+            )}"}`;
+      return buildLabelFilterAndExpression({ label_filter: labelFilter, promql: record.expression })
+        .then((expression) => ({ ...selectedMetric, expression }))
+        .catch(() => {
+          message.warning(t('filter.build_labelfilter_and_expression_error'));
+          return selectedMetric;
+        });
+    },
+    [selectedIdents, t],
+  );
+
+  useEffect(() => {
+    if (!inline || defaultSelectionStarted.current || !tableProps.dataSource?.length) return;
+    defaultSelectionStarted.current = true;
+    void Promise.all(tableProps.dataSource.slice(0, 2).map(buildSelectedMetric)).then(setExplorerDrawerData);
+  }, [inline, tableProps.dataSource, buildSelectedMetric, setExplorerDrawerData]);
+
   const columns: (ColumnType<Record> & { RC_TABLE_INTERNAL_COL_DEFINE?: any })[] = [
     {
       title: t('typ'),
@@ -78,33 +110,11 @@ export default function Metrics(props: Props) {
       title: t('name'),
       dataIndex: 'name',
       render: (val, record) => {
-        const recordClone = _.cloneDeep(record);
         return (
           <Tooltip overlayClassName='ant-tooltip-max-width-600 ant-tooltip-with-link' title={record.note ? <Markdown content={record.note} inTooltip /> : undefined}>
             <a
               onClick={() => {
-                const label_filter = `{ident=~"${_.join(
-                  _.map(selectedIdents, (item) => {
-                    return escapePromQLString(item);
-                  }),
-                  '|',
-                )}"}`;
-                if (label_filter) {
-                  buildLabelFilterAndExpression({
-                    label_filter,
-                    promql: record.expression,
-                  })
-                    .then((res) => {
-                      recordClone.expression = res;
-                      setExplorerDrawerData(recordClone);
-                    })
-                    .catch(() => {
-                      message.warning(t('filter.build_labelfilter_and_expression_error'));
-                      setExplorerDrawerData(recordClone);
-                    });
-                } else {
-                  setExplorerDrawerData(recordClone);
-                }
+                void buildSelectedMetric(record).then(setExplorerDrawerData);
               }}
             >
               {val}
@@ -119,7 +129,7 @@ export default function Metrics(props: Props) {
     (query) => {
       const newFilter = { ...filter, query };
       setFilter(newFilter);
-      window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
+      window.localStorage.setItem(filterStorageKey, JSON.stringify(newFilter));
     },
     {
       wait: 500,
@@ -151,7 +161,7 @@ export default function Metrics(props: Props) {
               onChange={(val) => {
                 const newFilter = { ...filter, typ: val };
                 setFilter(newFilter);
-                window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
+                window.localStorage.setItem(filterStorageKey, JSON.stringify(newFilter));
               }}
               options={_.map(typesList, (item) => {
                 return {
@@ -180,7 +190,7 @@ export default function Metrics(props: Props) {
               onChange={(val) => {
                 const newFilter = { ...filter, collector: val };
                 setFilter(newFilter);
-                window.localStorage.setItem(FILTER_SESSION_STORAGE_KEY, JSON.stringify(newFilter));
+                window.localStorage.setItem(filterStorageKey, JSON.stringify(newFilter));
               }}
               options={_.map(collectorsList, (item) => {
                 return {
