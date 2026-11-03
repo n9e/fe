@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { arrayMoveImmutable } from 'array-move';
+import { DrawerFooterContext, useDrawerFooter } from '@/components/DrawerFooterContext';
 
 import { SIZE } from '@/utils/constant';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
@@ -36,6 +37,7 @@ export default function index() {
   const { t } = useTranslation('alertRules');
   const isAuthorized = useIsAuthorized([eventPipelinePERM]);
   const form = Form.useFormInstance();
+  const { footer, context: drawerFooterContext } = useDrawerFooter();
   const pipelineConfigs = Form.useWatch('pipeline_configs');
   const [eventPipelineList, setEventPipelineList] = useState<EventPipeline[]>([]);
   const [loading, setLoading] = useState(false);
@@ -202,21 +204,24 @@ export default function index() {
           fetchData();
         }}
         width='80%'
+        footer={footer}
         className='n9e-antd-drawer'
       >
-        {eventPipelineDrawerState.type === 'list' && <EventPipelineList embedded />}
-        {eventPipelineDrawerState.type === 'edit' && eventPipelineDrawerState.id && (
-          <EventPipelineEdit
-            id={eventPipelineDrawerState.id}
-            onOk={() => {
-              setEventPipelineDrawerState({ ...eventPipelineDrawerState, visible: false, id: undefined });
-              fetchData();
-            }}
-            onCancel={() => {
-              setEventPipelineDrawerState({ ...eventPipelineDrawerState, visible: false, id: undefined });
-            }}
-          />
-        )}
+        <DrawerFooterContext.Provider value={drawerFooterContext}>
+          {eventPipelineDrawerState.type === 'list' && <EventPipelineList embedded />}
+          {eventPipelineDrawerState.type === 'edit' && eventPipelineDrawerState.id && (
+            <EventPipelineEdit
+              id={eventPipelineDrawerState.id}
+              onOk={() => {
+                setEventPipelineDrawerState({ ...eventPipelineDrawerState, visible: false, id: undefined });
+                fetchData();
+              }}
+              onCancel={() => {
+                setEventPipelineDrawerState({ ...eventPipelineDrawerState, visible: false, id: undefined });
+              }}
+            />
+          )}
+        </DrawerFooterContext.Provider>
       </Drawer>
     </>
   );

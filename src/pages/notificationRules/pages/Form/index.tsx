@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import _ from 'lodash';
+import { useMemoizedFn } from 'ahooks';
 import { Form, Card, Space, Input, Select, Switch, Button, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import AffixWrapper from '@/components/AffixWrapper';
@@ -25,6 +26,7 @@ import { getEventTags } from '../../services';
 import RuleConfig from './RuleConfig';
 import EventPipelineConfigs from './EventPipelineConfigs';
 import { useGlobalState } from './Attributes/globalState';
+import { DrawerFooterContext } from '@/components/DrawerFooterContext';
 
 interface Props {
   disabled?: boolean;
@@ -48,6 +50,8 @@ function buildAutoName(channelName: string | undefined, notifyConfig: any, teams
 export default function FormCpt(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { disabled, initialValues, onOk, onCancel } = props;
+  const { setFooter: setDrawerFooter, refreshFooter } = useContext(DrawerFooterContext);
+  const isDrawer = !!onCancel;
   const location = useLocation();
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
@@ -102,6 +106,47 @@ export default function FormCpt(props: Props) {
   const [channels, setChannels] = useState<ChannelItem[]>([]);
   const lastAutoNameRef = useRef<string>();
   const firstNotifyConfig = Form.useWatch(['notify_configs', 0], form);
+
+  const renderFooter = useMemoizedFn(() =>
+    disabled ? null : (
+      <Space>
+        <Button
+          type='primary'
+          onClick={() => {
+            form
+              .validateFields()
+              .then(async (values) => {
+                onOk && onOk(normalizeFormValues(values));
+              })
+              .catch((err) => {
+                console.error(err);
+                expandErrorSections(err?.errorFields);
+                scrollToFirstError();
+              });
+          }}
+        >
+          {t(isDrawer ? 'common:btn.ok' : 'common:btn.save')}
+        </Button>
+        {onCancel ? (
+          <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
+        ) : (
+          <Link to={{ pathname: `/${NS}`, search: `?page=${getPageFromSearch(location.search)}` }}>
+            <Button>{t('common:btn.cancel')}</Button>
+          </Link>
+        )}
+      </Space>
+    ),
+  );
+
+  useEffect(() => {
+    if (!isDrawer) return;
+    setDrawerFooter(() => renderFooter);
+    return () => setDrawerFooter(null);
+  }, [isDrawer, renderFooter, setDrawerFooter]);
+
+  useEffect(() => {
+    if (isDrawer) refreshFooter();
+  }, [disabled, isDrawer, refreshFooter]);
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
@@ -305,35 +350,10 @@ export default function FormCpt(props: Props) {
 
         <ExtraConfig eventKeys={eventKeys} baseIndex={3} toggleAllSignal={toggleAllSignal} />
       </div>
-      {!disabled && (
+      {!disabled && !isDrawer && (
         <AffixWrapper>
           <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
-            <Space>
-              <Button
-                type='primary'
-                onClick={() => {
-                  form
-                    .validateFields()
-                    .then(async (values) => {
-                      onOk && onOk(normalizeFormValues(values));
-                    })
-                    .catch((err) => {
-                      console.error(err);
-                      expandErrorSections(err?.errorFields);
-                      scrollToFirstError();
-                    });
-                }}
-              >
-                {t('common:btn.save')}
-              </Button>
-              {onCancel ? (
-                <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
-              ) : (
-                <Link to={{ pathname: `/${NS}`, search: `?page=${getPageFromSearch(location.search)}` }}>
-                  <Button>{t('common:btn.cancel')}</Button>
-                </Link>
-              )}
-            </Space>
+            {renderFooter()}
           </Card>
         </AffixWrapper>
       )}

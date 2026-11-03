@@ -21,9 +21,6 @@ coverage/
 .playwright-mcp/
 # Generated documentation stays ignored; keep the shared regression guide.
 docs/*
-!docs/log-explorer-ux.md
 midscene_run/
 test-results/
 fe+plus.code-workspace
-
-!docs/private-cloud-visibility-and-permissions.md

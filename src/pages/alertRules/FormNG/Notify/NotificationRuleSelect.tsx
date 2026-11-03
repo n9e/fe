@@ -10,6 +10,7 @@ import { NS as notificationRulesNS, CN as notificationRulesCN } from '@/pages/no
 import NotificationRuleForm from '@/pages/notificationRules/pages/Form';
 import { normalizeInitialValues } from '@/pages/notificationRules/utils/normalizeValues';
 import { useFormNGData } from '../context';
+import { DrawerFooterContext, useDrawerFooter } from '@/components/DrawerFooterContext';
 
 interface Props {
   label?: React.ReactNode;
@@ -22,6 +23,7 @@ export default function NotificationRuleSelect(props: Props) {
   const isAuthorized = permissions.notificationRules;
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [drawerData, setDrawerData] = useState<RuleItem>();
+  const { footer, context: drawerFooterContext } = useDrawerFooter();
   const options = useMemo(
     () =>
       _.map(notificationRules, (item) => {
@@ -99,29 +101,32 @@ export default function NotificationRuleSelect(props: Props) {
           setDrawerData(undefined);
         }}
         visible={drawerVisible}
+        footer={footer}
         className='n9e-antd-drawer'
       >
-        <div className={`n9e ${notificationRulesCN}`}>
-          {drawerData ? (
-            <NotificationRuleForm
-              initialValues={drawerData}
-              onOk={(values) => {
-                putNotificationRule(values).then(() => {
-                  message.success(t('common:success.add'));
+        <DrawerFooterContext.Provider value={drawerFooterContext}>
+          <div className={`n9e ${notificationRulesCN}`}>
+            {drawerData ? (
+              <NotificationRuleForm
+                initialValues={drawerData}
+                onOk={(values) => {
+                  putNotificationRule(values).then(() => {
+                    message.success(t('common:success.add'));
+                    setDrawerVisible(false);
+                    refreshNotificationRules();
+                  });
+                }}
+                onCancel={() => {
                   setDrawerVisible(false);
-                  refreshNotificationRules();
-                });
-              }}
-              onCancel={() => {
-                setDrawerVisible(false);
-              }}
-            />
-          ) : (
-            <div>
-              <Spin spinning />
-            </div>
-          )}
-        </div>
+                }}
+              />
+            ) : (
+              <div>
+                <Spin spinning />
+              </div>
+            )}
+          </div>
+        </DrawerFooterContext.Provider>
       </Drawer>
     </>
   );

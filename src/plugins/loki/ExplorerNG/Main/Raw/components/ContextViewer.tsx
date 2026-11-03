@@ -258,13 +258,6 @@ export default function ContextViewer(props: Props) {
       <Drawer
         className='n9e-antd-drawer log-explorer-ignore-click-away'
         title={t('context.title')}
-        extra={
-          <CloseOutlined
-            onClick={() => {
-              setOpen(false);
-            }}
-          />
-        }
         placement='right'
         onClose={() => {
           setOpen(false);
