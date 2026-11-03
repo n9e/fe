@@ -14,8 +14,10 @@ interface Props {
   onEnterPress?: (value?: string) => void;
   onBlur?: () => void;
   onFocus?: () => void;
+  onInput?: () => void;
 }
 
+/** Render the query editor while forwarding focus events for lightweight guidance. */
 export default function QueryInput(props: Props) {
   const [currentValue, setCurrentValue] = useState(props.value);
 
@@ -49,6 +51,7 @@ export default function QueryInput(props: Props) {
       placeholder={props.placeholder}
       value={currentValue}
       onChange={(e) => {
+        props.onInput?.();
         setCurrentValue(e.target.value);
       }}
       onBlur={() => {

@@ -7,6 +7,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 
 import { getTeamInfoList } from '@/services/manage';
 import { scrollToFirstError } from '@/utils';
@@ -15,7 +16,7 @@ import AffixWrapper from '@/components/AffixWrapper';
 import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
 
 import { Item } from '../../types';
-import { NS, DEFAULT_VALUES, DOC_URL, MAX_NAME_LENGTH } from '../../constants';
+import { NS, DEFAULT_VALUES, DOC_URL, MAX_NAME_LENGTH, FLASH_AI_PROCESSOR_TYPES, canMoveProcessor } from '../../constants';
 import { buildWorkflowName } from '../../components/buildWorkflowName';
 import Attributes from './Attributes';
 import Processor from './Processor';
@@ -57,6 +58,9 @@ export default function index(props: Props) {
   const { disabled, initialValues, showScenarioTips, onOk, onCancel, onDirtyChange } = props;
   const { setFooter: setDrawerFooter, refreshFooter } = useContext(DrawerFooterContext);
   const isDrawer = !!onCancel;
+  const canAccessFlashAi = useCanAccessFlashAiChat();
+  const accessRef = useRef({ disabled, canAccessFlashAi });
+  accessRef.current = { disabled, canAccessFlashAi };
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const formValues = Form.useWatch([], form);
@@ -301,9 +305,17 @@ export default function index(props: Props) {
           <Form.List name='processors'>
             {(fields, { add, remove, move }) => (
               <>
-                <SortableList useDragHandle helperClass='row-dragging' onSortEnd={({ oldIndex, newIndex }) => move(oldIndex, newIndex)}>
+                <SortableList
+                  useDragHandle
+                  helperClass='row-dragging'
+                  onSortEnd={({ oldIndex, newIndex }) => {
+                    if (!accessRef.current.disabled && canMoveProcessor(form.getFieldValue('processors') || [], oldIndex, newIndex, accessRef.current.canAccessFlashAi)) {
+                      move(oldIndex, newIndex);
+                    }
+                  }}
+                >
                   {fields.map((field, idx) => (
-                    <SortableItem key={field.key} index={idx}>
+                    <SortableItem key={field.key} index={idx} disabled={disabled || (!canAccessFlashAi && FLASH_AI_PROCESSOR_TYPES.includes(processors?.[field.name]?.typ))}>
                       <Processor
                         disabled={disabled}
                         fields={fields}

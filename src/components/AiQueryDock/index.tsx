@@ -16,8 +16,7 @@ import { buildAiChatShareUrl, copyAiChatShareUrl } from '@/components/AiChatNG/s
  * conversation floating below it on demand. The chat itself is the ordinary
  * ChatPanel in its slim form; this shell only decides where it sits, when
  * the conversation is open, and what the status says. Writing into the page
- * is not done here either: the page declares an action with the runtime and
- * the panel runs it when the model asks.
+ * is delegated to the page: it declares actions for model requests.
  *
  * Opening and closing does not change the conversation: one dock, one
  * conversation, until the page goes away. So the dock stays mounted while

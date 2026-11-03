@@ -77,6 +77,9 @@ export default defineConfig(({ mode }) => {
       // 'process.env.NODE_ENV': JSON.stringify(mode), // 如确实需要兼容旧代码 NODE_ENV=production , 放开这个
     },
     optimizeDeps: {
+      // 将启动入口的子路径依赖纳入首轮预构建，避免首屏请求时发现依赖并触发二次优化。
+      // JSX runtime 已由 @vitejs/plugin-react 默认加入。
+      include: ['react-dom/client', 'react-i18next'],
       esbuildOptions: {
         define: {
           // 依赖预构建（esbuild）默认只替换 process.env.NODE_ENV，不会替换其他 process.env.*；

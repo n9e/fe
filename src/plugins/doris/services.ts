@@ -1,8 +1,10 @@
 import request from '@/utils/request';
+import type { RequestOptionsInit } from 'umi-request';
 import { RequestMethod } from '@/store/common';
 import { DorisDBParams, DorisDBTableParams } from './types';
 import { Field, FieldSampleParams, FilterConfig, AggregateConfig } from './ExplorerNG/types';
 import { getEnabledFilters } from './ExplorerNG/utils/filters';
+import type { LogContextPage, LogContextRequest } from '@/pages/logExplorer/components/LogOrderContext/utils';
 
 export type { Field };
 
@@ -114,24 +116,29 @@ export function getDorisIndex(data: BaseParams & { database: string; table: stri
   });
 }
 
-export function getDorisHistogram(data: {
-  cate: string;
-  datasource_id: number;
-  query: [
-    {
-      database: string;
-      table: string;
-      time_field: string;
-      from: number;
-      to: number;
-      query: string;
-      query_builder_filter?: FilterConfig[];
-      group_by?: string;
-      default_field?: string;
-    },
-  ];
-}): Promise<any[]> {
+/** Fetch and normalize trend series, optionally delegating request error presentation. */
+export function getDorisHistogram(
+  data: {
+    cate: string;
+    datasource_id: number;
+    query: [
+      {
+        database: string;
+        table: string;
+        time_field: string;
+        from: number;
+        to: number;
+        query: string;
+        query_builder_filter?: FilterConfig[];
+        group_by?: string;
+        default_field?: string;
+      },
+    ];
+  },
+  options?: Pick<RequestOptionsInit, 'errorHandler'>,
+): Promise<any[]> {
   return request('/api/n9e-plus/doris-histogram', {
+    ...options,
     method: RequestMethod.Post,
     data: {
       ...data,
@@ -143,28 +150,36 @@ export function getDorisHistogram(data: {
   }).then((res) => res.dat || []);
 }
 
-export function getDorisLogsQuery(data: {
-  cate: string;
-  datasource_id: number;
-  query: {
-    database: string;
-    table: string;
-    time_field: string;
-    query: string;
-    query_builder_filter?: FilterConfig[];
-    from: number;
-    to: number;
-    lines: number;
-    offset: number;
-    reverse: boolean;
-    default_field?: string;
-    highlight?: boolean;
-  }[];
-}): Promise<{
+/** Execute Doris log queries with an optional request-local error handler. */
+export function getDorisLogsQuery(
+  data: {
+    cate: string;
+    datasource_id: number;
+    query: {
+      database: string;
+      table: string;
+      time_field: string;
+      query: string;
+      query_builder_filter?: FilterConfig[];
+      from: number;
+      to: number;
+      lines: number;
+      offset: number;
+      reverse: boolean;
+      default_field?: string;
+      highlight?: boolean;
+      /** 上一页最后一行的排序值；表支持原文顺序时代替 offset */
+      search_after?: { time: string; stream_id: string; seq: string };
+    }[];
+  },
+  options?: Pick<RequestOptionsInit, 'errorHandler'>,
+): Promise<{
   list: { [index: string]: string }[];
   total: number;
+  pagination_supported?: boolean;
 }> {
   return request('/api/n9e-plus/doris-logs-query', {
+    ...options,
     method: RequestMethod.Post,
     data: {
       ...data,
@@ -174,6 +189,18 @@ export function getDorisLogsQuery(data: {
       })),
     },
   }).then((res) => res.dat || { list: [], total: 0 });
+}
+
+/** 锚点所在文件流前后的日志，按原文顺序返回；分页语义与 SLS 上下文一致 */
+export function getDorisContextLogs(data: {
+  cate: string;
+  datasource_id: number;
+  query: (LogContextRequest & { database: string; table: string; time_field: string })[];
+}): Promise<LogContextPage> {
+  return request('/api/n9e-plus/doris-context-logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
 }
 
 export const getDsQuery2 = function (data: {

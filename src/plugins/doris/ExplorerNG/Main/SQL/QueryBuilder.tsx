@@ -11,7 +11,6 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import { NAME_SPACE, DORIS_SQL_MODE_DOC_URL } from '../../../constants';
 import QueryBuilder from '../../components/QueryBuilder';
 import CommonStateContext from '../../components/QueryBuilder/commonStateContext';
-import UsageDocs from '@/components/UsageDocs';
 
 type Keys = { value: string[]; label: string[] };
 
@@ -63,10 +62,9 @@ export default function QueryBuilderCpt(props: Props) {
     >
       <div
         ref={eleRef}
-        className={classNames('w-full border border-antd rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
+        className={classNames('w-full border border-primary rounded-sm mb-2 mt-1 bg-fc-100 left-0 p-4 pt-2 shadow-lg', {
           absolute: !queryBuilderPinned,
           'top-[32px]': !queryBuilderPinned,
-          'border-primary': !queryBuilderPinned,
           relative: queryBuilderPinned,
         })}
         style={{
@@ -128,22 +126,20 @@ export default function QueryBuilderCpt(props: Props) {
         />
         <div className='absolute top-2 right-2'>
           <Space size={0}>
-            <UsageDocs>
-              <Button
-                type='link'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  DocumentDrawer({
-                    language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
-                    title: t('common:document_title'),
-                    type: 'iframe',
-                    documentPath: DORIS_SQL_MODE_DOC_URL,
-                  });
-                }}
-              >
-                {t('common:document_title')}
-              </Button>
-            </UsageDocs>
+            <Button
+              type='link'
+              onClick={(e) => {
+                e.stopPropagation();
+                DocumentDrawer({
+                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                  title: t('common:document_title'),
+                  type: 'iframe',
+                  documentPath: DORIS_SQL_MODE_DOC_URL,
+                });
+              }}
+            >
+              {t('common:document_title')}
+            </Button>
             <Button
               type='text'
               icon={<PushpinOutlined />}

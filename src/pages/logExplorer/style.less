@@ -130,3 +130,42 @@
     white-space: nowrap;
   }
 }
+
+// All log result modes grow into the page so sticky sidebars and table headers
+// share one scroll container, including clustering and its virtual grid.
+.log-explorer-content:has(.n9e-log-results-auto-height) {
+  &,
+  > div,
+  > div > form {
+    height: auto !important;
+    min-height: 100%;
+  }
+}
+
+// Keep scrollbar geometry stable; hide only the thumb outside its scroll area.
+.n9e-log-explorer-page,
+.n9e-log-explorer-page * {
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
+  &:hover {
+    scrollbar-color: var(--fc-text-5) transparent !important;
+  }
+  &::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    visibility: hidden !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-corner {
+    background: transparent !important;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    visibility: visible !important;
+    background: var(--fc-text-5) !important;
+  }
+}

@@ -15,7 +15,7 @@
  *
  */
 import React, { useEffect } from 'react';
-import { Form, Radio, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
+import { Form, Select, Row, Col, InputNumber, Switch, Input } from 'antd';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
 import { Panel } from '../../Components/Collapse';
@@ -43,11 +43,22 @@ export default function GraphStyles() {
         <Row gutter={10}>
           <Col span={10}>
             <Form.Item label={t('panel.custom.textMode')} name={[...namePrefix, 'textMode']}>
-              <Radio.Group buttonStyle='solid'>
-                <Radio.Button value='valueAndName'>{t('panel.custom.valueAndName')}</Radio.Button>
-                <Radio.Button value='name'>{t('panel.custom.name')}</Radio.Button>
-                <Radio.Button value='value'>{t('panel.custom.value')}</Radio.Button>
-              </Radio.Group>
+              <Select
+                options={[
+                  {
+                    label: t('panel.custom.valueAndName'),
+                    value: 'valueAndName',
+                  },
+                  {
+                    label: t('panel.custom.name'),
+                    value: 'name',
+                  },
+                  {
+                    label: t('panel.custom.value'),
+                    value: 'value',
+                  },
+                ]}
+              />
             </Form.Item>
           </Col>
           <Col span={7}>

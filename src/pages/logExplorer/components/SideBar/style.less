@@ -1,0 +1,76 @@
+.n9e-log-sidebar {
+  flex-shrink: 0;
+  align-self: flex-start;
+  position: sticky !important;
+  top: var(--log-sidebar-top, 0px);
+  height: var(--log-sidebar-height, auto) !important;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  background: var(--fc-fill-2);
+  .n9e-log-sidebar-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  .n9e-log-sidebar-body[hidden] {
+    display: none !important;
+  }
+  &.n9e-log-sidebar-collapsed {
+    position: relative !important;
+    // Query rows (including their empty padding) paint above earlier siblings.
+    // Keep the overflowed expand button above the pinned query region (100/101).
+    z-index: 102;
+    top: 0;
+    border: 0;
+    height: 32px !important;
+    min-height: 0;
+    .n9e-log-sidebar-header {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: 0;
+      left: 0;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 0;
+    }
+  }
+}
+
+// Reserve space only beside the top query controls, not beside the results below.
+.n9e-log-sidebar-collapsed ~ * .log-explorer-query-row {
+  // Ant Design Row owns its inline gutter margins. Padding preserves those
+  // gutters while reserving the same button space in Row and plain div layouts.
+  padding-left: 42px;
+}
+
+// Override themed small-icon dimensions without changing any theme colors.
+.n9e-log-sidebar-toggle.ant-btn.ant-btn-sm.ant-btn-icon-only {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  line-height: 1;
+  vertical-align: middle;
+  svg {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+.n9e-log-view-select-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  > :first-child {
+    flex: 1;
+    min-width: 0;
+  }
+}

@@ -116,4 +116,16 @@ describe('MessageItem in the dock', () => {
     expect(bubble).toHaveClass('bg-primary/10');
     expect(bubble.parentElement).not.toHaveClass('justify-end');
   });
+
+  it('renders each response block only once', () => {
+    render(<MessageItem {...responseBlocksProps} message={message([{ content_type: EAiChatContentType.Markdown, content: '唯一回答', is_finish: true }], true)} variant='slim' />);
+
+    expect(screen.getAllByTestId('streaming-markdown')).toHaveLength(1);
+  });
+});
+
+// A duplicated legacy response wrapper also referenced a removed callback.
+test('MessageItem renders one copy of each answer', () => {
+  render(<MessageItem {...responseBlocksProps} message={message([{ content_type: EAiChatContentType.Markdown, content: 'Only one answer', is_finish: true }], true)} />);
+  expect(screen.getAllByTestId('streaming-markdown')).toHaveLength(1);
 });

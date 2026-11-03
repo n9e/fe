@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { Input, Select, Dropdown, Button, Menu, Space, Tag, Spin, Modal, message, Tooltip } from 'antd';
 import { PlusOutlined, SaveOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, SearchOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -34,10 +34,13 @@ interface Props<FilterValues> {
   adjustOldFilterValues?: (values: any) => any;
 
   placeholder?: string;
+  /** Clear an inaccessible saved selection without applying any query values. */
+  validateSelection?: boolean;
 }
 
 const VERSION = '1.0.0';
 
+/** Manage saved views, retaining selections during reload and validating settled results. */
 export default function index<FilterValues>(props: Props<FilterValues>) {
   const { t } = useTranslation('viewSelect');
   const {
@@ -113,6 +116,12 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
   } = useRequest<View[], any[]>(service, {
     refreshDeps: [page],
   });
+
+  useEffect(() => {
+    if (props.validateSelection && !loading && views && selected !== undefined && !views.some((view) => view.id === selected)) {
+      setSelected(undefined);
+    }
+  }, [props.validateSelection, loading, views, selected, setSelected]);
 
   const filteredViews = useMemo(() => {
     return _.filter(views, (item) => {
@@ -318,7 +327,7 @@ export default function index<FilterValues>(props: Props<FilterValues>) {
               };
             })}
             optionLabelProp='labelName'
-            value={selected}
+            value={props.validateSelection && (!views || (!loading && !views.some((view) => view.id === selected))) ? undefined : selected}
             onChange={(val) => {
               setSelected(val);
               if (onSelect) {

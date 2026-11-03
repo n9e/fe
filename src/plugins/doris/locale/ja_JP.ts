@@ -1,4 +1,6 @@
 const ja_JP = {
+  pagination_requires_order_keys:
+    '安定したページングには、ソートキーが（選択した時刻フィールド、__log_stream_id__、__log_seq__）で始まる必要があります。最初のページのみ表示します。検索範囲を絞るか、対応する時刻フィールドを選択してください。',
   quick_query: 'クイッククエリ',
   quick_query_tip:
     'クイッククエリ 固定のSQLテンプレートに基づいて、クエリステートメントを迅速に生成します。たとえば、フィールドAが0より大きい場合、A>0と入力するだけです。このボタンをクリックすると、クイックモードに迅速に切り替えて、SQLステートメントを表示および変更できます',
@@ -23,6 +25,11 @@ const ja_JP = {
     1. 過去5分間のログ行数をクエリする SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
     2. 選択した期間のログ行数をクエリする SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
     SQLモードの詳細については、<a>Doris SQLモード</a>を参照してください`,
+    variable_format_tip:
+      '高度な変数形式：${variable:csv}、raw、regex、json、text、sqlstring。text は選択肢ラベルを出力します。Doris 専用 LIKE：${variable:sql_like_or:column} または ${variable:sql_like_and:column}。',
+    advanced_variable_formats: '高度な変数形式',
+    dashboard_variable_tip:
+      "Doris クエリ変数：複数選択の変数は、既定で単一引用符付き・カンマ区切りの SQL 値リストに変換されます。例：${host} は 'host01', 'host02' となり、IN (${host}) で使用できます。<1/>${variable:format} で出力形式を指定します。text は選択肢ラベルを返します。Doris 専用 LIKE：${host:sql_like_or:description} または ${host:sql_like_and:table.column}。<1/>すべての形式と例は <advanced>高度な変数形式</advanced> を参照してください。<1/>バックエンド時間マクロとして $__timeFilter(...)、$__timeFrom()、$__timeTo() を使用できます。詳細は <a>クエリ条件</a> のドキュメントを参照してください。",
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'クエリ',
     database: 'データベース',

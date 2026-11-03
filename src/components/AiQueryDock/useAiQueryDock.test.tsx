@@ -12,14 +12,6 @@ type AiQueryDockProps = React.ComponentProps<typeof AiQueryDock>;
 type AiActionsOptions = Parameters<typeof useQueryDockActions>[0];
 type Snapshot = QueryDockSnapshot & { range?: IRawTimeRange };
 
-// Which build we are: the hook reads IS_ENT at render time, so a getter lets
-// each test pick the build without reloading the module.
-const mockMode = { isEnt: false };
-jest.mock('@/utils/constant', () => ({
-  get IS_ENT() {
-    return mockMode.isEnt;
-  },
-}));
 jest.mock('@/components/AiChatNG/constants', () => ({ NAME_SPACE: 'ai' }));
 jest.mock('@/components/TimeRangePicker', () => ({ timeRangeUnix: () => ({ start: 100, end: 200 }) }));
 jest.mock('@/components/AiChatNG/recommend', () => ({
@@ -33,6 +25,8 @@ jest.mock('./index', () => ({
     return <div data-testid='ai-dock' data-open={String(props.open)} />;
   },
 }));
+let mockCanAccess = true;
+jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
 const mockActions = { options: [] as AiActionsOptions[], cancel: jest.fn() };
 jest.mock('./useQueryDockActions', () => ({
   useQueryDockActions: (options: AiActionsOptions) => {
@@ -68,26 +62,13 @@ function Host(props: Pick<AiQueryDockOptions<Snapshot>, 'pageParams' | 'onToggle
 }
 
 beforeEach(() => {
+  mockCanAccess = true;
   mockActions.options = [];
   mockActions.cancel.mockClear();
   dockProps = undefined;
 });
 
-describe('open-source and Nightingale commercial builds', () => {
-  it('renders nothing and never lets the assistant write', () => {
-    mockMode.isEnt = false;
-    render(<Host />);
-    expect(screen.queryByRole('button', { name: 'dock.open' })).toBeNull();
-    expect(screen.queryByTestId('ai-dock')).toBeNull();
-    expect(mockActions.options.map((options) => options.enabled)).not.toContain(true);
-  });
-});
-
-describe('Flashcat enterprise build', () => {
-  beforeEach(() => {
-    mockMode.isEnt = true;
-  });
-
+describe('useAiQueryDock', () => {
   it('opens behind its trigger, and only then lets the assistant write', () => {
     const onToggle = jest.fn();
     render(<Host onToggle={onToggle} />);
@@ -122,4 +103,25 @@ describe('Flashcat enterprise build', () => {
     expect(mockActions.cancel).toHaveBeenCalled();
     expect(screen.getByTestId('ai-dock')).toHaveAttribute('data-open', 'false');
   });
+});
+
+it('hides both the trigger and chat and disables page actions without access', () => {
+  mockCanAccess = false;
+  render(<Host />);
+  expect(screen.queryByRole('button', { name: 'dock.open' })).toBeNull();
+  expect(screen.queryByTestId('ai-dock')).toBeNull();
+  expect(mockActions.options.every((option) => !option.enabled)).toBe(true);
+});
+
+it('unmounts an open dock, cancels work and does not reopen after access returns', () => {
+  const { rerender } = render(<Host />);
+  fireEvent.click(screen.getByRole('button', { name: 'dock.open' }));
+  mockCanAccess = false;
+  rerender(<Host />);
+  expect(screen.queryByTestId('ai-dock')).toBeNull();
+  expect(mockActions.cancel).toHaveBeenCalled();
+  expect(mockActions.options[mockActions.options.length - 1].enabled).toBe(false);
+  mockCanAccess = true;
+  rerender(<Host />);
+  expect(screen.getByTestId('ai-dock')).toHaveAttribute('data-open', 'false');
 });

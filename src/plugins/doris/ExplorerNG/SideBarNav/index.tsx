@@ -9,6 +9,7 @@ import Meta from '@/components/Meta';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
 import { getDorisIndex, getDorisTableConfig } from '../../services';
+import { filterLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import getIndexTimeRange from '../utils/getIndexTimeRange';
@@ -66,6 +67,8 @@ export default function index(props: Props) {
       let fields: Field[] = [];
       try {
         fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table, ...getIndexTimeRange(form) });
+        // 原文顺序字段只用于排序和上下文，不作为可检索、可统计的字段
+        fields = filterLogOrderFields(fields);
       } catch {
         // getDorisIndex 失败时继续执行，fields 保持空数组
       }

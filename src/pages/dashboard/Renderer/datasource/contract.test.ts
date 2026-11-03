@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import type { ITarget } from '@/pages/dashboard/types';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse, validateDashboardQueryRequest } from './contract';
 import dashboardDatasourceDefinitions, { DASHBOARD_DATASOURCE_CATES } from './registry';
@@ -25,7 +26,7 @@ jest.mock('@/components/TimeRangePicker/utils', () => ({
 jest.mock('@/pages/dashboard/Variables/utils/replaceTemplateVariables', () => ({
   __esModule: true,
   default: jest.fn((value: string) => value),
-  getBuiltInVariables: () => [],
+  getBuiltInVariables: () => [{ name: '__interval', value: '30s' }],
   replaceDatasourceVariables: (value: number | string) => (value === '${metrics}' ? 9 : value),
 }));
 
@@ -38,6 +39,31 @@ const getDashboardVariablePluginMock = getDashboardVariablePlugin as jest.Mocked
 describe('dashboard unified query contract', () => {
   afterEach(() => {
     getDashboardVariablePluginMock.mockReset();
+  });
+
+  it('accepts builtins, scoped variables and SQL macros without confusing expression RefIDs with variables', () => {
+    const request = buildDashboardQueryRequest({
+      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+      datasourceList: [],
+      scopedVars: { host: { value: 'localhost' } },
+      targets: [
+        { refId: 'A', datasource: { cate: 'prometheus', id: 1 }, expr: 'rate(up{instance="$host"}[$__interval])', legend: '$unusedLegend' },
+        { refId: 'B', datasource: { cate: 'mysql', id: 2 }, query: { query: 'SELECT value FROM metrics WHERE $__timeFilter(ts)' } },
+        { refId: 'C', kind: 'expression', expression: '$A * 2' },
+      ],
+    });
+    expect(request.queries.map((query) => query.ref_id)).toEqual(['A', 'B', 'C']);
+  });
+
+  it('reports nested query variables before a datasource plugin can silently skip the query', () => {
+    getDashboardVariablePluginMock.mockReturnValue({ transformQuery: jest.fn(() => undefined) } as unknown as NonNullable<ReturnType<typeof getDashboardVariablePlugin>>);
+    expect(() =>
+      buildDashboardQueryRequest({
+        time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+        datasourceList: [],
+        targets: [{ refId: 'B', datasource: { cate: 'elasticsearch', id: 1 }, query: { index: '$index', date_field: '@timestamp', filters: [{ value: '[[service]]' }] } }],
+      }),
+    ).toThrow('Query B references missing variable(s): index, service');
   });
 
   it('registers every dashboard datasource contract', () => {
@@ -536,6 +562,7 @@ describe('dashboard unified query contract', () => {
         start: moment('2026-07-24T00:00:00.000Z'),
         end: moment('2026-07-24T01:00:00.000Z'),
       },
+      variables: [{ name: 'metrics', type: 'constant', value: 9, definition: '' }],
       targets,
       datasourceList: [],
       panelWidth: 800,
@@ -670,6 +697,41 @@ describe('dashboard unified query contract', () => {
     expect(request).toMatchObject({ from: 1784858400, to: 1784862000, queries: [{ query: { sql: 'select ${host}', nested: { label: '${host}' }, values: ['${host}'] } }] });
     expect(JSON.stringify(request)).not.toMatch(/timezone|max_data_points|request_id/);
     expect(replaceTemplateVariables).toHaveBeenCalledWith('select ${host}', expect.objectContaining({ range: queryOptionsTime, scopedVars }));
+  });
+
+  it('enables Doris SQL LIKE formats throughout panel query interpolation', () => {
+    const replaceTemplateVariables = require('@/pages/dashboard/Variables/utils/replaceTemplateVariables').default as jest.Mock;
+    replaceTemplateVariables.mockClear();
+
+    const orExpression = '${servers:sql_like_or:description}';
+    const andExpression = '${servers:sql_like_and:logs.description}';
+    const variables: IVariable[] = [
+      {
+        name: 'servers',
+        type: 'custom',
+        definition: 'web-01,db-02',
+        datasource: { cate: 'custom' },
+        multi: true,
+        value: ['web-01'],
+      },
+    ];
+
+    buildDashboardQueryRequest({
+      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+      datasourceList: [],
+      variables,
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'doris', id: 1 },
+          query: { query: `SELECT description FROM logs WHERE ${orExpression}`, nested: { filter: andExpression } },
+        },
+      ],
+    });
+
+    expect(replaceTemplateVariables).toHaveBeenCalledWith(`SELECT description FROM logs WHERE ${orExpression}`, expect.objectContaining({ enableDorisSqlLike: true, variables }));
+    expect(replaceTemplateVariables).toHaveBeenCalledWith(andExpression, expect.objectContaining({ enableDorisSqlLike: true, variables }));
   });
 
   it('serializes instant Prometheus queries', () => {

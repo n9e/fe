@@ -29,7 +29,7 @@ const fr_FR = {
     "recording_rules": "Règles d'enregistrement",
     "logs_explorer": "Journaux",
     "monitors": "Alertes",
-    "alerts_notifications": "Notifications d'alerte",
+    "alerts_notifications": "Alertes",
     "rules": "Gestion des règles",
     "alert_rules": "Règles d'alerte",
     "alert_mutes": "Règles de mise en sourdine",

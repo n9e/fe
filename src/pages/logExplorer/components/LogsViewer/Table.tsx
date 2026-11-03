@@ -8,7 +8,7 @@ import moment from 'moment';
 
 import NavigableDrawer from '@/components/NavigableDrawer';
 
-import { NAME_SPACE } from '../../constants';
+import { LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY, NAME_SPACE } from '../../constants';
 import { Field } from '../../types';
 import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 import getColumnsFromFields from './utils/getColumnsFromFields';
@@ -59,6 +59,8 @@ interface Props {
   timeColumnWidth?: number;
   timeFieldColumnFormat?: (timeFieldValue: string | number) => React.ReactNode;
   linesColumnFormat?: (linesValue: number) => React.ReactNode;
+  rowActionsRender?: (row: Record<string, any>, index: number, detail: React.ReactNode) => React.ReactNode;
+  hideLineNumberDetailTooltip?: boolean;
   logViewerExtraRender?: (log: { [index: string]: any }) => React.ReactNode;
   logViewerFilterFields?: (log: Record<string, any>) => string[];
   logViewerRenderCustomTagsArea?: (log: Record<string, any>) => React.ReactNode;
@@ -77,6 +79,7 @@ interface Props {
   hideTypeIcon?: boolean;
 }
 
+/** Build structured log columns and connect row details to the shared grid. */
 function Table(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const {
@@ -98,6 +101,8 @@ function Table(props: Props) {
     timeColumnWidth,
     timeFieldColumnFormat,
     linesColumnFormat,
+    rowActionsRender,
+    hideLineNumberDetailTooltip,
     logViewerExtraRender,
     logViewerFilterFields,
     logViewerRenderCustomTagsArea,
@@ -133,6 +138,7 @@ function Table(props: Props) {
         timeColumnWidth,
         timeFieldColumnFormat,
         linesColumnFormat,
+        hideLineNumberDetailTooltip,
         adjustFieldValue,
         showExistsAction,
       }),
@@ -164,8 +170,7 @@ function Table(props: Props) {
   useClickAway(
     (event) => {
       // 忽略点击发生在 log viewer drawer 内的情况
-      const target = (event && (event as Event).target) as HTMLElement | null;
-      if (shouldIgnoreLogViewerClickAway(target)) {
+      if (shouldIgnoreLogViewerClickAway(event as Event)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭
@@ -178,7 +183,7 @@ function Table(props: Props) {
   );
 
   return (
-    <div className='min-h-0 h-full' ref={drawerRef}>
+    <div className='min-h-0' ref={drawerRef}>
       <RDGTable
         className='n9e-event-logs-table'
         rowKeyGetter={(row) => {
@@ -203,6 +208,12 @@ function Table(props: Props) {
             const idx = _.findIndex(data, { [id_key]: row[id_key] });
             setLogViewerDrawerState({ visible: true, currentIndex: idx });
           },
+          rowActionsRender: rowActionsRender
+            ? (row, detail) => {
+                const idx = _.findIndex(data, { [id_key]: row[id_key] });
+                return rowActionsRender(data[idx], idx, detail);
+              }
+            : undefined,
         }}
         onColumnResize={(idx, width) => {
           if (!tableColumnsWidthCacheKey) return;
@@ -227,6 +238,7 @@ function Table(props: Props) {
       <NavigableDrawer
         defaultSize='middle'
         className='log-explorer-ignore-click-away'
+        sizeStorageKey={LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY}
         title={navigableDrawerTitle}
         extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'

@@ -79,3 +79,58 @@ describe('elasticsearch dslBuilder filters', () => {
     });
   });
 });
+
+describe('elasticsearch dslBuilder sorter（原文顺序排序）', () => {
+  it('keeps every sorter field in order and pins unmapped_type', () => {
+    const body = getBody(
+      dslBuilder({
+        index: 'logs-*',
+        start: 1,
+        end: 2,
+        sorter: [
+          { field: '@timestamp', order: 'desc' },
+          { field: '__log_stream_id__', order: 'desc' },
+          { field: '__log_seq__', order: 'desc' },
+        ],
+      }),
+    );
+
+    expect(body.sort).toEqual([
+      { '@timestamp': { order: 'desc', unmapped_type: 'boolean' } },
+      { __log_stream_id__: { order: 'desc', unmapped_type: 'boolean' } },
+      { __log_seq__: { order: 'desc', unmapped_type: 'boolean' } },
+    ]);
+  });
+
+  it('does not add a sort when neither sorter nor order is provided', () => {
+    const body = getBody(
+      dslBuilder({
+        index: 'logs-*',
+        start: 1,
+        end: 2,
+      }),
+    );
+
+    expect(body.sort).toBeUndefined();
+  });
+});
+
+it('uses compatible unmapped types when old and ordered indices are mixed', () => {
+  const body = getBody(
+    dslBuilder({
+      index: 'logs-*',
+      start: 1,
+      end: 2,
+      sorter: [
+        { field: 'ts', order: 'desc', unmappedType: 'date' },
+        { field: '__log_stream_id__', order: 'desc', unmappedType: 'keyword' },
+        { field: '__log_seq__', order: 'desc', unmappedType: 'long' },
+      ],
+    }),
+  );
+  expect(body.sort.map((item) => Object.values(item)[0])).toEqual([
+    { order: 'desc', unmapped_type: 'date' },
+    { order: 'desc', unmapped_type: 'keyword' },
+    { order: 'desc', unmapped_type: 'long' },
+  ]);
+});

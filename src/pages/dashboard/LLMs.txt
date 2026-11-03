@@ -25,7 +25,7 @@ The runtime is intentionally tolerant. Missing optional fields can be completed 
 Required fields:
 
 - `id`: non-empty string.
-- `type`: non-empty string. Common values include `row`, `timeseries`, `stat`, `tableNG`, `table`, `pie`, `barGauge`, `text`, `gauge`, `iframe`, `heatmap`, and `barchart`.
+- `type`: non-empty string. Common values include `row`, `timeseries`, `barchart`, `stat`, `tableNG`, `table`, `pie`, `hexbin`, `barGauge`, `text`, `gauge`, `heatmap`, and `iframe` (the canonical list lives in `Renderer/registry/panelTypes.ts`).
 - `layout`: object.
 - `layout.h`, `layout.w`, `layout.x`, `layout.y`: numbers.
 - `layout.i`: non-empty string. It should be the same as `panel.id`.

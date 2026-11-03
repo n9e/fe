@@ -263,6 +263,44 @@ describe('variable value initialization priority', () => {
     expect(result[0].value).toBe(2);
   });
 
+  test('restores an explicitly cleared single value from cache', () => {
+    localStorage.setItem('dashboard_v6_42_project', '');
+
+    const result = initializeVariablesValue([queryVariable({ defaultValue: 'project-1' })], {}, { dashboardId: 42 });
+
+    expect(result[0].value).toBe('');
+  });
+
+  test('restores an explicitly cleared multi value from cache', () => {
+    localStorage.setItem('dashboard_v6_42_project', '[]');
+
+    const result = initializeVariablesValue([queryVariable({ multi: true, defaultValue: 'project-1' })], {}, { dashboardId: 42 });
+
+    expect(result[0].value).toEqual([]);
+  });
+
+  test('aligns a cleared cache with the current single or multi mode', () => {
+    localStorage.setItem('dashboard_v6_42_project', '');
+    const asMulti = initializeVariablesValue([queryVariable({ multi: true })], {}, { dashboardId: 42 });
+    expect(asMulti[0].value).toEqual([]);
+
+    localStorage.setItem('dashboard_v6_42_project', '[]');
+    const asSingle = initializeVariablesValue([queryVariable()], {}, { dashboardId: 42 });
+    expect(asSingle[0].value).toBe('');
+  });
+
+  test('keeps an unset variable undefined when there is no cache', () => {
+    const result = initializeVariablesValue([queryVariable({ defaultValue: 'project-1' })], {}, { dashboardId: 42 });
+
+    expect(result[0].value).toBeUndefined();
+  });
+
+  test('treats an empty URL value as unset', () => {
+    const result = initializeVariablesValue([queryVariable()], { project: '' }, { dashboardId: 42 });
+
+    expect(result[0].value).toBeUndefined();
+  });
+
   test('does not read the cache when fixed URL values are enabled', () => {
     localStorage.setItem('dashboard_v6_42_project', 'from-cache');
     localStorage.setItem('dashboard_v6_42_service', 'cached-service');

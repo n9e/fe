@@ -27,7 +27,7 @@ import ContextViewer from './components/ContextViewer';
 import { buildLogHighlights, getLineHighlightFilters } from './utils/highlights';
 
 // @ts-ignore
-import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
+import DownloadModal from '@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal';
 
 interface Props {
   indexData: Field[];
@@ -89,6 +89,7 @@ function formatTimestamp(value?: string | number) {
   return moment(value).format('MM-DD HH:mm:ss.SSS');
 }
 
+/** Connect loki raw results to shared scrolling and histogram controls. */
 export default function Raw(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { indexData, setExecuteLoading, executeQuery, snapRangeResetKey } = props;
@@ -326,7 +327,7 @@ export default function Raw(props: Props) {
           renderHistogramAddonAfterRender={(toggleNode) => {
             if (rangeRef.current) {
               return (
-                <Space>
+                <Space className='n9e-log-histogram-meta-content' size={6} wrap>
                   {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
                   {toggleNode}
                   {IS_PLUS && (

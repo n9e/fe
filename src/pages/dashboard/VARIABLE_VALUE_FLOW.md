@@ -43,7 +43,9 @@ flowchart TD
   H --> I[按依赖顺序获取或生成 options]
   I --> J{变量值是否固定?}
   J -- 是 --> K[保留当前值]
-  J -- 否 --> L{当前值有效?}
+  J -- 否 --> C1{是否为清空值?}
+  C1 -- 是 --> K
+  C1 -- 否 --> L{当前值有效?}
   L -- 是 --> K
   L -- 否 --> M[defaultValue]
   M --> N{存在 defaultValue?}
@@ -52,18 +54,19 @@ flowchart TD
   O --> K
 ```
 
-归一化规则：非文本框变量的 `null`、`undefined`、空字符串和空数组会视为未赋值；数据源变量会将数字字符串转为数字；多选变量会将单个字符串转为数组；单选变量会从数组中取第一项。文本框变量没有值时使用 `defaultValue`，否则为空字符串。
+归一化规则：非文本框变量的 `null`、`undefined`、空字符串和空数组会视为未赋值；数据源变量会将数字字符串转为数字；多选变量会将单个字符串转为数组；单选变量会从数组中取第一项。例外是 localStorage 里记录的显式清空：缓存原文为 `''` 或 `'[]'` 时，按当前单选或多选恢复为 `''` 或 `[]`，不再当作未赋值。文本框变量没有值时使用 `defaultValue`，否则为空字符串。URL 中的空值仍视为未赋值。
 
 ## options 返回后的校验和回填
 
 非固定变量在 options 就绪后执行如下顺序：
 
-1. 当前值存在于 options 中，保留当前值；
-2. 当前值未赋值或已不在 options 中，且配置了 `defaultValue`，使用该默认值；
-3. 否则使用首个 option；多选变量开启 All 时使用 `['all']`；
-4. 没有 options 时保持 `undefined`，文本框保持空字符串。
+1. 当前值是显式清空值（单选 `''`、多选 `[]`）时保留；
+2. 当前值存在于 options 中，保留当前值；
+3. 当前值未赋值或已不在 options 中，且配置了 `defaultValue`，使用该默认值；
+4. 否则使用首个 option；多选变量开启 All 时使用 `['all']`；
+5. 没有 options 时保持 `undefined`，文本框保持空字符串。
 
-因此，普通 URL 值和 localStorage 恢复值都会参与 options 校验：若值已不在 options 中，将回退到默认值或首项。带 `__variable_value_fixed` 的 URL 值则不会回退。
+因此，普通 URL 值和 localStorage 恢复值都会参与 options 校验：若值已不在 options 中，将回退到默认值或首项。显式清空值保留为空。带 `__variable_value_fixed` 的 URL 值则不会回退。
 
 ## 用户修改后的写回
 
@@ -74,7 +77,7 @@ flowchart TD
 3. 将非空、非 `undefined`、非 `null` 的变量值写入 URL；
 4. 通知依赖该变量的下游变量重新查询 options。
 
-运行时 `undefined` 不会覆盖 localStorage 中已有的记录；单选控件明确清空时会写入空字符串，下一次加载时会按未赋值处理。
+运行时 `undefined` 不会覆盖 localStorage 中已有的记录。单选控件明确清空时写入空字符串，多选清空时写入 `[]`。下一次加载会把这两种缓存恢复为清空状态，而不是回落到默认值。
 
 ## 变量联动期间的面板查询
 
@@ -86,14 +89,15 @@ flowchart TD
 
 执行状态保存为 `{ sessionId, isExecuting, revision }`。每个 `VariableManagerProvider` 挂载时领取新的 `sessionId`；只有当前会话可以把状态从执行中切换为稳定。Provider 卸载时会复位自己仍持有的执行状态，旧页面的异步变量请求即使随后返回，也不能覆盖新页面会话。
 
-因此，页面切换期间不会因为旧变量链悬挂而让新页面的面板永久停止查询。不过变量、时间范围等仍是仪表盘模块级全局状态；同一 React 树内多个仪表盘实例并存尚不支持，详见同级 [README.md](./README.md)。
+因此，页面切换期间不会因为旧变量链悬挂而让新页面的面板永久停止查询。变量、时间范围等运行时状态由 `DashboardRuntimeProvider` 按仪表盘实例隔离（见同级 [README.md](./README.md) 的「运行时边界」）：同一 React 树内多个实例互不影响，各实例只读取自己 store 中的变量与时间范围。
 
 ## 示例
 
-| URL                                               | localStorage  | options                  | 最终值        |
-| ------------------------------------------------- | ------------- | ------------------------ | ------------- |
-| `project=project-2`                               | `project-1`   | `project-1`, `project-2` | `project-2`   |
-| 无 `project`                                      | `project-2`   | `project-1`, `project-2` | `project-2`   |
-| 无 `project`                                      | `project-old` | `project-1`, `project-2` | `project-1`   |
-| `project=project-old`                             | `project-1`   | `project-1`, `project-2` | `project-1`   |
-| `__variable_value_fixed=true&project=project-old` | `project-1`   | `project-1`, `project-2` | `project-old` |
+| URL                                               | localStorage   | options                                                   | 最终值        |
+| ------------------------------------------------- | -------------- | --------------------------------------------------------- | ------------- |
+| `project=project-2`                               | `project-1`    | `project-1`, `project-2`                                  | `project-2`   |
+| 无 `project`                                      | `project-2`    | `project-1`, `project-2`                                  | `project-2`   |
+| 无 `project`                                      | `project-old`  | `project-1`, `project-2`                                  | `project-1`   |
+| 无 `project`                                      | `''`（已清空） | `project-1`, `project-2`（`defaultValue` 为 `project-1`） | 空            |
+| `project=project-old`                             | `project-1`    | `project-1`, `project-2`                                  | `project-1`   |
+| `__variable_value_fixed=true&project=project-old` | `project-1`    | `project-1`, `project-2`                                  | `project-old` |

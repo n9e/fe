@@ -29,7 +29,7 @@ const es_ES = {
     "recording_rules": "Reglas de registro",
     "logs_explorer": "Logs",
     "monitors": "Alertas",
-    "alerts_notifications": "Notificaciones de alerta",
+    "alerts_notifications": "Alertas",
     "rules": "Gestión de reglas",
     "alert_rules": "Reglas de alerta",
     "alert_mutes": "Reglas de silenciamiento",

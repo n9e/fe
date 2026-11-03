@@ -99,6 +99,7 @@ interface SiteInfo {
 
 export interface ICommonState {
   hideUsageDocs?: boolean;
+  homeMode?: ContentMode;
   emptyMode?: ContentMode;
   datasourceCateOptions: Cate[];
   groupedDatasourceList: {
@@ -148,7 +149,6 @@ export interface ICommonState {
   setDarkMode: (mode: boolean) => void;
   dashboardDefaultRangeIndex?: string;
   esIndexMode: string;
-  dashboardSaveMode: 'auto' | 'manual';
   perms?: string[];
   screenTemplates?: string[];
   tablePaginationPosition?: string; // 表格分页位置
@@ -253,7 +253,6 @@ function App() {
       setCommonState((state) => ({ ...state, darkMode: mode }));
     },
     esIndexMode: 'all',
-    dashboardSaveMode: 'manual',
     screenTemplates: [],
     installTs: 0,
     logsDefaultRange: { start: 'now-1h', end: 'now' },

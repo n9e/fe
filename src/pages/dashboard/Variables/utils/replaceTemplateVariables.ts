@@ -1,16 +1,25 @@
+import { useCallback, useContext } from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 
 import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import { getDefaultStepByTime } from '@/pages/dashboard/utils';
-import { getGlobalState } from '@/pages/dashboard/globalState';
+import { useGlobalState } from '@/pages/dashboard/globalState';
 import type { DashboardDatasource, ScopedVariables } from '@/pages/dashboard/types';
 
 import { IVariable } from '../types';
+import { ScopedVariablesContext } from '../ScopedVariablesContext';
 import adjustData from './ajustData';
 import { formatString, formatDatasource } from './formatString';
 
 export type { IVariable } from '../types';
+
+// scopedVars 的 text 只能还原为单个选项标签；数组值继续按值插值。
+function buildScopedVarOptions(text: string | undefined, value: IVariable['value']) {
+  if (text == null) return undefined;
+  if (typeof value !== 'string' && typeof value !== 'number') return undefined;
+  return [{ label: text, value }];
+}
 
 export default function replaceTemplateVariables(
   str: string,
@@ -22,6 +31,9 @@ export default function replaceTemplateVariables(
       maxDataPoints?: number;
     };
     scopedVars?: ScopedVariables;
+    /** Runtime variables supplied by an owning dashboard instance. */
+    variables?: IVariable[];
+    enableDorisSqlLike?: boolean;
   },
 ) {
   // 如果 str 为空，如果没有包含变量则直接返回
@@ -30,10 +42,9 @@ export default function replaceTemplateVariables(
     return str;
   }
 
-  const variablesWithOptions = getGlobalState('variablesWithOptions');
-  const globalRange = getGlobalState('range');
-  const { scopedVars } = params || {};
-  const range = params?.range ?? globalRange;
+  const variablesWithOptions = params?.variables ?? [];
+  const { scopedVars, enableDorisSqlLike } = params || {};
+  const range = params?.range;
 
   let extVariables: IVariable[] = getBuiltInVariables(range, params);
 
@@ -42,10 +53,13 @@ export default function replaceTemplateVariables(
       extVariables,
       _.map(scopedVars, (value, key) => {
         // scopedVars 的值有两种形态：{ value } 对象（ScopedVariable）或原始值（扁平映射），统一在这里归一化
-        const normalizedValue = _.isPlainObject(value) ? value.value : (value as IVariable['value']);
+        const isScopedVariable = value !== null && typeof value === 'object' && !Array.isArray(value);
+        const normalizedValue = isScopedVariable ? value.value : (value as IVariable['value']);
+        const normalizedText = isScopedVariable && typeof value.text === 'string' ? value.text : undefined;
         return {
           name: key,
           value: normalizedValue,
+          options: buildScopedVarOptions(normalizedText, normalizedValue),
         } as IVariable;
       }),
     );
@@ -54,7 +68,7 @@ export default function replaceTemplateVariables(
   const data = adjustData(_.concat(variablesWithOptions ?? [], extVariables), {
     datasourceList: [],
   });
-  const result = formatString(str, data);
+  const result = formatString(str, data, { enableDorisSqlLike });
   return result;
 }
 
@@ -112,18 +126,64 @@ export function replaceDatasourceVariables(
   value: string | number,
   params: {
     datasourceList: DashboardDatasource[];
+    /** Runtime variables supplied by an owning dashboard instance. */
+    variables?: IVariable[];
+    scopedVars?: ScopedVariables;
   },
 ) {
-  const variablesWithOptions = getGlobalState('variablesWithOptions');
+  const variablesWithOptions = params.variables ?? [];
   if (typeof value === 'number') return value;
   const { datasourceList = [] } = params;
-  if (!value || !variablesWithOptions || variablesWithOptions.length === 0) {
-    console.warn('replaceDatasourceVariables: no variables found');
+  if (!value) {
     return undefined;
   }
-  const data = adjustData(variablesWithOptions, {
+  const scopedVariables = Object.entries(params.scopedVars ?? {}).map(([name, scopedValue]) => {
+    const value = scopedValue !== null && typeof scopedValue === 'object' && !Array.isArray(scopedValue) ? scopedValue.value : (scopedValue as IVariable['value']);
+    // 保留 datasourceIdentifier 等变量类型，确保作用域内的标识仍能解析为数据源 ID。
+    return { ...variablesWithOptions.find((variable) => variable.name === name), name, value } as IVariable;
+  });
+  const data = adjustData([...variablesWithOptions, ...scopedVariables], {
     datasourceList,
   });
   const result = formatDatasource(value, data);
-  return result;
+  // NaN 会通过调用方的 `typeof id !== 'number'` 判断，导致用非法 id 发起查询；解析失败一律按未解析处理。
+  return typeof result === 'number' && Number.isFinite(result) ? result : undefined;
+}
+
+/**
+ * 返回绑定当前仪表盘运行时变量和时间范围的插值函数。
+ *
+ * 视图组件应使用此 Hook，纯函数调用方则显式传入 variables 和 range，避免读取模块级状态。
+ */
+export function useReplaceTemplateVariables() {
+  const scopedVars = useContext(ScopedVariablesContext);
+  const [variables] = useGlobalState('variablesWithOptions');
+  const [runtimeRange] = useGlobalState('range');
+
+  return useCallback(
+    (value: string, params?: Parameters<typeof replaceTemplateVariables>[1]) =>
+      replaceTemplateVariables(value, {
+        ...params,
+        scopedVars: { ...scopedVars, ...params?.scopedVars },
+        variables,
+        range: params?.range ?? runtimeRange,
+      }),
+    [runtimeRange, variables, scopedVars],
+  );
+}
+
+/** 返回绑定当前仪表盘变量的数据源值替换函数，供表单和查询组件使用。 */
+export function useReplaceDatasourceVariables() {
+  const scopedVars = useContext(ScopedVariablesContext);
+  const [variables] = useGlobalState('variablesWithOptions');
+
+  return useCallback(
+    (value: string | number, params: Omit<Parameters<typeof replaceDatasourceVariables>[1], 'variables'>) =>
+      replaceDatasourceVariables(value, {
+        ...params,
+        scopedVars: { ...scopedVars, ...params.scopedVars },
+        variables,
+      }),
+    [variables, scopedVars],
+  );
 }

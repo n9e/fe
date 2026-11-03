@@ -17,7 +17,7 @@ jest.mock('@/App', () => {
   };
 });
 jest.mock('@/utils/constant', () => ({
-  DatasourceCateEnum: { prometheus: 'prometheus', elasticsearch: 'elasticsearch', mysql: 'mysql', gcm: 'gcm' },
+  DatasourceCateEnum: { prometheus: 'prometheus', elasticsearch: 'elasticsearch', mysql: 'mysql', doris: 'doris', gcm: 'gcm' },
   IS_PLUS: true,
 }));
 jest.mock('@/components/TimeRangePicker', () => ({
@@ -42,7 +42,6 @@ jest.mock('../EditModal/Querybuilder', () => ({
   ),
 }));
 jest.mock('../Variable/Constant', () => () => null);
-jest.mock('../Variable/Custom', () => () => null);
 jest.mock('../Variable/Datasource', () => () => null);
 jest.mock('../Variable/DatasourceIdentifier', () => () => null);
 jest.mock('../Variable/HostIdent', () => () => null);
@@ -51,13 +50,16 @@ jest.mock('../Variable/Textbox', () => () => null);
 import Main from '../Main';
 import QueryEditor from '../EditModal/Variable/Query';
 import datasource from '../datasource';
-import { getGlobalState, setGlobalState } from '../../globalState';
+import { DashboardRuntimeProvider } from '../../globalState';
+import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
 import replaceTemplateVariables from '../utils/replaceTemplateVariables';
 import initializeVariablesValue from '../utils/initializeVariablesValue';
 import type { IVariable } from '../types';
 import processLegacyQueryOptions from '../../VariableConfig/processQueryOptions';
 import LegacyDisplayItem from '../../VariableConfig/DisplayItem';
 import type { IVariable as LegacyVariable } from '../../VariableConfig/definition';
+
+const { getGlobalState, setGlobalState } = dashboardTestRuntimeStore;
 
 const queryMock = datasource as jest.MockedFunction<typeof datasource>;
 const projects = [
@@ -71,15 +73,25 @@ const projectVariable = (partial: Partial<IVariable> = {}): IVariable => ({
   datasource: { cate: 'gcm', value: 1 },
   ...partial,
 });
+const serversVariable = (): IVariable => ({
+  name: 'servers',
+  type: 'custom',
+  definition: "web-01,db'o1,api.02",
+  datasource: { cate: 'custom' },
+  multi: true,
+  value: ['web-01'],
+});
 
 function mountRuntime(variables: IVariable[], fixed?: boolean) {
   act(() => setGlobalState('variablesWithOptions', variables));
   const history = createMemoryHistory({ initialEntries: ['/dashboard?keep=1'] });
   const view = render(
     <ConfigProvider virtual={false}>
-      <Router history={history}>
-        <Main variableValueFixed={fixed!} loading={false} />
-      </Router>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <Router history={history}>
+          <Main variableValueFixed={fixed!} loading={false} />
+        </Router>
+      </DashboardRuntimeProvider>
     </ConfigProvider>,
   );
   return { ...view, history };
@@ -96,6 +108,14 @@ async function selectOption(label: string, index = 0) {
 
 function state(name = 'project') {
   return getGlobalState('variablesWithOptions').find((item) => item.name === name)!;
+}
+
+/** 使用测试运行时的显式变量调用插值函数，避免测试依赖已删除的生产单例。 */
+function interpolate(value: string) {
+  return replaceTemplateVariables(value, {
+    variables: getGlobalState('variablesWithOptions'),
+    range: getGlobalState('range'),
+  });
 }
 
 beforeEach(() => {
@@ -123,7 +143,7 @@ test('query → real dropdown → selection → URL/cache → interpolation → 
   await waitFor(() => expect(history.location.search).toContain('project=project-2'));
   expect(history.location.search).toContain('keep=1');
   expect(localStorage.getItem('dashboard_v6_42_project')).toBe('project-2');
-  expect(replaceTemplateVariables('project=${project}')).toBe('project=project-2');
+  expect(interpolate('project=${project}')).toBe('project=project-2');
   expect(state().options).toEqual(projects);
   unmount();
   const restored = initializeVariablesValue([projectVariable()], {}, { dashboardId: 42 }) as IVariable[];
@@ -211,6 +231,44 @@ test('SQL macros are passed to the datasource instead of being treated as missin
   expect(document.querySelector('.anticon-warning')).not.toBeInTheDocument();
 });
 
+test('formatted Doris references rerun dependent query variables and escape SQL values', async () => {
+  queryMock.mockResolvedValue(projects);
+  const sql = 'SELECT description FROM logs WHERE ${servers:sql_like_or:description}';
+  mountRuntime([
+    serversVariable(),
+    projectVariable({
+      name: 'doris_matches',
+      datasource: { cate: 'doris', value: 1 },
+      definition: sql,
+      query: { query: sql, nested: { filter: '${servers:sql_like_and:logs.description}' } },
+    }),
+  ]);
+
+  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(1));
+  expect(queryMock).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      datasourceCate: 'doris',
+      query: expect.objectContaining({
+        query: "SELECT description FROM logs WHERE description LIKE '%web-01%'",
+        nested: { filter: "logs.description LIKE '%web-01%'" },
+      }),
+    }),
+  );
+
+  await selectOption("db'o1", 0);
+  fireEvent.blur(screen.getAllByRole('combobox')[0]);
+  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(2));
+  expect(state('servers').value).toEqual(['web-01', "db'o1"]);
+  expect(queryMock).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      query: expect.objectContaining({
+        query: "SELECT description FROM logs WHERE description LIKE '%web-01%' OR description LIKE '%db''o1%'",
+        nested: { filter: "logs.description LIKE '%web-01%' AND logs.description LIKE '%db''o1%'" },
+      }),
+    }),
+  );
+});
+
 test('real dependency chain receives the project value, not its display label', async () => {
   queryMock.mockImplementation(async ({ query }) => (query.project_id ? [{ label: `Metric for ${query.project_id}`, value: `metric/${query.project_id}` }] : projects));
   mountRuntime([projectVariable(), projectVariable({ name: 'metric', query: { project_id: '${project}' } })]);
@@ -259,12 +317,12 @@ test('multiple selection and All persist values and interpolate values only', as
   expect(localStorage.getItem('dashboard_v6_42_project')).toBe('["project-1","project-2"]');
   expect(history.location.search).toContain('project=project-1');
   expect(history.location.search).toContain('project=project-2');
-  expect(replaceTemplateVariables('${project}')).toBe('project-1,project-2');
+  expect(interpolate('${project}')).toBe('project-1,project-2');
   await selectOption('All');
   fireEvent.blur(screen.getByRole('combobox'));
   await waitFor(() => expect(state().value).toEqual(['all']));
   expect(localStorage.getItem('dashboard_v6_42_project')).toBe('["all"]');
-  expect(replaceTemplateVariables('${project}')).toBe('project-1,project-2');
+  expect(interpolate('${project}')).toBe('project-1,project-2');
 });
 
 test('refresh preserves selection when only label changes, and falls back when value disappears', async () => {
@@ -286,7 +344,34 @@ test('fixed URL values survive an absent option', async () => {
   mountRuntime([projectVariable({ value: 'project-outside' })], true);
   await waitFor(() => expect(state().options).toEqual(projects));
   expect(state().value).toBe('project-outside');
-  expect(replaceTemplateVariables('${project}')).toBe('project-outside');
+  expect(interpolate('${project}')).toBe('project-outside');
+});
+
+test('an explicitly cleared cached value stays empty after options load', async () => {
+  localStorage.setItem('dashboard_v6_42_project', '');
+  queryMock.mockResolvedValue(projects);
+  const initialized = initializeVariablesValue([projectVariable({ defaultValue: 'project-2' })], {}, { dashboardId: 42 }) as IVariable[];
+
+  mountRuntime(initialized);
+
+  await waitFor(() => expect(state().options).toEqual(projects));
+  expect(state().value).toBe('');
+  expect(screen.queryByText('Development', { selector: '.ant-select-selection-item' })).not.toBeInTheDocument();
+});
+
+test('clearing a multi-value survives a range refresh', async () => {
+  queryMock.mockResolvedValue(projects);
+  mountRuntime([projectVariable({ multi: true, allOption: true, defaultValue: 'project-1' })]);
+  await waitFor(() => expect(state().value).toBe('project-1'));
+
+  const clearIcon = document.querySelector('.ant-select-clear');
+  expect(clearIcon).not.toBeNull();
+  fireEvent.mouseDown(clearIcon!);
+  await waitFor(() => expect(state().value).toEqual([]));
+
+  act(() => setGlobalState('range', { start: 'now-2h', end: 'now' }));
+  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(2));
+  expect(state().value).toEqual([]);
 });
 
 test('non-fixed stale cache value falls back to the first available option', async () => {
@@ -315,7 +400,7 @@ test('query failure then recovery clears stale options and restores display labe
   expect(state().options).toEqual(projects);
 });
 
-function EditorHarness({ variable }: { variable: IVariable }) {
+function EditorHarness({ variable, variablesWithOptions = [] }: { variable: IVariable; variablesWithOptions?: IVariable[] }) {
   const [form] = Form.useForm();
   const footer = React.useRef<HTMLDivElement>(null);
   const [ready, setReady] = React.useState(false);
@@ -330,11 +415,61 @@ function EditorHarness({ variable }: { variable: IVariable }) {
         <Form.Item name={['datasource', 'value']} hidden>
           <Input />
         </Form.Item>
-        {ready && <QueryEditor formatedReg={variable.reg || ''} datasourceVars={[]} variablesWithOptions={[]} footerExtraRef={footer} />}
+        {ready && <QueryEditor formatedReg={variable.reg || ''} datasourceVars={[]} variablesWithOptions={variablesWithOptions} footerExtraRef={footer} />}
       </Form>
     </>
   );
 }
+
+test('Doris query-variable editor exposes multi and All controls without a wildcard All value', () => {
+  const variable = projectVariable({
+    datasource: { cate: 'doris', value: 1 },
+    multi: true,
+    allOption: true,
+    allValue: '',
+  });
+
+  render(
+    <ConfigProvider virtual={false}>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={variable} />
+      </DashboardRuntimeProvider>
+    </ConfigProvider>,
+  );
+
+  expect(screen.getByText('var.multi')).toBeInTheDocument();
+  expect(screen.getByText('var.allOption')).toBeInTheDocument();
+  const allValueInput = screen.getByText('var.allValue').closest('.ant-form-item')?.querySelector('input');
+  expect(allValueInput).toHaveAttribute('placeholder', '');
+});
+
+test('Doris variable preview interpolates SQL LIKE conditions before querying', async () => {
+  queryMock.mockResolvedValue(projects);
+  const sql = 'SELECT description FROM logs WHERE ${servers:sql_like_or:description}';
+  const variable = projectVariable({
+    name: 'doris_matches',
+    datasource: { cate: 'doris', value: 1 },
+    definition: sql,
+  });
+
+  render(
+    <ConfigProvider virtual={false}>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={variable} variablesWithOptions={[serversVariable()]} />
+      </DashboardRuntimeProvider>
+    </ConfigProvider>,
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'common:btn.data_preview' }));
+
+  await waitFor(() =>
+    expect(queryMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        datasourceCate: 'doris',
+        query: expect.objectContaining({ query: "SELECT description FROM logs WHERE description LIKE '%web-01%'" }),
+      }),
+    ),
+  );
+});
 
 test.each([
   ['/project-/', projects],
@@ -350,7 +485,9 @@ test.each([
   const variable = projectVariable({ reg });
   const view = render(
     <ConfigProvider virtual={false}>
-      <EditorHarness variable={variable} />
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={variable} />
+      </DashboardRuntimeProvider>
     </ConfigProvider>,
   );
   fireEvent.click(screen.getByRole('button', { name: 'common:btn.data_preview' }));
@@ -391,7 +528,9 @@ test('preview failure can be retried and replaces the error with fresh label/val
   queryMock.mockRejectedValueOnce(new Error('preview unavailable')).mockResolvedValue(projects);
   render(
     <ConfigProvider virtual={false}>
-      <EditorHarness variable={projectVariable()} />
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <EditorHarness variable={projectVariable()} />
+      </DashboardRuntimeProvider>
     </ConfigProvider>,
   );
   fireEvent.click(screen.getByRole('button', { name: 'common:btn.data_preview' }));

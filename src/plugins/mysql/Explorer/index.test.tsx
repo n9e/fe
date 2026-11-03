@@ -14,13 +14,7 @@ type AiActionsOptions = Parameters<typeof useQueryDockActions>[0];
 type LogQLProps = React.ComponentProps<typeof LogQL>;
 type TableProps = React.ComponentProps<typeof Table>;
 
-const mockMode = { isEnt: false };
-jest.mock('@/utils/constant', () => ({
-  DatasourceCateEnum: { mysql: 'mysql' },
-  get IS_ENT() {
-    return mockMode.isEnt;
-  },
-}));
+jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { mysql: 'mysql' }, IS_ENT: false }));
 // The box is a plain textarea here: the page only needs "the user typed".
 jest.mock('@/components/LogQL', () => ({
   __esModule: true,
@@ -96,24 +90,12 @@ beforeEach(() => {
   dockProps = undefined;
 });
 
-describe('open-source and Nightingale commercial builds', () => {
-  it('keeps the query row as it was and never mounts the dock', () => {
-    mockMode.isEnt = false;
-    render(<Host />);
-    expect(screen.getByLabelText('sql')).toBeInTheDocument();
-    expect(screen.queryByTestId('ai-dock')).toBeNull();
-    expect(screen.queryByRole('button', { name: 'dock.open' })).toBeNull();
-  });
-});
-
-describe('Flashcat enterprise build', () => {
-  beforeEach(() => {
-    mockMode.isEnt = true;
-  });
-
+describe('ai dock', () => {
   it('mounts the dock behind its trigger and names the action for SQL', () => {
     render(<Host />);
+    expect(screen.getByLabelText('sql')).toBeInTheDocument();
     expect(screen.getByTestId('ai-dock')).toHaveAttribute('data-open', 'false');
+    expect(mockActions.options.map((options) => options.enabled)).not.toContain(true);
     fireEvent.click(screen.getByRole('button', { name: 'dock.open' }));
     expect(screen.getByTestId('ai-dock')).toHaveAttribute('data-open', 'true');
     const latest = mockActions.options[mockActions.options.length - 1];

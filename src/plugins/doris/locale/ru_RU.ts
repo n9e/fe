@@ -1,4 +1,6 @@
 const ru_RU = {
+  pagination_requires_order_keys:
+    'Для стабильной пагинации ключи сортировки должны начинаться с (выбранное поле времени, __log_stream_id__, __log_seq__). Доступна только первая страница. Сузьте диапазон запроса или выберите соответствующее поле времени.',
   quick_query: 'Быстрый запрос',
   quick_query_tip:
     'Быстрый запрос позволяет быстро сгенерировать запрос на основе фиксированного шаблона SQL. Например, если поле A больше 0, достаточно ввести A > 0. Нажав эту кнопку, вы можете быстро переключиться в режим пользовательского запроса, чтобы просмотреть и изменить SQL-запрос.',
@@ -23,6 +25,11 @@ const ru_RU = {
     1. Запрос количества строк журнала за последние 5 минут SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
     2. Запрос количества строк журнала за выбранный интервал времени SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
     Дополнительную информацию о режиме SQL см. в разделе <a>Режим Doris SQL</a>`,
+    variable_format_tip:
+      'Расширенные форматы: ${variable:csv}, raw, regex, json, text и sqlstring; text выводит метки вариантов. Только для Doris LIKE: ${variable:sql_like_or:column} или ${variable:sql_like_and:column}.',
+    advanced_variable_formats: 'Расширенные форматы переменных',
+    dashboard_variable_tip:
+      "Переменные запроса Doris: переменные с несколькими значениями по умолчанию преобразуются в разделённый запятыми SQL-список в одинарных кавычках. Например, ${host} становится 'host01', 'host02' и может использоваться в IN (${host}).<1/>Используйте ${variable:format}, чтобы указать формат вывода; text возвращает метки вариантов. Форматы LIKE только для Doris: ${host:sql_like_or:description} и ${host:sql_like_and:table.column}.<1/>Все форматы и примеры приведены в <advanced>Расширенных форматах переменных</advanced>.<1/>Можно использовать серверные временные макросы, например $__timeFilter(...), $__timeFrom() и $__timeTo(). Подробнее см. в документации <a>условий запроса</a>.",
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Запрос',
     database: 'База данных',

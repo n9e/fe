@@ -1,8 +1,11 @@
 import React from 'react';
-import { Input, Form, InputNumber, Row, Col, Space } from 'antd';
+import { Form, InputNumber, Row, Col, Space } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import _ from 'lodash';
+
+import TrimInput from '@/components/TrimInput';
+
+import urlNoSpacesRule from '../../utils/urlNoSpacesRule';
 
 interface IProps {
   urlExtra?: React.ReactNode;
@@ -36,8 +39,8 @@ export default function HTTP(props: IProps) {
                 {fields.map((field) => (
                   <Row gutter={10}>
                     <Col flex='auto'>
-                      <FormItem {...field} key={field.key} rules={[{ required: true }]}>
-                        <Input placeholder={placeholder || 'http://localhost:9090'} />
+                      <FormItem {...field} key={field.key} rules={[{ required: true }, urlNoSpacesRule()]}>
+                        <TrimInput placeholder={placeholder || 'http://localhost:9090'} />
                       </FormItem>
                     </Col>
                     {fields.length > 1 ? (
@@ -62,17 +65,8 @@ export default function HTTP(props: IProps) {
       ) : (
         <>
           <div className='page-title'>HTTP</div>
-          <FormItem
-            label='URL'
-            name={['http', 'url']}
-            rules={[
-              { required: true },
-              {
-                validator: (_rule, value) => (!_.includes(value, ' ') ? Promise.resolve() : Promise.reject(new Error(t('form.url_no_spaces_msg')))),
-              },
-            ]}
-          >
-            <Input placeholder={placeholder || 'http://localhost:9090'} />
+          <FormItem label='URL' name={['http', 'url']} rules={[{ required: true }, urlNoSpacesRule()]}>
+            <TrimInput placeholder={placeholder || 'http://localhost:9090'} />
           </FormItem>
         </>
       )}

@@ -340,15 +340,15 @@ export default function EvalRecordsDrawer(props: Props) {
       },
     },
     {
-      title: t('eval_records.anomalies'),
+      title: t('eval_records.detail_anomalies'),
       dataIndex: 'anomaly_total',
-      width: 90,
+      width: 160,
       render: (val, record) => {
         if (val === 0 && record.recover_total === 0) return <span className='text-soft'>0</span>;
         return (
           <Space size={4}>
             {val > 0 && <Tag color='red'>{val}</Tag>}
-            {record.recover_total > 0 && <Tag color='green'>↓{record.recover_total}</Tag>}
+            {record.recover_total > 0 && <Tag color='green'>{record.recover_total}</Tag>}
           </Space>
         );
       },

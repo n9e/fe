@@ -9,7 +9,7 @@ import ExportModal from 'plus:/components/LogDownload/ExportModal';
 // @ts-ignore
 import DrilldownBtn from 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn';
 
-export default function MainMoreOperations() {
+export default function MainMoreOperations({ attachedBuilder = false }: { attachedBuilder?: boolean }) {
   const datasourceValue = Form.useWatch('datasourceValue');
 
   return (
@@ -43,7 +43,7 @@ export default function MainMoreOperations() {
         />
       }
     >
-      <Button className='mb-4' icon={<MoreOutlined />} />
+      <Button className={attachedBuilder ? undefined : 'mb-4'} icon={<MoreOutlined />} />
     </Dropdown>
   );
 }

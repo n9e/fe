@@ -66,6 +66,7 @@ interface Props {
   };
 }
 
+/** Host elasticsearch query controls in the shared collapsible and pinned layout. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { logsDefaultRange } = useContext(CommonStateContext);
@@ -143,9 +144,29 @@ export default function index(props: Props) {
   // Segmented 受控值：query 模式统一映射为 'query'，SQL 模式映射为 'sql'
   const segmentedValue = isSQLMode ? 'sql' : 'query';
 
+  const histogramFilters = (
+    <FiltersBuilder
+      datasourceValue={datasourceValue}
+      indexData={indexData}
+      filters={queryValues?.filters || []}
+      onChange={(filters) => {
+        form.setFieldsValue({
+          query: {
+            filters,
+          },
+        });
+        snapRangeRef.current = {
+          from: undefined,
+          to: undefined,
+        };
+      }}
+      executeQuery={executeQuery}
+    />
+  );
+
   return (
-    <div className='flex flex-col h-full'>
-      <div className='flex-shrink-0 relative'>
+    <div data-log-query-main className='flex flex-col h-full'>
+      <div className='log-explorer-query-row flex-shrink-0 relative'>
         <Row gutter={SIZE} wrap>
           <Col flex='none'>
             <Segmented
@@ -283,25 +304,6 @@ export default function index(props: Props) {
             }}
           />
         )}
-        {!isSQLMode && (
-          <FiltersBuilder
-            datasourceValue={datasourceValue}
-            indexData={indexData}
-            filters={queryValues?.filters || []}
-            onChange={(filters) => {
-              form.setFieldsValue({
-                query: {
-                  filters,
-                },
-              });
-              snapRangeRef.current = {
-                from: undefined,
-                to: undefined,
-              };
-            }}
-            executeQuery={executeQuery}
-          />
-        )}
       </div>
 
       {isSQLMode ? (
@@ -316,6 +318,7 @@ export default function index(props: Props) {
         />
       ) : (
         <RawMain
+          histogramFilters={histogramFilters}
           tableSelector={{
             antd: logsAntdTableSelector,
             rgd: logsRgdTableSelector,

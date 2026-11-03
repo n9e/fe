@@ -9,13 +9,28 @@ import './style.less';
 
 interface Props {
   selectedIdents: string[];
+  inline?: boolean;
+  defaultDatasourceId?: number;
 }
 
 export default function index(props: Props) {
   const { t } = useTranslation('targets');
   const { selectedIdents } = props;
   const [visible, setVisible] = useState(false);
-  const [explorerDrawerData, setExplorerDrawerData] = useState<Record>();
+  const [explorerDrawerData, setExplorerDrawerData] = useState<Record | Record[]>();
+
+  const content = (
+    <div className='n9e-hosts-explorer-metrics-container'>
+      <div className='n9e-hosts-explorer-metrics-list'>
+        <Metrics setExplorerDrawerData={setExplorerDrawerData} selectedIdents={selectedIdents} inline={props.inline} />
+      </div>
+      <div className='n9e-hosts-explorer-metrics-main'>
+        <ExplorerPanels data={explorerDrawerData} defaultDatasourceId={props.defaultDatasourceId} />
+      </div>
+    </div>
+  );
+
+  if (props.inline) return content;
 
   return (
     <>
@@ -37,14 +52,7 @@ export default function index(props: Props) {
         destroyOnClose
         className='n9e-antd-drawer'
       >
-        <div className='n9e-hosts-explorer-metrics-container'>
-          <div className='n9e-hosts-explorer-metrics-list'>
-            <Metrics setExplorerDrawerData={setExplorerDrawerData} selectedIdents={selectedIdents} />
-          </div>
-          <div className='n9e-hosts-explorer-metrics-main'>
-            <ExplorerPanels data={explorerDrawerData} />
-          </div>
-        </div>
+        {content}
       </Drawer>
     </>
   );

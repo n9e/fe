@@ -15,6 +15,8 @@ import localeCompare from '@/pages/dashboard/Renderer/utils/localeCompare';
 
 import Rename from '../Rename';
 import NextStepModal from '../NextStepModal';
+import PrometheusStatusDrawer from '../PrometheusStatusDrawer';
+import { getPrometheusStatusUrl } from '../../utils/prometheusStatusUrl';
 import { deleteDataSourceById, getDataSourceList, updateDataSourceStatus, getServerClusters } from '../../services';
 // @ts-ignore
 import { autoDatasourcetype, AuthList, AutoDatasourcetypeValue } from 'plus:/components/DataSourceAuth/auth';
@@ -65,6 +67,8 @@ const TableSource = (props: IPropsType) => {
   const [clusterList, setClusterList] = useState<string[]>([]);
   // 当前打开引导弹窗的行
   const [guideRecord, setGuideRecord] = useState<any>();
+  const [promStatus, setPromStatus] = useState<{ name: string; statusUrl: string }>();
+  const [promStatusVisible, setPromStatusVisible] = useState(false);
 
   useEffect(() => {
     setSearchVal(debouncedSearchValue);
@@ -250,6 +254,7 @@ const TableSource = (props: IPropsType) => {
         rowActions={(record) => {
           // SRE 高频动作前置：体检引导 / 编辑直达，不再只有删除
           // 体检是只读的，人人可看；编辑 / 删除是 admin 操作(后端 rt.admin())，非 admin 隐藏
+          const statusUrl = getPrometheusStatusUrl(record);
           return {
             inline: _.compact([
               {
@@ -293,6 +298,26 @@ const TableSource = (props: IPropsType) => {
                   }
                 : undefined,
               record.plugin_type === 'cloudwatch' ? { key: 'labelMapping', node: <LabelMappingCloudwatchButton ds_id={record.id} ds_cate='cloudwatch' /> } : undefined,
+              statusUrl
+                ? {
+                    key: 'promStatus',
+                    node: (
+                      <Tooltip title={t('prom_status_tip')} placement='topRight' overlayClassName='ant-tooltip-auto-width'>
+                        <Button
+                          className='p-0'
+                          type='link'
+                          size='small'
+                          onClick={() => {
+                            setPromStatus({ name: record.name, statusUrl });
+                            setPromStatusVisible(true);
+                          }}
+                        >
+                          {t('prom_status_link')}
+                        </Button>
+                      </Tooltip>
+                    ),
+                  }
+                : undefined,
             ]) as any,
           };
         }}
@@ -327,6 +352,14 @@ const TableSource = (props: IPropsType) => {
           dataSourceId={auth.dataSourceId}
         />
       )}
+      <PrometheusStatusDrawer
+        visible={promStatusVisible}
+        name={promStatus?.name}
+        statusUrl={promStatus?.statusUrl}
+        onClose={() => {
+          setPromStatusVisible(false);
+        }}
+      />
       {guideRecord && (
         <NextStepModal
           datasourceId={guideRecord.id}

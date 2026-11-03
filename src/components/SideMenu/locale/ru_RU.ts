@@ -31,7 +31,7 @@ const ru_RU = {
     recording_rules: 'Правила записи',
     logs_explorer: 'Логи',
     monitors: 'Оповещения',
-    alerts_notifications: 'Оповещения и уведомления',
+    alerts_notifications: 'Оповещения',
     rules: 'Управление правилами',
     alert_rules: 'Правила оповещения',
     alert_mutes: 'Режим тишины',

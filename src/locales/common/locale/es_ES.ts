@@ -276,7 +276,6 @@ const es_ES = {
   "msg.sort.success": "Reordenado correctamente",
   "copy_success": "{{num}} registros copiados correctamente",
   "request_fail_msg": "Se agotó el tiempo de espera de la solicitud. Inténtalo de nuevo más tarde",
-  "trim_validator_msg": "Hay espacios al principio o al final; elimínalos manualmente",
   "tags_popover_title": "{{count}}"
 };
 

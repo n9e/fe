@@ -23,11 +23,14 @@ export interface LogExplorerTabItem {
   name?: string;
   isInited?: boolean;
   formValues?: any;
+  selectedViewId?: number;
   /** 新增页签标记：仅运行时存在（不持久化），激活时跳过自动查询 */
   isNewTab?: boolean;
 }
 
 export interface DefaultFormValuesControl {
+  selectedViewId?: number;
+  setSelectedViewId?: (id: number | undefined) => void;
   isInited?: boolean;
   setIsInited: () => void;
   defaultFormValues?: any;

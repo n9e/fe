@@ -59,16 +59,16 @@ export default function LCDBar(props: Props) {
       }
       cellStyles.backgroundColor = backgroundColor;
     }
-    cells.push(<div key={i.toString()} style={cellStyles} className='renderer-table-ng-bar-gauge-lcd-item-cells' />);
+    cells.push(<div key={i.toString()} style={cellStyles} className='n9e-renderer-table-ng-bar-gauge-lcd-item-cells' />);
   }
 
   return (
-    <div className='renderer-table-ng-bar-gauge-lcd'>
-      <div className='renderer-table-ng-bar-gauge-lcd-item'>
-        <div className='renderer-table-ng-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
+    <div className='n9e-renderer-table-ng-bar-gauge-lcd'>
+      <div className='n9e-renderer-table-ng-bar-gauge-lcd-item'>
+        <div className='n9e-renderer-table-ng-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
         {valueMode !== 'hidden' && (
           <div
-            className='renderer-table-ng-bar-gauge-lcd-item-value'
+            className='n9e-renderer-table-ng-bar-gauge-lcd-item-value'
             style={{
               color: valueMode === 'color' ? item.color : 'inherit',
               width: maxFieldTextWidth,

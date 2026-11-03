@@ -13,6 +13,7 @@ import { processFormValues } from '@/pages/alertRules/Form/utils';
 import { alertRuleTestFire } from '@/pages/alertRules/services';
 
 import { getConfiguredSeverities, getDefaultSeverity, getFirstPromql, parseVectorSeries, summarizeNotifyResults, SampleSeries, TestFireStage } from './utils';
+import './style.less';
 
 interface Props {
   /** 保存接口同款业务组 id：initialValues?.group_id || 路由上的 bgid */
@@ -418,6 +419,7 @@ export default function TestFireModal(props: Props) {
                           style={{ width: '100%' }}
                           showSearch
                           optionFilterProp='label'
+                          dropdownClassName='test-fire-sample-series-dropdown'
                           value={selectedSeriesIndex}
                           onChange={(value) => setSelectedSeriesIndex(value)}
                           options={_.map(series, (item, idx) => ({

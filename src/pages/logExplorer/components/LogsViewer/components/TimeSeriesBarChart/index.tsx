@@ -34,6 +34,7 @@ function categoryFormatter(category: string | null | undefined) {
   return category === null || category === '' ? `"${category}"` : category;
 }
 
+/** Render log-volume bars with zoom selection and tooltips above pinned controls. */
 const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data, width, height = 400, onBarClick, onBrushEnd, stacked = false, stepMs, categoryColors }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<Chart | null>(null);
@@ -52,7 +53,8 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
       autoFit: true,
       width: width,
       height: height,
-      paddingTop: 0,
+      margin: 0,
+      paddingTop: 4,
       paddingRight: 0,
     });
 
@@ -178,34 +180,9 @@ const TimeSeriesBarChart: React.FC<TimeSeriesBarChartProps> = ({ darkMode, data,
       shared: stacked,
       crosshairs: true,
       mount: document.body,
-      render: (event: any, { container }: any) => {
-        // 自定义 tooltip 渲染，确保不溢出屏幕
-        const tooltipElement = container;
-        if (tooltipElement) {
-          // 获取 tooltip 的位置和尺寸
-          const tooltipRect = tooltipElement.getBoundingClientRect();
-          const viewportWidth = window.innerWidth;
-          const viewportHeight = window.innerHeight;
-
-          // 调整水平位置
-          if (tooltipRect.right > viewportWidth) {
-            const offsetX = tooltipRect.right - viewportWidth + 10;
-            tooltipElement.style.left = `${parseFloat(tooltipElement.style.left || '0') - offsetX}px`;
-          }
-          if (tooltipRect.left < 0) {
-            tooltipElement.style.left = '10px';
-          }
-
-          // 调整垂直位置
-          if (tooltipRect.bottom > viewportHeight) {
-            const offsetY = tooltipRect.bottom - viewportHeight + 10;
-            tooltipElement.style.top = `${parseFloat(tooltipElement.style.top || '0') - offsetY}px`;
-          }
-          if (tooltipRect.top < 0) {
-            tooltipElement.style.top = '10px';
-          }
-        }
-      },
+      // The body-mounted tooltip must paint above the query row and pinned
+      // controls (z-index 100–102), while staying below modal dialogs.
+      css: { '.g2-tooltip': { 'z-index': 900 } },
     });
 
     chart.options(chartOptions);

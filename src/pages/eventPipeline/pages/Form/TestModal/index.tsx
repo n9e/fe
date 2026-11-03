@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import DetailNG from '@/pages/event/DetailNG';
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 
-import { NS, MOCK_EVENT_DEFAULT_SEVERITY } from '../../../constants';
+import { NS, MOCK_EVENT_DEFAULT_SEVERITY, FLASH_AI_PROCESSOR_TYPES } from '../../../constants';
 import { eventProcessorTryrun, eventPipelineTryrun, TryrunEventSource } from '../../../services';
 import NodeResultsSteps, { NodeResult } from '../../../components/NodeResultsSteps';
 import humanizeProcessorMessage from '../../../utils/humanizeProcessorMessage';
@@ -51,6 +52,14 @@ type TestMode = 'history' | 'mock';
 const DEFAULT_MOCK_EVENT: MockEventState = { severity: MOCK_EVENT_DEFAULT_SEVERITY, isRecovered: false };
 
 export default function TestModal(props: Props) {
+  const canAccessFlashAi = useCanAccessFlashAiChat();
+  const processors = props.type === 'processor' ? [props.config] : props.config?.processors ?? [];
+  if (!canAccessFlashAi && processors.some((processor) => FLASH_AI_PROCESSOR_TYPES.includes(processor?.typ))) return null;
+  // 权限撤回时卸载已打开的试跑窗口，恢复权限后不会自动重开。
+  return <TestModalContent {...props} />;
+}
+
+function TestModalContent(props: Props) {
   const { t } = useTranslation(NS);
   const { type, config, getConfig, size, disabled, onBeforeOpen } = props;
   const [visible, setVisible] = useState<boolean>(false);

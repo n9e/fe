@@ -5,6 +5,7 @@ import { LoadingOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { CornerDownLeft, SendHorizontal, Square } from 'lucide-react';
 
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import IconFont from '@/components/IconFont';
 
 import { cancelMessage, createChat, getMessageDetail, getMessageHistory, sendMessage } from './services';
@@ -35,6 +36,11 @@ const POLLING_INTERVAL = 3000;
 const STREAM_RENDER_INTERVAL = 50;
 
 export default function ChatPanel(props: IAiChatProps) {
+  const canAccess = useCanAccessFlashAiChat();
+  return canAccess ? <ChatPanelContent {...props} /> : null;
+}
+
+function ChatPanelContent(props: IAiChatProps) {
   const { t } = useTranslation(NAME_SPACE);
   const {
     placeholder,
@@ -46,7 +52,6 @@ export default function ChatPanel(props: IAiChatProps) {
     initialMessage,
     continuationMessage,
     initialSkill,
-    onExecuteQueryForQueryContent,
     onChatChange,
     onError,
     welcomeSlot,
@@ -691,14 +696,13 @@ export default function ChatPanel(props: IAiChatProps) {
         key={`${messageItem.chat_id}-${messageItem.seq_id}`}
         message={messageItem}
         isStreaming={streamingLocator?.chat_id === messageItem.chat_id && streamingLocator?.seq_id === messageItem.seq_id}
-        onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
         onActionClick={sendUserMessage}
         onOKForFormSelectContent={sendUserMessage}
         maybeScrollToBottom={maybeScrollToBottom}
         pageActionOutcomes={pageActionOutcomes}
       />
     ));
-  }, [onExecuteQueryForQueryContent, maybeScrollToBottom, messages, pageActionOutcomes, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
+  }, [maybeScrollToBottom, messages, pageActionOutcomes, sendUserMessage, streamingLocator?.chat_id, streamingLocator?.seq_id]);
 
   const welcomeContent = typeof welcomeSlot === 'function' ? welcomeSlot((prompt) => sendUserMessage(undefined, prompt)) : welcomeSlot;
 

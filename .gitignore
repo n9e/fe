@@ -19,7 +19,8 @@ public/bound
 .worktrees/
 coverage/
 .playwright-mcp/
-docs/
+# Generated documentation stays ignored; keep the shared regression guide.
+docs/*
 midscene_run/
 test-results/
 fe+plus.code-workspace

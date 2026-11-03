@@ -14,6 +14,7 @@ import { Record } from './index';
 import '@/pages/explorer/index.less';
 
 interface Props {
+  defaultDatasourceId?: number;
   panel: Record;
   panels: Record[];
   setPanels: (panels: Record[]) => void;
@@ -38,7 +39,7 @@ export default function Panel(props: Props) {
           form={form}
           initialValues={{
             datasourceCate: 'prometheus',
-            datasourceValue: getDefaultDatasourceValue('prometheus', groupedDatasourceList),
+            datasourceValue: props.defaultDatasourceId ?? getDefaultDatasourceValue('prometheus', groupedDatasourceList),
           }}
         >
           <div className='explorer-content'>

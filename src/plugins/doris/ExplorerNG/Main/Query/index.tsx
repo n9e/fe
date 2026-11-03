@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
+import { Form, Button, Space, Tooltip, Pagination, Empty, Popover, Alert } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
 import { useRequest, useGetState } from 'ahooks';
 
-import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import { DatasourceCateEnum, IS_ENT, IS_PLUS } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import { NAME_SPACE as logExplorerNS, DEFAULT_FLATTEN_DEPTH } from '@/pages/logExplorer/constants';
 import LogsViewer from '@/pages/logExplorer/components/LogsViewer';
@@ -15,19 +15,25 @@ import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStruct
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
-import { getDorisLogsQuery, getDorisHistogram } from '../../../services';
+import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram, getDorisContextLogs } from '../../../services';
+import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
+import { getLogOrderAnchor } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
+import buildDorisLogsQueryRequest from '../../utils/logsQueryRequest';
 import filteredFields from '../../utils/filteredFields';
 import getValidIndexName from '../../utils/getValidIndexName';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
 import { PinIcon, UnPinIcon } from '../../SideBarNav/FieldsSidebar/PinIcon';
 import { HandleValueFilterParams } from '../../types';
 import QueryBuilderFilters from './QueryBuilderFilters';
+import useQuerySyntaxError from './useQuerySyntaxError';
+import { bindDorisLogAnalysisRows, captureDorisLogAnalysisRequest, useDorisLogAnalysisViewerProps } from 'plus:/parcels/DorisLogAnalysis';
 
 // @ts-ignore
-import DownloadModal from 'plus:/components/LogDownload/DownloadModal';
+import DownloadModal from '@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal';
 
 interface Props {
   tableSelector: {
@@ -59,11 +65,15 @@ interface Props {
   defaultSearchField?: string;
 }
 
+/** Connect doris log queries to shared results, stacking and pagination controls. */
 export default function index(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
 
   const form = Form.useFormInstance();
   const refreshFlag = Form.useWatch('refreshFlag');
+  const queryRequestOptions = useQuerySyntaxError(refreshFlag);
+  // Keep the request-capture boundary used by enterprise row/toolbar AI integration.
+  const getDorisLogsQuery = (data: Parameters<typeof queryDorisLogs>[0]) => queryDorisLogs(data, queryRequestOptions);
   const datasourceValue = Form.useWatch('datasourceValue');
   const queryValues = Form.useWatch('query');
   const queryStrRef = useRef<string>('');
@@ -137,6 +147,7 @@ export default function index(props: Props) {
 
   type HighlightMap = Record<string, string[]>;
 
+  const [paginationSupported, setPaginationSupported] = useState<boolean>();
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     // 优先 form(视图恢复时 form 即时最新),其次 options,最后默认值
@@ -154,30 +165,30 @@ export default function index(props: Props) {
         timeParams = snapRangeRef.current as { from: number; to: number };
       }
       rangeRef.current = timeParams;
+      // 滚动加载下一页时带上最后一行的排序值：表支持原文顺序时后端按它翻页，跨页不乱序也不用从头扫
+      const lastRaw = data?.list?.[data.list.length - 1]?.___raw___;
+      const lastAnchor = appendRef.current && lastRaw && typeof lastRaw === 'object' ? getLogOrderAnchor(lastRaw, queryValues.time_field) : undefined;
       const queryStart = Date.now();
-      const reqData = {
+      const reqData = buildDorisLogsQueryRequest({
         cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        query: [
-          {
-            database: queryValues.database,
-            table: queryValues.table,
-            time_field: queryValues.time_field,
-            query: queryValues.query,
-            query_builder_filter: queryValues.query_builder_filter,
-            from: timeParams.from,
-            to: timeParams.to,
-            lines: serviceParams.pageSize,
-            offset: (serviceParams.current - 1) * serviceParams.pageSize,
-            reverse: serviceParams.reverse,
-            default_field: defaultSearchField,
-            highlight: true,
-          },
-        ],
-      };
+        datasourceId: datasourceValue,
+        database: queryValues.database,
+        table: queryValues.table,
+        timeField: queryValues.time_field,
+        query: queryValues.query,
+        queryBuilderFilter: queryValues.query_builder_filter,
+        range: timeParams,
+        lines: serviceParams.pageSize,
+        offset: (serviceParams.current - 1) * serviceParams.pageSize,
+        reverse: serviceParams.reverse,
+        defaultField: defaultSearchField,
+        searchAfter: lastAnchor,
+      });
       queryStrRef.current = JSON.stringify(reqData);
+      const logAnalysisSnapshot = IS_ENT ? captureDorisLogAnalysisRequest(reqData) : undefined;
       return getDorisLogsQuery(reqData)
         .then((res) => {
+          setPaginationSupported(res.pagination_supported);
           if (fixedRangeRef.current === false) {
             loadTimeRef.current = Date.now() - queryStart;
           }
@@ -199,6 +210,7 @@ export default function index(props: Props) {
               ___id___: _.uniqueId('log_id_'),
             };
           });
+          if (IS_ENT) bindDorisLogAnalysisRows(newLogs, logAnalysisSnapshot);
           if (!queryRequest?.signal.aborted) queryRequest?.complete({ empty: newLogs.length === 0, count: res.total ?? newLogs.length });
           if (appendRef.current) {
             appendRef.current = false;
@@ -267,27 +279,39 @@ export default function index(props: Props) {
     refreshDeps: [JSON.stringify(serviceParams)],
   });
 
+  const logAnalysisViewerProps = useDorisLogAnalysisViewerProps({
+    enabled: IS_ENT,
+    logs: data?.list || [],
+    loading,
+    total: data?.total,
+    lineOffset: pageLoadMode === 'infiniteScroll' ? 0 : serviceParams.pageSize * (serviceParams.current - 1),
+    loadMode: pageLoadMode,
+  });
+
   const histogramService = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues && queryValues.database && queryValues.table && queryValues.time_field && queryValues.range) {
       const range = parseRange(queryValues.range);
-      return getDorisHistogram({
-        cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        query: [
-          {
-            database: queryValues.database,
-            table: queryValues.table,
-            time_field: queryValues.time_field,
-            from: moment(range.start).valueOf(),
-            to: moment(range.end).valueOf(),
-            query: queryValues.query,
-            query_builder_filter: queryValues.query_builder_filter,
-            group_by: stackByField,
-            default_field: defaultSearchField,
-          },
-        ],
-      })
+      return getDorisHistogram(
+        {
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          query: [
+            {
+              database: queryValues.database,
+              table: queryValues.table,
+              time_field: queryValues.time_field,
+              from: moment(range.start).valueOf(),
+              to: moment(range.end).valueOf(),
+              query: queryValues.query,
+              query_builder_filter: queryValues.query_builder_filter,
+              group_by: stackByField,
+              default_field: defaultSearchField,
+            },
+          ],
+        },
+        queryRequestOptions,
+      )
         .then((res) => {
           return {
             data: _.map(res, (item) => {
@@ -359,11 +383,15 @@ export default function index(props: Props) {
 
   return (
     <>
-      <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
+      {paginationSupported === false && <Alert type='warning' showIcon message={t('pagination_requires_order_keys')} />}
+      {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && (
+        <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
+      )}
       {refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
+              histogramFilters={<QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />}
               logClusting={{
                 enabled: true,
                 queryStrRef,
@@ -398,8 +426,9 @@ export default function index(props: Props) {
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}
               filterFields={(fieldKeys) => {
-                return filteredFields(fieldKeys, organizeFields);
+                return filteredFields(omitLogOrderKeys(fieldKeys), organizeFields);
               }}
+              supportsStacking
               histogramAddonBeforeRender={
                 stackByField ? (
                   <Popover
@@ -437,7 +466,7 @@ export default function index(props: Props) {
               renderHistogramAddonAfterRender={(toggleNode) => {
                 if (data) {
                   return (
-                    <Space>
+                    <Space className='n9e-log-histogram-meta-content' size={6} wrap>
                       {rangeRef.current && (
                         <>
                           {moment(rangeRef.current.from).format('YYYY-MM-DD HH:mm:ss.SSS')} ~ {moment(rangeRef.current.to).format('YYYY-MM-DD HH:mm:ss.SSS')}
@@ -481,6 +510,7 @@ export default function index(props: Props) {
                   )}
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
+                      disabled={paginationSupported === false}
                       showQuickJumper
                       size='small'
                       total={data?.total}
@@ -553,7 +583,7 @@ export default function index(props: Props) {
                 }
               }}
               onScrollCapture={() => {
-                if (loading || pageLoadMode !== 'infiniteScroll') return;
+                if (loading || paginationSupported === false || pageLoadMode !== 'infiniteScroll') return;
                 const isAtBottom = getIsAtBottom(tableSelector.antd, tableSelector.rgd);
                 if (isAtBottom) {
                   // 滚动到底后加载下一页
@@ -580,6 +610,27 @@ export default function index(props: Props) {
                 return { isIndex: !!indexName, indexName };
               }}
               range={queryValues?.range}
+              {...logAnalysisViewerProps}
+              logViewerFilterFields={withoutLogOrderFields}
+              logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
+              logViewerExtraRender={(log) => (
+                // 企业版的 AI 分析按钮自带 Space（inline-flex），并排的按钮要放进同一个 Space 才能垂直对齐
+                <Space>
+                  {(logAnalysisViewerProps as { logViewerExtraRender?: (log: Record<string, any>) => React.ReactNode }).logViewerExtraRender?.(log)}
+                  <LogOrderContext
+                    log={log?.___raw___}
+                    timeField={queryValues?.time_field}
+                    organizeFields={organizeFields}
+                    fetchPage={(req) =>
+                      getDorisContextLogs({
+                        cate: DatasourceCateEnum.doris,
+                        datasource_id: datasourceValue,
+                        query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
+                      })
+                    }
+                  />
+                </Space>
+              )}
             />
           ) : loading || histogramLoading ? (
             <div className='flex justify-center'>

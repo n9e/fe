@@ -1,7 +1,10 @@
 import React from 'react';
-import { Input, Form, InputNumber, Row, Col, Space, Button } from 'antd';
+import { Form, InputNumber, Row, Col, Space, Button } from 'antd';
 import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+
+import TrimInput from '@/components/TrimInput';
+import urlNoSpacesRule from '@/pages/datasource/utils/urlNoSpacesRule';
 
 export default function HTTPList() {
   const { t } = useTranslation('datasourceManage');
@@ -23,17 +26,8 @@ export default function HTTPList() {
                 <Form.Item key={field.key}>
                   <Row align='middle' gutter={8}>
                     <Col flex={1}>
-                      <Form.Item
-                        name={[field.name]}
-                        rules={[
-                          { required: true, message: t('form.url_required_msg') },
-                          {
-                            validator: (_, value) => (!value.includes(' ') ? Promise.resolve() : Promise.reject(new Error(t('form.url_no_spaces_msg')))),
-                          },
-                        ]}
-                        noStyle
-                      >
-                        <Input placeholder='http://localhost:9200' />
+                      <Form.Item name={[field.name]} rules={[{ required: true, message: t('form.url_required_msg') }, urlNoSpacesRule()]} noStyle>
+                        <TrimInput placeholder='http://localhost:9200' />
                       </Form.Item>
                     </Col>
                     {fields.length > 1 ? (
