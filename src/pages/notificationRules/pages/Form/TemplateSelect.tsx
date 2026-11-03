@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Form, Select, Space, Tooltip } from 'antd';
 import { QuestionCircleOutlined, SettingOutlined, SyncOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
+import { useRequest } from 'ahooks';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 import { getItems as getNotificationTemplates } from '@/pages/notificationTemplates/services';
+import type { Item } from '@/pages/notificationTemplates/services';
 import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { PERM } from '@/pages/notificationTemplates/constants';
 
@@ -21,46 +23,47 @@ export default function TemplateSelect(props: Props) {
   const { t } = useTranslation(NS);
   const { prefixNamePath = [], field } = props;
   const restField = _.omit(field, ['key', 'name']);
-  const [options, setOptions] = useState<{ label: string; value: number }[]>([]);
-  const [loading, setLoading] = useState(false);
   const form = Form.useFormInstance();
-  const channel_id = Form.useWatch([...prefixNamePath, field.name, 'channel_id']);
+  const watchedChannelId = Form.useWatch([...prefixNamePath, field.name, 'channel_id']);
+  const channelId = typeof watchedChannelId === 'number' ? watchedChannelId : undefined;
   const template_id = Form.useWatch([...prefixNamePath, field.name, 'template_id']);
   const isAuthorized = useIsAuthorized([PERM]);
-  const fetchData = (channel_id) => {
-    if (channel_id) {
-      setLoading(true);
-      getNotificationTemplates(channel_id)
-        .then((res) => {
-          setOptions(
-            _.map(res, (item) => {
-              return {
-                label: item.name,
-                value: item.id,
-              };
-            }),
-          );
-          // 如果 template_id 不存在，且返回的模板列表不为空，则设置第一个模板为默认值
-          if (res.length > 0 && template_id === undefined) {
-            const formValues = _.cloneDeep(form.getFieldsValue());
-            _.set(formValues, [...prefixNamePath, field.name, 'template_id'], res[0].id);
-            form.setFieldsValue(formValues);
-          }
-        })
-        .catch(() => {
-          setOptions([]);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else {
-      setOptions([]);
-    }
-  };
+  const cacheKey = channelId != null ? `notify-rule-message-templates-${channelId}` : undefined;
+  const { data, loading, error, refresh } = useRequest<{ channelId?: number; items: Item[] }, []>(
+    () => {
+      if (channelId == null) return Promise.resolve({ items: [] });
+      return getNotificationTemplates(String(channelId)).then((items) => ({ channelId, items }));
+    },
+    {
+      ready: channelId != null,
+      refreshDeps: [channelId],
+      cacheKey,
+      // 同一媒介配置行共享请求；staleTime 为 0，保留手动刷新和重新打开时的最新数据语义。
+      staleTime: 0,
+      onError: () => {},
+    },
+  );
+  const currentTemplates = useMemo(() => (data && data.channelId === channelId ? data.items : []), [data, channelId]);
+  const options = useMemo(
+    () =>
+      _.map(error ? [] : currentTemplates, (item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        };
+      }),
+    [currentTemplates, error],
+  );
 
   useEffect(() => {
-    fetchData(channel_id);
-  }, [channel_id]);
+    // 仅使用当前媒介的模板列表设置默认值，避免写入其他媒介的模板 ID。
+    const firstOption = options[0];
+    if (!loading && !error && firstOption && template_id === undefined) {
+      const formValues = _.cloneDeep(form.getFieldsValue());
+      _.set(formValues, [...prefixNamePath, field.name, 'template_id'], firstOption.value);
+      form.setFieldsValue(formValues);
+    }
+  }, [error, field.name, form, loading, options, template_id]);
 
   return (
     <Form.Item
@@ -79,7 +82,7 @@ export default function TemplateSelect(props: Props) {
           <SyncOutlined
             spin={loading}
             onClick={(e) => {
-              fetchData(channel_id);
+              refresh();
               e.preventDefault();
             }}
           />

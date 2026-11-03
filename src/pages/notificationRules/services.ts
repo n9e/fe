@@ -47,11 +47,25 @@ export function deleteItems(ids: number[]) {
   });
 }
 
-export function getFlashdutyChannelList(id: number) {
+export interface FlashDutyChannel {
+  channel_id: number;
+  channel_name: string;
+  status: string;
+}
+
+export interface CustomParamValue {
+  name: string;
+  cname: string;
+  value: string;
+}
+
+export type CustomParamsValues = CustomParamValue[][];
+
+export function getFlashdutyChannelList(id: number): Promise<FlashDutyChannel[]> {
   return request(`/api/n9e/flashduty-channel-list/${id}`, {
     method: RequestMethod.Get,
   }).then((res) => {
-    return res.dat;
+    return res.dat ?? [];
   });
 }
 
@@ -84,13 +98,17 @@ export function notifyRuleTest(data: { event_ids?: number[]; use_mock_event?: bo
   });
 }
 
-export function getCustomParamsValues(notify_channel_id: number) {
+export function getCustomParamsValues(notify_channel_id: number): Promise<CustomParamsValues> {
   return request('/api/n9e/notify-rule/custom-params', {
     method: RequestMethod.Get,
     params: { notify_channel_id },
   }).then((res) => {
     return res.dat ?? [];
   });
+}
+
+export function getCustomParamsCacheKey(notify_channel_id: number) {
+  return `notify-rule-custom-params-${notify_channel_id}`;
 }
 
 export function getNotifyStatistics(id: number, days: number): Promise<NotifyStatistics> {

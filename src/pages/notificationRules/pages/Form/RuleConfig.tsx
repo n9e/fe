@@ -141,7 +141,7 @@ export default function NotifyConfig(props: Props) {
           </Col>
           {channelItem?.request_type !== 'flashduty' && channelItem?.request_type !== 'pagerduty' && channelItem?.ident !== 'callback' && (
             <Col span={12}>
-              <TemplateSelect prefixNamePath={['notify_configs']} field={field} />
+              <TemplateSelect key={`${field.key}-${ruleConfig?.channel_id ?? ''}`} prefixNamePath={['notify_configs']} field={field} />
             </Col>
           )}
         </Row>
