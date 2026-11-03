@@ -3,6 +3,9 @@ import moment from 'moment';
 export const NS = 'notification-rules';
 export const CN = 'n9e-notification-rules';
 export const PERM = `/${NS}`;
+// 短暂缓存选项请求结果，减少配置行分批挂载造成的重复请求。
+export const OPTIONS_CACHE_STALE_TIME = 5_000;
+export const CUSTOM_PARAMS_CACHE_TIME = 60 * 1000;
 export const FILTER_SESSION_STORAGE_KEY = 'notification-rules-filter';
 export const DEFAULT_VALUES = {
   enable: true,
