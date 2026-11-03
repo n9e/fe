@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { Form, Input, Card, Space, Row, Col, Select, Switch, Button, Alert } from 'antd';
 import { PlusOutlined, HolderOutlined } from '@ant-design/icons';
 import { ListFilter, Workflow as WorkflowIcon, FileText } from 'lucide-react';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import { useTranslation, Trans } from 'react-i18next';
+import { useMemoizedFn } from 'ahooks';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
@@ -21,6 +22,7 @@ import Attributes from './Attributes';
 import Processor from './Processor';
 import TestModal from './TestModal';
 import ScenarioTips from '../../components/ScenarioTips';
+import { DrawerFooterContext } from '@/components/DrawerFooterContext';
 
 interface Props {
   disabled?: boolean;
@@ -54,12 +56,16 @@ const hasKey = (items?: { key?: string }[]) => _.filter(items, (i) => !!i?.key).
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { disabled, initialValues, showScenarioTips, onOk, onCancel, onDirtyChange } = props;
+  const { setFooter: setDrawerFooter, refreshFooter } = useContext(DrawerFooterContext);
+  const isDrawer = !!onCancel;
   const canAccessFlashAi = useCanAccessFlashAiChat();
   const accessRef = useRef({ disabled, canAccessFlashAi });
   accessRef.current = { disabled, canAccessFlashAi };
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const formValues = Form.useWatch([], form);
+  const formValuesRef = useRef(formValues);
+  formValuesRef.current = formValues;
   const filterEnable = Form.useWatch(['filter_enable'], form);
   const labelFilters = Form.useWatch(['label_filters'], form);
   const attrFilters = Form.useWatch(['attribute_filters'], form);
@@ -78,6 +84,48 @@ export default function index(props: Props) {
   // 不能用 form.isFieldsTouched()：自动命名会在用户没输入的情况下写 name，
   // 那会被算成「碰过」，于是永远返回 true，未保存提示就成了每次关闭都弹。
   const initialSnapshotRef = useRef<Record<string, any>>();
+
+  const getCurrentFormValues = useMemoizedFn(() => formValuesRef.current);
+  const renderFooter = useMemoizedFn(() =>
+    disabled ? null : (
+      <Space>
+        <Button
+          type='primary'
+          onClick={() => {
+            form
+              .validateFields()
+              .then(async (values) => {
+                onOk && onOk(values);
+              })
+              .catch((err) => {
+                if (!err?.errorFields) console.error(err);
+                expandErrorSections(err?.errorFields);
+                scrollToFirstError();
+              });
+          }}
+        >
+          {t(isDrawer ? 'common:btn.ok' : 'common:btn.save')}
+        </Button>
+        {isDrawer && <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>}
+        <TestModal type='pipeline' config={formValues} getConfig={getCurrentFormValues} onBeforeOpen={() => validateForTest()} />
+        {!isDrawer && (
+          <Link to={`/${NS}`}>
+            <Button>{t('common:btn.back')}</Button>
+          </Link>
+        )}
+      </Space>
+    ),
+  );
+
+  useEffect(() => {
+    if (!isDrawer) return;
+    setDrawerFooter(() => renderFooter);
+    return () => setDrawerFooter(null);
+  }, [isDrawer, renderFooter, setDrawerFooter]);
+
+  useEffect(() => {
+    if (isDrawer) refreshFooter();
+  }, [disabled, isDrawer, refreshFooter]);
 
   useEffect(() => {
     form.setFieldsValue(initialValues ?? DEFAULT_VALUES);
@@ -335,37 +383,10 @@ export default function index(props: Props) {
         </SectionCard>
       </div>
 
-      {!disabled && (
+      {!disabled && !isDrawer && (
         <AffixWrapper>
           <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
-            <Space>
-              <Button
-                type='primary'
-                onClick={() => {
-                  form
-                    .validateFields()
-                    .then(async (values) => {
-                      onOk && onOk(values);
-                    })
-                    .catch((err) => {
-                      // 校验失败的 err 带 errorFields；onOk 里同步抛出的异常没有，不能跟着一起静默掉
-                      if (!err?.errorFields) console.error(err);
-                      expandErrorSections(err?.errorFields);
-                      scrollToFirstError();
-                    });
-                }}
-              >
-                {t('common:btn.save')}
-              </Button>
-              <TestModal type='pipeline' config={formValues} onBeforeOpen={() => validateForTest()} />
-              {onCancel ? (
-                <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
-              ) : (
-                <Link to={`/${NS}`}>
-                  <Button>{t('common:btn.back')}</Button>
-                </Link>
-              )}
-            </Space>
+            {renderFooter()}
           </Card>
         </AffixWrapper>
       )}

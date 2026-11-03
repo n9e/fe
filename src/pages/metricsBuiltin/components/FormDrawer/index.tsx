@@ -67,8 +67,9 @@ export default function index(props: Props) {
   }, [typ]);
 
   useEffect(() => {
-    form.setFieldsValue(initialValues);
-  }, [open]);
+    form.resetFields();
+    if (open) form.setFieldsValue(initialValues);
+  }, [initialValues, open]);
 
   return (
     <Drawer
@@ -95,7 +96,7 @@ export default function index(props: Props) {
               form.submit();
             }}
           >
-            {t('common:btn.submit')}
+            {t('common:btn.ok')}
           </Button>
           <Button
             onClick={() => {

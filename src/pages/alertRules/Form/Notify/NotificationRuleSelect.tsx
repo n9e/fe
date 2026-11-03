@@ -10,6 +10,7 @@ import { useIsAuthorized } from '@/components/AuthorizationWrapper';
 import { NS as notificationRulesNS, CN as notificationRulesCN, PERM } from '@/pages/notificationRules/constants';
 import NotificationRuleForm from '@/pages/notificationRules/pages/Form';
 import { normalizeInitialValues } from '@/pages/notificationRules/utils/normalizeValues';
+import { DrawerFooterContext, useDrawerFooter } from '@/components/DrawerFooterContext';
 
 interface Props {
   label?: React.ReactNode;
@@ -23,6 +24,7 @@ export default function NotificationRuleSelect(props: Props) {
   const isAuthorized = useIsAuthorized([PERM]);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [drawerData, setDrawerData] = useState<RuleItem>();
+  const { footer, context: drawerFooterContext } = useDrawerFooter();
   const fetchData = () => {
     getNotificationRules()
       .then((res) => {
@@ -111,28 +113,31 @@ export default function NotificationRuleSelect(props: Props) {
           setDrawerData(undefined);
         }}
         visible={drawerVisible}
+        footer={footer}
         className='n9e-antd-drawer'
       >
-        <div className={`n9e ${notificationRulesCN}`}>
-          {drawerData ? (
-            <NotificationRuleForm
-              initialValues={drawerData}
-              onOk={(values) => {
-                putNotificationRule(values).then(() => {
-                  message.success(t('common:success.add'));
+        <DrawerFooterContext.Provider value={drawerFooterContext}>
+          <div className={`n9e ${notificationRulesCN}`}>
+            {drawerData ? (
+              <NotificationRuleForm
+                initialValues={drawerData}
+                onOk={(values) => {
+                  putNotificationRule(values).then(() => {
+                    message.success(t('common:success.add'));
+                    setDrawerVisible(false);
+                  });
+                }}
+                onCancel={() => {
                   setDrawerVisible(false);
-                });
-              }}
-              onCancel={() => {
-                setDrawerVisible(false);
-              }}
-            />
-          ) : (
-            <div>
-              <Spin spinning />
-            </div>
-          )}
-        </div>
+                }}
+              />
+            ) : (
+              <div>
+                <Spin spinning />
+              </div>
+            )}
+          </div>
+        </DrawerFooterContext.Provider>
       </Drawer>
     </>
   );
