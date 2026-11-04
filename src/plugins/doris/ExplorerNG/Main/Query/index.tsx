@@ -632,11 +632,11 @@ export default function index(props: Props) {
                   {renderOrderContext(log?.___raw___, 'button')}
                 </Space>
               )}
-              rowActionsRender={(row, _index, detail) => (
-                <span className='inline-flex items-center gap-1'>
+              rowPrefixRender={(row) => (
+                <>
                   {renderOrderContext(row?.___raw___, 'icon')}
-                  {detail}
-                </span>
+                  {(logAnalysisViewerProps as { rowPrefixRender?: (row: Record<string, any>) => React.ReactNode }).rowPrefixRender?.(row)}
+                </>
               )}
             />
           ) : loading || histogramLoading ? (

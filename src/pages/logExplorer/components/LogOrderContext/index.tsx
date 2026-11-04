@@ -215,7 +215,7 @@ export default function LogOrderContext(props: Props) {
       {variant === 'icon' ? (
         <Tooltip title={t('log_order_context.title')}>
           <span
-            className='cursor-pointer'
+            className='cursor-pointer inline-flex items-center my-[2px] mr-2'
             onClick={(e) => {
               e.stopPropagation();
               setOpen(true);
