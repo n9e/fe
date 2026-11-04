@@ -320,7 +320,7 @@ function Content(props: ContentProps) {
     },
   );
   const templatesById = useMemo(() => {
-    const items = templateLookup?.channelIds === templateChannelIdsKey ? templateLookup.items : [];
+    const items = templateLookup && templateLookup.channelIds === templateChannelIdsKey ? templateLookup.items : [];
     return _.keyBy(items, 'id');
   }, [templateLookup, templateChannelIdsKey]);
 
