@@ -15,6 +15,7 @@ import { downloadFile } from '@/pages/alertRules/List/utils';
 
 import { getPromData } from './services';
 import { QueryStats } from './components/QueryStatsView';
+import { RESULT_LIMIT } from './constants';
 
 interface IProps {
   url: string;
@@ -37,8 +38,6 @@ interface IProps {
   onQueryRequest?: () => void;
 }
 type ResultType = 'matrix' | 'vector' | 'scalar' | 'string' | 'streams';
-
-const LIMIT = 1000;
 
 function getListItemLabel(resultType, record) {
   const { metric } = record;
@@ -221,23 +220,23 @@ export default function Table(props: IProps) {
           let tooLong = false;
           let maxLength = 0;
           if (result) {
-            if (result.length > LIMIT) {
+            if (result.length > RESULT_LIMIT) {
               tooLong = true;
               maxLength = result.length;
-              result = result.slice(0, LIMIT);
+              result = result.slice(0, RESULT_LIMIT);
             }
             result.forEach((item) => {
-              if (item.values && item.values.length > LIMIT) {
+              if (item.values && item.values.length > RESULT_LIMIT) {
                 tooLong = true;
                 if (item.values.length > maxLength) {
                   maxLength = item.values.length;
                 }
-                item.values = item.values.slice(0, LIMIT);
+                item.values = item.values.slice(0, RESULT_LIMIT);
               }
             });
           }
           if (tooLong) {
-            setErrorContent(`Warning：Fetched ${maxLength} metrics, only displaying first ${LIMIT}`);
+            setErrorContent(`Warning：Fetched ${maxLength} metrics, only displaying first ${RESULT_LIMIT}`);
           } else {
             setErrorContent('');
           }
