@@ -12,6 +12,7 @@ import { TokenActionMenuContent } from './tokenActionMenu';
 import { getHighlightSource, getTokenDisplayValue } from './tokenValue';
 import { getNodeDebugName, getSelectionTextWithinRoot, getTextSelectionPopoverResult, isNodeInside, isTextSelectDebugEnabled } from './textSelect';
 import { toString } from './util';
+import { getTokenLinks } from './tokenLinks';
 import { LogsViewerStateContext } from '../../index';
 import { Field } from '../../../../types';
 import renderFieldValue from '../../../../utils/renderFieldValue';
@@ -92,7 +93,8 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
   const rootRef = useRef<HTMLSpanElement>(null);
   const selectionStartedInsideRef = useRef(false);
 
-  const relatedLinks = fieldConfig?.linkArr?.filter((item) => (parentKey ? item.field === parentKey : item.field === name));
+  const relatedLinks = useMemo(() => getTokenLinks(parentKey || name, value, segmented, rawValue, fieldConfig), [parentKey, name, value, segmented, rawValue, fieldConfig]);
+  const linkFieldConfig = fieldConfig ? { ...fieldConfig, linkArr: relatedLinks || [] } : undefined;
 
   // P0-4: 时间范围已由 Provider 层解析好，这里直接用；indexInfo 依赖用引用相等代替 JSON.stringify（
   // 整行日志序列化是重活，×行数×字段数×token 数，且父层数据变化时行引用本就会变）
@@ -289,7 +291,7 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
                 linkContext={{
                   rawValue: rawValue!,
                   name,
-                  fieldConfig,
+                  fieldConfig: linkFieldConfig,
                   range,
                   parentKey,
                 }}
@@ -348,7 +350,7 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
               linkContext={{
                 rawValue: rawValue!,
                 name,
-                fieldConfig,
+                fieldConfig: linkFieldConfig,
                 range,
                 parentKey,
               }}
