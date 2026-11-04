@@ -187,7 +187,7 @@ export default function List() {
                   <Tags
                     type='outline'
                     maxWidth={180}
-                    data={val}
+                    data={_.uniqBy(val, 'channel_id')}
                     getKey={(item) => item.channel_id}
                     getLabel={(item) => item.channel ?? String(item.channel_id)}
                     getTooltipTitle={(item) => (typeof item === 'string' ? undefined : item.channel ? undefined : t('channel_invalid_tip'))}

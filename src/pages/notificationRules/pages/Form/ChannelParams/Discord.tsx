@@ -48,7 +48,7 @@ export default function Discord(props: Props) {
       <Row gutter={16}>
         <Col span={16}>
           <Form.Item
-            {...field}
+            {..._.omit(field, 'key')}
             label={label('webhook_url')}
             messageVariables={{ label: t('notification_configuration.discord.webhook_url') }}
             name={[field.name, 'params', 'webhook_url']}
@@ -74,12 +74,12 @@ export default function Discord(props: Props) {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item {...field} label={label('bot_name')} name={[field.name, 'params', 'bot_name']}>
+          <Form.Item {..._.omit(field, 'key')} label={label('bot_name')} name={[field.name, 'params', 'bot_name']}>
             <Input placeholder='#prod-alerts' />
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item {...field} label={label('target')} name={[field.name, 'params', 'target']} getValueProps={(v) => ({ value: v || 'channel' })}>
+          <Form.Item {..._.omit(field, 'key')} label={label('target')} name={[field.name, 'params', 'target']} getValueProps={(v) => ({ value: v || 'channel' })}>
             <Select
               options={[
                 { label: t('notification_configuration.discord.target_channel'), value: 'channel' },
@@ -92,7 +92,7 @@ export default function Discord(props: Props) {
         {target === 'forum_post' && (
           <Col span={16}>
             <Form.Item
-              {...field}
+              {..._.omit(field, 'key')}
               label={label('thread_name')}
               messageVariables={{ label: t('notification_configuration.discord.thread_name') }}
               name={[field.name, 'params', 'thread_name']}
@@ -105,7 +105,7 @@ export default function Discord(props: Props) {
         {target === 'thread' && (
           <Col span={16}>
             <Form.Item
-              {...field}
+              {..._.omit(field, 'key')}
               label={label('thread_id')}
               messageVariables={{ label: t('notification_configuration.discord.thread_id') }}
               name={[field.name, 'params', 'thread_id']}

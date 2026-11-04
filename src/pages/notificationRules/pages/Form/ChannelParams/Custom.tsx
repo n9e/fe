@@ -56,7 +56,7 @@ function CustomInner(props: Props & { channelId?: number }) {
       {_.map(customParams, (item) => {
         return (
           <div key={item.key}>
-            <Form.Item {...field} label={item.cname} name={[field.name, 'params', item.key]}>
+            <Form.Item {..._.omit(field, 'key')} label={item.cname} name={[field.name, 'params', item.key]}>
               <AutoComplete
                 options={_.map(paramsData, (paramsDataItem: { __id__: string; data: { name: string; cname: string; value: string }[] }) => {
                   return {

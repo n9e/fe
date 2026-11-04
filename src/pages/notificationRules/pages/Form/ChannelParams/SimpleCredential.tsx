@@ -63,7 +63,7 @@ export default function SimpleCredential(props: Props) {
     <Row gutter={16}>
       <Col span={16}>
         <Form.Item
-          {...field}
+          {..._.omit(field, 'key')}
           label={label(t(k(rule.key)), t(k(`${rule.key}_tip`)))}
           messageVariables={{ label: t(k(rule.key)) }}
           name={[field.name, 'params', rule.key]}
@@ -89,7 +89,7 @@ export default function SimpleCredential(props: Props) {
         </Form.Item>
       </Col>
       <Col span={8}>
-        <Form.Item {...field} label={label(t(shared('bot_name')), t(shared('bot_name_tip')))} name={[field.name, 'params', 'bot_name']}>
+        <Form.Item {..._.omit(field, 'key')} label={label(t(shared('bot_name')), t(shared('bot_name_tip')))} name={[field.name, 'params', 'bot_name']}>
           <Input placeholder={rule.namePlaceholder} />
         </Form.Item>
       </Col>
