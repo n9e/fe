@@ -183,11 +183,12 @@ export default function List() {
               title: t('notification_configuration.channel'),
               dataIndex: 'notify_configs',
               render: (val: { channel_id: number; channel?: string }[]) => {
+                const notifyConfigs = val ?? [];
                 return (
                   <Tags
                     type='outline'
                     maxWidth={180}
-                    data={_.uniqBy(val, 'channel_id')}
+                    data={notifyConfigs.filter((item, index) => notifyConfigs.findIndex((candidate) => candidate.channel_id === item.channel_id) === index)}
                     getKey={(item) => item.channel_id}
                     getLabel={(item) => item.channel ?? String(item.channel_id)}
                     getTooltipTitle={(item) => (typeof item === 'string' ? undefined : item.channel ? undefined : t('channel_invalid_tip'))}
