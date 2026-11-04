@@ -153,14 +153,6 @@ export function getNotifySubAlertRules(id: number) {
   });
 }
 
-export function getEventTags() {
-  return request('/api/n9e/event-tagkeys', {
-    method: RequestMethod.Get,
-  }).then((res) => {
-    return res.dat;
-  });
-}
-
 export function getFeishuGroups(id: number): Promise<
   {
     chat_id: string;
