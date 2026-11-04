@@ -379,6 +379,22 @@ export default function index(props: Props) {
     setExecuteLoading(loading || histogramLoading);
   }, [loading, histogramLoading]);
 
+  const renderOrderContext = (raw: Record<string, any> | undefined, variant: 'button' | 'icon') => (
+    <LogOrderContext
+      variant={variant}
+      log={raw}
+      timeField={queryValues?.time_field}
+      organizeFields={organizeFields}
+      fetchPage={(req) =>
+        getDorisContextLogs({
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
+        })
+      }
+    />
+  );
+
   return (
     <>
       {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && (
@@ -613,19 +629,14 @@ export default function index(props: Props) {
                 // 企业版的 AI 分析按钮自带 Space（inline-flex），并排的按钮要放进同一个 Space 才能垂直对齐
                 <Space>
                   {(logAnalysisViewerProps as { logViewerExtraRender?: (log: Record<string, any>) => React.ReactNode }).logViewerExtraRender?.(log)}
-                  <LogOrderContext
-                    log={log?.___raw___}
-                    timeField={queryValues?.time_field}
-                    organizeFields={organizeFields}
-                    fetchPage={(req) =>
-                      getDorisContextLogs({
-                        cate: DatasourceCateEnum.doris,
-                        datasource_id: datasourceValue,
-                        query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
-                      })
-                    }
-                  />
+                  {renderOrderContext(log?.___raw___, 'button')}
                 </Space>
+              )}
+              rowActionsRender={(row, _index, detail) => (
+                <span className='inline-flex items-center gap-1'>
+                  {renderOrderContext(row?.___raw___, 'icon')}
+                  {detail}
+                </span>
               )}
             />
           ) : loading || histogramLoading ? (
