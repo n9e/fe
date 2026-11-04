@@ -368,18 +368,27 @@ export default function index(props: ITimeRangePickerProps) {
         <Tooltip
           overlayClassName='fc-time-range-tooltip'
           title={
-            <TimeRangeSummary
-              value={value}
-              resolvedRange={resolvedSnapshot as IRawTimeRange}
-              timezone={timezone}
-              showSecond={inputFormat.includes('ss')}
-              showMillisecond={showMillisecond}
-              extra={props.timeRangeTooltip}
-            />
+            <div
+              onClick={(event) => {
+                if (props.timeRangeTooltipInteractive && event.target instanceof Element && event.target.closest('a, button')) {
+                  setTooltipVisible(false);
+                }
+              }}
+            >
+              <TimeRangeSummary
+                value={value}
+                resolvedRange={resolvedSnapshot as IRawTimeRange}
+                timezone={timezone}
+                showSecond={inputFormat.includes('ss')}
+                showMillisecond={showMillisecond}
+                extra={props.timeRangeTooltip}
+              />
+            </div>
           }
           visible={!visible && tooltipVisible && !!value}
           onVisibleChange={setTooltipVisible}
-          overlayStyle={{ pointerEvents: 'none', maxWidth: 'min(420px, 100vw)' }}
+          mouseLeaveDelay={props.timeRangeTooltipInteractive ? 0.3 : 0.1}
+          overlayStyle={{ pointerEvents: props.timeRangeTooltipInteractive ? 'auto' : 'none', maxWidth: 'min(420px, 100vw)' }}
         >
           <Button
             type={props.noBorder ? 'text' : 'default'}
