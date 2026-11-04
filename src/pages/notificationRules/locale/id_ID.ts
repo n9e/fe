@@ -82,8 +82,12 @@ const id_ID = {
     channel_tip: 'Pilih media yang dipakai mengirim notifikasi event alert. Bila media yang ada belum memadai, minta administrator membuat yang baru',
     channel_msg: 'Pilih media notifikasi',
     template: 'Templat pesan',
+    callback_url: 'URL callback',
     template_tip: 'Templat isi notifikasi; templat berbeda bisa dipakai untuk skenario berbeda',
     template_msg: 'Pilih templat pesan',
+    summary_fields: {
+      bot_name: 'Nama bot',
+    },
     severities: 'Tingkat keparahan yang berlaku',
     severities_tip:
       'Pilih tingkat event alert mana yang diberitahukan; hanya tingkat yang dicentang yang dikirim. Bila tidak satu pun dari ketiga tingkat dicentang, media ini tidak akan cocok dengan event apa pun, sama saja dengan menonaktifkannya',

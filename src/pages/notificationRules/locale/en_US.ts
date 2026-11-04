@@ -83,8 +83,12 @@ const en_US = {
       'Select which media type is used to send alert notifications. If the existing media types do not meet your needs, you can contact the administrator to create a new one',
     channel_msg: 'Please select a media type',
     template: 'Message template',
+    callback_url: 'Callback URL',
     template_tip: 'The template of the notification content, different templates can be used according to different scenarios',
     template_msg: 'Please select the message template',
+    summary_fields: {
+      bot_name: 'Bot Name',
+    },
     severities: 'Applicable severities',
     severities_tip:
       'Select which severities are notified; only checked severities are notified. If none of the three severities are checked, this configuration matches no alert events, which is equivalent to disabling it',

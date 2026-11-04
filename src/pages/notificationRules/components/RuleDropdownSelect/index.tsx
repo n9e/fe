@@ -1,17 +1,20 @@
 import React, { useMemo, useState } from 'react';
-import { Form, Dropdown, Button, Input, Space, Drawer, Spin, Tooltip, message } from 'antd';
+import { Form, Dropdown, Button, Input, Space, Drawer, Spin, Tooltip, Popover, message } from 'antd';
 import { PlusOutlined, PlusCircleOutlined, SyncOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Rule } from 'antd/lib/form';
-import { Bell, Check, ExternalLink, Eye, X } from 'lucide-react';
+import { Check, ExternalLink, Eye, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useRequest } from 'ahooks';
 import _ from 'lodash';
 
 import { getNotificationChannelTypes } from '@/pages/notificationChannels/constants';
+import { getSimplifiedItems as getNotificationChannels, SIMPLIFIED_ITEMS_CACHE_KEY, ChannelItem } from '@/pages/notificationChannels/services';
+import { getItems as getNotificationTemplates } from '@/pages/notificationTemplates/services';
 import { DrawerFooterContext, useDrawerFooter } from '@/components/DrawerFooterContext';
 
 import { getItem as getNotificationRule, putItem as putNotificationRule, postItems as createNotificationRules, RuleItem } from '../../services';
-import { NS, CN } from '../../constants';
+import { NS, CN, OPTIONS_CACHE_STALE_TIME } from '../../constants';
 import NotificationRuleForm from '../../pages/Form';
 import { normalizeInitialValues } from '../../utils/normalizeValues';
 import QuickCreateModal from './QuickCreateModal';
@@ -19,7 +22,15 @@ import useNotificationRules from './useNotificationRules';
 
 const channelTypes = getNotificationChannelTypes();
 
-type NotifyConfig = { channel_id: number; channel_ident?: string; params?: Record<string, any>; user_group_names?: string[]; user_names?: string[] };
+type NotifyConfig = {
+  channel_id: number;
+  channel?: string;
+  channel_ident?: string;
+  template_id?: number;
+  params?: Record<string, any>;
+  user_group_names?: string[];
+  user_names?: string[];
+};
 
 export type RuleItemData = {
   id: number;
@@ -28,38 +39,100 @@ export type RuleItemData = {
   notify_configs?: NotifyConfig[];
 };
 
-/** 取通知规则第一条通知媒介配置的副标题 */
-function getRuleSubtitle(rule: RuleItemData) {
-  const firstConfig = rule.notify_configs?.[0];
-  if (!firstConfig) return '';
+function isZeroSummaryValue(value: unknown) {
+  return value === 0 || value === '0';
+}
 
-  const separator = '、';
-  const userGroupsAndUserNames = _.join(_.compact(_.concat(firstConfig.user_group_names, firstConfig.user_names)), separator);
+/** 模板名称优先，取不到时退回模板 ID，保证摘要和详情不会出现空值。 */
+function getTemplateLabel(templateId: number, templatesById: Record<string, { name: string }>) {
+  const templateName = templatesById[templateId]?.name;
+  return templateName && !isZeroSummaryValue(templateName) ? templateName : String(templateId);
+}
 
-  if (userGroupsAndUserNames) return userGroupsAndUserNames;
+/** 取单条通知配置的摘要；模板放在现有摘要字段之前。 */
+function getNotifyConfigSummary(config: NotifyConfig, templatesById: Record<string, { name: string }>) {
+  const parts: string[] = [];
+  if (config.template_id != null && !isZeroSummaryValue(config.template_id)) {
+    parts.push(getTemplateLabel(config.template_id, templatesById));
+  }
 
-  const params = firstConfig.params || {};
-  if (params.bot_name) return params.bot_name;
-  if (params.callback_url) return params.callback_url;
+  const userNamesAndUserGroups = _.compact(_.concat(config.user_names, config.user_group_names)).filter((value) => !isZeroSummaryValue(value));
+  if (userNamesAndUserGroups.length > 0) {
+    parts.push(...userNamesAndUserGroups);
+  } else {
+    const params = config.params || {};
+    if (params.bot_name && !isZeroSummaryValue(params.bot_name)) {
+      parts.push(params.bot_name);
+    } else if (params.callback_url && !isZeroSummaryValue(params.callback_url)) {
+      parts.push(params.callback_url);
+    }
+  }
 
-  return '';
+  return parts.join(' · ');
 }
 
 /** 根据通知媒介 ident 获取图标 */
 function getRuleIcon(ident?: string) {
   if (!ident) return null;
 
-  const typeConfig = (channelTypes as Record<string, { logo?: string }>)[ident];
+  const configuredType = (channelTypes as Record<string, { logo?: string }>)[ident];
+  const typeConfig = configuredType || (isDutyChannel(ident) ? channelTypes.flashduty : undefined);
 
   if (typeConfig?.logo) {
-    return <img src={typeConfig.logo} alt={ident} height={16} className='mr-3 shrink-0' />;
+    return <img src={typeConfig.logo} alt={ident} height={14} className='block h-[14px] w-auto shrink-0' />;
   }
 
   return null;
 }
 
+function isDutyChannel(ident?: string) {
+  const normalizedIdent = ident?.toLowerCase();
+  return Boolean(normalizedIdent && (normalizedIdent === 'flashduty' || /(?:^|[-_])duty$/.test(normalizedIdent)));
+}
+
+type NotifyConfigPopoverField = { key: string; value: string };
+
+/** 取单条通知配置的可读详情，字段范围与第二行摘要保持一致。 */
+function getNotifyConfigPopoverFields(config: NotifyConfig, templatesById: Record<string, { name: string }>, channelNamesById: Record<number, string>, t: (key: string) => string) {
+  const fields: NotifyConfigPopoverField[] = [];
+
+  const channelName = config.channel?.trim() || channelNamesById[config.channel_id];
+  if (channelName) {
+    fields.push({ key: t('notification_configuration.channel'), value: channelName });
+  }
+
+  if (config.template_id != null && !isZeroSummaryValue(config.template_id)) {
+    fields.push({
+      key: t('notification_configuration.template'),
+      value: getTemplateLabel(config.template_id, templatesById),
+    });
+  }
+
+  const userNames = _.compact(config.user_names).filter((value) => !isZeroSummaryValue(value));
+  const userGroupNames = _.compact(config.user_group_names).filter((value) => !isZeroSummaryValue(value));
+  if (userNames.length > 0 || userGroupNames.length > 0) {
+    if (userNames.length > 0) {
+      fields.push({ key: t('notification_configuration.user_info.user_ids'), value: userNames.join(' · ') });
+    }
+    if (userGroupNames.length > 0) {
+      fields.push({ key: t('notification_configuration.user_info.user_group_ids'), value: userGroupNames.join(' · ') });
+    }
+  } else {
+    const params = config.params || {};
+    if (params.bot_name && !isZeroSummaryValue(params.bot_name)) {
+      fields.push({ key: t('notification_configuration.summary_fields.bot_name'), value: params.bot_name });
+    } else if (params.callback_url && !isZeroSummaryValue(params.callback_url)) {
+      fields.push({ key: t('notification_configuration.callback_url'), value: params.callback_url });
+    }
+  }
+
+  return fields;
+}
+
 interface NotificationRuleItemProps {
   rule: RuleItemData;
+  templatesById: Record<string, { name: string }>;
+  channelNamesById: Record<number, string>;
   showCheckbox?: boolean;
   isSelected?: boolean;
   onClick?: () => void;
@@ -69,12 +142,36 @@ interface NotificationRuleItemProps {
   className?: string;
 }
 
-function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showViewButton = 'hover', onView, onRemove, className = '' }: NotificationRuleItemProps) {
+function NotificationRuleItem({
+  rule,
+  templatesById,
+  channelNamesById,
+  showCheckbox,
+  isSelected,
+  onClick,
+  showViewButton = 'hover',
+  onView,
+  onRemove,
+  className = '',
+}: NotificationRuleItemProps) {
   const { t } = useTranslation(NS);
-  const subtitle = getRuleSubtitle(rule);
   const configCount = rule.notify_configs?.length ?? 0;
-  const firstIdent = rule.notify_configs?.[0]?.channel_ident;
-  const icon = getRuleIcon(firstIdent);
+  const summaryConfigs = (rule.notify_configs ?? [])
+    .map((config) => {
+      return {
+        icon: getRuleIcon(config.channel_ident),
+        subtitle: getNotifyConfigSummary(config, templatesById),
+        config,
+      };
+    })
+    .filter(({ icon, subtitle }) => Boolean(icon || subtitle));
+  const popoverConfigs = (rule.notify_configs ?? [])
+    .map((config, index) => ({
+      key: `${config.channel_id}-${index}`,
+      icon: getRuleIcon(config.channel_ident),
+      fields: getNotifyConfigPopoverFields(config, templatesById, channelNamesById, t),
+    }))
+    .filter(({ fields }) => fields.length > 0);
 
   return (
     <div className={`flex items-center px-3 py-2 ${onClick ? 'cursor-pointer' : ''} ${className}`} onClick={onClick}>
@@ -86,20 +183,60 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
         ) : (
           <div className='w-[14px] h-[14px] rounded-full border border-[var(--fc-violet-11)] mr-3 shrink-0' />
         ))}
-      {icon || <Bell size={16} className='mr-3 shrink-0 text-soft' />}
       <div className='flex-1 min-w-0'>
         <div className='flex items-center gap-1'>
           <span className='font-bold leading-[1.4] max-w-[500px] truncate'>{rule.name}</span>
           {rule.enable === false && <span className='px-1 py-0 rounded text-[10px] bg-error/10 text-error shrink-0'>{t('common:disabled')}</span>}
           {configCount > 1 && <span className='px-1 py-0 rounded text-[10px] bg-primary/10 text-primary shrink-0'>{t('rule_select.total', { total: configCount })}</span>}
         </div>
-        {subtitle && <div className='leading-[1.4] text-soft mt-0.5 truncate'>{subtitle}</div>}
+        {summaryConfigs.length > 0 && (
+          <Popover
+            placement='right'
+            mouseEnterDelay={0.5}
+            zIndex={1060}
+            overlayStyle={{ maxWidth: 600 }}
+            content={
+              <div className='max-w-[600px] whitespace-normal break-words space-y-1'>
+                {popoverConfigs.map(({ key, icon, fields }) => (
+                  <div key={key} className='flex items-start gap-2'>
+                    {icon && <span className='mt-[3px] inline-flex shrink-0 items-center'>{icon}</span>}
+                    <div className='min-w-0'>
+                      {fields.map((field, index) => (
+                        <React.Fragment key={field.key}>
+                          {index > 0 && <span className='mx-1'>·</span>}
+                          <span className='text-soft'>{field.key}: </span>
+                          <span>{field.value}</span>
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }
+          >
+            <div className='mt-0.5 inline-flex min-w-0 max-w-full cursor-help items-center overflow-hidden whitespace-nowrap leading-[1.4] text-soft'>
+              {summaryConfigs.map(({ config, icon, subtitle }, index) => {
+                return (
+                  <span key={`${config.channel_id}-${index}`} className='flex min-w-0 items-center gap-1 py-0.5'>
+                    {(index > 0 || icon) && (
+                      <span className='inline-flex shrink-0 items-center'>
+                        {index > 0 && <span className='mx-2 shrink-0 text-[10px] leading-none'>|</span>}
+                        {icon}
+                      </span>
+                    )}
+                    {subtitle && <span className='min-w-0 truncate'>{subtitle}</span>}
+                  </span>
+                );
+              })}
+            </div>
+          </Popover>
+        )}
       </div>
       {showViewButton === 'always' && (
         <Button
           type='text'
           size='small'
-          className='flex items-center gap-1 shrink-0 ml-2'
+          className='flex items-center gap-1 shrink-0 ml-2 text-soft'
           onClick={(e) => {
             e.stopPropagation();
             onView?.(rule.id);
@@ -113,7 +250,7 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
         <Button
           type='text'
           size='small'
-          className='opacity-0 group-hover:opacity-100 flex items-center gap-1'
+          className='opacity-0 group-hover:opacity-100 flex items-center gap-1 text-soft'
           onClick={(e) => {
             e.stopPropagation();
             onView?.(rule.id);
@@ -127,7 +264,7 @@ function NotificationRuleItem({ rule, showCheckbox, isSelected, onClick, showVie
         <Button
           type='text'
           size='small'
-          className='shrink-0 ml-1 text-soft hover:text-title flex items-center'
+          className='shrink-0 ml-1 text-soft flex items-center'
           onClick={(e) => {
             e.stopPropagation();
             onRemove();
@@ -155,6 +292,37 @@ function Content(props: ContentProps) {
   const { t } = useTranslation(NS);
   const { value, onChange, label, required, notificationRules, loading, refresh, isAuthorized } = props;
   const selectedIds = value ?? [];
+
+  const { data: notificationChannels = [] } = useRequest<ChannelItem[], []>(getNotificationChannels, {
+    cacheKey: SIMPLIFIED_ITEMS_CACHE_KEY,
+    staleTime: OPTIONS_CACHE_STALE_TIME,
+  });
+  const channelNamesById = useMemo(() => _.mapValues(_.keyBy(notificationChannels, 'id'), (channel) => channel.name), [notificationChannels]);
+
+  const templateChannelIds = useMemo(() => {
+    const ids = notificationRules
+      .flatMap((rule) => rule.notify_configs ?? [])
+      .filter((config) => config.template_id != null && !isZeroSummaryValue(config.template_id))
+      .map((config) => config.channel_id);
+    return _.uniq(ids).sort((a, b) => a - b);
+  }, [notificationRules]);
+  const templateChannelIdsKey = templateChannelIds.join(',');
+  const { data: templateLookup } = useRequest(
+    () =>
+      getNotificationTemplates(templateChannelIdsKey, { silence: true }).then((items) => ({
+        channelIds: templateChannelIdsKey,
+        items,
+      })),
+    {
+      ready: templateChannelIds.length > 0,
+      refreshDeps: [templateChannelIdsKey],
+      onError: () => {},
+    },
+  );
+  const templatesById = useMemo(() => {
+    const items = templateLookup?.channelIds === templateChannelIdsKey ? templateLookup.items : [];
+    return _.keyBy(items, 'id');
+  }, [templateLookup, templateChannelIdsKey]);
 
   const [searchText, setSearchText] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -264,6 +432,8 @@ function Content(props: ContentProps) {
             <NotificationRuleItem
               key={rule.id}
               rule={rule}
+              templatesById={templatesById}
+              channelNamesById={channelNamesById}
               showCheckbox
               isSelected={isSelected}
               onClick={() => toggleRule(rule.id)}
@@ -338,7 +508,16 @@ function Content(props: ContentProps) {
       {selectedRules.length > 0 && (
         <div className='mb-2 space-y-1'>
           {selectedRules.map((rule) => (
-            <NotificationRuleItem key={rule.id} rule={rule} showViewButton='always' onView={handleViewRule} onRemove={() => toggleRule(rule.id)} className='fc-border rounded' />
+            <NotificationRuleItem
+              key={rule.id}
+              rule={rule}
+              templatesById={templatesById}
+              channelNamesById={channelNamesById}
+              showViewButton='always'
+              onView={handleViewRule}
+              onRemove={() => toggleRule(rule.id)}
+              className='fc-border rounded'
+            />
           ))}
         </div>
       )}
