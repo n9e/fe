@@ -49,7 +49,7 @@ function FlashdutyInner(props: Props) {
 
   return (
     <div>
-      <Form.Item {...field} label={t('notification_configuration.flashduty.ids')} name={[field.name, 'params', 'ids']}>
+      <Form.Item {..._.omit(field, 'key')} label={t('notification_configuration.flashduty.ids')} name={[field.name, 'params', 'ids']}>
         <Select options={channelOptions} showSearch optionFilterProp='label' mode='multiple' />
       </Form.Item>
     </div>

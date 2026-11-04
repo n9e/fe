@@ -163,7 +163,12 @@ export default function NotifyConfig(props: Props) {
           </div>
           <div className='p-3' style={{ display: filtersCollapsed ? 'none' : undefined }}>
             <div className='p-3 pb-0 mb-2 rounded bg-fc-150 flex'>
-              <Form.Item {...field} label={t('notification_configuration.severities')} tooltip={t('notification_configuration.severities_tip')} name={[field.name, 'severities']}>
+              <Form.Item
+                {..._.omit(field, 'key')}
+                label={t('notification_configuration.severities')}
+                tooltip={t('notification_configuration.severities_tip')}
+                name={[field.name, 'severities']}
+              >
                 <Checkbox.Group disabled={disabled}>
                   <Checkbox value={1}>{t('common:severity.1')}</Checkbox>
                   <Checkbox value={2}>{t('common:severity.2')}</Checkbox>

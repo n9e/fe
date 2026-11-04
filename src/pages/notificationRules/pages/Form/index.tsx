@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import _ from 'lodash';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Form, Card, Space, Input, Select, Switch, Button, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import AffixWrapper from '@/components/AffixWrapper';
@@ -10,19 +10,20 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { getTeamInfoList } from '@/services/manage';
 import { getBusiGroupsAlertRules } from '@/services/warning';
+import { getEventTagKeys } from '@/components/KVTagSelect/services';
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
 import { getPageFromSearch } from '@/utils/urlPage';
 import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
-import { ChannelItem, getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
+import { ChannelItem, getSimplifiedItems as getNotificationChannels, SIMPLIFIED_ITEMS_CACHE_KEY } from '@/pages/notificationChannels/services';
+import { EVENT_TAG_KEYS_CACHE_KEY, EVENT_TAG_KEYS_CACHE_STALE_TIME } from '@/components/KVTagSelect/constants';
 
 // @ts-ignore
 import ExtraConfig from 'plus:/parcels/notificationRules/ExtraConfig';
 
-import { NS, DEFAULT_VALUES } from '../../constants';
+import { NS, DEFAULT_VALUES, OPTIONS_CACHE_STALE_TIME } from '../../constants';
 import { RuleItem } from '../../types';
 import { normalizeFormValues } from '../../utils/normalizeValues';
-import { getEventTags } from '../../services';
 import RuleConfig from './RuleConfig';
 import EventPipelineConfigs from './EventPipelineConfigs';
 import { useGlobalState } from './Attributes/globalState';
@@ -56,7 +57,6 @@ export default function FormCpt(props: Props) {
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>();
-  const [eventKeys, setEventKeys] = useState<string[]>([]);
   const [, setAlertRules] = useGlobalState('alertRules');
 
   const sections = useMemo(() => {
@@ -103,7 +103,17 @@ export default function FormCpt(props: Props) {
   const [noteVisible, setNoteVisible] = useState(() => !!initialValues?.description);
 
   // 媒介列表，按第 1 条通知配置的 channel_id 反查媒介名，用于自动生成规则名称
-  const [channels, setChannels] = useState<ChannelItem[]>([]);
+  const { data: channelData } = useRequest<ChannelItem[], []>(getNotificationChannels, {
+    cacheKey: SIMPLIFIED_ITEMS_CACHE_KEY,
+    staleTime: OPTIONS_CACHE_STALE_TIME,
+    onError: (error) => console.error(error),
+  });
+  const channels = useMemo(() => channelData ?? [], [channelData]);
+  const { data: eventTagData } = useRequest<string[], []>(getEventTagKeys, {
+    cacheKey: EVENT_TAG_KEYS_CACHE_KEY,
+    staleTime: EVENT_TAG_KEYS_CACHE_STALE_TIME,
+  });
+  const eventKeys = useMemo(() => eventTagData ?? [], [eventTagData]);
   const lastAutoNameRef = useRef<string>();
   const firstNotifyConfig = Form.useWatch(['notify_configs', 0], form);
 
@@ -157,20 +167,9 @@ export default function FormCpt(props: Props) {
         form.setFieldsValue({ user_group_ids: [teams[0].id] });
       }
     });
-    getEventTags().then((res) => {
-      setEventKeys(res ?? []);
-    });
     getBusiGroupsAlertRules().then((res) => {
       setAlertRules(_.map(res.dat, (item) => ({ id: item.id, name: item.name })));
     });
-    getNotificationChannels()
-      .then((res) => {
-        setChannels(res);
-      })
-      .catch((error) => {
-        console.error(error);
-        setChannels([]);
-      });
   }, []);
 
   // 自动命名：仅当名称为空或仍是上次自动生成值时覆盖，用户手动改过则不再干预

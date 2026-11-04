@@ -128,7 +128,7 @@ export default function Jira(props: Props) {
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
-            {...field}
+            {..._.omit(field, 'key')}
             label={label('project')}
             messageVariables={{ label: t('notification_configuration.jira.project') }}
             name={[field.name, 'params', 'project_key']}
@@ -155,7 +155,7 @@ export default function Jira(props: Props) {
         </Col>
         <Col span={12}>
           <Form.Item
-            {...field}
+            {..._.omit(field, 'key')}
             label={label('issue_type')}
             messageVariables={{ label: t('notification_configuration.jira.issue_type') }}
             name={[field.name, 'params', 'issue_type']}
@@ -199,7 +199,7 @@ export default function Jira(props: Props) {
           }
         />
       )}
-      <Form.Item {...field} label={label('on_resolve')} name={[field.name, 'params', 'on_resolve']} getValueProps={(v) => ({ value: v || 'close' })}>
+      <Form.Item {..._.omit(field, 'key')} label={label('on_resolve')} name={[field.name, 'params', 'on_resolve']} getValueProps={(v) => ({ value: v || 'close' })}>
         <Radio.Group>
           <Radio value='close'>{t('notification_configuration.jira.on_resolve_close')}</Radio>
           <Radio value='comment'>{t('notification_configuration.jira.on_resolve_comment')}</Radio>
@@ -211,12 +211,12 @@ export default function Jira(props: Props) {
         <Collapse.Panel key='advanced' header={t('notification_configuration.jira.advanced')} forceRender>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item {...field} label={label('resolve_transition')} name={[field.name, 'params', 'resolve_transition']}>
+              <Form.Item {..._.omit(field, 'key')} label={label('resolve_transition')} name={[field.name, 'params', 'resolve_transition']}>
                 <Input placeholder={t('notification_configuration.jira.resolve_transition_placeholder')} />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item {...field} label={label('on_repeat')} name={[field.name, 'params', 'on_repeat']} getValueProps={(v) => ({ value: v || 'none' })}>
+              <Form.Item {..._.omit(field, 'key')} label={label('on_repeat')} name={[field.name, 'params', 'on_repeat']} getValueProps={(v) => ({ value: v || 'none' })}>
                 <Radio.Group>
                   <Radio value='none'>{t('notification_configuration.jira.on_repeat_none')}</Radio>
                   <Radio value='comment'>{t('notification_configuration.jira.on_repeat_comment')}</Radio>
@@ -224,18 +224,18 @@ export default function Jira(props: Props) {
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item {...field} label={label('priority_map')} name={[field.name, 'params', 'priority_map']}>
+          <Form.Item {..._.omit(field, 'key')} label={label('priority_map')} name={[field.name, 'params', 'priority_map']}>
             <PriorityMapInput priorities={priorities} />
           </Form.Item>
           <Row gutter={16}>
             <Col span={16}>
-              <Form.Item {...field} label={label('labels')} name={[field.name, 'params', 'labels']}>
+              <Form.Item {..._.omit(field, 'key')} label={label('labels')} name={[field.name, 'params', 'labels']}>
                 <JSONTagsInput placeholder={t('notification_configuration.jira.labels_placeholder')} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                {...field}
+                {..._.omit(field, 'key')}
                 label={label('tags_as_labels')}
                 name={[field.name, 'params', 'tags_as_labels']}
                 valuePropName='checked'
@@ -246,7 +246,7 @@ export default function Jira(props: Props) {
               </Form.Item>
             </Col>
           </Row>
-          <Form.Item {...field} label={label('fields')} name={[field.name, 'params', 'fields']}>
+          <Form.Item {..._.omit(field, 'key')} label={label('fields')} name={[field.name, 'params', 'fields']}>
             <JSONFieldsInput />
           </Form.Item>
         </Collapse.Panel>
