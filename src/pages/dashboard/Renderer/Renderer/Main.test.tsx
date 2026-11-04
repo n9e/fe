@@ -282,7 +282,9 @@ test('shows the panel skeleton and loading bar only before the first result is a
   expect(screen.getAllByLabelText('common:loading')).toHaveLength(2);
   expect(screen.getByTestId('panel-loading-chart-icon')).toBeInTheDocument();
   expect(screen.getByTestId('panel-loading-bar')).toBeInTheDocument();
-  expect(screen.getByTestId('panel-loading-bar')).toHaveStyle({ animationDuration: '960ms' });
+  const loadingBarGradient = screen.getByTestId('panel-loading-bar').querySelector('.renderer-loading-bar-gradient');
+  expect(loadingBarGradient).toBeInTheDocument();
+  expect(loadingBarGradient).toHaveStyle({ animationDuration: '1200ms' });
   expect(document.querySelector('.renderer-header-controllers .anticon-sync')).not.toBeInTheDocument();
 
   rerender(
