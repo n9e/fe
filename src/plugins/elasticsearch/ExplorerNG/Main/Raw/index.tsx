@@ -500,16 +500,7 @@ export default function index(props: Props) {
               logViewerFilterFields={withoutLogOrderFields}
               logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
               logViewerExtraRender={IS_PLUS ? (log) => renderOrderContext(log?.__n9e_raw_n9e__, 'button') : undefined}
-              rowActionsRender={
-                IS_PLUS
-                  ? (row, _index, detail) => (
-                      <span className='inline-flex items-center gap-1'>
-                        {renderOrderContext(row?.__n9e_raw_n9e__, 'icon')}
-                        {detail}
-                      </span>
-                    )
-                  : undefined
-              }
+              rowPrefixRender={IS_PLUS ? (row) => renderOrderContext(row?.__n9e_raw_n9e__, 'icon') : undefined}
               showExistsAction
               timeField={queryValues?.date_field}
               histogramLoading={histogramLoading}
