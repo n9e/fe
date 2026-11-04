@@ -1,6 +1,4 @@
 const id_ID = {
-  pagination_requires_order_keys:
-    'Paginasi stabil memerlukan kunci pengurutan yang diawali dengan (kolom waktu yang dipilih, __log_stream_id__, __log_seq__). Hanya halaman pertama yang tersedia. Persempit rentang kueri atau pilih kolom waktu yang sesuai.',
   quick_query: 'Kueri cepat',
   quick_query_tip:
     'Kueri cepat membuat pernyataan kueri dari templat SQL yang tetap; misalnya untuk field A lebih dari 0, cukup ketik A > 0. Tombol ini juga membawa Anda ke mode khusus, tempat SQL-nya bisa dilihat dan diubah',

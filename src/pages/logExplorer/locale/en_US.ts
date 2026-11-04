@@ -181,7 +181,7 @@ const en_US = {
     sampled_tip: 'Log count is too large, the current clustering result is based on sampled logs',
   },
   log_order_context: {
-    title: 'Context',
+    title: 'Context Viewer',
     earlier: 'Earlier',
     later: 'Later',
     earlier_tip: 'Load {{n}} earlier lines from the same file',
@@ -189,7 +189,7 @@ const en_US = {
     earlier_disabled_tip: 'No earlier logs from this file within the previous hour; widen the time range in search to see older ones',
     later_disabled_tip: 'No later logs from this file within the next hour',
     no_fields_tip:
-      "This log has no __log_stream_id__ or __log_seq__, so its context in original order is unavailable. Collect file logs with a recent Categraf and keep both fields in the log transform's extracted fields",
+      "This log has no __log_stream_id__ or __log_seq__, so its context in original order is unavailable. Collect file logs with Categraf v0.5.45 or later and keep both fields in the log transform's extracted fields",
     no_time_tip: 'This log has no time field {{field}}, so its context cannot be located',
     back_to_anchor: 'Current log',
     raw_layout: 'Raw layout',

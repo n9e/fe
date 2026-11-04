@@ -359,6 +359,22 @@ export default function index(props: Props) {
     setExecuteLoading(loading || histogramLoading);
   }, [loading, histogramLoading]);
 
+  const renderOrderContext = (raw: Record<string, any> | undefined, variant: 'button' | 'icon') => (
+    <LogOrderContext
+      variant={variant}
+      log={raw}
+      timeField={queryValues?.time_field}
+      organizeFields={organizeFields}
+      fetchPage={(req) =>
+        getDorisContextLogs({
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
+        })
+      }
+    />
+  );
+
   return (
     <>
       <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
@@ -586,19 +602,14 @@ export default function index(props: Props) {
               logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
               logViewerExtraRender={(log) => (
                 <Space>
-                  <LogOrderContext
-                    log={log?.___raw___}
-                    timeField={queryValues?.time_field}
-                    organizeFields={organizeFields}
-                    fetchPage={(req) =>
-                      getDorisContextLogs({
-                        cate: DatasourceCateEnum.doris,
-                        datasource_id: datasourceValue,
-                        query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
-                      })
-                    }
-                  />
+                  {renderOrderContext(log?.___raw___, 'button')}
                 </Space>
+              )}
+              rowActionsRender={(row, _index, detail) => (
+                <span className='inline-flex items-center gap-1'>
+                  {renderOrderContext(row?.___raw___, 'icon')}
+                  {detail}
+                </span>
               )}
             />
           ) : loading || histogramLoading ? (

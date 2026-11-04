@@ -452,6 +452,26 @@ export default function index(props: Props) {
     return formatedValue;
   }, []);
 
+  const renderOrderContext = useCallback(
+    (raw: Record<string, any> | undefined, variant: 'button' | 'icon') => (
+      <LogOrderContext
+        variant={variant}
+        log={raw}
+        timeField={queryValues?.date_field}
+        organizeFields={organizeFields}
+        formatTime={(time) => String(moment(time).valueOf())}
+        fetchPage={(req) =>
+          getESContextLogs({
+            cate: DatasourceCateEnum.elasticsearch,
+            datasource_id: datasourceValue,
+            query: [{ ...req, index: queryValues?.index, time_field: queryValues?.date_field, stream_field: streamFieldRef.current }],
+          })
+        }
+      />
+    ),
+    [datasourceValue, organizeFields, queryValues?.date_field, queryValues?.index],
+  );
+
   return (
     <>
       {metadataError ? (
@@ -479,22 +499,14 @@ export default function index(props: Props) {
               raw_key='__n9e_raw_n9e__'
               logViewerFilterFields={withoutLogOrderFields}
               logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
-              logViewerExtraRender={
+              logViewerExtraRender={IS_PLUS ? (log) => renderOrderContext(log?.__n9e_raw_n9e__, 'button') : undefined}
+              rowActionsRender={
                 IS_PLUS
-                  ? (log) => (
-                      <LogOrderContext
-                        log={log?.__n9e_raw_n9e__}
-                        timeField={queryValues?.date_field}
-                        organizeFields={organizeFields}
-                        formatTime={(time) => String(moment(time).valueOf())}
-                        fetchPage={(req) =>
-                          getESContextLogs({
-                            cate: DatasourceCateEnum.elasticsearch,
-                            datasource_id: datasourceValue,
-                            query: [{ ...req, index: queryValues?.index, time_field: queryValues?.date_field, stream_field: streamFieldRef.current }],
-                          })
-                        }
-                      />
+                  ? (row, _index, detail) => (
+                      <span className='inline-flex items-center gap-1'>
+                        {renderOrderContext(row?.__n9e_raw_n9e__, 'icon')}
+                        {detail}
+                      </span>
                     )
                   : undefined
               }
