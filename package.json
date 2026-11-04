@@ -131,12 +131,12 @@
     "@types/echarts": "^4.9.7",
     "@types/jest": "^29.5.14",
     "@types/lodash": "^4.14.191",
-    "@types/node": "^18.19.100",
+    "@types/node": "^22.19.0",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@types/react-router-dom": "^5.1.7",
     "@types/spark-md5": "^3.0.5",
-    "@vitejs/plugin-react": "^4.4.1",
+    "@vitejs/plugin-react": "^6.2.1",
     "autoprefixer": "^10.4.16",
     "cross-env": "^7.0.3",
     "identity-obj-proxy": "^3.0.0",
@@ -156,14 +156,19 @@
     "ts-morph": "^23.0.0",
     "ts-node": "^10.9.1",
     "typescript": "4.9.4",
-    "vite": "^4.5.14",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite": "^8.3.5",
+    "vite-plugin-svgr": "^5.2.0",
+    "esbuild": "^0.28.2"
   },
   "overrides": {
     "@types/d3-dispatch": "3.0.6",
     "react-sortable-hoc": {
       "react": "$react",
       "react-dom": "$react-dom"
-    }
+    },
+    "@babel/plugin-transform-runtime": "^7.29.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   }
 }
