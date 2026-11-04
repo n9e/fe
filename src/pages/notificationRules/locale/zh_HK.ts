@@ -82,8 +82,12 @@ const zh_HK = {
     channel_tip: '選擇使用哪種媒介發送告警事件通知，如果已有媒介不滿足需求，可以聯繫管理員創建新的媒介',
     channel_msg: '請選擇通知媒介',
     template: '消息模板',
+    callback_url: '回調地址',
     template_tip: '通知內容的模板，可以根據不同的場景使用不同的模板',
     template_msg: '請選擇消息模板',
+    summary_fields: {
+      bot_name: '名稱',
+    },
     severities: '適用級別',
     severities_tip: '選擇要對哪個等級的告警事件進行通知，只有勾選上的級別，才會被通知。如果三個等級都沒有勾選，這個媒介就匹配不到告警事件了，相當於禁用了這個媒介',
     time_ranges: '適用時段',

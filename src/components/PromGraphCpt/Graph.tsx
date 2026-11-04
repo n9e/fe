@@ -34,6 +34,7 @@ import { getPromData, setTmpChartData } from './services';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { QueryStats } from './components/QueryStatsView';
 import LineGraphStandardOptions from './components/GraphStandardOptions';
+import { RESULT_LIMIT } from './constants';
 
 interface IProps {
   url: string;
@@ -238,7 +239,9 @@ export default function Graph(props: IProps) {
       )
         .then((res) => {
           if (controller.signal.aborted) return;
-          const series = _.map(res?.result, (item) => {
+          const result = Array.isArray(res?.result) ? res.result : [];
+          const tooLong = result.length > RESULT_LIMIT;
+          const series = _.map(result.slice(0, RESULT_LIMIT), (item) => {
             return {
               id: _.uniqueId('series_'),
               name: getSerieName(item.metric),
@@ -253,7 +256,7 @@ export default function Graph(props: IProps) {
           });
 
           setData(series);
-          setErrorContent('');
+          setErrorContent(tooLong ? `Warning：Fetched ${result.length} metrics, only displaying first ${RESULT_LIMIT}` : '');
           settled = true;
           queryRequest?.complete({ empty: series.length === 0, count: series.length });
         })

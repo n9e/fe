@@ -82,8 +82,12 @@ const es_ES = {
     channel_tip: 'Elige por qué medio se enviará la notificación. Si los medios existentes no te sirven, pide al administrador que cree otro',
     channel_msg: 'Selecciona el medio de notificación',
     template: 'Plantillas de mensaje',
+    callback_url: 'URL de callback',
     template_tip: 'Plantilla del contenido de la notificación; puedes usar plantillas distintas según el escenario',
     template_msg: 'Selecciona la plantilla de mensaje',
+    summary_fields: {
+      bot_name: 'Nombre del bot',
+    },
     severities: 'Severidades aplicables',
     severities_tip:
       'Elige qué severidades generan notificación; solo se avisa de las marcadas. Si no marcas ninguna, este medio no se corresponderá con ningún evento, lo que equivale a desactivarlo',
