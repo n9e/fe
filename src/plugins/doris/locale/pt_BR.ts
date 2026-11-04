@@ -1,6 +1,4 @@
 const pt_BR = {
-  pagination_requires_order_keys:
-    'A paginação estável exige chaves de ordenação que comecem com (campo de tempo selecionado, __log_stream_id__, __log_seq__). Apenas a primeira página está disponível. Reduza o intervalo da consulta ou escolha o campo de tempo correspondente.',
   quick_query: 'Consulta rápida',
   quick_query_tip:
     'A consulta rápida gera o SQL a partir de um modelo fixo: para o campo A maior que zero, basta digitar A > 0. Este botão alterna para o modo personalizado, em que o SQL pode ser visto e editado',
