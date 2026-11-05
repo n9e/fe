@@ -189,6 +189,8 @@ const id_ID = {
     no_fields_tip:
       'Log ini tidak memiliki __log_stream_id__ atau __log_seq__, sehingga konteks dalam urutan asli tidak tersedia. Kumpulkan log file dengan Categraf v0.5.45 atau yang lebih baru dan pertahankan kedua field di field ekstraksi transformasi log',
     no_time_tip: 'Log ini tidak memiliki field waktu {{field}}, sehingga konteksnya tidak dapat ditemukan',
+    table_unsupported_tip:
+      'Tabel ini tidak menampilkan konteks: kunci urutan tidak diawali bidang waktu, __log_stream_id__, dan __log_seq__. Kunci urutan tabel yang sudah ada tidak bisa diubah; buat tabel baru',
     back_to_anchor: 'Log saat ini',
     raw_layout: 'Tata letak asli',
     raw_layout_tip: 'Hanya menampilkan nilai field, tanpa waktu dan nama field, dengan font monospace yang mempertahankan indentasi',
