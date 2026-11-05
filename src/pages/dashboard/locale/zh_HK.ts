@@ -825,6 +825,7 @@ __variable_value_fixed=true：固定 URL 中的變數值，不使用本機快取
     add: '新增注釋',
     edit: '編輯注釋',
     description: '描述',
+    description_required: '描述不能為空',
     tags: '標籤',
     updated: '注釋已更新',
     deleted: '注釋已刪除',

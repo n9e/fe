@@ -4,6 +4,8 @@ import { ChannelItem } from './types';
 
 export type { ChannelItem };
 
+export const SIMPLIFIED_ITEMS_CACHE_KEY = 'notification-channels-simplified-items';
+
 export function getItems(): Promise<ChannelItem[]> {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Get,
@@ -69,9 +71,7 @@ export interface ChannelTestResult {
 }
 
 /** 测试事件来源，与工作流试跑 / 通知规则测试同一套语义 */
-export type ChannelTestEventSource =
-  | { event_ids: number[]; use_mock_event?: false }
-  | { use_mock_event: true; mock_severity?: number; mock_is_recovered?: boolean };
+export type ChannelTestEventSource = { event_ids: number[]; use_mock_event?: false } | { use_mock_event: true; mock_severity?: number; mock_is_recovered?: boolean };
 
 /**
  * 测试一份「可能尚未保存」的媒介配置。

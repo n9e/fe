@@ -11,7 +11,7 @@ export interface Values {
   dashboard_id: number;
   panel_id: string;
   tags: string[];
-  text: string;
+  description: string;
   time_start: number;
   time_end: number;
 }
@@ -86,7 +86,7 @@ export default function FormModal(props: Props) {
         <Form.Item name='time_end' hidden>
           <Input />
         </Form.Item>
-        <Form.Item label={t('annotation.description')} name='description' rules={[{ required: true }]}>
+        <Form.Item label={t('annotation.description')} name='description' rules={[{ required: true, message: t('annotation.description_required') }]}>
           <Input.TextArea />
         </Form.Item>
         <Form.Item label={t('annotation.tags')} name='tags'>

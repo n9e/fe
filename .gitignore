@@ -19,7 +19,8 @@ public/bound
 .worktrees/
 coverage/
 .playwright-mcp/
-docs/
+docs/*
 midscene_run/
 test-results/
 fe+plus.code-workspace
+!docs/private-cloud-visibility-and-permissions.md

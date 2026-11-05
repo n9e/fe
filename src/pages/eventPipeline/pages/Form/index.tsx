@@ -6,6 +6,7 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 
 import { getTeamInfoList } from '@/services/manage';
 import { scrollToFirstError } from '@/utils';
@@ -14,7 +15,7 @@ import AffixWrapper from '@/components/AffixWrapper';
 import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
 
 import { Item } from '../../types';
-import { NS, DEFAULT_VALUES, DOC_URL, MAX_NAME_LENGTH } from '../../constants';
+import { NS, DEFAULT_VALUES, DOC_URL, MAX_NAME_LENGTH, FLASH_AI_PROCESSOR_TYPES, canMoveProcessor } from '../../constants';
 import { buildWorkflowName } from '../../components/buildWorkflowName';
 import Attributes from './Attributes';
 import Processor from './Processor';
@@ -53,6 +54,9 @@ const hasKey = (items?: { key?: string }[]) => _.filter(items, (i) => !!i?.key).
 export default function index(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { disabled, initialValues, showScenarioTips, onOk, onCancel, onDirtyChange } = props;
+  const canAccessFlashAi = useCanAccessFlashAiChat();
+  const accessRef = useRef({ disabled, canAccessFlashAi });
+  accessRef.current = { disabled, canAccessFlashAi };
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const formValues = Form.useWatch([], form);
@@ -100,7 +104,14 @@ export default function index(props: Props) {
 
   const sections = useMemo<Record<string, SectionItem>>(
     () => ({
-      filter: { key: 'filter', title: t('form_section.filter.title'), description: t('form_section.filter.desc'), tag: 'core', icon: <ListFilter size={14} />, helpDoc: { documentPath: DOC_URL } },
+      filter: {
+        key: 'filter',
+        title: t('form_section.filter.title'),
+        description: t('form_section.filter.desc'),
+        tag: 'core',
+        icon: <ListFilter size={14} />,
+        helpDoc: { documentPath: DOC_URL },
+      },
       processor: { key: 'processor', title: t('form_section.processor.title'), description: t('form_section.processor.desc'), tag: 'core', icon: <WorkflowIcon size={14} /> },
       basic: { key: 'basic', title: t('form_section.basic.title'), description: t('form_section.basic.desc'), tag: 'default', icon: <FileText size={14} /> },
     }),
@@ -153,7 +164,13 @@ export default function index(props: Props) {
   const expandErrorSections = (errorFields?: { name: (string | number)[] }[]) => {
     const keys = _.compact(_.map(errorFields, ({ name }) => FIELD_SECTION_MAP[_.toString(name?.[0])]));
     if (keys.length) {
-      setSectionCollapsed((prev) => ({ ...prev, ..._.zipObject(keys, _.map(keys, () => false)) }));
+      setSectionCollapsed((prev) => ({
+        ...prev,
+        ..._.zipObject(
+          keys,
+          _.map(keys, () => false),
+        ),
+      }));
     }
     // 出错字段在某个处理器内时 name 形如 ['processors', 0, 'config', 'url']，取下标展开对应卡片。
     // 不能用 _.compact 过滤：它会把下标 0（最常见的那张卡片）一起丢掉。
@@ -240,9 +257,17 @@ export default function index(props: Props) {
           <Form.List name='processors'>
             {(fields, { add, remove, move }) => (
               <>
-                <SortableList useDragHandle helperClass='row-dragging' onSortEnd={({ oldIndex, newIndex }) => move(oldIndex, newIndex)}>
+                <SortableList
+                  useDragHandle
+                  helperClass='row-dragging'
+                  onSortEnd={({ oldIndex, newIndex }) => {
+                    if (!accessRef.current.disabled && canMoveProcessor(form.getFieldValue('processors') || [], oldIndex, newIndex, accessRef.current.canAccessFlashAi)) {
+                      move(oldIndex, newIndex);
+                    }
+                  }}
+                >
                   {fields.map((field, idx) => (
-                    <SortableItem key={field.key} index={idx}>
+                    <SortableItem key={field.key} index={idx} disabled={disabled || (!canAccessFlashAi && FLASH_AI_PROCESSOR_TYPES.includes(processors?.[field.name]?.typ))}>
                       <Processor
                         disabled={disabled}
                         fields={fields}

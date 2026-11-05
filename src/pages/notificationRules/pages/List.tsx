@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Space, Button, Switch, Modal, Input } from 'antd';
 import { NotificationOutlined, SearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useRequest } from 'ahooks';
 import _ from 'lodash';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
@@ -11,12 +12,12 @@ import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTabl
 import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
 import Tags from '@/components/TableTags/Tags';
 import EmptyGuide from '@/components/EmptyGuide';
-import { getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
+import { getSimplifiedItems as getNotificationChannels, ChannelItem, SIMPLIFIED_ITEMS_CACHE_KEY } from '@/pages/notificationChannels/services';
 import { getTeamInfoList } from '@/services/manage';
 import usePagination from '@/components/usePagination';
 
 import { getItems, putItem, deleteItems } from '../services';
-import { NS, CN, TABLE_PAGINATION_CACHE_KEY, FILTER_SESSION_STORAGE_KEY } from '../constants';
+import { NS, CN, TABLE_PAGINATION_CACHE_KEY, FILTER_SESSION_STORAGE_KEY, OPTIONS_CACHE_STALE_TIME } from '../constants';
 import { RuleItem } from '../types';
 import { getPageFromSearch, setPageInSearch } from '@/utils/urlPage';
 
@@ -30,6 +31,11 @@ export default function List() {
   const location = useLocation();
   const pagination = usePagination({ PAGESIZE_KEY: TABLE_PAGINATION_CACHE_KEY });
   const [loading, setLoading] = useState(false);
+  const { runAsync: fetchChannels } = useRequest<ChannelItem[], []>(getNotificationChannels, {
+    manual: true,
+    cacheKey: SIMPLIFIED_ITEMS_CACHE_KEY,
+    staleTime: OPTIONS_CACHE_STALE_TIME,
+  });
   let defaultFilter = {} as Filter;
   try {
     const saved = JSON.parse(window.sessionStorage.getItem(FILTER_SESSION_STORAGE_KEY) || '{}');
@@ -60,7 +66,7 @@ export default function List() {
     setLoading(true);
     getItems()
       .then((res) => {
-        getNotificationChannels()
+        fetchChannels()
           .then((channels) => {
             const newData = _.map(res, (item) => {
               const notify_configs = _.map(item.notify_configs, (notify_config) => {

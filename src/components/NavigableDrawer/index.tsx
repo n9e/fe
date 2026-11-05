@@ -10,6 +10,8 @@ export interface NavigableDrawerProps extends DrawerProps {
   hasNext?: boolean;
   onPrev?: () => void;
   onNext?: () => void;
+  defaultSize?: SizeType;
+  sizeStorageKey?: string;
   /** * 是否开启“内联模式”。
    * true: Drawer 渲染在父容器内，且没有遮罩 (适合侧拉板)
    * false: 默认 Antd 行为，全屏弹出带遮罩
@@ -18,6 +20,19 @@ export interface NavigableDrawerProps extends DrawerProps {
 }
 
 type SizeType = 'small' | 'middle' | 'large';
+
+const isSizeType = (value: unknown): value is SizeType => value === 'small' || value === 'middle' || value === 'large';
+
+const getInitialSize = (storageKey: string | undefined, defaultSize: SizeType): SizeType => {
+  if (!storageKey || typeof window === 'undefined') return defaultSize;
+
+  try {
+    const cachedSize = window.localStorage.getItem(storageKey);
+    return isSizeType(cachedSize) ? cachedSize : defaultSize;
+  } catch {
+    return defaultSize;
+  }
+};
 
 const sizeWidthMap = {
   small: '35%',
@@ -33,16 +48,31 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
   title,
   children,
   inlineMode = true, // 默认开启内联模式
+  defaultSize = 'small',
   mask,
   getContainer,
   style,
   width,
+  sizeStorageKey,
   extra,
   className,
   ...restProps
 }) => {
   const { t } = useTranslation('navigableDrawer');
-  const [size, setSize] = React.useState<SizeType>('small');
+  const [size, setSize] = React.useState<SizeType>(() => getInitialSize(sizeStorageKey, defaultSize));
+
+  const handleSizeChange = (value: string | number) => {
+    if (!isSizeType(value)) return;
+
+    setSize(value);
+    if (sizeStorageKey) {
+      try {
+        window.localStorage.setItem(sizeStorageKey, value);
+      } catch {
+        // Keep the size control usable when browser storage is unavailable.
+      }
+    }
+  };
 
   // 计算内联模式的特定属性
   const inlineProps: Partial<DrawerProps> = inlineMode
@@ -73,9 +103,7 @@ const NavigableDrawer: React.FC<NavigableDrawerProps> = ({
                 },
               ]}
               value={size}
-              onChange={(value) => {
-                setSize(value as SizeType);
-              }}
+              onChange={handleSizeChange}
             />
           </Space>
         ),
