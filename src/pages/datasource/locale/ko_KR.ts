@@ -251,6 +251,13 @@ const ko_KR = {
     group_option: '{{name}} ({{count}}개)',
     selected_count: '{{total}}개 가운데 {{checked}}개 선택됨',
     datasource_bound: '가져올 때 데이터 소스 「{{name}}」이(가) 자동으로 연결됩니다',
+    coverage: '커버리지 {{hit}}/{{total}}',
+    coverage_covered: '커버된 지표:',
+    coverage_missing: '누락된 지표:',
+    recommended_tip: '선택한 수집 템플릿의 지표 커버리지 순으로 정렬하고 추천 항목을 선택했습니다.',
+    coverage_unavailable: '지표 커버리지를 계산할 수 없습니다. 템플릿은 선택되지 않습니다.',
+    no_covered_dashboards: '선택한 수집 템플릿 지표와 일치하는 대시보드 템플릿이 없습니다.',
+    no_covered_alerts: '선택한 수집 템플릿 지표와 일치하는 알림 규칙 템플릿이 없습니다.',
   },
 };
 
