@@ -9,7 +9,7 @@ import { useLocation } from 'react-router-dom';
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 
-import { defaultValues, defaultCustomValuesMap } from './config';
+import { defaultValues, defaultCustomValuesMap, NO_QUERY_PANEL_TYPES } from './config';
 import Options from './Options';
 import Collapse, { Panel } from './Components/Collapse';
 import Renderer from '../Renderer/Renderer';
@@ -111,7 +111,7 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
                   />
                 )}
               </div>
-              {!_.includes(['text', 'iframe'], type) && (
+              {!_.includes(NO_QUERY_PANEL_TYPES, type) && (
                 <div className='n9e-dashboard-editor-modal-left-query-wrapper'>
                   <QueryEditor panelWidth={panelWidth} type={type} variablesWithOptions={variablesWithOptions} range={range} />
                 </div>

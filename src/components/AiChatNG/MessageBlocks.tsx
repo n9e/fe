@@ -411,12 +411,11 @@ function MessageItemComponent({
           </div>
         </div>
       </div>
-      <div className={cn('space-y-3', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
+      <div className={cn('space-y-3', slim && 'min-w-0 flex-1', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
         <ResponseBlocks
           message={message}
           isStreaming={isStreaming}
           pageActionOutcomes={pageActionOutcomes}
-          onExecuteQueryForQueryContent={onExecuteQueryForQueryContent}
           onActionClick={onActionClick}
           onOKForFormSelectContent={onOKForFormSelectContent}
           maybeScrollToBottom={maybeScrollToBottom}

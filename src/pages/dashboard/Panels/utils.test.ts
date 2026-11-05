@@ -99,6 +99,23 @@ describe('updatePanelsInsertNewPanelToRow', () => {
     expect(result[0].layout.h).toBe(4);
   });
 
+  it('uses a compact default size for aiButton panels and keeps a pasted size', () => {
+    const panels = [row];
+    const aiButtonPanel = {
+      id: 'ai-1',
+      type: 'aiButton',
+      layout: { x: 0, y: 10, w: 8, h: 6, i: 'ai-1' },
+    };
+
+    const inserted = updatePanelsInsertNewPanelToRow(panels, 'row-1', aiButtonPanel, true);
+    expect(inserted[0].layout.w).toBe(4);
+    expect(inserted[0].layout.h).toBe(2);
+
+    const pasted = updatePanelsInsertNewPanelToRow(panels, 'row-1', aiButtonPanel, false);
+    expect(pasted[0].layout.w).toBe(8);
+    expect(pasted[0].layout.h).toBe(6);
+  });
+
   it('uses default dimensions by default', () => {
     const panels = [row];
     const pastedPanel = {
@@ -193,5 +210,22 @@ describe('updatePanelsInsertNewPanelToGlobal', () => {
     const result = updatePanelsInsertNewPanelToGlobal(panels, pastedPanel, 'chart', true);
     expect(result[0].layout.w).toBe(12);
     expect(result[0].layout.h).toBe(4);
+  });
+
+  it('uses a compact default size for aiButton panels and keeps a pasted size', () => {
+    const panels: IPanel[] = [];
+    const aiButtonPanel = {
+      id: 'ai-1',
+      type: 'aiButton',
+      layout: { x: 0, y: 10, w: 8, h: 6, i: 'ai-1' },
+    };
+
+    const inserted = updatePanelsInsertNewPanelToGlobal(panels, aiButtonPanel, 'chart', true);
+    expect(inserted[0].layout.w).toBe(4);
+    expect(inserted[0].layout.h).toBe(2);
+
+    const pasted = updatePanelsInsertNewPanelToGlobal(panels, aiButtonPanel, 'chart', false);
+    expect(pasted[0].layout.w).toBe(8);
+    expect(pasted[0].layout.h).toBe(6);
   });
 });

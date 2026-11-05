@@ -27,6 +27,7 @@ import BarGauge from './BarGauge';
 import Text from './Text';
 import Gauge from './Gauge';
 import Iframe from './Iframe';
+import AiButton from './AiButton';
 import Heatmap from './Heatmap';
 import BarChart from './BarChart';
 import type { ITarget, IType } from '../../types';
@@ -48,6 +49,7 @@ export default function index({ type, targets }: OptionsProps) {
     barGauge: <BarGauge />,
     text: <Text />,
     iframe: <Iframe />,
+    aiButton: <AiButton />,
     gauge: <Gauge />,
     heatmap: <Heatmap />,
     barchart: <BarChart />,

@@ -30,6 +30,10 @@ export default function AiChat(props: IAiChatProps & { showClose?: boolean; onCl
     setSelectedChatId(props.chatId);
   }, [props.chatId]);
 
+  useEffect(() => {
+    if (props.buttonLaunch) setActiveView('chat');
+  }, [props.buttonLaunch]);
+
   const handleChatChange = useCallback(
     (chat?: IAiChatHistoryItem) => {
       setSelectedChatId(chat?.chat_id);

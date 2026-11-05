@@ -39,6 +39,10 @@ interface IAiChatContextValue {
   setShareChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
   initialMessage?: string;
   setInitialMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
+  /** 每次携带 initialMessage 打开时递增，用来强制重新挂载会话并发送提示词 */
+  initialMessageOpenKey: number;
+  buttonLaunch?: { id: number; content: string; autoExecute: boolean };
+  buttonChatKey: number;
   cachedSessionId?: string;
   setCachedSessionId: React.Dispatch<React.SetStateAction<string | undefined>>;
   pendingChatId?: string;
@@ -49,6 +53,7 @@ interface IAiChatContextValue {
     promptList?: string[];
     initialMessage?: string;
     onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
+    buttonLaunch?: { content: string; autoExecute: boolean; reuseConversation: boolean };
     queryPageFrom?: IAiChatPageInfo;
     queryAction?: IAiChatAction;
   }) => void;
@@ -67,6 +72,9 @@ export const AiChatContext = React.createContext<IAiChatContextValue>({
   promptList: undefined,
   initialMessage: undefined,
   onExecuteQueryForQueryContent: undefined,
+  initialMessageOpenKey: 0,
+  buttonLaunch: undefined,
+  buttonChatKey: 0,
   queryPageFrom: undefined,
   queryAction: undefined,
   shareReadonly: false,
@@ -97,6 +105,10 @@ export function AiChatProvider(props: IAiChatProviderProps) {
   const [shareChatId, setShareChatId] = React.useState<string | undefined>(undefined);
   const [initialMessage, setInitialMessage] = React.useState<string | undefined>(undefined);
   const [onExecuteQueryForQueryContent, setOnExecuteQueryForQueryContent] = React.useState<AiChatExecuteQueryForQueryContent | undefined>(undefined);
+  const [initialMessageOpenKey, setInitialMessageOpenKey] = React.useState(0);
+  const [buttonLaunch, setButtonLaunch] = React.useState<IAiChatContextValue['buttonLaunch']>();
+  const [buttonChatKey, setButtonChatKey] = React.useState(0);
+  const buttonLaunchIdRef = React.useRef(0);
   const [queryPageFrom, setQueryPageFrom] = React.useState<IAiChatPageInfo | undefined>(undefined);
   const [queryAction, setQueryAction] = React.useState<IAiChatAction | undefined>(undefined);
   const [cachedSessionId, setCachedSessionId] = React.useState<string | undefined>(() => {
@@ -129,6 +141,7 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       promptList?: string[];
       initialMessage?: string;
       onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;
+      buttonLaunch?: { content: string; autoExecute: boolean; reuseConversation: boolean };
       queryPageFrom?: IAiChatPageInfo;
       queryAction?: IAiChatAction;
     }) => {
@@ -151,6 +164,18 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       setShareChatId(undefined);
       setPromptList(options?.promptList);
       setInitialMessage(options?.initialMessage);
+      if (options?.buttonLaunch) {
+        setButtonLaunch({ id: ++buttonLaunchIdRef.current, content: options.buttonLaunch.content, autoExecute: options.buttonLaunch.autoExecute });
+        if (!options.buttonLaunch.reuseConversation) {
+          setCachedSessionId(undefined);
+          setButtonChatKey((key) => key + 1);
+        }
+      } else {
+        setButtonLaunch(undefined);
+      }
+      if (options?.initialMessage) {
+        setInitialMessageOpenKey((current) => current + 1);
+      }
       if (options?.chatId !== undefined) {
         setPendingChatId(options.chatId);
       } else {
@@ -177,6 +202,9 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       shareChatId,
       initialMessage,
       onExecuteQueryForQueryContent,
+      initialMessageOpenKey,
+      buttonLaunch,
+      buttonChatKey,
       queryPageFrom,
       queryAction,
       setVisible,
@@ -201,6 +229,9 @@ export function AiChatProvider(props: IAiChatProviderProps) {
       promptList,
       initialMessage,
       onExecuteQueryForQueryContent,
+      initialMessageOpenKey,
+      buttonLaunch,
+      buttonChatKey,
       queryPageFrom,
       queryAction,
       shareReadonly,

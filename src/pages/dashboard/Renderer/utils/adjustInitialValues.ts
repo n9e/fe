@@ -58,7 +58,7 @@ const adjustInitialValues = (type: string, groupedDatasourceList: GroupedDatasou
     visible: true,
     id: uuidv4(),
     initialValues: {
-      name: 'Panel Title',
+      name: visualizationType === 'aiButton' ? '' : 'Panel Title',
       type: visualizationType,
       id: '',
       description: '',
