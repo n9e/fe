@@ -1,4 +1,5 @@
 import { EPageType } from '../config';
+import type { PromptReference } from '../PromptEditor';
 
 export interface IMatchRoute {
   path: string;
@@ -224,10 +225,17 @@ export interface IParamsAiAction {
   slo?: ISloAction;
 
   custom?: {
-    content: string;
+    content?: string;
+    references?: PromptReference[];
     action?: { key: string; param?: any };
     /** true: 只填到输入框；false/缺省: 自动发送 */
     prefillOnly?: boolean;
+    /** true: 创建新会话；false/缺省: 不强制新建 */
+    createNew?: boolean;
+    /** true: 将提示词应用到当前会话；没有可用会话时新建 */
+    reuseConversation?: boolean;
+    /** 在全页 FlashAI 路由上也以抽屉形式打开 */
+    forceDrawer?: boolean;
   };
 }
 

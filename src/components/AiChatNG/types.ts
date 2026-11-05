@@ -244,6 +244,7 @@ export interface IAiChatProps {
   welcomeSlot?: React.ReactNode | ((onPromptClick: (prompt: string) => void) => React.ReactNode);
   promptList?: Array<string | { label: string; value: string }>;
   initialMessage?: string;
+  buttonLaunch?: { id: number; content: string; autoExecute: boolean };
   /** Reference this skill in the first accepted message of a conversation. */
   initialSkill?: string;
   onExecuteQueryForQueryContent?: AiChatExecuteQueryForQueryContent;

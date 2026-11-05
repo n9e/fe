@@ -7,6 +7,8 @@ import { useLocation } from 'react-router-dom';
 import { IS_ENT } from '@/utils/constant';
 import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
+import type { PromptReference } from '@/components/AiChat/PromptEditor';
+import type { IParamsAiAction } from '@/components/AiChat/store';
 
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
@@ -35,13 +37,14 @@ function useAiEntClickHandler(options?: {
   promptList?: string[];
   queryPageFrom?: IAiChatPageInfo;
   queryAction?: IAiChatAction;
+  custom?: IParamsAiAction['custom'];
 }) {
   const [, setAiChatVisible] = useAiChatVisible();
   const [, setAiHandleEvent] = useAiHandleEvent();
   const [, setAiExternalConfig] = useAiExternalConfig();
   const [, setParamsAiAction] = useParamsAiAction();
 
-  const { onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction } = options ?? {};
+  const { onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction, custom } = options ?? {};
 
   return React.useCallback(() => {
     setAiChatVisible(true);
@@ -55,12 +58,13 @@ function useAiEntClickHandler(options?: {
         createNew: true,
         ...queryPageFrom,
         ...queryAction,
+        ...custom,
         // After spreads: ConfigHost pages live on /flashai*, where AiChat stays
         // in page mode unless forceDrawer is set (knowledge / scheduled-task).
         forceDrawer: true,
-      } as any,
+      },
     });
-  }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction]);
+  }, [setAiChatVisible, setAiHandleEvent, setAiExternalConfig, setParamsAiAction, onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction, custom]);
 }
 
 function FlashAiButtonContent() {
@@ -144,6 +148,34 @@ export function AiButton(props: {
   }
 
   return <AiButtonContent {...props} />;
+}
+
+export function useAiChatOpenWithPrompt(prompt?: string, options?: { autoExecute?: boolean; reuseConversation?: boolean; references?: PromptReference[] }) {
+  const trimmedPrompt = prompt?.trim() || '';
+  const { openAiChat, cachedSessionId } = useAiChatContext();
+  const canAccess = useCanAccessFlashAiChat();
+  const openEntChat = useAiEntClickHandler({
+    custom: {
+      content: trimmedPrompt,
+      prefillOnly: !options?.autoExecute,
+      createNew: !options?.reuseConversation,
+      reuseConversation: !!options?.reuseConversation,
+      references: options?.references,
+    },
+  });
+
+  return React.useCallback(() => {
+    if (!canAccess) return;
+    if (IS_ENT) {
+      openEntChat();
+      return;
+    }
+    openAiChat({
+      chatId: options?.reuseConversation ? cachedSessionId : undefined,
+      queryPageFrom: buildPageFrom({ url: getCurrentPageUrl() }),
+      buttonLaunch: { content: trimmedPrompt, autoExecute: !!options?.autoExecute, reuseConversation: !!options?.reuseConversation },
+    });
+  }, [canAccess, openAiChat, openEntChat, cachedSessionId, trimmedPrompt, options?.autoExecute, options?.reuseConversation]);
 }
 
 export function CustomAiButtonWrap({

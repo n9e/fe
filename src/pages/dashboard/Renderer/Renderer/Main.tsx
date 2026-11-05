@@ -38,12 +38,14 @@ import BarGauge from './BarGauge';
 import Text from './Text';
 import Gauge from './Gauge';
 import Iframe from './Iframe';
+import AiButton from './AiButton';
 import Heatmap from './Heatmap';
 import BarChart from './BarChart';
 import Markdown from '../../Editor/Components/Markdown';
 import getPanelCustomTimeDescribe from '../utils/getPanelCustomTimeDescribe';
 import Inspect from '../Inspect';
 import { IProps } from './index';
+import { NO_QUERY_PANEL_TYPES } from '../../Editor/config';
 
 function index(
   props: IProps & {
@@ -307,6 +309,7 @@ function index(
     text: () => <Text {...subProps} themeMode={themeMode} />,
     gauge: () => <Gauge {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     iframe: () => <Iframe {...subProps} />,
+    aiButton: () => <AiButton {...subProps} />,
     heatmap: () => <Heatmap {...subProps} themeMode={themeMode} isPreview={isPreview} />,
     barchart: () => <BarChart {...subProps} themeMode={themeMode} isPreview={isPreview} />,
   };
@@ -423,9 +426,9 @@ function index(
             </div>
           )}
         </div>
-        {(loaded || values.type === 'text' || values.type === 'iframe') && (
+        {(loaded || _.includes(NO_QUERY_PANEL_TYPES, values.type)) && (
           <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
-            {_.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
+            {_.isEmpty(series) && !_.includes(NO_QUERY_PANEL_TYPES, values.type) ? (
               <PanelEmpty values={values} bodyWrapRef={bodyWrapRef} />
             ) : (
               <>{RendererCptMap[values.type] ? RendererCptMap[values.type]() : <div className='unknown-type'>{`${t('detail.invalidPanelType')} ${values.type}`}</div>}</>
