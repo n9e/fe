@@ -188,6 +188,8 @@ const pt_BR = {
     no_fields_tip:
       'Este log não tem __log_stream_id__ nem __log_seq__, então o contexto na ordem original não está disponível. Colete os logs de arquivo com o Categraf v0.5.45 ou posterior e mantenha os dois campos nos campos extraídos da transformação',
     no_time_tip: 'Este log não tem o campo de tempo {{field}}, então o contexto não pode ser localizado',
+    table_unsupported_tip:
+      'Esta tabela não mostra contexto: a chave de ordenação não começa com o campo de tempo, __log_stream_id__ e __log_seq__. A chave de uma tabela existente não pode ser alterada; crie uma tabela nova',
     back_to_anchor: 'Log atual',
     raw_layout: 'Layout original',
     raw_layout_tip: 'Mostra apenas os valores, sem hora nem nomes de campo, em fonte monoespaçada que preserva a indentação',

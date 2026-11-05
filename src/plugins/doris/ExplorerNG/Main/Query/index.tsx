@@ -221,6 +221,7 @@ export default function index(props: Props) {
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs, data?.colWidths),
               highlights: _.concat(data?.highlights || [], nextHighlights),
+              paginationSupported: res.pagination_supported,
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
@@ -234,6 +235,7 @@ export default function index(props: Props) {
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs),
               highlights: nextHighlights,
+              paginationSupported: res.pagination_supported,
             };
           }
         })
@@ -273,6 +275,7 @@ export default function index(props: Props) {
       hash: string;
       colWidths?: { [key: string]: number };
       highlights?: HighlightMap[];
+      paginationSupported?: boolean;
     },
     any
   >(service, {
@@ -385,6 +388,7 @@ export default function index(props: Props) {
     <LogOrderContext
       variant={variant}
       log={raw}
+      orderSupported={data?.paginationSupported}
       timeField={queryValues?.time_field}
       organizeFields={organizeFields}
       fetchPage={(req) =>
