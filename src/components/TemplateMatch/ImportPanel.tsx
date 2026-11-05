@@ -251,7 +251,7 @@ export default function ImportPanel(props: Props) {
   const dashboardCoverageByUuid = useMemo(() => {
     const coverageByUuid = new Map<string, MetricCoverage>();
     if (!hasProvidedMetrics || !providedMetrics) return coverageByUuid;
-    const payloadByUuid = new Map(_.map(dashboardPayloads || [], (payload) => [String(payload.uuid), payload] as const));
+    const payloadByUuid = new Map<string, PayloadLike>((dashboardPayloads || []).map((payload): [string, PayloadLike] => [String(payload.uuid), payload]));
 
     dashboards.forEach((dashboard) => {
       const payload = payloadByUuid.get(String(dashboard.uuid));
@@ -265,7 +265,7 @@ export default function ImportPanel(props: Props) {
     if (!hasProvidedMetrics || !providedMetrics) return result;
 
     alertGroups.forEach((group) => {
-      const payloadByUuid = new Map(_.map(alertPayloadsByCate[group.cate] || [], (payload) => [String(payload.uuid), payload] as const));
+      const payloadByUuid = new Map<string, PayloadLike>((alertPayloadsByCate[group.cate] || []).map((payload): [string, PayloadLike] => [String(payload.uuid), payload]));
       const coverageByUuid = new Map<string, MetricCoverage>();
       group.rules.forEach((rule) => {
         const payload = payloadByUuid.get(String(rule.uuid));
