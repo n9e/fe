@@ -65,23 +65,24 @@ it('fills the actual page viewport and preserves its height when the sticky side
     );
     const sidebar = container.querySelector<HTMLElement>('.n9e-log-sidebar')!;
     const height = () => sidebar.style.getPropertyValue('--log-sidebar-height');
-    // Scroll viewport bottom (864) - row top (112) - card bottom padding (16).
-    expect(height()).toBe('736px');
+    // Viewport bottom (80 + 800) - row top (112) - card bottom padding (16).
+    // Page bottom padding scrolls with content; it is not a viewport inset.
+    expect(height()).toBe('752px');
     expect(sidebar.style.getPropertyValue('--log-sidebar-top')).toBe('16px');
     viewportHeight = 1000;
     fireEvent.resize(window);
-    expect(height()).toBe('936px');
+    expect(height()).toBe('952px');
     screen.getByTestId('page').scrollTop = 350;
     fireEvent.resize(window);
-    expect(height()).toBe('936px');
+    expect(height()).toBe('952px');
     expect(sidebar.style.getPropertyValue('--log-sidebar-top')).toBe('16px');
     fireEvent.click(screen.getByRole('button', { name: 'sidebar.collapse' }));
     viewportHeight = 900;
     fireEvent.resize(window);
     // Collapsed buttons keep their own compact size; no height updates apply.
-    expect(height()).toBe('936px');
+    expect(height()).toBe('952px');
     fireEvent.click(screen.getByRole('button', { name: 'sidebar.expand' }));
-    expect(height()).toBe('836px');
+    expect(height()).toBe('852px');
   } finally {
     rectSpy.mockRestore();
     clientRectsSpy.mockRestore();
