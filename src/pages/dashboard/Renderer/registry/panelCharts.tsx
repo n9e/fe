@@ -6,6 +6,7 @@ import Table from '../Renderer/Table';
 import TableNG from '../Renderer/TableNG';
 import Text from '../Renderer/Text';
 import Iframe from '../Renderer/Iframe';
+import AiButton from '../Renderer/AiButton';
 import { lazyPanelChart } from './lazyPanelChart';
 import type { PanelChartAdapter } from './types';
 
@@ -61,6 +62,9 @@ export const TextPanel: PanelChartAdapter = (props) => <Text values={props.value
 
 /** iframe 面板：直接嵌入配置的地址。 */
 export const IframePanel: PanelChartAdapter = (props) => <Iframe values={props.values} series={props.series} />;
+
+/** AI 按钮面板使用已计算的序列替换提示词中的变量。 */
+export const AiButtonPanel: PanelChartAdapter = (props) => <AiButton values={props.values} series={props.series} themeMode={props.themeMode} />;
 
 /** 饼图，按需加载。 */
 export const PiePanel = lazyPanelChart(() => import('../Renderer/Pie'));

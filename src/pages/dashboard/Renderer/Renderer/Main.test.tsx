@@ -41,6 +41,7 @@ jest.mock('./Hexbin', () => () => null);
 jest.mock('./BarGauge', () => () => null);
 jest.mock('./Gauge', () => () => null);
 jest.mock('./Iframe', () => () => <div data-testid='iframe-body' />);
+jest.mock('./AiButton', () => () => null);
 jest.mock('./Heatmap', () => () => null);
 jest.mock('./BarChart', () => () => null);
 
@@ -176,6 +177,39 @@ test('shows the loading skeleton while variables are executing before the panel 
   expect(screen.getByTestId('panel-loading-bar')).toBeInTheDocument();
   expect(screen.getByTestId('panel-loading-chart-icon')).toBeInTheDocument();
   expect(screen.queryByTestId('timeseries-body')).not.toBeInTheDocument();
+});
+
+test('aiButton panel renders its body before the query state is loaded', () => {
+  renderWithDashboardRuntime(
+    <Main
+      id='ai-button-panel'
+      panelWidth={200}
+      values={
+        {
+          id: 'ai-button-panel',
+          type: 'aiButton',
+          name: '',
+          description: '',
+          layout: { h: 2, w: 4, x: 0, y: 0, i: 'ai-button-panel' },
+          targets: [],
+          custom: { style: 'capsule' },
+          options: {},
+          overrides: [],
+        } satisfies IPanel
+      }
+      annotations={[]}
+      controllersVisible={false}
+      queryResult={queryResult}
+      containerEleRef={{ current: null }}
+      time={time}
+      inspect={false}
+      setInspect={jest.fn()}
+      setViewModalVisible={jest.fn()}
+    />,
+  );
+
+  expect(document.querySelector('.renderer-body')).toBeInTheDocument();
+  expect(screen.queryByText('empty')).not.toBeInTheDocument();
 });
 
 test('anonymous-share-equivalent panels keep read-only actions but hide edit and delete', () => {

@@ -43,6 +43,7 @@ jest.mock('../Renderer/Text', () => ({
   },
 }));
 jest.mock('../Renderer/Iframe', () => ({ __esModule: true, default: () => null }));
+jest.mock('../Renderer/AiButton', () => ({ __esModule: true, default: () => null }));
 
 describe('panel chart adapters', () => {
   it('passes annotations, time range and theme props to the timeseries renderer', () => {

@@ -13,6 +13,7 @@ import { SIZE } from '@/utils/constant';
 
 import { defaultValues } from './config';
 import { defaultCustomValuesMap } from '../Renderer/registry/defaults';
+import { NO_QUERY_PANEL_TYPES } from '../Renderer/registry/panelTypes';
 import Options from './Options';
 import Collapse, { Panel } from './Components/Collapse';
 import Renderer from '../Renderer/Renderer';
@@ -49,7 +50,7 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const editorContainerSize = useSize(editorContainerRef);
   const [editorLayout, setEditorLayout] = useState(readEditorLayout);
-  const hasQueryEditor = !_.includes(['text', 'iframe'], type);
+  const hasQueryEditor = !NO_QUERY_PANEL_TYPES.includes(type);
   const layoutBounds = {
     maxPreviewHeight:
       hasQueryEditor && editorContainerSize?.height

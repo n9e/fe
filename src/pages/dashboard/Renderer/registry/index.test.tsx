@@ -10,6 +10,7 @@ jest.mock('./panelCharts', () => {
     TablePanelNG: StubChart,
     TextPanel: StubChart,
     IframePanel: StubChart,
+    AiButtonPanel: StubChart,
     PiePanel: StubChart,
     HexbinPanel: StubChart,
     BarGaugePanel: StubChart,
@@ -25,7 +26,21 @@ jest.mock('@/App', () => ({ CommonStateContext: require('react').createContext({
 
 describe('panel type registry', () => {
   it('keeps the visualization selectors in the configured display order', () => {
-    expect(PANEL_VISUALIZATION_TYPES).toEqual(['timeseries', 'stat', 'tableNG', 'barGauge', 'gauge', 'hexbin', 'barchart', 'pie', 'table', 'text', 'heatmap', 'iframe']);
+    expect(PANEL_VISUALIZATION_TYPES).toEqual([
+      'timeseries',
+      'stat',
+      'tableNG',
+      'barGauge',
+      'gauge',
+      'hexbin',
+      'barchart',
+      'pie',
+      'table',
+      'text',
+      'heatmap',
+      'iframe',
+      'aiButton',
+    ]);
     expect(visualizations.map((item) => item.type)).toEqual(PANEL_VISUALIZATION_TYPES);
   });
 

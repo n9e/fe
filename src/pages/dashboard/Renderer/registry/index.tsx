@@ -2,6 +2,7 @@ import type { IType } from '../../types';
 import {
   BarChartPanel,
   BarGaugePanel,
+  AiButtonPanel,
   GaugePanel,
   HeatmapPanel,
   HexbinPanel,
@@ -113,6 +114,13 @@ const panelTypeRegistry: Record<PanelVisualizationType, PanelTypeDefinition> = {
     loadOptions: () => import('../../Editor/Options/Iframe'),
     defaultCustom: defaultCustomValuesMap.iframe,
     defaultOptions: defaultOptionsValuesMap.iframe,
+  },
+  aiButton: {
+    type: 'aiButton',
+    chart: AiButtonPanel,
+    loadOptions: () => import('../../Editor/Options/AiButton'),
+    defaultCustom: defaultCustomValuesMap.aiButton,
+    defaultOptions: defaultOptionsValuesMap.aiButton,
   },
 };
 

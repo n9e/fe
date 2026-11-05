@@ -35,6 +35,7 @@ import Markdown from '../../Components/Markdown';
 import getPanelCustomTimeDescribe from '../utils/getPanelCustomTimeDescribe';
 import Inspect from '../Inspect';
 import PanelRenderer from '../registry/PanelRenderer';
+import { NO_QUERY_PANEL_TYPES } from '../registry/panelTypes';
 import type { PanelChartProps } from '../registry/types';
 import { resolvePanelColors } from '../../Components/ColorPicker/builtinColors';
 import { IProps } from './index';
@@ -168,7 +169,7 @@ function index(
   const hasPartialFailure = failedRefIds.length > 0 && series.length > 0;
   // 存在请求参考但没有执行快照，表示查询在本地校验阶段被拦截，无需提供刷新入口。
   const isPreflightError = Boolean(requestReference) && (query?.length ?? 0) === 0;
-  const showPanelErrorIcon = Boolean(error) && series.length === 0 && values.type !== 'text' && values.type !== 'iframe';
+  const showPanelErrorIcon = Boolean(error) && series.length === 0 && !NO_QUERY_PANEL_TYPES.includes(values.type);
   const headerError = renderError?.message || error;
   const name = replaceTemplateVariables(values.name, {
     scopedVars: values.scopedVars,
@@ -500,11 +501,11 @@ function index(
             </div>
           )}
         </div>
-        {(loaded || loading || waitingForVariables || values.type === 'text' || values.type === 'iframe') && (
+        {(loaded || loading || waitingForVariables || NO_QUERY_PANEL_TYPES.includes(values.type)) && (
           <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
             {loadingSkeletonVisible ? (
               <PanelLoadingSkeleton label={t('common:loading')} />
-            ) : _.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
+            ) : _.isEmpty(series) && !NO_QUERY_PANEL_TYPES.includes(values.type) ? (
               showPanelErrorIcon ? (
                 <PanelErrorIcon label={error} />
               ) : (

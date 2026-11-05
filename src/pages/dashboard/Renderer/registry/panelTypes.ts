@@ -19,7 +19,11 @@ export const PANEL_VISUALIZATION_TYPES: PanelVisualizationType[] = [
   'text',
   'heatmap',
   'iframe',
+  'aiButton',
 ];
+
+/** 不发起查询、没有序列数据也能渲染的面板类型。 */
+export const NO_QUERY_PANEL_TYPES: readonly string[] = ['text', 'iframe', 'aiButton'];
 
 /** 可视化类型选择使用的列表。 */
 export const visualizations = PANEL_VISUALIZATION_TYPES.map((type) => ({ type }));
