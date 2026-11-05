@@ -76,6 +76,17 @@ it('greys out the entry and explains the missing time when the time value is emp
   expect(await screen.findByText('log_order_context.no_time_tip')).toBeInTheDocument();
 });
 
+it('hides the row icon and greys the button when the table sort key does not support context', async () => {
+  const button = render(<LogOrderContext log={log} timeField='timestamp' orderSupported={false} fetchPage={jest.fn()} />);
+  const entry = button.getByRole('button', { name: 'log_order_context.title' });
+  expect(entry).toBeDisabled();
+  fireEvent.mouseEnter(entry.parentElement as HTMLElement);
+  expect(await button.findByText('log_order_context.table_unsupported_tip')).toBeTruthy();
+
+  const icon = render(<LogOrderContext variant='icon' log={log} timeField='timestamp' orderSupported={false} fetchPage={jest.fn()} />);
+  expect(icon.container.querySelector('.anticon-file-search')).toBeNull();
+});
+
 it('opens context from the same icon SLS uses on the log row', async () => {
   render(<LogOrderContext variant='icon' log={log} timeField='timestamp' fetchPage={() => Promise.resolve(page as any)} />);
   expect(screen.queryByRole('button', { name: 'log_order_context.title' })).toBeNull();

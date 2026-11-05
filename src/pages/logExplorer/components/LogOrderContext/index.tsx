@@ -32,6 +32,7 @@ interface Props {
   fetchPage: (req: LogContextRequest) => Promise<LogContextPage>;
   /** 检索页外面的字段列设置，作为上下文的默认显示字段；空表示全部显示 */
   organizeFields?: string[];
+  orderSupported?: boolean;
 }
 
 // 与 SLS 上下文每次取的行数一致
@@ -39,10 +40,10 @@ const STEP_LINES = 30;
 
 type Direction = 'back' | 'forward';
 
-/** 按原文顺序查看同一文件流的前后日志。详情按钮缺锚点时置灰；行图标缺锚点时不显示 */
+/** 按原文顺序查看同一文件流的前后日志。表不支持或这一行缺锚点时，详情按钮置灰，行图标不显示 */
 export default function LogOrderContext(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { log, variant = 'button', timeField, formatTime = String, fetchPage, organizeFields: outerOrganizeFields } = props;
+  const { log, variant = 'button', timeField, formatTime = String, fetchPage, organizeFields: outerOrganizeFields, orderSupported } = props;
   const anchor = log ? getLogOrderAnchor(log, timeField) : undefined;
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState<LogContextPage>();
@@ -189,6 +190,16 @@ export default function LogOrderContext(props: Props) {
   );
 
   if (!log) return null;
+  if (orderSupported === false) {
+    if (variant === 'icon') return null;
+    return (
+      <Tooltip title={t('log_order_context.table_unsupported_tip')}>
+        <span>
+          <Button disabled>{t('log_order_context.title')}</Button>
+        </span>
+      </Tooltip>
+    );
+  }
   if (!anchor) {
     if (variant === 'icon') return null;
     const reason = logOrderUnavailableReason(log, timeField);

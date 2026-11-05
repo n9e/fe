@@ -188,6 +188,8 @@ const ko_KR = {
     no_fields_tip:
       '이 로그에는 __log_stream_id__, __log_seq__가 없어 원본 순서의 컨텍스트를 볼 수 없습니다. Categraf v0.5.45 이상으로 파일 로그를 수집하고 로그 변환의 추출 필드에 두 필드를 유지하세요',
     no_time_tip: '이 로그에는 시간 필드 {{field}}가 없어 컨텍스트를 찾을 수 없습니다',
+    table_unsupported_tip:
+      '이 테이블은 정렬 키가 시간 필드, __log_stream_id__, __log_seq__로 시작하지 않아 컨텍스트를 볼 수 없습니다. 기존 테이블의 정렬 키는 바꿀 수 없으니 새 테이블을 만드세요',
     back_to_anchor: '현재 로그',
     raw_layout: '원문 레이아웃',
     raw_layout_tip: '시간과 필드 이름 없이 값만 고정폭 글꼴로 표시하여 들여쓰기를 유지합니다',
