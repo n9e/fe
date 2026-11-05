@@ -186,10 +186,10 @@ const pt_BR = {
     earlier_disabled_tip: 'Nenhum log anterior deste arquivo na hora anterior; amplie o intervalo de tempo na busca para ver mais',
     later_disabled_tip: 'Nenhum log posterior deste arquivo na hora seguinte',
     no_fields_tip:
-      'Este log não tem __log_stream_id__ nem __log_seq__, então o contexto na ordem original não está disponível. Colete os logs de arquivo com o Categraf v0.5.45 ou posterior e mantenha os dois campos nos campos extraídos da transformação',
+      'Este log não tem __log_stream_id__ nem __log_seq__, então não pode ser ordenado na ordem do arquivo e o contexto não está disponível. Colete os logs de arquivo com o Categraf v0.5.45 ou posterior e mantenha os dois campos nos campos extraídos da transformação',
     no_time_tip: 'Este log não tem o campo de tempo {{field}}, então o contexto não pode ser localizado',
     table_unsupported_tip:
-      'Esta tabela não mostra contexto: a chave de ordenação não começa com o campo de tempo, __log_stream_id__ e __log_seq__. A chave de uma tabela existente não pode ser alterada; crie uma tabela nova',
+      'A chave de ordenação desta tabela não começa com o campo de tempo, __log_stream_id__ e __log_seq__. Os resultados não podem ser ordenados na ordem do arquivo, e o contexto não está disponível.',
     back_to_anchor: 'Log atual',
     raw_layout: 'Layout original',
     raw_layout_tip: 'Mostra apenas os valores, sem hora nem nomes de campo, em fonte monoespaçada que preserva a indentação',
