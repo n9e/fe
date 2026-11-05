@@ -5,7 +5,30 @@ const fr_FR = {
   },
   query: 'Condition de requête',
   query_is_required: 'La condition de requête est obligatoire',
+  sql_placeholder: 'Saisissez du SQL',
+  sql_shortcut_hint: 'Shift+Entrée saut de ligne · Entrée requête',
   execute: 'Requête',
+  query_workspace: {
+    assist: 'Assistance par formulaire',
+    assist_tip:
+      "Construisez la requête avec le formulaire, puis convertissez-la pour la prévisualiser ou continuer à l'écrire à la main. Les requêtes existantes ne sont pas converties en formulaire.",
+    enable_assist: "Activez d'abord l'assistance par formulaire",
+    builder: 'Construction du formulaire',
+    preview: 'Aperçu {{language}}',
+    convert: 'Convertir en {{language}}',
+    continue: 'Continuer à écrire ce {{language}}',
+    not_generated: 'Non converti',
+    generating: 'Génération',
+    modified: 'Le formulaire a changé ; convertissez la requête',
+    synced: 'Identique au formulaire',
+    empty: "Configurez le formulaire puis cliquez sur « Convertir en {{language}} » pour générer l'aperçu",
+    use_previous: 'Le résultat de la dernière conversion sera utilisé. Pour obtenir le contenu le plus récent, convertissez à nouveau.',
+    range_required: 'Sélectionnez une plage de temps',
+    unlimited: 'Illimité',
+    build_failed: 'Échec de la génération du SQL',
+    collapse: 'Replier',
+    expand: 'Déplier',
+  },
   mode: {
     label: 'Mode',
     raw_logs: 'Journaux bruts',
@@ -127,6 +150,11 @@ const fr_FR = {
       topNSettings: {
         title: 'Réglage des N valeurs les plus fréquentes',
       },
+      flattenSettings: {
+        title: "Niveau d'aplatissement des champs",
+        extra:
+          "0 : sans analyse ni aplatissement, les valeurs des champs sont affichées sous forme de chaînes de log brutes\nN (>=1) : le JSON imbriqué est déplié jusqu'à N niveaux, les parties plus profondes sont affichées en entier",
+      },
     },
     fieldLabelTip: "Les statistiques ne sont pas activées sur ce champ : aucune analyse statistique n'est possible",
     filterAnd: 'Ajouter « {{token}} » à cette recherche',
@@ -177,7 +205,6 @@ const fr_FR = {
     loading_tip_suffix: 'et lancez-y votre recherche',
     sampled_tip: 'Les journaux sont trop nombreux : ce regroupement repose sur un échantillon',
   },
-  view_placeholder: 'Vue des journaux',
   log_order_context: {
     title: 'Contexte',
     earlier: 'Plus anciens',
@@ -206,6 +233,7 @@ const fr_FR = {
     highlight_keywords_add: 'Ajouter un surlignage',
     stream_tip: 'Flux du fichier (identifiant attribué par le collecteur à chaque fichier) ; le contexte affiche les lignes de ce flux dans l’ordre d’origine',
   },
+  view_placeholder: 'Vue des journaux',
 };
 
 export default fr_FR;

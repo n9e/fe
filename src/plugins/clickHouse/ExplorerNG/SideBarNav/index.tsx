@@ -28,6 +28,11 @@ interface Props {
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
+
+  /** The database/table/date field changed: the builder and its statement belong to the old context. */
+  onQueryContextChange?: () => void;
+  /** A field statistic wrote a statement: it belongs to hand-written SQL, not to the builder. */
+  onGeneratedSql?: () => void;
 }
 
 export default function index(props: Props) {
@@ -43,6 +48,9 @@ export default function index(props: Props) {
 
     stackByField,
     setStackByField,
+
+    onQueryContextChange,
+    onGeneratedSql,
   } = props;
 
   const form = Form.useFormInstance();
@@ -144,9 +152,13 @@ export default function index(props: Props) {
               disabled={disabled}
               datasourceValue={datasourceValue}
               onChange={() => {
+                // The statement names the database it runs against: drop it with the context it belonged to and
+                // go back to writing SQL by hand.
+                onQueryContextChange?.();
                 form.setFieldsValue({
                   refreshFlag: undefined,
                   query: {
+                    sql: undefined,
                     stackByField: undefined,
                     table: undefined,
                     time_field: undefined,
@@ -161,9 +173,11 @@ export default function index(props: Props) {
               datasourceValue={datasourceValue}
               database={database}
               onChange={() => {
+                onQueryContextChange?.();
                 form.setFieldsValue({
                   refreshFlag: undefined,
                   query: {
+                    sql: undefined,
                     stackByField: undefined,
                     time_field: undefined,
                     query_builder_filter: undefined,
@@ -178,7 +192,10 @@ export default function index(props: Props) {
                 return isCKDateType(item.type, item.normalized_type);
               })}
               onChange={() => {
-                executeQuery();
+                onQueryContextChange?.();
+                form.setFieldsValue({ refreshFlag: undefined, query: { sql: undefined } });
+                // The statement was just dropped, so only a search-mode filter still has something to run.
+                if (syntax !== 'sql') executeQuery();
               }}
             />
           </Form.Item>
@@ -193,6 +210,7 @@ export default function index(props: Props) {
             executeQuery={executeQuery}
             stackByField={stackByField}
             setStackByField={setStackByField}
+            onGeneratedSql={onGeneratedSql}
           />
         </div>
       </div>

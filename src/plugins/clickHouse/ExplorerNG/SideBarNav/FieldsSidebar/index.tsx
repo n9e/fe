@@ -21,6 +21,8 @@ interface IProps {
   loading: boolean;
   onValueFilter: HandleValueFilterParams;
   executeQuery: () => void;
+  /** The statistic generated a statement: it replaces the builder configuration. */
+  onGeneratedSql?: () => void;
 
   stackByField?: string;
   setStackByField: (field?: string) => void;
@@ -28,7 +30,7 @@ interface IProps {
 
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, stackByField, setStackByField } = props;
+  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, stackByField, setStackByField, onGeneratedSql } = props;
   const fieldTypeMap = React.useMemo<Record<string, string>>(
     () =>
       _.omitBy(
@@ -228,6 +230,7 @@ export default function index(props: IProps) {
               const sqlPreviewData = res.table;
               if (!sqlPreviewData) return;
               const sqlTimeSeriesData = res.timeseries?.[options.func];
+              onGeneratedSql?.();
               form.setFieldsValue({
                 refreshFlag: undefined,
                 query: {
@@ -244,6 +247,7 @@ export default function index(props: IProps) {
             } else if (type === 'timeseries') {
               const sqlPreviewData = res.timeseries?.[options.func];
               if (sqlPreviewData) {
+                onGeneratedSql?.();
                 form.setFieldsValue({
                   refreshFlag: undefined,
                   query: {

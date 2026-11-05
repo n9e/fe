@@ -5,7 +5,30 @@ const es_ES = {
   },
   query: 'Condición de consulta',
   query_is_required: 'La condición de consulta no puede estar vacía',
+  sql_placeholder: 'Introduzca SQL',
+  sql_shortcut_hint: 'Shift+Enter nueva línea · Enter consulta',
   execute: 'Consulta',
+  query_workspace: {
+    assist: 'Asistencia con formulario',
+    assist_tip:
+      'Cree la consulta con el formulario y, tras convertirla, podrá previsualizarla o seguir escribiendo a mano. Las consultas existentes no se convierten al formulario.',
+    enable_assist: 'Active primero la asistencia con formulario',
+    builder: 'Construcción del formulario',
+    preview: 'Vista previa de {{language}}',
+    convert: 'Convertir a {{language}}',
+    continue: 'Seguir escribiendo este {{language}}',
+    not_generated: 'Sin convertir',
+    generating: 'Generando',
+    modified: 'El formulario ha cambiado; convierta la consulta',
+    synced: 'Coincide con el formulario',
+    empty: 'Configure el formulario y haga clic en «Convertir a {{language}}» para generar la vista previa',
+    use_previous: 'Se usará el resultado de la última conversión. Para obtener el contenido más reciente, vuelva a convertir.',
+    range_required: 'Seleccione un rango de tiempo',
+    unlimited: 'Sin límite',
+    build_failed: 'Error al generar SQL',
+    collapse: 'Contraer',
+    expand: 'Expandir',
+  },
   mode: {
     label: 'Modo',
     raw_logs: 'Texto bruto del log',
@@ -126,6 +149,11 @@ const es_ES = {
       topNSettings: {
         title: 'Configuración de los N valores más frecuentes',
       },
+      flattenSettings: {
+        title: 'Nivel de aplanado de campos',
+        extra:
+          '0: sin analizar ni aplanar, los valores de los campos se muestran como las cadenas originales del log\nN (>=1): el JSON anidado se expande hasta N niveles, las partes más profundas se muestran completas',
+      },
     },
     fieldLabelTip: 'Las estadísticas no están activadas para este campo, así que no puede analizarse',
     filterAnd: 'Añadir «{{token}}» a esta búsqueda',
@@ -176,7 +204,6 @@ const es_ES = {
     loading_tip_suffix: 'y haz allí la búsqueda de logs',
     sampled_tip: 'Hay demasiados logs, así que esta agrupación se ha generado a partir de una muestra',
   },
-  view_placeholder: 'Vista de los logs',
   log_order_context: {
     title: 'Contexto',
     earlier: 'Anteriores',
@@ -205,6 +232,7 @@ const es_ES = {
     highlight_keywords_add: 'Añadir resaltado',
     stream_tip: 'Flujo del archivo (ID que el recolector asigna a cada archivo); el contexto muestra las líneas de este flujo en su orden original',
   },
+  view_placeholder: 'Vista de los logs',
 };
 
 export default es_ES;

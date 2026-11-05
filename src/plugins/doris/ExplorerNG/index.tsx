@@ -20,6 +20,7 @@ import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } fr
 import SideBarNav from './SideBarNav';
 import Main from './Main';
 import { useDorisAiDock } from './aiDock';
+import useDorisQueryWorkspace from './useQueryWorkspace';
 
 import './style.less';
 import UsageDocs from '@/components/UsageDocs';
@@ -44,8 +45,9 @@ export default function index(props: Props) {
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
   const syntax = Form.useWatch(['query', 'syntax']);
-  const ai = useDorisAiDock({ form, datasourceValue, syntax, indexData, commit: (values) => commitQuery(values) });
+  const ai = useDorisAiDock({ form, datasourceValue, syntax, indexData, commit: (values) => commitQuery(values), onSqlFill: () => workspace.enterManual() });
   const invalidate = ai.invalidate;
+  const workspace = useDorisQueryWorkspace({ form, datasourceValue, execute: () => submitQuery(), onQueryEdit: ai.onQueryEdit });
 
   // What a validated query does once it may run: remember it, then refresh.
   function commitQuery(values) {
@@ -75,22 +77,33 @@ export default function index(props: Props) {
     });
   }
 
-  const executeQuery = (force = false) => {
+  function submitQuery(force = false): Promise<void> {
     invalidate();
     // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
-    setTimeout(() => {
-      form.validateFields().then((values) => {
-        const queryValues = values.query;
+    return new Promise<void>((resolve) => setTimeout(resolve, 0)).then(() => {
+      return form.validateFields().then(
+        (values) => {
+          const queryValues = values.query;
 
-        // 如果是 sql 模式 sql值 里未包含关键字：$__time 或 $__unixEpoch，触发查询时阻断弹窗
-        const sqlValue = queryValues.sql || '';
-        // typeof force === 'boolean' 是为了防止非布尔值传入时报错
-        if (typeof force === 'boolean' && !force && queryValues.syntax === 'sql' && !sqlValue.includes('$__time') && !sqlValue.includes('$__unixEpoch')) {
-          setQueryWarnModalVisible(true);
-          return;
-        }
-        commitQuery(values);
-      });
+          // 如果是 sql 模式 sql值 里未包含关键字：$__time 或 $__unixEpoch，触发查询时阻断弹窗
+          const sqlValue = queryValues.sql || '';
+          // typeof force === 'boolean' 是为了防止非布尔值传入时报错
+          if (typeof force === 'boolean' && !force && queryValues.syntax === 'sql' && !sqlValue.includes('$__time') && !sqlValue.includes('$__unixEpoch')) {
+            setQueryWarnModalVisible(true);
+            return;
+          }
+          commitQuery(values);
+        },
+        () => undefined,
+      );
+    });
+  }
+
+  const executeQuery = () => {
+    // Form watchers must observe changed query context before the builder starts.
+    setTimeout(() => {
+      if (form.getFieldValue(['query', 'syntax']) === 'sql') void workspace.run();
+      else void submitQuery();
     }, 0);
   };
 
@@ -237,6 +250,13 @@ export default function index(props: Props) {
               setStackByField={handleSetStackByField}
               defaultSearchField={defaultSearchField}
               setDefaultSearchField={handleSetDefaultSearchField}
+              onQueryContextChange={() => workspace.enterManual()}
+              onGeneratedSql={() => {
+                // The sidebar wrote a statement from a field statistic: show it in the manual editor and forget
+                // the builder configuration it replaced.
+                workspace.enterManual();
+                workspace.resetBuilder();
+              }}
             />
           </SideBar>
           <div className='min-w-0 flex-1'>
@@ -268,7 +288,7 @@ export default function index(props: Props) {
               queryBoxRef={ai.queryBoxRef}
               queryButtonRef={ai.queryButtonRef}
               queryRequest={ai.queryRequest}
-              keepEditorInFlow={ai.open}
+              workspace={workspace}
               onQueryEdit={ai.onQueryEdit}
             />
           </div>
@@ -282,7 +302,7 @@ export default function index(props: Props) {
             key='ok'
             onClick={() => {
               setQueryWarnModalVisible(false);
-              executeQuery(true);
+              void submitQuery(true);
             }}
           >
             {t('query.warn_message_btn_1')}

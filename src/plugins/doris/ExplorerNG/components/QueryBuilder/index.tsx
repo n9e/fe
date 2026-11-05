@@ -1,54 +1,48 @@
-import React, { useEffect, useMemo } from 'react';
-import { Form, Space, Tooltip, Segmented, Button, Select, InputNumber } from 'antd';
+import React, { useMemo } from 'react';
+import { Form, Space, Tooltip, Segmented, Select, InputNumber } from 'antd';
 import { FormInstance } from 'antd/es/form';
-import { InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
-import { useRequest } from 'ahooks';
 
 import { SIZE, DatasourceCateEnum } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
 
 import { Field, FieldSampleParams } from '../../types';
-import { NAME_SPACE, DATE_TYPE_LIST } from '../../../constants';
-import { getDorisIndex, buildSql } from '../../../services';
+import { NAME_SPACE } from '../../../constants';
 import getMaxLabelWidth from '../QueryBuilder/utils/getMaxLabelWidth';
-import getIndexTimeRange from '../../utils/getIndexTimeRange';
+import CommonStateContext from './commonStateContext';
+import { defaultBuilderValues, DorisBuilderValues } from '../../useQueryWorkspace';
 
 import Filters from './Filters';
 import Aggregates from './Aggregates';
 import OrderBy from './OrderBy';
 
-import './style.less';
-
 interface Props {
   explorerForm: FormInstance;
-  datasourceValue: number;
+  form: FormInstance<DorisBuilderValues>;
+  datasourceValue?: number;
   database?: string;
   table?: string;
   time_field?: string;
-  sqlValue?: string;
-  visible: boolean;
-  onExecute: (values) => void;
-  onPreviewSQL: (values) => void;
+  indexData: Field[];
+  onChange: () => void;
 }
 
-export default function index(props: Props) {
+const inlineBuilderContext = { ignoreNextOutsideClick: () => {} };
+
+export default function QueryBuilder(props: Props) {
   const { t, i18n } = useTranslation(NAME_SPACE);
-
-  const { explorerForm, datasourceValue, database, table, time_field, sqlValue, visible, onExecute, onPreviewSQL } = props;
-
-  const [form] = Form.useForm();
-  const refreshFlag = Form.useWatch('refreshFlag', explorerForm);
+  const { explorerForm, form, datasourceValue, database, table, time_field, indexData, onChange } = props;
+  const range = Form.useWatch(['query', 'range'], explorerForm);
   const filters = Form.useWatch(['filters'], form);
   const aggregates = Form.useWatch(['aggregates'], form);
   const group_by = Form.useWatch(['group_by'], form);
 
   const fieldSampleParams = useMemo(() => {
-    const range = explorerForm.getFieldValue(['query', 'range']);
-    if (!database || !table || !time_field || !range) return {} as FieldSampleParams;
+    if (!datasourceValue || !database || !table || !time_field || !range) return {} as FieldSampleParams;
     const parsedRange = parseRange(range);
     return {
       cate: DatasourceCateEnum.doris,
@@ -61,42 +55,7 @@ export default function index(props: Props) {
       to: moment(parsedRange.end).valueOf(),
       limit: 100,
     };
-  }, [datasourceValue, database, table, time_field, JSON.stringify(filters), refreshFlag]);
-
-  const indexDataService = () => {
-    if (datasourceValue && database && table) {
-      return getDorisIndex({
-        cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        database,
-        table,
-        ...getIndexTimeRange(explorerForm),
-      })
-        .then((res) => {
-          const timeField = form.getFieldValue('time_field');
-          const fieldExists = _.some(res, (item) => item.field === timeField);
-          if (!timeField || !fieldExists) {
-            const firstDateField = _.find(res, (item) => {
-              return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
-            })?.field;
-            if (firstDateField) {
-              form.setFieldsValue({
-                time_field: firstDateField,
-              });
-            }
-          }
-          return res;
-        })
-        .catch(() => {
-          return [];
-        });
-    }
-    return Promise.resolve(undefined);
-  };
-
-  const { data: indexData = [] } = useRequest<Field[] | undefined, any>(indexDataService, {
-    refreshDeps: [datasourceValue, database, table, refreshFlag],
-  });
+  }, [datasourceValue, database, table, time_field, JSON.stringify(filters), JSON.stringify(range)]);
 
   const validIndexData = useMemo(() => {
     return _.filter(indexData, (item) => {
@@ -114,182 +73,96 @@ export default function index(props: Props) {
     ]);
   }, [i18n.language]);
 
-  useEffect(() => {
-    if (visible) {
-      const explorerQueryValues = explorerForm.getFieldValue('query') || {};
-      const database = form.getFieldValue('database');
-      const table = form.getFieldValue('table');
-      const time_field = form.getFieldValue('time_field');
-
-      form.setFieldsValue({
-        database: database || explorerQueryValues.database || undefined,
-        table: table || explorerQueryValues.table || undefined,
-        time_field: time_field || explorerQueryValues.time_field || undefined,
-      });
-    }
-  }, [visible]);
-
   return (
-    <Form form={form} layout='vertical'>
-      <div className='w-full table border-separate border-spacing-y-2'>
-        <div
-          className='table-column'
-          style={{
-            width: maxLabelWidth,
-          }}
-        />
-        <div className='table-column' />
-        <div className='table-row'>
-          <div className='table-cell align-top'>
-            <div className='h-[24px] flex items-center'>
-              <Tooltip title={t('builder.filters.label_tip')}>
-                <Space size={SIZE / 2}>
-                  <span>{t('builder.filters.label')}</span>
-                  <InfoCircleOutlined />
-                </Space>
-              </Tooltip>
+    <CommonStateContext.Provider value={inlineBuilderContext}>
+      <Form form={form} component='div' layout='vertical' initialValues={defaultBuilderValues} onValuesChange={onChange}>
+        <div className='w-full table border-separate border-spacing-y-2'>
+          <div
+            className='table-column'
+            style={{
+              width: maxLabelWidth,
+            }}
+          />
+          <div className='table-column' />
+          <div className='table-row'>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>
+                <Tooltip title={t('builder.filters.label_tip')}>
+                  <Space size={SIZE / 2}>
+                    <span>{t('builder.filters.label')}</span>
+                    <InfoCircleOutlined />
+                  </Space>
+                </Tooltip>
+              </div>
+            </div>
+            <div className='table-cell'>
+              <Form.Item name='filters' noStyle>
+                <Filters size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
+              </Form.Item>
             </div>
           </div>
-          <div className='table-cell'>
-            <Form.Item name='filters' noStyle>
-              <Filters size='small' indexData={validIndexData} fieldSampleParams={fieldSampleParams} />
-            </Form.Item>
-          </div>
-        </div>
-        <div className='table-row'>
-          <div className='table-cell align-top'>
-            <div className='h-[24px] flex items-center'>{t('builder.aggregates.label')}</div>
-          </div>
-          <div className='table-cell'>
-            <Form.Item name='aggregates' noStyle>
-              <Aggregates indexData={validIndexData} />
-            </Form.Item>
-          </div>
-        </div>
-        <div className='table-row'>
-          <div className='table-cell align-top'>
-            <div className='h-[24px] flex items-center'>{t('builder.display_label')}</div>
-          </div>
-          <div className='table-cell'>
-            <Space size={SIZE} wrap>
-              <Form.Item name='mode' noStyle initialValue='table'>
-                <Segmented
-                  size='small'
-                  options={[
-                    { label: t('builder.mode.table'), value: 'table' },
-                    { label: t('builder.mode.timeseries'), value: 'timeseries' },
-                  ]}
-                />
+          <div className='table-row'>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>{t('builder.aggregates.label')}</div>
+            </div>
+            <div className='table-cell'>
+              <Form.Item name='aggregates' noStyle>
+                <Aggregates indexData={validIndexData} />
               </Form.Item>
-              <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
-                <Form.Item name='group_by' noStyle>
-                  <Select
+            </div>
+          </div>
+          <div className='table-row'>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>{t('builder.display_label')}</div>
+            </div>
+            <div className='table-cell'>
+              <Space size={SIZE} wrap>
+                <Form.Item name='mode' noStyle>
+                  <Segmented
                     size='small'
-                    className='min-w-[160px] doris-query-builder-group-by-select'
-                    dropdownClassName='doris-query-builder-popup'
-                    options={_.map(indexData, (item) => {
-                      return { label: item.field, value: item.field };
-                    })}
-                    mode='multiple'
-                    showSearch
-                    optionFilterProp='label'
-                    dropdownMatchSelectWidth={false}
+                    options={[
+                      { label: t('builder.mode.table'), value: 'table' },
+                      { label: t('builder.mode.timeseries'), value: 'timeseries' },
+                    ]}
                   />
                 </Form.Item>
-              </InputGroupWithFormItem>
-              <InputGroupWithFormItem size='small' label={t('builder.limit')}>
-                <Form.Item name='limit' noStyle>
-                  <InputNumber size='small' className='w-[80px]' min={1} max={10000000} />
-                </Form.Item>
-              </InputGroupWithFormItem>
-            </Space>
+                <InputGroupWithFormItem size='small' label={t('builder.group_by')}>
+                  <Form.Item name='group_by' noStyle>
+                    <Select
+                      size='small'
+                      className='min-w-[140px] max-w-full [&_.ant-select-selection-item]:h-[14.8px] [&_.ant-select-selection-item]:my-0'
+                      dropdownClassName='doris-query-builder-popup'
+                      options={_.map(indexData, (item) => {
+                        return { label: item.field, value: item.field };
+                      })}
+                      mode='multiple'
+                      placeholder={t('builder.filters.field_placeholder')}
+                      showSearch
+                      optionFilterProp='label'
+                      dropdownMatchSelectWidth={false}
+                    />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+                <InputGroupWithFormItem size='small' label={t('builder.limit')}>
+                  <Form.Item name='limit' noStyle>
+                    <InputNumber size='small' className='w-[80px]' min={1} max={10000000} placeholder={t('log_explorer:query_workspace.unlimited')} />
+                  </Form.Item>
+                </InputGroupWithFormItem>
+              </Space>
+            </div>
+          </div>
+          <div className='table-row mb-4'>
+            <div className='table-cell align-top'>
+              <div className='h-[24px] flex items-center whitespace-nowrap'>{t('builder.order_by.label')}</div>
+            </div>
+            <div className='table-cell'>
+              <Form.Item name='order_by' noStyle>
+                <OrderBy indexData={validIndexData} aggregates={aggregates} group_by={group_by} />
+              </Form.Item>
+            </div>
           </div>
         </div>
-        <div className='table-row mb-4'>
-          <div className='table-cell align-top'>
-            <div className='h-[24px] flex items-center'>{t('builder.order_by.label')}</div>
-          </div>
-          <div className='table-cell'>
-            <Form.Item name='order_by' noStyle>
-              <OrderBy indexData={validIndexData} aggregates={aggregates} group_by={group_by} />
-            </Form.Item>
-          </div>
-        </div>
-      </div>
-      <Space size={SIZE} className='mt-2'>
-        <Tooltip title={sqlValue ? t('builder.btn_tip') : undefined}>
-          <Button
-            size='small'
-            type='primary'
-            icon={<SearchOutlined />}
-            onClick={() => {
-              form.validateFields().then((values) => {
-                const range = explorerForm.getFieldValue(['query', 'range']);
-                if (!range || !database || !table || !time_field) return;
-                const parsedRange = parseRange(range);
-                buildSql({
-                  cate: DatasourceCateEnum.doris,
-                  datasource_id: datasourceValue,
-                  query: [
-                    {
-                      database,
-                      table,
-                      time_field,
-                      from: moment(parsedRange.start).valueOf(),
-                      to: moment(parsedRange.end).valueOf(),
-                      filters: values.filters,
-                      aggregates: values.aggregates,
-                      group_by: values.group_by,
-                      order_by: values.order_by,
-                      mode: values.mode,
-                      limit: values.limit,
-                    },
-                  ],
-                }).then((res) => {
-                  onExecute(res);
-                });
-              });
-            }}
-          >
-            {t('builder.excute')}
-          </Button>
-        </Tooltip>
-        <Tooltip title={sqlValue ? t('builder.btn_tip') : undefined}>
-          <Button
-            size='small'
-            onClick={() => {
-              form.validateFields().then((values) => {
-                const range = explorerForm.getFieldValue(['query', 'range']);
-                if (!range || !database || !table || !time_field) return;
-                const parsedRange = parseRange(range);
-                buildSql({
-                  cate: DatasourceCateEnum.doris,
-                  datasource_id: datasourceValue,
-                  query: [
-                    {
-                      database,
-                      table,
-                      time_field,
-                      from: moment(parsedRange.start).valueOf(),
-                      to: moment(parsedRange.end).valueOf(),
-                      filters: values.filters,
-                      aggregates: values.aggregates,
-                      group_by: values.group_by,
-                      order_by: values.order_by,
-                      mode: values.mode,
-                      limit: values.limit,
-                    },
-                  ],
-                }).then((res) => {
-                  onPreviewSQL(res);
-                });
-              });
-            }}
-          >
-            {t('builder.preview_sql')}
-          </Button>
-        </Tooltip>
-      </Space>
-    </Form>
+      </Form>
+    </CommonStateContext.Provider>
   );
 }

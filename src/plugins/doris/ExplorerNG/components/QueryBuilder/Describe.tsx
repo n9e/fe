@@ -7,16 +7,17 @@ interface Props {
   children: React.ReactNode;
   onClick: (e: any) => void;
   disabled?: boolean;
+  /** Plain text of the chip, shown as the native tooltip. */
+  title?: string;
 }
 
 export default function Describe(props: Props) {
-  const { children, onClick, disabled } = props;
+  const { children, onClick, disabled, title } = props;
 
   return (
     <div
-      className={`border border-antd rounded-sm hover:bg-fc-150 min-h-[24px] wrap-break-word whitespace-normal cursor-pointer flex items-center justify-between ${
-        disabled ? 'opacity-50 bg-fc-100' : ''
-      }`}
+      title={title}
+      className={`border border-antd rounded-sm hover:bg-fc-150 min-h-[24px] cursor-pointer flex items-center justify-between ${disabled ? 'opacity-50 bg-fc-100' : ''}`}
     >
       <div
         className='h-full px-[7px] flex items-center relative'
