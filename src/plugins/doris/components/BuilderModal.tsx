@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Form, Modal, Row, Col, Space, Segmented, Select, InputNumber, Tooltip, message } from 'antd';
+import type { ModalProps } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -43,6 +44,7 @@ interface Props {
   visible: boolean;
   datasourceId: number;
   builderConfig?: BuilderConfig;
+  getContainer?: ModalProps['getContainer'];
   onCancel: () => void;
   onConfirm: (builderConfig: BuilderConfig, result: BuildSqlResult) => void;
 }
@@ -60,7 +62,7 @@ const getDefaultBuilderConfig = (builderConfig?: BuilderConfig): BuilderConfig =
 };
 
 export default function BuilderModal(props: Props) {
-  const { visible, datasourceId, builderConfig, onCancel, onConfirm } = props;
+  const { visible, datasourceId, builderConfig, getContainer, onCancel, onConfirm } = props;
   const { t, i18n } = useTranslation(NAME_SPACE);
   const [form] = Form.useForm<BuilderConfig>();
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -182,7 +184,7 @@ export default function BuilderModal(props: Props) {
         ignoreNextOutsideClick: () => {},
       }}
     >
-      <Modal width={960} visible={visible} title='Builder' confirmLoading={confirmLoading} onCancel={onCancel} onOk={handleOk} destroyOnClose>
+      <Modal width={960} visible={visible} title='Builder' confirmLoading={confirmLoading} onCancel={onCancel} onOk={handleOk} destroyOnClose getContainer={getContainer}>
         <Form form={form} layout='vertical'>
           <Row gutter={10}>
             <Col span={8}>
