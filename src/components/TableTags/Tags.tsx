@@ -230,9 +230,9 @@ export default function Tags<T>(props: Props<T>) {
                 )}
               </div>
             }
-            overlayStyle={{ width: 400, maxHeight: 600, overflowY: 'auto' } as React.CSSProperties}
+            overlayStyle={{ width: 400 }}
             content={
-              <div className='flex flex-wrap gap-1'>
+              <div className='flex flex-wrap gap-1 best-looking-scroll' style={{ maxHeight: 500 }}>
                 {(data as (string | T)[]).map((item, i) => (
                   <span
                     key={getItemKey(item, i)}

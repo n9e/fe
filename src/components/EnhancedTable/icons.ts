@@ -1,5 +1,6 @@
 import {
   ArrowDownToLine,
+  ChartLine,
   CheckCircle,
   Copy,
   ExternalLink,
@@ -21,6 +22,7 @@ import {
   UserX,
   Import,
   BellOff,
+  Compass,
 } from 'lucide-react';
 
 import type { RowAction } from './types';
@@ -29,6 +31,8 @@ export const actionIconMap = {
   default: CheckCircle,
   edit: Pencil,
   view: Eye,
+  compass: Compass,
+  dashboard: ChartLine,
   history: History,
   settings: Settings,
   access: Network,
