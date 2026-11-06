@@ -286,7 +286,7 @@ it('hides the point summary immediately for the calendar and forwards the range 
   render(<TimePointPicker value={moment('2026-10-20 08:00')} showTime showNow={false} renderExtraFooter={() => <button onClick={rangeAction}>adjust range</button>} />);
   fireEvent.mouseEnter(document.querySelector('.ant-picker')!);
   act(() => {
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
   });
   expect(screen.getByRole('tooltip')).toHaveTextContent('08:00:00');
   fireEvent.mouseDown(screen.getByRole('textbox'));
@@ -297,6 +297,32 @@ it('hides the point summary immediately for the calendar and forwards the range 
   expect(rangeAction).toHaveBeenCalledTimes(1);
 });
 
+it('removes the native point tooltip while preserving focus, typing, calendar confirmation and clearing', () => {
+  const onChange = jest.fn();
+  render(<TimePointPicker defaultValue={moment('2026-10-20 08:00:00')} showTime format='YYYY-MM-DD HH:mm:ss' onChange={onChange} />);
+  const input = screen.getByRole('textbox');
+  expect(input).toHaveAttribute('title', '');
+  fireEvent.mouseDown(input);
+  fireEvent.mouseUp(input);
+  fireEvent.click(input);
+  expect(input).toHaveFocus();
+  fireEvent.change(input, { target: { value: '2026-10-21 09:10:11' } });
+  fireEvent.keyDown(input, { key: 'Enter', code: 'Enter', keyCode: 13 });
+  expect(onChange.mock.calls[0][1]).toBe('2026-10-21 09:10:11');
+  expect(input).toHaveAttribute('title', '');
+  fireEvent.mouseDown(input);
+  fireEvent.mouseUp(input);
+  fireEvent.click(input);
+  fireEvent.click(document.querySelector('td[title="2026-10-22"] .ant-picker-cell-inner')!);
+  fireEvent.click(document.querySelector('.ant-picker-ok button')!);
+  expect(onChange.mock.calls[1][1]).toBe('2026-10-22 09:10:11');
+  expect(input).toHaveValue('2026-10-22 09:10:11');
+  expect(input).toHaveAttribute('title', '');
+  fireEvent.mouseUp(document.querySelector('.ant-picker-clear')!);
+  expect(onChange).toHaveBeenLastCalledWith(null, '');
+  expect(input).toHaveValue('');
+});
+
 it('suppresses point summaries while the external range editor is open without leaving a stale hover', () => {
   jest.useFakeTimers();
   const value = moment('2026-10-20 08:00');
@@ -304,25 +330,25 @@ it('suppresses point summaries while the external range editor is open without l
   const trigger = document.querySelector('.ant-picker')!;
   fireEvent.mouseEnter(trigger);
   act(() => {
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
   });
   expect(screen.getByRole('tooltip')).toBeInTheDocument();
   rerender(<TimePointPicker value={value} tooltipDisabled />);
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   fireEvent.mouseEnter(trigger);
   act(() => {
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
   });
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   rerender(<TimePointPicker value={value} />);
   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
   fireEvent.mouseLeave(trigger);
   act(() => {
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
   });
   fireEvent.mouseEnter(trigger);
   act(() => {
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(500);
   });
   expect(screen.getByRole('tooltip')).toBeInTheDocument();
 });
@@ -386,4 +412,29 @@ it('edits a configured frequency without starting queries or inheriting a page l
     jest.advanceTimersByTime(10000);
   });
   expect(refresh).toHaveBeenCalledTimes(1);
+});
+
+it.each(['range', 'point'])('waits 500ms before showing the %s summary and cancels a brief hover', (kind) => {
+  jest.useFakeTimers();
+  render(kind === 'range' ? <Picker value={{ start: 'now-1h', end: 'now' }} /> : <TimePointPicker value={moment('2026-10-20 08:00')} />);
+  const trigger = document.querySelector(kind === 'range' ? '.flashcat-timeRangePicker-target' : '.ant-picker')!;
+  fireEvent.mouseEnter(trigger);
+  act(() => {
+    jest.advanceTimersByTime(499);
+  });
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  fireEvent.mouseLeave(trigger);
+  act(() => {
+    jest.advanceTimersByTime(500);
+  });
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  fireEvent.mouseEnter(trigger);
+  act(() => {
+    jest.advanceTimersByTime(499);
+  });
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  act(() => {
+    jest.advanceTimersByTime(1);
+  });
+  expect(screen.getByRole('tooltip')).toBeInTheDocument();
 });

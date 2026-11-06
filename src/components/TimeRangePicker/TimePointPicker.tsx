@@ -30,6 +30,7 @@ export default function TimePointPicker({
       onVisibleChange={(next) => setHover(next && !calendarOpen && !tooltipDisabled)}
       transitionName=''
       destroyTooltipOnHide
+      mouseEnterDelay={0.5}
       overlayClassName='fc-time-range-tooltip'
       overlayStyle={{ pointerEvents: 'none', maxWidth: 'min(400px, 100vw)' }}
       title={
@@ -54,6 +55,11 @@ export default function TimePointPicker({
     >
       <DatePicker
         {...props}
+        inputRender={(inputProps) => {
+          // The custom summary already shows the date; suppress the duplicate browser tooltip.
+          const summaryInputProps = { ...inputProps, title: '' };
+          return props.inputRender ? props.inputRender(summaryInputProps) : <input {...summaryInputProps} />;
+        }}
         onOpenChange={(next) => {
           setOpen(next);
           setHover(false);
