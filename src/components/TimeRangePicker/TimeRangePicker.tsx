@@ -366,6 +366,7 @@ export default function index(props: ITimeRangePickerProps) {
         onVisibleChange={changeVisible}
       >
         <Tooltip
+          mouseEnterDelay={0.5}
           overlayClassName='fc-time-range-tooltip'
           title={
             <div
