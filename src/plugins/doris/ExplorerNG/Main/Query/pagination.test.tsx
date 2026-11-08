@@ -12,7 +12,7 @@ jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { doris: 'doris' }, I
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: (range: any) => range }));
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
 jest.mock('@/pages/logExplorer/components/RenderValue/useFieldConfig', () => () => ({}));
-jest.mock('@/pages/logExplorer/components/LogOrderContext', () => () => null);
+jest.mock('@/pages/logExplorer/components/LogOrderContext', () => (props: any) => <span data-testid={`context-${props.variant}`}>{props.log?.__log_stream_id__}</span>);
 jest.mock('@/pages/logExplorer/components/LogOrderContext/LogOrderMeta', () => ({
   __esModule: true,
   default: () => null,
@@ -23,14 +23,22 @@ jest.mock('@/pages/logExplorer/components/LogsViewer/components/HistogramDownloa
 jest.mock('@/pages/logExplorer/components/LogsViewer', () => (props: any) => (
   <div data-testid='viewer' onScrollCapture={props.onScrollCapture}>
     {props.optionsExtraRender}
+    {props.rowPrefixRender?.({ ___raw___: { ts: '2026-10-31 00:30:00', __log_stream_id__: 'file-1', __log_seq__: '1' } })}
+    {props.logViewerExtraRender?.({ ___raw___: { ts: '2026-10-31 00:30:00', __log_stream_id__: 'file-1', __log_seq__: '1' } })}
   </div>
 ));
 jest.mock('./QueryBuilderFilters', () => () => null);
 jest.mock('./useQuerySyntaxError', () => () => ({}));
 jest.mock('../../utils/tableElementMethods', () => ({ scrollToTop: () => {}, getIsAtBottom: () => true }));
-jest.mock('plus:/parcels/DorisLogAnalysis', () => ({ bindDorisLogAnalysisRows: () => {}, captureDorisLogAnalysisRequest: () => {}, useDorisLogAnalysisViewerProps: () => ({}) }), {
-  virtual: true,
-});
+jest.mock(
+  'plus:/parcels/DorisLogAnalysis',
+  () => ({
+    bindDorisLogAnalysisRows: () => {},
+    captureDorisLogAnalysisRequest: () => {},
+    useDorisLogAnalysisViewerProps: jest.fn(() => ({})),
+  }),
+  { virtual: true },
+);
 function Harness() {
   const [form] = Form.useForm();
   return (
@@ -95,4 +103,24 @@ it.each([false, true])('preserves infinite scrolling and selects the cursor only
   expect((getDorisLogsQuery as jest.Mock).mock.calls.slice(-1)[0][0].query[0].search_after).toEqual(
     ordered ? { time: '2026-10-31 00:30:00', stream_id: 'file-1', seq: '9007199254740993' } : undefined,
   );
+});
+
+it.each([false, true])('renders context callbacks with AI extensions present: %s', async (withAI) => {
+  const { useDorisLogAnalysisViewerProps } = require('plus:/parcels/DorisLogAnalysis');
+  const rowPrefixRender = jest.fn((row) => <span data-testid='ai-row'>{row.___raw___.__log_stream_id__}</span>);
+  const logViewerExtraRender = jest.fn((row) => <span data-testid='ai-detail'>{row.___raw___.__log_seq__}</span>);
+  useDorisLogAnalysisViewerProps.mockReturnValue(withAI ? { rowPrefixRender, logViewerExtraRender } : {});
+  (getDorisLogsQuery as jest.Mock).mockResolvedValue({ list: [{ ts: '2026-10-31 00:30:00', message: 'test' }], total: 1, pagination_supported: true });
+  const view = render(<Harness />);
+  expect(await view.findByTestId('context-icon')).toHaveTextContent('file-1');
+  expect(view.getByTestId('context-button')).toHaveTextContent('file-1');
+  if (withAI) {
+    expect(view.getByTestId('ai-row')).toHaveTextContent('file-1');
+    expect(view.getByTestId('ai-detail')).toHaveTextContent('1');
+    expect(rowPrefixRender).toHaveBeenCalled();
+    expect(logViewerExtraRender).toHaveBeenCalled();
+  } else {
+    expect(view.queryByTestId('ai-row')).toBeNull();
+    expect(view.queryByTestId('ai-detail')).toBeNull();
+  }
 });
