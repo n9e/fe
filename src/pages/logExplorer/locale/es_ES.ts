@@ -189,7 +189,7 @@ const es_ES = {
       'Este registro no tiene __log_stream_id__ ni __log_seq__, así que no se puede ordenar en el orden del archivo y el contexto no está disponible. Recopile los registros de archivo con Categraf v0.5.45 o posterior y conserve ambos campos en los campos extraídos de la transformación',
     no_time_tip: 'Este registro no tiene el campo de tiempo {{field}}, así que no se puede ubicar su contexto',
     table_unsupported_tip:
-      'La clave de orden de esta tabla no empieza por el campo de tiempo, __log_stream_id__ y __log_seq__. Los resultados no se pueden ordenar en el orden del archivo y el contexto no está disponible.',
+      'La clave de orden de esta tabla no empieza por el campo de tiempo, __log_stream_id__ y __log_seq__. Los resultados no se pueden ordenar en el orden del archivo y el contexto no está disponible. Recopile los registros de archivo con Categraf v0.5.45 o posterior y conserve ambos campos en los campos extraídos de la transformación.',
     back_to_anchor: 'Log actual',
     raw_layout: 'Diseño original',
     raw_layout_tip: 'Muestra solo los valores, sin hora ni nombres de campo, en fuente monoespaciada que conserva la sangría',

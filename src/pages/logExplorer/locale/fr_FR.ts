@@ -190,7 +190,7 @@ const fr_FR = {
       'Ce journal n’a ni __log_stream_id__ ni __log_seq__ : il ne peut pas être trié dans l’ordre du fichier et le contexte n’est pas disponible. Collectez les journaux de fichiers avec Categraf v0.5.45 ou ultérieur et conservez ces deux champs dans les champs extraits de la transformation',
     no_time_tip: 'Ce journal n’a pas de champ horaire {{field}} : son contexte ne peut pas être localisé',
     table_unsupported_tip:
-      'La clé de tri de cette table ne commence pas par le champ horaire, __log_stream_id__ et __log_seq__. Les résultats ne peuvent pas être triés dans l’ordre du fichier, et le contexte n’est pas disponible.',
+      'La clé de tri de cette table ne commence pas par le champ horaire, __log_stream_id__ et __log_seq__. Les résultats ne peuvent pas être triés dans l’ordre du fichier, et le contexte n’est pas disponible. Collectez les journaux de fichiers avec Categraf v0.5.45 ou ultérieur et conservez ces deux champs dans les champs extraits de la transformation.',
     back_to_anchor: 'Log actuel',
     raw_layout: 'Mise en page brute',
     raw_layout_tip: "Affiche uniquement les valeurs, sans heure ni noms de champ, en police à chasse fixe qui conserve l'indentation",
