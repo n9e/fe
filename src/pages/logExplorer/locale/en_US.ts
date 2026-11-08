@@ -231,7 +231,7 @@ const en_US = {
       "This log has no __log_stream_id__ or __log_seq__, so it cannot be sorted in file order and context is not available. Collect file logs with Categraf v0.5.45 or later and keep both fields in the log transform's extracted fields",
     no_time_tip: 'This log has no time field {{field}}, so its context cannot be located',
     table_unsupported_tip:
-      'This table’s sort key does not start with the time field, __log_stream_id__, and __log_seq__. Search results cannot be sorted in file order, and context is not available.',
+      "This table’s sort key does not start with the time field, __log_stream_id__, and __log_seq__. Search results cannot be sorted in file order, and context is not available. Collect file logs with Categraf v0.5.45 or later and keep both fields in the log transform's extracted fields.",
     back_to_anchor: 'Current log',
     raw_layout: 'Raw layout',
     raw_layout_tip: 'Show field values only, without time and field names, in a monospace font that keeps indentation',
