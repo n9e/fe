@@ -185,7 +185,8 @@ const zh_HK = {
     later_disabled_tip: '後 1 小時內同一檔案沒有更新的日誌',
     no_fields_tip: '該日誌缺少 __log_stream_id__、__log_seq__ 欄位，不支持按原文順序排序，也不支持查看上下文。請使用 Categraf v0.5.45 及以上版本採集檔案日誌，並在日誌轉換的「日誌提取欄位」中保留上述欄位。',
     no_time_tip: '該日誌缺少時間欄位 {{field}}，無法定位上下文。',
-    table_unsupported_tip: '該表排序鍵不是（時間欄位、__log_stream_id__、__log_seq__），檢索結果不支持按原文順序排序，也不支持查看上下文。',
+    table_unsupported_tip:
+      '該表排序鍵不是（時間欄位、__log_stream_id__、__log_seq__），檢索結果不支持按原文順序排序，也不支持查看上下文。請使用 Categraf v0.5.45 及以上版本採集檔案日誌，並在日誌轉換的「日誌提取欄位」中保留上述欄位。',
     back_to_anchor: '當前日誌',
     raw_layout: '原文排版',
     raw_layout_tip: '只顯示欄位值，不帶時間和欄位名，用等寬字體保留縮排',

@@ -189,7 +189,8 @@ const zh_CN = {
     later_disabled_tip: '后 1 小时内同一文件没有更新的日志',
     no_fields_tip: '该日志缺少 __log_stream_id__、__log_seq__ 字段，不支持按原文顺序排序，也不支持查看上下文。请使用 Categraf v0.5.45 及以上版本采集文件日志，并在日志转换的「日志提取字段」中保留上述字段。',
     no_time_tip: '该日志缺少时间字段 {{field}}，无法定位上下文。',
-    table_unsupported_tip: '该表排序键不是（时间字段、__log_stream_id__、__log_seq__），检索结果不支持按原文顺序排序，也不支持查看上下文。',
+    table_unsupported_tip:
+      '该表排序键不是（时间字段、__log_stream_id__、__log_seq__），检索结果不支持按原文顺序排序，也不支持查看上下文。请使用 Categraf v0.5.45 及以上版本采集文件日志，并在日志转换的「日志提取字段」中保留上述字段。',
     back_to_anchor: '当前日志',
     raw_layout: '原文排版',
     raw_layout_tip: '只显示字段值，不带时间和字段名，用等宽字体保留缩进',
