@@ -3,15 +3,29 @@ import React from 'react';
 import { Form } from 'antd';
 import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import Raw from './index';
-import { getFullFields, getLogsQuery } from '../../../services';
+import { getFullFields, getLogsQuery, getESContextLogs } from '../../../services';
 
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: (range: any) => range }));
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
-jest.mock('../../../services', () => ({ getFullFields: jest.fn(), getLogsQuery: jest.fn(), getHistogram: jest.fn().mockResolvedValue([]) }));
+jest.mock('../../../services', () => ({
+  getESContextLogs: jest.fn().mockResolvedValue({}),
+  getFullFields: jest.fn(),
+  getLogsQuery: jest.fn(),
+  getHistogram: jest.fn().mockResolvedValue([]),
+}));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (s: string) => s }), Trans: () => null }));
-jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { elasticsearch: 'elasticsearch' }, IS_PLUS: false }));
+jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { elasticsearch: 'elasticsearch' }, IS_PLUS: true }));
 jest.mock('@/pages/logExplorer/components/RenderValue/useFieldConfig', () => () => ({}));
-jest.mock('@/pages/logExplorer/components/LogOrderContext', () => () => null);
+jest.mock('@/pages/logExplorer/components/LogOrderContext', () => (props: any) => (
+  <button
+    data-testid={`context-${props.variant}`}
+    onClick={() =>
+      props.fetchPage({ stream_id: props.log.__log_stream_id__, seq: props.log.__log_seq__, time: props.formatTime(props.log[props.timeField]), back_lines: 30, forward_lines: 30 })
+    }
+  >
+    context
+  </button>
+));
 jest.mock('@/pages/logExplorer/components/LogOrderContext/LogOrderMeta', () => ({
   __esModule: true,
   default: () => null,
@@ -20,7 +34,13 @@ jest.mock('@/pages/logExplorer/components/LogOrderContext/LogOrderMeta', () => (
 }));
 jest.mock('@/pages/logExplorer/components/LogsViewer/components/HistogramDownloadModal', () => () => null);
 jest.mock('@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/tokenValue', () => ({ getDateTokenDisplayValue: () => '' }));
-jest.mock('@/pages/logExplorer/components/LogsViewer', () => (props: any) => <div>{props.optionsExtraRender}</div>);
+jest.mock('@/pages/logExplorer/components/LogsViewer', () => (props: any) => (
+  <div>
+    {props.optionsExtraRender}
+    {props.rowPrefixRender?.({ __n9e_raw_n9e__: { ts: 1793377800000, __log_stream_id__: 'file-1', __log_seq__: '9007199254740993' } })}
+    {props.logViewerExtraRender?.({ __n9e_raw_n9e__: { ts: 1793377800000, __log_stream_id__: 'file-1', __log_seq__: '9007199254740993' } })}
+  </div>
+));
 jest.mock('@fc-components/es-query', () => ({ buildESQueryFromKuery: () => ({ filter: [] }) }));
 const fields = [
   { field: 'ts', type: 'date' },
@@ -110,4 +130,25 @@ it('shows metadata failure and retries before running the log query', async () =
   const body = JSON.parse((getLogsQuery as jest.Mock).mock.calls[0][1].trim().split('\n')[1]);
   expect(body.from).toBe(0);
   expect(body.sort).toHaveLength(3);
+});
+
+it.each(['keyword', 'text'])('uses the same stream field for sorting and both context entries: %s', async (streamType) => {
+  const streamField = streamType === 'text' ? '__log_stream_id__.keyword' : '__log_stream_id__';
+  (getFullFields as jest.Mock).mockResolvedValue({ allFields: fields.map((field) => (field.field === '__log_stream_id__' ? { ...field, type: streamType } : field)) });
+  (getLogsQuery as jest.Mock).mockResolvedValue({ list: [{ _source: { ts: 1793377800000, message: 'test' } }], total: 1 });
+  const view = render(<Harness />);
+  fireEvent.click(await view.findByTestId('context-icon'));
+  fireEvent.click(view.getByTestId('context-button'));
+  const body = JSON.parse((getLogsQuery as jest.Mock).mock.calls[0][1].trim().split('\n')[1]);
+  expect(body.sort[1]).toEqual({ [streamField]: { order: 'desc', unmapped_type: 'keyword' } });
+  expect(getESContextLogs).toHaveBeenCalledTimes(2);
+  for (const [request] of (getESContextLogs as jest.Mock).mock.calls) {
+    expect(request).toEqual({
+      cate: 'elasticsearch',
+      datasource_id: 1,
+      query: [
+        { index: 'logs-*', time_field: 'ts', stream_field: streamField, stream_id: 'file-1', seq: '9007199254740993', time: '1793377800000', back_lines: 30, forward_lines: 30 },
+      ],
+    });
+  }
 });

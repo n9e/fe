@@ -3,16 +3,24 @@ import React from 'react';
 import { Form } from 'antd';
 import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import Query from './index';
-import { getDorisLogsQuery } from '../../../services';
+import { getDorisLogsQuery, getDorisContextLogs } from '../../../services';
 import { NG_QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../../constants';
 
-jest.mock('../../../services', () => ({ getDorisLogsQuery: jest.fn(), getDorisHistogram: jest.fn().mockResolvedValue([]) }));
+jest.mock('../../../services', () => ({ getDorisContextLogs: jest.fn().mockResolvedValue({}), getDorisLogsQuery: jest.fn(), getDorisHistogram: jest.fn().mockResolvedValue([]) }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (s: string) => s }), Trans: () => null }));
 jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { doris: 'doris' }, IS_ENT: false, IS_PLUS: false }));
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: (range: any) => range }));
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
 jest.mock('@/pages/logExplorer/components/RenderValue/useFieldConfig', () => () => ({}));
-jest.mock('@/pages/logExplorer/components/LogOrderContext', () => (props: any) => <span data-testid={`context-${props.variant}`}>{props.log?.__log_stream_id__}</span>);
+jest.mock('@/pages/logExplorer/components/LogOrderContext', () => (props: any) => (
+  <button
+    data-testid={`context-${props.variant}`}
+    data-order-supported={String(props.orderSupported)}
+    onClick={() => props.fetchPage({ stream_id: props.log.__log_stream_id__, seq: props.log.__log_seq__, time: props.log[props.timeField], back_lines: 30, forward_lines: 30 })}
+  >
+    {props.log?.__log_stream_id__}
+  </button>
+));
 jest.mock('@/pages/logExplorer/components/LogOrderContext/LogOrderMeta', () => ({
   __esModule: true,
   default: () => null,
@@ -122,5 +130,26 @@ it.each([false, true])('renders context callbacks with AI extensions present: %s
   } else {
     expect(view.queryByTestId('ai-row')).toBeNull();
     expect(view.queryByTestId('ai-detail')).toBeNull();
+  }
+});
+
+it.each([true, false, undefined])('forwards context parameters and order support %s', async (supported) => {
+  const { useDorisLogAnalysisViewerProps } = require('plus:/parcels/DorisLogAnalysis');
+  useDorisLogAnalysisViewerProps.mockReturnValue({});
+  (getDorisLogsQuery as jest.Mock).mockResolvedValue({ list: [{ ts: '2026-10-31 00:30:00', message: 'test' }], total: 1, pagination_supported: supported });
+  const view = render(<Harness />);
+  const icon = await view.findByTestId('context-icon');
+  const detail = view.getByTestId('context-button');
+  expect(icon).toHaveAttribute('data-order-supported', String(supported));
+  expect(detail).toHaveAttribute('data-order-supported', String(supported));
+  fireEvent.click(icon);
+  fireEvent.click(detail);
+  expect(getDorisContextLogs).toHaveBeenCalledTimes(2);
+  for (const [request] of (getDorisContextLogs as jest.Mock).mock.calls) {
+    expect(request).toEqual({
+      cate: 'doris',
+      datasource_id: 1,
+      query: [{ database: 'logs', table: 'app', time_field: 'ts', stream_id: 'file-1', seq: '1', time: '2026-10-31 00:30:00', back_lines: 30, forward_lines: 30 }],
+    });
   }
 });
