@@ -24,6 +24,7 @@ jest.mock('plus:/components/LogDownload/DownloadModal', () => () => null, { virt
 jest.mock('@/pages/logExplorer/components/LogsViewer', () => (props: any) => (
   <div data-testid='viewer' onScrollCapture={props.onScrollCapture}>
     {props.optionsExtraRender}
+    {props.rowPrefixRender?.({ ___raw___: { ts: '2026-10-31 00:30:00', __log_stream_id__: 'file-1', __log_seq__: '1' } })}
   </div>
 ));
 jest.mock('./QueryBuilderFilters', () => () => null);

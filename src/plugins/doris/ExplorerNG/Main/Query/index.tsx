@@ -604,17 +604,8 @@ export default function index(props: Props) {
               range={queryValues?.range}
               logViewerFilterFields={withoutLogOrderFields}
               logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
-              logViewerExtraRender={(log) => (
-                <Space>
-                  {renderOrderContext(log?.___raw___, 'button')}
-                </Space>
-              )}
-              rowPrefixRender={(row) => (
-                <>
-                  {renderOrderContext(row?.___raw___, 'icon')}
-                  {(logAnalysisViewerProps as { rowPrefixRender?: (row: Record<string, any>) => React.ReactNode }).rowPrefixRender?.(row)}
-                </>
-              )}
+              logViewerExtraRender={(log) => <Space>{renderOrderContext(log?.___raw___, 'button')}</Space>}
+              rowPrefixRender={(row) => renderOrderContext(row?.___raw___, 'icon')}
             />
           ) : loading || histogramLoading ? (
             <div className='flex justify-center'>
