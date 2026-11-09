@@ -3,10 +3,17 @@ import React from 'react';
 import { Form } from 'antd';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+import zh_CN from '@/pages/dashboard/locale/zh_CN';
+
 import ExpressionPanel from './index';
 
 jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string) => {
+      const locale = jest.requireActual('@/pages/dashboard/locale/zh_CN').default;
+      return key.startsWith('query.expression_') ? locale.query[key.split('.')[1]] : key;
+    },
+  }),
 }));
 
 // @/utils/constant 顶层使用 import.meta.env，jest CJS 环境无法解析，按仓库既有约定 mock
@@ -35,8 +42,20 @@ function renderPanel(expressionTargets: MockExpressionTarget[]) {
 describe('dashboard expression panel component', () => {
   it('renders an expression editor with a generated RefID header', () => {
     renderPanel([{ expression: '' }]);
-    expect(screen.getByPlaceholderText('query.expression_placeholder')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(zh_CN.query.expression_placeholder)).toBeInTheDocument();
     expect(screen.getByText('A')).toBeInTheDocument();
+  });
+
+  it('shows query reference syntax and all built-in variables in the expression tooltip', async () => {
+    renderPanel([{ expression: '$A / ${__interval_ms}' }]);
+    fireEvent.mouseEnter(screen.getAllByRole('img', { name: 'question-circle' })[0]);
+    const tooltip = await screen.findByRole('tooltip');
+    expect(tooltip).toHaveTextContent('您通过 $<refId> 引用查询，即 $A、$B、$C 等。');
+    expect(tooltip).toHaveTextContent('两个标量值的总和：$A + $B > 10');
+    for (const line of zh_CN.query.expression_variables_tip.split('\n')) {
+      expect(tooltip).toHaveTextContent(line);
+    }
+    expect(tooltip).not.toHaveTextContent('${refId}');
   });
 
   it('uses the configured RefID as the panel header', () => {
@@ -54,7 +73,7 @@ describe('dashboard expression panel component', () => {
 
   it('submits once the expression is filled', async () => {
     const { onFinish } = renderPanel([{ expression: '' }]);
-    fireEvent.change(screen.getByPlaceholderText('query.expression_placeholder'), { target: { value: '$A / 100' } });
+    fireEvent.change(screen.getByPlaceholderText(zh_CN.query.expression_placeholder), { target: { value: '$A / 100' } });
     fireEvent.click(screen.getByText('submit'));
     await waitFor(() => {
       expect(onFinish).toHaveBeenCalled();
