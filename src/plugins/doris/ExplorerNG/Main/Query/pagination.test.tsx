@@ -3,17 +3,25 @@ import React from 'react';
 import { Form } from 'antd';
 import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import Query from './index';
-import { getDorisLogsQuery } from '../../../services';
+import { getDorisLogsQuery, getDorisContextLogs } from '../../../services';
 import { NG_QUERY_LOGS_OPTIONS_CACHE_KEY } from '../../../constants';
 
-jest.mock('../../../services', () => ({ getDorisLogsQuery: jest.fn(), getDorisHistogram: jest.fn().mockResolvedValue([]) }));
+jest.mock('../../../services', () => ({ getDorisContextLogs: jest.fn().mockResolvedValue({}), getDorisLogsQuery: jest.fn(), getDorisHistogram: jest.fn().mockResolvedValue([]) }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (s: string) => s }), Trans: () => null }));
 jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { doris: 'doris' }, IS_ENT: false, IS_PLUS: false }));
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: (range: any) => range }));
 jest.mock('@/utils/getTextWidth', () => () => 100);
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
 jest.mock('@/pages/logExplorer/components/RenderValue/useFieldConfig', () => () => ({}));
-jest.mock('@/pages/logExplorer/components/LogOrderContext', () => () => null);
+jest.mock('@/pages/logExplorer/components/LogOrderContext', () => (props: any) => (
+  <button
+    data-testid={`context-${props.variant}`}
+    data-order-supported={String(props.orderSupported)}
+    onClick={() => props.fetchPage({ stream_id: props.log.__log_stream_id__, seq: props.log.__log_seq__, time: props.log[props.timeField], back_lines: 30, forward_lines: 30 })}
+  >
+    context
+  </button>
+));
 jest.mock('@/pages/logExplorer/components/LogOrderContext/LogOrderMeta', () => ({
   __esModule: true,
   default: () => null,
@@ -24,6 +32,8 @@ jest.mock('plus:/components/LogDownload/DownloadModal', () => () => null, { virt
 jest.mock('@/pages/logExplorer/components/LogsViewer', () => (props: any) => (
   <div data-testid='viewer' onScrollCapture={props.onScrollCapture}>
     {props.optionsExtraRender}
+    {props.logViewerExtraRender?.({ ___raw___: { ts: '2026-10-31 00:30:00', __log_stream_id__: 'file-1', __log_seq__: '1' } })}
+    {props.rowPrefixRender?.({ ___raw___: { ts: '2026-10-31 00:30:00', __log_stream_id__: 'file-1', __log_seq__: '1' } })}
   </div>
 ));
 jest.mock('./QueryBuilderFilters', () => () => null);
@@ -72,26 +82,46 @@ afterEach(() => {
   jest.clearAllMocks();
   localStorage.clear();
 });
-it.each([true, false])('only enables further paging when supported=%s', async (supported) => {
+it.each([true, false, undefined])('preserves offset paging when order support is %s', async (supported) => {
   (getDorisLogsQuery as jest.Mock).mockResolvedValue({ list: [{ ts: '2026-10-31 00:30:00', message: 'test' }], total: 1000, pagination_supported: supported });
   const view = render(<Harness />);
   const page = await view.findByTitle('2');
-  const before = (getDorisLogsQuery as jest.Mock).mock.calls.length;
   fireEvent.click(page);
-  if (supported) {
-    await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBeGreaterThan(before));
-    expect(view.queryByText('pagination_requires_order_keys')).toBeNull();
-  } else {
-    expect(view.getByText('pagination_requires_order_keys')).toBeTruthy();
-    expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBe(before);
-  }
+  await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.slice(-1)[0][0].query[0].offset).toBeGreaterThan(0));
+  expect(view.queryByText('pagination_requires_order_keys')).toBeNull();
 });
-it('does not load another batch in infinite scroll when unsupported', async () => {
-  localStorage.setItem(NG_QUERY_LOGS_OPTIONS_CACHE_KEY, JSON.stringify({ pageLoadMode: 'infiniteScroll' }));
-  (getDorisLogsQuery as jest.Mock).mockResolvedValue({ list: [{ ts: '2026-10-31 00:30:00', message: 'test' }], total: 1000, pagination_supported: false });
+it.each([false, true])('preserves infinite scrolling and selects the cursor only for rows with order fields: %s', async (ordered) => {
+  localStorage.setItem(`${NG_QUERY_LOGS_OPTIONS_CACHE_KEY}@options`, JSON.stringify({ pageLoadMode: 'infiniteScroll' }));
+  (getDorisLogsQuery as jest.Mock).mockResolvedValue({
+    list: [{ ts: '2026-10-31 00:30:00', message: 'test', ...(ordered ? { __log_stream_id__: 'file-1', __log_seq__: '9007199254740993' } : {}) }],
+    total: 1000,
+    pagination_supported: ordered,
+  });
   const view = render(<Harness />);
-  await view.findByText('pagination_requires_order_keys');
-  const before = (getDorisLogsQuery as jest.Mock).mock.calls.length;
+  await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBeGreaterThan(0));
+  await waitFor(() => expect(view.getByTestId('viewer')).toBeTruthy());
   fireEvent.scroll(view.getByTestId('viewer'));
-  expect((getDorisLogsQuery as jest.Mock).mock.calls.length).toBe(before);
+  await waitFor(() => expect((getDorisLogsQuery as jest.Mock).mock.calls.slice(-1)[0][0].query[0].offset).toBeGreaterThan(0));
+  expect((getDorisLogsQuery as jest.Mock).mock.calls.slice(-1)[0][0].query[0].search_after).toEqual(
+    ordered ? { time: '2026-10-31 00:30:00', stream_id: 'file-1', seq: '9007199254740993' } : undefined,
+  );
+});
+
+it.each([true, false, undefined])('wires both context entries and forwards order support %s', async (supported) => {
+  (getDorisLogsQuery as jest.Mock).mockResolvedValue({ list: [{ ts: '2026-10-31 00:30:00', message: 'test' }], total: 1, pagination_supported: supported });
+  const view = render(<Harness />);
+  const icon = await view.findByTestId('context-icon');
+  const detail = view.getByTestId('context-button');
+  expect(icon).toHaveAttribute('data-order-supported', String(supported));
+  expect(detail).toHaveAttribute('data-order-supported', String(supported));
+  fireEvent.click(icon);
+  fireEvent.click(detail);
+  expect(getDorisContextLogs).toHaveBeenCalledTimes(2);
+  for (const [request] of (getDorisContextLogs as jest.Mock).mock.calls) {
+    expect(request).toEqual({
+      cate: 'doris',
+      datasource_id: 1,
+      query: [{ database: 'logs', table: 'app', time_field: 'ts', stream_id: 'file-1', seq: '1', time: '2026-10-31 00:30:00', back_lines: 30, forward_lines: 30 }],
+    });
+  }
 });
