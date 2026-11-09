@@ -42,6 +42,17 @@ export default function index({ fields, remove, field }: ExpressionPanelProps) {
     >
       <Form.Item
         label='Expression'
+        tooltip={{
+          getPopupContainer: () => document.body,
+          overlayClassName: 'max-w-[min(640px,calc(100vw-32px))]',
+          title: (
+            <div className='whitespace-pre-line'>
+              {t('query.expression_placeholder')}
+              {'\n\n'}
+              {t('query.expression_variables_tip')}
+            </div>
+          ),
+        }}
         {...restField}
         name={[field.name, 'expression']}
         rules={[
@@ -49,7 +60,7 @@ export default function index({ fields, remove, field }: ExpressionPanelProps) {
             required: true,
           },
         ]}
-        style={{ flex: 1 }}
+        className='flex-1'
       >
         <Input.TextArea autoSize placeholder={t('query.expression_placeholder')} />
       </Form.Item>

@@ -658,7 +658,19 @@ const fr_FR = {
       },
     },
     expression_placeholder:
-      "Applique des opérations mathématiques à une ou plusieurs requêtes. Référencez-les par ${refId}, c'est-à-dire $A, $B, $C, etc. Somme de deux scalaires : $A + $B > 10",
+      "Applique des opérations mathématiques à une ou plusieurs requêtes. Référencez-les par $<refId>, c'est-à-dire $A, $B, $C, etc. Somme de deux scalaires : $A + $B > 10",
+    expression_variables_tip: [
+      'Utilisation des variables',
+      '${__interval} : intervalle en secondes, par exemple 15s, égal au pas par défaut',
+      '${__interval_ms} : intervalle en millisecondes, par exemple 15000',
+      '${__range} : plage en secondes, par exemple 3600s',
+      '${__range_ms} : plage en millisecondes, par exemple 3600000',
+      '${__rate_interval} : intervalle en secondes, __interval * 4',
+      '${__from} : date de début en millisecondes',
+      '${__from_date_seconds} : date de début en secondes',
+      '${__from_date_iso} : date de début, ISO 8601/RFC 3339',
+      'La même syntaxe vaut pour ${__to}',
+    ].join('\n'),
     legend: 'Légende (Legend)',
     legendTip: "Remplace le nom de la légende ou sert de modèle ; ainsi {{hostname}} est substitué par la valeur de l'étiquette hostname",
     legendTip2:

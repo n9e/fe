@@ -655,7 +655,19 @@ const es_ES = {
       },
     },
     expression_placeholder:
-      'Aplica operaciones matemáticas a una o varias consultas. Refiérete a ellas con ${refId}, es decir, $A, $B, $C, etc. Suma de dos escalares: $A + $B > 10',
+      'Aplica operaciones matemáticas a una o varias consultas. Refiérete a ellas con $<refId>, es decir, $A, $B, $C, etc. Suma de dos escalares: $A + $B > 10',
+    expression_variables_tip: [
+      'Cómo usar las variables',
+      '${__interval}: intervalo en segundos, por ejemplo 15s; por defecto es el paso',
+      '${__interval_ms}: intervalo en milisegundos, por ejemplo 15000',
+      '${__range}: ventana de tiempo en segundos, por ejemplo 3600s',
+      '${__range_ms}: ventana de tiempo en milisegundos, por ejemplo 3600000',
+      '${__rate_interval}: intervalo en segundos, __interval * 4',
+      '${__from}: inicio del intervalo en milisegundos',
+      '${__from_date_seconds}: inicio del intervalo en segundos',
+      '${__from_date_iso}: inicio del intervalo en ISO 8601/RFC 3339',
+      'La misma sintaxis sirve para ${__to}',
+    ].join('\n'),
     legend: 'Leyenda (Legend)',
     legendTip: 'Sustituye o define el nombre que se muestra en la leyenda; por ejemplo, {{hostname}} se reemplaza por el valor de la etiqueta hostname',
     legendTip2:
