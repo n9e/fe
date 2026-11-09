@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, Space, Tooltip, Pagination, Empty, Popover, Alert } from 'antd';
+import { Form, Button, Space, Tooltip, Pagination, Empty, Popover } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -147,7 +147,6 @@ export default function index(props: Props) {
 
   type HighlightMap = Record<string, string[]>;
 
-  const [paginationSupported, setPaginationSupported] = useState<boolean>();
   const service = () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     // 优先 form(视图恢复时 form 即时最新),其次 options,最后默认值
@@ -188,7 +187,6 @@ export default function index(props: Props) {
       const logAnalysisSnapshot = IS_ENT ? captureDorisLogAnalysisRequest(reqData) : undefined;
       return getDorisLogsQuery(reqData)
         .then((res) => {
-          setPaginationSupported(res.pagination_supported);
           if (fixedRangeRef.current === false) {
             loadTimeRef.current = Date.now() - queryStart;
           }
@@ -221,6 +219,7 @@ export default function index(props: Props) {
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs, data?.colWidths),
               highlights: _.concat(data?.highlights || [], nextHighlights),
+              paginationSupported: res.pagination_supported,
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
@@ -234,6 +233,7 @@ export default function index(props: Props) {
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs),
               highlights: nextHighlights,
+              paginationSupported: res.pagination_supported,
             };
           }
         })
@@ -273,6 +273,7 @@ export default function index(props: Props) {
       hash: string;
       colWidths?: { [key: string]: number };
       highlights?: HighlightMap[];
+      paginationSupported?: boolean;
     },
     any
   >(service, {
@@ -381,9 +382,25 @@ export default function index(props: Props) {
     setExecuteLoading(loading || histogramLoading);
   }, [loading, histogramLoading]);
 
+  const renderOrderContext = (raw: Record<string, any> | undefined, variant: 'button' | 'icon') => (
+    <LogOrderContext
+      variant={variant}
+      log={raw}
+      orderSupported={data?.paginationSupported}
+      timeField={queryValues?.time_field}
+      organizeFields={organizeFields}
+      fetchPage={(req) =>
+        getDorisContextLogs({
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
+        })
+      }
+    />
+  );
+
   return (
     <>
-      {paginationSupported === false && <Alert type='warning' showIcon message={t('pagination_requires_order_keys')} />}
       {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && (
         <QueryBuilderFilters indexData={indexData} snapRangeRef={snapRangeRef} executeQuery={executeQuery} />
       )}
@@ -510,7 +527,6 @@ export default function index(props: Props) {
                   )}
                   {pageLoadMode === 'pagination' ? (
                     <Pagination
-                      disabled={paginationSupported === false}
                       showQuickJumper
                       size='small'
                       total={data?.total}
@@ -583,7 +599,7 @@ export default function index(props: Props) {
                 }
               }}
               onScrollCapture={() => {
-                if (loading || paginationSupported === false || pageLoadMode !== 'infiniteScroll') return;
+                if (loading || pageLoadMode !== 'infiniteScroll') return;
                 const isAtBottom = getIsAtBottom(tableSelector.antd, tableSelector.rgd);
                 if (isAtBottom) {
                   // 滚动到底后加载下一页
@@ -617,19 +633,14 @@ export default function index(props: Props) {
                 // 企业版的 AI 分析按钮自带 Space（inline-flex），并排的按钮要放进同一个 Space 才能垂直对齐
                 <Space>
                   {(logAnalysisViewerProps as { logViewerExtraRender?: (log: Record<string, any>) => React.ReactNode }).logViewerExtraRender?.(log)}
-                  <LogOrderContext
-                    log={log?.___raw___}
-                    timeField={queryValues?.time_field}
-                    organizeFields={organizeFields}
-                    fetchPage={(req) =>
-                      getDorisContextLogs({
-                        cate: DatasourceCateEnum.doris,
-                        datasource_id: datasourceValue,
-                        query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
-                      })
-                    }
-                  />
+                  {renderOrderContext(log?.___raw___, 'button')}
                 </Space>
+              )}
+              rowPrefixRender={(row) => (
+                <>
+                  {renderOrderContext(row?.___raw___, 'icon')}
+                  {(logAnalysisViewerProps as { rowPrefixRender?: (row: Record<string, any>) => React.ReactNode }).rowPrefixRender?.(row)}
+                </>
               )}
             />
           ) : loading || histogramLoading ? (

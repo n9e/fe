@@ -179,7 +179,7 @@ const id_ID = {
   },
   view_placeholder: 'Tampilan log',
   log_order_context: {
-    title: 'Konteks',
+    title: 'Context Viewer',
     earlier: 'Lebih awal',
     later: 'Lebih baru',
     earlier_tip: 'Muat {{n}} baris sebelumnya dari file yang sama',
@@ -187,8 +187,10 @@ const id_ID = {
     earlier_disabled_tip: 'Tidak ada log sebelumnya dari file ini dalam 1 jam sebelumnya; perluas rentang waktu di pencarian untuk melihat lebih banyak',
     later_disabled_tip: 'Tidak ada log berikutnya dari file ini dalam 1 jam berikutnya',
     no_fields_tip:
-      'Log ini tidak memiliki __log_stream_id__ atau __log_seq__, sehingga konteks dalam urutan asli tidak tersedia. Kumpulkan log file dengan Categraf terbaru dan pertahankan kedua field di field ekstraksi transformasi log',
+      'Log ini tidak memiliki __log_stream_id__ atau __log_seq__, sehingga tidak dapat diurutkan sesuai urutan file dan konteks tidak tersedia. Kumpulkan log file dengan Categraf v0.5.45 atau yang lebih baru dan pertahankan kedua field di field ekstraksi transformasi log',
     no_time_tip: 'Log ini tidak memiliki field waktu {{field}}, sehingga konteksnya tidak dapat ditemukan',
+    table_unsupported_tip:
+      'Kunci urutan tabel ini tidak diawali bidang waktu, __log_stream_id__, dan __log_seq__. Hasil pencarian tidak dapat diurutkan sesuai urutan file, dan konteks tidak tersedia. Kumpulkan log file dengan Categraf v0.5.45 atau yang lebih baru dan pertahankan kedua field di field ekstraksi transformasi log.',
     back_to_anchor: 'Log saat ini',
     raw_layout: 'Tata letak asli',
     raw_layout_tip: 'Hanya menampilkan nilai field, tanpa waktu dan nama field, dengan font monospace yang mempertahankan indentasi',

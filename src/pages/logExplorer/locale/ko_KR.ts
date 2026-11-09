@@ -178,7 +178,7 @@ const ko_KR = {
   },
   view_placeholder: '로그 뷰',
   log_order_context: {
-    title: '컨텍스트',
+    title: 'Context Viewer',
     earlier: '이전',
     later: '이후',
     earlier_tip: '같은 파일에서 이전 {{n}}줄 불러오기',
@@ -186,8 +186,10 @@ const ko_KR = {
     earlier_disabled_tip: '이전 1시간 내에 이 파일의 이전 로그가 없습니다. 더 이전 로그는 검색에서 시간 범위를 넓혀 확인하세요',
     later_disabled_tip: '이후 1시간 내에 이 파일의 이후 로그가 없습니다',
     no_fields_tip:
-      '이 로그에는 __log_stream_id__, __log_seq__가 없어 원본 순서의 컨텍스트를 볼 수 없습니다. 최신 Categraf로 파일 로그를 수집하고 로그 변환의 추출 필드에 두 필드를 유지하세요',
+      '이 로그에는 __log_stream_id__, __log_seq__가 없어 원본 순서로 정렬할 수 없고 컨텍스트도 볼 수 없습니다. Categraf v0.5.45 이상으로 파일 로그를 수집하고 로그 변환의 추출 필드에 두 필드를 유지하세요',
     no_time_tip: '이 로그에는 시간 필드 {{field}}가 없어 컨텍스트를 찾을 수 없습니다',
+    table_unsupported_tip:
+      '이 테이블의 정렬 키는 시간 필드, __log_stream_id__, __log_seq__로 시작하지 않습니다. 검색 결과는 원본 순서로 정렬할 수 없고 컨텍스트도 볼 수 없습니다. Categraf v0.5.45 이상으로 파일 로그를 수집하고 로그 변환의 추출 필드에 두 필드를 유지하세요.',
     back_to_anchor: '현재 로그',
     raw_layout: '원문 레이아웃',
     raw_layout_tip: '시간과 필드 이름 없이 값만 고정폭 글꼴로 표시하여 들여쓰기를 유지합니다',
