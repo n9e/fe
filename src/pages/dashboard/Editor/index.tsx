@@ -27,7 +27,7 @@ import TimeRangePicker, { IRawTimeRange } from '@/components/TimeRangePicker';
 
 import { defaultValues } from './config';
 import { defaultCustomValuesMap, defaultOptionsValuesMap } from '../Renderer/registry/defaults';
-import { visualizations, NO_QUERY_PANEL_TYPES } from '../Renderer/registry/panelTypes';
+import { NO_QUERY_PANEL_TYPES, visualizations } from '../Renderer/registry/panelTypes';
 import FormCpt, { EditorFormHandle } from './Form';
 import { IPanel } from '../types';
 import { normalizeInitialValues } from './util';

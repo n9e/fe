@@ -22,11 +22,11 @@ export const PANEL_VISUALIZATION_TYPES: PanelVisualizationType[] = [
   'aiButton',
 ];
 
+/** 不发起查询、没有序列数据也能渲染的面板类型。 */
+export const NO_QUERY_PANEL_TYPES: readonly string[] = ['text', 'iframe', 'aiButton'];
+
 /** 可视化类型选择使用的列表。 */
 export const visualizations = PANEL_VISUALIZATION_TYPES.map((type) => ({ type }));
-
-/** 不发起查询、没有序列数据也能渲染的图表类型。 */
-export const NO_QUERY_PANEL_TYPES = ['text', 'iframe', 'aiButton'];
 
 /** 判断字符串是否属于支持的可视化类型。 */
 export function isPanelVisualizationType(type: string): type is PanelVisualizationType {

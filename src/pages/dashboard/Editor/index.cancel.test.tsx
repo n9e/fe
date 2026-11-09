@@ -33,13 +33,13 @@ jest.mock('../globalState', () => ({ useGlobalState: () => [[]] }));
 jest.mock('./config', () => ({
   defaultValues: { type: 'timeseries' },
 }));
-jest.mock('../Renderer/registry/defaults', () => ({
-  defaultCustomValuesMap: { timeseries: { drawStyle: 'lines' } },
-  defaultOptionsValuesMap: { timeseries: {} },
-}));
 jest.mock('../Renderer/registry/panelTypes', () => ({
   visualizations: [{ type: 'aiButton' }, { type: 'timeseries' }],
   NO_QUERY_PANEL_TYPES: ['aiButton'],
+}));
+jest.mock('../Renderer/registry/defaults', () => ({
+  defaultCustomValuesMap: { timeseries: { drawStyle: 'lines' } },
+  defaultOptionsValuesMap: { timeseries: {} },
 }));
 jest.mock('./Form', () => ({
   __esModule: true,

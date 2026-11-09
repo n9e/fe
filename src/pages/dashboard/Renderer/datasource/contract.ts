@@ -62,6 +62,15 @@ function interpolateQueryValue(
   return value;
 }
 
+function interpolateExpression(expression: string, range: IRawTimeRange, step: number) {
+  const variables = new Map(getBuiltInVariables(range, { step }).map(({ name, value }) => [name, String(value ?? '')]));
+  // 只替换完整的内置变量名，保留 $A 等查询引用，避免与同名仪表盘变量冲突。
+  return expression.replace(/\$\{(__\w+)\}|\$(__\w+)|\[\[(__\w+)\]\]/g, (placeholder, bracedName, bareName, bracketName) => {
+    const name = bracedName ?? bareName ?? bracketName;
+    return variables.get(name) ?? placeholder;
+  });
+}
+
 function getRawDatasourceQueryPayload(target: ITarget, cate: string): JsonObject {
   const payload = getDashboardDatasourceDefinition(cate)?.serializeTarget(target) ?? {
     ...(target.query && typeof target.query === 'object' ? _.cloneDeep(target.query) : {}),
@@ -155,7 +164,13 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
       if (!expression.trim()) {
         return [];
       }
-      return [{ kind: 'expression', ref_id: refId, expression }];
+      const step = getDashboardQueryStep({
+        time: effectiveRange,
+        maxDataPoints: options.maxDataPoints,
+        panelWidth: options.panelWidth,
+        minStep: target.step,
+      });
+      return [{ kind: 'expression', ref_id: refId, expression: interpolateExpression(expression, effectiveRange, step) }];
     }
 
     const datasource = target.datasource ?? {

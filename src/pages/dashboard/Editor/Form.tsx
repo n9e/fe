@@ -50,7 +50,7 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const editorContainerSize = useSize(editorContainerRef);
   const [editorLayout, setEditorLayout] = useState(readEditorLayout);
-  const hasQueryEditor = !_.includes(NO_QUERY_PANEL_TYPES, type);
+  const hasQueryEditor = !NO_QUERY_PANEL_TYPES.includes(type);
   const layoutBounds = {
     maxPreviewHeight:
       hasQueryEditor && editorContainerSize?.height
