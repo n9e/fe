@@ -183,19 +183,23 @@ function index(
           },
         ]
       : []),
-    {
-      key: 'share_btn',
-      label: (
-        <Space>
-          <ShareAltOutlined />
-          {t('share_btn')}
-        </Space>
-      ),
-      onClick: () => {
-        setVisible(false);
-        onShareClick?.();
-      },
-    },
+    ...(values.type !== 'aiButton'
+      ? [
+          {
+            key: 'share_btn',
+            label: (
+              <Space>
+                <ShareAltOutlined />
+                {t('share_btn')}
+              </Space>
+            ),
+            onClick: () => {
+              setVisible(false);
+              onShareClick?.();
+            },
+          },
+        ]
+      : []),
     ...(values.type === 'table'
       ? [
           {
