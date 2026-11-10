@@ -8,8 +8,6 @@ import Table from './Table';
 import Timeseries from './Timeseries';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 
-import './style.less';
-
 interface Props {
   tableSelector: {
     antd: string;

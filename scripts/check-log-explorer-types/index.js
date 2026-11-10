@@ -47,7 +47,15 @@ const scopes = [
   'src/plugins/doris/ExplorerNG/Main/index.tsx',
   'src/plugins/doris/ExplorerNG/Main/index.test.tsx',
   'src/plugins/doris/ExplorerNG/Main/SQL/QueryInput.tsx',
-  'src/plugins/doris/ExplorerNG/Main/SQL/QueryBuilder.tsx',
+  'src/pages/logExplorer/components/QueryWorkspace',
+  'src/plugins/doris/ExplorerNG/useQueryWorkspace.ts',
+  'src/plugins/clickHouse/ExplorerNG/useQueryWorkspace.ts',
+  'src/plugins/clickHouse/ExplorerNG/Main/index.tsx',
+  'src/plugins/clickHouse/ExplorerNG/Main/SQL/QueryInput.tsx',
+  'src/plugins/elasticsearch/ExplorerNG/useQueryWorkspace.ts',
+  'src/plugins/elasticsearch/ExplorerNG/Main/index.tsx',
+  'src/plugins/elasticsearch/ExplorerNG/Main/SQL/Builder.tsx',
+  'src/plugins/elasticsearch/ExplorerNG/Main/SQL/QueryInput.tsx',
   'src/plugins/doris/ExplorerNG/components/MainMoreOperations.tsx',
   'src/plugins/doris/ExplorerNG/Main/Query/queryErrorPolicy.ts',
   'src/plugins/doris/ExplorerNG/Main/Query/queryErrorPolicy.test.ts',
@@ -67,7 +75,7 @@ const scopes = [
 ];
 const plusScope = 'src/plus/datasource/cloudwatchLogs/ExplorerNG/SideBarNav/FieldsSidebar';
 if (fs.existsSync(path.join(workspace, plusScope))) {
-  scopes.push(plusScope, 'src/plus/datasource/logExplorerScroll.test.ts');
+  scopes.push(plusScope, 'src/plus/datasource/logExplorerScroll.test.ts', 'src/plus/datasource/elasticsearch/ExplorerNG/components/QueryBuilder/index.tsx');
   for (const source of ['aliyunSLS', 'bceBLS', 'cloudwatchLogs', 'huaweiLTS', 'tencentCLS', 'volcTLS']) {
     scopes.push(`src/plus/datasource/${source}/ExplorerNG/Main/index.tsx`);
   }

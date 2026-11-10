@@ -41,8 +41,6 @@ export const QUERY_LOGS_ORGANIZE_FIELDS_CACHE_KEY = 'doris-query-logs-organize-f
 export const PIN_INDEX_CACHE_KEY = 'doris_query_logs_pin_index';
 export const DEFAULT_SEARCH_INDEX_CACHE_KEY = 'doris_query_logs_default_search_index';
 
-export const QUERY_BUILDER_PINNED_CACHE_KEY = 'doris-query-builder-pinned';
-
 export const HIGHLIGHT_FIELD = '__highlight__';
 
 export const DORIS_SQL_MODE_DOC_URL = IS_ENT

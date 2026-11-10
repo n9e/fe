@@ -29,12 +29,26 @@ interface IProps {
   setStackByField: (field?: string) => void;
   defaultSearchField?: string;
   setDefaultSearchField: (field?: string) => void;
+  /** A statement generated from a field statistic was just written to the form. */
+  onGeneratedSql?: () => void;
 }
 
 /** Provide doris field statistics with strict count validation and retryable failures. */
 export default function index(props: IProps) {
   const { t } = useTranslation(NAME_SPACE);
-  const { organizeFields, setOrganizeFields, data, loading, onValueFilter, executeQuery, stackByField, setStackByField, defaultSearchField, setDefaultSearchField } = props;
+  const {
+    organizeFields,
+    setOrganizeFields,
+    data,
+    loading,
+    onValueFilter,
+    executeQuery,
+    stackByField,
+    setStackByField,
+    defaultSearchField,
+    setDefaultSearchField,
+    onGeneratedSql,
+  } = props;
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch(['datasourceValue']);
   const queryValues = Form.useWatch('query');
@@ -241,6 +255,7 @@ export default function index(props: IProps) {
                   },
                 },
               });
+              onGeneratedSql?.();
               executeQuery();
             } else if (type === 'timeseries') {
               let sqlPreviewData = res.timeseries?.[options.func];
@@ -257,6 +272,7 @@ export default function index(props: IProps) {
                     },
                   },
                 });
+                onGeneratedSql?.();
                 executeQuery();
               } else {
                 message.error(t('query.generate_sql_failed'));

@@ -1,4 +1,27 @@
 const pt_BR = {
+  query_workspace: {
+    assist: 'Assistência por formulário',
+    assist_tip:
+      'Monte a consulta pelo formulário e, depois de converter, visualize ou continue escrevendo manualmente. Consultas existentes não são convertidas de volta para o formulário.',
+    enable_assist: 'Ative a assistência por formulário primeiro',
+    builder: 'Construção do formulário',
+    preview: 'Pré-visualização {{language}}',
+    convert: 'Converter {{language}}',
+    continue: 'Continuar escrevendo este {{language}}',
+    not_generated: 'Não convertido',
+    generating: 'Gerando',
+    modified: 'O formulário foi alterado; converta a consulta',
+    synced: 'Igual ao formulário',
+    empty: 'Configure o formulário e clique em “Converter {{language}}” para gerar a pré-visualização',
+    use_previous: 'Será usado o resultado da última conversão. Para obter o conteúdo mais recente, converta novamente.',
+    range_required: 'Selecione um intervalo de tempo',
+    unlimited: 'Sem limite',
+    build_failed: 'Falha ao gerar SQL',
+    collapse: 'Recolher',
+    expand: 'Expandir',
+  },
+  sql_placeholder: 'Insira SQL',
+  sql_shortcut_hint: 'Shift+Enter nova linha · Enter consulta',
   title: 'Busca de logs',
   tab: {
     rename: 'Renomear',

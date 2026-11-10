@@ -1,4 +1,26 @@
 const zh_HK = {
+  query_workspace: {
+    assist: '表單輔助',
+    assist_tip: '透過表單構建查詢，轉換後可預覽或繼續手寫。已有查詢語句不會反向解析為表單。',
+    enable_assist: '請先開啟表單輔助',
+    builder: '表單構建',
+    preview: '{{language}} 預覽',
+    convert: '轉換 {{language}}',
+    continue: '用此 {{language}} 繼續手寫',
+    not_generated: '待轉換',
+    generating: '正在生成',
+    modified: '表單已修改，請轉換查詢語句',
+    synced: '與表單一致',
+    empty: '設置表單後，點擊「轉換 {{language}}」生成預覽',
+    use_previous: '將使用上次轉換的結果；如需最新內容，請先轉換',
+    range_required: '請選擇時間範圍',
+    unlimited: '無限制',
+    build_failed: 'SQL 生成失敗',
+    collapse: '收起',
+    expand: '展開',
+  },
+  sql_placeholder: '輸入 SQL',
+  sql_shortcut_hint: 'Shift+Enter 換行 · Enter 查詢',
   guidance: {
     stack_action_note: '註：所選欄位在查詢區間內，去重後的值需在 2～10 個之間。',
     stack_action: '設定頂部趨勢圖表按此欄位的值堆疊展示。',
@@ -222,7 +244,8 @@ const zh_HK = {
     later_tip: '在同一檔案中向後載入 {{n}} 行',
     earlier_disabled_tip: '前 1 小時內同一檔案沒有更早的日誌；更遠的日誌請擴大時間範圍後在檢索裡查看',
     later_disabled_tip: '後 1 小時內同一檔案沒有更新的日誌',
-    no_fields_tip: '該日誌缺少 __log_stream_id__、__log_seq__ 欄位，不支持按原文順序排序，也不支持查看上下文。請使用 Categraf v0.5.45 及以上版本採集檔案日誌，並在日誌轉換的「日誌提取欄位」中保留上述欄位。',
+    no_fields_tip:
+      '該日誌缺少 __log_stream_id__、__log_seq__ 欄位，不支持按原文順序排序，也不支持查看上下文。請使用 Categraf v0.5.45 及以上版本採集檔案日誌，並在日誌轉換的「日誌提取欄位」中保留上述欄位。',
     no_time_tip: '該日誌缺少時間欄位 {{field}}，無法定位上下文。',
     table_unsupported_tip:
       '該表排序鍵不是（時間欄位、__log_stream_id__、__log_seq__），檢索結果不支持按原文順序排序，也不支持查看上下文。請使用 Categraf v0.5.45 及以上版本採集檔案日誌，並在日誌轉換的「日誌提取欄位」中保留上述欄位。',

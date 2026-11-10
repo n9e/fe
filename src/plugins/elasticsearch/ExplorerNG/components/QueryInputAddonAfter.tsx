@@ -14,11 +14,12 @@ const SYNTAX_LABEL_MAP: Record<string, string> = { sql: 'SQL', kuery: 'KQL', luc
 
 interface Props {
   executeQuery: () => void;
+  onSelectSQL?: () => void;
 }
 
 export default function QueryInputAddonAfter(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { executeQuery } = props;
+  const { executeQuery, onSelectSQL } = props;
 
   const form = Form.useFormInstance();
   const datasourceValue = Form.useWatch('datasourceValue');
@@ -46,6 +47,7 @@ export default function QueryInputAddonAfter(props: Props) {
             className='flex flex-wrap items-center gap-y-1 cursor-pointer hover:bg-[var(--fc-fill-3)] p-1 rounded leading-[1.1] mb-1'
             key={JSON.stringify(item)}
             onClick={() => {
+              if (item.syntax === 'sql') onSelectSQL?.();
               form.setFieldsValue({
                 query: {
                   ...item,

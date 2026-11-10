@@ -15,6 +15,7 @@ jest.mock('@/components/UsageDocs', () => () => null);
 jest.mock('@/pages/logExplorer/components/SideBar', () => ({ children }: any) => <div>{children}</div>);
 jest.mock('../constants', () => ({ NAME_SPACE: 'doris' }));
 jest.mock('./aiDock', () => ({ useDorisAiDock: () => ({ invalidate: jest.fn() }) }));
+jest.mock('./useQueryWorkspace', () => ({ __esModule: true, default: () => ({}) }));
 jest.mock('./Main', () => () => null);
 jest.mock('./SideBarNav', () => ({ setDefaultSearchField }: any) => <button onClick={() => setDefaultSearchField(undefined)}>clear default</button>);
 
