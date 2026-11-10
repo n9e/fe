@@ -78,7 +78,7 @@ export default function index(props: Props) {
   const stablePanel = useStableValue(mainProps.panel);
   const legend = options?.legend;
   const legendPlacement = legend?.placement || 'bottom'; // 适配旧版的默认值
-  const legendDisplayMode = options.legend?.displayMode || 'table';
+  const legendDisplayMode = legend?.displayMode || 'table';
   const legendColumns = !_.isEmpty(legend?.columns) ? legend?.columns : legendDisplayMode === 'table' ? ['max', 'min', 'avg', 'sum', 'last'] : [];
   const legendBehaviour = legend?.behaviour || 'showItem';
   const legendSelectMode = legend?.selectMode || 'single';

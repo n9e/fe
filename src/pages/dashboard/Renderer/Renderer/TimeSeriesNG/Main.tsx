@@ -80,7 +80,7 @@ export default function index(props: Props) {
     onZoomWithoutDefult,
   } = props;
   const id = isPreview ? `${props.id}__view` : props.id;
-  const { custom: rawCustom, options = {}, targets, overrides, queryOptionsTime } = panel;
+  const { custom: rawCustom = {}, options = {}, targets, overrides, queryOptionsTime } = panel;
   // custom 为 JsonObject（宽类型），按折线图面板实际使用的结构收窄
   const custom = rawCustom as {
     scaleDistribution?: { type?: 'log'; log?: number };

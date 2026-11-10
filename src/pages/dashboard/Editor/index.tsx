@@ -64,13 +64,10 @@ function index(props: IProps) {
   const changeVisualization = (val: string, migrateLegacyTable = false) => {
     if (!formRef.current?.getFormInstance) return;
     const formInstance = formRef.current.getFormInstance();
-    const values = {
-      ...(formInstance.getFieldsValue() as Record<string, unknown>),
-      targets: formInstance.getFieldValue('targets'),
-    } as IPanel;
+    const values = formInstance.getFieldsValue(true) as IPanel;
     if (migrateLegacyTable) {
       const availableFields = _.uniq(_.flatMap(normalizeData(series || []), 'columns'));
-      setInitialValues(upgradeTableToNG(values, availableFields));
+      setInitialValues(upgradeTableToNG(_.cloneDeep(values), availableFields));
       return;
     }
     const valuesCopy = _.cloneDeep(values);
@@ -98,8 +95,9 @@ function index(props: IProps) {
   const handleAddChart = async () => {
     if (formRef.current && formRef.current.getFormInstance) {
       const formInstance = formRef.current.getFormInstance();
-      formInstance.validateFields().then(async (values: IPanel) => {
-        values.targets = formInstance.getFieldValue('targets') ?? values.targets;
+      formInstance.validateFields().then(() => {
+        // validateFields 只返回已注册字段；保留异步选项和隐藏配置，并隔离后续持久化转换。
+        const values = _.cloneDeep(formInstance.getFieldsValue(true)) as IPanel;
         // TODO: 渲染 hexbin 图时，colorRange 需要从 string 转换为 array
         if (values.type === 'hexbin' && typeof values.custom.colorRange === 'string') {
           _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
