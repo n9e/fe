@@ -1,4 +1,27 @@
 const es_ES = {
+  query_workspace: {
+    assist: 'Asistencia con formulario',
+    assist_tip:
+      'Cree la consulta con el formulario y, tras convertirla, podrá previsualizarla o seguir escribiendo a mano. Las consultas existentes no se convierten al formulario.',
+    enable_assist: 'Active primero la asistencia con formulario',
+    builder: 'Construcción del formulario',
+    preview: 'Vista previa de {{language}}',
+    convert: 'Convertir a {{language}}',
+    continue: 'Seguir escribiendo este {{language}}',
+    not_generated: 'Sin convertir',
+    generating: 'Generando',
+    modified: 'El formulario ha cambiado; convierta la consulta',
+    synced: 'Coincide con el formulario',
+    empty: 'Configure el formulario y haga clic en «Convertir a {{language}}» para generar la vista previa',
+    use_previous: 'Se usará el resultado de la última conversión. Para obtener el contenido más reciente, vuelva a convertir.',
+    range_required: 'Seleccione un rango de tiempo',
+    unlimited: 'Sin límite',
+    build_failed: 'Error al generar SQL',
+    collapse: 'Contraer',
+    expand: 'Expandir',
+  },
+  sql_placeholder: 'Introduzca SQL',
+  sql_shortcut_hint: 'Shift+Enter nueva línea · Enter consulta',
   title: 'Búsqueda de logs',
   tab: {
     rename: 'Renombrar',

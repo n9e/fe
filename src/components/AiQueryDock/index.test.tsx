@@ -8,6 +8,7 @@ import type { IAiChatProps, IAiChatTurn } from '@/components/AiChatNG/types';
 // The dock is a shell around ChatPanel; the stub exposes what the shell
 // passes in and lets a test drive turns the way the panel would.
 jest.mock('@/utils', () => ({ copy2ClipBoard: jest.fn(() => true) }));
+jest.mock('@/utils/constant', () => ({ IS_ENT: false }));
 let panelProps: IAiChatProps | undefined;
 jest.mock('@/components/AiChatNG', () => {
   const actual = jest.requireActual('@/components/AiChatNG/types');
