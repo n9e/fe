@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form } from 'antd';
 import _ from 'lodash';
+import { isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target';
 import Collapse from '../../Components/Collapse';
 import ExpressionPanel from '../../Components/ExpressionPanel';
 import AddQueryButtons from '../../Components/AddQueryButtons';
@@ -16,8 +17,7 @@ export default function Elasticsearch({ datasourceValue }: { datasourceValue: nu
           <>
             <Collapse>
               {_.map(fields, (field, index) => {
-                const { __mode__ } = targets?.[field.name] || {};
-                if (__mode__ === '__expr__') {
+                if (isExpressionTarget(targets?.[field.name])) {
                   return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
                 }
                 return <QueryPanel key={field.key} field={field} index={index} fields={fields} add={add} remove={remove} datasourceValue={datasourceValue} />;
