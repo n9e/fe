@@ -44,6 +44,7 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
   const [chartForm] = Form.useForm();
   const { panelWidth, initialValues, range, timezone, id } = props;
   const type = Form.useWatch('type', chartForm);
+  const values = Form.useWatch([], chartForm);
   const location = useLocation();
   const queryParams = location.search ? queryString.parse(location.search) : {};
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -77,8 +78,7 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
     }
   });
 
-  // 已保存的数组整体覆盖默认数组，显式清空的 overrides 等不能被默认占位项补回。
-  const formInitialValuesRef = useRef(_.mergeWith({}, defaultValues, initialValues, (_value, source) => (Array.isArray(source) ? _.cloneDeep(source) : undefined)));
+  const formInitialValuesRef = useRef(_.merge({}, defaultValues, initialValues));
   useLayoutEffect(() => {
     // Form.Item / Form.List 中保留各数据源自己的默认值；已保存的面板配置在字段注册后统一覆盖默认值。
     // 不使用 Form.initialValues，避免同一路径同时存在 Item.initialValue 时触发 antd 警告。
@@ -90,27 +90,6 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
       return chartForm;
     },
   }));
-
-  // 异步选项尚未挂载时字段未注册；预览仍须读取完整 store，并响应未注册字段的程序更新。
-  const renderPreview = () => {
-    const values = chartForm.getFieldsValue(true) as IPanel;
-    if (!values.type) return null;
-    return (
-      <Renderer
-        id={`${id}__editor__`}
-        panelWidth={panelWidth}
-        time={range}
-        timezone={timezone}
-        values={values}
-        isPreview
-        themeMode={darkMode ? 'dark' : undefined}
-        annotations={[]}
-        onOverridesChange={(overrides) => {
-          chartForm.setFieldsValue({ overrides });
-        }}
-      />
-    );
-  };
 
   return (
     <Form layout='vertical' preserve={true} form={chartForm}>
@@ -147,16 +126,40 @@ function FormCpt(props: IProps, ref: React.ForwardedRef<EditorFormHandle>) {
                 }}
               >
                 <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper'>
-                  <Form.Item noStyle shouldUpdate>
-                    {renderPreview}
-                  </Form.Item>
+                  {values && (
+                    <Renderer
+                      id={`${id}__editor__`}
+                      panelWidth={panelWidth}
+                      time={range}
+                      timezone={timezone}
+                      values={values}
+                      isPreview
+                      themeMode={darkMode ? 'dark' : undefined}
+                      annotations={[]}
+                      onOverridesChange={(overrides) => {
+                        chartForm.setFieldsValue({ overrides });
+                      }}
+                    />
+                  )}
                 </div>
               </Resizable>
             ) : (
               <div className='fc-border rounded-lg bg-fc-100 n9e-dashboard-editor-modal-left-chart-wrapper n9e-dashboard-editor-modal-left-chart-wrapper-full'>
-                <Form.Item noStyle shouldUpdate>
-                  {renderPreview}
-                </Form.Item>
+                {values && (
+                  <Renderer
+                    id={`${id}__editor__`}
+                    panelWidth={panelWidth}
+                    time={range}
+                    timezone={timezone}
+                    values={values}
+                    isPreview
+                    themeMode={darkMode ? 'dark' : undefined}
+                    annotations={[]}
+                    onOverridesChange={(overrides) => {
+                      chartForm.setFieldsValue({ overrides });
+                    }}
+                  />
+                )}
               </div>
             )}
             {hasQueryEditor && (
