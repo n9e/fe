@@ -7,12 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { alphabet, DatasourceCateEnum } from '@/utils/constant';
 import AdvancedSettings from '../components/AdvancedSettings';
 import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
+import ExpressionPanel from '@/pages/dashboard/Editor/Components/ExpressionPanel';
+import { isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target';
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
 import { MetaModal } from '../components/Meta';
 
 export default function IotDBQueryBuilder({ datasourceValue }) {
   const { t } = useTranslation('dashboard');
   const chartForm = Form.useFormInstance();
+  const targets = Form.useWatch('targets');
 
   return (
     <Form.List name='targets'>
@@ -20,6 +23,9 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
         <>
           <Collapse>
             {_.map(fields, (field, index) => {
+              if (isExpressionTarget(targets?.[field.name])) {
+                return <ExpressionPanel key={field.key} fields={fields} remove={remove} field={field} />;
+              }
               const restField = _.omit(field, 'key');
               return (
                 <Panel
