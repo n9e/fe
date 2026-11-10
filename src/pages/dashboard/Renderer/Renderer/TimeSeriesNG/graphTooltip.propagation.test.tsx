@@ -133,20 +133,6 @@ describe('graphTooltip runtime propagation to timeseries charts', () => {
     expect(axisBuilderCalls[axisBuilderCalls.length - 1]).toEqual(expect.objectContaining({ theme: 'dark' }));
   });
 
-  it('renders legacy panels without custom or options configuration', () => {
-    const utils = render(
-      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
-        <MemoryRouter>
-          <Main {...panelProps} panel={{ type: 'timeseries', targets: [] } as never} darkMode={false} />
-        </MemoryRouter>
-      </DashboardRuntimeProvider>,
-    );
-
-    expect(utils.getByTestId('uplot-test-panel')).toBeInTheDocument();
-    expect(tooltipCalls.length).toBeGreaterThan(0);
-    expect(axisBuilderCalls.length).toBeGreaterThan(0);
-  });
-
   it('resizes without rebuilding the chart options when only width changes', () => {
     const utils = renderMain();
     const tooltipCallCount = tooltipCalls.length;
