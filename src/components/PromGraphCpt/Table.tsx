@@ -342,6 +342,7 @@ export default function Table(props: IProps) {
     {
       title: t('value'),
       dataIndex: 'value',
+      fixed: 'right' as const,
       className: 'prom-graph-table-value',
       render: (_text, record) => <div>{getListItemValue(data.resultType, record, unit)}</div>,
     },
