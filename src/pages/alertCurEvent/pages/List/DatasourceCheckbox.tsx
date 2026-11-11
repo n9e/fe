@@ -51,7 +51,7 @@ const DatasourceCheckbox: React.FC<Props> = ({ value = [], onChange }) => {
         <Checkbox checked={allChecked} indeterminate={indeterminate} onChange={(e) => handleCheckAll(e.target.checked)} />
         <Input prefix={<SearchOutlined />} allowClear className='ml-2 px-2 py-[2px] flex-1' placeholder={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
-      <div className='overflow-auto h-full min-h-0'>
+      <div className='best-looking-scroll h-full min-h-0'>
         <Checkbox.Group value={value} onChange={(vals) => onChange(_.map(vals, _.toNumber))}>
           {filteredDatasource.map((ds) => {
             const cate = _.find(allCates, (c) => c.value === ds.plugin_type);

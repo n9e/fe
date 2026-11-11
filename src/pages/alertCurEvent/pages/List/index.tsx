@@ -440,19 +440,12 @@ const AlertCurEvent: React.FC = () => {
                     </div>
                   </div>
                   {/* 右侧内容区 */}
-                  <div className='fc-border flex min-w-0 flex-1 flex-col gap-2'>
-                    <div
-                      className='cur-events'
-                      style={{
-                        borderBottom: '1px solid var(--fc-border-color)',
-                      }}
-                    >
-                      <div className='p-2'>
-                        <div className='alert-event-summary-toolbar'>
-                          <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
-                        </div>
-                        <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
+                  <div className='flex min-w-0 flex-1 flex-col gap-2'>
+                    <div className='cur-events'>
+                      <div className='alert-event-summary-toolbar'>
+                        <AggrRuleDropdown cardList={cardList} filter={filter} setFilter={setFilterPatch} reloadRuleCards={reloadRuleCards} />
                       </div>
+                      <AlertCard filter={filter} setFilter={setFilterPatch} cardList={cardList} />
                     </div>
                     {selectedRowKeys.length > 0 && (
                       <div className='mr-2 flex shrink-0 justify-end gap-2'>
@@ -499,7 +492,7 @@ const AlertCurEvent: React.FC = () => {
                         )}
                       </div>
                     )}
-                    <div className='h-full min-h-0 px-2'>
+                    <div className='h-full min-h-0'>
                       <AlertTable
                         filter={filter}
                         setFilter={setFilterPatch}
