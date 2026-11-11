@@ -106,6 +106,26 @@ mark {
 .ant-table-container {
   border: 1px solid var(--fc-border-color) !important;
   border-radius: 8px !important;
+
+  // 底部边框由容器统一绘制，避免末行单元格边框叠加；同时覆盖主题的末行边框样式。
+  .ant-table-tbody > tr:last-child > td {
+    border-bottom: none !important;
+  }
+}
+
+// rc-table 按表格外层宽度设置空状态占位块，未扣除容器边框，导致额外的横向滚动。
+// 仅在空表横向滚动区域内使用实际可用宽度，保留超宽表头的滚动与空状态的可视区域居中。
+@supports (container-type: inline-size) and (width: 100cqi) {
+  .ant-table-empty.ant-table-scroll-horizontal > .ant-table-container {
+    > .ant-table-content,
+    > .ant-table-body {
+      container-type: inline-size;
+
+      > table > .ant-table-tbody > .ant-table-placeholder > td > .ant-table-expanded-row-fixed {
+        width: 100cqi !important;
+      }
+    }
+  }
 }
 
 /* antd */
