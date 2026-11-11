@@ -24,6 +24,7 @@ import { json2csv } from 'json-2-csv';
 import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { deleteStrategy, updateAlertRules, updateServiceCal, updateNotifyChannels } from '@/services/warning';
 import { CommonStateContext } from '@/App';
+import { customProdInitialValues } from '@/pages/alertRules/Form/customProds';
 import Export from './Export';
 import EditModal from './EditModal';
 import CloneToHosts from './CloneToHosts';
@@ -87,7 +88,8 @@ export default function MoreOperations(props: MoreOperationsProps) {
               onClick={() => {
                 if (selectedRows.length) {
                   const exportData = selectedRows.map((item) => {
-                    return _.omit(item, ignoreFields);
+                    // 自定义规则类型的 rule_config 可能带后端内部字段，导出前按该类型的结构还原
+                    return _.omit(customProdInitialValues(item), ignoreFields);
                   });
                   Export({
                     data: JSON.stringify(exportData, null, 2),
