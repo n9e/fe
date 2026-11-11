@@ -11,6 +11,8 @@ import { getPageFromSearch } from '@/utils/urlPage';
 import { Document } from '@/components/DocumentDrawer';
 import Splitter from '@/components/Splitter';
 import { useShowUsageDocs } from '@/components/UsageDocs';
+// @ts-ignore 商业版扩展由 plusResolve 解析，开源版使用空组件。
+import ScriptSettings from 'plus:/parcels/NotificationChannels/ScriptSettings';
 
 import { NS, getChannelTypeMeta } from '../../constants';
 import { ChannelItem } from '../../types';
@@ -161,6 +163,7 @@ export default function FormCpt(props: Props) {
                     </Form.List>
                   </div>
                 </div>
+                {requestType === 'script' && <ScriptSettings />}
                 <div className='mb-1 px-4 py-3 pt-4'>
                   <div className='font-bolder flex items-center gap-1 text-l1'>{t(`request_configuration.${requestType}`)}</div>
                 </div>

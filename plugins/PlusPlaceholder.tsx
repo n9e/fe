@@ -4,6 +4,10 @@ export default function PlusePlaceholder() {
   return null;
 }
 
+// 通知媒介商业扩展在开源版中不改变表单数据。
+export const normalizeChannelFormValues = <T,>(values: T): T => values;
+export const normalizeChannelInitialValues = <T,>(values: T): T => values;
+
 function AlertRule() {
   return null;
 }
