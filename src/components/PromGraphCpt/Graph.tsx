@@ -138,6 +138,9 @@ export default function Graph(props: IProps) {
     chartheight: 300,
   });
   const [chartType, setChartType] = useState<ChartType>(ChartType.Line);
+  // 用 Array.isArray 收窄并固定为 string[]，避免类型取决于具体环境对 siteInfo 的声明。
+  const configuredLegendColumns = siteInfo?.explorer_timeseries_legend_columns;
+  const legendColumns: string[] = Array.isArray(configuredLegendColumns) && configuredLegendColumns.length > 0 ? configuredLegendColumns : ['last'];
   const lineGraphProps = {
     custom: {
       drawStyle: 'lines',
@@ -148,7 +151,7 @@ export default function Graph(props: IProps) {
     options: {
       legend: {
         displayMode: highLevelConfig.legend ? 'table' : 'hidden',
-        columns: _.isEmpty(siteInfo?.explorer_timeseries_legend_columns) ? ['last'] : siteInfo?.explorer_timeseries_legend_columns,
+        columns: legendColumns,
       },
       tooltip: {
         mode: highLevelConfig.shared ? 'all' : 'single',
