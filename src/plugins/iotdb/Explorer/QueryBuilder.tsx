@@ -14,6 +14,10 @@ interface Props {
   setRefreshFlag: (flag?: string) => void;
 }
 
+/**
+ * Edits Explorer SQL, the time range, and an optional database override.
+ * Requests a query refresh when Enter is pressed in the SQL input.
+ */
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('db_iotdb');
   const { extra, setRefreshFlag } = props;

@@ -26,6 +26,10 @@ interface IProps {
   datasourceValue: number | number[];
 }
 
+/**
+ * Edits IoTDB alert queries, evaluation intervals, and optional database overrides.
+ * Provides metadata selection and a graph preview for each query.
+ */
 export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
   const { t, i18n } = useTranslation('db_iotdb');
   const { darkMode } = useContext(CommonStateContext);

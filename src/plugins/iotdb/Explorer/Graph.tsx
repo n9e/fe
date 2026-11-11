@@ -21,6 +21,10 @@ interface Props {
   setRefreshFlag: (flag?: string) => void;
 }
 
+/**
+ * Runs Explorer queries as time series using the selected database and value keys.
+ * Refreshes results for changed query inputs while a refresh is requested.
+ */
 export default function Graph(props: Props) {
   const { form, datasourceCate = DatasourceCateEnum.iotdb, datasourceValue, refreshFlag, setRefreshFlag } = props;
   const [data, setData] = useState<any[]>([]);

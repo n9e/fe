@@ -24,6 +24,11 @@ interface Result {
   query?: any[];
 }
 
+/**
+ * Expands dashboard template variables and executes IoTDB targets as a batch.
+ * Returns chart series and, when requested, request and response inspection data.
+ * Each target can override the datasource database and use legacy metric keys.
+ */
 export default async function iotdbQuery(options: IOptions): Promise<Result> {
   const { time, targets, datasourceValue, queryOptionsTime, scopedVars } = options;
   if (!time.start) return Promise.resolve({ series: [] });

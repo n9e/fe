@@ -7,6 +7,10 @@ interface Props {
   data: any;
 }
 
+/**
+ * Displays IoTDB HTTP and table-model RPC settings, including fallback values.
+ * Masks the saved password when showing authentication details.
+ */
 export default function Index(props: Props) {
   const { t } = useTranslation('datasourceManage');
   const { data } = props;

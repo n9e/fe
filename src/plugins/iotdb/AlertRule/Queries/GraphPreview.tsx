@@ -8,6 +8,10 @@ import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getDsQuery } from '../../services';
 import { getSerieName, getValueKey } from '../../utils';
 
+/**
+ * Previews an IoTDB alert query for the selected time range and database.
+ * Loads results while the preview is visible and displays query errors inline.
+ */
 export default function GraphPreview({ cate, datasourceValue, query }) {
   const { t } = useTranslation('db_iotdb');
   const divRef = useRef<HTMLDivElement>(null);
@@ -38,6 +42,10 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
       },
     },
   };
+  /**
+   * Requests preview series using normalized value keys and the current range.
+   * Replaces the displayed series on success and clears them on failure.
+   */
   const fetchData = () => {
     if (datasourceValue && query?.query) {
       const parsedRange = parseRange(range);

@@ -47,6 +47,11 @@ export function getColumns(
   });
 }
 
+/**
+ * Fetches time-series results for a batch of datasource queries.
+ * Queries support database overrides and both valueKey and legacy metricKey fields.
+ * Returns an empty array when the response contains no data.
+ */
 export function getDsQuery(
   data: BaseParams & {
     query: {
@@ -72,6 +77,10 @@ export function getDsQuery(
   });
 }
 
+/**
+ * Fetches tabular results for datasource queries with optional database overrides.
+ * Returns the response data for the Explorer table to extract its rows.
+ */
 export function getLogsQuery(
   data: BaseParams & {
     query: {

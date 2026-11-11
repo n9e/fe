@@ -11,6 +11,10 @@ import Description from '../../components/items/Description';
 import Footer from '../../components/items/Footer';
 import Cluster from '../../components/items/Cluster';
 
+/**
+ * Edits IoTDB HTTP and RPC settings, including the datasource default database.
+ * Requires positive connection and query timeouts before submitting the form.
+ */
 export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
   const [form] = Form.useForm();

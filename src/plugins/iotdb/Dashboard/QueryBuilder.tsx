@@ -9,6 +9,10 @@ import Collapse, { Panel } from '@/pages/dashboard/Editor/Components/Collapse';
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
 import { MetaModal } from '../components/Meta';
 
+/**
+ * Edits dashboard IoTDB query targets, legends, and result-column mappings.
+ * Allows each target to override the datasource default database.
+ */
 export default function IotDBQueryBuilder({ datasourceValue }) {
   const { t } = useTranslation('dashboard');
   const chartForm = Form.useFormInstance();

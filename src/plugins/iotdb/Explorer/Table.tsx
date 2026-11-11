@@ -17,6 +17,10 @@ interface Props {
   setRefreshFlag: (flag?: string) => void;
 }
 
+/**
+ * Runs Explorer queries for the selected database and displays returned rows.
+ * Derives table columns from the response and displays query errors inline.
+ */
 export default function TableCpt(props: Props) {
   const { form, datasourceCate = DatasourceCateEnum.iotdb, datasourceValue, refreshFlag, setRefreshFlag } = props;
   const [columns, setColumns] = useState<any[]>([]);
@@ -72,6 +76,10 @@ export default function TableCpt(props: Props) {
     }
   }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, database, refreshFlag]);
 
+  /**
+   * Formats numeric IoTDB time values as local timestamps with milliseconds.
+   * Leaves other cells unchanged, accepting time values in seconds or milliseconds.
+   */
   const formatCellValue = (columnName: string, value: any) => {
     if (datasourceCate === DatasourceCateEnum.iotdb && columnName === 'time' && value !== null && value !== undefined) {
       const raw = _.isNumber(value) ? value : Number(value);
