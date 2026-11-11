@@ -1,0 +1,48 @@
+.prom-timeseries-container {
+  flex: 0 1 auto;
+  min-height: 0;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .prom-timeseries-graph-container {
+    height: 200px;
+    flex-shrink: 0;
+  }
+
+  .prom-timeseries-graph {
+    position: relative;
+  }
+
+  .prom-timeseries-reset-zoom {
+    position: absolute;
+    z-index: 1;
+    top: 10px;
+    right: 10px;
+    background: var(--fc-fill-1);
+  }
+
+  .prom-timeseries-legend-container {
+    min-height: 0;
+  }
+
+  .prom-timeseries-legend-table {
+    .ant-table-thead,
+    .ant-table-tbody {
+      .ant-table-cell {
+        padding: 2px 4px !important;
+        white-space: nowrap;
+      }
+    }
+
+    .prom-timeseries-legend-table-spacer > td {
+      padding: 0 !important;
+      border: 0 !important;
+    }
+  }
+}
+
+.theme-dark .prom-timeseries-container .u-select {
+  background: rgba(255, 255, 255, 0.1);
+}

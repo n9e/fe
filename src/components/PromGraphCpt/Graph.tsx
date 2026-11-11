@@ -25,7 +25,8 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+import TimeSeries from './components/TimeSeries';
+import type { PromSeries } from './components/TimeSeries/data';
 import { interpolateString, getRealStep } from '@/components/PromQLInputNG';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
@@ -117,7 +118,8 @@ export default function Graph(props: IProps) {
     queryPaused,
     onQueryContextChange,
   } = props;
-  const [data, setData] = useState<any[]>([]);
+  const [chartId] = useState(() => _.uniqueId('prom-explorer-'));
+  const [queryResult, setQueryResult] = useState<{ series: PromSeries[]; time?: IRawTimeRange }>({ series: [] });
   const [zoomRangeState, setZoomRangeState] = useState<{ range: IRawTimeRange; sourceKey: string }>();
   const [resetZoomVersion, setResetZoomVersion] = useState(0);
   const rangeKey = JSON.stringify(range);
@@ -197,7 +199,7 @@ export default function Graph(props: IProps) {
   useEffect(() => {
     if (queryPaused || queryRequest?.signal.aborted) return;
     if (!promql) {
-      setData([]);
+      setQueryResult({ series: [] });
       setLoading(false);
       return;
     }
@@ -231,8 +233,8 @@ export default function Graph(props: IProps) {
             minStep,
             maxDataPoints: maxDataPoints || panelWidth,
           }),
-          start: moment(parsedRange.start).unix(),
-          end: moment(parsedRange.end).unix(),
+          start,
+          end,
           step: realStep,
         },
         controller.signal,
@@ -255,7 +257,8 @@ export default function Graph(props: IProps) {
             resultSeries: series.length,
           });
 
-          setData(series);
+          // 数据和坐标范围使用同一次请求的时间快照，相对时间刷新后也同步更新。
+          setQueryResult({ series, time: { start: moment.unix(start), end: moment.unix(end) } });
           setErrorContent(tooLong ? `Warning：Fetched ${result.length} metrics, only displaying first ${RESULT_LIMIT}` : '');
           settled = true;
           queryRequest?.complete({ empty: series.length === 0, count: series.length });
@@ -279,7 +282,7 @@ export default function Graph(props: IProps) {
   }, [effectiveRangeKey, minStep, maxDataPoints, datasourceValue, promql, refreshFlag, onQueryRequest, url, queryRequest, queryPaused]);
 
   return (
-    <div className={activeZoomRange ? 'prom-graph-graph-container prom-graph-graph-zoom-owner' : 'prom-graph-graph-container'}>
+    <div className='prom-graph-graph-container'>
       <div className='prom-graph-graph-controls'>
         <Space wrap>
           <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
@@ -418,18 +421,19 @@ export default function Graph(props: IProps) {
           )}
         </Space>
       </div>
-      <Timeseries
+      <TimeSeries
+        id={chartId}
         key={refetchOnZoom ? `${resetZoomVersion}-${zoomSourceKey}` : undefined}
-        inDashboard={false}
-        values={lineGraphProps as any}
-        series={data}
-        time={effectiveRange}
+        values={lineGraphProps}
+        series={queryResult.series}
+        time={queryResult.time || effectiveRange}
         themeMode={darkMode ? 'dark' : undefined}
-        legendTableMaxHeight={contentMaxHeight - 200} // line chart height
-        onZoomWithoutDefult={refetchOnZoom ? (handleZoomWithoutDefault as any) : undefined}
-        legendSeriesFilterText={seriesFilterText}
-        onLegendSeriesFilterTextChange={onSeriesFilterTextChange}
-        legendFilteredText={t('filtered')}
+        legendTableMaxHeight={contentMaxHeight - 200}
+        onZoomRangeChange={refetchOnZoom ? handleZoomWithoutDefault : undefined}
+        zoomed={Boolean(activeZoomRange)}
+        seriesFilterText={seriesFilterText}
+        onSeriesFilterTextChange={onSeriesFilterTextChange}
+        filteredText={t('filtered')}
       />
     </div>
   );
