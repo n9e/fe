@@ -1,3 +1,4 @@
+import { customProdLabel } from '@/pages/alertRules/Form/customProds';
 import React, { useEffect, useState, useLayoutEffect, useRef, useImperativeHandle, useContext } from 'react';
 import { Button, Row, Col, Drawer, Tag, Table, Dropdown, Menu, Tooltip } from 'antd';
 import { MoreOutlined } from '@ant-design/icons';
@@ -103,7 +104,7 @@ function Card(props: Props, ref) {
       dataIndex: 'rule_prod',
       width: 100,
       render: (value) => {
-        return t(`AlertHisEvents:rule_prod.${value}`);
+        return customProdLabel(value) || t(`AlertHisEvents:rule_prod.${value}`);
       },
     },
     {

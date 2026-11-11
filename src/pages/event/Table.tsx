@@ -1,3 +1,4 @@
+import { customProdLabel } from '@/pages/alertRules/Form/customProds';
 /*
  * Copyright 2022 Nightingale Team
  *
@@ -54,7 +55,7 @@ export default function TableCpt(props: IProps) {
       dataIndex: 'rule_prod',
       width: 100,
       render: (value) => {
-        return t(`AlertHisEvents:rule_prod.${value}`);
+        return customProdLabel(value) || t(`AlertHisEvents:rule_prod.${value}`);
       },
     },
     {

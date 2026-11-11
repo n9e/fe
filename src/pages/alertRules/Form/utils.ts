@@ -12,6 +12,8 @@ import { isElasticsearchLike, normalizeElasticsearchAlertRuleQueryForPersist } f
 // @ts-ignore
 import * as alertUtils from 'plus:/parcels/AlertRule/utils';
 
+import { isCustomProd, customProdDefaults, customProdFormValues, customProdInitialValues } from './customProds';
+
 export function getFirstDatasourceId(datasourceIds = [], datasourceList: { id: number }[] = []) {
   return _.isEqual(datasourceIds, [DATASOURCE_ALL]) && datasourceList.length > 0 ? datasourceList?.[0]?.id : datasourceIds?.[0];
 }
@@ -97,7 +99,7 @@ export function processFormValues(values) {
       _.map(values.rule_config.queries, (item) => _.omit(item, 'prom_ql')),
     );
   }
-  if (values?.rule_config?.queries) {
+  if (!isCustomProd(values.prod) && values?.rule_config?.queries) {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       let parsedRange;
       if (item.range) {
@@ -123,7 +125,7 @@ export function processFormValues(values) {
       return isElasticsearchLike(values.cate) ? normalizeElasticsearchAlertRuleQueryForPersist(normalizedItem) : normalizedItem;
     });
   }
-  if (values?.rule_config?.triggers) {
+  if (!isCustomProd(values.prod) && values?.rule_config?.triggers) {
     values.rule_config.triggers = _.map(values.rule_config.triggers, (trigger) => {
       if (trigger.mode === 0) {
         return {
@@ -172,16 +174,16 @@ export function processFormValues(values) {
       enrich_queries,
     },
   };
-  return data;
+  return customProdFormValues(data);
 }
 
 export function processInitialValues(values) {
-  values = _.cloneDeep(values);
+  values = customProdInitialValues(_.cloneDeep(values));
   // datasource_ids 是后端 DB2FE 反填的 Deprecated 字段（引擎只认 datasource_queries），
   // 前端表单以 datasource_queries 为准、没有 datasource_ids 的 UI 绑定；若保留会在提交/模拟触发时
   // 携带旧数据源 id，故在 DB→表单 的初始化转换里统一剥离。
   delete values.datasource_ids;
-  if (values?.rule_config?.queries) {
+  if (!isCustomProd(values.prod) && values?.rule_config?.queries) {
     values.rule_config.queries = _.map(values.rule_config.queries, (item) => {
       if (item?.keys?.labelKey !== undefined) {
         _.set(item, 'keys.labelKey', item?.keys?.labelKey ? _.split(item.keys.labelKey, ' ') : []);
@@ -209,7 +211,7 @@ export function processInitialValues(values) {
     });
   }
   const isHostRule = values?.cate === 'host' || values?.prod === 'host';
-  if (!isHostRule && Array.isArray(values?.rule_config?.triggers)) {
+  if (!isHostRule && !isCustomProd(values.prod) && Array.isArray(values?.rule_config?.triggers)) {
     // 指标类阈值条件以 exp 作为后端实际执行表达式；host trigger 使用 type/duration，不要求 exp。
     values.rule_config.triggers = values.rule_config.triggers.filter((trigger) => {
       return typeof trigger?.exp === 'string' && trigger.exp.trim().length > 0;
@@ -263,6 +265,7 @@ export function processInitialValues(values) {
 }
 
 export function getDefaultValuesByCate(prod, cate) {
+  if (isCustomProd(prod)) return customProdDefaults(prod);
   const defaultRuleConfig = getDefaultRuleConfig(cate);
   if (cate === 'host') {
     return {

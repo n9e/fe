@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+import { customProdCates, customProdLabel, isCustomProd } from '@/pages/alertRules/Form/customProds';
+
 import React, { useState, useEffect, useCallback, useContext, useMemo, useRef } from 'react';
 import { Form, Card, Select, Col, Button, Row, message, Checkbox, Radio, Modal, Space, InputNumber, Input, Switch, Tag, Alert } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -199,6 +201,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
   const debounceFetcher = useCallback(_.debounce(getGroups, 800), []);
 
   const cateLabel = useMemo(() => {
+    if (customProdLabel(cate)) return customProdLabel(cate);
     if (cate === 'host') return 'Host';
     const cateItem = _.find(allCates, { value: cate });
     return cateItem ? getCateDisplayLabel(cateItem, i18n.language) : undefined;
@@ -293,6 +296,10 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
 
   const onFinish = (values) => {
     const params = processFormValues(values, selectedRules);
+    if (isCustomProd(values.cate)) {
+      params.prod = values.cate;
+      params.datasource_ids = [];
+    }
     if (type === 1) {
       editSubscribe([{ ...params, id: detail.id }], curBusiId).then((_) => {
         message.success(t('common:success.edit'));
@@ -371,13 +378,14 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
           >
             {!hasAnyFilter && <Alert className='mb-4' type='warning' showIcon message={t('no_filter_warning')} />}
             <Row gutter={10}>
-              <Col span={!cate || cate === 'host' ? 24 : 12}>
+              <Col span={!cate || cate === 'host' || isCustomProd(cate) ? 24 : 12}>
                 <Form.Item label={t('common:datasource.type')} name='cate'>
                   <DatasourceCateSelect
                     allowClear
                     scene='alert'
                     filterCates={(cates) => {
                       return _.concat(
+                        customProdCates(),
                         [
                           {
                             label: 'Host',
@@ -390,7 +398,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                         }),
                       );
                     }}
-                    onChange={() => {
+                    onChange={(value) => {
                       form.setFieldsValue({
                         datasource_ids: [],
                       });
@@ -398,7 +406,7 @@ const OperateForm: React.FC<Props> = ({ detail = {} as subscribeItem, type }) =>
                   />
                 </Form.Item>
               </Col>
-              {cate && cate !== 'host' && (
+              {cate && cate !== 'host' && !isCustomProd(cate) && (
                 <Col span={12}>
                   <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
                     {({ getFieldValue, setFieldsValue }) => {

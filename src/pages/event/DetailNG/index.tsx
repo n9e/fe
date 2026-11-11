@@ -1,3 +1,4 @@
+import { customProdLabel } from '@/pages/alertRules/Form/customProds';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import moment from 'moment';
@@ -276,6 +277,7 @@ export default function DetailNG(props: Props) {
     {
       label: t('detail.cate'),
       key: 'cate',
+      render: (cate) => customProdLabel(cate) || cate,
     },
     ...(_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)
       ? [

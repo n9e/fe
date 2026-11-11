@@ -11,3 +11,12 @@ export default function PlusModuleStub() {
 }
 
 export const dashboardVariablePlugins = {};
+
+export {
+  customRuleTypeOptions,
+  isCustomRuleProd,
+  getCustomProdDefaultValues,
+  processCustomProdFormValues,
+  processCustomProdInitialValues,
+  getCustomProdUrlValues,
+} from '../../../plugins/PlusPlaceholder';

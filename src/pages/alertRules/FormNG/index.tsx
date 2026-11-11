@@ -16,6 +16,10 @@ import { IS_PLUS } from '@/utils/constant';
 import { getPageFromSearch } from '@/utils/urlPage';
 import RouterPrompt from '@/components/RouterPrompt';
 
+import { isCustomProd, customProdCates, customProdUrlValues } from '../Form/customProds';
+// @ts-ignore
+import PlusAlertRule from 'plus:/parcels/AlertRule';
+
 import { defaultValues } from '../Form/constants';
 import { processFormValues, processInitialValues, getDefaultValuesByCate } from '../Form/utils';
 import SectionCard, { SectionItem } from './components/SectionCard';
@@ -120,6 +124,7 @@ export default function FormNG(props: IProps) {
 
     return [
       ...sortedCates,
+      ...customProdCates(),
       {
         value: 'host',
         label: 'Host',
@@ -129,14 +134,14 @@ export default function FormNG(props: IProps) {
         logo: '/image/logos/host.png',
       },
     ];
-  }, [datasourceCateOptions]);
+  }, [datasourceCateOptions, i18n.language]);
 
   const alertDatasourceTypes = useMemo(
     () =>
       alertDatasourceCates.map((item) => ({
         value: item.value,
         label: getCateDisplayLabel(item, i18n.language),
-        icon: <img src={item.logo} alt='' className='h-[18px] w-[18px] object-contain' />,
+        icon: item.logo ? <img src={item.logo} alt='' className='h-[18px] w-[18px] object-contain' /> : <Sparkles size={18} />,
       })),
     [alertDatasourceCates, i18n.language],
   );
@@ -304,6 +309,7 @@ export default function FormNG(props: IProps) {
 
     if (type === 1 || type === 2 || type === 3 || !_.isEmpty(initialValues)) {
       const processed = processInitialValues(initialValues);
+      form.resetFields();
       form.setFieldsValue(processed);
 
       // 初始化 cate 草稿
@@ -328,6 +334,8 @@ export default function FormNG(props: IProps) {
         newValues.prod = 'host';
         newValues.cate = 'host';
       }
+      Object.assign(newValues, customProdUrlValues(history.location.search));
+      form.resetFields();
       form.setFieldsValue(newValues);
       cateRef.current = newValues.cate;
       initialFormValuesRef.current = _.cloneDeep(newValues);
@@ -516,6 +524,7 @@ export default function FormNG(props: IProps) {
                         }
 
                         isProgrammaticUpdate.current = true;
+                        form.resetFields(['rule_config', 'datasource_queries', 'datasource_value', 'datasource_values']);
                         form.setFieldsValue(newValues);
                         // setFieldsValue 对数组按索引 merge，重置用的空 values:[] 盖不掉旧值
                         //（旧 cate 选中的数据源 id 会残留），这里对 datasource_queries 强制整体替换
@@ -526,7 +535,7 @@ export default function FormNG(props: IProps) {
                       }}
                     />
                   </Form.Item>
-                  {prod !== 'host' && (
+                  {prod !== 'host' && !isCustomProd(prod) && (
                     <DatasourceValueSelect datasourceList={groupedDatasourceList[cate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} showExtra />
                   )}
                 </SectionCard>
@@ -544,7 +553,8 @@ export default function FormNG(props: IProps) {
                     <div />
                   </Form.Item>
                   {prod === 'host' && <Host />}
-                  {prod !== 'host' && <Rule />}
+                  {isCustomProd(prod) && <PlusAlertRule prod={prod} />}
+                  {prod !== 'host' && !isCustomProd(prod) && <Rule />}
                 </SectionCard>
 
                 <Notify

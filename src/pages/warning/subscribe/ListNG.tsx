@@ -1,3 +1,4 @@
+import { customProdLabel } from '@/pages/alertRules/Form/customProds';
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, Input, message, Modal, Space, Switch, Tag, Tooltip, Select } from 'antd';
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons';
@@ -128,6 +129,7 @@ const Subscribe = (props: Props) => {
         dataIndex: 'datasource_ids',
         render(value, record: any) {
           if (!value) return '-';
+          if (customProdLabel(record.cate)) return <span>{customProdLabel(record.cate)}</span>;
           const cate = _.find(allCates, { value: record.cate });
           const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
           let logoSrc = cate?.logo;

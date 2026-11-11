@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function PlusePlaceholder() {
+export default function PlusePlaceholder(_props?: any) {
   return null;
 }
 
@@ -140,3 +140,11 @@ export {
 
 // 开源版没有 Plus 变量扩展，公共注册表仍然有效。
 export const dashboardVariablePlugins: Record<string, import('../src/pages/dashboard/Variables/pluginTypes').DashboardVariablePlugin> = {};
+
+// No custom rule products in the open-source edition.
+export const customRuleTypeOptions = [];
+export const isCustomRuleProd = (_prod?: string) => false;
+export const getCustomProdDefaultValues = (_prod: string) => undefined;
+export const processCustomProdFormValues = (values: any) => values;
+export const processCustomProdInitialValues = (values: any) => values;
+export const getCustomProdUrlValues = (_search: string) => undefined;

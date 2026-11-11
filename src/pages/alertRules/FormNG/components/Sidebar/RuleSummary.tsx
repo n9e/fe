@@ -1,3 +1,5 @@
+import { customProdLabel, isCustomProd } from '../../../Form/customProds';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import i18next from 'i18next';
@@ -394,7 +396,7 @@ function DatasourceSummary({ datasourceList }: { datasourceList: { id: number; n
         <SectionTitle>{t('datasource_configs')}</SectionTitle>
         <Field>
           <FieldLabel>{t('table.cate')}</FieldLabel>
-          <FieldValue>{cateNameMap[cate] || cate}</FieldValue>
+          <FieldValue>{customProdLabel(cate) || cateNameMap[cate] || cate}</FieldValue>
         </Field>
         {instanceNames.length > 0 && (
           <Field noMargin>
@@ -490,6 +492,7 @@ function RuleConditionSummary() {
   const hasTriggers = summary.triggers.length > 0;
   const isHost = prod === 'host' || cate === 'host';
 
+  if (isCustomProd(prod)) return null;
   if (!isHost && !hasQueries && !hasTriggers) return null;
 
   return (

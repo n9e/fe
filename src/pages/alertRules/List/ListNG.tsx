@@ -1,3 +1,6 @@
+import { customProdLabel, customProdOptions } from '@/pages/alertRules/Form/customProds';
+import { getProdOptions } from '@/pages/alertRules/Form/components/ProdSelect';
+
 import React, { useContext, useState, useEffect } from 'react';
 import { Space, Select, Input, Button, Tooltip, Tag, Modal, Switch, message } from 'antd';
 import { ColumnType } from 'antd/lib/table';
@@ -233,6 +236,7 @@ export default function AlertRules(props: Props) {
         title: t('table.datasource_ids'),
         dataIndex: 'datasource_ids',
         render(value, record) {
+          if (customProdLabel(record.cate)) return <span>{customProdLabel(record.cate)}</span>;
           if (!value) return null;
           const cate = _.find(allCates, { value: record.cate });
           const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
@@ -420,6 +424,16 @@ export default function AlertRules(props: Props) {
               fetchData();
             }}
           />
+          {customProdOptions.length > 0 && (
+            <Select
+              allowClear
+              style={{ minWidth: 120 }}
+              placeholder={t('prod')}
+              value={filter.prod}
+              options={getProdOptions([])}
+              onChange={(prod) => handleFilterChange({ ...filter, prod })}
+            />
+          )}
           <DatasourceSelectV3
             style={{ width: 100 }}
             filterKey='alertRule'

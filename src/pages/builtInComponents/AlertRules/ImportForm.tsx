@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+import { isCustomProd } from '@/pages/alertRules/Form/customProds';
+
 import React, { useEffect, useMemo, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -73,7 +75,7 @@ function parseCate(data: string): { derivedCate?: string; multiCate: boolean } {
     const dataList = Array.isArray(parsed) ? parsed : [parsed];
     const cates = _.union(
       _.map(
-        _.filter(dataList, (item) => item.cate !== 'host'),
+        _.filter(dataList, (item) => item.cate !== 'host' && !isCustomProd(item.prod)),
         (item) => item.cate,
       ),
     );
@@ -161,8 +163,8 @@ export default function ImportForm(props: ImportFormProps) {
               const record = _.omit(item, ['id', 'group_id', 'create_at', 'create_by', 'update_at', 'update_by']);
               return {
                 ...record,
-                cate: record.cate === 'host' ? 'host' : derivedCate,
-                datasource_queries: vals?.datasource_queries,
+                cate: record.cate === 'host' || isCustomProd(record.prod) ? record.cate : derivedCate,
+                datasource_queries: isCustomProd(record.prod) ? [] : vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
                 notify_version: 1, // 导入内置规则时强制使用通知规则的版本
                 // 内置规则自带的通知设置一律丢弃，只认用户在本表单选的（不选就是空）

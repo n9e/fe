@@ -27,6 +27,9 @@ import DatasourceValueSelectV2 from '@/pages/alertRules/Form/components/Datasour
 
 import { panelBaseProps } from '../../constants';
 import Host from './Rule/Host';
+import { isCustomProd, customProdCates } from '../customProds';
+// @ts-ignore
+import PlusAlertRule from 'plus:/parcels/AlertRule';
 import AlertRule from './Rule';
 import { getDefaultValuesByCate } from '../utils';
 
@@ -55,7 +58,7 @@ export default function Rule({ form }) {
             const filtedCates = _.filter(cates, (item) => {
               return !!item.alertRule && (item.alertPro ? isPlus : true);
             });
-            return _.concat(filtedCates, {
+            return _.concat(filtedCates, customProdCates(), {
               value: 'host',
               label: 'Host',
               type: ['host'],
@@ -67,16 +70,20 @@ export default function Rule({ form }) {
           onChange={(val, record) => {
             const { type } = record;
             const curProd = type[0];
+            form.resetFields(['rule_config', 'datasource_queries', 'datasource_value']);
             form.setFieldsValue(getDefaultValuesByCate(curProd, val));
           }}
         />
       </Form.Item>
-      {prod !== 'host' && <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} showExtra />}
+      {prod !== 'host' && !isCustomProd(prod) && (
+        <DatasourceValueSelectV2 datasourceList={groupedDatasourceList[cate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} showExtra />
+      )}
       <Form.Item isListField={false} name={['rule_config', 'inhibit']} valuePropName='checked' noStyle hidden>
         <div />
       </Form.Item>
       {prod === 'host' && <Host />}
-      {prod !== 'host' && <AlertRule />}
+      {isCustomProd(prod) && <PlusAlertRule prod={prod} />}
+      {prod !== 'host' && !isCustomProd(prod) && <AlertRule />}
     </Card>
   );
 }

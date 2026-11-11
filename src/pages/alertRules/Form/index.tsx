@@ -30,6 +30,7 @@ import Rule from './Rule';
 import Effective from './Effective';
 import Notify from './Notify';
 import { processFormValues, processInitialValues, getDefaultValuesByCate } from './utils';
+import { customProdUrlValues } from './customProds';
 import { defaultValues } from './constants';
 import PipelineConfigsNG, { PipelineConfigsNGRef } from './PipelineConfigsNG';
 
@@ -94,6 +95,7 @@ export default function index(props: IProps) {
 
   useEffect(() => {
     if (type === 1 || type === 2 || type === 3 || !_.isEmpty(initialValues)) {
+      form.resetFields();
       form.setFieldsValue(processInitialValues(initialValues));
     } else {
       const newValues = {
@@ -123,6 +125,7 @@ export default function index(props: IProps) {
       form.setFieldsValue({
         ...newValues,
         ...getDefaultValuesByCate(newValues.prod, newValues.cate),
+        ...customProdUrlValues(history.location.search),
       });
     }
   }, [initialValues]);

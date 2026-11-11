@@ -15,6 +15,8 @@
  *
  */
 import { useMemoizedFn, useRequest } from 'ahooks';
+import { customProdLabel } from '@/pages/alertRules/Form/customProds';
+
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, Input, Tooltip, message, Modal, Switch, Space, Tag, Select } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -119,6 +121,7 @@ const Shield: React.FC = () => {
       dataIndex: 'datasource_ids',
       render(value, record: any) {
         if (!value) return null;
+        if (customProdLabel(record.cate)) return <span>{customProdLabel(record.cate)}</span>;
         const cate = _.find(allCates, { value: record.cate });
         const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
         let logoSrc = cate?.logo;

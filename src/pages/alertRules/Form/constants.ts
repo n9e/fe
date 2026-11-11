@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { customProdOptions } from './customProds';
 import _ from 'lodash';
 
 import { DatasourceCateEnum } from '@/utils/constant';
@@ -105,4 +106,5 @@ export const ruleTypeOptions = [
     value: 'logging',
     pro: false,
   },
+  ...customProdOptions,
 ];

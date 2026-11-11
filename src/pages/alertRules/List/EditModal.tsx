@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+import { isCustomProd } from '@/pages/alertRules/Form/customProds';
+
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import _ from 'lodash';
 import { debounce, join } from 'lodash';
@@ -253,6 +255,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
   };
 
   const editModalClose = () => {
+    form.resetFields();
     editModalFinish(false);
   };
 
@@ -283,7 +286,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
             enable_status: true, // true:立即启用 false:禁用
             notify_recovered: 1, // 1:启用
             effective_time: defaultValues.effective_time,
-            field: 'datasource_ids',
+            field: selectedRows.some((row) => isCustomProd(row.prod)) ? 'severity' : 'datasource_ids',
           }}
         >
           <Form.Item
@@ -304,7 +307,7 @@ const editModal: React.FC<Props> = ({ isModalVisible, editModalFinish, selectedR
                     })
                   : fields,
                 (item) => (
-                  <Option key={item.field} value={item.field}>
+                  <Option key={item.field} value={item.field} disabled={selectedRows.some((row) => isCustomProd(row.prod)) && ['datasource_ids', 'triggers'].includes(item.field)}>
                     {t(`batch.update.options.${item.field}`)}
                   </Option>
                 ),

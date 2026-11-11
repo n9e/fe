@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+import { customProdCates, customProdLabel, isCustomProd } from '@/pages/alertRules/Form/customProds';
+
 import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
 import { Form, Input, Card, Select, Col, Button, Row, message, DatePicker, Tooltip, Space, Radio, TimePicker, Checkbox, Alert } from 'antd';
 import { PlusCircleOutlined, MinusCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -137,7 +139,7 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
     basic: false,
   });
 
-  const cateLabel = getCateDisplayLabel(_.find(allCates, { value: cate }), i18n.language);
+  const cateLabel = customProdLabel(cate) || getCateDisplayLabel(_.find(allCates, { value: cate }), i18n.language);
   const datasourceNames = _.compact(
     _.map(datasourceIds, (id) => {
       if (id === 0) return '';
@@ -195,6 +197,10 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
 
   const onFinish = (values) => {
     const params = processFormValues(values);
+    if (isCustomProd(values.cate)) {
+      params.prod = values.cate;
+      params.datasource_ids = [];
+    }
     const curBusiItemId = form.getFieldValue('group_id');
     const historyPushOptions = {
       pathname: '/alert-mutes',
@@ -322,11 +328,14 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                   <DatasourceCateSelect
                     scene='alert'
                     filterCates={(cates) => {
-                      return _.filter(cates, (item) => {
-                        return !!item.alertRule && (item.alertPro ? isPlus : true);
-                      });
+                      return _.concat(
+                        customProdCates(),
+                        _.filter(cates, (item) => {
+                          return !!item.alertRule && (item.alertPro ? isPlus : true);
+                        }),
+                      );
                     }}
-                    onChange={() => {
+                    onChange={(value) => {
                       form.setFieldsValue({
                         datasource_ids: [],
                       });
@@ -334,16 +343,18 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={12}>
-                <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
-                  {({ getFieldValue, setFieldsValue }) => {
-                    const cate = getFieldValue('cate');
-                    return (
-                      <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} required={false} />
-                    );
-                  }}
-                </Form.Item>
-              </Col>
+              {!isCustomProd(cate) && (
+                <Col span={12}>
+                  <Form.Item shouldUpdate={(prevValues, curValues) => prevValues.cate !== curValues.cate} noStyle>
+                    {({ getFieldValue, setFieldsValue }) => {
+                      const cate = getFieldValue('cate');
+                      return (
+                        <DatasourceValueSelect mode='multiple' setFieldsValue={setFieldsValue} cate={cate} datasourceList={groupedDatasourceList[cate] || []} required={false} />
+                      );
+                    }}
+                  </Form.Item>
+                </Col>
+              )}
             </Row>
             <Form.Item label={t('severities')} name='severities' tooltip={t('severities_tip')} rules={[{ required: true, message: t('severities_msg') }]}>
               <Checkbox.Group

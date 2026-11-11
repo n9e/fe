@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+import { isCustomProd } from '@/pages/alertRules/Form/customProds';
+
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +41,7 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, reload
         const cates = _.union(
           _.map(
             _.filter(dataList, (item) => {
-              return item.cate !== 'host';
+              return item.cate !== 'host' && !isCustomProd(item.prod);
             }),
             (item) => item.cate,
           ),
@@ -72,8 +74,8 @@ export default function ImportBase({ busiId, onOk, groupedDatasourceList, reload
             const importData = _.map(JSON.parse(vals.import), (item) => {
               return {
                 ...item,
-                cate: item.cate === 'host' ? 'host' : vals.datasource_cate,
-                datasource_queries: vals?.datasource_queries,
+                cate: item.cate === 'host' || isCustomProd(item.prod) ? item.cate : vals.datasource_cate,
+                datasource_queries: isCustomProd(item.prod) ? [] : vals?.datasource_queries,
                 disabled: vals.enabled ? 0 : 1,
                 notify_version: 1, // 导入规则时强制使用通知规则的版本
                 notify_rule_ids: [], // 同时清空规则里的通知规则设置
