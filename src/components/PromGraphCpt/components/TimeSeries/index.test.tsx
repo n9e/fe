@@ -8,7 +8,7 @@ import * as tooltipModule from './NameWithTooltip';
 
 let plotWidth = 800;
 jest.mock('ahooks', () => ({ useSize: () => ({ width: plotWidth, height: 200 }) }));
-jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key, i18n: { language: 'en_US' } }) }));
 jest.mock('@/pages/dashboard/config', () => ({ hexPalette: ['#123456'] }));
 jest.mock('./Chart', () => ({
   __esModule: true,

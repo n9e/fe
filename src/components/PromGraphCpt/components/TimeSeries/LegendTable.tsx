@@ -6,6 +6,8 @@ import type { SorterResult } from 'antd/lib/table/interface';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { isChineseLanguage } from '@/utils/n9eSiteDoc';
+
 import type { LegendItem as DataItem } from './data';
 import NameWithTooltip from './NameWithTooltip';
 
@@ -23,7 +25,8 @@ interface Props {
 }
 
 function LegendTable(props: Props) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation('dashboard');
+  const legendLng = isChineseLanguage(i18n.language) ? i18n.language : 'en_US';
   const { data: tableData, legendColumns, onRowClick } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,14 +76,14 @@ function LegendTable(props: Props) {
           >
             <Space className='cursor-pointer'>
               <span>
-                {t('panel.options.legend.series')} ({filteredData.length})
+                {t('panel.options.legend.series', { lng: legendLng })} ({filteredData.length})
               </span>
               <SearchOutlined title={t('panel.options.legend.seriesFilter')} style={{ color: props.seriesFilterText ? 'var(--fc-primary-color)' : undefined }} />
               {props.seriesFilterText && props.filteredText && <span className='text-soft'>({props.filteredText})</span>}
             </Space>
           </Popover>
         ) : (
-          `Series (${tableData.length})`
+          `${t('panel.options.legend.series', { lng: legendLng })} (${tableData.length})`
         ),
         dataIndex: 'name',
         render: (text: string, record: DataItem) => {
@@ -99,9 +102,7 @@ function LegendTable(props: Props) {
     ];
     _.forEach(legendColumns, (column) => {
       cols.push({
-        title: t(`panel.options.legend.${column}`, {
-          lng: 'en_US', // fixed to en_US, optimize column width
-        }),
+        title: t(`panel.options.legend.${column}`, { lng: legendLng }),
         dataIndex: column,
         fixed: 'right',
         width: 112,
@@ -121,6 +122,7 @@ function LegendTable(props: Props) {
     sortState.column,
     sortState.dir,
     t,
+    legendLng,
     props.seriesFilterText,
     props.onSeriesFilterTextChange,
     props.filteredText,

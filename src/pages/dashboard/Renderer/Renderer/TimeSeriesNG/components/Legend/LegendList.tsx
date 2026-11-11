@@ -3,6 +3,8 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
+import { isChineseLanguage } from '@/utils/n9eSiteDoc';
+
 import { IPanel } from '../../../../../types';
 import { DataItem } from '../../utils/getLegendData';
 
@@ -19,7 +21,8 @@ interface Props {
 }
 
 export default function LegendList(props: Props) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation('dashboard');
+  const legendLng = isChineseLanguage(i18n.language) ? i18n.language : 'en_US';
   const { panel, data, legendColumns, legendSortBy, legendSortDir, placement, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
@@ -66,10 +69,7 @@ export default function LegendList(props: Props) {
                   {_.map(legendColumns, (column) => {
                     return (
                       <span key={column} style={{ paddingLeft: 8 }}>
-                        {t(`panel.options.legend.${column}`, {
-                          lng: 'en_US', // fixed to en_US, optimize column width
-                        })}
-                        : {item[column].text}
+                        {t(`panel.options.legend.${column}`, { lng: legendLng })}: {item[column].text}
                       </span>
                     );
                   })}
