@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import PromQLInputNG from '@/components/PromQLInputNG';
 import PromGraph from './index';
 import { getPromData } from './services';
+import { parseRange } from '@/components/TimeRangePicker';
 
 jest.mock('./services', () => ({ getPromData: jest.fn() }));
 jest.mock('@/utils/constant', () => ({ N9E_PATHNAME: 'n9e' }));
@@ -18,13 +19,17 @@ jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) =>
 jest.mock('@/App', () => ({ CommonStateContext: require('react').createContext({ datasourceList: [] }) }));
 jest.mock('@/pages/dashboard/Components/UnitPicker', () => () => null);
 jest.mock('@/pages/alertRules/List/utils', () => ({ downloadFile: jest.fn() }));
-jest.mock('@/pages/dashboard/Renderer/Renderer/Timeseries', () => (props: any) => <div data-testid='graph-data'>{JSON.stringify(props.series)}</div>);
+jest.mock('./components/TimeSeries', () => (props: any) => (
+  <div data-testid='graph-data' data-time={JSON.stringify(props.time)}>
+    {JSON.stringify(props.series)}
+  </div>
+));
 jest.mock('@/pages/dashboard/Renderer/datasource/utils', () => ({ completeBreakpoints: (_step: number, values: any) => values }));
 jest.mock('./components/GraphStandardOptions', () => () => null);
 jest.mock('@/components/TimeRangePicker', () => ({
   __esModule: true,
   default: (props: any) => <button onClick={() => props.onChange({ start: 'now-2h', end: 'now' })}>change range</button>,
-  parseRange: () => ({ start: new Date(0), end: new Date(100000) }),
+  parseRange: jest.fn(() => ({ start: new Date(0), end: new Date(100000) })),
 }));
 jest.mock('@/components/PromQLInput/BuiltinMetrics', () => () => null);
 jest.mock('./components/MetricsExplorer', () => () => null);
@@ -68,6 +73,7 @@ let requests: Array<{ resolve: (value: any) => void; reject: (error: Error) => v
 beforeEach(() => {
   requests = [];
   mockEditorSetValue.mockClear();
+  (parseRange as jest.Mock).mockReturnValue({ start: new Date(0), end: new Date(100000) });
   (getPromData as jest.Mock).mockImplementation(() => new Promise((resolve, reject) => requests.push({ resolve, reject })));
 });
 
@@ -130,6 +136,33 @@ it('places vertical scrolling in the table body', async () => {
   render(<PromGraph datasourceValue={1} promQL='up' defaultType='table' />);
   await act(async () => requests[0].resolve(response('up')));
   expect(document.querySelector('[data-scroll-y="400"]')).toBeTruthy();
+});
+
+it('uses the exact request bounds for graph results and advances relative bounds on refresh', async () => {
+  const controlRef: any = { current: null };
+  (parseRange as jest.Mock).mockReturnValue({ start: new Date(0), end: new Date(3600000) });
+  render(<PromGraph datasourceValue={1} promQL='up' defaultType='graph' controlRef={controlRef} />);
+  await act(async () => requests[0].resolve(response('initial')));
+  expect(JSON.parse(screen.getByTestId('graph-data').getAttribute('data-time')!)).toEqual({
+    start: new Date(0).toISOString(),
+    end: new Date(3600000).toISOString(),
+  });
+
+  (parseRange as jest.Mock).mockReturnValue({ start: new Date(600000), end: new Date(4200000) });
+  let run: Promise<any>;
+  act(() => {
+    run = controlRef.current.run();
+  });
+  const query = (getPromData as jest.Mock).mock.calls[1][1];
+  expect(query).toMatchObject({ start: 600, end: 4200 });
+  // 即使网络请求返回前时间继续前进，图表也必须使用这次请求的起止时间。
+  (parseRange as jest.Mock).mockReturnValue({ start: new Date(900000), end: new Date(4500000) });
+  await act(async () => requests[1].resolve(response('refreshed')));
+  await run!;
+  expect(JSON.parse(screen.getByTestId('graph-data').getAttribute('data-time')!)).toEqual({
+    start: new Date(query.start * 1000).toISOString(),
+    end: new Date(query.end * 1000).toISOString(),
+  });
 });
 
 it('rejects failed queries instead of reporting success', async () => {
