@@ -55,7 +55,7 @@ function createPanel(type: 'stat' | 'timeseries'): IPanel {
   const mapping: IValueMapping = {
     type: type === 'stat' ? 'special' : 'textValue',
     match: type === 'stat' ? { special: 60 } : { textValue: 'QA_B' },
-    result: { text: 'MAPPED' },
+    result: { text: 'MAPPED', color: '' },
   };
   return {
     id: 'mapping-panel',
@@ -104,7 +104,7 @@ it.each(['stat', 'timeseries'] as const)('%s 映射立即作用于编辑预览�
   fireEvent.click(screen.getByRole('button', { name: 'common:btn.save' }));
   await waitFor(() => expect(onOK).toHaveBeenCalledTimes(1));
   const savedPanel = JSON.parse(JSON.stringify(onOK.mock.calls[0][0])) as IPanel;
-  expect(savedPanel.options.valueMappings).toEqual([{ ...panel.options.valueMappings![0], result: { text: 'UPDATED' } }]);
+  expect(savedPanel.options.valueMappings).toEqual([{ ...panel.options.valueMappings![0], result: { text: 'UPDATED', color: '' } }]);
   expect(panel.options.valueMappings![0].result.text).toBe('MAPPED');
 
   unmount();
