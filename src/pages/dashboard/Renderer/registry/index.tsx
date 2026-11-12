@@ -27,7 +27,7 @@ export { defaultCustomValuesMap, defaultOptionsValuesMap, defaultOptionsValues, 
  *
  * 约束：
  * - `loadOptions` 只允许动态 import，查看态（渲染器）引用本模块时不会静态引入编辑器；
- * - 低频图表（pie / hexbin / barGauge / gauge / heatmap / barchart）的渲染器按需加载；
+ * - 所有图表渲染器静态加载，避免显示面板时动态加载模块失败；
  * - 类型顺序由 `panelTypes.ts` 的 `PANEL_VISUALIZATION_TYPES` 唯一定义。
  */
 const panelTypeRegistry: Record<PanelVisualizationType, PanelTypeDefinition> = {
