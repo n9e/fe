@@ -60,6 +60,7 @@ function EditItem(props: IProps) {
   const footerExtraRef = useRef<HTMLDivElement>(null);
 
   useDeepCompareEffect(() => {
+    form.resetFields();
     form.setFieldsValue(data);
   }, [data]);
 
@@ -135,7 +136,7 @@ function EditItem(props: IProps) {
             type='primary'
             onClick={() => {
               form.validateFields().then((res) => {
-                onOk(res);
+                onOk({ ...res, allOption: Boolean(res.multi && res.allOption) });
               });
             }}
             disabled={varType === 'hostIdent' && anonymousAccess}
