@@ -89,6 +89,7 @@ export default function FormNG(props: IProps) {
   const prod = Form.useWatch('prod', form);
   const cate = Form.useWatch('cate', form);
   const notifyVersion = Form.useWatch('notify_version', form);
+  const groupId = Form.useWatch('group_id', form);
   const showAdvanced = shouldShowAdvancedSettings(notifyVersion, cate);
   const [sidebarVisible, setSidebarVisible] = useState(() => localStorage.getItem('alert_rule_form_ng_sidebar_visible') !== 'false');
 
@@ -458,7 +459,7 @@ export default function FormNG(props: IProps) {
                     <Col xs={24} lg={8}>
                       <Form.Item label={t('group_id')} name='group_id' rules={[{ required: true }]}>
                         <Select
-                          disabled
+                          disabled={type === 1 || type === 3}
                           placeholder={t('group_id_placeholder')}
                           options={_.map(busiGroups, (item) => ({
                             label: item.name,
@@ -610,7 +611,7 @@ export default function FormNG(props: IProps) {
                                 const res = await EditStrategy(data, initialValues.group_id, initialValues.id);
                                 handleMessage(res);
                               } else {
-                                const curBusiId = initialValues?.group_id || Number(bgid);
+                                const curBusiId = values.group_id || initialValues?.group_id || Number(bgid);
                                 const res = await addStrategy([data], curBusiId);
                                 handleMessage(res);
                               }
@@ -624,7 +625,7 @@ export default function FormNG(props: IProps) {
                       >
                         {t('common:btn.save')}
                       </Button>
-                      <TestFireModal bgid={initialValues?.group_id || Number(bgid)} buttonDisabled={editable === false} />
+                      <TestFireModal bgid={(type !== 1 && groupId) || initialValues?.group_id || Number(bgid)} buttonDisabled={editable === false} />
                       <Link to={{ pathname: '/alert-rules', search: `?page=${getPageFromSearch(location.search)}` }}>
                         <Button>{t('common:btn.cancel')}</Button>
                       </Link>
@@ -664,7 +665,7 @@ export default function FormNG(props: IProps) {
                     if (type === 1) {
                       res = await EditStrategy(data, initialValues.group_id, initialValues.id);
                     } else {
-                      const curBusiId = initialValues?.group_id || Number(bgid);
+                      const curBusiId = values.group_id || initialValues?.group_id || Number(bgid);
                       res = await addStrategy([data], curBusiId);
                     }
                     if (type === 1 && res.err) {
