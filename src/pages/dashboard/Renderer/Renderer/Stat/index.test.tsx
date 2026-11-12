@@ -121,3 +121,22 @@ describe('Stat arrangement', () => {
     expect(view.container.querySelectorAll('.renderer-stat-item-graph')).toHaveLength(0);
   });
 });
+
+test('removing an override restores global precision without changing query data', () => {
+  const data: CalculatedSeries[] = ['A', 'B'].map((refId) => ({ id: refId, refId, metric: {}, name: refId, data: [[1000, 60.125]] }));
+  const panel = createPanel({ orientation: 'horizontal', graphMode: 'none' });
+  panel.options = { standardOptions: { unit: 'none', decimals: 2 } };
+  panel.overrides = [{ matcher: { id: 'byFrameRefID', value: 'A' }, properties: { standardOptions: { unit: 'none', decimals: 1 } } }];
+  const bodyWrapRef = React.createRef<HTMLDivElement>();
+  const contents = () => (
+    <DashboardRuntimeProvider>
+      <Stat values={panel} series={data} dataRevision={1} bodyWrapRef={bodyWrapRef} />
+    </DashboardRuntimeProvider>
+  );
+  const view = render(contents());
+  const values = () => Array.from(view.container.querySelectorAll('.renderer-stat-value')).map((element) => element.textContent);
+  expect(values()).toEqual(['60.1', '60.13']);
+  panel.overrides = [];
+  view.rerender(contents());
+  expect(values()).toEqual(['60.13', '60.13']);
+});

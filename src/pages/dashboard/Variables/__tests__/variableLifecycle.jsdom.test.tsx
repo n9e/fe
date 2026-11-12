@@ -36,7 +36,6 @@ jest.mock('react-i18next', () => ({
 // 只隔离外部查询与本用例无关的变量类型；保留真实的 Query / Datasource 组件与依赖管理。
 jest.mock('../datasource', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../Variable/Constant', () => () => null);
-jest.mock('../Variable/Custom', () => () => null);
 jest.mock('../Variable/DatasourceIdentifier', () => () => null);
 jest.mock('../Variable/HostIdent', () => () => null);
 jest.mock('../Variable/Textbox', () => () => null);
@@ -355,4 +354,21 @@ test('同一 Provider 的重叠执行链在全部完成前保持暂停状态', a
   });
   await waitFor(() => expect(state('project').value).toBe('project-1'));
   expect(getGlobalState('variableExecution')).toMatchObject({ isExecuting: false, revision: initialRevision + 1 });
+});
+
+test.each(['query', 'custom'] as const)('%s 单选转多选不拆分已有字符串，提交到 URL 和缓存的值保持完整', async (type) => {
+  queryMock.mockResolvedValue([
+    { label: '10', value: '10' },
+    { label: '30', value: '30' },
+  ]);
+  mountRuntime([queryVariable('numbers', { type, definition: '10,30', value: '30', multi: false })]);
+  await waitFor(() => expect(state('numbers').options).toHaveLength(2));
+  await saveVariables((prev) => prev.map((item) => ({ ...item, multi: true })));
+  await selectOption('10');
+  fireEvent.keyDown(screen.getByRole('combobox'), { key: 'Escape', keyCode: 27 });
+  await waitFor(() => expect(state('numbers').value).toEqual(['30', '10']));
+  expect(JSON.parse(localStorage.getItem('dashboard_v6_42_numbers')!)).toEqual(['30', '10']);
+  await saveVariables((prev) => prev.map((item) => ({ ...item, multi: false })));
+  await waitFor(() => expect(screen.getByRole('combobox').closest('.ant-select')).not.toHaveClass('ant-select-multiple'));
+  expect(document.querySelector('.ant-select-selection-item')?.textContent).toBe('30');
 });

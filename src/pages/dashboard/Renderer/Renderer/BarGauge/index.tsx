@@ -185,6 +185,11 @@ export default function BarGauge(props: IProps) {
   }
   const minValue = options?.standardOptions?.min ?? _.minBy(calculatedValues, 'stat')?.stat ?? 0;
   const maxValue = options?.standardOptions?.max ?? _.maxBy(calculatedValues, 'stat')?.stat ?? 0;
+  // 阈值颜色与柱长使用同一最终量程，覆盖显式 Min/Max、字段值及合并后的 Other。
+  calculatedValues = calculatedValues.map((item) => ({
+    ...item,
+    color: getSerieTextObj(item.stat, options?.standardOptions, options?.valueMappings, options?.thresholds, [Number(minValue), Number(maxValue)]).color,
+  }));
   const resolvedOrientation: 'horizontal' | 'vertical' =
     orientation === 'auto' ? (containerSize && containerSize.width > containerSize.height ? 'vertical' : 'horizontal') : orientation;
   const resolvedNamePlacement: 'top' | 'bottom' | 'left' | 'hidden' =

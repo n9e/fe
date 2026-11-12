@@ -30,8 +30,8 @@ export default function index(props: IProps) {
         color: themeMode === 'dark' ? textDarkColor : textColor,
         backgroundColor: bgColor,
         display: justifyContent !== 'unset' && alignItems !== 'unset' ? 'flex' : 'block',
-        justifyContent,
-        alignItems,
+        justifyContent: justifyContent === 'flexStart' ? 'flex-start' : justifyContent === 'flexEnd' ? 'flex-end' : justifyContent,
+        alignItems: alignItems === 'flexStart' ? 'flex-start' : alignItems === 'flexEnd' ? 'flex-end' : alignItems,
       }}
     />
   );

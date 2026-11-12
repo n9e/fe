@@ -37,7 +37,7 @@ export default function index(props: Props) {
       }
     }
     setValue(curValue);
-  }, [propValue]);
+  }, [propValue, type, multi]);
 
   // 兼容旧数据，constant 的 hide 默认为 true
   const hide = item.hide || (type === 'constant' && item.hide === undefined);
