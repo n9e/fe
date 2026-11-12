@@ -7,7 +7,7 @@ import type { ImportDeclaration } from 'ts-morph';
  *
  * 图表注册表同时服务查看态和编辑器，因此查看态的静态依赖图里不能出现编辑器模块。
  * 这里从面板渲染入口出发，只沿 dashboard 内部的静态 import 遍历：
- * - 动态 import（注册表的 loadOptions 和低频图表加载器）不会被跟随，
+ * - 动态 import（注册表的 loadOptions）不会被跟随，
  *   这正是编辑器与编辑器选项面板保持按需加载的方式；
  * - 只用于类型的 import 在编译后会被移除，不算静态依赖。
  */
@@ -34,7 +34,7 @@ const PANEL_OPTION_MODULES = [
   '../../Editor/Options/AiButton',
 ];
 
-/** 常用图表：查看态直接静态引入。 */
+/** 所有图表都由查看态静态引入，避免显示面板时再请求独立 chunk。 */
 const EAGER_CHART_ENTRIES = [
   'Renderer/Renderer/TimeSeriesNG/index.tsx',
   'Renderer/Renderer/Stat/index.tsx',
@@ -43,10 +43,6 @@ const EAGER_CHART_ENTRIES = [
   'Renderer/Renderer/Text/index.tsx',
   'Renderer/Renderer/Iframe/index.tsx',
   'Renderer/Renderer/AiButton/index.tsx',
-];
-
-/** 低频图表：只能通过动态 import 加载，不能进入查看态首屏依赖。 */
-const LAZY_CHART_ENTRIES = [
   'Renderer/Renderer/Pie/index.tsx',
   'Renderer/Renderer/Hexbin/index.tsx',
   'Renderer/Renderer/BarGauge/index.tsx',
@@ -131,12 +127,9 @@ describe('panel view dependency boundary', () => {
     expect(dynamicImportModules.slice().sort()).toEqual(PANEL_OPTION_MODULES.map((modulePath) => `'${modulePath}'`).sort());
   });
 
-  it('keeps the common charts eager and the low-frequency charts out of the view bundle', () => {
+  it('statically loads every chart renderer in the view bundle', () => {
     EAGER_CHART_ENTRIES.forEach((entry) => {
       expect(staticDependencies.has(path.resolve(DASHBOARD_ROOT, entry))).toBe(true);
-    });
-    LAZY_CHART_ENTRIES.forEach((entry) => {
-      expect(staticDependencies.has(path.resolve(DASHBOARD_ROOT, entry))).toBe(false);
     });
   });
 });
