@@ -163,7 +163,6 @@ export default function FormCpt(props: Props) {
                     </Form.List>
                   </div>
                 </div>
-                {requestType === 'script' && <ScriptSettings />}
                 <div className='mb-1 px-4 py-3 pt-4'>
                   <div className='font-bolder flex items-center gap-1 text-l1'>{t(`request_configuration.${requestType}`)}</div>
                 </div>
@@ -188,6 +187,7 @@ export default function FormCpt(props: Props) {
                   <MattermostWebhook />
                   <JSMAlert />
                 </div>
+                {requestType === 'script' && <ScriptSettings />}
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>
                 <Space>
