@@ -254,6 +254,13 @@ const pt_BR = {
     group_option: '{{name}} ({{count}})',
     selected_count: '{{checked}} / {{total}} selecionados',
     datasource_bound: 'Na importação, a fonte de dados "{{name}}" será vinculada automaticamente',
+    coverage: 'Cobertura {{hit}}/{{total}}',
+    coverage_covered: 'Métricas cobertas:',
+    coverage_missing: 'Métricas ausentes:',
+    recommended_tip: 'Ordenado pela cobertura de métricas dos templates de coleta selecionados; os itens recomendados foram selecionados.',
+    coverage_unavailable: 'Não foi possível calcular a cobertura de métricas. Os templates permanecem desmarcados.',
+    no_covered_dashboards: 'Nenhum template de dashboard corresponde às métricas dos templates de coleta selecionados.',
+    no_covered_alerts: 'Nenhum template de regra de alerta corresponde às métricas dos templates de coleta selecionados.',
   },
 };
 

@@ -295,13 +295,9 @@ export default function List(props: Props) {
 
   return (
     <>
-      <div
-        className={classNames('flex-shrink-0', {
-          'bg-fc-100 fc-border rounded-lg p-4': !aiTaskMode,
-        })}
-      >
+      <div className='flex-shrink-0'>
         {/* 引导条：把「装完机器之后」的接力常驻在机器列表页，用户关掉安装弹窗后还能接着走。
-            寄居在工具栏这个盒子里而不是自成一块 —— 表格之上已经有统计卡片和工具栏两层边框加内边距，
+            与筛选条同处一条工具栏而不是自成一块 —— 工具栏本身已经贴着内容区，
             再叠一个独立容器，光 chrome 就要吃掉 40px 而不承载任何信息。
             必做项全完成、或还没有任何机器（该先装采集器，由表格空态的部署引导承接）时
             NextStepsCard 自己返回 null。aiTaskMode/商业版必须在这里就不挂载 ——
