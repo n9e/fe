@@ -146,7 +146,7 @@ export default function BarGauge(props: IProps) {
 
   if (topn) {
     const items = _.take(calculatedValues, topn as number);
-    if (combine_other) {
+    if (combine_other && calculatedValues.length > items.length) {
       const sumValue = _.sumBy(_.slice(calculatedValues, topn as number), (item) => {
         return item.stat as number;
       });
@@ -185,6 +185,11 @@ export default function BarGauge(props: IProps) {
   }
   const minValue = options?.standardOptions?.min ?? _.minBy(calculatedValues, 'stat')?.stat ?? 0;
   const maxValue = options?.standardOptions?.max ?? _.maxBy(calculatedValues, 'stat')?.stat ?? 0;
+  // 阈值颜色与柱长使用同一最终量程，覆盖显式 Min/Max、字段值及合并后的 Other。
+  calculatedValues = calculatedValues.map((item) => ({
+    ...item,
+    color: getSerieTextObj(item.stat, options?.standardOptions, options?.valueMappings, options?.thresholds, [Number(minValue), Number(maxValue)]).color,
+  }));
   const resolvedOrientation: 'horizontal' | 'vertical' =
     orientation === 'auto' ? (containerSize && containerSize.width > containerSize.height ? 'vertical' : 'horizontal') : orientation;
   const resolvedNamePlacement: 'top' | 'bottom' | 'left' | 'hidden' =
@@ -254,6 +259,7 @@ export default function BarGauge(props: IProps) {
             maxValueWidth={maxValueWidth}
             maxBarWidth={Math.max(1, containerSize.width - (resolvedNamePlacement === 'left' ? maxNameWidth + 4 : 0) - maxValueWidth - NAME_VALUE_SPACE * 2)}
             namePlacement={resolvedNamePlacement}
+            barHeight={sizing === 'manual' ? barSize : undefined}
           />
         ) : (
           <div className={`n9e-renderer-bar-gauge n9e-renderer-bar-gauge-${resolvedOrientation} best-looking-scroll`} style={{ gap: `${itemSpacing}px` }}>

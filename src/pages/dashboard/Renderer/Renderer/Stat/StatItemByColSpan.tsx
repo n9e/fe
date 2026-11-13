@@ -38,7 +38,7 @@ export default function StatItem(props: StatItemProps) {
   const ele = useRef(null);
   const eleSize = useSize(ele);
   const { textMode, colorMode, textSize, isFullSizeBackground, valueField = 'Value', graphMode, serie, options, style } = props;
-  let item = props.item;
+  const item = { ...props.item };
 
   if (valueField !== 'Value') {
     const value = _.get(item, ['metric', valueField]);

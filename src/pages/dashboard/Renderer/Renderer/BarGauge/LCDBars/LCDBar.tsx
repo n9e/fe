@@ -21,6 +21,7 @@ interface Props {
   maxNameWidth: number;
   maxValueWidth: number;
   maxBarWidth: number;
+  barHeight?: number;
   namePlacement?: 'top' | 'bottom' | 'left' | 'hidden';
 }
 
@@ -30,7 +31,7 @@ const CELL_SPACING = 2;
 
 export default function LCDBar(props: Props) {
   const replaceTemplateVariables = useReplaceTemplateVariables();
-  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxValueWidth, maxBarWidth, namePlacement = 'left' } = props;
+  const { item, custom, options, themeMode, minValue, maxValue, maxNameWidth, maxValueWidth, maxBarWidth, barHeight, namePlacement = 'left' } = props;
   const { stat, metric } = item;
   const { serieWidth, detailUrl, nameField, valueMode = 'color' } = custom as IBarGaugeStyles;
   const name = nameField ? _.get(metric, nameField, item.name) : item.name;
@@ -53,7 +54,7 @@ export default function LCDBar(props: Props) {
     );
     const cellStyles: CSSProperties = {};
     cellStyles.width = `${CELL_WIDTH}px`;
-    cellStyles.height = `${CELL_HEIGHT}px`;
+    cellStyles.height = `${barHeight ?? CELL_HEIGHT}px`;
     cellStyles.marginRight = `${CELL_SPACING}px`;
 
     if (currentValue <= stat) {
@@ -102,7 +103,7 @@ export default function LCDBar(props: Props) {
             )}
           </div>
         )}
-        <div className='n9e-renderer-bar-gauge-lcd-item-content'>
+        <div className='n9e-renderer-bar-gauge-lcd-item-content' style={barHeight == null ? undefined : { height: barHeight, minHeight: barHeight }}>
           <div className='n9e-renderer-bar-gauge-lcd-item-cells-wrapper'>{cells}</div>
           {valueMode !== 'hidden' && (
             <div
