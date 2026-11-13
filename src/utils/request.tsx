@@ -145,6 +145,94 @@ const request = extend({
   credentials: 'include',
 });
 
+/** Reject with the error parsed from a non-2xx response body. */
+const rejectWithResponseBody = (response: Response, options: any) => {
+  const { status } = response;
+  return response
+    .clone()
+    .text()
+    .then((data) => {
+      let errObj = {};
+      try {
+        const parsed = JSON.parse(data);
+        const errMessage = processError(parsed);
+        errObj = {
+          name: errMessage,
+          message: errMessage,
+          data: parsed,
+        };
+      } catch (error) {
+        errObj = {
+          name: data,
+          message: data,
+        };
+      }
+      throw {
+        ...errObj,
+        silence: options.silence,
+        response,
+        status,
+      };
+    });
+};
+
+/** n9e issues the session; any other service may reject a token n9e still accepts. */
+const isIdentityServiceUrl = (url: string) => url.includes('/api/n9e/') || url.includes('/api/n9e-plus/');
+
+/**
+ * A 401 means the access token may have expired: refresh it once and replay the request once.
+ *
+ * Only n9e can say the session is dead, so only these go to the login page: the refresh itself
+ * rejected, or an n9e endpoint still 401 when no refresh is possible or after the replay. When another
+ * service (e.g. fc-model) still answers 401, refreshing cannot fix it, so only that request fails
+ * and its caller degrades. Reloading the page here instead would loop forever: every reload
+ * replays the same 401.
+ */
+const handleUnauthorized = async (response: Response, options: any) => {
+  const toLogin = () => {
+    redirectToLogin();
+    throw { name: 'Unauthorized', message: 'Unauthorized', silence: true, response, status: response.status };
+  };
+  const giveUp = () => (isIdentityServiceUrl(response.url) ? toLogin() : rejectWithResponseBody(response, options));
+
+  if (response.url.includes('/api/n9e/auth/refresh')) {
+    return toLogin();
+  }
+  if (options.authRetried || !localStorage.getItem('refresh_token')) {
+    return giveUp();
+  }
+
+  let res: any;
+  try {
+    res = await updateAccessTokenWithLock();
+  } catch (e) {
+    // A rejected refresh already went to login above; a network error or 5xx says nothing about
+    // the session, so only this request fails.
+    return rejectWithResponseBody(response, options);
+  }
+  if (res?.err) {
+    return toLogin();
+  }
+  const accessToken = res?.dat?.access_token;
+  // Proxy-auth deployments answer refresh with an empty token: n9e still holds the session, but
+  // there is no token to replay with, so only this request fails.
+  if (!accessToken) {
+    return rejectWithResponseBody(response, options);
+  }
+  localStorage.setItem(AccessTokenKey, accessToken);
+  localStorage.setItem('refresh_token', res.dat.refresh_token);
+
+  // The replay rethrows instead of using the global errorHandler, so the outer request
+  // reports a failure exactly once.
+  return request(options.rawUrl, {
+    ...options,
+    authRetried: true,
+    errorHandler: (error: any) => {
+      throw error;
+    },
+  });
+};
+
 request.interceptors.request.use((url, options) => {
   let headers = {
     ...options.headers,
@@ -163,7 +251,8 @@ request.interceptors.request.use((url, options) => {
   }
   return {
     url: basePrefix + newUrl,
-    options: { ...options, headers, sourcePathname: location.pathname },
+    // The response interceptor never sees the caller's url; keep it so a 401 can replay the request.
+    options: { ...options, headers, sourcePathname: location.pathname, rawUrl: url },
   };
 });
 
@@ -236,27 +325,7 @@ request.interceptors.response.use(
           }
         });
     } else if (status === 401 && !_.includes(response.url, '/api/n9e-plus/proxy') && !_.includes(response.url, '/api/n9e/proxy')) {
-      if (response.url.indexOf('/api/n9e/auth/refresh') > 0) {
-        redirectToLogin();
-      } else {
-        localStorage.getItem('refresh_token')
-          ? updateAccessTokenWithLock()
-              .then((res) => {
-                console.log('401 err', res);
-                if (res.err) {
-                  redirectToLogin();
-                } else {
-                  const { access_token, refresh_token } = res.dat;
-                  localStorage.setItem(AccessTokenKey, access_token);
-                  localStorage.setItem('refresh_token', refresh_token);
-                  location.href = `${location.pathname}${location.search}`;
-                }
-              })
-              .catch(() => {
-                redirectToLogin();
-              })
-          : redirectToLogin();
-      }
+      return handleUnauthorized(response, options);
     } else if (
       status === 403 &&
       // 只有这两组接口的 403 才接管整页。这正是改造前会整页跳 /403 的那一组，
@@ -332,32 +401,7 @@ request.interceptors.response.use(
           };
         });
     } else {
-      return response
-        .clone()
-        .text()
-        .then((data) => {
-          let errObj = {};
-          try {
-            const parsed = JSON.parse(data);
-            const errMessage = processError(parsed);
-            errObj = {
-              name: errMessage,
-              message: errMessage,
-              data: parsed,
-            };
-          } catch (error) {
-            errObj = {
-              name: data,
-              message: data,
-            };
-          }
-          throw {
-            ...errObj,
-            silence: options.silence,
-            response,
-            status,
-          };
-        });
+      return rejectWithResponseBody(response, options);
     }
   },
   {
