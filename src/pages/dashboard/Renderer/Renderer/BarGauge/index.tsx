@@ -146,7 +146,7 @@ export default function BarGauge(props: IProps) {
 
   if (topn) {
     const items = _.take(calculatedValues, topn as number);
-    if (combine_other) {
+    if (combine_other && calculatedValues.length > items.length) {
       const sumValue = _.sumBy(_.slice(calculatedValues, topn as number), (item) => {
         return item.stat as number;
       });
@@ -259,6 +259,7 @@ export default function BarGauge(props: IProps) {
             maxValueWidth={maxValueWidth}
             maxBarWidth={Math.max(1, containerSize.width - (resolvedNamePlacement === 'left' ? maxNameWidth + 4 : 0) - maxValueWidth - NAME_VALUE_SPACE * 2)}
             namePlacement={resolvedNamePlacement}
+            barHeight={sizing === 'manual' ? barSize : undefined}
           />
         ) : (
           <div className={`n9e-renderer-bar-gauge n9e-renderer-bar-gauge-${resolvedOrientation} best-looking-scroll`} style={{ gap: `${itemSpacing}px` }}>
