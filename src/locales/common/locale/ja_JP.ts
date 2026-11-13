@@ -52,6 +52,7 @@ const ja_JP = {
     cancel: 'キャンセル',
     close: '閉じる',
     view: '表示',
+    view_operation_history: '操作履歴を表示',
     more: 'その他の操作',
     back: '戻る',
     edit: '編集',
