@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Form, Space, Row, Col, InputNumber, Select, Tooltip, Button } from 'antd';
+import { Form, Space, Row, Col, Input, InputNumber, Select, Tooltip, Button } from 'antd';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { WandSparkles } from 'lucide-react';
 import _ from 'lodash';
@@ -27,6 +27,10 @@ interface IProps {
   datasourceValue: number | number[];
 }
 
+/**
+ * Edits IoTDB alert queries, evaluation intervals, and optional database overrides.
+ * Provides metadata selection and a graph preview for each query.
+ */
 export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPrefixName = [], prefixName = [], disabled, datasourceValue }: IProps) {
   const { t, i18n } = useTranslation('db_iotdb');
   const { darkMode } = useContext(CommonStateContext);
@@ -103,6 +107,13 @@ export default function IotDBAlertRuleQueries({ form, prefixField = {}, fullPref
                               );
                             }}
                           />
+                        </Form.Item>
+                      </InputGroupWithFormItem>
+                    </Col>
+                    <Col flex='180px'>
+                      <InputGroupWithFormItem label='Database'>
+                        <Form.Item {...field} name={[field.name, 'database']}>
+                          <Input placeholder='Optional' disabled={disabled} />
                         </Form.Item>
                       </InputGroupWithFormItem>
                     </Col>

@@ -17,6 +17,10 @@ interface Props {
   setRefreshFlag: (flag?: string) => void;
 }
 
+/**
+ * Runs Explorer queries for the selected database and displays returned rows.
+ * Derives table columns from the response and displays query errors inline.
+ */
 export default function TableCpt(props: Props) {
   const { form, datasourceCate = DatasourceCateEnum.iotdb, datasourceValue, refreshFlag, setRefreshFlag } = props;
   const [columns, setColumns] = useState<any[]>([]);
@@ -25,6 +29,7 @@ export default function TableCpt(props: Props) {
   const range = Form.useWatch(['query', 'range'], form);
   const keys = Form.useWatch(['query', 'keys'], form);
   const query = Form.useWatch(['query', 'query'], form);
+  const database = Form.useWatch(['query', 'database'], form);
 
   useEffect(() => {
     if (datasourceCate && datasourceValue && query && range && refreshFlag) {
@@ -38,6 +43,7 @@ export default function TableCpt(props: Props) {
         query: [
           {
             query,
+            database,
             from: start,
             to: end,
             keys: keys || {},
@@ -68,8 +74,12 @@ export default function TableCpt(props: Props) {
           setRefreshFlag();
         });
     }
-  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, refreshFlag]);
+  }, [datasourceCate, datasourceValue, JSON.stringify(range), JSON.stringify(keys), query, database, refreshFlag]);
 
+  /**
+   * Formats numeric IoTDB time values as local timestamps with milliseconds.
+   * Leaves other cells unchanged, accepting time values in seconds or milliseconds.
+   */
   const formatCellValue = (columnName: string, value: any) => {
     if (datasourceCate === DatasourceCateEnum.iotdb && columnName === 'time' && value !== null && value !== undefined) {
       const raw = _.isNumber(value) ? value : Number(value);

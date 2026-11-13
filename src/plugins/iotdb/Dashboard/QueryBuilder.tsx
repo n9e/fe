@@ -12,6 +12,10 @@ import { isExpressionTarget } from '@/pages/dashboard/Renderer/datasource/target
 import getFirstUnusedLetter from '@/pages/dashboard/Renderer/utils/getFirstUnusedLetter';
 import { MetaModal } from '../components/Meta';
 
+/**
+ * Edits dashboard IoTDB query targets, legends, and result-column mappings.
+ * Allows each target to override the datasource default database.
+ */
 export default function IotDBQueryBuilder({ datasourceValue }) {
   const { t } = useTranslation('dashboard');
   const chartForm = Form.useFormInstance();
@@ -112,6 +116,13 @@ export default function IotDBQueryBuilder({ datasourceValue }) {
                           }}
                         />
                       </div>
+                    </Col>
+                  </Row>
+                  <Row gutter={10}>
+                    <Col flex='auto'>
+                      <Form.Item label='Database' {...restField} name={[field.name, 'query', 'database']}>
+                        <Input placeholder='Optional; uses datasource default database' />
+                      </Form.Item>
                     </Col>
                   </Row>
                   <Row gutter={10}>
