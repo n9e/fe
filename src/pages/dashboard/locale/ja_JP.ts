@@ -114,6 +114,15 @@ const ja_JP = {
     import_grafana_tip:
       'Prometheus タイプのデータ ソースをインポートするダッシュボードだけがサポートされており、ナイチンゲールでサポートされているチャート タイプと関数もサポートされています <a>問題フィードバック</a>',
     import_grafana_url: 'Grafana ダッシュボードリンク（推奨）',
+    import_kibana: 'Kibana ダッシュボードをインポート',
+    import_kibana_tip:
+      'Kibana Saved Objects から書き出した NDJSON を貼り付けるか選択します。パネルのデータソースは datasource という Elasticsearch 変数になり、インポート後に切り替えできます。',
+    import_kibana_file: 'NDJSON ファイル',
+    import_kibana_ndjson: 'NDJSON',
+    import_kibana_default_datasource: 'デフォルトデータソース ID',
+    import_kibana_default_datasource_tip: 'データソース変数の初期値だけに使います。空の場合は最初の Elasticsearch データソースが選ばれます。',
+    import_kibana_panels: 'パネル',
+    import_kibana_warnings: '変換メモ',
     import_grafana_url_label: 'Grafana ダッシュボードリンク',
     show_time_picker: '時間選択を表示',
     show_time_picker_tip: 'Grafana の一部のバージョンでは、キオスクモードで時間選択が表示されません。このオプションをオンにすると、本システムの時間選択を使用できます。',
