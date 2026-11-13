@@ -17,7 +17,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useTranslation, Trans } from 'react-i18next';
-import { Modal, Input, Tabs, Form, Button, Alert, message, Select, Space, Switch } from 'antd';
+import { Modal, Input, InputNumber, Tabs, Form, Button, Alert, message, Select, Space, Switch } from 'antd';
 import Icon from '@ant-design/icons';
 import { CommonStateContext } from '@/App';
 import { HelpLink } from '@/components/pageLayout';
@@ -25,11 +25,12 @@ import { createDashboard } from '@/services/dashboardV2';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
 import type { ConvertResult } from '@/pages/dashboard/utils/grafanaImport';
 import { convertDashboardGrafanaToN9EWithReport } from '@/pages/dashboard/utils/grafanaImport';
+import { convertKibanaNdjson, KibanaImportResult } from '@/pages/dashboard/utils/kibanaImport/convert';
 import { getValidImportData, JSONParse } from '../utils';
 import ImportBuiltinContent from './ImportBuiltinContent';
 import ImportGrafanaReport from './ImportGrafanaReport';
 
-export type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin' | 'ImportGrafanaURL';
+export type ModalType = 'Import' | 'ImportGrafana' | 'ImportBuiltin' | 'ImportGrafanaURL' | 'ImportKibana';
 interface IProps {
   visible: boolean;
   onOk: () => void;
@@ -68,9 +69,12 @@ export default function Import(props: IProps) {
   const [form] = Form.useForm();
   const [importLoading, setImportLoading] = useState(false);
   // Grafana 导入两步式：先转换并展示报告，确认后才保存
+  const [kibanaForm] = Form.useForm();
   const [grafanaReport, setGrafanaReport] = useState<ConvertResult>();
   const [grafanaError, setGrafanaError] = useState<string>();
   const [saveError, setSaveError] = useState<string>();
+  const [kibanaResult, setKibanaResult] = useState<KibanaImportResult>();
+  const [kibanaError, setKibanaError] = useState<string>();
 
   // 关闭弹窗时清理 Grafana 导入状态（对齐仓库弹窗清理约定）
   useEffect(() => {
@@ -78,7 +82,10 @@ export default function Import(props: IProps) {
       setGrafanaReport(undefined);
       setGrafanaError(undefined);
       setSaveError(undefined);
+      setKibanaResult(undefined);
+      setKibanaError(undefined);
       form.resetFields();
+      kibanaForm.resetFields();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
@@ -89,6 +96,10 @@ export default function Import(props: IProps) {
       setGrafanaReport(undefined);
       setGrafanaError(undefined);
       setSaveError(undefined);
+    }
+    if (modalType !== 'ImportKibana') {
+      setKibanaResult(undefined);
+      setKibanaError(undefined);
     }
   }, [modalType]);
 
@@ -153,6 +164,7 @@ export default function Import(props: IProps) {
             }
             key='ImportGrafana'
           ></TabPane>
+          <TabPane tab={t('batch.import_kibana')} key='ImportKibana'></TabPane>
         </Tabs>
       }
       visible={visible}
@@ -251,6 +263,92 @@ export default function Import(props: IProps) {
                 style={{ margin: '10px 0' }}
               />
             )}
+            <Form.Item>
+              <Button type='primary' htmlType='submit'>
+                {t('common:btn.import')}
+              </Button>
+            </Form.Item>
+          </Form>
+        )
+      ) : null}
+      {modalType === 'ImportKibana' ? (
+        kibanaResult ? (
+          <div>
+            <Alert
+              type='info'
+              showIcon
+              message={kibanaResult.dashboard.name}
+              description={`${t('batch.import_kibana_panels')}: ${kibanaResult.dashboard.configs.panels.length}`}
+              style={{ marginBottom: 12 }}
+            />
+            {kibanaResult.warnings.length ? (
+              <Alert
+                type='warning'
+                showIcon
+                message={t('batch.import_kibana_warnings')}
+                description={
+                  <pre className='mb-0' style={{ whiteSpace: 'pre-wrap' }}>
+                    {kibanaResult.warnings.join('\n')}
+                  </pre>
+                }
+                style={{ marginBottom: 12 }}
+              />
+            ) : null}
+            {saveError ? <Alert type='error' showIcon message={saveError} style={{ marginBottom: 12 }} /> : null}
+            <Space>
+              <Button type='primary' loading={importLoading} onClick={() => doSave(kibanaResult.dashboard as ConvertResult['dashboard'])}>
+                {t('batch.import_grafana_report.confirm')}
+              </Button>
+              <Button
+                onClick={() => {
+                  setKibanaResult(undefined);
+                  setSaveError(undefined);
+                }}
+              >
+                {t('batch.import_grafana_report.back')}
+              </Button>
+            </Space>
+          </div>
+        ) : (
+          <Form
+            layout='vertical'
+            form={kibanaForm}
+            onFinish={(vals: { ndjson: string; defaultDatasourceId?: number }) => {
+              setKibanaError(undefined);
+              setSaveError(undefined);
+              try {
+                setKibanaResult(
+                  convertKibanaNdjson(vals.ndjson, {
+                    defaultDatasourceId: typeof vals.defaultDatasourceId === 'number' ? vals.defaultDatasourceId : undefined,
+                  }),
+                );
+              } catch (error) {
+                setKibanaError(error instanceof Error ? error.message : String(error));
+              }
+            }}
+          >
+            <Alert type='info' showIcon message={t('batch.import_kibana_tip')} style={{ marginBottom: 12 }} />
+            <Form.Item label={t('batch.import_kibana_file')}>
+              <input
+                type='file'
+                accept='.ndjson,.json,application/x-ndjson,text/plain'
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  file
+                    .text()
+                    .then((text) => kibanaForm.setFieldsValue({ ndjson: text }))
+                    .catch((error) => setKibanaError(error instanceof Error ? error.message : String(error)));
+                }}
+              />
+            </Form.Item>
+            <Form.Item label={t('batch.import_kibana_ndjson')} name='ndjson' rules={[{ required: true }]}>
+              <Input.TextArea className='code-area' rows={12} />
+            </Form.Item>
+            <Form.Item label={t('batch.import_kibana_default_datasource')} name='defaultDatasourceId' tooltip={t('batch.import_kibana_default_datasource_tip')}>
+              <InputNumber min={1} precision={0} style={{ width: 240 }} />
+            </Form.Item>
+            {kibanaError ? <Alert type='error' showIcon message={kibanaError} style={{ marginBottom: 12 }} /> : null}
             <Form.Item>
               <Button type='primary' htmlType='submit'>
                 {t('common:btn.import')}
