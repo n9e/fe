@@ -7,6 +7,8 @@ import _ from 'lodash';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import { IS_PLUS } from '@/utils/constant';
+import { CommonStateContext } from '@/App';
+import { openAuditHistory } from '@/utils/auditLink';
 import PageLayout from '@/components/pageLayout';
 import EnhancedTable, { getEnabledStatusColumn } from '@/components/EnhancedTable';
 import { updateByColumn, dateColumn } from '@/components/EnhancedTable/columns';
@@ -27,6 +29,8 @@ interface Filter {
 
 export default function List() {
   const { t } = useTranslation(NS);
+  const { perms } = React.useContext(CommonStateContext);
+  const canViewAudits = IS_PLUS && (perms?.includes('/system/audits') ?? false);
   const history = useHistory();
   const location = useLocation();
   const pagination = usePagination({ PAGESIZE_KEY: TABLE_PAGINATION_CACHE_KEY });
@@ -278,6 +282,9 @@ export default function List() {
                 },
               },
             ],
+            menu: canViewAudits
+              ? [{ key: 'audit', icon: 'view' as const, text: t('common:btn.view_operation_history'), collapsed: true, onClick: () => openAuditHistory('notify_rule', record.id) }]
+              : [],
           })}
           actionColumn={{ title: t('common:table.operations'), width: 100 }}
         />
