@@ -11,6 +11,8 @@ import { getPageFromSearch } from '@/utils/urlPage';
 import { Document } from '@/components/DocumentDrawer';
 import Splitter from '@/components/Splitter';
 import { useShowUsageDocs } from '@/components/UsageDocs';
+// @ts-ignore 商业版扩展由 plusResolve 解析，开源版使用空组件。
+import ScriptSettings from 'plus:/parcels/NotificationChannels/ScriptSettings';
 
 import { NS, getChannelTypeMeta } from '../../constants';
 import { ChannelItem } from '../../types';
@@ -185,6 +187,7 @@ export default function FormCpt(props: Props) {
                   <MattermostWebhook />
                   <JSMAlert />
                 </div>
+                {requestType === 'script' && <ScriptSettings />}
               </div>
               <div className='border-t border-fc-200 px-4 py-3'>
                 <Space>

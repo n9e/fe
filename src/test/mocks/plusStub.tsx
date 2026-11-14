@@ -11,3 +11,6 @@ export default function PlusModuleStub() {
 }
 
 export const dashboardVariablePlugins = {};
+
+export const normalizeChannelFormValues = <T,>(values: T): T => values;
+export const normalizeChannelInitialValues = <T,>(values: T): T => values;
