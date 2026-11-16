@@ -1,4 +1,5 @@
 const zh_CN = {
+  load_failed: '仪表盘加载失败',
   title: '监控仪表盘',
   colorPicker: {
     colors: '内置颜色',

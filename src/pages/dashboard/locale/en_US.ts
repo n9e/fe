@@ -1,4 +1,5 @@
 const en_US = {
+  load_failed: 'Failed to load dashboard',
   title: 'Dashboards',
   colorPicker: {
     colors: 'Colors',

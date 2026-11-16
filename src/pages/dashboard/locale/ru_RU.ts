@@ -1,4 +1,5 @@
 const ru_RU = {
+  load_failed: 'Не удалось загрузить дашборд',
   title: 'Панели мониторинга',
   colorPicker: {
     colors: 'Встроенные цвета',

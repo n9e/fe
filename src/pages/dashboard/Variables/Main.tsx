@@ -13,6 +13,7 @@ interface Props {
   disabledVariableNames?: Set<string>;
   loading: boolean;
   renderBtns?: () => React.ReactNode;
+  persistState?: boolean;
 }
 
 export default function Main(props: Props) {
@@ -20,7 +21,7 @@ export default function Main(props: Props) {
   const location = useLocation();
   const [dashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
-  const { variableValueFixed, disabledVariableNames, loading, renderBtns } = props;
+  const { variableValueFixed, disabledVariableNames, loading, renderBtns, persistState = true } = props;
   const shouldUpdateUrl = useRef(false);
 
   // 只提取 name 和 value，用于优化 useEffect 依赖
@@ -28,7 +29,7 @@ export default function Main(props: Props) {
 
   // 监听变量 name-value 变化，更新 URL
   useEffect(() => {
-    if (!shouldUpdateUrl.current) return;
+    if (!persistState || !shouldUpdateUrl.current) return;
 
     let newQueryParams = location.search ? queryString.parse(location.search) : {};
     newQueryParams = _.omit(newQueryParams, _.map(variableNameValues, 'name')); // 先移除之前的变量参数
@@ -48,7 +49,7 @@ export default function Main(props: Props) {
     });
 
     shouldUpdateUrl.current = false;
-  }, [variableNameValues, location.search]);
+  }, [variableNameValues, location.search, persistState]);
 
   return (
     <div className='flex flex-wrap items-center gap-2 px-2'>
@@ -64,12 +65,12 @@ export default function Main(props: Props) {
             });
             callback();
             // localStorage 本地保存
-            if (dashboardMeta.dashboardId && partial.value !== undefined) {
+            if (persistState && dashboardMeta.dashboardId && partial.value !== undefined) {
               localStorage.setItem(`dashboard_v6_${dashboardMeta.dashboardId}_${partial.name}`, typeof partial.value === 'string' ? partial.value : JSON.stringify(partial.value));
             }
 
             // 标记需要更新 URL
-            shouldUpdateUrl.current = true;
+            shouldUpdateUrl.current = persistState;
             return newVariables;
           });
         }}

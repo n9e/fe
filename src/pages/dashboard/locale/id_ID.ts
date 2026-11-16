@@ -1,4 +1,5 @@
 const id_ID = {
+  load_failed: 'Gagal memuat dasbor',
   title: 'Dasbor pemantauan',
   colorPicker: {
     colors: 'Warna bawaan',

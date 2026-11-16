@@ -1,4 +1,5 @@
 const ko_KR = {
+  load_failed: '대시보드를 불러오지 못했습니다',
   title: '모니터링 대시보드',
   colorPicker: {
     colors: '기본 색상',
