@@ -46,8 +46,15 @@ const AbsoluteTimePicker = ({
   disabled,
   confirmText,
   getPopupContainer,
+  inline = false,
+  panelVisible = true,
+  onPanelVisibleChange,
 }: {
   type: 'start' | 'end';
+  /** Show the calendar beside other fields without a nested popover or confirmation. */
+  inline?: boolean;
+  panelVisible?: boolean;
+  onPanelVisibleChange?: (visible: boolean) => void;
   limitHour?: number;
   range?: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
@@ -85,10 +92,10 @@ const AbsoluteTimePicker = ({
   }, [range, type, dateFormat]);
 
   useEffect(() => {
-    if (visible) {
+    if (visible || inline) {
       setTempValue(val.isValid() ? val : undefined);
     }
-  }, [visible, range, type]);
+  }, [visible, inline, range, type]);
 
   const inputIsValid = (value: string) => (bounds ? moment(value, dateFormat, true).isValid() : isValid(value));
   const commitInputValue = (val: string) => {
@@ -133,20 +140,98 @@ const AbsoluteTimePicker = ({
     setVisible(false);
   };
 
+  const calendarPanel = (
+    <PickerPanel
+      tabIndex={disabled ? -1 : 0}
+      prefixCls='ant-picker'
+      generateConfig={momentGenerateConfig}
+      locale={pickerLocale}
+      showNow={false}
+      showTime={{
+        defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
+        showSecond: showMillisecond || showSecond,
+        format: inline ? (showMillisecond || showSecond ? 'HH:mm:ss' : 'HH:mm') : undefined,
+      }}
+      disabledTime={
+        bounds
+          ? (current) => {
+              if (!current) return {};
+              return {
+                disabledHours: () =>
+                  Array.from({ length: 24 }, (_, hour) => hour).filter(
+                    (hour) => current.clone().hour(hour).endOf('hour').unix() < bounds.start || current.clone().hour(hour).startOf('hour').unix() > bounds.end,
+                  ),
+                disabledMinutes: (hour) =>
+                  Array.from({ length: 60 }, (_, minute) => minute).filter(
+                    (minute) =>
+                      current.clone().hour(hour).minute(minute).endOf('minute').unix() < bounds.start ||
+                      current.clone().hour(hour).minute(minute).startOf('minute').unix() > bounds.end,
+                  ),
+              };
+            }
+          : undefined
+      }
+      disabledDate={(current: Moment) => {
+        if (disabled) return true;
+        if (bounds) return current.clone().endOf('day').unix() < bounds.start || current.clone().startOf('day').unix() > bounds.end;
+        const exceedHourLimit = limitHour
+          ? moment().hour(0).minute(0).second(0).diff(current, 'hour') > limitHour || current.diff(moment().hour(0).minute(0).second(0), 'hour') > limitHour
+          : false;
+        if (exceedHourLimit) {
+          return true;
+        }
+        return false;
+      }}
+      value={tempValue}
+      onChange={(value) => {
+        if (disabled) return;
+        const next = bounds ? moment.unix(Math.max(bounds.start, Math.min(bounds.end, value.unix()))).second(0) : value;
+        setTempValue(next);
+        if (bounds || inline) {
+          setRange({ ...range, [type]: next } as IRawTimeRange);
+          setRangeStatus({ ...rangeStatus, [type]: undefined });
+        }
+      }}
+      renderExtraFooter={
+        inline
+          ? undefined
+          : () => (
+              <div className='flex items-center justify-between'>
+                <a
+                  onClick={() => {
+                    const next = bounds ? moment.unix(Math.max(bounds.start, Math.min(bounds.end, moment().unix()))).second(0) : moment();
+                    setTempValue(next);
+                    if (bounds) {
+                      setRange({ ...range, [type]: next } as IRawTimeRange);
+                      setRangeStatus({ ...rangeStatus, [type]: undefined });
+                    }
+                  }}
+                >
+                  {nowLabel}
+                </a>
+                <Button type='primary' size='small' disabled={bounds ? !tempValue?.isValid() : undefined} onClick={confirmPanelValue}>
+                  {okLabel}
+                </Button>
+              </div>
+            )
+      }
+    />
+  );
+
   return (
-    <div className='mb-2'>
+    <div className={inline ? 'flashcat-timeRangePicker-inline' : 'mb-2'} data-range-endpoint={type} aria-disabled={disabled}>
       <span>{labelMap[type]}</span>
       <Input.Group compact style={{ marginTop: 4 }}>
         <Input
           aria-label={labelMap[type]}
           disabled={disabled}
-          style={{ width: 'calc(100% - 32px)' }}
+          style={{ width: inline && !onPanelVisibleChange ? '100%' : 'calc(100% - 32px)' }}
           className={rangeStatus[type] === 'invalid' ? 'ant-input-status-error' : ''}
           value={inputValue}
           onChange={(e) => {
             const val = e.target.value;
             setInputValue(val);
-            if (bounds) commitInputValue(val);
+            if (bounds || inline) commitInputValue(val);
             setRangeStatus({
               ...rangeStatus,
               [type]: !inputIsValid(val) ? 'invalid' : undefined,
@@ -163,103 +248,41 @@ const AbsoluteTimePicker = ({
             commitInputValue(e.currentTarget.value);
           }}
         />
-        <Popover
-          title={
-            <div className='flex justify-between'>
-              <div>{labelMap[type]}</div>
-              <a
-                onClick={() => {
-                  setVisible(false);
-                }}
-              >
-                {t('close')}
-              </a>
-            </div>
-          }
-          placement='rightTop'
-          trigger='click'
-          overlayClassName='flashcat-timeRangePicker-single-popover'
-          getPopupContainer={getPopupContainer ?? (() => document.body)}
-          content={
-            <PickerPanel
-              prefixCls='ant-picker'
-              generateConfig={momentGenerateConfig}
-              locale={pickerLocale}
-              showNow={false}
-              showTime={{
-                defaultValue: type === 'start' ? moment().startOf('day') : moment().endOf('day'),
-                showSecond: showMillisecond || showSecond,
-              }}
-              disabledTime={
-                bounds
-                  ? (current) => {
-                      if (!current) return {};
-                      return {
-                        disabledHours: () =>
-                          Array.from({ length: 24 }, (_, hour) => hour).filter(
-                            (hour) => current.clone().hour(hour).endOf('hour').unix() < bounds.start || current.clone().hour(hour).startOf('hour').unix() > bounds.end,
-                          ),
-                        disabledMinutes: (hour) =>
-                          Array.from({ length: 60 }, (_, minute) => minute).filter(
-                            (minute) =>
-                              current.clone().hour(hour).minute(minute).endOf('minute').unix() < bounds.start ||
-                              current.clone().hour(hour).minute(minute).startOf('minute').unix() > bounds.end,
-                          ),
-                      };
-                    }
-                  : undefined
-              }
-              disabledDate={(current: Moment) => {
-                if (bounds) return current.clone().endOf('day').unix() < bounds.start || current.clone().startOf('day').unix() > bounds.end;
-                const exceedHourLimit = limitHour
-                  ? moment().hour(0).minute(0).second(0).diff(current, 'hour') > limitHour || current.diff(moment().hour(0).minute(0).second(0), 'hour') > limitHour
-                  : false;
-                if (exceedHourLimit) {
-                  return true;
-                }
-                return false;
-              }}
-              value={tempValue}
-              onChange={(value) => {
-                const next = bounds ? moment.unix(Math.max(bounds.start, Math.min(bounds.end, value.unix()))).second(0) : value;
-                setTempValue(next);
-                if (bounds) {
-                  setRange({ ...range, [type]: next } as IRawTimeRange);
-                  setRangeStatus({ ...rangeStatus, [type]: undefined });
-                }
-              }}
-              renderExtraFooter={() => (
-                <div className='flex items-center justify-between'>
-                  <a
-                    onClick={() => {
-                      const next = bounds ? moment.unix(Math.max(bounds.start, Math.min(bounds.end, moment().unix()))).second(0) : moment();
-                      setTempValue(next);
-                      if (bounds) {
-                        setRange({ ...range, [type]: next } as IRawTimeRange);
-                        setRangeStatus({ ...rangeStatus, [type]: undefined });
-                      }
-                    }}
-                  >
-                    {nowLabel}
-                  </a>
-                  <Button type='primary' size='small' disabled={bounds ? !tempValue?.isValid() : undefined} onClick={confirmPanelValue}>
-                    {okLabel}
-                  </Button>
-                </div>
-              )}
-            />
-          }
-          visible={visible}
-          onVisibleChange={(v) => {
-            if (v) {
-              setTempValue(val.isValid() ? val : undefined);
+        {inline && onPanelVisibleChange && (
+          <Button aria-label={labelMap[type]} aria-expanded={panelVisible} disabled={disabled} icon={<CalendarOutlined />} onClick={() => onPanelVisibleChange(!panelVisible)} />
+        )}
+        {!inline && (
+          <Popover
+            title={
+              <div className='flex justify-between'>
+                <div>{labelMap[type]}</div>
+                <a
+                  onClick={() => {
+                    setVisible(false);
+                  }}
+                >
+                  {t('close')}
+                </a>
+              </div>
             }
-            if (!disabled) setVisible(v);
-          }}
-        >
-          <Button disabled={disabled} danger={rangeStatus[type] === 'invalid'} icon={<CalendarOutlined />} />
-        </Popover>
+            placement='rightTop'
+            trigger='click'
+            overlayClassName='flashcat-timeRangePicker-single-popover'
+            getPopupContainer={getPopupContainer ?? (() => document.body)}
+            content={calendarPanel}
+            visible={visible}
+            onVisibleChange={(v) => {
+              if (v) {
+                setTempValue(val.isValid() ? val : undefined);
+              }
+              if (!disabled) setVisible(v);
+            }}
+          >
+            <Button disabled={disabled} danger={rangeStatus[type] === 'invalid'} icon={<CalendarOutlined />} />
+          </Popover>
+        )}
       </Input.Group>
+      {inline && panelVisible && calendarPanel}
       <div className='flashcat-timeRangePicker-single-status'>{rangeStatus[type] === 'invalid' ? t('invalid') : undefined}</div>
     </div>
   );
