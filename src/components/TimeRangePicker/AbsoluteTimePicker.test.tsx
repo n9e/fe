@@ -37,20 +37,35 @@ jest.mock('rc-picker', () => ({
     return (
       <>
         <button onClick={() => props.onChange(moment('2026-11-12 09:30'))}>pick date</button>
-        {props.renderExtraFooter()}
+        {props.renderExtraFooter?.()}
       </>
     );
   },
 }));
 
 const initial = { start: moment('2026-11-11 16:26'), end: moment('2026-11-13 16:22') };
-function Fixture({ bounds }: { bounds?: { start: number; end: number } }) {
+function Fixture({
+  bounds,
+  inline = false,
+  disabled = false,
+  collapsible = false,
+}: {
+  bounds?: { start: number; end: number };
+  inline?: boolean;
+  disabled?: boolean;
+  collapsible?: boolean;
+}) {
   const [range, setRange] = useState<IRawTimeRange>(initial);
+  const [panelVisible, setPanelVisible] = useState(false);
   const [rangeStatus, setRangeStatus] = useState<{ start?: string; end?: string }>({});
   return (
     <>
       <AbsoluteTimePicker
         type='start'
+        inline={inline}
+        panelVisible={collapsible ? panelVisible : undefined}
+        onPanelVisibleChange={collapsible ? setPanelVisible : undefined}
+        disabled={disabled}
         range={range}
         setRange={setRange}
         rangeStatus={rangeStatus}
@@ -99,4 +114,38 @@ test('bounded input rejects incomplete dates and relative expressions, then reco
   fireEvent.change(input, { target: { value: '2026-11-12 10:20' } });
   expect(screen.getByTestId('status').textContent).toBe('');
   expect(screen.getByTestId('range').textContent).toBe('2026-11-12 10:20|2026-11-13 16:22');
+});
+
+test('inline calendar is immediately editable and has no nested popup or confirmation', () => {
+  render(<Fixture inline bounds={{ start: initial.start.unix(), end: initial.end.unix() }} />);
+  expect(screen.queryByRole('button', { name: 'calendar' })).toBeNull();
+  expect(screen.queryByRole('button', { name: 'Done' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'pick date' }));
+  expect(screen.getByTestId('range').textContent).toBe('2026-11-12 09:30|2026-11-13 16:22');
+  expect(mockPanel.value.format('YYYY-MM-DD HH:mm')).toBe('2026-11-12 09:30');
+  fireEvent.change(screen.getByRole('textbox', { name: 'start' }), { target: { value: '2026-11-12 10:20' } });
+  expect(mockPanel.value.format('YYYY-MM-DD HH:mm')).toBe('2026-11-12 10:20');
+});
+
+test('disabled inline calendar cannot change the range while a submission is running', () => {
+  render(<Fixture inline disabled bounds={{ start: initial.start.unix(), end: initial.end.unix() }} />);
+  expect(screen.getByRole('textbox', { name: 'start' })).toBeDisabled();
+  expect(mockPanel.disabledDate(moment('2026-11-12'))).toBe(true);
+  fireEvent.click(screen.getByRole('button', { name: 'pick date' }));
+  expect(screen.getByTestId('range').textContent).toBe('2026-11-11 16:26|2026-11-13 16:22');
+});
+
+test('collapsible inline calendar keeps the input and draft when toggled', () => {
+  render(<Fixture inline collapsible bounds={{ start: initial.start.unix(), end: initial.end.unix() }} />);
+  const toggle = screen.getByRole('button', { name: 'start' });
+  expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  expect(screen.queryByRole('button', { name: 'pick date' })).toBeNull();
+  fireEvent.click(toggle);
+  fireEvent.click(screen.getByRole('button', { name: 'pick date' }));
+  expect(screen.getByTestId('range').textContent).toBe('2026-11-12 09:30|2026-11-13 16:22');
+  fireEvent.click(toggle);
+  expect(screen.queryByRole('button', { name: 'pick date' })).toBeNull();
+  expect(screen.getByRole('textbox', { name: 'start' })).toHaveValue('2026-11-12 09:30');
+  fireEvent.click(toggle);
+  expect(mockPanel.value.format('YYYY-MM-DD HH:mm')).toBe('2026-11-12 09:30');
 });
