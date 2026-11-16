@@ -19,9 +19,10 @@ export default function initializeVariablesValue(
   queryParams: Record<string, VariableQueryParam>,
   params: {
     dashboardId: number;
+    persistState?: boolean;
   },
 ) {
-  const { dashboardId } = params;
+  const { dashboardId, persistState = true } = params;
 
   return _.map(variables, (variablesItem) => {
     if (variablesItem.type === 'constant') return variablesItem;
@@ -31,7 +32,7 @@ export default function initializeVariablesValue(
     // localStorage 原文为 '' 或 '[]' 时，表示用户明确清空过，需要和“从未赋值”区分开
     let explicitlyCleared = false;
     // 如果没有固定 URL 参数值，则从 localStorage 读取缓存值
-    if (queryParams.__variable_value_fixed === undefined) {
+    if (persistState && queryParams.__variable_value_fixed === undefined) {
       if (variableValue === undefined) {
         const cachedValue = localStorage.getItem(`dashboard_v6_${dashboardId}_${variableName}`);
         variableValue = cachedValue;

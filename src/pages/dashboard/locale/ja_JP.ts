@@ -1,4 +1,5 @@
 const ja_JP = {
+  load_failed: 'ダッシュボードを読み込めませんでした',
   title: '監視ダッシュボード',
   colorPicker: {
     colors: '組み込み色',

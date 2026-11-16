@@ -23,6 +23,8 @@ interface Props {
   /** Returns the number of saved dashboard references for rename and deletion prompts. */
   getReferenceCount?: (name: string) => number;
   onInitialized?: () => void;
+  /** 嵌入实例的变量不向页面 URL 或普通仪表盘缓存同步。 */
+  persistState?: boolean;
 }
 
 export default function index(props: Props) {
@@ -95,7 +97,13 @@ export default function index(props: Props) {
 
   return (
     <div className='n9e-dashboard-variables-container'>
-      <Main variableValueFixed={Boolean(queryParams.__variable_value_fixed)} disabledVariableNames={disabledVariableNames} loading={false} renderBtns={renderBtns} />
+      <Main
+        persistState={props.persistState}
+        variableValueFixed={Boolean(queryParams.__variable_value_fixed)}
+        disabledVariableNames={disabledVariableNames}
+        loading={false}
+        renderBtns={renderBtns}
+      />
       <EditModal visible={editing} setVisible={setEditing} onChange={onChange} onRename={onRename} getReferenceCount={getReferenceCount} />
     </div>
   );

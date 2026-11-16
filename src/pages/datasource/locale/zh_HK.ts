@@ -249,6 +249,13 @@ const zh_HK = {
     group_option: '{{name}}（{{count}} 條）',
     selected_count: '已選 {{checked}} / {{total}}',
     datasource_bound: '導入時將自動綁定資料來源「{{name}}」',
+    coverage: '覆蓋 {{hit}}/{{total}}',
+    coverage_covered: '覆蓋指標：',
+    coverage_missing: '缺少指標:',
+    recommended_tip: '已按所選採集模板的指標覆蓋率排序並勾選推薦項',
+    coverage_unavailable: '無法計算指標覆蓋率推薦，模板不會預設勾選。',
+    no_covered_dashboards: '沒有符合所選採集模板指標的儀表板模板。',
+    no_covered_alerts: '沒有符合所選採集模板指標的告警規則模板。',
   },
 };
 

@@ -17,7 +17,16 @@ jest.mock('@/components/TimeRangePicker', () => ({
 import moment from 'moment';
 import { message } from 'antd';
 import { getDefaultValue } from '@/components/TimeRangePicker';
-import { getDatasourceValue, getDefaultTimeRange, getFullscreenDisplayOptions, isFullscreenExitDisabled } from './index';
+import { getDatasourceValue, getDefaultTimeRange, getDefaultTimezone, getFullscreenDisplayOptions, isFullscreenExitDisabled } from './index';
+
+test('embedded time settings use link parameters and defaults without reading dashboard caches', () => {
+  localStorage.setItem('dashboard-timezone-value_42', 'Asia/Shanghai');
+  expect(getDefaultTimeRange('42', {}, undefined, false)).toEqual({ start: 'now-1h', end: 'now' });
+  expect(getDefaultValue).not.toHaveBeenCalled();
+  expect(getDefaultTimezone('42', {}, false)).not.toBe('Asia/Shanghai');
+  expect(getDefaultTimezone('42', { __timezone: 'UTC' }, false)).toBe('UTC');
+  expect(getDefaultTimezone('42', {})).toBe('Asia/Shanghai');
+});
 
 describe('getDatasourceValue', () => {
   it('resolves v5 datasource names to IDs and leaves unknown names unresolved', () => {

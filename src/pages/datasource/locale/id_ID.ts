@@ -257,6 +257,13 @@ const id_ID = {
     group_option: '{{name}} ({{count}})',
     selected_count: '{{checked}} dari {{total}} dipilih',
     datasource_bound: 'Saat diimpor, sumber data «{{name}}» dikaitkan secara otomatis',
+    coverage: 'Cakupan {{hit}}/{{total}}',
+    coverage_covered: 'Metrik tercakup:',
+    coverage_missing: 'Metrik yang tidak tercakup:',
+    recommended_tip: 'Diurutkan berdasarkan cakupan metrik dari template pengumpulan yang dipilih; item rekomendasi dipilih.',
+    coverage_unavailable: 'Cakupan metrik tidak dapat dihitung. Template tidak akan dicentang.',
+    no_covered_dashboards: 'Tidak ada template dasbor yang cocok dengan metrik template pengumpulan yang dipilih.',
+    no_covered_alerts: 'Tidak ada template aturan alert yang cocok dengan metrik template pengumpulan yang dipilih.',
   },
 };
 

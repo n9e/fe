@@ -45,10 +45,10 @@ export const adjustURL = (url: string, darkMode: boolean, options: AdjustURLOpti
         searchParams.set('to', to);
       }
     }
-    if (options.refreshLocalKey) {
+    if (options.refreshLocalKey || options.refreshIntervalSeconds !== undefined) {
       let refreshIntervalSeconds = options.refreshIntervalSeconds;
       const hasInterval = typeof refreshIntervalSeconds === 'number' && refreshIntervalSeconds > 0;
-      if (!hasInterval && !windowSearchParams.get('__refresh') && typeof window !== 'undefined') {
+      if (options.refreshLocalKey && !hasInterval && !windowSearchParams.get('__refresh') && typeof window !== 'undefined') {
         const cachedIntervalSeconds = Number(window.localStorage.getItem(options.refreshLocalKey));
         if (cachedIntervalSeconds > 0) {
           refreshIntervalSeconds = cachedIntervalSeconds;

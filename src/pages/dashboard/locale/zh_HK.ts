@@ -1,4 +1,5 @@
 const zh_HK = {
+  load_failed: '儀表盤載入失敗',
   title: '監控儀表盤',
   colorPicker: {
     colors: '內置顏色',

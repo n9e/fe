@@ -255,6 +255,13 @@ const fr_FR = {
     group_option: '{{name}} ({{count}})',
     selected_count: '{{checked}} sur {{total}} sélectionnés',
     datasource_bound: "La source de données « {{name}} » sera associée automatiquement à l'import",
+    coverage: 'Couverture {{hit}}/{{total}}',
+    coverage_covered: 'Métriques couvertes :',
+    coverage_missing: 'Métriques manquantes :',
+    recommended_tip: 'Tri selon la couverture des modèles de collecte sélectionnés ; les éléments recommandés sont cochés.',
+    coverage_unavailable: 'Impossible de calculer la couverture des métriques. Aucun modèle n’est coché.',
+    no_covered_dashboards: 'Aucun modèle de tableau de bord ne correspond aux métriques des modèles de collecte sélectionnés.',
+    no_covered_alerts: 'Aucun modèle de règle d’alerte ne correspond aux métriques des modèles de collecte sélectionnés.',
   },
 };
 

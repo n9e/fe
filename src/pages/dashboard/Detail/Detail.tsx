@@ -28,7 +28,7 @@ import { Alert, Modal, Button, Affix, message, notification, Spin } from 'antd';
 
 import { useParamsAiAction } from '@/components/AiChat/utils/useHook';
 import PageLayout from '@/components/pageLayout';
-import { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
+import { IRawTimeRange, parseRange, TimeRangePickerWithRefresh } from '@/components/TimeRangePicker';
 import { Dashboard } from '@/store/dashboardInterface';
 import { getDashboard, updateDashboard, updateDashboardConfigs, getDashboardPure, getAnnotations } from '@/services/dashboardV2';
 import { getPayloadByUUID } from '@/pages/builtInComponents/services';
@@ -64,6 +64,7 @@ import {
 } from './utils';
 import dashboardMigrator from './utils/dashboardMigrator';
 import { resolveSharedPanelDatasource } from './utils/resolveSharedPanelDatasource';
+import { getEmbeddedVariables } from './utils/embeddedVariables';
 import adjustInitialValues from '../Renderer/utils/adjustInitialValues';
 import './style.less';
 
@@ -71,7 +72,14 @@ interface URLParam {
   id: string;
 }
 
+export type EmbeddedDashboardOptions = ({ dashboardId: string; builtinUUID?: never } | { dashboardId?: never; builtinUUID: number }) & {
+  search?: string;
+  fixedVariables?: Record<string, string>;
+};
+
 interface IProps {
+  /** 独立只读实例：显式指定仪表盘来源，不读取或改写宿主页面路由及普通仪表盘缓存。 */
+  embedded?: EmbeddedDashboardOptions;
   isPreview?: boolean;
   isBuiltin?: boolean;
   gobackPath?: string;
@@ -79,6 +87,8 @@ interface IProps {
   /** 在详情页右上角操作区最左侧插入调用方专属操作。 */
   headerLeadingActions?: React.ReactNode;
   onLoaded?: (dashboard: Dashboard['configs']) => boolean;
+  /** 向调用方通知当前实例的变量值和选项，不参与变量持久化。 */
+  onVariablesChange?: (variables: IVariable[]) => void;
   hideGoBack?: boolean;
   hideGoList?: boolean;
 }
@@ -103,15 +113,7 @@ interface RouterPromptHandle {
 
 const fetchDashboard = ({ id, builtinParams }: FetchDashboardParams) => {
   if (builtinParams) {
-    return getPayloadByUUID(builtinParams).then((res) => {
-      let { content } = res;
-      try {
-        content = JSON.parse(content);
-        return content;
-      } catch (e) {
-        console.error(e);
-      }
-    });
+    return getPayloadByUUID(builtinParams).then((res) => JSON.parse(res.content));
   }
   return getDashboard(id);
 };
@@ -140,10 +142,14 @@ const replaceTargetQueryVariables = (value: JsonValue, range: IRawTimeRange, var
   return value;
 };
 
+function EmbeddedLayout({ children }: React.PropsWithChildren<{ customArea?: React.ReactNode }>) {
+  return <>{children}</>;
+}
+
 /** 为详情、分享和嵌入入口创建独立运行时实例，防止同页仪表盘共享变量状态。 */
 export default function DetailV2(props: IProps) {
   return (
-    <DashboardRuntimeProvider>
+    <DashboardRuntimeProvider key={props.embedded ? JSON.stringify(props.embedded) : 'page'}>
       <DetailContent {...props} />
     </DashboardRuntimeProvider>
   );
@@ -151,7 +157,12 @@ export default function DetailV2(props: IProps) {
 
 /** 渲染单个仪表盘详情，并协调配置、变量和面板的页面内状态。 */
 function DetailContent(props: IProps) {
-  const { isPreview = false, isBuiltin = false, gobackPath, builtinParams, headerLeadingActions, hideGoBack, hideGoList } = props;
+  const { embedded, gobackPath, headerLeadingActions, hideGoBack, hideGoList } = props;
+  const isPreview = !!embedded || !!props.isPreview;
+  const isBuiltin = !!embedded?.builtinUUID || !!props.isBuiltin;
+  const builtinParams = embedded?.builtinUUID ?? props.builtinParams;
+  const Layout = embedded ? EmbeddedLayout : PageLayout;
+  const Header = embedded ? React.Fragment : Affix;
   const { t } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
@@ -159,29 +170,36 @@ function DetailContent(props: IProps) {
   const isAuthorized = _.includes(perms, '/dashboards/put') && !isPreview;
   const [dashboardMeta, setDashboardMeta] = useGlobalState('dashboardMeta');
   const [variablesWithOptions, setVariablesWithOptions] = useGlobalState('variablesWithOptions');
+  useEffect(() => {
+    props.onVariablesChange?.(variablesWithOptions);
+  }, [variablesWithOptions, props.onVariablesChange]);
   const [, setGlobalRange] = useGlobalState('range');
   const [, setParamsAiAction] = useParamsAiAction();
-  let { id } = useParams<URLParam>();
-  const query = queryString.parse(location.search) as Record<string, string | string[] | null | undefined>;
-  const fullscreenDisplayOptions = getFullscreenDisplayOptions(query);
+  const routeParams = useParams<URLParam>();
+  const query = queryString.parse(embedded ? embedded.search || '' : location.search) as Record<string, string | string[] | null | undefined>;
+  const id = embedded
+    ? embedded.dashboardId ?? String(embedded.builtinUUID)
+    : isBuiltin
+    ? builtinParamsToID(query as Record<string, string | (string | null)[] | null>)
+    : routeParams.id;
+  const fullscreenDisplayOptions = getFullscreenDisplayOptions(embedded ? {} : query);
   // 点击按钮准备进入全屏时 viewMode 尚未变成 fullscreen，此时 fullscreenDisplayOptions.disableExit 恒为 false，
   // 提示是否展示必须读原始 URL 参数，不能复用 disableExit
   const fullscreenExitDisabled = isFullscreenExitDisabled(query);
   const effectiveIsPreview = isPreview || fullscreenDisplayOptions.readonly;
   const effectiveIsAuthorized = isAuthorized && !fullscreenDisplayOptions.readonly;
-  if (isBuiltin) {
-    id = builtinParamsToID(query as Record<string, string | (string | null)[] | null>);
-  }
   const [dashboard, setDashboard] = useState<Dashboard>({} as Dashboard);
   const [dashboardLinks, setDashboardLinks] = useState<ILink[]>();
   const [panels, setPanels] = useState<IPanel[]>([]);
   const [annotations, setAnnotations] = useState<DashboardAnnotation[]>([]);
   const [annotationsRefreshFlag, setAnnotationsRefreshFlag] = useState<string>(_.uniqueId('annotationsRefreshFlag_'));
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string>();
+  const loadRequestRef = useRef(0);
   const [range, setRange] = useState<IRawTimeRange>(
-    getDefaultTimeRange(id as string, query as Record<string, string | string[] | null | undefined>, dashboardDefaultRangeIndex as number | undefined),
+    getDefaultTimeRange(id as string, query as Record<string, string | string[] | null | undefined>, dashboardDefaultRangeIndex as number | undefined, !embedded),
   );
-  const [timezone, setTimezone] = useState<string>(getDefaultTimezone(id as string, query as Record<string, string | string[] | null | undefined>) as string);
+  const [timezone, setTimezone] = useState<string>(getDefaultTimezone(id as string, query as Record<string, string | string[] | null | undefined>, !embedded) as string);
   const [intervalSeconds, setIntervalSeconds] = useState<number | undefined>(getDefaultIntervalSeconds(query as Record<string, string | string[] | null | undefined>));
   const [editable, setEditable] = useState(true);
   const [editorData, setEditorData] = useState({
@@ -202,17 +220,24 @@ function DetailContent(props: IProps) {
   const configRevisionRef = useRef(0);
   const routerPromptRef = useRef<RouterPromptHandle>(null);
   const refresh = async (cbk?: () => void) => {
+    const requestId = ++loadRequestRef.current;
     setLoading(true);
-    fetchDashboard({
+    setLoadError(undefined);
+    return fetchDashboard({
       id,
       builtinParams,
     })
       .then((res) => {
+        if (requestId !== loadRequestRef.current) return;
+        if (!res) throw new Error(t('load_failed'));
         const dashboardId = res.id;
         updateAtRef.current = res.update_at;
         let configs = _.isString(res.configs) ? JSONParse(res.configs) : res.configs;
         // 仪表盘迁移
         configs = dashboardMigrator(configs);
+        if (embedded?.fixedVariables) {
+          configs = { ...configs, var: getEmbeddedVariables(configs.var || [], embedded.fixedVariables) };
+        }
         if (props.onLoaded && !props.onLoaded(configs)) {
           return;
         }
@@ -253,6 +278,7 @@ function DetailContent(props: IProps) {
           }) as IVariable[];
           const normalizedVariables = initializeVariablesValue(currentVariables, query, {
             dashboardId,
+            persistState: !embedded,
           });
           setVariablesWithOptions(normalizedVariables as unknown as IVariable<JsonObject>[]);
           // 暂时不处理 panels，等待变量初始化完成
@@ -263,8 +289,11 @@ function DetailContent(props: IProps) {
           }
         }
       })
+      .catch((error: unknown) => {
+        if (requestId === loadRequestRef.current) setLoadError(getErrorMessage(error) || t('load_failed'));
+      })
       .finally(() => {
-        setLoading(false);
+        if (requestId === loadRequestRef.current) setLoading(false);
       });
   };
   /**
@@ -380,7 +409,7 @@ function DetailContent(props: IProps) {
   }, [range, setGlobalRange]);
 
   useEffect(() => {
-    if (query.viewMode !== 'fullscreen') return;
+    if (embedded || query.viewMode !== 'fullscreen') return;
 
     const aiChatBtn = document.querySelector<HTMLElement>('.ai-chat-btn-box');
     if (!aiChatBtn) return;
@@ -402,28 +431,33 @@ function DetailContent(props: IProps) {
 
     // 组件卸载时清空全局状态
     return () => {
+      loadRequestRef.current += 1;
       setDashboardMeta({} as DashboardMeta);
       setVariablesWithOptions([]);
     };
   }, [id]);
 
-  useInterval(() => {
-    // 2024-12-27 当手动保存模式时，只有仪表盘配置被更改后（!allowedLeave）才会触发 "持续查询" 的检测
-    if (import.meta.env.PROD && dashboard.id && !allowedLeave) {
-      getDashboardPure(_.toString(dashboard.id)).then((res) => {
-        if (updateAtRef.current && res.update_at > updateAtRef.current) {
-          if (editable) setEditable(false);
-        } else {
-          setEditable(true);
-        }
-      });
-    }
-  }, 2000);
+  useInterval(
+    () => {
+      // 2024-12-27 当手动保存模式时，只有仪表盘配置被更改后（!allowedLeave）才会触发 "持续查询" 的检测
+      if (import.meta.env.PROD && dashboard.id && !allowedLeave) {
+        getDashboardPure(_.toString(dashboard.id)).then((res) => {
+          if (updateAtRef.current && res.update_at > updateAtRef.current) {
+            if (editable) setEditable(false);
+          } else {
+            setEditable(true);
+          }
+        });
+      }
+    },
+    embedded ? undefined : 2000,
+  );
 
   useBeforeunload(!allowedLeave && import.meta.env.PROD ? () => t('detail.prompt.message') : undefined);
 
   useEffect(() => {
-    if (dashboard.id) {
+    let stale = false;
+    if (dashboard.id && !isBuiltin) {
       // 获取 annotations 数据
       const parsedRange = parseRange(range);
       getAnnotations({
@@ -431,13 +465,19 @@ function DetailContent(props: IProps) {
         from: moment(parsedRange.start).unix(),
         to: moment(parsedRange.end).unix(),
         limit: 100,
-      }).then((res) => {
-        setAnnotations(res);
-      });
+      })
+        .then((res) => {
+          if (!stale) setAnnotations(res);
+        })
+        .catch(() => {});
     }
-  }, [dashboard.id, range, annotationsRefreshFlag]);
+    return () => {
+      stale = true;
+    };
+  }, [dashboard.id, range, annotationsRefreshFlag, isBuiltin]);
 
   useDeepCompareEffect(() => {
+    if (embedded) return;
     // 更新全局状态
     const obj: Record<string, string[]> = {};
     _.forEach(variablesWithOptions, (item) => {
@@ -486,22 +526,34 @@ function DetailContent(props: IProps) {
   };
 
   useKeyPress('esc', () => {
-    if (fullscreenDisplayOptions.isFullscreen && !fullscreenDisplayOptions.disableExit) {
+    if (!embedded && fullscreenDisplayOptions.isFullscreen && !fullscreenDisplayOptions.disableExit) {
       toggleFullscreen();
       notification.close('dashboard_fullscreen');
     }
   });
 
+  if (loadError) {
+    return (
+      <Layout customArea={<div />}>
+        <div>
+          <Alert
+            type='error'
+            showIcon
+            message={t('load_failed')}
+            description={loadError === t('load_failed') ? undefined : loadError}
+            action={<Button onClick={() => void refresh()}>{t('common:btn.reload')}</Button>}
+          />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
-    <PageLayout customArea={<div />}>
-      <div className='dashboard-detail-container'>
+    <Layout customArea={<div />}>
+      <div className={`dashboard-detail-container${embedded ? ' dashboard-detail-embedded' : ''}`}>
         <Spin spinning={loading} tip='Loading...' className='dashboard-detail-loading' />
         <div className='dashboard-detail-content scroll-container' ref={containerRef}>
-          <Affix
-            target={() => {
-              return containerRef.current;
-            }}
-          >
+          <Header {...(embedded ? {} : { target: () => containerRef.current })}>
             <div
               className='dashboard-detail-content-header-container'
               style={{
@@ -510,7 +562,22 @@ function DetailContent(props: IProps) {
                 paddingTop: showVariablesOnly ? 16 : undefined,
               }}
             >
-              {(!fullscreenDisplayOptions.isFullscreen || fullscreenDisplayOptions.showHeader) && (
+              {embedded && (
+                <div className='flex flex-wrap items-center justify-between gap-3 p-3'>
+                  <span className='font-medium'>{dashboard.name}</span>
+                  <TimeRangePickerWithRefresh
+                    value={range}
+                    onChange={setRange}
+                    dateFormat='YYYY-MM-DD HH:mm:ss'
+                    intervalSeconds={intervalSeconds}
+                    onIntervalSecondsChange={(value) => setIntervalSeconds(value > 0 ? value : undefined)}
+                    showTimezone
+                    timezone={timezone}
+                    onTimezoneChange={setTimezone}
+                  />
+                </div>
+              )}
+              {!embedded && (!fullscreenDisplayOptions.isFullscreen || fullscreenDisplayOptions.showHeader) && (
                 <Title
                   isPreview={effectiveIsPreview}
                   isBuiltin={isBuiltin}
@@ -536,7 +603,7 @@ function DetailContent(props: IProps) {
                   timezone={timezone}
                   setTimezone={(newTimezone) => {
                     setTimezone(newTimezone);
-                    window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+                    if (!embedded) window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
                   }}
                   intervalSeconds={intervalSeconds}
                   setIntervalSeconds={setIntervalSeconds}
@@ -581,6 +648,7 @@ function DetailContent(props: IProps) {
               {dashboard.configs?.mode !== 'iframe' && (
                 <div style={{ display: showVariables ? 'block' : 'none' }}>
                   <Variables
+                    persistState={!embedded}
                     editable={editable && effectiveIsAuthorized}
                     queryParams={query}
                     onChange={handleVariableChange}
@@ -593,13 +661,13 @@ function DetailContent(props: IProps) {
                 </div>
               )}
             </div>
-          </Affix>
+          </Header>
           {dashboard.configs?.mode !== 'iframe' ? (
             <>
               <Panels
                 dashboardId={id}
                 isPreview={effectiveIsPreview}
-                editable={editable && !fullscreenDisplayOptions.readonly}
+                editable={editable && !embedded && !fullscreenDisplayOptions.readonly}
                 panels={panels}
                 setPanels={setPanels}
                 dashboard={dashboard}
@@ -609,7 +677,7 @@ function DetailContent(props: IProps) {
                 timezone={timezone}
                 setTimezone={(newTimezone) => {
                   setTimezone(newTimezone);
-                  window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+                  if (!embedded) window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
                 }}
                 onShareClick={(panel) => {
                   const resolvedTargets: ITarget[] = _.map(panel.targets, (target): ITarget => {
@@ -676,8 +744,9 @@ function DetailContent(props: IProps) {
               className='embedded-dashboards-iframe'
               src={adjustURL(dashboard.configs?.iframe_url!, darkMode, {
                 range,
-                refreshIntervalSeconds: intervalSeconds,
-                refreshLocalKey: `${dashboardTimeCacheKey}_${dashboard.id}_refresh`,
+                refreshIntervalSeconds: embedded ? intervalSeconds ?? 0 : intervalSeconds,
+                refreshLocalKey: embedded ? undefined : `${dashboardTimeCacheKey}_${dashboard.id}_refresh`,
+                windowSearch: embedded ? embedded.search || '' : undefined,
               })}
               width='100%'
               height='100%'
@@ -699,7 +768,7 @@ function DetailContent(props: IProps) {
         timezone={timezone}
         setTimezone={(newTimezone) => {
           setTimezone(newTimezone);
-          window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
+          if (!embedded) window.localStorage.setItem(`${dashboardTimezoneCacheKey}_${id}`, newTimezone);
         }}
         initialValues={editorData.initialValues}
         onOK={(values, mode) => {
@@ -809,6 +878,6 @@ function DetailContent(props: IProps) {
           return location.pathname === prompt.pathname;
         }}
       />
-    </PageLayout>
+    </Layout>
   );
 }

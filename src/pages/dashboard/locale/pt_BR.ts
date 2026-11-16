@@ -1,4 +1,5 @@
 const pt_BR = {
+  load_failed: 'Falha ao carregar o dashboard',
   title: 'Dashboards de monitoramento',
   colorPicker: {
     colors: 'Cores integradas',

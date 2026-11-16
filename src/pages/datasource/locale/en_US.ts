@@ -255,6 +255,13 @@ const en_US = {
     group_option: '{{name}} ({{count}})',
     selected_count: '{{checked}} / {{total}} selected',
     datasource_bound: 'Datasource "{{name}}" will be bound automatically on import',
+    coverage: 'Coverage {{hit}}/{{total}}',
+    coverage_covered: 'Covered metrics:',
+    coverage_missing: 'Missing metrics:',
+    recommended_tip: 'Sorted by coverage of the selected collection templates, with recommended items selected.',
+    coverage_unavailable: 'Metric coverage recommendations are unavailable. Templates are left unchecked.',
+    no_covered_dashboards: 'No dashboard templates match the selected collection template metrics.',
+    no_covered_alerts: 'No alert rule templates match the selected collection template metrics.',
   },
 };
 export default en_US;

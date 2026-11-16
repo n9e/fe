@@ -1,4 +1,5 @@
 const fr_FR = {
+  load_failed: 'Échec du chargement du tableau de bord',
   title: 'Tableaux de bord de supervision',
   colorPicker: {
     colors: 'Couleurs intégrées',
