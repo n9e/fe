@@ -293,6 +293,8 @@ export default function List(props: Props) {
     },
   };
 
+  const hasHosts = tableProps.dataSource.length > 0;
+
   return (
     <>
       <div
@@ -409,7 +411,7 @@ export default function List(props: Props) {
           rowKey='id'
           size='small'
           tableLayout='auto'
-          scroll={{ x: tableProps.dataSource.length > 0 ? 'max-content' : undefined, y: 'calc(100% - 38px)' }}
+          scroll={{ x: hasHosts ? 'max-content' : undefined, y: hasHosts ? 'calc(100% - 38px)' : undefined }}
           onRow={(record) => ({
             className: 'group cursor-pointer',
             onClick: (e) => {

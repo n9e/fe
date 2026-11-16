@@ -175,6 +175,7 @@ const zh_HK = {
       annotation_qd: '事件附加信息豐富',
       event_recover: '故障自愈',
       alert_shot: '告警截圖',
+      flashai_automation: 'FlashAI 自動化',
     },
     category: {
       rewrite: '改寫事件',
@@ -196,6 +197,7 @@ const zh_HK = {
       annotation_qd: '按數據查詢結果給事件附加信息',
       event_recover: '觸發自愈任務',
       alert_shot: '對儀表盤 / 網頁截圖並附到告警',
+      flashai_automation: '用當前事件觸發一項 FlashAI 自動化',
     },
     delete_confirm: '確認刪除這個處理器？',
     switch_type_confirm: '切換類型會清空當前處理器的配置，確認切換？',
@@ -203,6 +205,14 @@ const zh_HK = {
     move_up: '上移',
     move_down: '下移',
     copy_tip: '複製此處理器',
+  },
+  flashai_automation: {
+    cron_id: '自動化任務',
+    manage: '管理 FlashAI 自動化',
+    placeholder: '選擇允許工作流觸發的自動化',
+    no_options: '暫無可用的 FlashAI 自動化。請檢查任務的總開關和工作流觸發開關。',
+    selected_unavailable: '已選任務當前不可用或你已無權查看，執行時可能失敗。',
+    event_context_tip: '執行時會把當前告警的規則、級別、狀態、標籤和附加信息發送給 FlashAI。',
   },
   form_section: {
     filter: {
