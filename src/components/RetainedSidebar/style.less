@@ -1,6 +1,9 @@
 // Outrank global !important flex utilities regardless of production CSS chunk order.
+// The doubled class raises specificity without an attribute selector: `[class]`
+// inside a subject-less :has() makes every class change on the page restyle the
+// whole document.
 // Explicit rows keep collapsed headings above the full-width results.
-:has(> .fc-retained-sidebar[class]) {
+:has(> .fc-retained-sidebar.fc-retained-sidebar) {
   --fc-retained-content-row: 1;
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr);
