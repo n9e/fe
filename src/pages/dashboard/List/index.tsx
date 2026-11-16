@@ -32,6 +32,8 @@ import { Dashboard as DashboardType } from '@/store/dashboardInterface';
 import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
+import { IS_PLUS } from '@/utils/constant';
+import { openAuditHistory } from '@/utils/auditLink';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import { getDashboardCompatibleGids } from '@/components/BusinessGroup/presetFilters';
 import EnhancedTable from '@/components/EnhancedTable';
@@ -69,6 +71,7 @@ const getDefaultPublicSelectGids = (localKey: string) => {
 export default function index() {
   const { t } = useTranslation('dashboard');
   const { businessGroup, perms } = useContext(CommonStateContext);
+  const canViewAudits = IS_PLUS && (perms?.includes('/system/audits') ?? false);
   const history = useHistory();
   const location = useLocation();
   const queryParams = queryString.parse(location.search);
@@ -389,6 +392,9 @@ export default function index() {
                     }
                   : undefined,
               ]) as RowAction[],
+              menu: canViewAudits
+                ? [{ key: 'audit', icon: 'view' as const, text: t('common:btn.view_operation_history'), collapsed: true, onClick: () => openAuditHistory('board', record.id) }]
+                : [],
             })}
             actionColumn={{ title: t('common:table.operations'), width: 130 }}
             rowKey='id'

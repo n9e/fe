@@ -51,6 +51,7 @@ const zh_HK = {
     cancel: '取消',
     close: '關閉',
     view: '檢視',
+    view_operation_history: '查看操作記錄',
     more: '更多操作',
     back: '返回',
     edit: '編輯',

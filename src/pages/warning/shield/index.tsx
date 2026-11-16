@@ -35,6 +35,8 @@ import BusinessGroupSideBarWithAll, { getDefaultGids } from '@/components/Busine
 import RefreshIcon from '@/components/RefreshIcon';
 import { DatasourceSelectV3 } from '@/components/DatasourceSelect';
 import { CommonStateContext } from '@/App';
+import { IS_PLUS } from '@/utils/constant';
+import { openAuditHistory } from '@/utils/auditLink';
 import usePagination from '@/components/usePagination';
 import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
@@ -65,7 +67,8 @@ const Shield: React.FC = () => {
   const { t, i18n } = useTranslation('alertMutes');
   const history = useHistory();
   const location = useLocation();
-  const { datasourceList, groupedDatasourceList, datasourceCateOptions, businessGroup, busiGroups, darkMode } = useContext(CommonStateContext);
+  const { datasourceList, groupedDatasourceList, datasourceCateOptions, businessGroup, busiGroups, darkMode, perms } = useContext(CommonStateContext);
+  const canViewAudits = IS_PLUS && (perms?.includes('/system/audits') ?? false);
   const [gids, setGids] = useState<string | undefined>(getDefaultGids(N9E_GIDS_LOCALKEY, businessGroup));
   let defaultFilter = {} as Filter;
   try {
@@ -520,6 +523,9 @@ const Shield: React.FC = () => {
                   },
                 },
               ],
+              menu: canViewAudits
+                ? [{ key: 'audit', icon: 'view' as const, text: t('common:btn.view_operation_history'), collapsed: true, onClick: () => openAuditHistory('alert_mute', record.id) }]
+                : [],
             })}
             actionColumn={{ title: t('common:table.operations'), width: 80 }}
           />
