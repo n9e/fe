@@ -9,6 +9,8 @@ const zh_CN = {
   sql_placeholder: '输入 SQL',
   execute: '查询',
   query_workspace: {
+    default_rows: '默认 {{count}} 条',
+    default_groups: '默认 {{count}} 个分组',
     assist: '表单辅助',
     assist_tip: '通过表单构建查询，转换后可预览或继续手写。已有查询语句不会反向解析为表单。',
     enable_assist: '请先开启表单辅助',
@@ -209,7 +211,8 @@ const zh_CN = {
     later_tip: '在同一文件中向后加载 {{n}} 行',
     earlier_disabled_tip: '前 1 小时内同一文件没有更早的日志；更远的日志请扩大时间范围后在检索里查看',
     later_disabled_tip: '后 1 小时内同一文件没有更新的日志',
-    no_fields_tip: '该日志缺少 __log_stream_id__、__log_seq__ 字段，不支持按原文顺序排序，也不支持查看上下文。请使用 Categraf v0.5.45 及以上版本采集文件日志，并在日志转换的「日志提取字段」中保留上述字段。',
+    no_fields_tip:
+      '该日志缺少 __log_stream_id__、__log_seq__ 字段，不支持按原文顺序排序，也不支持查看上下文。请使用 Categraf v0.5.45 及以上版本采集文件日志，并在日志转换的「日志提取字段」中保留上述字段。',
     no_time_tip: '该日志缺少时间字段 {{field}}，无法定位上下文。',
     table_unsupported_tip:
       '该表排序键不是（时间字段、__log_stream_id__、__log_seq__），检索结果不支持按原文顺序排序，也不支持查看上下文。请使用 Categraf v0.5.45 及以上版本采集文件日志，并在日志转换的「日志提取字段」中保留上述字段。',

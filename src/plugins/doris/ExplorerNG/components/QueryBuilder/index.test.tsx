@@ -79,7 +79,7 @@ it('shows an error and blocks conversion and execution when the limit exceeds th
   expect(execute).not.toHaveBeenCalled();
 });
 
-it.each([1, 749, 750, undefined])('allows limit %s, including the configured maximum and an empty limit', async (limit) => {
+it.each([1, 20, 749, 750, undefined])('allows limit %s, including the configured maximum and an empty limit', async (limit) => {
   render(<Host />);
   act(() => {
     workspace.setAssistEnabled(true);

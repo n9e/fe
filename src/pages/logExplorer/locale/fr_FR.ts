@@ -9,6 +9,8 @@ const fr_FR = {
   sql_shortcut_hint: 'Shift+Entrée saut de ligne · Entrée requête',
   execute: 'Requête',
   query_workspace: {
+    default_rows: '{{count}} lignes par défaut',
+    default_groups: '{{count}} groupes par défaut',
     assist: 'Assistance par formulaire',
     assist_tip:
       "Construisez la requête avec le formulaire, puis convertissez-la pour la prévisualiser ou continuer à l'écrire à la main. Les requêtes existantes ne sont pas converties en formulaire.",

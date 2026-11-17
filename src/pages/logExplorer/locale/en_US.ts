@@ -1,5 +1,7 @@
 const en_US = {
   query_workspace: {
+    default_rows: 'Default: {{count}} rows',
+    default_groups: 'Default: {{count}} groups',
     assist: 'Form assistance',
     assist_tip: 'Build a query with the form, then convert it to preview or continue editing. Existing queries are not parsed into the form.',
     enable_assist: 'Enable form assistance first',

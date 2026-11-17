@@ -9,6 +9,8 @@ const es_ES = {
   sql_shortcut_hint: 'Shift+Enter nueva línea · Enter consulta',
   execute: 'Consulta',
   query_workspace: {
+    default_rows: '{{count}} filas por defecto',
+    default_groups: '{{count}} grupos por defecto',
     assist: 'Asistencia con formulario',
     assist_tip:
       'Cree la consulta con el formulario y, tras convertirla, podrá previsualizarla o seguir escribiendo a mano. Las consultas existentes no se convierten al formulario.',

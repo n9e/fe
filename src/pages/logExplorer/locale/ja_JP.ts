@@ -9,6 +9,8 @@ const ja_JP = {
   sql_shortcut_hint: 'Shift+Enter 改行 · Enter 検索',
   execute: '検索',
   query_workspace: {
+    default_rows: '既定: {{count}} 件',
+    default_groups: '既定: {{count}} グループ',
     assist: 'フォーム補助',
     assist_tip: 'フォームでクエリを作成し、変換後にプレビューするか手書きの編集を続けられます。既存のクエリはフォームに逆変換されません。',
     enable_assist: '先にフォーム補助を有効にしてください',
