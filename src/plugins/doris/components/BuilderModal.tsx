@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Form, Modal, Row, Col, Space, Segmented, Select, InputNumber, Tooltip, message } from 'antd';
+import { Form, Modal, Row, Col, Space, Segmented, Select, Tooltip, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { useRequest } from 'ahooks';
 
 import { SIZE, DatasourceCateEnum } from '@/utils/constant';
+import SQLBuilderLimit from '@/pages/logExplorer/components/SQLBuilderLimit';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../constants';
 import { getDorisIndex, buildSql, Field } from '../services';
@@ -270,7 +271,7 @@ export default function BuilderModal(props: Props) {
                 <div className='h-[24px] flex items-center'>{t('builder.display_label')}</div>
               </div>
               <div className='table-cell'>
-                <Space size={SIZE} wrap>
+                <Space size={SIZE} align='start' wrap>
                   <Form.Item name='mode' noStyle initialValue='table'>
                     <Segmented
                       size='small'
@@ -295,9 +296,7 @@ export default function BuilderModal(props: Props) {
                       placeholder={t('builder.group_by')}
                     />
                   </Form.Item>
-                  <Form.Item name='limit' noStyle initialValue={100}>
-                    <InputNumber size='small' className='w-[80px]' min={1} max={10000000} placeholder={t('builder.limit')} />
-                  </Form.Item>
+                  <SQLBuilderLimit datasourceId={datasourceId} type='doris' label={t('builder.limit')} initialValue={100} visible={visible} />
                 </Space>
               </div>
             </div>
