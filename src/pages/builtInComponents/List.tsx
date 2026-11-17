@@ -1,5 +1,5 @@
 import { useCanAccessFiremap } from '@/components/FiremapAccess';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { Input, Drawer, Space, Tabs, Button, Modal, Tooltip } from 'antd';
@@ -35,7 +35,12 @@ export default function index() {
   const [searchValue, setSearchValue] = useState(localStorage.getItem(LIST_SEARCH_VALUE) || '');
   const [data, setData] = useState<Component[]>([]);
   const [activeComponent, setActiveComponent] = useState<Component>();
-  const [readme, setReadme] = useState('');
+  const [readme, setReadmeState] = useState('');
+  const readmeValue = useRef('');
+  const setReadme = (value: string) => {
+    readmeValue.current = value;
+    setReadmeState(value);
+  };
   // ?tab= 优先于上次停留的页签：从别处深链过来（如采集验证通过后的「导入仪表盘」）
   // 是带着明确目的的，不该被用户上一次看的页签盖掉
   const [activeTab, setActiveTab] = useState((query.tab as string) || localStorage.getItem(BUILT_IN_ACTIVE_TAB_KEY) || 'tab_instructions');
@@ -43,6 +48,50 @@ export default function index() {
     if (!canAccessFiremap && activeTab === 'tab_firemap') setActiveTab('tab_instructions');
   }, [canAccessFiremap, activeTab]);
   const [readmeEditabled, setReadmeEditabled] = useState(false);
+  const [readmeSaving, setReadmeSaving] = useState(false);
+  const readmeSaveRequest = useRef<symbol>();
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      readmeSaveRequest.current = undefined;
+    };
+  }, []);
+  const resetReadmeEditor = (value = '') => {
+    readmeSaveRequest.current = undefined;
+    setReadmeSaving(false);
+    setReadmeEditabled(false);
+    setReadme(value);
+  };
+  const closeComponent = () => {
+    history.replace({
+      search: queryString.stringify({ ...queryString.parse(history.location.search), component: undefined }),
+    });
+    setActiveComponent(undefined);
+    resetReadmeEditor();
+  };
+  const saveReadme = async () => {
+    if (!activeComponent || readmeSaveRequest.current) return;
+    const request = Symbol();
+    const savedComponent = { ...activeComponent, readme };
+    readmeSaveRequest.current = request;
+    setReadmeSaving(true);
+    try {
+      await putComponent(savedComponent);
+      if (!mounted.current) return;
+      setData((prev) => prev.map((item) => (item.id === savedComponent.id ? { ...item, readme: savedComponent.readme } : item)));
+      setActiveComponent((prev) => (prev?.id === savedComponent.id ? { ...prev, readme: savedComponent.readme } : prev));
+      if (readmeSaveRequest.current === request && readmeValue.current === savedComponent.readme) setReadmeEditabled(false);
+    } catch {
+      // The request handler displays the error; keep the draft available for retry.
+    } finally {
+      if (readmeSaveRequest.current === request) {
+        readmeSaveRequest.current = undefined;
+        setReadmeSaving(false);
+      }
+    }
+  };
   // 三步进度存在 localStorage 里，导入成功后递增这个信号让步骤条重读
   const [packFlag, setPackFlag] = useState(0);
   const fetchData = () => {
@@ -58,7 +107,7 @@ export default function index() {
         const component = _.find(res, { ident: defaultComponent });
         if (component) {
           setActiveComponent(component);
-          setReadme(component.readme);
+          resetReadmeEditor(component.readme);
         }
       }
     });
@@ -115,7 +164,7 @@ export default function index() {
                         }),
                       });
                       setActiveComponent(item);
-                      setReadme(item.readme);
+                      resetReadmeEditor(item.readme);
                     }}
                   >
                     <img src={item.logo} style={{ height: 42, maxWidth: '60%' }} />
@@ -188,52 +237,19 @@ export default function index() {
             <div>{activeComponent?.ident}</div>
           </Space>
         }
-        extra={
-          <CloseOutlined
-            onClick={() => {
-              history.replace({
-                search: queryString.stringify({
-                  ...query,
-                  component: undefined,
-                }),
-              });
-              setActiveComponent(undefined);
-              setReadmeEditabled(false);
-              setReadme(activeComponent?.readme || '');
-            }}
-          />
-        }
-        onClose={() => {
-          history.replace({
-            search: queryString.stringify({
-              ...query,
-              component: undefined,
-            }),
-          });
-          setActiveComponent(undefined);
-          setReadmeEditabled(false);
-          setReadme(activeComponent?.readme || '');
-        }}
+        extra={<CloseOutlined onClick={closeComponent} />}
+        onClose={closeComponent}
         footer={
           activeTab === 'tab_instructions' &&
           (readmeEditabled ? (
             <Space>
-              <Button
-                type='primary'
-                onClick={() => {
-                  if (activeComponent) {
-                    putComponent({ ...activeComponent, readme }).then(() => {
-                      fetchData();
-                    });
-                    setReadmeEditabled(!readmeEditabled);
-                  }
-                }}
-              >
+              <Button type='primary' loading={readmeSaving} onClick={saveReadme}>
                 {t('common:btn.ok')}
               </Button>
               <Button
+                disabled={readmeSaving}
                 onClick={() => {
-                  setReadmeEditabled(!readmeEditabled);
+                  setReadmeEditabled(false);
                   setReadme(activeComponent?.readme || '');
                 }}
               >
@@ -245,7 +261,7 @@ export default function index() {
               <Button
                 type='primary'
                 onClick={() => {
-                  setReadmeEditabled(!readmeEditabled);
+                  setReadmeEditabled(true);
                 }}
               >
                 {t('common:btn.edit')}
@@ -253,7 +269,7 @@ export default function index() {
             </AuthorizationWrapper>
           ))
         }
-        className='n9e-antd-drawer'
+        className='n9e-antd-drawer builtin-components-drawer'
       >
         {activeComponent && (
           <ComponentSteps
@@ -283,7 +299,6 @@ export default function index() {
                   setReadme(newValue);
                 }}
                 editabled={readmeEditabled}
-                setReadmeEditabled={setReadmeEditabled}
               />
             </Tabs.TabPane>
             {IS_PLUS && (
