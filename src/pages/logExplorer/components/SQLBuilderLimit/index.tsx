@@ -5,18 +5,26 @@ import { useTranslation } from 'react-i18next';
 import request from '@/utils/request';
 import { getAntdLocale } from '@/utils/antdLocale';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import { NAME_SPACE } from '../../constants';
+import getDefaultLimit from './getDefaultLimit';
 
 interface Props {
   datasourceId?: number;
   type: string;
   label: string;
-  placeholder?: string;
   initialValue?: number;
   visible?: boolean;
 }
 
-export default function SQLBuilderLimit({ datasourceId, type, label, placeholder, initialValue, visible = true }: Props) {
-  const { i18n } = useTranslation();
+export default function SQLBuilderLimit({ datasourceId, type, label, initialValue, visible = true }: Props) {
+  const { t, i18n } = useTranslation(NAME_SPACE);
+  const form = Form.useFormInstance();
+  const mode = Form.useWatch('mode', form);
+  const aggregates = Form.useWatch('aggregates', form);
+  const groupBy = Form.useWatch('group_by', form);
+  const defaultLimit = mode === 'table' ? getDefaultLimit(type, aggregates, groupBy) : undefined;
+  const placeholder =
+    defaultLimit === undefined ? t('query_workspace.unlimited') : t(groupBy?.length ? 'query_workspace.default_groups' : 'query_workspace.default_rows', { count: defaultLimit });
   const loadMaxQueryRows = useMemo(() => {
     let pending: Promise<number | undefined> | undefined;
     return () => {
@@ -60,7 +68,7 @@ export default function SQLBuilderLimit({ datasourceId, type, label, placeholder
           },
         ]}
       >
-        <InputNumber size='small' className='w-[80px]' min={1} placeholder={placeholder} />
+        <InputNumber size='small' className='w-[140px]' min={1} placeholder={placeholder} title={placeholder} />
       </Form.Item>
     </InputGroupWithFormItem>
   );

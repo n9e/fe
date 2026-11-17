@@ -100,7 +100,7 @@ it('maps ES generation without executing and applies the statement with its keys
     expect.objectContaining({
       cate: 'elasticsearch',
       datasource_id: 7,
-      query: [expect.objectContaining({ index: 'logs-*', time_field: 'ts', from: 1000, to: 2000, mode: 'table' })],
+      query: [expect.objectContaining({ index: 'logs-*', time_field: 'ts', from: 1000, to: 2000, mode: 'table', limit: 100 })],
     }),
   );
   expect(outerForm.getFieldValue(['query', 'sql'])).toBe(generated.sql);
@@ -127,6 +127,26 @@ it('does not leave a query trigger behind when converting swaps the result view'
   expect(outerForm.getFieldValue(['query', 'sqlVizType'])).toBe('timeseries');
   expect(outerForm.getFieldValue('refreshFlag')).toBeUndefined();
   expect(setLocalQueryHistory).not.toHaveBeenCalled();
+});
+
+it('preserves a manual limit of 20 and omits it after clearing and changing aggregation', async () => {
+  render(<Host />);
+  act(() => {
+    main.workspace.setAssistEnabled(true);
+    main.workspace.builderForm.setFieldsValue({ limit: 20 });
+  });
+  await act(async () => {
+    await main.workspace.convert();
+  });
+  expect(esQueryBuilder).toHaveBeenLastCalledWith(expect.objectContaining({ query: [expect.objectContaining({ limit: 20 })] }));
+  act(() => {
+    main.workspace.builderForm.setFields([{ name: 'limit', value: null }]);
+    main.workspace.builderForm.setFieldsValue({ group_by: ['host'], aggregates: [{ func: 'COUNT', field: '*' }] });
+  });
+  await act(async () => {
+    await main.workspace.convert();
+  });
+  expect(esQueryBuilder).toHaveBeenLastCalledWith(expect.objectContaining({ query: [expect.objectContaining({ limit: undefined, group_by: ['host'] })] }));
 });
 
 it('reports a missing index without changing or executing the current SQL', async () => {

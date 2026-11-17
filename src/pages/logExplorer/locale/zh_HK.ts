@@ -1,5 +1,7 @@
 const zh_HK = {
   query_workspace: {
+    default_rows: '預設 {{count}} 條',
+    default_groups: '預設 {{count}} 個分組',
     assist: '表單輔助',
     assist_tip: '透過表單構建查詢，轉換後可預覽或繼續手寫。已有查詢語句不會反向解析為表單。',
     enable_assist: '請先開啟表單輔助',
