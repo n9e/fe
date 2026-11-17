@@ -10,8 +10,12 @@ jest.mock('@/utils/request', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('@/utils/constant', () => ({ SIZE: 8, DatasourceCateEnum: { doris: 'doris' } }));
 jest.mock('react-i18next', () => {
   const i18n = require('i18next').createInstance();
-  i18n.init({ lng: 'en_US', initImmediate: false, resources: { en_US: { translation: require('../locale/en_US').default } } });
-  return { useTranslation: () => ({ t: i18n.t.bind(i18n), i18n }) };
+  i18n.init({
+    lng: 'en_US',
+    initImmediate: false,
+    resources: { en_US: { db_doris: require('../locale/en_US').default, log_explorer: require('@/pages/logExplorer/locale/en_US').default } },
+  });
+  return { useTranslation: (namespace = 'db_doris') => ({ t: i18n.getFixedT(null, namespace), i18n }) };
 });
 jest.mock('../services', () => ({
   buildSql: jest.fn(),
@@ -60,4 +64,19 @@ it('clears old validation and loads the new datasource limit when the modal reop
   await waitFor(() => expect(screen.getByText('Limit must be maximum 10')).toBeVisible());
   expect(buildSql).not.toHaveBeenCalled();
   expect(request).toHaveBeenCalledWith('/api/v1/datasource/desc', { method: 'POST', data: { id: 8 }, silence: true });
+});
+
+it('preserves the initial limit and submits no limit after clearing an explicit value', async () => {
+  jest.mocked(request).mockResolvedValue({ data: { settings: { 'doris.max_query_rows': 200 } } });
+  const onConfirm = jest.fn();
+  render(<BuilderModal visible datasourceId={7} builderConfig={{ database: 'db', table: 'logs', time_field: 'ts' }} onCancel={() => {}} onConfirm={onConfirm} />);
+  await waitFor(() => expect(screen.getByRole('spinbutton')).toHaveValue('100'));
+  fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '20' } });
+  fireEvent.click(screen.getByRole('button', { name: 'OK' }));
+  await waitFor(() => expect(onConfirm).toHaveBeenCalledTimes(1));
+  expect(buildSql).toHaveBeenLastCalledWith(expect.objectContaining({ query: [expect.objectContaining({ limit: 20 })] }));
+  fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '' } });
+  fireEvent.click(screen.getByRole('button', { name: 'OK' }));
+  await waitFor(() => expect(onConfirm).toHaveBeenCalledTimes(2));
+  expect(buildSql).toHaveBeenLastCalledWith(expect.objectContaining({ query: [expect.objectContaining({ limit: undefined })] }));
 });

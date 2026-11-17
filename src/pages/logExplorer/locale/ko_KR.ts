@@ -1,5 +1,7 @@
 const ko_KR = {
   query_workspace: {
+    default_rows: '기본 {{count}}행',
+    default_groups: '기본 {{count}}개 그룹',
     assist: '폼 보조',
     assist_tip: '폼으로 쿼리를 작성한 뒤 변환하여 미리보기하거나 계속 직접 작성할 수 있습니다. 기존 쿼리는 폼으로 역변환되지 않습니다.',
     enable_assist: '먼저 폼 보조를 켜세요',

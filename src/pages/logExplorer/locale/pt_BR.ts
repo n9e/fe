@@ -1,5 +1,7 @@
 const pt_BR = {
   query_workspace: {
+    default_rows: 'Padrão: {{count}} linhas',
+    default_groups: 'Padrão: {{count}} grupos',
     assist: 'Assistência por formulário',
     assist_tip:
       'Monte a consulta pelo formulário e, depois de converter, visualize ou continue escrevendo manualmente. Consultas existentes não são convertidas de volta para o formulário.',

@@ -140,7 +140,7 @@ export default function QueryBuilder(props: Props) {
                     />
                   </Form.Item>
                 </InputGroupWithFormItem>
-                <SQLBuilderLimit datasourceId={datasourceValue} type='ck' label={t('builder.limit')} placeholder={t('log_explorer:query_workspace.unlimited')} />
+                <SQLBuilderLimit datasourceId={datasourceValue} type='ck' label={t('builder.limit')} />
               </Space>
             </div>
           </div>

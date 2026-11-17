@@ -164,7 +164,7 @@ export default function BuilderModal(props: Props) {
             group_by: values.group_by || [],
             order_by: values.order_by || [],
             mode: values.mode || 'table',
-            limit: values.limit || 100,
+            limit: values.limit ?? undefined,
           },
         ],
       })
