@@ -49,12 +49,14 @@ const AbsoluteTimePicker = ({
   inline = false,
   panelVisible = true,
   onPanelVisibleChange,
+  validationMessage,
 }: {
   type: 'start' | 'end';
   /** Show the calendar beside other fields without a nested popover or confirmation. */
   inline?: boolean;
   panelVisible?: boolean;
   onPanelVisibleChange?: (visible: boolean) => void;
+  validationMessage?: React.ReactNode;
   limitHour?: number;
   range?: IRawTimeRange;
   setRange: (range: IRawTimeRange) => void;
@@ -140,6 +142,16 @@ const AbsoluteTimePicker = ({
     setVisible(false);
   };
 
+  const selectPanelValue = (value: Moment) => {
+    if (disabled) return;
+    const next = bounds ? moment.unix(Math.max(bounds.start, Math.min(bounds.end, value.unix()))).second(0) : value;
+    setTempValue(next);
+    if (bounds || inline) {
+      setRange({ ...range, [type]: next } as IRawTimeRange);
+      setRangeStatus({ ...rangeStatus, [type]: undefined });
+    }
+  };
+
   const calendarPanel = (
     <PickerPanel
       tabIndex={disabled ? -1 : 0}
@@ -183,15 +195,9 @@ const AbsoluteTimePicker = ({
         return false;
       }}
       value={tempValue}
-      onChange={(value) => {
-        if (disabled) return;
-        const next = bounds ? moment.unix(Math.max(bounds.start, Math.min(bounds.end, value.unix()))).second(0) : value;
-        setTempValue(next);
-        if (bounds || inline) {
-          setRange({ ...range, [type]: next } as IRawTimeRange);
-          setRangeStatus({ ...rangeStatus, [type]: undefined });
-        }
-      }}
+      // onSelect also handles reselecting a day whose inherited time has expired.
+      onSelect={bounds ? selectPanelValue : undefined}
+      onChange={bounds ? undefined : selectPanelValue}
       renderExtraFooter={
         inline
           ? undefined
@@ -226,7 +232,8 @@ const AbsoluteTimePicker = ({
           aria-label={labelMap[type]}
           disabled={disabled}
           style={{ width: inline && !onPanelVisibleChange ? '100%' : 'calc(100% - 32px)' }}
-          className={rangeStatus[type] === 'invalid' ? 'ant-input-status-error' : ''}
+          className={validationMessage || rangeStatus[type] === 'invalid' ? 'ant-input-status-error' : ''}
+          aria-invalid={!!validationMessage || rangeStatus[type] === 'invalid'}
           value={inputValue}
           onChange={(e) => {
             const val = e.target.value;
@@ -282,8 +289,10 @@ const AbsoluteTimePicker = ({
           </Popover>
         )}
       </Input.Group>
+      <div className='flashcat-timeRangePicker-single-status' role={validationMessage ? 'alert' : undefined}>
+        {validationMessage || (rangeStatus[type] === 'invalid' ? t('invalid') : undefined)}
+      </div>
       {inline && panelVisible && calendarPanel}
-      <div className='flashcat-timeRangePicker-single-status'>{rangeStatus[type] === 'invalid' ? t('invalid') : undefined}</div>
     </div>
   );
 };
