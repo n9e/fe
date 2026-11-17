@@ -138,6 +138,155 @@ export default function index() {
   // 仅在选中具体叶子业务组（有 id，且非「全部」-1 /「未归组」-2）时，才允许在组内新建 / 导入大盘
   const canManageInGroup = !!(businessGroup.isLeaf && businessGroup.id && gids && gids !== '-1' && gids !== '-2');
 
+  const columns = (() => {
+    const cols = _.concat([
+      {
+        title: t('name'),
+        dataIndex: 'name',
+        className: 'name-column',
+        render: (text: string, record: DashboardType) => {
+          const hideBusinessGroupColumn = businessGroup.isLeaf && gids !== '-2' && gids !== '-1';
+          const groupName = !hideBusinessGroupColumn ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
+          return (
+            <div className='flex flex-col gap-0.5'>
+              <Link
+                className='table-active-text'
+                to={{
+                  pathname: `/dashboards/${record.ident || record.id}`,
+                  search: gids === '-1' ? `__public__=true&__page=${current}` : `?__page=${current}`, // __public__ 用于详情页判断公开仪表盘
+                }}
+              >
+                {text}
+              </Link>
+              {groupName && <span className='text-soft text-xs'>{groupName}</span>}
+            </div>
+          );
+        },
+      },
+      {
+        title: t('tags'),
+        dataIndex: 'tags',
+        className: 'tags-column',
+        render: (text: string) => (
+          <Tags
+            type='outline'
+            data={_.compact(_.split(text, ' '))}
+            maxWidth={360}
+            onTagClick={(tag: string) => {
+              const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
+              if (queryItem.includes(tag)) return;
+              setsearchVal((searchVal) => {
+                if (searchVal) {
+                  sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, searchVal + ' ' + tag);
+                  return searchVal + ' ' + tag;
+                }
+                sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tag);
+                return tag;
+              });
+            }}
+          />
+        ),
+      },
+      {
+        title: t('common:table.note'),
+        dataIndex: 'note',
+        className: 'note-column',
+        ellipsis: { showTitle: false },
+        render: (text: string) => <EllipsisText text={text} />,
+      },
+      dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }),
+      updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
+      {
+        title: t('public.name'),
+        width: 150,
+        dataIndex: 'public',
+        className: 'published-cell',
+        render: (val: number, record: DashboardType) => {
+          let content: React.ReactNode = null;
+          if (val === 1 && record.public_cate !== undefined) {
+            if (record.public_cate === 0) {
+              content = (
+                <Tooltip
+                  overlayClassName='ant-tooltip-with-link'
+                  title={
+                    <>
+                      <div>
+                        <Link
+                          target='_blank'
+                          to={{
+                            pathname: `/dashboards/share/${record.ident || record.id}`,
+                            search: 'themeMode=dark',
+                          }}
+                        >
+                          {t('public.theme_link.dark')}
+                        </Link>
+                      </div>
+                      <div>
+                        <Link
+                          target='_blank'
+                          to={{
+                            pathname: `/dashboards/share/${record.ident || record.id}`,
+                            search: 'themeMode=light',
+                          }}
+                        >
+                          {t('public.theme_link.light')}
+                        </Link>
+                      </div>
+                    </>
+                  }
+                >
+                  <Link
+                    target='_blank'
+                    to={{
+                      pathname: `/dashboards/share/${record.ident || record.id}`,
+                    }}
+                  >
+                    <ShareAltOutlined /> {t(`public.cate.${record.public_cate}`)}
+                  </Link>
+                </Tooltip>
+              );
+            } else {
+              content = t(`public.cate.${record.public_cate}`);
+            }
+          } else {
+            content = t('public.unpublic');
+          }
+
+          return (
+            <Space>
+              {content}
+              {gids !== '-1' && (
+                <EditOutlined
+                  onClick={() => {
+                    PublicForm({
+                      busiGroups,
+                      boardId: record.id,
+                      initialValues: {
+                        public: val,
+                        public_cate: record.public_cate,
+                        bgids: record.bgids,
+                      },
+                      onOk: () => {
+                        setRefreshKey(_.uniqueId('refreshKey_'));
+                      },
+                    });
+                  }}
+                />
+              )}
+            </Space>
+          );
+        },
+      },
+    ]);
+    return cols.filter((col) => {
+      if (col.dataIndex === 'operator') return true;
+      return visibleColumns.includes(col.dataIndex as string);
+    });
+  })();
+  // Width-less columns (name, tags, note) count as 160px; plus selection (32) and action (130) columns,
+  // so they keep a readable width and the table scrolls horizontally on narrow screens.
+  const tableScrollX = columns.reduce((sum, column) => sum + (Number(column.width) || 160), 32 + 130);
+
   return (
     <PageLayout title={t('title')} icon={<FundViewOutlined />} doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/quickstart/dashboard/'>
       <div style={{ display: 'flex' }}>
@@ -179,151 +328,8 @@ export default function index() {
           <EnhancedTable
             className='mt-2'
             dataSource={data}
-            columns={(() => {
-              const cols = _.concat([
-                {
-                  title: t('name'),
-                  dataIndex: 'name',
-                  className: 'name-column',
-                  render: (text: string, record: DashboardType) => {
-                    const hideBusinessGroupColumn = businessGroup.isLeaf && gids !== '-2' && gids !== '-1';
-                    const groupName = !hideBusinessGroupColumn ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
-                    return (
-                      <div className='flex flex-col gap-0.5'>
-                        <Link
-                          className='table-active-text'
-                          to={{
-                            pathname: `/dashboards/${record.ident || record.id}`,
-                            search: gids === '-1' ? `__public__=true&__page=${current}` : `?__page=${current}`, // __public__ 用于详情页判断公开仪表盘
-                          }}
-                        >
-                          {text}
-                        </Link>
-                        {groupName && <span className='text-soft text-xs'>{groupName}</span>}
-                      </div>
-                    );
-                  },
-                },
-                {
-                  title: t('tags'),
-                  dataIndex: 'tags',
-                  className: 'tags-column',
-                  render: (text: string) => (
-                    <Tags
-                      type='outline'
-                      data={_.compact(_.split(text, ' '))}
-                      maxWidth={360}
-                      onTagClick={(tag: string) => {
-                        const queryItem = searchVal.length > 0 ? searchVal.split(' ') : [];
-                        if (queryItem.includes(tag)) return;
-                        setsearchVal((searchVal) => {
-                          if (searchVal) {
-                            sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, searchVal + ' ' + tag);
-                            return searchVal + ' ' + tag;
-                          }
-                          sessionStorage.setItem(SEARCH_SESSION_STORAGE_KEY, tag);
-                          return tag;
-                        });
-                      }}
-                    />
-                  ),
-                },
-                {
-                  title: t('common:table.note'),
-                  dataIndex: 'note',
-                  className: 'note-column',
-                  ellipsis: { showTitle: false },
-                  render: (text: string) => <EllipsisText text={text} />,
-                },
-                dateColumn({ title: t('common:table.update_at'), dataIndex: 'update_at', unix: true, sortable: true, defaultSortOrder: 'descend' }),
-                updateByColumn({ title: t('common:table.update_by'), dataIndex: 'update_by', nickname: 'update_by_nickname' }),
-                {
-                  title: t('public.name'),
-                  width: 150,
-                  dataIndex: 'public',
-                  className: 'published-cell',
-                  render: (val: number, record: DashboardType) => {
-                    let content: React.ReactNode = null;
-                    if (val === 1 && record.public_cate !== undefined) {
-                      if (record.public_cate === 0) {
-                        content = (
-                          <Tooltip
-                            overlayClassName='ant-tooltip-with-link'
-                            title={
-                              <>
-                                <div>
-                                  <Link
-                                    target='_blank'
-                                    to={{
-                                      pathname: `/dashboards/share/${record.ident || record.id}`,
-                                      search: 'themeMode=dark',
-                                    }}
-                                  >
-                                    {t('public.theme_link.dark')}
-                                  </Link>
-                                </div>
-                                <div>
-                                  <Link
-                                    target='_blank'
-                                    to={{
-                                      pathname: `/dashboards/share/${record.ident || record.id}`,
-                                      search: 'themeMode=light',
-                                    }}
-                                  >
-                                    {t('public.theme_link.light')}
-                                  </Link>
-                                </div>
-                              </>
-                            }
-                          >
-                            <Link
-                              target='_blank'
-                              to={{
-                                pathname: `/dashboards/share/${record.ident || record.id}`,
-                              }}
-                            >
-                              <ShareAltOutlined /> {t(`public.cate.${record.public_cate}`)}
-                            </Link>
-                          </Tooltip>
-                        );
-                      } else {
-                        content = t(`public.cate.${record.public_cate}`);
-                      }
-                    } else {
-                      content = t('public.unpublic');
-                    }
-
-                    return (
-                      <Space>
-                        {content}
-                        {gids !== '-1' && (
-                          <EditOutlined
-                            onClick={() => {
-                              PublicForm({
-                                busiGroups,
-                                boardId: record.id,
-                                initialValues: {
-                                  public: val,
-                                  public_cate: record.public_cate,
-                                  bgids: record.bgids,
-                                },
-                                onOk: () => {
-                                  setRefreshKey(_.uniqueId('refreshKey_'));
-                                },
-                              });
-                            }}
-                          />
-                        )}
-                      </Space>
-                    );
-                  },
-                },
-              ]);
-              return cols.filter((col) => {
-                if (col.dataIndex === 'operator') return true;
-                return visibleColumns.includes(col.dataIndex as string);
-              });
-            })()}
+            columns={columns}
+            scroll={{ x: tableScrollX }}
             rowActions={(record) => ({
               inline: _.compact([
                 gids !== '-1'
