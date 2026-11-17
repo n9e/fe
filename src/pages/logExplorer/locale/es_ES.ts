@@ -1,4 +1,27 @@
 const es_ES = {
+  query_workspace: {
+    assist: 'Asistencia con formulario',
+    assist_tip:
+      'Cree la consulta con el formulario y, tras convertirla, podrá previsualizarla o seguir escribiendo a mano. Las consultas existentes no se convierten al formulario.',
+    enable_assist: 'Active primero la asistencia con formulario',
+    builder: 'Construcción del formulario',
+    preview: 'Vista previa de {{language}}',
+    convert: 'Convertir a {{language}}',
+    continue: 'Seguir escribiendo este {{language}}',
+    not_generated: 'Sin convertir',
+    generating: 'Generando',
+    modified: 'El formulario ha cambiado; convierta la consulta',
+    synced: 'Coincide con el formulario',
+    empty: 'Configure el formulario y haga clic en «Convertir a {{language}}» para generar la vista previa',
+    use_previous: 'Se usará el resultado de la última conversión. Para obtener el contenido más reciente, vuelva a convertir.',
+    range_required: 'Seleccione un rango de tiempo',
+    unlimited: 'Sin límite',
+    build_failed: 'Error al generar SQL',
+    collapse: 'Contraer',
+    expand: 'Expandir',
+  },
+  sql_placeholder: 'Introduzca SQL',
+  sql_shortcut_hint: 'Shift+Enter nueva línea · Enter consulta',
   title: 'Búsqueda de logs',
   tab: {
     rename: 'Renombrar',
@@ -178,7 +201,7 @@ const es_ES = {
   },
   view_placeholder: 'Vista de los logs',
   log_order_context: {
-    title: 'Contexto',
+    title: 'Context Viewer',
     earlier: 'Anteriores',
     later: 'Posteriores',
     earlier_tip: 'Cargar {{n}} líneas anteriores del mismo archivo',
@@ -186,8 +209,10 @@ const es_ES = {
     earlier_disabled_tip: 'No hay registros anteriores de este archivo en la hora previa; amplíe el rango de tiempo en la búsqueda para ver más',
     later_disabled_tip: 'No hay registros posteriores de este archivo en la hora siguiente',
     no_fields_tip:
-      'Este registro no tiene __log_stream_id__ ni __log_seq__, así que su contexto en orden original no está disponible. Recopile los registros de archivo con un Categraf reciente y conserve ambos campos en los campos extraídos de la transformación',
+      'Este registro no tiene __log_stream_id__ ni __log_seq__, así que no se puede ordenar en el orden del archivo y el contexto no está disponible. Recopile los registros de archivo con Categraf v0.5.45 o posterior y conserve ambos campos en los campos extraídos de la transformación',
     no_time_tip: 'Este registro no tiene el campo de tiempo {{field}}, así que no se puede ubicar su contexto',
+    table_unsupported_tip:
+      'La clave de orden de esta tabla no empieza por el campo de tiempo, __log_stream_id__ y __log_seq__. Los resultados no se pueden ordenar en el orden del archivo y el contexto no está disponible. Recopile los registros de archivo con Categraf v0.5.45 o posterior y conserve ambos campos en los campos extraídos de la transformación.',
     back_to_anchor: 'Log actual',
     raw_layout: 'Diseño original',
     raw_layout_tip: 'Muestra solo los valores, sin hora ni nombres de campo, en fuente monoespaciada que conserva la sangría',

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Form, Modal, Row, Col, Space, Segmented, Select, InputNumber, Tooltip, message } from 'antd';
+import type { ModalProps } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -18,6 +19,7 @@ import Filters from '../ExplorerNG/components/QueryBuilder/Filters';
 import Aggregates from '../ExplorerNG/components/QueryBuilder/Aggregates';
 import OrderBy from '../ExplorerNG/components/QueryBuilder/OrderBy';
 import CommonStateContext from '../ExplorerNG/components/QueryBuilder/commonStateContext';
+import getErrorMessage from '@/pages/logExplorer/components/QueryWorkspace/getErrorMessage';
 import getMaxLabelWidth from '../ExplorerNG/components/QueryBuilder/utils/getMaxLabelWidth';
 
 export interface BuilderConfig {
@@ -43,6 +45,7 @@ interface Props {
   visible: boolean;
   datasourceId: number;
   builderConfig?: BuilderConfig;
+  getContainer?: ModalProps['getContainer'];
   onCancel: () => void;
   onConfirm: (builderConfig: BuilderConfig, result: BuildSqlResult) => void;
 }
@@ -60,7 +63,7 @@ const getDefaultBuilderConfig = (builderConfig?: BuilderConfig): BuilderConfig =
 };
 
 export default function BuilderModal(props: Props) {
-  const { visible, datasourceId, builderConfig, onCancel, onConfirm } = props;
+  const { visible, datasourceId, builderConfig, getContainer, onCancel, onConfirm } = props;
   const { t, i18n } = useTranslation(NAME_SPACE);
   const [form] = Form.useForm<BuilderConfig>();
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -167,8 +170,8 @@ export default function BuilderModal(props: Props) {
         .then((res) => {
           onConfirm(getDefaultBuilderConfig(values), res);
         })
-        .catch(() => {
-          message.error(t('query.editMode.build_sql_failed'));
+        .catch((err) => {
+          message.error(getErrorMessage(err, t('query.editMode.build_sql_failed')));
         })
         .finally(() => {
           setConfirmLoading(false);
@@ -182,7 +185,7 @@ export default function BuilderModal(props: Props) {
         ignoreNextOutsideClick: () => {},
       }}
     >
-      <Modal width={960} visible={visible} title='Builder' confirmLoading={confirmLoading} onCancel={onCancel} onOk={handleOk} destroyOnClose>
+      <Modal width={960} visible={visible} title='Builder' confirmLoading={confirmLoading} onCancel={onCancel} onOk={handleOk} destroyOnClose getContainer={getContainer}>
         <Form form={form} layout='vertical'>
           <Row gutter={10}>
             <Col span={8}>
@@ -282,7 +285,7 @@ export default function BuilderModal(props: Props) {
                   <Form.Item name='group_by' noStyle initialValue={[]}>
                     <Select
                       size='small'
-                      className='min-w-[160px] doris-query-builder-group-by-select'
+                      className='min-w-[160px] [&_.ant-select-selection-item]:h-[14.8px] [&_.ant-select-selection-item]:my-0'
                       dropdownClassName='doris-query-builder-popup'
                       options={_.map(indexData, (item) => {
                         return { label: item.field, value: item.field };

@@ -1,6 +1,6 @@
 import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Button, Drawer, Empty, Modal, Space, Switch, Table, Tag, Tooltip, message } from 'antd';
-import { CloseOutlined, EyeInvisibleOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { CloseOutlined, EyeInvisibleOutlined, FileSearchOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -24,14 +24,15 @@ import {
 } from './utils';
 
 interface Props {
-  /** 原始行（未拍平）；缺原文顺序字段或时间时入口置灰并说明原因 */
   log?: Record<string, any>;
+  variant?: 'button' | 'icon';
   timeField: string;
   /** 把锚点时间换成该存储要的格式（Doris 原样字符串，ES 毫秒时间戳字符串） */
   formatTime?: (time: string | number) => string;
   fetchPage: (req: LogContextRequest) => Promise<LogContextPage>;
   /** 检索页外面的字段列设置，作为上下文的默认显示字段；空表示全部显示 */
   organizeFields?: string[];
+  orderSupported?: boolean;
 }
 
 // 与 SLS 上下文每次取的行数一致
@@ -39,10 +40,10 @@ const STEP_LINES = 30;
 
 type Direction = 'back' | 'forward';
 
-/** 按原文顺序查看同一个文件流的前后日志，交互与 SLS 上下文一致 */
+/** 按原文顺序查看同一文件流的前后日志。表不支持或这一行缺锚点时，详情按钮置灰，行图标不显示 */
 export default function LogOrderContext(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
-  const { log, timeField, formatTime = String, fetchPage, organizeFields: outerOrganizeFields } = props;
+  const { log, variant = 'button', timeField, formatTime = String, fetchPage, organizeFields: outerOrganizeFields, orderSupported } = props;
   const anchor = log ? getLogOrderAnchor(log, timeField) : undefined;
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState<LogContextPage>();
@@ -189,7 +190,18 @@ export default function LogOrderContext(props: Props) {
   );
 
   if (!log) return null;
+  if (orderSupported === false) {
+    if (variant === 'icon') return null;
+    return (
+      <Tooltip title={t('log_order_context.table_unsupported_tip')}>
+        <span>
+          <Button disabled>{t('log_order_context.title')}</Button>
+        </span>
+      </Tooltip>
+    );
+  }
   if (!anchor) {
+    if (variant === 'icon') return null;
     const reason = logOrderUnavailableReason(log, timeField);
     return (
       <Tooltip title={t(`log_order_context.${reason}_tip`, { field: timeField })}>
@@ -211,7 +223,28 @@ export default function LogOrderContext(props: Props) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>{t('log_order_context.title')}</Button>
+      {variant === 'icon' ? (
+        <Tooltip title={t('log_order_context.title')}>
+          <span
+            className='cursor-pointer inline-flex items-center my-[2px] mr-2'
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(true);
+            }}
+          >
+            <FileSearchOutlined className='text-gray-500 text-[14px]' aria-label={t('log_order_context.title')} />
+          </span>
+        </Tooltip>
+      ) : (
+        <Button
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(true);
+          }}
+        >
+          {t('log_order_context.title')}
+        </Button>
+      )}
       <Drawer
         className='n9e-antd-drawer log-explorer-ignore-click-away'
         title={t('log_order_context.title')}

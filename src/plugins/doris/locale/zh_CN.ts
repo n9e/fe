@@ -1,5 +1,4 @@
 const zh_CN = {
-  pagination_requires_order_keys: '当前表的排序键未以（所选时间字段、__log_stream_id__、__log_seq__）开头，无法保证稳定分页。仅显示首屏，请缩小查询范围或选择匹配的时间字段。',
   quick_query: '快捷查询',
   quick_query_tip: '快捷查询 根据固定的SQL模板，快速生成查询语句，比如字段A大于0，只需要输入 A > 0，通过点击该按钮可以快速切换到自定义模式，支持查看并修改SQL语句',
   custom_query: '自定义查询',
@@ -39,6 +38,7 @@ const zh_CN = {
     time_field_tip: '<span>需在查询条件中使用时间宏才能联动此时间选择器</span><br/>时间宏使用介绍: <a>详情</a>',
     query: '查询条件',
     query_required: '查询条件不能为空',
+    historical_records: '历史记录',
     advancedSettings: {
       title: '辅助配置',
       tags_placeholder: '回车输入多个',

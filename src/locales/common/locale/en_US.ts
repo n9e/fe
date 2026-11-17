@@ -52,6 +52,7 @@ const en_US = {
     cancel: 'Cancel',
     close: 'Close',
     view: 'View',
+    view_operation_history: 'View operation history',
     more: 'More',
     back: 'Back',
     edit: 'Edit',
@@ -102,8 +103,7 @@ const en_US = {
     preview: 'Data source preview',
     empty_modal: {
       title: 'Please contact the administrator to configure the data source',
-      title_with_types:
-        'Only {{types}} data source types are currently supported. Please contact the administrator to configure the data source',
+      title_with_types: 'Only {{types}} data source types are currently supported. Please contact the administrator to configure the data source',
       btn1: 'Go to configure',
       btn2: 'OK',
     },

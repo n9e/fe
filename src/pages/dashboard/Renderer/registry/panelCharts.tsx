@@ -7,14 +7,19 @@ import TableNG from '../Renderer/TableNG';
 import Text from '../Renderer/Text';
 import Iframe from '../Renderer/Iframe';
 import AiButton from '../Renderer/AiButton';
-import { lazyPanelChart } from './lazyPanelChart';
+import Pie from '../Renderer/Pie';
+import Hexbin from '../Renderer/Hexbin';
+import BarGauge from '../Renderer/BarGauge';
+import Gauge from '../Renderer/Gauge';
+import Heatmap from '../Renderer/Heatmap';
+import BarChart from '../Renderer/BarChart';
 import type { PanelChartAdapter } from './types';
 
 /**
  * 图表适配层：把注册表统一的 PanelChartProps 映射为各渲染器的入参。
  *
- * 常用图表（timeseries / stat / table / tableNG / text / iframe）同步加载，
- * 低频图表通过 lazyPanelChart 按需加载，首次渲染时才拉取对应实现。
+ * 所有图表同步加载，避免显示面板时再请求独立 chunk，因网络或发布版本切换而加载失败。
+ * 编辑器选项面板仍由注册表单独按需加载，不进入查看态的静态依赖。
  */
 
 /** 时序图（NG）：透传注解、时区和时间范围。 */
@@ -66,20 +71,20 @@ export const IframePanel: PanelChartAdapter = (props) => <Iframe values={props.v
 /** AI 按钮面板使用已计算的序列替换提示词中的变量。 */
 export const AiButtonPanel: PanelChartAdapter = (props) => <AiButton values={props.values} series={props.series} themeMode={props.themeMode} />;
 
-/** 饼图，按需加载。 */
-export const PiePanel = lazyPanelChart(() => import('../Renderer/Pie'));
+/** 饼图。 */
+export const PiePanel: PanelChartAdapter = (props) => <Pie {...props} />;
 
-/** 六边形分箱图，按需加载。 */
-export const HexbinPanel = lazyPanelChart(() => import('../Renderer/Hexbin'));
+/** 六边形分箱图。 */
+export const HexbinPanel: PanelChartAdapter = (props) => <Hexbin {...props} />;
 
-/** 柱状仪表盘，按需加载。 */
-export const BarGaugePanel = lazyPanelChart(() => import('../Renderer/BarGauge'));
+/** 柱状仪表盘。 */
+export const BarGaugePanel: PanelChartAdapter = (props) => <BarGauge {...props} />;
 
-/** 仪表盘面板，按需加载。 */
-export const GaugePanel = lazyPanelChart(() => import('../Renderer/Gauge'));
+/** 仪表盘面板。 */
+export const GaugePanel: PanelChartAdapter = (props) => <Gauge {...props} />;
 
-/** 热力图，按需加载。 */
-export const HeatmapPanel = lazyPanelChart(() => import('../Renderer/Heatmap'));
+/** 热力图。 */
+export const HeatmapPanel: PanelChartAdapter = (props) => <Heatmap {...props} />;
 
-/** 柱状图，按需加载。 */
-export const BarChartPanel = lazyPanelChart(() => import('../Renderer/BarChart'));
+/** 柱状图。 */
+export const BarChartPanel: PanelChartAdapter = (props) => <BarChart {...props} />;

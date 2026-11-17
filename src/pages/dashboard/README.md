@@ -40,8 +40,8 @@ src/pages/dashboard/
 │   ├── registry/                    # 图表注册表：类型、渲染器、选项加载器与默认配置
 │   │   ├── panelTypes.ts            # 可视化类型顺序（展示顺序的唯一来源）
 │   │   ├── defaults.ts              # 各类型默认 custom/options 与阈值默认值（纯数据）
-│   │   ├── panelCharts.tsx          # 图表适配层，常用图表同步、低频图表按需加载
-│   │   ├── lazyPanelChart.tsx       # 动态加载占位、失败提示与重试
+│   │   ├── panelCharts.tsx          # 图表适配层，所有图表同步加载
+│   │   ├── lazyComponent.tsx        # 编辑器选项动态加载占位、失败提示与重试
 │   │   ├── PanelErrorBoundary.tsx   # 面板级错误边界
 │   │   └── PanelRenderer.tsx        # 按类型渲染，未知类型给出提示
 │   ├── Renderer/                    # 面板渲染最上层（集成测试挂载点）
@@ -71,7 +71,7 @@ src/pages/dashboard/
 - 组件只能通过 `useGlobalState` / `useDashboardRuntimeStore` 读取当前实例的状态；缺少 Provider 时直接抛错，**不回落**到任何模块级共享状态，也不再导出模块级单例。
 - 弹窗、分享页、独立图表等由独立 React root 挂载的入口，必须显式取得并传入所属实例的 store，不能假定自动继承 Context。
 - 变量执行状态带有会话 ID，用于丢弃已卸载实例的迟到回调；面板查询由 `useQuery` 负责，运行时数据（时间范围、变量、scopedVars）显式取自所属实例。
-- 面板渲染的静态依赖不得进入 `Editor/`：图表注册表用 `loadOptions` 动态加载编辑器选项面板，低频图表按需加载。该边界由 `Renderer/registry/viewEditorBoundary.test.ts` 守护。
+- 面板渲染的静态依赖不得进入 `Editor/`：图表注册表用 `loadOptions` 动态加载编辑器选项面板。所有图表渲染器静态加载，避免显示面板时因独立 chunk 加载失败而无法显示图表。该边界由 `Renderer/registry/viewEditorBoundary.test.ts` 守护。
 
 ## 配置保存流程
 

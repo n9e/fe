@@ -10,6 +10,8 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
+import { IS_PLUS } from '@/utils/constant';
+import { openAuditHistory } from '@/utils/auditLink';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import RefreshIcon from '@/components/RefreshIcon';
@@ -65,7 +67,8 @@ interface Props {
 
 export default function AlertRules(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
-  const { busiGroups, datasourceList, datasourceCateOptions, feats } = useContext(CommonStateContext);
+  const { busiGroups, datasourceList, datasourceCateOptions, feats, perms } = useContext(CommonStateContext);
+  const canViewAudits = IS_PLUS && (perms?.includes('/system/audits') ?? false);
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide, gids, groupSwitchCount } = props;
   const { run: runMutation, pendingIds } = useRowMutation();
   const history = useHistory();
@@ -625,6 +628,17 @@ export default function AlertRules(props: Props) {
                       },
                     },
                   ]) as any,
+                  menu: canViewAudits
+                    ? [
+                        {
+                          key: 'audit',
+                          icon: 'view' as const,
+                          text: t('common:btn.view_operation_history'),
+                          collapsed: true,
+                          onClick: () => openAuditHistory('alert_rule', record.id),
+                        },
+                      ]
+                    : [],
                 };
               }
         }

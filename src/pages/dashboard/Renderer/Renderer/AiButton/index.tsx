@@ -31,7 +31,7 @@ function isAntdButtonType(value: unknown): value is (typeof ANTD_BUTTON_TYPES)[n
 
 export default function AiButton(props: IProps) {
   const { values } = props;
-  const custom = values.custom as unknown as Partial<IAiButtonStyles>;
+  const custom = (values.custom ?? {}) as Partial<IAiButtonStyles>;
   const style = custom.style === 'icon' || custom.style === 'antd' ? custom.style : 'capsule';
   const label = custom.text?.trim() || DEFAULT_LABEL;
   const prompt = replaceTemplateVariables(typeof custom.prompt === 'string' ? custom.prompt : '', {

@@ -16,6 +16,7 @@ interface Props {
   maxNameWidth: number;
   maxValueWidth: number;
   maxBarWidth: number;
+  barHeight?: number;
   namePlacement?: 'top' | 'bottom' | 'left' | 'hidden';
 }
 

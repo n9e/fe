@@ -39,7 +39,7 @@ const series: CalculatedSeries[] = [
   },
 ];
 
-function renderGauge(custom: Record<string, unknown>) {
+function renderGauge(custom: Record<string, unknown>, gaugeSeries = series) {
   const values: IPanel = {
     id: 'bar-gauge',
     name: 'bar gauge',
@@ -61,7 +61,7 @@ function renderGauge(custom: Record<string, unknown>) {
   };
   return render(
     <DashboardRuntimeProvider>
-      <BarGauge values={values} series={series} />
+      <BarGauge values={values} series={gaugeSeries} />
     </DashboardRuntimeProvider>,
   );
 }
@@ -112,6 +112,45 @@ describe('BarGauge display options', () => {
     expect(items).toHaveLength(2);
     expect(items[1]).toHaveTextContent('Other');
     expect(items[1].querySelector('.n9e-renderer-bar-gauge-lcd-item-value')).toHaveStyle({ color: '#00ff00' });
+  });
+
+  describe.each(['basic', 'lcd'])('%s Other item', (displayMode) => {
+    it.each([2, 3])('omits Other when TopN=%i includes every series', (topn) => {
+      const view = renderGauge({ displayMode, topn, combine_other: true, otherPosition: 'bottom' });
+
+      expect(view.queryByText('Other')).not.toBeInTheDocument();
+      expect(view.getByText('cpu')).toBeInTheDocument();
+      expect(view.getByText('mem')).toBeInTheDocument();
+    });
+
+    it('keeps Other when omitted series sum to zero', () => {
+      const view = renderGauge({ displayMode, topn: 1, combine_other: true, otherPosition: 'bottom' }, [
+        ...series,
+        { ...series[0], id: 'C', name: 'disk', metric: { __name__: 'disk' }, data: [[1, -40]] },
+      ]);
+      const other = view.getByText('Other').parentElement;
+
+      expect(other).toHaveTextContent('Other0');
+    });
+  });
+
+  describe.each(['left', 'top', 'hidden'])('LCD manual height with %s names', (namePlacement) => {
+    it.each([20, 40])('renders cells and content at the configured %ipx height', (height) => {
+      const view = renderGauge({ displayMode: 'lcd', orientation: 'horizontal', sizing: 'manual', namePlacement, minVizHeight: height, maxVizHeight: height });
+
+      for (const cell of view.container.querySelectorAll('.n9e-renderer-bar-gauge-lcd-item-cells')) {
+        expect(cell).toHaveStyle({ height: `${height}px` });
+      }
+      for (const content of view.container.querySelectorAll('.n9e-renderer-bar-gauge-lcd-item-content')) {
+        expect(content).toHaveStyle({ height: `${height}px`, minHeight: `${height}px` });
+      }
+    });
+  });
+
+  it('preserves the compact LCD cell height in automatic mode', () => {
+    const view = renderGauge({ displayMode: 'lcd', sizing: 'auto', minVizHeight: 40, maxVizHeight: 40 });
+
+    expect(view.container.querySelector('.n9e-renderer-bar-gauge-lcd-item-cells')).toHaveStyle({ height: '16px' });
   });
 
   it('keeps the LCD value beside the bar when the name is on top', () => {

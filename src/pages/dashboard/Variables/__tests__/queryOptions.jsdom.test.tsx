@@ -30,8 +30,10 @@ jest.mock('react-i18next', () => ({
 }));
 jest.mock('plus:/parcels/Dashboard/variablePlugins', () => jest.requireActual('@/plus/parcels/Dashboard/variablePlugins'), { virtual: true });
 // 只隔离外部查询与无关编辑器；保留真实的 Form、Select、Modal、Table、状态和依赖管理。
+jest.mock('array-move', () => ({ arrayMoveImmutable: (items: unknown[]) => items }));
 jest.mock('../datasource', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('@/components/DatasourceSelect', () => ({ DatasourceSelectV3: () => null }));
+jest.mock('@/services/targets', () => ({ getMonObjectList: jest.fn() }));
 jest.mock('@/components/DocumentDrawer', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('../EditModal/Querybuilder', () => ({
   __esModule: true,
@@ -48,6 +50,7 @@ jest.mock('../Variable/HostIdent', () => () => null);
 jest.mock('../Variable/Textbox', () => () => null);
 
 import Main from '../Main';
+import EditModal from '../EditModal';
 import QueryEditor from '../EditModal/Variable/Query';
 import datasource from '../datasource';
 import { DashboardRuntimeProvider } from '../../globalState';
@@ -594,4 +597,31 @@ test('an empty result produces no default option and no synthetic object string'
   fireEvent.mouseDown(screen.getByRole('combobox'));
   expect(screen.queryByText('[object Object]')).not.toBeInTheDocument();
   expect(document.querySelectorAll('.ant-select-item-option')).toHaveLength(0);
+});
+
+test.each(['query', 'custom'] as const)('%s 同次关闭 All 和 Multi 后保存重开不会恢复 All', async (type) => {
+  const variable = projectVariable({ type, datasource: { cate: 'prometheus', value: 1 }, definition: '10,30', multi: true, allOption: true, allValue: '.*', value: ['30'] });
+  act(() => setGlobalState('variablesWithOptions', [variable]));
+  const onChange = jest.fn();
+  const history = createMemoryHistory({ initialEntries: ['/dashboard'] });
+  render(
+    <ConfigProvider virtual={false}>
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <Router history={history}>
+          <EditModal visible setVisible={jest.fn()} onChange={onChange} />
+        </Router>
+      </DashboardRuntimeProvider>
+    </ConfigProvider>,
+  );
+  fireEvent.click(screen.getByText('project'));
+  const all = await screen.findByRole('switch', { name: 'var.allOption' });
+  expect(all).toHaveAttribute('aria-checked', 'true');
+  fireEvent.click(all);
+  fireEvent.click(screen.getByRole('switch', { name: 'var.multi' }));
+  fireEvent.click(screen.getByRole('button', { name: 'common:btn.save' }));
+  await waitFor(() => expect(onChange).toHaveBeenCalledWith([expect.objectContaining({ multi: false, allOption: false, allValue: '.*' })]));
+  fireEvent.click(screen.getByText('project'));
+  expect(await screen.findByRole('switch', { name: 'var.multi' })).toHaveAttribute('aria-checked', 'false');
+  fireEvent.click(screen.getByRole('switch', { name: 'var.multi' }));
+  expect(await screen.findByRole('switch', { name: 'var.allOption' })).toHaveAttribute('aria-checked', 'false');
 });

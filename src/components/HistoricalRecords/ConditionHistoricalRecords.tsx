@@ -148,9 +148,11 @@ export default function index({ localKey, datasourceValue, renderItem, type = 'b
           {children || t('query.historicalRecords.button')}
         </Button>
       )}
+      {/* A text trigger carries an icon button, which is block-level and shorter than the row: fill the cell it
+          sits in (e.g. the query box's addon) and center it, instead of relying on the cell's line box. */}
       {type === 'text' && (
         <span
-          className='cursor-pointer underline'
+          className='cursor-pointer underline flex h-full items-center'
           onClick={() => {
             setVisible(true);
           }}

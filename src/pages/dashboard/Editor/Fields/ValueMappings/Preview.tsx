@@ -6,7 +6,7 @@ import type { IValueMapping } from '../../../types';
 import { getBuiltinColorCssValue } from '../../../Components/ColorPicker/builtinColors';
 
 interface Props {
-  valueMappings?: IValueMapping[];
+  valueMappings?: IValueMapping[] | null;
   showColor?: boolean;
   editText: string;
   onEdit: () => void;
@@ -29,7 +29,8 @@ export function getValueMappingConditionText(mapping: IValueMapping) {
   return match.special == null ? '-' : String(match.special);
 }
 
-export default function Preview({ valueMappings = [], showColor = false, editText, onEdit }: Props) {
+export default function Preview({ valueMappings: mappings, showColor = false, editText, onEdit }: Props) {
+  const valueMappings = mappings ?? [];
   return (
     <div>
       {valueMappings.map((mapping, index) => {

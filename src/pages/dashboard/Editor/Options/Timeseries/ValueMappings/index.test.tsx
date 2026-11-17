@@ -15,6 +15,10 @@ function ValuesProbe({ form }: { form: ReturnType<typeof Form.useForm>[0] }) {
   return <output data-testid='form-values'>{JSON.stringify(values)}</output>;
 }
 
+function getFormValues() {
+  return JSON.parse(screen.getByTestId('form-values').textContent || '{}');
+}
+
 function renderValueMappings(initialValues: Record<string, unknown>) {
   const formRef: { current?: ReturnType<typeof Form.useForm>[0] } = {};
 
@@ -35,6 +39,15 @@ function renderValueMappings(initialValues: Record<string, unknown>) {
 }
 
 describe('dashboard Timeseries ValueMappings', () => {
+  it('已有文本映射在未打开弹窗时也进入预览和保存', async () => {
+    const valueMappings = [{ type: 'textValue', match: { textValue: 'QA_B' }, result: { text: 'Mapped name' } }];
+    const formRef = renderValueMappings({ options: { valueMappings } });
+    await waitFor(() => {
+      expect(getFormValues()).toMatchObject({ options: { valueMappings } });
+    });
+    expect(await formRef.current?.validateFields()).toMatchObject({ options: { valueMappings } });
+  });
+
   it('新增文本映射后更新主表单', async () => {
     const formRef = renderValueMappings({});
 
@@ -55,6 +68,12 @@ describe('dashboard Timeseries ValueMappings', () => {
         },
       ]);
       expect(screen.getByText('Success')).toBeInTheDocument();
+      expect(getFormValues()).toMatchObject({
+        options: { valueMappings: [{ type: 'textValue', match: { textValue: 'ok' }, result: { text: 'Success' } }] },
+      });
+    });
+    expect(await formRef.current?.validateFields()).toMatchObject({
+      options: { valueMappings: [{ type: 'textValue', match: { textValue: 'ok' }, result: { text: 'Success' } }] },
     });
   });
 
@@ -79,6 +98,7 @@ describe('dashboard Timeseries ValueMappings', () => {
 
     await waitFor(() => {
       expect(formRef.current?.getFieldValue(['options', 'valueMappings'])).toEqual([]);
+      expect(getFormValues()).toMatchObject({ options: { valueMappings: [] } });
     });
   });
 });

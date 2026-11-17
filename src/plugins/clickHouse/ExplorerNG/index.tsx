@@ -20,6 +20,7 @@ import { buildCKFilterFromLogValue } from './utils/queryMode';
 
 import SideBarNav from './SideBarNav';
 import Main from './Main';
+import useCKQueryWorkspace from './useQueryWorkspace';
 
 import './style.less';
 import UsageDocs from '@/components/UsageDocs';
@@ -42,46 +43,63 @@ export default function index(props: Props) {
   const [organizeFields, setOrganizeFields] = useState<string[]>([]);
   const [indexData, setIndexData] = useState<Field[]>([]);
   const [queryWarnModalVisible, setQueryWarnModalVisible] = useState(false);
+  const workspace = useCKQueryWorkspace({ form, datasourceValue, execute: () => submitQuery() });
 
-  const executeQuery = (force = false) => {
-    // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
-    setTimeout(() => {
-      form.validateFields().then((values) => {
-        const queryValues = values.query;
-
-        // 如果是 sql 模式 sql值 里未包含关键字：$__time 或 $__unixEpoch，触发查询时阻断弹窗
-        const sqlValue = queryValues.sql || '';
-        // typeof force === 'boolean' 是为了防止非布尔值传入时报错
-        const hasTimeMacro = /\$__(?:time|date|dt|fromTime|toTime|unixEpoch)/.test(sqlValue);
-        if (typeof force === 'boolean' && !force && queryValues.syntax === 'sql' && !hasTimeMacro) {
-          setQueryWarnModalVisible(true);
-          return;
-        }
-
-        // 设置 tabs 缓存值
-        if (defaultFormValuesControl?.setDefaultFormValues) {
-          defaultFormValuesControl.setDefaultFormValues({
-            datasourceCate: values.datasourceCate,
-            datasourceValue: values.datasourceValue,
-            query: values.query,
-          });
-        }
-
-        // 设置历史记录方法
-        if (queryValues.syntax === 'query') {
-          if (queryValues.database && queryValues.table && queryValues.time_field) {
-            setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
-          }
-        } else if (queryValues.syntax === 'sql') {
-          if (queryValues.sql) {
-            setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.sql);
-          }
-        }
-
-        form.setFieldsValue({
-          refreshFlag: _.uniqueId('refreshFlag_'),
-        });
+  // What a validated query does once it may run: remember it, then refresh.
+  function commitQuery(values) {
+    const queryValues = values.query;
+    // 设置 tabs 缓存值
+    if (defaultFormValuesControl?.setDefaultFormValues) {
+      defaultFormValuesControl.setDefaultFormValues({
+        datasourceCate: values.datasourceCate,
+        datasourceValue: values.datasourceValue,
+        query: values.query,
       });
+    }
+
+    // 设置历史记录方法
+    if (queryValues.syntax === 'query') {
+      if (queryValues.database && queryValues.table && queryValues.time_field) {
+        setLocalQueryHistory(`${NG_QUERY_CACHE_KEY}-${datasourceValue}`, _.pick(queryValues, NG_QUERY_CACHE_PICK_KEYS));
+      }
+    } else if (queryValues.syntax === 'sql') {
+      if (queryValues.sql) {
+        setLocalQueryHistoryUtil(`${NG_SQL_CACHE_KEY}-${datasourceValue}`, queryValues.sql);
+      }
+    }
+
+    form.setFieldsValue({
+      refreshFlag: _.uniqueId('refreshFlag_'),
+    });
+  }
+
+  function submitQuery(force = false): Promise<void> {
+    // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
+    return new Promise<void>((resolve) => setTimeout(resolve, 0)).then(() => {
+      return form.validateFields().then(
+        (values) => {
+          const queryValues = values.query;
+
+          // 如果是 sql 模式 sql值 里未包含关键字：$__time 或 $__unixEpoch，触发查询时阻断弹窗
+          const sqlValue = queryValues.sql || '';
+          // typeof force === 'boolean' 是为了防止非布尔值传入时报错
+          const hasTimeMacro = /\$__(?:time|date|dt|fromTime|toTime|unixEpoch)/.test(sqlValue);
+          if (typeof force === 'boolean' && !force && queryValues.syntax === 'sql' && !hasTimeMacro) {
+            setQueryWarnModalVisible(true);
+            return;
+          }
+          commitQuery(values);
+        },
+        () => undefined,
+      );
+    });
+  }
+
+  const executeQuery = () => {
+    // Form watchers must observe changed query context before the builder starts.
+    setTimeout(() => {
+      if (form.getFieldValue(['query', 'syntax']) === 'sql') void workspace.run();
+      else void submitQuery();
     }, 0);
   };
 
@@ -188,6 +206,13 @@ export default function index(props: Props) {
               handleValueFilter={handleValueFilter}
               stackByField={stackByField}
               setStackByField={handleSetStackByField}
+              onQueryContextChange={() => workspace.enterManual()}
+              onGeneratedSql={() => {
+                // The sidebar wrote a statement from a field statistic: show it in the manual editor and forget
+                // the builder configuration it replaced.
+                workspace.enterManual();
+                workspace.resetBuilder();
+              }}
             />
           </SideBar>
           <div className='min-w-0 flex-1'>
@@ -212,6 +237,7 @@ export default function index(props: Props) {
               handleValueFilter={handleValueFilter}
               stackByField={stackByField}
               setStackByField={handleSetStackByField}
+              workspace={workspace}
             />
           </div>
         </div>
@@ -224,7 +250,7 @@ export default function index(props: Props) {
             key='ok'
             onClick={() => {
               setQueryWarnModalVisible(false);
-              executeQuery(true);
+              void submitQuery(true);
             }}
           >
             {t('query.warn_message_btn_1')}

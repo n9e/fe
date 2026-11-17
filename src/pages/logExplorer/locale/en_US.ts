@@ -1,4 +1,26 @@
 const en_US = {
+  query_workspace: {
+    assist: 'Form assistance',
+    assist_tip: 'Build a query with the form, then convert it to preview or continue editing. Existing queries are not parsed into the form.',
+    enable_assist: 'Enable form assistance first',
+    builder: 'Form builder',
+    preview: '{{language}} preview',
+    convert: 'Convert {{language}}',
+    continue: 'Continue editing this {{language}}',
+    not_generated: 'Not converted',
+    generating: 'Generating',
+    modified: 'Form changed; convert the query',
+    synced: 'Matches the form',
+    empty: 'Configure the form and click “Convert {{language}}” to preview',
+    use_previous: 'Uses the previous conversion. Convert again to use the latest form.',
+    range_required: 'Please select a time range',
+    unlimited: 'Unlimited',
+    build_failed: 'Failed to generate SQL',
+    collapse: 'Collapse',
+    expand: 'Expand',
+  },
+  sql_placeholder: 'Enter SQL',
+  sql_shortcut_hint: 'Shift+Enter newline · Enter query',
   guidance: {
     stack_action_note: 'Note: within the query time range, the selected field must have 2–10 values after deduplication.',
     stack_action: 'Stack the top trend chart by this field’s values.',
@@ -220,7 +242,7 @@ const en_US = {
     sampled_tip: 'Log count is too large, the current clustering result is based on sampled logs',
   },
   log_order_context: {
-    title: 'Context',
+    title: 'Context Viewer',
     earlier: 'Earlier',
     later: 'Later',
     earlier_tip: 'Load {{n}} earlier lines from the same file',
@@ -228,8 +250,10 @@ const en_US = {
     earlier_disabled_tip: 'No earlier logs from this file within the previous hour; widen the time range in search to see older ones',
     later_disabled_tip: 'No later logs from this file within the next hour',
     no_fields_tip:
-      "This log has no __log_stream_id__ or __log_seq__, so its context in original order is unavailable. Collect file logs with a recent Categraf and keep both fields in the log transform's extracted fields",
+      "This log has no __log_stream_id__ or __log_seq__, so it cannot be sorted in file order and context is not available. Collect file logs with Categraf v0.5.45 or later and keep both fields in the log transform's extracted fields",
     no_time_tip: 'This log has no time field {{field}}, so its context cannot be located',
+    table_unsupported_tip:
+      "This table’s sort key does not start with the time field, __log_stream_id__, and __log_seq__. Search results cannot be sorted in file order, and context is not available. Collect file logs with Categraf v0.5.45 or later and keep both fields in the log transform's extracted fields.",
     back_to_anchor: 'Current log',
     raw_layout: 'Raw layout',
     raw_layout_tip: 'Show field values only, without time and field names, in a monospace font that keeps indentation',

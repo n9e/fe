@@ -1,6 +1,4 @@
 const fr_FR = {
-  pagination_requires_order_keys:
-    'La pagination stable nécessite des clés de tri commençant par (champ temporel sélectionné, __log_stream_id__, __log_seq__). Seule la première page est disponible. Réduisez la plage de recherche ou choisissez le champ temporel correspondant.',
   quick_query: 'Requête rapide',
   quick_query_tip:
     "La requête rapide compose une requête à partir d'un modèle SQL figé : pour un champ A supérieur à 0, il suffit de saisir A > 0. Ce bouton fait aussi passer en mode personnalisé, où le SQL se consulte et se modifie",
@@ -39,6 +37,7 @@ const fr_FR = {
     time_field_tip: "<span>Ce sélecteur de période n'agit que si la requête utilise une macro temporelle</span><br/>Utilisation des macros temporelles : <a>en savoir plus</a>",
     query: 'Condition de requête',
     query_required: 'La condition de requête est obligatoire',
+    historical_records: 'Historique',
     advancedSettings: {
       title: 'Réglages complémentaires',
       tags_placeholder: 'Entrée pour en saisir plusieurs',

@@ -17,6 +17,7 @@ import { getOrganizeFieldsFromLocalstorage, setOrganizeFieldsToLocalstorage } fr
 import calcInterval from './utils/calcInterval';
 
 import SideBarNav from './SideBarNav';
+import useESQueryWorkspace from './useQueryWorkspace';
 import Main from './Main';
 
 import './style.less';
@@ -62,50 +63,66 @@ export default function index(props: Props) {
     refreshFlag: undefined,
   });
 
-  const executeQuery = () => {
-    // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
-    setTimeout(() => {
-      form.validateFields().then((values) => {
-        const queryValues = values.query;
+  // What a validated query does once it may run: remember it, then refresh.
+  function commitQuery(values) {
+    const queryValues = values.query;
 
-        // SQL 模式：执行逻辑待后端接口设计完成后实现
-        // SQL 模式：保存缓存和历史记录后触发查询
-        if (queryValues.syntax === 'sql') {
-          if (defaultFormValuesControl?.setDefaultFormValues) {
-            defaultFormValuesControl.setDefaultFormValues({
-              datasourceCate: values.datasourceCate,
-              datasourceValue: values.datasourceValue,
-              query: _.omit(queryValues, 'refreshFlag'),
-            });
-          }
-          setLocalQueryHistory(`${QUERY_CACHE_KEY}-${values.datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
-
-          form.setFieldsValue({ refreshFlag: _.uniqueId('refreshFlag_') });
-          return;
-        }
-
-        if (!intervalFixedRef.current && queryValues.range) {
-          const { start, end } = parseRange(queryValues.range);
-          const newInterval = calcInterval(moment(start), moment(end));
-          setInterval(newInterval);
-        }
-
-        // 设置 tabs 缓存值
-        if (defaultFormValuesControl?.setDefaultFormValues) {
-          defaultFormValuesControl.setDefaultFormValues({
-            datasourceCate: values.datasourceCate,
-            datasourceValue: values.datasourceValue,
-            query: queryValues,
-          });
-        }
-
-        // 设置历史记录方法
-        setLocalQueryHistory(`${QUERY_CACHE_KEY}-${values.datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
-
-        form.setFieldsValue({
-          refreshFlag: _.uniqueId('refreshFlag_'),
+    if (queryValues.syntax === 'sql') {
+      if (defaultFormValuesControl?.setDefaultFormValues) {
+        defaultFormValuesControl.setDefaultFormValues({
+          datasourceCate: values.datasourceCate,
+          datasourceValue: values.datasourceValue,
+          query: _.omit(queryValues, 'refreshFlag'),
         });
+      }
+      setLocalQueryHistory(`${QUERY_CACHE_KEY}-${values.datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
+
+      form.setFieldsValue({ refreshFlag: _.uniqueId('refreshFlag_') });
+      return;
+    }
+
+    if (!intervalFixedRef.current && queryValues.range) {
+      const { start, end } = parseRange(queryValues.range);
+      const newInterval = calcInterval(moment(start), moment(end));
+      setInterval(newInterval);
+    }
+
+    // 设置 tabs 缓存值
+    if (defaultFormValuesControl?.setDefaultFormValues) {
+      defaultFormValuesControl.setDefaultFormValues({
+        datasourceCate: values.datasourceCate,
+        datasourceValue: values.datasourceValue,
+        query: queryValues,
       });
+    }
+
+    // 设置历史记录方法
+    setLocalQueryHistory(`${QUERY_CACHE_KEY}-${values.datasourceValue}`, _.pick(queryValues, QUERY_CACHE_PICK_KEYS));
+
+    form.setFieldsValue({
+      refreshFlag: _.uniqueId('refreshFlag_'),
+    });
+  }
+
+  const workspace = useESQueryWorkspace({ form, datasourceValue, execute: () => submitQuery() });
+
+  function submitQuery(): Promise<void> {
+    // setFieldsValue 是异步执行，但是 validateFields 是同步的，所以用 setTimeout 把 validateFields 放到下一个事件循环中执行
+    return new Promise<void>((resolve) => setTimeout(resolve, 0)).then(() => {
+      return form.validateFields().then(
+        (values) => {
+          commitQuery(values);
+        },
+        () => undefined,
+      );
+    });
+  }
+
+  const executeQuery = () => {
+    // Form watchers must observe changed query context before the builder starts.
+    setTimeout(() => {
+      if (form.getFieldValue(['query', 'syntax']) === 'sql') void workspace.run();
+      else void submitQuery();
     }, 0);
   };
 
@@ -265,6 +282,7 @@ export default function index(props: Props) {
               handleValueFilter={handleValueFilter}
               requestParams={{ from: (serviceParams.current - 1) * serviceParams.pageSize, range: rangeRef.current, limit: serviceParams.pageSize, reverse: serviceParams.reverse }}
               isOpenSearch={isOpenSearch}
+              onQueryContextChange={() => workspace.enterManual()}
             />
           </SideBar>
           <div className='min-w-0 flex-1'>
@@ -302,6 +320,7 @@ export default function index(props: Props) {
               serviceParams={serviceParams}
               setServiceParams={setServiceParams}
               getServiceParams={getServiceParams}
+              workspace={workspace}
             />
           </div>
         </div>

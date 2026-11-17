@@ -40,6 +40,13 @@ const chunk3 = ['react-ace'];
 const chunk1 = ['react', 'react-router-dom', 'react-dom', 'moment', '@ant-design/icons', 'umi-request', 'lodash', 'react-grid-layout', 'd3', 'ahooks', 'color'];
 const antdChunk = ['antd'];
 const excelChunk = ['file-saver', 'exceljs'];
+const chunkGroups: [string, string[]][] = [
+  ['vendor', chunk1],
+  ['vendor1', chunk2],
+  ['vendor2', chunk3],
+  ['antdChunk', antdChunk],
+  ['excelChunk', excelChunk],
+];
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -80,13 +87,15 @@ export default defineConfig(({ mode }) => {
       // 将启动入口的子路径依赖纳入首轮预构建，避免首屏请求时发现依赖并触发二次优化。
       // JSX runtime 已由 @vitejs/plugin-react 默认加入。
       include: ['react-dom/client', 'react-i18next'],
-      esbuildOptions: {
-        define: {
-          // 依赖预构建（esbuild）默认只替换 process.env.NODE_ENV，不会替换其他 process.env.*；
-          // react-draggable@4.7.0 的 log() 引用了 process.env.DRAGGABLE_DEBUG，
-          // 浏览器环境没有 process，会导致拖拽（如 tableNG 面板）时抛 ReferenceError: process is not defined。
-          'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || mode),
-          'process.env.DRAGGABLE_DEBUG': JSON.stringify(false),
+      rolldownOptions: {
+        transform: {
+          define: {
+            // 依赖预构建默认只替换 process.env.NODE_ENV，不会替换其他 process.env.*；
+            // react-draggable@4.7.0 的 log() 引用了 process.env.DRAGGABLE_DEBUG，
+            // 浏览器环境没有 process，会导致拖拽（如 tableNG 面板）时抛 ReferenceError: process is not defined。
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || mode),
+            'process.env.DRAGGABLE_DEBUG': JSON.stringify(false),
+          },
         },
       },
     },
@@ -129,20 +138,25 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      commonjsOptions: {
-        ignoreTryCatch: false, // https://github.com/wbkd/react-flow/issues/1840
-      },
+      // Pin the browser baseline this build has always shipped (Vite 4's default
+      // 'modules' target). Newer Vite defaults stop down-leveling syntax such as
+      // class static blocks, which breaks older browsers.
+      target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14'],
+      cssTarget: ['edge88', 'firefox78', 'chrome87', 'safari14'],
+      // The gzip size table compresses every output chunk just to print it.
+      reportCompressedSize: false,
       outDir: 'pub',
       chunkSizeWarningLimit: 650,
       sourcemap: false,
-      rollupOptions: {
+      rolldownOptions: {
         output: {
-          manualChunks: {
-            vendor: chunk1,
-            vendor1: chunk2,
-            vendor2: chunk3,
-            antdChunk: antdChunk,
-            excelChunk,
+          // Rolldown only accepts the function form.
+          manualChunks: (id: string) => {
+            if (!id.includes('/node_modules/')) return undefined;
+            for (const [name, pkgs] of chunkGroups) {
+              if (pkgs.some((pkg) => id.includes(`/node_modules/${pkg}/`))) return name;
+            }
+            return undefined;
           },
         },
       },

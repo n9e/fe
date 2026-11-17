@@ -1,6 +1,4 @@
 const en_US = {
-  pagination_requires_order_keys:
-    'Stable pagination requires sort keys beginning with (selected time field, __log_stream_id__, __log_seq__). Only the first page is available. Narrow the query range or choose the matching time field.',
   quick_query: 'Quick query',
   quick_query_tip:
     'Quick query: quickly generate query statements from a fixed SQL template. For example, if field A is greater than 0, simply enter A>0. Click this button to switch to custom mode where you can view and modify the SQL statement',
@@ -41,6 +39,7 @@ const en_US = {
     time_field_tip: '<span>To link this time picker, you need to use a time macro in the query condition</span><br/>Introduction to time macro usage: <a>Details</a>',
     query: 'Query',
     query_required: 'Query is required',
+    historical_records: 'Historical records',
     advancedSettings: {
       title: 'Auxiliary settings',
       tags_placeholder: 'Enter multiple tags by pressing Enter',

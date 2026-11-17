@@ -50,16 +50,16 @@ interface Options {
   indexData: Field[];
   /** Send a validated query the way the query button does. */
   commit: (values: Record<string, unknown>) => void;
+  onSqlFill?: () => void;
 }
 
 /**
  * The assistant on the Doris log explorer: the dock, and the control it
  * writes the panel's form through. The panel hands `queryBoxRef`,
- * `queryButtonRef`, `queryRequest` and `onQueryEdit` to its query row, keeps
- * the editor in flow while `open`, and calls `invalidate` whenever the user
- * takes the panel back.
+ * `queryButtonRef`, `queryRequest` and `onQueryEdit` to its query row and
+ * calls `invalidate` whenever the user takes the panel back.
  */
-export function useDorisAiDock({ form, datasourceValue, syntax, indexData, commit }: Options) {
+export function useDorisAiDock({ form, datasourceValue, syntax, indexData, commit, onSqlFill }: Options) {
   const queryBoxRef = useRef<HTMLDivElement>(null);
   const queryButtonRef = useRef<HTMLButtonElement>(null);
   const undoRef = useRef<() => void>();
@@ -77,7 +77,11 @@ export function useDorisAiDock({ form, datasourceValue, syntax, indexData, commi
     }),
     // Rows are the honest view of a statement; the time series view needs
     // value columns the assistant never chose.
-    fillExtras: () => (inSQL() ? { query: { sqlVizType: 'table' } } : undefined),
+    fillExtras: () => {
+      if (!inSQL()) return undefined;
+      onSqlFill?.();
+      return { query: { sqlVizType: 'table' } };
+    },
     guard: (statement, values) => {
       const query = (values.query ?? {}) as { syntax?: string; database?: string; table?: string; time_field?: string };
       // The page refuses to run an unbounded scan; say so instead of popping its modal.
@@ -126,7 +130,6 @@ export function useDorisAiDock({ form, datasourceValue, syntax, indexData, commi
   return {
     trigger: ai.trigger,
     dock: ai.dock,
-    open: ai.open,
     invalidate: control.invalidate,
     onQueryEdit: control.onUserEdit,
     queryRequest: control.queryRequest,

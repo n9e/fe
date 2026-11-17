@@ -51,6 +51,7 @@ const zh_CN = {
     cancel: '取消',
     close: '关闭',
     view: '查看',
+    view_operation_history: '查看操作记录',
     more: '更多操作',
     back: '返回',
     edit: '编辑',

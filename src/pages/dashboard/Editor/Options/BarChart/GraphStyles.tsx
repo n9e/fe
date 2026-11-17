@@ -26,8 +26,6 @@ export default function GraphStyles() {
   const { t } = useTranslation('dashboard');
   const namePrefix = ['custom'];
   const form = Form.useFormInstance();
-  const xAxisField = Form.useWatch([...namePrefix, 'xAxisField']);
-  const yAxisField = Form.useWatch([...namePrefix, 'yAxisField']);
   const [statFields, setStatFields] = useGlobalState('statFields');
   const fieldsOptions = _.map(_.uniq(['Name', ...statFields]), (item) => {
     return {
@@ -43,13 +41,13 @@ export default function GraphStyles() {
   }, []);
 
   useEffect(() => {
-    if (!xAxisField) {
+    if (!form.getFieldValue([...namePrefix, 'xAxisField'])) {
       form.setFields([{ name: [...namePrefix, 'xAxisField'], value: 'Name' }]);
     }
-    if (!yAxisField) {
+    if (!form.getFieldValue([...namePrefix, 'yAxisField'])) {
       form.setFields([{ name: [...namePrefix, 'yAxisField'], value: 'Value' }]);
     }
-  }, [form, xAxisField, yAxisField]);
+  }, [form]);
 
   return (
     <Panel header={t('panel.custom.title')}>

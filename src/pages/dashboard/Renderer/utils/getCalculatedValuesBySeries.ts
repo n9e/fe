@@ -305,17 +305,14 @@ export const getLegendValues = (
   valueMappings?: IValueMapping[],
   overrides?: IOverride[],
 ) => {
-  let { decimals, dateFormat } = standardOptions || {};
-  let unit = standardOptions?.unit;
   const newSeries = stack ? _.reverse(_.clone(series)) : series;
   const values = _.map(newSeries, (serie, idx) => {
     const override = _.find(overrides, (item) => item.matcher?.value === serie.refId);
-    if (override) {
-      const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
-      unit = overrideStandardOptions?.unit;
-      decimals = overrideStandardOptions?.decimals;
-      dateFormat = overrideStandardOptions?.dateFormat;
-    }
+    const overrideStandardOptions = override?.properties?.standardOptions as IStandardOptions | undefined;
+    const unit = overrideStandardOptions?.unit ?? standardOptions?.unit;
+    const decimals = overrideStandardOptions?.decimals ?? standardOptions?.decimals;
+    const dateFormat = overrideStandardOptions?.dateFormat ?? standardOptions?.dateFormat;
+    const displayName = overrideStandardOptions?.displayName || standardOptions?.displayName || serie.name;
     const results = {
       max: getValueAndToNumber(_.maxBy(serie.data, (item) => _.toNumber(item[1]))),
       min: getValueAndToNumber(_.minBy(serie.data, (item) => _.toNumber(item[1]))),
@@ -325,7 +322,7 @@ export const getLegendValues = (
     };
     return {
       id: serie.id,
-      name: getMappedTextObj(serie.name as string, valueMappings)?.text,
+      name: getMappedTextObj(displayName as string, valueMappings)?.text,
       metric: _.reduce(
         serie.metric,
         (pre, curVal, curKey) => {

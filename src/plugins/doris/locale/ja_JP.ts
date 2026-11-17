@@ -1,6 +1,4 @@
 const ja_JP = {
-  pagination_requires_order_keys:
-    '安定したページングには、ソートキーが（選択した時刻フィールド、__log_stream_id__、__log_seq__）で始まる必要があります。最初のページのみ表示します。検索範囲を絞るか、対応する時刻フィールドを選択してください。',
   quick_query: 'クイッククエリ',
   quick_query_tip:
     'クイッククエリ 固定のSQLテンプレートに基づいて、クエリステートメントを迅速に生成します。たとえば、フィールドAが0より大きい場合、A>0と入力するだけです。このボタンをクリックすると、クイックモードに迅速に切り替えて、SQLステートメントを表示および変更できます',
@@ -41,6 +39,7 @@ const ja_JP = {
     time_field_tip: '<span>このタイムピッカーをリンクするには、クエリ条件で時間マクロを使用する必要があります</span><br/>時間マクロの使用方法の紹介: <a>詳細</a>',
     query: 'クエリ',
     query_required: 'クエリは必須です',
+    historical_records: '履歴記録',
     advancedSettings: {
       title: '高度な設定',
       tags_placeholder: '複数入力可能',

@@ -1,115 +1,72 @@
-import React, { useImperativeHandle, forwardRef, useContext } from 'react';
-import { Space, Form, Button, Tooltip } from 'antd';
-import { FilterOutlined } from '@ant-design/icons';
+import React, { useImperativeHandle, forwardRef, useContext, useRef } from 'react';
+import { Form, Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { SqlMonacoEditor } from '@fc-components/monaco-editor';
 import { WandSparkles } from 'lucide-react';
 
 import { CommonStateContext } from '@/App';
-import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import QueryBoxPrefix from '@/components/QueryBoxPrefix';
 import { NAME_SPACE as logExplorerNS } from '@/pages/logExplorer/constants';
 
-import { NAME_SPACE } from '../../../constants';
 import QueryInputAddonAfter from '../../components/QueryInputAddonAfter';
 
 interface Props {
-  snapRangeRef: React.MutableRefObject<{
-    from?: number;
-    to?: number;
-  }>;
   executeQuery: () => void;
-
-  queryBuilderPinned: boolean;
-  queryBuilderVisible: boolean;
-  onLableClick: () => void;
+  onSelectSQL: () => void;
 }
 
-export default forwardRef(function QueryInputCpt(props: Props, ref) {
-  const { t } = useTranslation(NAME_SPACE);
+// The box has a fixed height while the editor lays out to its content, so the workspace body stays at 200px.
+const BOX_HEIGHT_CLASS = 'h-[192px]';
+
+export default forwardRef(function QueryInputCpt({ executeQuery, onSelectSQL }: Props, ref) {
+  const { t } = useTranslation(logExplorerNS);
   const { darkMode } = useContext(CommonStateContext);
+  const syntax = Form.useWatch(['query', 'syntax']);
+  const inputRef = useRef<{ focus: () => void }>();
+  const editorRef = useRef<{ format: () => void }>(null);
 
-  const { snapRangeRef, executeQuery, queryBuilderPinned, queryBuilderVisible, onLableClick } = props;
+  useImperativeHandle(ref, () => ({ focus: () => inputRef.current?.focus() }));
 
-  const [focused, setFocused] = React.useState(false);
-
-  const inputRef = React.useRef<any>(null);
-
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      inputRef.current?.focus();
-    },
-  }));
+  // A click on the blank part of the box lands on the wrapper instead of the editor: hand it the focus.
+  const focusEditor = () => inputRef.current?.focus();
 
   return (
-    <InputGroupWithFormItem
-      className={classNames({
-        'ck-sql-input-container-with-builder': queryBuilderVisible,
-        'ck-sql-input-container-with-builder-unpinned': !queryBuilderPinned && queryBuilderVisible,
-      })}
-      label={
-        <Space
-          className='cursor-pointer'
-          onMouseDown={(e) => {
-            // Prevent outside click handler from firing before label click
-            e.stopPropagation();
-          }}
-          onTouchStart={(e) => {
-            // Prevent outside click handler from firing on touch
-            e.stopPropagation();
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onLableClick();
-          }}
-        >
-          {t(`${logExplorerNS}:query`)}
-          <FilterOutlined />
-        </Space>
-      }
-      addonAfter={<QueryInputAddonAfter executeQuery={executeQuery} />}
-    >
-      <div
-        className={classNames('relative w-full hover:z-10', {
-          'z-10': focused,
-        })}
-      >
-        <div
-          className={classNames('w-full', {
-            absolute: queryBuilderPinned,
-          })}
-        >
-          <Form.Item name={['query', 'sql']} rules={[{ required: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
-            <SqlMonacoEditor
-              className='bg-fc-100 z-0'
-              maxHeight={200}
-              theme={darkMode ? 'dark' : 'light'}
-              enableAutocomplete
-              enableFormat
-              renderFormatButton={() => {
-                return (
-                  <Tooltip title={t('common:format_sql')}>
-                    <Button size='small' type='text' icon={<WandSparkles size={12} strokeWidth={1} />} />
-                  </Tooltip>
-                );
-              }}
-              onEnter={() => {
-                snapRangeRef.current = {
-                  from: undefined,
-                  to: undefined,
-                };
-                executeQuery();
-              }}
-              onFocus={() => {
-                setFocused(true);
-              }}
-              onBlur={() => {
-                setFocused(false);
-              }}
-            />
-          </Form.Item>
+    <div className='relative'>
+      <div className='absolute right-1 top-1 z-10 flex items-center gap-0'>
+        <QueryInputAddonAfter executeQuery={executeQuery} onSelectSQL={onSelectSQL} />
+        <Tooltip title={t('common:format_sql')}>
+          <Button
+            size='small'
+            type='text'
+            className='flex h-6 w-6 items-center justify-center p-0'
+            icon={<WandSparkles size={12} strokeWidth={1} />}
+            onClick={() => editorRef.current?.format()}
+          />
+        </Tooltip>
+      </div>
+      <div className='relative cursor-text' onClick={focusEditor}>
+        <Form.Item name={['query', 'sql']} rules={[{ required: syntax === 'sql', message: t('query_is_required') }]}>
+          <SqlMonacoEditor
+            ref={editorRef}
+            className={classNames(
+              BOX_HEIGHT_CLASS,
+              'bg-fc-100 resize-none border-0 pl-0 pr-16 shadow-none [&::-webkit-scrollbar]:h-[6px] [&::-webkit-scrollbar]:w-[6px] [&::-webkit-scrollbar]:invisible [&::-webkit-scrollbar-thumb]:invisible [&::-webkit-scrollbar-thumb]:rounded-[3px] [&::-webkit-scrollbar-thumb]:bg-[rgba(0,0,0,0.1)] [&:hover::-webkit-scrollbar]:visible [&:hover::-webkit-scrollbar-thumb]:visible [&::-webkit-scrollbar-corner]:bg-transparent',
+            )}
+            placeholder={t('sql_placeholder')}
+            theme={darkMode ? 'dark' : 'light'}
+            enableAutocomplete
+            enableFormat
+            editorDidMount={(editor) => {
+              inputRef.current = editor;
+            }}
+            onEnter={executeQuery}
+          />
+        </Form.Item>
+        <div className={classNames('pointer-events-none absolute inset-x-0 top-0 flex items-end justify-end pr-2 pb-1.5', BOX_HEIGHT_CLASS)}>
+          <span className='bg-fc-100 px-1 text-xs text-soft'>{t('sql_shortcut_hint')}</span>
         </div>
       </div>
-    </InputGroupWithFormItem>
+    </div>
   );
 });

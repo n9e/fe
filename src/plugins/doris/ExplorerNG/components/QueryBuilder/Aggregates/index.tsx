@@ -39,12 +39,13 @@ export default function Aggregates(props: Props) {
             }}
           >
             <Describe
+              title={`${item.func} ${item.field}${item.alias ? ` AS ${item.alias}` : ''}`}
               onClick={(e) => {
                 e.stopPropagation();
                 onChange?.(_.filter(value, (_, i) => i !== index));
               }}
             >
-              <Space className='text-hint'>
+              <div className='flex items-center gap-2 whitespace-nowrap text-hint'>
                 <strong className='text-main bg-fc-200 px-1'>{item.func}</strong>
                 <span>{item.field}</span>
                 {item.alias ? (
@@ -53,7 +54,7 @@ export default function Aggregates(props: Props) {
                     <span>{item.alias}</span>
                   </>
                 ) : null}
-              </Space>
+              </div>
             </Describe>
           </ConfigPopover>
         );

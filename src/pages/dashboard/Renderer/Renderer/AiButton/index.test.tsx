@@ -32,8 +32,8 @@ const SIZE_EXPECTATIONS = {
   large: { buttonClass: 'ant-btn-lg', circleSize: 40, capsuleIconSize: 16 },
 } as const;
 
-function renderButton(custom: IPanel['custom']) {
-  const values = {
+function createPanel(custom: IPanel['custom']): IPanel {
+  return {
     id: 'ai-1',
     name: '',
     description: '',
@@ -44,8 +44,10 @@ function renderButton(custom: IPanel['custom']) {
     custom,
     overrides: [],
   } satisfies IPanel;
+}
 
-  return render(<AiButton values={values} series={[]} />);
+function renderButton(custom: IPanel['custom']) {
+  return render(<AiButton values={createPanel(custom)} series={[]} />);
 }
 
 beforeEach(() => {
@@ -84,6 +86,21 @@ test('uses the default label when button text is empty', () => {
   renderButton({ style: 'capsule', text: '' });
 
   expect(screen.getByRole('button', { name: 'Nightingale AI' })).toBeInTheDocument();
+});
+
+test.each([undefined, null])('renders before editor custom fields register (%s) and applies the restored config', (custom) => {
+  const savedPanel = createPanel({ style: 'antd', text: 'Analyze host', type: 'dashed', size: 'large', prompt: 'check $host cpu', autoExecute: true, reuseConversation: true });
+  // The editor's watched form values can omit custom until the lazy options have registered their fields.
+  const initialPanel = { ...savedPanel, custom } as unknown as IPanel;
+  const { rerender } = render(<AiButton values={initialPanel} series={[]} />);
+
+  expect(screen.getByRole('button', { name: 'Nightingale AI' })).toBeInTheDocument();
+
+  rerender(<AiButton values={savedPanel} series={[]} />);
+  const button = screen.getByRole('button', { name: 'Analyze host' });
+  expect(button).toHaveClass('ant-btn-dashed', 'ant-btn-lg');
+  fireEvent.click(button);
+  expect(mockOpen).toHaveBeenCalledWith('check web-1 cpu', expect.objectContaining({ autoExecute: true, reuseConversation: true }));
 });
 
 test.each(['small', 'middle', 'large'] as const)('applies %s size to every button style', (size) => {

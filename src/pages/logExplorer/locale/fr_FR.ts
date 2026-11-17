@@ -1,4 +1,27 @@
 const fr_FR = {
+  query_workspace: {
+    assist: 'Assistance par formulaire',
+    assist_tip:
+      "Construisez la requête avec le formulaire, puis convertissez-la pour la prévisualiser ou continuer à l'écrire à la main. Les requêtes existantes ne sont pas converties en formulaire.",
+    enable_assist: "Activez d'abord l'assistance par formulaire",
+    builder: 'Construction du formulaire',
+    preview: 'Aperçu {{language}}',
+    convert: 'Convertir en {{language}}',
+    continue: 'Continuer à écrire ce {{language}}',
+    not_generated: 'Non converti',
+    generating: 'Génération',
+    modified: 'Le formulaire a changé ; convertissez la requête',
+    synced: 'Identique au formulaire',
+    empty: "Configurez le formulaire puis cliquez sur « Convertir en {{language}} » pour générer l'aperçu",
+    use_previous: 'Le résultat de la dernière conversion sera utilisé. Pour obtenir le contenu le plus récent, convertissez à nouveau.',
+    range_required: 'Sélectionnez une plage de temps',
+    unlimited: 'Illimité',
+    build_failed: 'Échec de la génération du SQL',
+    collapse: 'Replier',
+    expand: 'Déplier',
+  },
+  sql_placeholder: 'Saisissez du SQL',
+  sql_shortcut_hint: 'Shift+Entrée saut de ligne · Entrée requête',
   title: 'Recherche dans les journaux',
   tab: {
     rename: 'Renommer',
@@ -179,7 +202,7 @@ const fr_FR = {
   },
   view_placeholder: 'Vue des journaux',
   log_order_context: {
-    title: 'Contexte',
+    title: 'Context Viewer',
     earlier: 'Plus anciens',
     later: 'Plus récents',
     earlier_tip: 'Charger {{n}} lignes antérieures du même fichier',
@@ -187,8 +210,10 @@ const fr_FR = {
     earlier_disabled_tip: "Aucun journal antérieur de ce fichier dans l'heure précédente ; élargissez la plage horaire dans la recherche pour en voir plus",
     later_disabled_tip: "Aucun journal plus récent de ce fichier dans l'heure suivante",
     no_fields_tip:
-      'Ce journal n’a ni __log_stream_id__ ni __log_seq__ : son contexte dans l’ordre d’origine n’est pas disponible. Collectez les journaux de fichiers avec un Categraf récent et conservez ces deux champs dans les champs extraits de la transformation',
+      'Ce journal n’a ni __log_stream_id__ ni __log_seq__ : il ne peut pas être trié dans l’ordre du fichier et le contexte n’est pas disponible. Collectez les journaux de fichiers avec Categraf v0.5.45 ou ultérieur et conservez ces deux champs dans les champs extraits de la transformation',
     no_time_tip: 'Ce journal n’a pas de champ horaire {{field}} : son contexte ne peut pas être localisé',
+    table_unsupported_tip:
+      'La clé de tri de cette table ne commence pas par le champ horaire, __log_stream_id__ et __log_seq__. Les résultats ne peuvent pas être triés dans l’ordre du fichier, et le contexte n’est pas disponible. Collectez les journaux de fichiers avec Categraf v0.5.45 ou ultérieur et conservez ces deux champs dans les champs extraits de la transformation.',
     back_to_anchor: 'Log actuel',
     raw_layout: 'Mise en page brute',
     raw_layout_tip: "Affiche uniquement les valeurs, sans heure ni noms de champ, en police à chasse fixe qui conserve l'indentation",
