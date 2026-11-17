@@ -36,7 +36,7 @@ jest.mock('rc-picker', () => ({
     mockPanel = props;
     return (
       <>
-        <button onClick={() => props.onChange(moment('2026-11-12 09:30'))}>pick date</button>
+        <button onClick={() => (props.onSelect || props.onChange)(moment('2026-11-12 09:30'))}>pick date</button>
         {props.renderExtraFooter?.()}
       </>
     );
@@ -49,11 +49,13 @@ function Fixture({
   inline = false,
   disabled = false,
   collapsible = false,
+  validationMessage,
 }: {
   bounds?: { start: number; end: number };
   inline?: boolean;
   disabled?: boolean;
   collapsible?: boolean;
+  validationMessage?: string;
 }) {
   const [range, setRange] = useState<IRawTimeRange>(initial);
   const [panelVisible, setPanelVisible] = useState(false);
@@ -72,6 +74,7 @@ function Fixture({
         setRangeStatus={setRangeStatus}
         dateFormat='YYYY-MM-DD HH:mm'
         bounds={bounds}
+        validationMessage={validationMessage}
         confirmText={bounds ? 'Done' : undefined}
       />
       <output data-testid='range'>
@@ -148,4 +151,21 @@ test('collapsible inline calendar keeps the input and draft when toggled', () =>
   expect(screen.getByRole('textbox', { name: 'start' })).toHaveValue('2026-11-12 09:30');
   fireEvent.click(toggle);
   expect(mockPanel.value.format('YYYY-MM-DD HH:mm')).toBe('2026-11-12 09:30');
+});
+
+test('choosing a boundary day clamps inherited hours and minutes to the selectable range', () => {
+  const earliest = moment('2026-11-12 10:20');
+  render(<Fixture inline bounds={{ start: earliest.unix(), end: initial.end.unix() }} />);
+  fireEvent.click(screen.getByRole('button', { name: 'pick date' }));
+  expect(screen.getByTestId('range').textContent).toBe('2026-11-12 10:20|2026-11-13 16:22');
+  expect(mockPanel.value.format('YYYY-MM-DD HH:mm')).toBe('2026-11-12 10:20');
+  expect(mockPanel.disabledTime(earliest).disabledMinutes(10)).toContain(19);
+  expect(mockPanel.disabledTime(earliest).disabledMinutes(10)).not.toContain(20);
+});
+
+test('caller validation highlights the input and presents the exact reason without changing the draft', () => {
+  render(<Fixture inline validationMessage='最早可选时间为：2026-11-12 10:20' bounds={{ start: initial.start.unix(), end: initial.end.unix() }} />);
+  expect(screen.getByRole('textbox', { name: 'start' })).toHaveAttribute('aria-invalid', 'true');
+  expect(screen.getByRole('alert')).toHaveTextContent('最早可选时间为：2026-11-12 10:20');
+  expect(screen.getByTestId('range').textContent).toBe('2026-11-11 16:26|2026-11-13 16:22');
 });
