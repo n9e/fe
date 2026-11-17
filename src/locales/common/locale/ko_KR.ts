@@ -51,6 +51,7 @@ const ko_KR = {
     "cancel": "취소",
     "close": "닫기",
     "view": "보기",
+    "view_operation_history": "작업 기록 보기",
     "more": "추가 작업",
     "back": "뒤로",
     "edit": "수정",

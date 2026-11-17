@@ -51,6 +51,7 @@ const fr_FR = {
     "cancel": "Annuler",
     "close": "Fermer",
     "view": "Consulter",
+    "view_operation_history": "Voir l\'historique des opérations",
     "more": "Autres actions",
     "back": "Retour",
     "edit": "Modifier",

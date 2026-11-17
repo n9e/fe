@@ -51,6 +51,7 @@ const pt_BR = {
     "cancel": "Cancelar",
     "close": "Fechar",
     "view": "Ver",
+    "view_operation_history": "Ver histórico de operações",
     "more": "Mais ações",
     "back": "Voltar",
     "edit": "Editar",

@@ -51,6 +51,7 @@ const id_ID = {
     "cancel": "Batal",
     "close": "Tutup",
     "view": "Lihat",
+    "view_operation_history": "Lihat riwayat operasi",
     "more": "Tindakan lainnya",
     "back": "Kembali",
     "edit": "Ubah",

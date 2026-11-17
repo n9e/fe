@@ -51,6 +51,7 @@ const es_ES = {
     "cancel": "Cancelar",
     "close": "Cerrar",
     "view": "Ver",
+    "view_operation_history": "Ver historial de operaciones",
     "more": "Más acciones",
     "back": "Volver",
     "edit": "Editar",
