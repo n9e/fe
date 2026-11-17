@@ -40,6 +40,8 @@ interface IProps {
   type?: number; // 空: 新增 1:编辑 2:克隆 3:查看
   initialValues?: any;
   editable?: boolean;
+  lockDatasourceType?: boolean;
+  onCancel?: () => void;
 }
 
 export const FormStateContext = createContext({
@@ -72,7 +74,7 @@ function AdvancedSettingsSection(props: {
 }
 
 export default function FormNG(props: IProps) {
-  const { type, initialValues, editable = true } = props;
+  const { type, initialValues, editable = true, lockDatasourceType = false, onCancel } = props;
   const history = useHistory();
   const location = useLocation();
   const { bgid } = useParams<{ bgid: string }>();
@@ -486,7 +488,7 @@ export default function FormNG(props: IProps) {
                   <Form.Item label={t('form_ng.cate')} name='cate' rules={[{ required: true }]}>
                     <DataSourceTypeList
                       types={alertDatasourceTypes}
-                      disabled={disabled}
+                      disabled={disabled || lockDatasourceType}
                       showLabel={false}
                       onChange={(val) => {
                         const record = _.find(alertDatasourceCates, { value: val });
@@ -615,9 +617,13 @@ export default function FormNG(props: IProps) {
                         {t('common:btn.save')}
                       </Button>
                       <TestFireModal bgid={initialValues?.group_id || Number(bgid)} buttonDisabled={editable === false} />
-                      <Link to={{ pathname: '/alert-rules', search: `?page=${getPageFromSearch(location.search)}` }}>
-                        <Button>{t('common:btn.cancel')}</Button>
-                      </Link>
+                      {onCancel ? (
+                        <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
+                      ) : (
+                        <Link to={{ pathname: '/alert-rules', search: `?page=${getPageFromSearch(location.search)}` }}>
+                          <Button>{t('common:btn.cancel')}</Button>
+                        </Link>
+                      )}
                     </Space>
                   )}
                 </Card>
