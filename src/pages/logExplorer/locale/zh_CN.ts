@@ -1,5 +1,7 @@
 const zh_CN = {
   query_workspace: {
+    default_rows: '默认 {{count}} 条',
+    default_groups: '默认 {{count}} 个分组',
     assist: '表单辅助',
     assist_tip: '通过表单构建查询，转换后可预览或继续手写。已有查询语句不会反向解析为表单。',
     enable_assist: '请先开启表单辅助',
