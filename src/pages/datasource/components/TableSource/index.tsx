@@ -249,6 +249,8 @@ const TableSource = (props: IPropsType) => {
           return item;
         })}
         columns={defaultColumns}
+        // Width-less columns (name, cluster) count as 200px; plus the action column so they never collapse.
+        scroll={{ x: defaultColumns.reduce((sum, column) => sum + (Number(column.width) || 200), 160) }}
         loading={loading}
         pagination={pagination}
         rowActions={(record) => {
