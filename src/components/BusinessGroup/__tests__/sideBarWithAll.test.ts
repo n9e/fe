@@ -75,6 +75,13 @@ describe('getDefaultGids', () => {
     expect(result).toBe('-2');
   });
 
+  it('业务组缺失时使用页面记忆或全部', () => {
+    expect(getDefaultGids(localeKey, undefined)).toBe('-2');
+    localStorage.setItem(localeKey, '42');
+    expect(getDefaultGids(localeKey, null)).toBe('42');
+    expect(getDefaultGids(localeKey, undefined, '123')).toBe('123');
+  });
+
   it('当前业务组优先级高于 localStorage', () => {
     localStorage.setItem(localeKey, '0');
     const result = getDefaultGids(localeKey, businessGroup);
@@ -158,6 +165,12 @@ describe('getDefaultGidsInDashboard', () => {
   it('全部回退都无值时返回 -1', () => {
     const result = getDefaultGidsInDashboard({}, localeKey, {});
     expect(result).toBe('-1');
+  });
+
+  it('业务组缺失时使用页面记忆或公开', () => {
+    expect(getDefaultGidsInDashboard({}, localeKey, undefined)).toBe('-1');
+    localStorage.setItem(localeKey, '-2');
+    expect(getDefaultGidsInDashboard({}, localeKey, null)).toBe('-2');
   });
 
   it('URL 有 preset-filter=public 时忽略 localStorage 返回 -1', () => {

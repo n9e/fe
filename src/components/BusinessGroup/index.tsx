@@ -106,7 +106,7 @@ const BUSINESS_GROUP_SEARCH_KEY = 'businessGroupSearchValue';
 
 const BusinessGroup = forwardRef((props: IProps, ref) => {
   const { t } = useTranslation('BusinessGroup');
-  const { businessGroup, businessGroupOnChange } = useContext(CommonStateContext);
+  const { businessGroup = {}, businessGroupOnChange } = useContext(CommonStateContext);
   const location = useLocation();
   const query = queryString.parse(location.search);
   const history = useHistory();
