@@ -19,7 +19,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import semver from 'semver';
 import { useTranslation } from 'react-i18next';
-import { useDeepCompareEffect, useInterval, useKeyPress } from 'ahooks';
+import { useDeepCompareEffect, useInterval, useKeyPress, useLatest } from 'ahooks';
 import { v4 as uuidv4 } from 'uuid';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
 import { useBeforeunload } from 'react-beforeunload';
@@ -87,6 +87,8 @@ interface IProps {
   /** 在详情页右上角操作区最左侧插入调用方专属操作。 */
   headerLeadingActions?: React.ReactNode;
   onLoaded?: (dashboard: Dashboard['configs']) => boolean;
+  /** 为嵌入实例补充初始变量值，显式 URL 参数优先。 */
+  getInitialVariableValues?: (variables: IVariable[]) => Record<string, string>;
   /** 向调用方通知当前实例的变量值和选项，不参与变量持久化。 */
   onVariablesChange?: (variables: IVariable[]) => void;
   hideGoBack?: boolean;
@@ -196,6 +198,7 @@ function DetailContent(props: IProps) {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string>();
   const loadRequestRef = useRef(0);
+  const initialVariableValuesRef = useLatest(props.getInitialVariableValues);
   const [range, setRange] = useState<IRawTimeRange>(
     getDefaultTimeRange(id as string, query as Record<string, string | string[] | null | undefined>, dashboardDefaultRangeIndex as number | undefined, !embedded),
   );
@@ -276,7 +279,9 @@ function DetailContent(props: IProps) {
           const currentVariables = _.map(variableConfig.var, (item) => {
             return _.omit(item, 'options'); // 兼容性代码，去除掉已保存的 options
           }) as IVariable[];
-          const normalizedVariables = initializeVariablesValue(currentVariables, query, {
+          const getInitialVariableValues = initialVariableValuesRef.current;
+          const initialValues = embedded && getInitialVariableValues ? { ...getInitialVariableValues(currentVariables), ...query } : query;
+          const normalizedVariables = initializeVariablesValue(currentVariables, initialValues, {
             dashboardId,
             persistState: !embedded,
           });
