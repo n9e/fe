@@ -1,4 +1,27 @@
+/** @jest-environment jsdom */
+import type uPlot from 'uplot';
+import tooltipPlugin from './tooltipPlugin';
 import { shouldShowSeriesInTooltip } from './tooltipFilter';
+
+jest.mock('../index', () => ({ uplotsMap: new Map() }));
+
+it.each([true, false])('mounts the tooltip in the chart container layer when inside a drawer (%s)', (insideDrawer) => {
+  const container = document.createElement('div');
+  if (insideDrawer) container.className = 'ant-drawer';
+  document.body.appendChild(container);
+  const root = container.appendChild(document.createElement('div'));
+  const over = root.appendChild(document.createElement('div'));
+  const plugin = tooltipPlugin({ id: 'chart', mode: 'all', sort: 'none' });
+
+  try {
+    plugin.hooks.init({ root, over } as uPlot);
+    expect(document.getElementById('chart-tooltip')?.parentElement).toBe(insideDrawer ? container : document.body);
+  } finally {
+    plugin.hooks.destroy();
+    container.remove();
+  }
+  expect(document.getElementById('chart-tooltip')).toBeNull();
+});
 
 describe('tooltipPlugin 过滤逻辑 (shouldShowSeriesInTooltip)', () => {
   describe('主数据数组过滤 (无 n9e_internal.values)', () => {

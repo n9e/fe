@@ -12,7 +12,7 @@ const ru_RU = {
   time: 'Время',
   unit: 'Единица',
   enable_autocomplete: 'Включить автодополнение',
-  evaluation_time: 'Выберите время',
+  evaluation_time: 'Текущее время',
   tooltip_mode: 'Режим подсказки',
   tooltip_mode_single: 'Одна',
   tooltip_mode_all: 'Все',
