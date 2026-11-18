@@ -424,6 +424,7 @@ export default function index(props: IProps) {
               setQueryStats={setQueryStats}
               setErrorContent={setErrorContent}
               timestamp={timestamp}
+              showCurrentTime={!resultsOnly}
               setTimestamp={(next) => {
                 invalidate();
                 updateTimestamp(next);

@@ -27,6 +27,7 @@ interface IProps {
   setErrorContent: (content: string) => void;
   contentMaxHeight?: number;
   timestamp?: number;
+  showCurrentTime?: boolean;
   setTimestamp: (timestamp?: number) => void;
   refreshFlag?: string;
   loading: boolean;
@@ -123,6 +124,7 @@ export default function Table(props: IProps) {
     setErrorContent,
     contentMaxHeight,
     timestamp,
+    showCurrentTime = true,
     setTimestamp,
     refreshFlag,
     loading,
@@ -146,6 +148,7 @@ export default function Table(props: IProps) {
     result: [],
   });
   const [evaluationTime, setEvaluationTime] = useState(() => timestamp ?? moment().unix());
+  const displayedTimestamp = timestamp ?? (showCurrentTime ? evaluationTime : undefined);
   const [unit, setUnit] = useState(defaultUnit || 'sishort');
   const [internalSeriesFilterText, setInternalSeriesFilterText] = useState('');
   const [seriesFilterVisible, setSeriesFilterVisible] = useState(false);
@@ -161,7 +164,7 @@ export default function Table(props: IProps) {
     <Space>
       <InputGroupWithFormItem label={t('promGraphCpt:time')}>
         <TimePointPicker
-          value={moment.unix(timestamp ?? evaluationTime)}
+          value={displayedTimestamp === undefined ? undefined : moment.unix(displayedTimestamp)}
           allowClear={timestamp !== undefined}
           onChange={(val) => {
             setTimestamp(val ? val.unix() : undefined);
