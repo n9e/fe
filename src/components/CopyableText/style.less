@@ -1,0 +1,115 @@
+.fc-copyable-text {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  min-width: 0;
+  max-width: 100%;
+  gap: 4px;
+
+  > .fc-copyable-text__content {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    > a,
+    > button {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  > .fc-copyable-text__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    color: var(--fc-text-3);
+    background: transparent;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, color 0.15s ease;
+    &:hover {
+      color: var(--fc-text-link);
+      background: var(--fc-fill-3);
+    }
+    &:focus-visible {
+      outline: 2px solid var(--fc-primary-color);
+      outline-offset: -2px;
+    }
+  }
+
+  &:hover > .fc-copyable-text__button,
+  &:focus-within > .fc-copyable-text__button,
+  > .fc-copyable-text__button--feedback {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &.fc-copyable-text--overlay {
+    position: relative;
+    gap: 0;
+    > .fc-copyable-text__button {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      background: var(--fc-fill-3);
+    }
+  }
+
+  &.fc-copyable-text--wrap {
+    align-items: flex-start;
+    > .fc-copyable-text__content {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+}
+
+.fc-copyable-tag {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: bottom;
+  > .fc-copyable-text--overlay {
+    > .fc-copyable-text__button {
+      right: -6px;
+      width: 24px;
+      height: 20px;
+      border-radius: 0 4px 4px 0;
+      background: var(--fc-copy-tag-background, var(--fc-fill-3));
+    }
+  }
+  &:hover > .fc-copyable-text > .fc-copyable-text__button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .fc-copyable-text > .fc-copyable-text__button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.ant-tooltip.fc-copyable-text-tooltip {
+  max-width: min(560px, calc(100vw - 32px));
+  .ant-tooltip-inner {
+    max-height: 320px;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}

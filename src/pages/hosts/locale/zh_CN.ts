@@ -1,4 +1,5 @@
 const zh_CN = {
+  ident_meta_tip: '点击标识查看机器元信息',
   title: '机器列表',
   default_filter: '预置筛选',
   ungrouped_targets: '未归组机器',
