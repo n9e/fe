@@ -27,10 +27,6 @@ export default function dotPathSpaFallback(): Plugin {
         }
         const rawUrl = req.url || '';
         const [pathname, search] = rawUrl.split('?');
-        // 只回退页面导航；缺失的脚本等资源应保留原请求，不能作为 HTML 交给模块解析。
-        if (req.method !== 'GET' || !req.headers.accept?.includes('text/html')) {
-          return next();
-        }
         // 不带点号、或属于 Vite 内部请求（/@fs/ /@vite/ 等）直接放行
         if (!pathname.includes('.') || pathname.startsWith('/@')) {
           return next();
