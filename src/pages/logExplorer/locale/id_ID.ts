@@ -1,5 +1,7 @@
 const id_ID = {
   query_workspace: {
+    default_rows: 'Bawaan: {{count}} baris',
+    default_groups: 'Bawaan: {{count}} grup',
     assist: 'Bantuan formulir',
     assist_tip: 'Susun kueri dengan formulir, lalu konversi untuk pratinjau atau lanjutkan menulis manual. Kueri yang sudah ada tidak diurai kembali ke formulir.',
     enable_assist: 'Aktifkan bantuan formulir terlebih dahulu',
