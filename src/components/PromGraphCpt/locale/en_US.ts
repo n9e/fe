@@ -12,7 +12,7 @@ const en_US = {
   time: 'Time',
   unit: 'Unit',
   enable_autocomplete: 'Enable autocomplete',
-  evaluation_time: 'Evaluation time',
+  evaluation_time: 'Current time',
   tooltip_mode: 'Tooltip mode',
   tooltip_mode_single: 'Single',
   tooltip_mode_all: 'All',
