@@ -1,4 +1,5 @@
 const ja_JP = {
+  ident_meta_tip: '識別子をクリックするとホストのメタ情報を表示します',
   title: 'ホスト一覧',
   default_filter: 'プリセットフィルター',
   ungrouped_targets: '未グループ化ホスト',

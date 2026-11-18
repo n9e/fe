@@ -1,3 +1,4 @@
+import CopyableText from '@/components/CopyableText';
 import React, { useContext, useEffect, useState } from 'react';
 import { Alert, Drawer, Tabs, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -53,8 +54,8 @@ function bytesToSize(bytes, precision) {
 }
 
 function RenderInterfaces({ value }) {
-  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('targets');
+  const { darkMode } = useContext(CommonStateContext);
   const [expand, setExpand] = useState(false);
 
   return (
@@ -84,16 +85,9 @@ function RenderInterfaces({ value }) {
                   <div key={k} className='target-information-interface-item'>
                     <div className='target-information-interface-item-key'>{k}</div>
                     <div className='target-information-interface-item-value'>
-                      <Tooltip title={t('meta_value_click_to_copy')} placement='right'>
-                        <Tag
-                          color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
-                          onClick={() => {
-                            copyToClipBoard(v);
-                          }}
-                        >
-                          {v}
-                        </Tag>
-                      </Tooltip>
+                      <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>
+                        <CopyableText value={typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' ? v : undefined} wrap />
+                      </Tag>
                     </div>
                   </div>
                 );
@@ -113,11 +107,13 @@ function RenderFilesystem({ value }) {
         return (
           <div key={index} className='target-information-filesystem'>
             <div key={index} className='target-information-filesystem-name'>
-              {item.name}
+              <CopyableText value={item.name} />
             </div>
             <div className='target-information-filesystem-mounted_on'>mounted on</div>
             <div className='target-information-filesystem-mounted_on-value'>
-              <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>{item.mounted_on}</Tag>
+              <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>
+                <CopyableText value={item.mounted_on} />
+              </Tag>
             </div>
             <div className='target-information-filesystem-kb_size'>{bytesToSize(item.kb_size * 1024, 2)}</div>
           </div>
@@ -128,9 +124,9 @@ function RenderFilesystem({ value }) {
 }
 
 function Group({ name, data }) {
+  const { darkMode } = useContext(CommonStateContext);
   const { t } = useTranslation('targets');
   const [expand, setExpand] = useState(true);
-  const { darkMode } = useContext(CommonStateContext);
 
   return (
     <div key={name} className='target-information-group'>
@@ -170,18 +166,13 @@ function Group({ name, data }) {
               return (
                 <div key={key} className='target-information-group-content-item'>
                   <div className='target-information-group-content-item-key'>{key}</div>
-                  {_.isString(value) && (
+                  {(typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') && (
                     <div className='target-information-group-content-item-value'>
-                      <Tooltip title={t('meta_value_click_to_copy')} placement='right'>
-                        <Tag
-                          color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}
-                          onClick={() => {
-                            copyToClipBoard(value);
-                          }}
-                        >
-                          {val}
-                        </Tag>
-                      </Tooltip>
+                      <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>
+                        <CopyableText value={value} wrap>
+                          {String(val)}
+                        </CopyableText>
+                      </Tag>
                     </div>
                   )}
                   {_.isArray(value) && key === 'interfaces' && <RenderInterfaces value={value} />}
@@ -265,7 +256,19 @@ export default function TargetMetaDrawer(props: IProps) {
           {targetNode ? <span onClick={handleTriggerClick}>{targetNode}</span> : <a onClick={handleTriggerClick}>{ident}</a>}
         </Tooltip>
       )}
-      <Drawer destroyOnClose title={t('meta_title')} width={800} placement='right' onClose={handleClose} visible={drawerVisible} className='n9e-antd-drawer'>
+      <Drawer
+        destroyOnClose
+        title={
+          <span className='target-information-drawer__title'>
+            <span>{t('meta_title')} ·</span> <CopyableText value={ident} />
+          </span>
+        }
+        width={800}
+        placement='right'
+        onClose={handleClose}
+        visible={drawerVisible}
+        className='n9e-antd-drawer target-information-drawer'
+      >
         {extraActions && <div className='mb-3 flex flex-wrap items-center gap-3'>{extraActions}</div>}
         {/* 没有额外页签时不套 Tabs：抽屉要和过去长得一模一样，开源构建下
             plus 的页签解析成空，走的就是这条分支。

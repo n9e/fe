@@ -1,3 +1,4 @@
+import { CopyableTag } from '@/components/CopyableText';
 import React, { useRef, useState, useLayoutEffect } from 'react';
 import { Button, Popover } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
@@ -13,6 +14,7 @@ interface Props {
   fontColor?: string; // 字体颜色，仅在 type 为 'fill' 时生效
   data: string[];
   onTagClick?: (tag: string) => void;
+  copyable?: boolean;
 }
 
 const GAP = 2;
@@ -154,13 +156,13 @@ export default function Tags(props: Props) {
             key={i}
             className={visibleTagClass}
             style={fillStyle}
-            title={tag}
+            title={props.copyable ? undefined : tag}
             onClick={(e) => {
               e.stopPropagation();
               onTagClick?.(tag);
             }}
           >
-            {tag}
+            {props.copyable ? <CopyableTag text={tag} style={{ '--fc-copy-tag-background': type === 'fill' ? bgColor : 'var(--fc-fill-2)' } as React.CSSProperties} /> : tag}
           </span>
         ))}
         {overflowCount > 0 && (
@@ -189,7 +191,11 @@ export default function Tags(props: Props) {
                         onTagClick?.(tag);
                       }}
                     >
-                      {tag}
+                      {props.copyable ? (
+                        <CopyableTag text={tag} style={{ '--fc-copy-tag-background': type === 'fill' ? bgColor : 'var(--fc-fill-2)' } as React.CSSProperties} />
+                      ) : (
+                        tag
+                      )}
                     </div>
                   </div>
                 ))}

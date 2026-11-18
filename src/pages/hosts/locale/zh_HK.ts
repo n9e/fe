@@ -1,4 +1,5 @@
 const zh_HK = {
+  ident_meta_tip: '點擊標識查看機器元資訊',
   title: '機器列表',
   default_filter: '預置篩選',
   ungrouped_targets: '未分組機器',

@@ -1,0 +1,91 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Tooltip, message } from 'antd';
+import { CheckOutlined, CopyOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
+import { writeClipboard } from './clipboard';
+import './style.less';
+
+export interface CopyableTextProps {
+  value: string | number | boolean | null | undefined;
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  wrap?: boolean;
+  overlay?: boolean;
+  placeholder?: React.ReactNode;
+}
+
+export default function CopyableText({ value, children, className, style, wrap, overlay, placeholder = '—' }: CopyableTextProps) {
+  const { t } = useTranslation('resourceCopy');
+  const raw = value == null || String(value).trim() === '' ? undefined : String(value);
+  const [status, setStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const sequence = useRef(0);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => {
+    setStatus('idle');
+    return () => {
+      sequence.current += 1;
+      clearTimeout(timer.current);
+    };
+  }, [raw]);
+
+  const copy = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (raw === undefined || status === 'pending') return;
+    const current = ++sequence.current;
+    clearTimeout(timer.current);
+    setStatus('pending');
+    try {
+      await writeClipboard(raw, event.currentTarget);
+      if (current !== sequence.current) return;
+      setStatus('success');
+      timer.current = setTimeout(() => setStatus('idle'), 1800);
+    } catch {
+      if (current !== sequence.current) return;
+      setStatus('error');
+      message.error(t('failed'));
+    }
+  };
+
+  if (raw === undefined)
+    return (
+      <span className={className} style={style}>
+        {placeholder}
+      </span>
+    );
+  const tip = t(status === 'success' ? 'copied' : status === 'error' ? 'retry' : 'copy');
+  return (
+    <span className={classNames('fc-copyable-text', className, { 'fc-copyable-text--wrap': wrap, 'fc-copyable-text--overlay': overlay })} style={style}>
+      <Tooltip title={raw} mouseEnterDelay={0.4} overlayClassName='fc-copyable-text-tooltip'>
+        <span className='fc-copyable-text__content'>{children ?? raw}</span>
+      </Tooltip>
+      <Tooltip title={tip}>
+        <button
+          type='button'
+          className={classNames('fc-copyable-text__button', { 'fc-copyable-text__button--feedback': status === 'success' || status === 'error' })}
+          aria-label={`${tip}: ${raw}`}
+          aria-busy={status === 'pending'}
+          onClick={copy}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
+          }}
+        >
+          {status === 'success' ? <CheckOutlined /> : status === 'error' ? <ExclamationCircleOutlined /> : <CopyOutlined />}
+        </button>
+      </Tooltip>
+    </span>
+  );
+}
+
+/** The host tag owns its background/padding; the button only covers the value's tail. */
+export function CopyableTag({ text, copyValue = text, style }: { text: string; copyValue?: string; style?: React.CSSProperties }) {
+  return (
+    <span className='fc-copyable-tag' style={style}>
+      <CopyableText value={copyValue} overlay>
+        {text}
+      </CopyableText>
+    </span>
+  );
+}
