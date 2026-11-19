@@ -328,7 +328,7 @@ export default function index() {
         icon={<SettingOutlined />}
         doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/metrics/metrics-built-in/'
       >
-        <div className='built-in-metrics-container'>
+        <div className='built-in-metrics-container fc-retained-layout'>
           <Collapse
             collapseLocalStorageKey='built-in-metrics-filters-collapse'
             widthLocalStorageKey='built-in-metrics-filters-width'

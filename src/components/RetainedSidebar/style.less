@@ -1,9 +1,6 @@
-// Outrank global !important flex utilities regardless of production CSS chunk order.
-// The doubled class raises specificity without an attribute selector: `[class]`
-// inside a subject-less :has() makes every class change on the page restyle the
-// whole document.
-// Explicit rows keep collapsed headings above the full-width results.
-:has(> .fc-retained-sidebar.fc-retained-sidebar) {
+// The explicit layout host keeps state matching local and preserves the specificity
+// needed to outrank !important flex utilities regardless of CSS chunk order.
+.fc-retained-layout:has(> .fc-retained-sidebar) {
   --fc-retained-content-row: 1;
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr);
@@ -16,12 +13,13 @@
     grid-template-columns: auto auto minmax(0, 1fr);
   }
   &:has(> .fc-retained-sidebar--collapsed) {
-    --fc-retained-content-row: 2;
-    grid-template-rows: 40px minmax(0, 1fr);
+    // Reserve one gap after the heading group; include it in the available height.
+    --fc-retained-content-row: 3;
+    grid-template-rows: 40px 12px minmax(0, 1fr);
   }
   &:has(> .fc-retained-sidebar--collapsed ~ .fc-retained-sidebar--collapsed) {
-    --fc-retained-content-row: 3;
-    grid-template-rows: 40px 40px minmax(0, 1fr);
+    --fc-retained-content-row: 4;
+    grid-template-rows: 40px 40px 12px minmax(0, 1fr);
   }
   &:not(:has(> .fc-retained-sidebar:not(.fc-retained-sidebar--collapsed))) {
     grid-template-columns: minmax(0, 1fr);
@@ -43,9 +41,6 @@
   }
   > .fc-retained-sidebar--collapsed ~ .fc-retained-sidebar--collapsed {
     grid-row: 2;
-  }
-  &:has(> .fc-retained-sidebar--logs.fc-retained-sidebar--collapsed) {
-    row-gap: 12px;
   }
 }
 .fc-retained-sidebar {
