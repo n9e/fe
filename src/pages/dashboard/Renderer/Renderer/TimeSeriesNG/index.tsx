@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
 import { useSize } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -50,6 +51,8 @@ const dashboardDataFrameOptions = {
 
 export default function index(props: Props) {
   const { darkMode: appDarkMode } = useContext(CommonStateContext);
+  const { i18n } = useTranslation('dashboard');
+  const legendLanguage = i18n.language === 'zh_CN' || i18n.language === 'zh_HK' ? i18n.language : 'en_US';
   // TODO 不建议，后面会删除。hoc打开的组件获取不到 App 中 useContext, 这里用localStorage兜底
   const darkMode = appDarkMode || localStorage.getItem('darkMode') === 'true';
   const containerRef = useRef<HTMLDivElement>(null);
@@ -155,6 +158,7 @@ export default function index(props: Props) {
         >
           {legendDisplayMode === 'list' && (
             <LegendList
+              legendLanguage={legendLanguage}
               panel={mainProps.panel}
               data={legendData}
               legendColumns={legendColumns}
@@ -172,6 +176,7 @@ export default function index(props: Props) {
           )}
           {legendDisplayMode === 'table' && (
             <LegendTable
+              legendLanguage={legendLanguage}
               panel={mainProps.panel}
               data={legendData}
               legendColumns={legendColumns}

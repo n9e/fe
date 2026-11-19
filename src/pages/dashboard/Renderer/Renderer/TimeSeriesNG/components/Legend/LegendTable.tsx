@@ -21,6 +21,7 @@ interface Props {
   panel: IPanel;
   data: DataItem[];
   legendColumns?: string[];
+  legendLanguage?: string;
   legendSortBy?: string;
   legendSortDir?: string;
   onRowClick: (record: DataItem) => void;
@@ -54,7 +55,7 @@ function mockLegendData(data: DataItem[], count: number) {
 
 export default function LegendTable(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { panel, data, legendColumns, legendSortBy, legendSortDir, onRowClick } = props;
+  const { panel, data, legendColumns, legendLanguage = 'en_US', legendSortBy, legendSortDir, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
@@ -72,7 +73,7 @@ export default function LegendTable(props: Props) {
   const columns: ColumnProps<DataItem>[] = useMemo(() => {
     const cols: ColumnProps<DataItem>[] = [
       {
-        title: `Series (${tableData.length})`,
+        title: `${t('panel.options.legend.series', { lng: legendLanguage, defaultValue: 'Series' })} (${tableData.length})`,
         dataIndex: 'name',
         width: '100%',
         render: (text: string, record: DataItem) => {
@@ -93,9 +94,7 @@ export default function LegendTable(props: Props) {
     ];
     _.forEach(legendColumns, (column) => {
       cols.push({
-        title: t(`panel.options.legend.${column}`, {
-          lng: 'en_US', // fixed to en_US, optimize column width
-        }),
+        title: t(`panel.options.legend.${column}`, { lng: legendLanguage }),
         dataIndex: column,
         sorter: (a, b) => a[column].stat - b[column].stat,
         sortOrder: sortState.column === column ? (sortState.dir === 'desc' ? 'descend' : 'ascend') : null,
@@ -105,7 +104,7 @@ export default function LegendTable(props: Props) {
       });
     });
     return cols;
-  }, [tableData.length, legendColumns, sortState.column, sortState.dir, t, detailName, detailUrl]);
+  }, [tableData.length, legendColumns, legendLanguage, sortState.column, sortState.dir, t, detailName, detailUrl]);
 
   useEffect(() => {
     setSortState({

@@ -12,6 +12,7 @@ interface Props {
   panel: IPanel;
   data: DataItem[];
   legendColumns?: string[];
+  legendLanguage?: string;
   legendSortBy?: string;
   legendSortDir?: string;
   placement?: 'bottom' | 'right';
@@ -20,7 +21,7 @@ interface Props {
 
 export default function LegendList(props: Props) {
   const { t } = useTranslation('dashboard');
-  const { panel, data, legendColumns, legendSortBy, legendSortDir, placement, onRowClick } = props;
+  const { panel, data, legendColumns, legendLanguage = 'en_US', legendSortBy, legendSortDir, placement, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
   const detailUrl = options.legend?.detailUrl;
@@ -66,10 +67,7 @@ export default function LegendList(props: Props) {
                   {_.map(legendColumns, (column) => {
                     return (
                       <span key={column} style={{ paddingLeft: 8 }}>
-                        {t(`panel.options.legend.${column}`, {
-                          lng: 'en_US', // fixed to en_US, optimize column width
-                        })}
-                        : {item[column].text}
+                        {t(`panel.options.legend.${column}`, { lng: legendLanguage })}: {item[column].text}
                       </span>
                     );
                   })}
