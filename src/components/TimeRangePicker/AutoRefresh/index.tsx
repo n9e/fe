@@ -38,6 +38,8 @@ export const GRAFANA_REFRESH_OPTIONS = {
 };
 
 interface IProps {
+  /** Keep this contract aligned with SRM callers and the updated refresh component. */
+  align?: 'start' | 'end';
   disabled?: boolean;
   tooltip?: React.ReactNode;
   intervalTooltip?: React.ReactNode;
@@ -113,7 +115,7 @@ function Refresh(props: IProps, ref) {
   }));
 
   return (
-    <div className='auto-refresh-container'>
+    <div className={`auto-refresh-container auto-refresh-container--${props.align || 'end'}`}>
       <Tooltip title={props.tooltip}>
         <Button disabled={props.disabled} icon={<SyncOutlined className={intervalSeconds ? 'rotate-icon' : ''} />} onClick={props.onRefresh} />
       </Tooltip>
