@@ -3,6 +3,8 @@ const en_US = {
   validate_metric_msg: 'Please validate the metric first',
   smart_rule_limit_msg: 'The number of smart alert rules has reached the limit, please contact support',
   title: 'Alert rules',
+  product_rule_readonly_tip: 'This rule is managed by its product. Please edit, enable/disable or delete it on the Firemap / Polaris page.',
+  product_rule_missing_space_tip: 'Missing space ID, cannot open rule details',
   empty_guide: {
     title: 'No alert rule yet',
     desc: 'Create an alert rule, or import a built-in alert rule template with one click.',

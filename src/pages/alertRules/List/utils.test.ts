@@ -1,4 +1,4 @@
-import { matchSearch, matchTriggerType, TRIGGER_TYPE_OPTIONS } from './utils';
+import { getNorthstarRuleName, getProductRulePath, hasProductRuleSpaceId, isProductRule, matchSearch, matchTriggerType, TRIGGER_TYPE_OPTIONS } from './utils';
 
 const rule = (rule_config?: unknown) => ({ rule_config });
 
@@ -109,5 +109,96 @@ describe('matchSearch', () => {
     // 主机类规则的查询不含查询语句字段，字段名和非字符串值都不参与匹配
     expect(matchSearch(searchRule({ queries: [{ key: 'group_ids', op: '==', values: [1] }] }), 'group_ids')).toBe(false);
     expect(matchSearch(searchRule({ queries: [{ query: { index: 'logs' } }] }), 'logs')).toBe(false);
+  });
+});
+
+describe('isProductRule', () => {
+  it('灭火图、北极星规则识别为产品规则', () => {
+    expect(isProductRule({ prod: 'firemap' })).toBe(true);
+    expect(isProductRule({ prod: 'northstar' })).toBe(true);
+  });
+
+  it('普通数据源规则、缺省 prod 不是产品规则', () => {
+    expect(isProductRule({ prod: 'metric' })).toBe(false);
+    expect(isProductRule({ prod: 'host' })).toBe(false);
+    expect(isProductRule({})).toBe(false);
+    expect(isProductRule(undefined)).toBe(false);
+  });
+});
+
+describe('getProductRulePath', () => {
+  const firemapRule = {
+    id: 1844,
+    prod: 'firemap',
+    name: 'firemap/1844/CPU 使用率过高',
+    rule_config: { workspace_id: 6773224013418 },
+  } as const;
+
+  it('灭火图规则跳回灭火图，带上空间与规则 id', () => {
+    expect(getProductRulePath(firemapRule)).toBe('/firemap?spaceId=6773224013418&alertRuleId=1844');
+  });
+
+  it('北极星规则从名称里解析业务线 ID', () => {
+    expect(getProductRulePath({ ...firemapRule, prod: 'northstar', name: 'northstar/24/sss' })).toBe('/polaris/24?spaceId=6773224013418&alertRuleId=1844');
+    // 只有前缀 + 业务线 ID 也能解析
+    expect(getProductRulePath({ ...firemapRule, prod: 'northstar', name: 'northstar/24' })).toBe('/polaris/24?spaceId=6773224013418&alertRuleId=1844');
+  });
+
+  it('北极星规则名称解析不出业务线 ID 时不生成链接', () => {
+    ['sss', 'northstar', 'northstar/', 'northstar/abc/sss', '', undefined].forEach((name) => {
+      expect(getProductRulePath({ id: 1844, prod: 'northstar', name, rule_config: { workspace_id: 1 } })).toBeUndefined();
+    });
+  });
+
+  it('北极星不再从 rule_config 兜底 business_id', () => {
+    expect(getProductRulePath({ id: 1844, prod: 'northstar', name: 'sss', rule_config: { workspace_id: 1, business_id: 12 } })).toBeUndefined();
+  });
+
+  it('rule_config 缺少 workspace_id 时不生成链接（降级为纯文本）', () => {
+    expect(getProductRulePath({ id: 1844, prod: 'firemap', rule_config: {} })).toBeUndefined();
+    expect(getProductRulePath({ id: 1844, prod: 'firemap' })).toBeUndefined();
+    expect(getProductRulePath({ id: 1844, prod: 'firemap', rule_config: { workspace_id: '' } })).toBeUndefined();
+  });
+
+  it('识别不出规则 id 时不生成链接', () => {
+    expect(getProductRulePath({ prod: 'firemap', rule_config: { workspace_id: 1 } })).toBeUndefined();
+  });
+
+  it('普通数据源规则不生成产品链接', () => {
+    expect(getProductRulePath({ id: 1844, prod: 'metric', rule_config: { workspace_id: 1 } })).toBeUndefined();
+  });
+
+  it('空间 ID 为数字或字符串都能拼进链接', () => {
+    expect(getProductRulePath({ id: 7, prod: 'firemap', rule_config: { workspace_id: 99 } })).toBe('/firemap?spaceId=99&alertRuleId=7');
+    expect(getProductRulePath({ id: 7, prod: 'firemap', rule_config: { workspace_id: '99' } })).toBe('/firemap?spaceId=99&alertRuleId=7');
+  });
+});
+
+describe('hasProductRuleSpaceId', () => {
+  it('rule_config.workspace_id 有值时返回 true', () => {
+    expect(hasProductRuleSpaceId({ rule_config: { workspace_id: 99 } })).toBe(true);
+    expect(hasProductRuleSpaceId({ rule_config: { workspace_id: '99' } })).toBe(true);
+  });
+
+  it('缺少 rule_config、workspace_id 或值为空时返回 false', () => {
+    expect(hasProductRuleSpaceId({})).toBe(false);
+    expect(hasProductRuleSpaceId({ rule_config: {} })).toBe(false);
+    expect(hasProductRuleSpaceId({ rule_config: { workspace_id: '' } })).toBe(false);
+    expect(hasProductRuleSpaceId(undefined)).toBe(false);
+  });
+});
+
+describe('getNorthstarRuleName', () => {
+  it('从 northstar/<业务线 ID>/<规则名> 里取出真实规则名', () => {
+    expect(getNorthstarRuleName('northstar/24/sss')).toBe('sss');
+    expect(getNorthstarRuleName('northstar/24/CPU 使用率过高')).toBe('CPU 使用率过高');
+    expect(getNorthstarRuleName('northstar/24/sss/extra')).toBe('sss/extra');
+    expect(getNorthstarRuleName('  northstar/24/sss  ')).toBe('sss');
+  });
+
+  it('没有真实规则名或格式不符时返回 undefined', () => {
+    ['northstar/24', 'northstar/24/', 'northstar/24/   ', 'sss', 'northstar', 'northstar/abc/sss', '', undefined].forEach((name) => {
+      expect(getNorthstarRuleName(name)).toBeUndefined();
+    });
   });
 });

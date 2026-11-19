@@ -4,6 +4,8 @@ const fr_FR = {
   "validate_metric_msg": "Validez d'abord la métrique",
   "smart_rule_limit_msg": "Le nombre maximal de règles d'alerte intelligentes est atteint ; contactez le support",
   "title": "Règle d'alerte",
+  "product_rule_readonly_tip": "Cette règle est gérée par son produit. Modifiez-la, activez-la ou supprimez-la depuis la page Firemap / Polaris.",
+  "product_rule_missing_space_tip": "ID d'espace manquant, impossible d'ouvrir le détail de la règle",
   "empty_guide": {
     "title": "Aucune règle d'alerte",
     "desc": "Ajoutez une règle d'alerte ou importez en un clic les modèles intégrés.",
