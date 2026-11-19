@@ -4,6 +4,8 @@ const id_ID = {
   "validate_metric_msg": "Validasi metriknya terlebih dahulu",
   "smart_rule_limit_msg": "Batas jumlah aturan alert cerdas telah tercapai. Hubungi tim dukungan",
   "title": "Aturan alert",
+  "product_rule_readonly_tip": "Aturan ini dikelola oleh produknya. Edit, aktifkan, atau hapus di halaman Firemap / Polaris.",
+  "product_rule_missing_space_tip": "ID ruang tidak tersedia, detail aturan tidak dapat dibuka",
   "empty_guide": {
     "title": "Belum ada aturan alert",
     "desc": "Tambahkan satu aturan alert, atau impor templat aturan bawaan sekali klik.",

@@ -3,6 +3,8 @@ const ja_JP = {
   validate_metric_msg: '先に指標を検証してください',
   smart_rule_limit_msg: 'インテリジェントアラートルールの数が上限に達しました。サポートにお問い合わせください',
   title: 'アラートルール',
+  product_rule_readonly_tip: 'このルールは対応する製品で管理されています。Firemap / Polaris のページで操作してください。',
+  product_rule_missing_space_tip: 'スペース ID がないため、ルール詳細を開けません',
   empty_guide: {
     title: 'まだアラートルールがありません',
     desc: 'アラートルールを新規作成するか、テンプレートセンターから組み込みのアラートルールパックをインポートできます。',
