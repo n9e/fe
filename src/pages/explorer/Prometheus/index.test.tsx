@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import type { FormInstance } from 'antd/lib/form/Form';
 
 import type PromGraph from '@/components/PromGraphCpt';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 import type AiQueryDock from '@/components/AiQueryDock';
 import type { useQueryDockActions } from '@/components/AiQueryDock/useQueryDockActions';
 import Prometheus from './index';
@@ -13,13 +14,14 @@ type AiQueryDockProps = React.ComponentProps<typeof AiQueryDock>;
 type AiActionsOptions = Parameters<typeof useQueryDockActions>[0];
 
 jest.mock('@/utils/constant', () => ({ SIZE: 8, IS_ENT: false }));
+jest.mock('@/App', () => ({ basePrefix: '', CommonStateContext: React.createContext({}) }));
 
 // The graph is the page's only child that matters here: it renders the three
 // slots the AI entry points live in, and echoes the query it was handed.
 jest.mock('@/components/PromGraphCpt', () => ({
   __esModule: true,
   default: (props: PromGraphProps) => (
-    <div>
+    <div data-testid='graph' data-pinning-enabled={React.useContext(TooltipPinningContext)}>
       <div data-testid='leading'>{props.queryExtra}</div>
       <div data-testid='notice'>{props.noticeBanner}</div>
       <div data-testid='extra'>{props.extra}</div>
@@ -53,6 +55,11 @@ function renderPage() {
 
 beforeEach(() => {
   mockActions.enabled = [];
+});
+
+it('disables click-to-pin for instant queries', () => {
+  renderPage();
+  expect(screen.getByTestId('graph')).toHaveAttribute('data-pinning-enabled', 'false');
 });
 
 describe('ai dock', () => {
