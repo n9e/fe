@@ -8,6 +8,7 @@ import { FormInstance } from 'antd/lib/form/Form';
 
 import { SIZE } from '@/utils/constant';
 import PromGraph from '@/components/PromGraphCpt';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 import { IRawTimeRange, timeRangeUnix, isMathString } from '@/components/TimeRangePicker';
 import { getHistoryEventsById } from '@/services/warning';
 
@@ -105,7 +106,7 @@ export default function Prometheus(props: IProps) {
   }, []);
 
   return (
-    <>
+    <TooltipPinningContext.Provider value={false}>
       <PromGraph
         controlRef={ai.controlRef}
         onUserContextChange={ai.onUserContextChange}
@@ -182,6 +183,6 @@ export default function Prometheus(props: IProps) {
         }
         showExportButton
       />
-    </>
+    </TooltipPinningContext.Provider>
   );
 }

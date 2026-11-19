@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import _ from 'lodash';
 import { CommonStateContext } from '@/App';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 import Detail from '@/pages/dashboard/Detail/Detail';
 import type { DashboardDatasource } from '@/pages/dashboard/types';
 import type { IVariable } from '@/pages/dashboard/Variables/types';
@@ -43,29 +44,31 @@ export default function index() {
   const { groupedDatasourceList } = useContext(CommonStateContext);
 
   return (
-    <Detail
-      isPreview
-      onLoaded={(configs) => {
-        const firstDatasourceVar = _.find(configs?.var, { type: 'datasource', definition: 'prometheus' }) as DatasourceVariable | undefined;
-        /**
-         * 兼容 v5 版本生成的 URL
-         * 这里通过 search 中是否有双引号来判断是否是 v5 版本生成的 URL
-         * 如果是 v5 的 URL，需要将 search 中的参数转换成 v6 的格式并且刷新该页面。
-         * 同时页面给出提示，让用户有需要的话保存新的 URL
-         */
-        if (/"/.test(decodeURIComponent(search)) && search.indexOf('__variable_value_fixed=true') && firstDatasourceVar) {
-          try {
-            const newSearch = searchV5toV6(search, firstDatasourceVar, groupedDatasourceList?.prometheus);
-            window.location.href = `${window.location.origin}${window.location.pathname}?${newSearch}`;
-            return true;
-          } catch (e) {
-            // 如果转换失败，降级为正常渲染页面
-            console.error(e);
-            return true;
+    <TooltipPinningContext.Provider value={false}>
+      <Detail
+        isPreview
+        onLoaded={(configs) => {
+          const firstDatasourceVar = _.find(configs?.var, { type: 'datasource', definition: 'prometheus' }) as DatasourceVariable | undefined;
+          /**
+           * 兼容 v5 版本生成的 URL
+           * 这里通过 search 中是否有双引号来判断是否是 v5 版本生成的 URL
+           * 如果是 v5 的 URL，需要将 search 中的参数转换成 v6 的格式并且刷新该页面。
+           * 同时页面给出提示，让用户有需要的话保存新的 URL
+           */
+          if (/"/.test(decodeURIComponent(search)) && search.indexOf('__variable_value_fixed=true') && firstDatasourceVar) {
+            try {
+              const newSearch = searchV5toV6(search, firstDatasourceVar, groupedDatasourceList?.prometheus);
+              window.location.href = `${window.location.origin}${window.location.pathname}?${newSearch}`;
+              return true;
+            } catch (e) {
+              // 如果转换失败，降级为正常渲染页面
+              console.error(e);
+              return true;
+            }
           }
-        }
-        return true;
-      }}
-    />
+          return true;
+        }}
+      />
+    </TooltipPinningContext.Provider>
   );
 }

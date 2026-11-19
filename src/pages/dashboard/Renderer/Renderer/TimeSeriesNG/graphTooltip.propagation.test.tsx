@@ -9,6 +9,7 @@ import type { RenderResult } from '@testing-library/react';
 import { DashboardRuntimeProvider } from '../../../globalState';
 import type { DashboardMeta } from '../../../globalState';
 import { dashboardTestRuntimeStore } from '@/test/dashboardRuntime';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 
 const { getGlobalState, setGlobalState } = dashboardTestRuntimeStore;
 
@@ -35,7 +36,7 @@ jest.mock('./components/Annotation/annotationsPlugin', () => ({
   Markers: () => null,
 }));
 
-const tooltipCalls: Array<{ graphTooltip?: string; id?: string }> = [];
+const tooltipCalls: Array<{ graphTooltip?: string; pinningEnabled?: boolean; id?: string }> = [];
 const axisBuilderCalls: Array<{ theme?: string }> = [];
 const renderedCharts: string[] = [];
 
@@ -107,6 +108,23 @@ describe('graphTooltip runtime propagation to timeseries charts', () => {
     axisBuilderCalls.length = 0;
     renderedCharts.length = 0;
     setGlobalState('dashboardMeta', { ...baseMeta, graphTooltip: 'default' });
+  });
+
+  it('keeps pinning available by default and disables it in a hover-only preview', () => {
+    const utils = renderMain();
+    expect(tooltipCalls[tooltipCalls.length - 1].pinningEnabled).toBe(true);
+
+    utils.rerender(
+      <DashboardRuntimeProvider store={dashboardTestRuntimeStore}>
+        <MemoryRouter>
+          <TooltipPinningContext.Provider value={false}>
+            <Main {...panelProps} darkMode={false} isPreview />
+          </TooltipPinningContext.Provider>
+        </MemoryRouter>
+      </DashboardRuntimeProvider>,
+    );
+
+    expect(tooltipCalls[tooltipCalls.length - 1].pinningEnabled).toBe(false);
   });
 
   it('rebuilds the chart with the new mode when dashboardMeta.graphTooltip changes at runtime', () => {
