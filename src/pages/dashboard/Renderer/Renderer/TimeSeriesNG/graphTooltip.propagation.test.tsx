@@ -4,11 +4,15 @@ import { render } from '@testing-library/react';
 import { act } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
+import SharedChart from '@/pages/chart/Main';
+import SharedDashboard from '@/pages/dashboard/Share';
 import Main from './Main';
 import { getGlobalState, setGlobalState } from '../../../globalState';
 import type { DashboardMeta } from '../../../globalState';
 
 jest.mock('@/App', () => ({ CommonStateContext: React.createContext({}) }));
+jest.mock('@/pages/dashboard/Detail/Detail', () => ({ __esModule: true, default: MockPanel }));
+jest.mock('@/pages/dashboard/Renderer/Renderer', () => ({ __esModule: true, default: MockPanel }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (value: string) => value }) }));
 jest.mock('@/utils/constant', () => ({
   IS_PLUS: false,
@@ -31,7 +35,7 @@ jest.mock('./components/Annotation/annotationsPlugin', () => ({
   Markers: () => null,
 }));
 
-const tooltipCalls: Array<{ graphTooltip?: string; id?: string }> = [];
+const tooltipCalls: Array<{ graphTooltip?: string; id?: string; pinningEnabled?: boolean }> = [];
 const renderedCharts: string[] = [];
 
 jest.mock('@/components/UPlotChart', () => {
@@ -57,21 +61,20 @@ const baseMeta = {
   graphZoom: 'default',
 } as DashboardMeta;
 
-function setup() {
-  return render(
-    <MemoryRouter>
-      <Main
-        id='test-panel'
-        frames={[[1000, 2000]] as never}
-        baseSeries={[]}
-        darkMode={false}
-        width={400}
-        height={200}
-        panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
-        series={[]}
-        annotations={[]}
-      />
-    </MemoryRouter>,
+function MockPanel({ isPreview }: { isPreview?: boolean }) {
+  return (
+    <Main
+      id='test-panel'
+      isPreview={isPreview}
+      frames={[[1000, 2000]] as never}
+      baseSeries={[]}
+      darkMode={false}
+      width={400}
+      height={200}
+      panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
+      series={[]}
+      annotations={[]}
+    />
   );
 }
 
@@ -82,8 +85,21 @@ describe('graphTooltip runtime propagation to timeseries charts', () => {
     setGlobalState('dashboardMeta', { ...baseMeta, graphTooltip: 'default' });
   });
 
+  it.each([
+    ['shared dashboard', <SharedDashboard />, false],
+    ['shared panel', <SharedChart width={400} item={{ dataProps: { id: 'shared' } }} range={{ start: 'now-1h', end: 'now' }} />, false],
+    ['dashboard panel preview', <MockPanel isPreview />, true],
+  ] as const)('sets click-to-pin for the %s', (_name, page, pinningEnabled) => {
+    render(<MemoryRouter>{page}</MemoryRouter>);
+    expect(tooltipCalls[tooltipCalls.length - 1].pinningEnabled).toBe(pinningEnabled);
+  });
+
   it('rebuilds the chart with the new mode when dashboardMeta.graphTooltip changes at runtime', () => {
-    const utils = setup();
+    const utils = render(
+      <MemoryRouter>
+        <MockPanel />
+      </MemoryRouter>,
+    );
 
     expect(tooltipCalls.length).toBeGreaterThan(0);
     expect(tooltipCalls[tooltipCalls.length - 1].graphTooltip).toBe('default');
@@ -93,17 +109,7 @@ describe('graphTooltip runtime propagation to timeseries charts', () => {
     });
     utils.rerender(
       <MemoryRouter>
-        <Main
-          id='test-panel'
-          frames={[[1000, 2000]] as never}
-          baseSeries={[]}
-          darkMode={false}
-          width={400}
-          height={200}
-          panel={{ type: 'timeseries', custom: {}, options: {}, targets: [] } as never}
-          series={[]}
-          annotations={[]}
-        />
+        <MockPanel />
       </MemoryRouter>,
     );
 

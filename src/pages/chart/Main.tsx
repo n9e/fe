@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 
 import Renderer from '../dashboard/Renderer/Renderer';
 
@@ -17,22 +18,24 @@ export default function Main(props: Props) {
   const { width, item, range } = props;
 
   return (
-    <div style={{ height: 740 }}>
-      <Renderer
-        id={item.dataProps.id}
-        panelWidth={width}
-        time={range}
-        values={_.merge({}, item.dataProps, {
-          options: {
-            legend: {
-              displayMode: 'table',
+    <TooltipPinningContext.Provider value={false}>
+      <div style={{ height: 740 }}>
+        <Renderer
+          id={item.dataProps.id}
+          panelWidth={width}
+          time={range}
+          values={_.merge({}, item.dataProps, {
+            options: {
+              legend: {
+                displayMode: 'table',
+              },
             },
-          },
-        })}
-        isPreview
-        themeMode={darkMode ? 'dark' : undefined}
-        annotations={[]}
-      />
-    </div>
+          })}
+          isPreview
+          themeMode={darkMode ? 'dark' : undefined}
+          annotations={[]}
+        />
+      </div>
+    </TooltipPinningContext.Provider>
   );
 }
