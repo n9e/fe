@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, useEffect, useMemo, useContext, useImperativeHandle, forwardRef } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { Resizable } from 're-resizable';
@@ -6,7 +6,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
 import { Button, Input, Popover, Space, Modal, message, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { LeftOutlined, RightOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 import { CommonStateContext } from '@/App';
 import { ActionType } from '@/store/manageInterface';
@@ -17,6 +17,7 @@ import { deleteBusinessTeam } from '@/services/manage';
 import AuthorizationWrapper, { useIsAuthorized } from '@/components/AuthorizationWrapper';
 
 import {
+  getBusinessGroupSelectionLabel,
   listToTree,
   getCollapsedKeys,
   getCleanBusinessGroupIds,
@@ -28,6 +29,7 @@ import {
 import BusinessGroupSelect from './BusinessGroupSelect';
 import BusinessGroupSelectWithAll from './BusinessGroupSelectWithAll';
 import { getBusiGroups } from './services';
+import BusinessGroupSidebarHeader from './SidebarHeader';
 import './style.less';
 
 export {
@@ -112,8 +114,8 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
   const history = useHistory();
   const { title = t('common:business_groups'), renderHeadExtra, onSelect, showSelected = true } = props;
   const selected = getSelectedBusinessGroupKey(props.selected, businessGroup.key);
-  const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
-  const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
+  const [collapse, setCollapse] = useState(localStorage.getItem('business-group-sidebar-collapse-v2') === '1');
+  const [width, setWidth] = useState(() => Math.min(480, Math.max(200, Number(localStorage.getItem('leftwidth')) || 200)));
   const { busiGroups, siteInfo, setBusiGroups } = useContext(CommonStateContext);
   const [businessGroupTreeData, setBusinessGroupTreeData] = useState<Node[]>([]);
   const [createBusiVisible, setCreateBusiVisible] = useState<boolean>(false);
@@ -157,6 +159,15 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
   const isPresetFilterActive = props.presetFilters?.some((f) => cleanSelected === f.value) ?? false;
   const internalShowSelected = isPresetFilterActive ? false : showSelected;
 
+  const selectionLabel = useMemo(
+    () => getBusinessGroupSelectionLabel(selected, busiGroups, siteInfo?.businessGroupSeparator || '-', props.presetFilters || [], t('sidebar.unselected')),
+    [selected, busiGroups, siteInfo?.businessGroupSeparator, props.presetFilters, t],
+  );
+  const toggleCollapse = () => {
+    localStorage.setItem('business-group-sidebar-collapse-v2', collapse ? '0' : '1');
+    setCollapse(!collapse);
+  };
+
   const reloadData = () => {
     getBusiGroups().then((res = []) => {
       setBusiGroups(res);
@@ -195,17 +206,20 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
   useImperativeHandle(ref, () => ({
     getCollapse: () => collapse,
     setCollapse: (newCollapsed) => {
-      localStorage.setItem('leftlist', newCollapsed ? '1' : '0');
+      localStorage.setItem('business-group-sidebar-collapse-v2', newCollapsed ? '1' : '0');
       setCollapse(newCollapsed);
     },
   }));
 
   return (
     <Resizable
+      className={`n9e-business-group-sidebar${collapse ? ' n9e-business-group-sidebar--collapsed' : ''}`}
       style={{
         marginRight: collapse ? 0 : 10,
       }}
-      size={{ width: collapse ? 0 : width, height: '100%' }}
+      size={{ width: collapse ? '100%' : width, height: collapse ? 40 : '100%' }}
+      maxWidth={collapse ? undefined : 480}
+      minWidth={collapse ? undefined : 200}
       enable={{
         right: collapse ? false : true,
       }}
@@ -218,27 +232,25 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
         localStorage.setItem('leftwidth', curWidth.toString());
       }}
     >
-      <div className={collapse ? 'n9e-biz-group-container collapse' : 'n9e-biz-group-container'}>
-        <div
-          className='collapse-btn'
-          onClick={() => {
-            localStorage.setItem('leftlist', !collapse ? '1' : '0');
-            setCollapse(!collapse);
-          }}
-        >
-          {!collapse ? <LeftOutlined /> : <RightOutlined />}
-        </div>
-        <div className='flex flex-col h-full overflow-hidden'>
+      <div className='n9e-biz-group-container n9e-biz-group-container--retained'>
+        <BusinessGroupSidebarHeader
+          title={title}
+          collapsed={collapse}
+          selection={selectionLabel}
+          onToggle={toggleCollapse}
+          actions={<Button size='small' type='text' aria-label={t('sidebar.create')} onClick={() => setCreateBusiVisible(true)} icon={<PlusOutlined />} />}
+        />
+        <div className='n9e-biz-group-container__body' hidden={collapse}>
           {renderHeadExtra && renderHeadExtra()}
           {props.presetFilters && props.presetFilters.length > 0 && (
-            <div className='mb-2'>
-              {props.presetFilterTitle && <div className='text-l1 font-bold leading-none mb-4'>{props.presetFilterTitle}</div>}
+            <div className='n9e-business-group-presets'>
+              {props.presetFilterTitle && <div className='n9e-business-group-presets__title'>{props.presetFilterTitle}</div>}
               {_.map(props.presetFilters, (item) => (
                 <div
                   key={item.value}
-                  className={classNames('justify-between py-[6px] px-[8px] cursor-pointer rounded-md hover:bg-fc-200/80', {
+                  className={classNames('n9e-business-group-presets__item justify-between py-[6px] px-[8px] cursor-pointer rounded-md hover:bg-fc-200/80', {
                     'bg-fc-200/90': cleanSelected === item.value,
-                    'font-bold': cleanSelected === item.value,
+                    'n9e-business-group-presets__item--active': cleanSelected === item.value,
                     'text-title': cleanSelected === item.value,
                   })}
                   onClick={() => handlePresetFilterClick(item.value)}
@@ -255,20 +267,6 @@ const BusinessGroup = forwardRef((props: IProps, ref) => {
               ))}
             </div>
           )}
-          <div className='n9e-biz-group-container-group-title'>
-            {title}
-            <Button
-              style={{
-                height: '30px',
-              }}
-              size='small'
-              type='text'
-              onClick={() => {
-                setCreateBusiVisible(true);
-              }}
-              icon={<PlusOutlined />}
-            />
-          </div>
           <Input
             className='n9e-biz-group-container-group-search'
             prefix={<SearchOutlined />}

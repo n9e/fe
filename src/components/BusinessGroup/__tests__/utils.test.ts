@@ -45,6 +45,7 @@ Object.defineProperty(global, 'window', { value: mockWindow, writable: true });
 (globalThis as any).window = mockWindow;
 
 import {
+  getBusinessGroupSelectionLabel,
   getCleanBusinessGroupIds,
   getSelectedBusinessGroupKey,
   getDefaultBusinessGroupKey,
@@ -303,5 +304,32 @@ describe('getCollapsedKeys', () => {
 
   it('空树时应返回空数组', () => {
     expect(getCollapsedKeys([], [], '1')).toEqual([]);
+  });
+});
+
+describe('collapsed sidebar selection summary', () => {
+  const groups = [
+    { id: 11, name: 'prod-api-east' },
+    { id: 12, name: 'prod-api-west' },
+    { id: 13, name: 'prod-worker' },
+  ];
+  test('shows a complete leaf path and the selected parent path', () => {
+    expect(getBusinessGroupSelectionLabel('11', groups, '-', [], 'None')).toBe('prod / api / east');
+    expect(getBusinessGroupSelectionLabel('group,group,11,12', groups, '-', [], 'None')).toBe('prod / api');
+    expect(getBusinessGroupSelectionLabel('group,11,12,13', groups, '-', [], 'None')).toBe('prod');
+  });
+  test('respects custom separators and page-specific presets', () => {
+    expect(getBusinessGroupSelectionLabel('2', [{ id: 2, name: 'a::b' }], '::', [], 'None')).toBe('a / b');
+    for (const [value, label] of [
+      ['-2', 'All machines'],
+      ['0', 'Ungrouped machines'],
+      ['-1', 'Public dashboards'],
+    ]) {
+      expect(getBusinessGroupSelectionLabel(`group,${value}`, groups, '-', [{ value, label }], 'None')).toBe(label);
+    }
+  });
+  test('does not mistake an absent or unknown selection for all groups', () => {
+    expect(getBusinessGroupSelectionLabel(undefined, groups, '-', [], 'None')).toBe('None');
+    expect(getBusinessGroupSelectionLabel('999', groups, '-', [], 'None')).toBe('None');
   });
 });

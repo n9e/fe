@@ -82,7 +82,7 @@ export default function index() {
         </div>
       }
     >
-      <div className='n9e-metric-views'>
+      <div className='n9e-metric-views fc-retained-layout'>
         <List
           datasourceValue={datasourceValue}
           onSelect={(record: IMatch) => {

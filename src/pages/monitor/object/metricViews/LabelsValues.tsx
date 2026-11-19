@@ -93,7 +93,15 @@ export default function LabelsValues(props: IProps) {
   }, [filtersStr, dynamicLabelsStr, id, refreshFlag, datasourceValue]);
 
   return (
-    <Collapse collapseLocalStorageKey='quick_view_filter_collapse' widthLocalStorageKey='quick_view_filter_width' defaultWidth={240} tooltip={t('list.filters_title')}>
+    <Collapse
+      collapseLocalStorageKey='quick_view_filter_collapse'
+      widthLocalStorageKey='quick_view_filter_width'
+      defaultWidth={240}
+      tooltip={t('list.filters_title')}
+      summary={[filtersStr, dynamicLabelsStr, ..._.map(dimensionLabels, (item) => (item.value?.length ? `${item.label}=${item.value.join(', ')}` : ''))]
+        .filter(Boolean)
+        .join(' / ')}
+    >
       <div className='n9e-metric-views-labels-values rounded-lg'>
         {!_.isEmpty(filtersStr) && (
           <div className='n9e-metric-views-labels-values-item'>

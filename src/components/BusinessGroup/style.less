@@ -169,3 +169,120 @@
     text-overflow: ellipsis;
   }
 }
+
+// Retain the sidebar header in place, and let results occupy the full row below it.
+:has(> .n9e-business-group-sidebar--collapsed) {
+  flex-direction: column !important;
+  min-height: 0;
+  > .n9e-business-group-sidebar--collapsed {
+    flex: 0 0 40px;
+    margin-bottom: 12px;
+  }
+  > .n9e-business-group-sidebar--collapsed ~ * {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+}
+.n9e-business-group-sidebar {
+  flex-shrink: 0;
+  min-width: 0;
+  .n9e-biz-group-container--retained {
+    display: flex;
+    padding: 0;
+    overflow: hidden;
+  }
+  .n9e-biz-group-container__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 12px 16px 16px;
+    &[hidden] {
+      display: none;
+    }
+  }
+}
+.n9e-business-group-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  flex: 0 0 40px;
+  min-width: 0;
+  padding: 0 12px 0 16px;
+  border-bottom: 1px solid var(--fc-border-color);
+  > strong {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  &__selection {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 0;
+    color: var(--fc-text-3);
+    font-size: 12px;
+  }
+  &__actions {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 4px;
+    flex: 0 0 auto;
+    // Outrank themed icon-button dimensions as well as the base button layout.
+    .ant-btn.ant-btn-sm.ant-btn-icon-only {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      line-height: 1;
+      > svg {
+        display: block;
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+.n9e-business-group-sidebar--collapsed {
+  .n9e-biz-group-container--retained {
+    border-radius: 0;
+    border-width: 0 0 1px;
+  }
+  .n9e-business-group-header {
+    border: 0;
+  }
+  .n9e-business-group-header__actions {
+    margin-left: 0;
+  }
+}
+
+.n9e-business-group-presets {
+  margin-bottom: 12px;
+  &__title {
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 400;
+    color: var(--fc-text-4);
+    margin-bottom: 4px;
+  }
+  &__item {
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 400;
+    &--active {
+      font-weight: 500;
+    }
+  }
+}
+.n9e-business-group-sidebar--collapsed .n9e-business-group-header__actions {
+  order: -1;
+}
+.n9e-business-group-header__selection {
+  flex: 1 1 auto;
+}
