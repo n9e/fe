@@ -1,4 +1,4 @@
-import { getNorthstarRuleName, getProductRulePath, hasProductRuleSpaceId, isProductRule, matchSearch, matchTriggerType, TRIGGER_TYPE_OPTIONS } from './utils';
+import { getNorthstarRuleName, getProductRuleLink, isProductRule, matchSearch, matchTriggerType, TRIGGER_TYPE_OPTIONS } from './utils';
 
 const rule = (rule_config?: unknown) => ({ rule_config });
 
@@ -126,7 +126,8 @@ describe('isProductRule', () => {
   });
 });
 
-describe('getProductRulePath', () => {
+describe('getProductRuleLink', () => {
+  const mapping = [{ business_id: 24, workspace_id: 6773224013418 }] as const;
   const firemapRule = {
     id: 1844,
     prod: 'firemap',
@@ -134,57 +135,56 @@ describe('getProductRulePath', () => {
     rule_config: { workspace_id: 6773224013418 },
   } as const;
 
-  it('灭火图规则跳回灭火图，带上空间与规则 id', () => {
-    expect(getProductRulePath(firemapRule)).toBe('/firemap?spaceId=6773224013418&alertRuleId=1844');
+  it('灭火图规则跳回灭火图，空间取 rule_config.workspace_id', () => {
+    expect(getProductRuleLink(firemapRule, mapping)).toEqual({ path: '/firemap?spaceId=6773224013418&alertRuleId=1844', missingSpace: false });
   });
 
-  it('北极星规则从名称里解析业务线 ID', () => {
-    expect(getProductRulePath({ ...firemapRule, prod: 'northstar', name: 'northstar/24/sss' })).toBe('/polaris/24?spaceId=6773224013418&alertRuleId=1844');
+  it('北极星规则按名称里的业务线 ID，从映射里取空间', () => {
+    expect(getProductRuleLink({ ...firemapRule, prod: 'northstar', name: 'northstar/24/sss' }, mapping)).toEqual({
+      path: '/polaris/24?spaceId=6773224013418&alertRuleId=1844',
+      missingSpace: false,
+    });
     // 只有前缀 + 业务线 ID 也能解析
-    expect(getProductRulePath({ ...firemapRule, prod: 'northstar', name: 'northstar/24' })).toBe('/polaris/24?spaceId=6773224013418&alertRuleId=1844');
-  });
-
-  it('北极星规则名称解析不出业务线 ID 时不生成链接', () => {
-    ['sss', 'northstar', 'northstar/', 'northstar/abc/sss', '', undefined].forEach((name) => {
-      expect(getProductRulePath({ id: 1844, prod: 'northstar', name, rule_config: { workspace_id: 1 } })).toBeUndefined();
+    expect(getProductRuleLink({ ...firemapRule, prod: 'northstar', name: 'northstar/24' }, mapping)).toEqual({
+      path: '/polaris/24?spaceId=6773224013418&alertRuleId=1844',
+      missingSpace: false,
     });
   });
 
-  it('北极星不再从 rule_config 兜底 business_id', () => {
-    expect(getProductRulePath({ id: 1844, prod: 'northstar', name: 'sss', rule_config: { workspace_id: 1, business_id: 12 } })).toBeUndefined();
+  it('北极星不再使用 rule_config.workspace_id，映射缺失时按缺空间处理', () => {
+    expect(getProductRuleLink({ id: 1, prod: 'northstar', name: 'northstar/24/sss', rule_config: { workspace_id: 99 } }, [])).toEqual({ missingSpace: true });
+    expect(getProductRuleLink({ id: 1, prod: 'northstar', name: 'northstar/24/sss' }, undefined)).toEqual({ missingSpace: true });
+    // 映射里没有该业务线
+    expect(getProductRuleLink({ id: 1, prod: 'northstar', name: 'northstar/99/sss' }, mapping)).toEqual({ missingSpace: true });
   });
 
-  it('rule_config 缺少 workspace_id 时不生成链接（降级为纯文本）', () => {
-    expect(getProductRulePath({ id: 1844, prod: 'firemap', rule_config: {} })).toBeUndefined();
-    expect(getProductRulePath({ id: 1844, prod: 'firemap' })).toBeUndefined();
-    expect(getProductRulePath({ id: 1844, prod: 'firemap', rule_config: { workspace_id: '' } })).toBeUndefined();
+  it('北极星名称解析不出业务线 ID 时只降级纯文本，不提示缺空间', () => {
+    ['sss', 'northstar', 'northstar/', 'northstar/abc/sss', '', undefined].forEach((name) => {
+      expect(getProductRuleLink({ id: 1, prod: 'northstar', name }, mapping)).toEqual({ missingSpace: false });
+    });
+  });
+
+  it('灭火图缺少 rule_config.workspace_id 时提示缺空间', () => {
+    expect(getProductRuleLink({ id: 1844, prod: 'firemap', rule_config: {} })).toEqual({ missingSpace: true });
+    expect(getProductRuleLink({ id: 1844, prod: 'firemap' })).toEqual({ missingSpace: true });
+    expect(getProductRuleLink({ id: 1844, prod: 'firemap', rule_config: { workspace_id: '' } })).toEqual({ missingSpace: true });
   });
 
   it('识别不出规则 id 时不生成链接', () => {
-    expect(getProductRulePath({ prod: 'firemap', rule_config: { workspace_id: 1 } })).toBeUndefined();
+    expect(getProductRuleLink({ prod: 'firemap', rule_config: { workspace_id: 1 } })).toEqual({ missingSpace: false });
   });
 
   it('普通数据源规则不生成产品链接', () => {
-    expect(getProductRulePath({ id: 1844, prod: 'metric', rule_config: { workspace_id: 1 } })).toBeUndefined();
+    expect(getProductRuleLink({ id: 1844, prod: 'metric', rule_config: { workspace_id: 1 } }, mapping)).toEqual({ missingSpace: false });
   });
 
   it('空间 ID 为数字或字符串都能拼进链接', () => {
-    expect(getProductRulePath({ id: 7, prod: 'firemap', rule_config: { workspace_id: 99 } })).toBe('/firemap?spaceId=99&alertRuleId=7');
-    expect(getProductRulePath({ id: 7, prod: 'firemap', rule_config: { workspace_id: '99' } })).toBe('/firemap?spaceId=99&alertRuleId=7');
-  });
-});
-
-describe('hasProductRuleSpaceId', () => {
-  it('rule_config.workspace_id 有值时返回 true', () => {
-    expect(hasProductRuleSpaceId({ rule_config: { workspace_id: 99 } })).toBe(true);
-    expect(hasProductRuleSpaceId({ rule_config: { workspace_id: '99' } })).toBe(true);
-  });
-
-  it('缺少 rule_config、workspace_id 或值为空时返回 false', () => {
-    expect(hasProductRuleSpaceId({})).toBe(false);
-    expect(hasProductRuleSpaceId({ rule_config: {} })).toBe(false);
-    expect(hasProductRuleSpaceId({ rule_config: { workspace_id: '' } })).toBe(false);
-    expect(hasProductRuleSpaceId(undefined)).toBe(false);
+    expect(getProductRuleLink({ id: 7, prod: 'firemap', rule_config: { workspace_id: 99 } })).toEqual({ path: '/firemap?spaceId=99&alertRuleId=7', missingSpace: false });
+    expect(getProductRuleLink({ id: 7, prod: 'firemap', rule_config: { workspace_id: '99' } })).toEqual({ path: '/firemap?spaceId=99&alertRuleId=7', missingSpace: false });
+    expect(getProductRuleLink({ id: 7, prod: 'northstar', name: 'northstar/24/x' }, [{ business_id: '24', workspace_id: '9' }])).toEqual({
+      path: '/polaris/24?spaceId=9&alertRuleId=7',
+      missingSpace: false,
+    });
   });
 });
 
