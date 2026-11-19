@@ -1,4 +1,6 @@
 const zh_HK = {
+  metadata_load_failed: '載入索引欄位失敗，日誌查詢未執行，請重試。',
+  metadata_retry: '重試',
   query: {
     range: '查詢區間',
     sql_required: 'SQL 不能為空',

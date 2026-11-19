@@ -197,7 +197,7 @@ function EditField(props: Props & ModalWrapProps) {
               destroy();
             }}
           >
-            {t('common:btn.save')}
+            {t('common:btn.ok')}
           </Button>
           <Button onClick={() => destroy()}>{t('common:btn.cancel')}</Button>
         </Space>

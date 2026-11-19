@@ -12,7 +12,7 @@ const zh_CN = {
   time: '时间',
   unit: '单位',
   enable_autocomplete: '启用自动补全',
-  evaluation_time: '选择时间',
+  evaluation_time: '当前时间',
   tooltip_mode: '提示模式',
   tooltip_mode_single: '单条',
   tooltip_mode_all: '全部',

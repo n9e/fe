@@ -1,4 +1,6 @@
 const en_US = {
+  metadata_load_failed: 'Failed to load index fields. The log query was not run. Please retry.',
+  metadata_retry: 'Retry',
   query: {
     range: 'Query range',
     sql_required: 'SQL is required',

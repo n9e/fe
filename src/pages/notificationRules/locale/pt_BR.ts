@@ -82,8 +82,12 @@ const pt_BR = {
     channel_tip: 'Escolha por qual meio a notificação será enviada. Se os meios existentes não atenderem, peça ao administrador que crie outro',
     channel_msg: 'Selecione o meio de notificação',
     template: 'Modelos de mensagem',
+    callback_url: 'URL de callback',
     template_tip: 'Modelo do conteúdo da notificação; é possível usar modelos diferentes conforme o cenário',
     template_msg: 'Selecione o modelo de mensagem',
+    summary_fields: {
+      bot_name: 'Nome do bot',
+    },
     severities: 'Severidades aplicáveis',
     severities_tip:
       'Escolha quais severidades geram notificação; apenas as marcadas são avisadas. Sem nenhuma marcada, este meio não corresponde a evento algum, o que equivale a desativá-lo',

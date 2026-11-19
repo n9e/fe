@@ -42,7 +42,7 @@ export default function FeishuApp(props: Props) {
 
   return (
     <div>
-      <Form.Item {...field} label={t('notification_configuration.feishuapp.feishu_groups')} name={[field.name, 'params', 'feishu_groups']}>
+      <Form.Item {..._.omit(field, 'key')} label={t('notification_configuration.feishuapp.feishu_groups')} name={[field.name, 'params', 'feishu_groups']}>
         <Select options={groupOptions} showSearch optionFilterProp='label' mode='multiple' />
       </Form.Item>
     </div>

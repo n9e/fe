@@ -1,4 +1,6 @@
 const ja_JP = {
+  metadata_load_failed: 'インデックスのフィールドを読み込めませんでした。ログクエリは実行されていません。再試行してください。',
+  metadata_retry: '再試行',
   query: {
     range: 'Query range',
     sql_required: 'SQL is required',

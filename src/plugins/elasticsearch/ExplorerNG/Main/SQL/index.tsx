@@ -7,8 +7,6 @@ import useKeepMountedAfterFirstMeasure from '@/pages/logExplorer/utils/useKeepMo
 import Table from './Table';
 import Timeseries from './Timeseries';
 
-import './style.less';
-
 interface Props {
   tableSelector: {
     antd: string;

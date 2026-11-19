@@ -276,7 +276,6 @@ const fr_FR = {
   "msg.sort.success": "Ordre modifié",
   "copy_success": "{{num}} enregistrements copiés",
   "request_fail_msg": "La requête réseau a expiré ; réessayez plus tard",
-  "trim_validator_msg": "Des espaces figurent en début ou en fin ; supprimez-les",
   "tags_popover_title": "{{count}}"
 };
 

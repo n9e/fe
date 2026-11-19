@@ -33,5 +33,6 @@ describe('mergeTeams', () => {
 
   it('详情未返回团队对象时不构造选项，界面可继续回退显示 ID', () => {
     expect(mergeTeams([], [])).toEqual([]);
+    expect(mergeTeams([], null)).toEqual([]);
   });
 });

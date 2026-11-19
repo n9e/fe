@@ -25,7 +25,8 @@ import { useTranslation } from 'react-i18next';
 import { CommonStateContext, basePrefix } from '@/App';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
-import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
+import TimeSeries from './components/TimeSeries';
+import type { PromSeries } from './components/TimeSeries/data';
 import { interpolateString, getRealStep } from '@/components/PromQLInputNG';
 import { completeBreakpoints } from '@/pages/dashboard/Renderer/datasource/utils';
 import { DASHBOARD_VERSION } from '@/pages/dashboard/config';
@@ -34,6 +35,7 @@ import { getPromData, setTmpChartData } from './services';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { QueryStats } from './components/QueryStatsView';
 import LineGraphStandardOptions from './components/GraphStandardOptions';
+import { RESULT_LIMIT } from './constants';
 
 interface IProps {
   url: string;
@@ -116,7 +118,8 @@ export default function Graph(props: IProps) {
     queryPaused,
     onQueryContextChange,
   } = props;
-  const [data, setData] = useState<any[]>([]);
+  const [chartId] = useState(() => _.uniqueId('prom-explorer-'));
+  const [queryResult, setQueryResult] = useState<{ series: PromSeries[]; time?: IRawTimeRange }>({ series: [] });
   const [zoomRangeState, setZoomRangeState] = useState<{ range: IRawTimeRange; sourceKey: string }>();
   const [resetZoomVersion, setResetZoomVersion] = useState(0);
   const rangeKey = JSON.stringify(range);
@@ -135,6 +138,9 @@ export default function Graph(props: IProps) {
     chartheight: 300,
   });
   const [chartType, setChartType] = useState<ChartType>(ChartType.Line);
+  // 用 Array.isArray 收窄并固定为 string[]，避免类型取决于具体环境对 siteInfo 的声明。
+  const configuredLegendColumns = siteInfo?.explorer_timeseries_legend_columns;
+  const legendColumns: string[] = Array.isArray(configuredLegendColumns) && configuredLegendColumns.length > 0 ? configuredLegendColumns : ['last'];
   const lineGraphProps = {
     custom: {
       drawStyle: 'lines',
@@ -145,7 +151,7 @@ export default function Graph(props: IProps) {
     options: {
       legend: {
         displayMode: highLevelConfig.legend ? 'table' : 'hidden',
-        columns: _.isEmpty(siteInfo?.explorer_timeseries_legend_columns) ? ['last'] : siteInfo?.explorer_timeseries_legend_columns,
+        columns: legendColumns,
       },
       tooltip: {
         mode: highLevelConfig.shared ? 'all' : 'single',
@@ -196,7 +202,7 @@ export default function Graph(props: IProps) {
   useEffect(() => {
     if (queryPaused || queryRequest?.signal.aborted) return;
     if (!promql) {
-      setData([]);
+      setQueryResult({ series: [] });
       setLoading(false);
       return;
     }
@@ -230,15 +236,17 @@ export default function Graph(props: IProps) {
             minStep,
             maxDataPoints: maxDataPoints || panelWidth,
           }),
-          start: moment(parsedRange.start).unix(),
-          end: moment(parsedRange.end).unix(),
+          start,
+          end,
           step: realStep,
         },
         controller.signal,
       )
         .then((res) => {
           if (controller.signal.aborted) return;
-          const series = _.map(res?.result, (item) => {
+          const result = Array.isArray(res?.result) ? res.result : [];
+          const tooLong = result.length > RESULT_LIMIT;
+          const series = _.map(result.slice(0, RESULT_LIMIT), (item) => {
             return {
               id: _.uniqueId('series_'),
               name: getSerieName(item.metric),
@@ -252,8 +260,9 @@ export default function Graph(props: IProps) {
             resultSeries: series.length,
           });
 
-          setData(series);
-          setErrorContent('');
+          // 数据和坐标范围使用同一次请求的时间快照，相对时间刷新后也同步更新。
+          setQueryResult({ series, time: { start: moment.unix(start), end: moment.unix(end) } });
+          setErrorContent(tooLong ? `Warning：Fetched ${result.length} metrics, only displaying first ${RESULT_LIMIT}` : '');
           settled = true;
           queryRequest?.complete({ empty: series.length === 0, count: series.length });
         })
@@ -276,7 +285,7 @@ export default function Graph(props: IProps) {
   }, [effectiveRangeKey, minStep, maxDataPoints, datasourceValue, promql, refreshFlag, onQueryRequest, url, queryRequest, queryPaused]);
 
   return (
-    <div className={activeZoomRange ? 'prom-graph-graph-container prom-graph-graph-zoom-owner' : 'prom-graph-graph-container'}>
+    <div className='prom-graph-graph-container'>
       <div className='prom-graph-graph-controls'>
         <Space wrap>
           <TimeRangePicker value={range} onChange={setRange} dateFormat='YYYY-MM-DD HH:mm:ss' />
@@ -415,18 +424,19 @@ export default function Graph(props: IProps) {
           )}
         </Space>
       </div>
-      <Timeseries
+      <TimeSeries
+        id={chartId}
         key={refetchOnZoom ? `${resetZoomVersion}-${zoomSourceKey}` : undefined}
-        inDashboard={false}
-        values={lineGraphProps as any}
-        series={data}
-        time={effectiveRange}
+        values={lineGraphProps}
+        series={queryResult.series}
+        time={queryResult.time || effectiveRange}
         themeMode={darkMode ? 'dark' : undefined}
-        legendTableMaxHeight={contentMaxHeight - 200} // line chart height
-        onZoomWithoutDefult={refetchOnZoom ? (handleZoomWithoutDefault as any) : undefined}
-        legendSeriesFilterText={seriesFilterText}
-        onLegendSeriesFilterTextChange={onSeriesFilterTextChange}
-        legendFilteredText={t('filtered')}
+        legendTableMaxHeight={contentMaxHeight - 200}
+        onZoomRangeChange={refetchOnZoom ? handleZoomWithoutDefault : undefined}
+        zoomed={Boolean(activeZoomRange)}
+        seriesFilterText={seriesFilterText}
+        onSeriesFilterTextChange={onSeriesFilterTextChange}
+        filteredText={t('filtered')}
       />
     </div>
   );

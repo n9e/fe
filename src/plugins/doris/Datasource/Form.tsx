@@ -4,6 +4,8 @@ import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import TrimInput from '@/components/TrimInput';
+import urlNoSpacesRule from '@/pages/datasource/utils/urlNoSpacesRule';
 import Name from '@/pages/datasource/components/items/Name';
 import Description from '@/pages/datasource/components/items/Description';
 import Footer from '@/pages/datasource/components/items/Footer';
@@ -30,17 +32,8 @@ export default function Doris(props: Props) {
       <Card title={t(`datasourceManage:${action}_title`)}>
         <Name />
         <div className='page-title'>FE node</div>
-        <Form.Item
-          label='URL'
-          name={['settings', 'doris.addr']}
-          rules={[
-            { required: true },
-            {
-              validator: (_, value) => (!value.includes(' ') ? Promise.resolve() : Promise.reject(new Error(t('form.url_no_spaces_msg')))),
-            },
-          ]}
-        >
-          <Input placeholder={'localhost:9030'} />
+        <Form.Item label='URL' name={['settings', 'doris.addr']} rules={[{ required: true }, urlNoSpacesRule()]}>
+          <TrimInput placeholder={'localhost:9030'} />
         </Form.Item>
         <div className={!advancedVisible ? 'mb-2' : ''}>
           <Space

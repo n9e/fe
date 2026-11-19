@@ -100,3 +100,5 @@ export {
   mapRelativeTimeRangeToOption,
   isValid,
 };
+
+export { default as AbsoluteTimePicker } from './AbsoluteTimePicker';

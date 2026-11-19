@@ -62,6 +62,19 @@ export default function EditDrawer(props: Props) {
       onClose={onClose}
       footer={
         <Space>
+          <Button
+            type='primary'
+            onClick={() => {
+              if (!id) return;
+              form.validateFields().then((values) => {
+                putItem(id, adjustSubmitValues(values)).then(() => {
+                  onOk();
+                });
+              });
+            }}
+          >
+            {t('common:btn.ok')}
+          </Button>
           <Button onClick={onClose}>{t('common:btn.cancel')}</Button>
           <Button
             loading={testLoading}
@@ -98,19 +111,6 @@ export default function EditDrawer(props: Props) {
             }}
           >
             {t('form.test_connection')}
-          </Button>
-          <Button
-            type='primary'
-            onClick={() => {
-              if (!id) return;
-              form.validateFields().then((values) => {
-                putItem(id, adjustSubmitValues(values)).then(() => {
-                  onOk();
-                });
-              });
-            }}
-          >
-            {t('common:btn.save')}
           </Button>
         </Space>
       }

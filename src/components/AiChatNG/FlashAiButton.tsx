@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
 import { IS_ENT } from '@/utils/constant';
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import LayoutHeaderAiBtn from '@/components/AiChat/AiBtn/LayoutHeaderAiBtn';
+import type { PromptReference } from '@/components/AiChat/PromptEditor';
+import type { IParamsAiAction } from '@/components/AiChat/store';
 
 import { useAiChatContext } from './context';
 import { buildPageFrom, getCurrentPageUrl, getRecommendByUrl } from './recommend';
@@ -29,12 +32,12 @@ function useFlashAiClickHandler() {
   }, [i18n, openAiChat, cachedSessionId]);
 }
 
-function useAiEntClickHandler(options?: { promptList?: string[]; queryPageFrom?: IAiChatPageInfo; queryAction?: IAiChatAction }) {
+function useAiEntClickHandler(options?: { promptList?: string[]; queryPageFrom?: IAiChatPageInfo; queryAction?: IAiChatAction; custom?: IParamsAiAction['custom'] }) {
   const [, setAiChatVisible] = useAiChatVisible();
   const [, setAiExternalConfig] = useAiExternalConfig();
   const [, setParamsAiAction] = useParamsAiAction();
 
-  const { promptList, queryPageFrom, queryAction } = options ?? {};
+  const { promptList, queryPageFrom, queryAction, custom } = options ?? {};
 
   return React.useCallback(() => {
     setAiChatVisible(true);
@@ -47,12 +50,13 @@ function useAiEntClickHandler(options?: { promptList?: string[]; queryPageFrom?:
         createNew: true,
         ...queryPageFrom,
         ...queryAction,
+        ...custom,
         // After spreads: ConfigHost pages live on /flashai*, where AiChat stays
         // in page mode unless forceDrawer is set (knowledge / scheduled-task).
         forceDrawer: true,
-      } as any,
+      },
     });
-  }, [setAiChatVisible, setAiExternalConfig, setParamsAiAction, promptList, queryPageFrom, queryAction]);
+  }, [setAiChatVisible, setAiExternalConfig, setParamsAiAction, promptList, queryPageFrom, queryAction, custom]);
 }
 
 function FlashAiButtonContent() {
@@ -121,6 +125,8 @@ export function AiButton(props: {
   const { size, queryPageFrom, queryAction, promptList, initialMessage, children } = props;
 
   const handleEntClick = useAiEntClickHandler({ promptList, queryPageFrom, queryAction });
+  const canAccess = useCanAccessFlashAiChat();
+  if (IS_ENT && !canAccess) return null;
 
   if (IS_ENT) {
     return (
@@ -133,6 +139,32 @@ export function AiButton(props: {
   return <AiButtonContent {...props} />;
 }
 
+export function useAiChatOpenWithPrompt(prompt?: string, options?: { autoExecute?: boolean; reuseConversation?: boolean; references?: PromptReference[] }) {
+  const trimmedPrompt = prompt?.trim() || '';
+  const { openAiChat, cachedSessionId } = useAiChatContext();
+  const openEntChat = useAiEntClickHandler({
+    custom: {
+      content: trimmedPrompt,
+      prefillOnly: !options?.autoExecute,
+      createNew: !options?.reuseConversation,
+      reuseConversation: !!options?.reuseConversation,
+      references: options?.references,
+    },
+  });
+
+  return React.useCallback(() => {
+    if (IS_ENT) {
+      openEntChat();
+      return;
+    }
+    openAiChat({
+      chatId: options?.reuseConversation ? cachedSessionId : undefined,
+      queryPageFrom: buildPageFrom({ url: getCurrentPageUrl() }),
+      buttonLaunch: { content: trimmedPrompt, autoExecute: !!options?.autoExecute, reuseConversation: !!options?.reuseConversation },
+    });
+  }, [openAiChat, openEntChat, cachedSessionId, trimmedPrompt, options?.autoExecute, options?.reuseConversation]);
+}
+
 export function CustomAiButtonWrap({
   children,
   queryAction,
@@ -141,13 +173,13 @@ export function CustomAiButtonWrap({
   ...rest
 }: // 这里 any 是因为作为 Wrap 会接受很多未知的 props，暂时不想一个个列举
 { children: React.ReactElement } & Record<string, any>) {
+  const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList });
+  const handleClick = useFlashAiClickHandler();
+  const canAccess = useCanAccessFlashAiChat();
+  if (IS_ENT && !canAccess) return null;
   if (IS_ENT) {
-    const handleEntClick = useAiEntClickHandler({ queryAction, queryPageFrom, promptList });
-
     return <span {...rest}>{React.cloneElement(children, { onClick: handleEntClick } as any)}</span>;
   }
-
-  const handleClick = useFlashAiClickHandler();
 
   return <span {...rest}>{React.cloneElement(children, { onClick: handleClick } as any)}</span>;
 }

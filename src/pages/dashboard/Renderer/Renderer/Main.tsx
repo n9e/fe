@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useLayoutEffect } from 'react';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
@@ -35,13 +35,15 @@ import Markdown from '../../Components/Markdown';
 import getPanelCustomTimeDescribe from '../utils/getPanelCustomTimeDescribe';
 import Inspect from '../Inspect';
 import PanelRenderer from '../registry/PanelRenderer';
+import { NO_QUERY_PANEL_TYPES } from '../registry/panelTypes';
 import type { PanelChartProps } from '../registry/types';
 import { resolvePanelColors } from '../../Components/ColorPicker/builtinColors';
 import { IProps } from './index';
 
-const LOADING_BAR_MILLISECONDS_PER_PIXEL = 2.4;
-const LOADING_BAR_MIN_DURATION_MS = 500;
-const LOADING_BAR_MAX_DURATION_MS = 4000;
+/** 高光约以 330px/s 横移，比上一版再慢一些，避免窄面板一闪而过。 */
+const LOADING_BAR_MILLISECONDS_PER_PIXEL = 3;
+const LOADING_BAR_MIN_DURATION_MS = 1080;
+const LOADING_BAR_MAX_DURATION_MS = 7200;
 const LOADING_BAR_FALLBACK_WIDTH = 400;
 
 /**
@@ -67,20 +69,40 @@ function PanelErrorIcon({ label }: { label: string }) {
 }
 
 /**
- * 在面板顶部显示无进度语义的加载动画，反馈查询仍在执行且不占用标题栏操作区域。
+ * 在面板顶部显示无进度语义的扫光，反馈查询仍在执行且不占用标题栏操作区域。
  *
- * 该指示器只表示活动状态，不根据请求耗时推断完成比例。
+ * 时长按加载条的实际宽度计算，这样横移速度跟画出来的距离一致。测量完成前先用传入的 panelWidth。
  */
 function PanelLoadingBar({ label, width }: { label: string; width?: number }) {
+  const barRef = useRef<HTMLDivElement>(null);
+  const [measuredWidth, setMeasuredWidth] = useState<number>();
+
+  useLayoutEffect(() => {
+    const element = barRef.current;
+    if (!element || typeof ResizeObserver === 'undefined') return;
+
+    const update = () => {
+      const nextWidth = element.clientWidth;
+      if (nextWidth > 0) {
+        setMeasuredWidth((current) => (current === nextWidth ? current : nextWidth));
+      }
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className='renderer-loading-bar' role='progressbar' aria-label={label} data-testid='panel-loading-bar' style={{ animationDuration: `${getLoadingBarDuration(width)}ms` }}>
-      <div className='renderer-loading-bar-gradient' />
+    <div ref={barRef} className='renderer-loading-bar' aria-label={label} data-testid='panel-loading-bar'>
+      <div className='renderer-loading-bar-gradient' style={{ animationDuration: `${getLoadingBarDuration(measuredWidth ?? width)}ms` }} />
     </div>
   );
 }
 
 /**
- * 根据面板宽度计算活动条时长，使不同尺寸的面板保持近似的横移速度。
+ * 根据面板宽度计算扫光时长，使不同尺寸的面板保持近似的横移速度。
  *
  * 未获得宽度时使用常见面板宽度作为回退，并限制时长以避免过快或过慢。
  */
@@ -147,7 +169,7 @@ function index(
   const hasPartialFailure = failedRefIds.length > 0 && series.length > 0;
   // 存在请求参考但没有执行快照，表示查询在本地校验阶段被拦截，无需提供刷新入口。
   const isPreflightError = Boolean(requestReference) && (query?.length ?? 0) === 0;
-  const showPanelErrorIcon = Boolean(error) && series.length === 0 && values.type !== 'text' && values.type !== 'iframe';
+  const showPanelErrorIcon = Boolean(error) && series.length === 0 && !NO_QUERY_PANEL_TYPES.includes(values.type);
   const headerError = renderError?.message || error;
   const name = replaceTemplateVariables(values.name, {
     scopedVars: values.scopedVars,
@@ -258,19 +280,23 @@ function index(
           },
         ]
       : []),
-    {
-      key: 'share_btn',
-      label: (
-        <Space>
-          <ShareAltOutlined />
-          {t('share_btn')}
-        </Space>
-      ),
-      onClick: () => {
-        setVisible(false);
-        onShareClick?.();
-      },
-    },
+    ...(values.type !== 'aiButton'
+      ? [
+          {
+            key: 'share_btn',
+            label: (
+              <Space>
+                <ShareAltOutlined />
+                {t('share_btn')}
+              </Space>
+            ),
+            onClick: () => {
+              setVisible(false);
+              onShareClick?.();
+            },
+          },
+        ]
+      : []),
     ...(values.type === 'table'
       ? [
           {
@@ -479,11 +505,11 @@ function index(
             </div>
           )}
         </div>
-        {(loaded || loading || waitingForVariables || values.type === 'text' || values.type === 'iframe') && (
+        {(loaded || loading || waitingForVariables || NO_QUERY_PANEL_TYPES.includes(values.type)) && (
           <div className='renderer-body' style={{ height: values.name ? `calc(100% - 34px)` : '100%' }}>
             {loadingSkeletonVisible ? (
               <PanelLoadingSkeleton label={t('common:loading')} />
-            ) : _.isEmpty(series) && values.type !== 'text' && values.type !== 'iframe' ? (
+            ) : _.isEmpty(series) && !NO_QUERY_PANEL_TYPES.includes(values.type) ? (
               showPanelErrorIcon ? (
                 <PanelErrorIcon label={error} />
               ) : (

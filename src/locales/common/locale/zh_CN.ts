@@ -51,6 +51,7 @@ const zh_CN = {
     cancel: '取消',
     close: '关闭',
     view: '查看',
+    view_operation_history: '查看操作记录',
     more: '更多操作',
     back: '返回',
     edit: '编辑',
@@ -274,7 +275,6 @@ const zh_CN = {
 
   copy_success: '复制成功 {{num}} 条记录',
   request_fail_msg: '网络请求超时，请稍后重试',
-  trim_validator_msg: '前后有空格，请手动删除',
   tags_popover_title: '{{count}} 个',
 };
 export default zh_CN;

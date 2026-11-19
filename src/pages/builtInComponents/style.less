@@ -100,20 +100,36 @@
   }
 
   .w-md-editor-text {
-    height: 100% !important;
+    // Let the highlighted content size both layers so the textarea remains clickable after scrolling.
+    min-height: 100% !important;
   }
 
   .w-md-editor-text-pre,
-  .w-md-editor-text-pre>code,
+  .w-md-editor-text-pre > code,
   .w-md-editor-text-input {
     font-family: unset !important;
+    // Native textarea defaults reset numeric shaping, which must match the highlighted text.
+    font-variant: inherit;
+    font-feature-settings: inherit;
     font-size: 12px !important;
     line-height: 18px !important;
   }
 }
 
+.builtin-components-drawer {
+  .ant-drawer-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    > :not(.builtin-drawer-tabs) {
+      flex-shrink: 0;
+    }
+  }
+}
+
 .builtin-drawer-tabs {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
 
   .ant-tabs-content-holder {
     height: 100%;

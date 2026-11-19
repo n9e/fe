@@ -7,11 +7,9 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "@/store/eventWallInterface": [
-        "src/Packages/EventWall/interface/index.ts"
-      ],
+      "@/store/eventWallInterface": ["src/Packages/EventWall/interface/index.ts"],
       "@/*": ["src/*"],
-      "plus:/*": ["src/plus/*"],
+      "plus:/*": ["src/plus/*"]
     },
     "skipLibCheck": true,
     "esModuleInterop": false,
@@ -33,5 +31,5 @@
     "esm": true
   },
   "include": ["./src"],
-  "exclude": ["./src/Packages/", "./node_modules/**/*", "**/*.test.ts"]
+  "exclude": ["./src/Packages/", "./node_modules/**/*", "**/*.test.ts", "**/*.test.tsx"]
 }

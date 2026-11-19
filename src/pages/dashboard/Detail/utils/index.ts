@@ -131,7 +131,7 @@ export const dashboardTimezoneCacheKey = 'dashboard-timezone-value';
 message.config({
   maxCount: 1,
 });
-export const getDefaultTimeRange = (id: string | number, query: DashboardLocationQuery, dashboardDefaultRangeIndex?: number) => {
+export const getDefaultTimeRange = (id: string | number, query: DashboardLocationQuery, dashboardDefaultRangeIndex?: number, persistState = true) => {
   const defaultRange =
     dashboardDefaultRangeIndex !== undefined && String(dashboardDefaultRangeIndex) !== ''
       ? rangeOptions[dashboardDefaultRangeIndex]
@@ -153,9 +153,9 @@ export const getDefaultTimeRange = (id: string | number, query: DashboardLocatio
       };
     }
     message.error(i18next.t('dashboard:detail.invalidTimeRange'));
-    return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
+    return persistState ? getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange) : defaultRange;
   }
-  return getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange);
+  return persistState ? getDefaultValue(`${dashboardTimeCacheKey}_${id}`, defaultRange) : defaultRange;
 };
 
 export const getDefaultIntervalSeconds = (query: DashboardLocationQuery) => {
@@ -168,11 +168,11 @@ export const getDefaultIntervalSeconds = (query: DashboardLocationQuery) => {
   return undefined;
 };
 
-export const getDefaultTimezone = (id: string | number, query: DashboardLocationQuery) => {
+export const getDefaultTimezone = (id: string | number, query: DashboardLocationQuery, persistState = true) => {
   if (query.__timezone) {
     return query.__timezone;
   }
-  const timezone = window.localStorage.getItem(`${dashboardTimezoneCacheKey}_${id}`);
+  const timezone = persistState ? window.localStorage.getItem(`${dashboardTimezoneCacheKey}_${id}`) : undefined;
   if (timezone) {
     return timezone;
   }

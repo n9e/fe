@@ -71,6 +71,8 @@ interface IProps {
   showExportButton?: boolean; // 是否显示导出按钮
   refetchOnZoom?: boolean;
   noticeBanner?: React.ReactNode; // 查询框与结果区之间的提示横幅（如数据源体检结论），由调用方控制显隐
+  /** Embed the result panel and allow the host to trigger a refresh. */
+  resultsOnly?: { refreshFlag: string };
   /**
    * Lets the page drive the query box the way a user would: write into it,
    * then press 查询. Separate steps on purpose — the assistant's cursor moves
@@ -123,6 +125,7 @@ export default function index(props: IProps) {
     showExportButton,
     refetchOnZoom = false,
     noticeBanner,
+    resultsOnly,
     controlRef,
     onUserContextChange,
   } = props;
@@ -278,8 +281,8 @@ export default function index(props: IProps) {
   });
 
   return (
-    <div className='prom-graph-container'>
-      {headerExtra && globalOperates.enabled ? (
+    <div className={`prom-graph-container${resultsOnly ? ' prom-graph-results-only' : ''}`}>
+      {resultsOnly ? null : headerExtra && globalOperates.enabled ? (
         createPortal(
           <div className='prom-graph-global-operate' style={{ marginTop: 5 }}>
             <Checkbox
@@ -306,78 +309,80 @@ export default function index(props: IProps) {
         </div>
       )}
 
-      <div className={`prom-graph-expression-input-ng${queryExtra ? ' ai-query-prom-with-dock' : ''}`} ref={inputWrapRef}>
-        {/* With a dock, the buttons align to the box's top and the dock hangs under the box only. */}
-        <div className={`flex gap-[8px]${queryExtra ? ' items-start' : ''}`}>
-          <QueryBoxColumn className='flex min-w-0 w-full flex-col' below={queryExtra ? noticeBanner : undefined}>
-            <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
-              <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
-                <PromQLInputNG
-                  prefix={queryExtra}
-                  maxHeight={200}
-                  enableAutocomplete={completeEnabled}
-                  datasourceValue={datasourceValue}
-                  showBuiltinMetrics={showBuiltinMetrics}
-                  interpolateString={(query) => {
-                    return interpolateString({
-                      query,
-                      range,
-                      minStep,
-                    });
-                  }}
-                  onMetricUnitChange={(newUnit) => {
-                    setDefaultUnit(newUnit);
-                  }}
-                  showGlobalMetrics={showGlobalMetrics}
-                  onChangeTrigger={['onBlur', 'onEnter']}
-                  modelResetToken={modelResetTokenRef.current}
-                  value={value}
-                  onDraftChange={(next) => {
-                    if (next !== valueRef.current) {
+      {!resultsOnly && (
+        <div className={`prom-graph-expression-input-ng${queryExtra ? ' ai-query-prom-with-dock' : ''}`} ref={inputWrapRef}>
+          {/* With a dock, the buttons align to the box's top and the dock hangs under the box only. */}
+          <div className={`flex gap-[8px]${queryExtra ? ' items-start' : ''}`}>
+            <QueryBoxColumn className='flex min-w-0 w-full flex-col' below={queryExtra ? noticeBanner : undefined}>
+              <div className='flex-shrink-1 min-w-0 w-full overflow-hidden'>
+                <PromQLInputNGWithTooltipWrapper tooltip={promQLInputTooltip}>
+                  <PromQLInputNG
+                    prefix={queryExtra}
+                    maxHeight={200}
+                    enableAutocomplete={completeEnabled}
+                    datasourceValue={datasourceValue}
+                    showBuiltinMetrics={showBuiltinMetrics}
+                    interpolateString={(query) => {
+                      return interpolateString({
+                        query,
+                        range,
+                        minStep,
+                      });
+                    }}
+                    onMetricUnitChange={(newUnit) => {
+                      setDefaultUnit(newUnit);
+                    }}
+                    showGlobalMetrics={showGlobalMetrics}
+                    onChangeTrigger={['onBlur', 'onEnter']}
+                    modelResetToken={modelResetTokenRef.current}
+                    value={value}
+                    onDraftChange={(next) => {
+                      if (next !== valueRef.current) {
+                        invalidate();
+                        setQueryPaused(true);
+                        change(next);
+                      }
+                    }}
+                    onChange={(newVal) => {
+                      // The user finished typing (blur or Enter): that both shows and runs it.
+                      if (newVal !== valueRef.current) invalidate();
+                      setQueryPaused(false);
+                      change(newVal);
+                      updateSubmitted(newVal);
+                      onChange && onChange(newVal);
+                    }}
+                  />
+                </PromQLInputNGWithTooltipWrapper>
+              </div>
+            </QueryBoxColumn>
+            {extra && (
+              <div className='flex-shrink-0'>
+                {React.cloneElement(extra as React.ReactElement, {
+                  onChange: (newValue?: string) => {
+                    if (typeof newValue === 'string') {
                       invalidate();
-                      setQueryPaused(true);
-                      change(next);
+                      change(newValue);
+                      updateSubmitted(newValue);
                     }
-                  }}
-                  onChange={(newVal) => {
-                    // The user finished typing (blur or Enter): that both shows and runs it.
-                    if (newVal !== valueRef.current) invalidate();
-                    setQueryPaused(false);
-                    change(newVal);
-                    updateSubmitted(newVal);
-                    onChange && onChange(newVal);
-                  }}
-                />
-              </PromQLInputNGWithTooltipWrapper>
-            </div>
-          </QueryBoxColumn>
-          {extra && (
-            <div className='flex-shrink-0'>
-              {React.cloneElement(extra as React.ReactElement, {
-                onChange: (newValue?: string) => {
-                  if (typeof newValue === 'string') {
-                    invalidate();
-                    change(newValue);
-                    updateSubmitted(newValue);
-                  }
-                },
-              })}
-            </div>
-          )}
-          <Button
-            ref={queryButtonRef}
-            className='flex-shrink-0'
-            type='primary'
-            loading={loading}
-            onClick={() => {
-              invalidate();
-              submit();
-            }}
-          >
-            {t('query_btn')}
-          </Button>
+                  },
+                })}
+              </div>
+            )}
+            <Button
+              ref={queryButtonRef}
+              className='flex-shrink-0'
+              type='primary'
+              loading={loading}
+              onClick={() => {
+                invalidate();
+                submit();
+              }}
+            >
+              {t('query_btn')}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
       {tabActiveKey === 'table' && value && includesVariables(value) && (
         <Alert
           style={{ marginBottom: 16 }}
@@ -392,7 +397,7 @@ export default function index(props: IProps) {
       {/* With the AI rail, the banner hangs under the PromQL column so the spine can meet it. */}
       {noticeBanner && !queryExtra ? noticeBanner : null}
       {errorContent && <Alert style={{ marginBottom: 16 }} message={errorContent} type='error' />}
-      <div style={{ minHeight: 0, height: '100%' }}>
+      <div style={{ minHeight: 0, height: resultsOnly ? 'auto' : '100%' }}>
         <Tabs
           destroyInactiveTabPane
           tabBarGutter={0}
@@ -423,7 +428,7 @@ export default function index(props: IProps) {
                 invalidate();
                 updateTimestamp(next);
               }}
-              refreshFlag={refreshFlag}
+              refreshFlag={resultsOnly?.refreshFlag ?? refreshFlag}
               loading={loading}
               setLoading={setLoading}
               defaultUnit={defaultUnit}
@@ -465,7 +470,7 @@ export default function index(props: IProps) {
                   }
                 }}
                 graphOperates={graphOperates}
-                refreshFlag={refreshFlag}
+                refreshFlag={resultsOnly?.refreshFlag ?? refreshFlag}
                 loading={loading}
                 setLoading={setLoading}
                 graphStandardOptionsType={graphStandardOptionsType}

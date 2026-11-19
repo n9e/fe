@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Form, Space, Pagination, Empty, Popover, InputNumber, Select } from 'antd';
+import { Form, Space, Pagination, Empty, Popover, InputNumber, Select, Alert, Button } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import _ from 'lodash';
 import moment from 'moment';
@@ -15,7 +15,10 @@ import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldC
 import { getDateTokenDisplayValue } from '@/pages/logExplorer/components/LogsViewer/components/LogFieldValue/tokenValue';
 
 import { NAME_SPACE, LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY } from '../../../constants';
-import { getLogsQuery, getHistogram } from '../../../services';
+import { getLogsQuery, getHistogram, getESContextLogs, getFullFields } from '../../../services';
+import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
+import { esLogOrderSearchSortFields, esLogOrderStreamField, LOG_SEQ_FIELD, LOG_STREAM_ID_FIELD } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import dslBuilder from '../../../utils/dslBuilder';
 import { getHighlightHtml } from '../../../utils/highlight';
 import { Field, Interval } from '../../types';
@@ -148,7 +151,9 @@ export default function index(props: Props) {
   const fixedRangeRef = useRef<boolean>(false);
   const loadTimeRef = useRef<number | null>(null);
 
-  const service = () => {
+  const queryFieldsRef = useRef<{ key: string; fields: Promise<Field[]> }>();
+  const streamFieldRef = useRef(LOG_STREAM_ID_FIELD);
+  const service = async () => {
     const queryValues = form.getFieldValue('query'); // 实时获取最新的查询条件
     if (refreshFlag && datasourceValue && queryValues.range) {
       const range = parseRange(queryValues.range);
@@ -164,6 +169,31 @@ export default function index(props: Props) {
       }
       rangeRef.current = timeParams;
 
+      const fieldsKey = JSON.stringify([refreshFlag, datasourceValue, queryValues.index, queryValues.allow_hide_system_indices, queryValues.cross_cluster_enabled]);
+      let queryFields: Field[];
+      try {
+        // Pin metadata before page one so automatic queries and later pages use the same sort.
+        if (queryFieldsRef.current?.key !== fieldsKey) {
+          queryFieldsRef.current = {
+            key: fieldsKey,
+            fields: getFullFields(datasourceValue, queryValues.index, {
+              type: 'date',
+              allowHideSystemIndices: !!queryValues.allow_hide_system_indices,
+              crossClusterEnabled: queryValues.cross_cluster_enabled === 1,
+            }).then((res) => res.allFields),
+          };
+        }
+        const fieldsRequest = queryFieldsRef.current;
+        queryFields = await fieldsRequest.fields;
+        if (queryFieldsRef.current !== fieldsRequest) {
+          return { list: [], total: 0, hash: _.uniqueId('logs_'), fields: [], highlights: [] };
+        }
+        streamFieldRef.current = esLogOrderStreamField(queryFields);
+      } catch (error) {
+        if (queryFieldsRef.current?.key === fieldsKey) queryFieldsRef.current = undefined;
+        throw error;
+      }
+
       let requestBody;
       try {
         requestBody = dslBuilder({
@@ -177,12 +207,12 @@ export default function index(props: Props) {
           kuery: queryValues.query,
           from: (serviceParams.current - 1) * serviceParams.pageSize,
           limit: serviceParams.pageSize,
-          sorter: [
-            {
-              field: queryValues.date_field,
-              order: serviceParams.reverse ? 'desc' : 'asc',
-            },
-          ],
+          // 时间相同时按文件流和序号排，同一文件的日志跨页也保持原文顺序
+          sorter: _.map(esLogOrderSearchSortFields(queryFields, queryValues.date_field), (field) => ({
+            field,
+            order: serviceParams.reverse ? 'desc' : 'asc',
+            unmappedType: field === LOG_STREAM_ID_FIELD || field.endsWith('.keyword') ? 'keyword' : field === LOG_SEQ_FIELD ? 'long' : 'date',
+          })),
           _source: true,
           shouldHighlight: true,
         });
@@ -225,7 +255,7 @@ export default function index(props: Props) {
               total: res.total,
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newData, data?.colWidths),
-              fields: filterOutBuiltinFields(getFields(mergedList, queryValues.date_field)),
+              fields: omitLogOrderKeys(filterOutBuiltinFields(getFields(mergedList, queryValues.date_field))),
               highlights: mergedHighlights,
             };
           }
@@ -238,7 +268,7 @@ export default function index(props: Props) {
             total: res.total,
             hash: _.uniqueId('logs_'),
             colWidths: calcColWidthByData(newData),
-            fields: filterOutBuiltinFields(getFields(newData, queryValues.date_field)),
+            fields: omitLogOrderKeys(filterOutBuiltinFields(getFields(newData, queryValues.date_field))),
             highlights: nextHighlights,
           };
         })
@@ -269,6 +299,7 @@ export default function index(props: Props) {
   const {
     data,
     loading,
+    error: metadataError,
     run: fetchLogs,
     mutate: setData,
   } = useRequest<
@@ -384,7 +415,7 @@ export default function index(props: Props) {
 
   const handleFilterFields = useCallback(
     (fieldKeys: string[]) => {
-      return filteredFields(fieldKeys, organizeFields);
+      return filteredFields(omitLogOrderKeys(fieldKeys), organizeFields);
     },
     [organizeFields],
   );
@@ -424,10 +455,41 @@ export default function index(props: Props) {
     return formatedValue;
   }, []);
 
+  const renderOrderContext = useCallback(
+    (raw: Record<string, any> | undefined, variant: 'button' | 'icon') => (
+      <LogOrderContext
+        variant={variant}
+        log={raw}
+        timeField={queryValues?.date_field}
+        organizeFields={organizeFields}
+        formatTime={(time) => String(moment(time).valueOf())}
+        fetchPage={(req) =>
+          getESContextLogs({
+            cate: DatasourceCateEnum.elasticsearch,
+            datasource_id: datasourceValue,
+            query: [{ ...req, index: queryValues?.index, time_field: queryValues?.date_field, stream_field: streamFieldRef.current }],
+          })
+        }
+      />
+    ),
+    [datasourceValue, organizeFields, queryValues?.date_field, queryValues?.index],
+  );
+
   return (
     <>
       {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && histogramFilters}
-      {refreshFlag ? (
+      {metadataError ? (
+        <Alert
+          type='error'
+          showIcon
+          message={t('metadata_load_failed')}
+          action={
+            <Button size='small' loading={loading} onClick={() => fetchLogs()}>
+              {t('metadata_retry')}
+            </Button>
+          }
+        />
+      ) : refreshFlag ? (
         <>
           {!_.isEmpty(data?.list) || !_.isEmpty(histogramData?.data) ? (
             <LogsViewer
@@ -440,6 +502,10 @@ export default function index(props: Props) {
               // props
               id_key='__n9e_id_n9e__'
               raw_key='__n9e_raw_n9e__'
+              logViewerFilterFields={withoutLogOrderFields}
+              logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
+              logViewerExtraRender={IS_PLUS ? (log) => renderOrderContext(log?.__n9e_raw_n9e__, 'button') : undefined}
+              rowPrefixRender={IS_PLUS ? (row) => renderOrderContext(row?.__n9e_raw_n9e__, 'icon') : undefined}
               showExistsAction
               timeField={queryValues?.date_field}
               histogramLoading={histogramLoading}

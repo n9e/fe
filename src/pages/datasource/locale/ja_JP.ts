@@ -78,6 +78,9 @@ const ja_JP = {
     enabled: '有効',
     disabled: '無効',
   },
+  prom_status_link: 'ステータス',
+  prom_status_tip: 'この Prometheus のランタイムとビルド情報を表示',
+  prom_status_open: '新しいウィンドウで開く',
   form: {
     advanced_settings: '詳細設定',
     other: 'その他',
@@ -253,6 +256,13 @@ const ja_JP = {
     group_option: '{{name}}（{{count}} 件）',
     selected_count: '{{checked}} / {{total}} 件選択中',
     datasource_bound: 'インポート時にデータソース「{{name}}」を自動でバインドします',
+    coverage: 'カバー率 {{hit}}/{{total}}',
+    coverage_covered: 'カバー済みメトリクス：',
+    coverage_missing: '不足している指標：',
+    recommended_tip: '選択した収集テンプレートの指標カバー率順に並べ、おすすめ項目を選択しました',
+    coverage_unavailable: '指標カバー率を計算できません。テンプレートは未選択のままです。',
+    no_covered_dashboards: '選択した収集テンプレートの指標に一致するダッシュボードテンプレートはありません。',
+    no_covered_alerts: '選択した収集テンプレートの指標に一致するアラートルールテンプレートはありません。',
   },
 };
 

@@ -82,8 +82,12 @@ const ko_KR = {
     channel_tip: '알림 이벤트를 어떤 매체로 보낼지 고릅니다. 기존 매체로 부족하면 관리자에게 새 매체를 만들어 달라고 요청하세요',
     channel_msg: '통지 매체를 선택하세요',
     template: '메시지 템플릿',
+    callback_url: '콜백 URL',
     template_tip: '통지 내용의 템플릿이며 상황에 따라 다른 템플릿을 쓸 수 있습니다',
     template_msg: '메시지 템플릿을 선택하세요',
+    summary_fields: {
+      bot_name: '봇 이름',
+    },
     severities: '적용 등급',
     severities_tip: '어떤 등급의 알림 이벤트를 전송할지 고릅니다. 고른 등급만 전송되며, 세 등급 모두 고르지 않으면 이 매체는 어떤 이벤트와도 맞지 않아 사실상 꺼 둔 것과 같습니다',
     time_ranges: '적용 시간대',

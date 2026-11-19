@@ -78,6 +78,9 @@ const zh_CN = {
     enabled: '启用',
     disabled: '停用',
   },
+  prom_status_link: '状态页',
+  prom_status_tip: '查看该数据源 Prometheus 的运行与构建信息',
+  prom_status_open: '新窗口打开',
   form: {
     advanced_settings: '高级设置',
     other: '其他',
@@ -246,6 +249,13 @@ const zh_CN = {
     group_option: '{{name}}（{{count}} 条）',
     selected_count: '已选 {{checked}} / {{total}}',
     datasource_bound: '导入时将自动绑定数据源「{{name}}」',
+    coverage: '覆盖 {{hit}}/{{total}}',
+    coverage_covered: '覆盖指标：',
+    coverage_missing: '缺少指标:',
+    recommended_tip: '已按所选采集模板的指标覆盖率排序并勾选推荐项',
+    coverage_unavailable: '无法计算指标覆盖率推荐，模板不会默认勾选。',
+    no_covered_dashboards: '没有与所选采集模板指标匹配的仪表盘模板。',
+    no_covered_alerts: '没有与所选采集模板指标匹配的告警规则模板。',
   },
 };
 export default zh_CN;

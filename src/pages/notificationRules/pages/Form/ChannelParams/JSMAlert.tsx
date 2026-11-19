@@ -3,6 +3,7 @@ import { Col, Form, Input, Row, Space, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { FormListFieldData } from 'antd/lib/form/FormList';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
 import { ChannelItem } from '@/pages/notificationChannels/types';
 
@@ -38,7 +39,7 @@ export default function JSMAlert(props: Props) {
       <Row gutter={16}>
         <Col span={16}>
           <Form.Item
-            {...field}
+            {..._.omit(field, 'key')}
             label={label('api_key')}
             messageVariables={{ label: t('notification_configuration.jsm_alert.api_key') }}
             name={[field.name, 'params', 'api_key']}
@@ -55,7 +56,7 @@ export default function JSMAlert(props: Props) {
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item {...field} label={label('bot_name')} name={[field.name, 'params', 'bot_name']}>
+          <Form.Item {..._.omit(field, 'key')} label={label('bot_name')} name={[field.name, 'params', 'bot_name']}>
             <Input placeholder='SRE team' />
           </Form.Item>
         </Col>

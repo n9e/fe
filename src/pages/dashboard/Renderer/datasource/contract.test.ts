@@ -1,6 +1,7 @@
 import moment from 'moment';
 
 import type { ITarget } from '@/pages/dashboard/types';
+import type { IVariable } from '@/pages/dashboard/Variables/types';
 
 import { buildDashboardQueryRequest, normalizeDashboardQueryResponse, validateDashboardQueryRequest } from './contract';
 import dashboardDatasourceDefinitions, { DASHBOARD_DATASOURCE_CATES } from './registry';
@@ -696,6 +697,41 @@ describe('dashboard unified query contract', () => {
     expect(request).toMatchObject({ from: 1784858400, to: 1784862000, queries: [{ query: { sql: 'select ${host}', nested: { label: '${host}' }, values: ['${host}'] } }] });
     expect(JSON.stringify(request)).not.toMatch(/timezone|max_data_points|request_id/);
     expect(replaceTemplateVariables).toHaveBeenCalledWith('select ${host}', expect.objectContaining({ range: queryOptionsTime, scopedVars }));
+  });
+
+  it('enables Doris SQL LIKE formats throughout panel query interpolation', () => {
+    const replaceTemplateVariables = require('@/pages/dashboard/Variables/utils/replaceTemplateVariables').default as jest.Mock;
+    replaceTemplateVariables.mockClear();
+
+    const orExpression = '${servers:sql_like_or:description}';
+    const andExpression = '${servers:sql_like_and:logs.description}';
+    const variables: IVariable[] = [
+      {
+        name: 'servers',
+        type: 'custom',
+        definition: 'web-01,db-02',
+        datasource: { cate: 'custom' },
+        multi: true,
+        value: ['web-01'],
+      },
+    ];
+
+    buildDashboardQueryRequest({
+      time: { start: moment('2026-07-24T00:00:00.000Z'), end: moment('2026-07-24T01:00:00.000Z') },
+      datasourceList: [],
+      variables,
+      targets: [
+        {
+          refId: 'A',
+          kind: 'query',
+          datasource: { cate: 'doris', id: 1 },
+          query: { query: `SELECT description FROM logs WHERE ${orExpression}`, nested: { filter: andExpression } },
+        },
+      ],
+    });
+
+    expect(replaceTemplateVariables).toHaveBeenCalledWith(`SELECT description FROM logs WHERE ${orExpression}`, expect.objectContaining({ enableDorisSqlLike: true, variables }));
+    expect(replaceTemplateVariables).toHaveBeenCalledWith(andExpression, expect.objectContaining({ enableDorisSqlLike: true, variables }));
   });
 
   it('serializes instant Prometheus queries', () => {

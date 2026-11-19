@@ -52,17 +52,17 @@ export default function PagerDuty(props: Props) {
 
     const results = await Promise.allSettled(tasks);
     // 统计请求失败的项
-        const failedSet = new Set<string>();
-        results.forEach((r) => {
-          if (r.status === 'fulfilled') {
-            const v = r.value as { val: string; ok: boolean };
-            if (!v.ok) failedSet.add(v.val);
-          } else {
-            // promise rejected（理论上不会，但兜底）
-            const v = (r as any).reason?.val;
-            if (v) failedSet.add(v);
-          }
-        });
+    const failedSet = new Set<string>();
+    results.forEach((r) => {
+      if (r.status === 'fulfilled') {
+        const v = r.value as { val: string; ok: boolean };
+        if (!v.ok) failedSet.add(v.val);
+      } else {
+        // promise rejected（理论上不会，但兜底）
+        const v = (r as any).reason?.val;
+        if (v) failedSet.add(v);
+      }
+    });
 
     // 如果有失败项，从当前选中数组中移除它们
     let remainingIds = vals.slice();
@@ -74,7 +74,6 @@ export default function PagerDuty(props: Props) {
       });
 
       // 提示用户有哪些项被移除
-      const failedList = Array.from(failedSet).join(', ');
       const failedListLabels = Array.from(failedSet)
         .map((id) => (channelOptions || []).find((o) => o.value === id)?.label ?? id)
         .join(', ');
@@ -108,9 +107,7 @@ export default function PagerDuty(props: Props) {
     if (ids.length === 0) {
       // 外部初始化为空：清理本地状态与表单（可选）
       setIntegrationKeys([]);
-      form.setFields([
-        { name: ['notify_configs', field.name, 'params', 'pagerduty_integration_keys'], value: [] },
-      ]);
+      form.setFields([{ name: ['notify_configs', field.name, 'params', 'pagerduty_integration_keys'], value: [] }]);
       return;
     }
     handleSelectChange(ids);
@@ -124,7 +121,7 @@ export default function PagerDuty(props: Props) {
             _.map(res, (item) => {
               return {
                 label: `${item.service_name}/${item.integration_summary}`,
-                value: `${item.service_id}-${item.integration_id}`,  //  实际值
+                value: `${item.service_id}-${item.integration_id}`, //  实际值
               };
             }),
           );
@@ -139,11 +136,16 @@ export default function PagerDuty(props: Props) {
 
   return (
     <div>
-      <Form.Item {...field} label={t('notification_configuration.pagerduty.services')} name={[field.name, 'params', 'pagerduty_integration_ids']}>
+      <Form.Item {..._.omit(field, 'key')} label={t('notification_configuration.pagerduty.services')} name={[field.name, 'params', 'pagerduty_integration_ids']}>
         <Select options={channelOptions} showSearch optionFilterProp='label' mode='multiple' onChange={handleSelectChange} />
       </Form.Item>
       {/* 不显示组件，受控 */}
-      <Form.Item {...field} label={t('notification_configuration.pagerduty.services')} name={[field.name, 'params', 'pagerduty_integration_keys']} style={{ display: 'none' }}>
+      <Form.Item
+        {..._.omit(field, 'key')}
+        label={t('notification_configuration.pagerduty.services')}
+        name={[field.name, 'params', 'pagerduty_integration_keys']}
+        style={{ display: 'none' }}
+      >
         <Select options={Object.entries(integrationKeysCacheMap.current).map(([k, v]) => ({ label: v, value: v }))} mode='multiple' value={integrationKeys} />
       </Form.Item>
     </div>

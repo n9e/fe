@@ -17,6 +17,7 @@ import EllipsisText from '@/components/EllipsisText';
 import EmptyGuide from '@/components/EmptyGuide';
 import DocumentDrawer from '@/components/DocumentDrawer';
 import UsageDocs from '@/components/UsageDocs';
+import { DrawerFooterContext, useDrawerFooter } from '@/components/DrawerFooterContext';
 
 import { NS, DOC_URL, FILTER_SESSION_STORAGE_KEY, MAX_NAME_LENGTH } from '../../constants';
 import { Item, getList, putItemsDisabled, deleteItems } from '../../services';
@@ -53,6 +54,7 @@ export default function List({ embedded = false }: ListProps) {
   const { t, i18n } = useTranslation(NS);
   const history = useHistory();
   const { darkMode } = useContext(CommonStateContext);
+  const { footer, context: drawerFooterContext } = useDrawerFooter();
   const [filter, setFilter] = useState<Filter>(readFilter);
   const [data, setData] = useState<{ list: Item[]; loaded: boolean }>({ list: [], loaded: false });
   // 选择态只存 id，行数据渲染时从最新的 data.list 现查：
@@ -402,43 +404,46 @@ export default function List({ embedded = false }: ListProps) {
         // 点一下遮罩就丢掉整张表单的代价太大，只保留 × 与「取消」两个明确入口
         maskClosable={false}
         destroyOnClose
+        footer={footer}
         className='n9e-antd-drawer'
       >
-        {eventPipelineDrawerState.action === 'add' && (
-          <Add
-            onSaved={featchData}
-            onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
-            onOk={() => {
-              resetEventPipelineDrawerState();
-              featchData();
-            }}
-            onCancel={closeEventPipelineDrawer}
-          />
-        )}
-        {eventPipelineDrawerState.action === 'edit' && eventPipelineDrawerState?.id && (
-          <Edit
-            runMutation={runMutation}
-            id={eventPipelineDrawerState.id}
-            onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
-            onOk={() => {
-              resetEventPipelineDrawerState();
-              featchData();
-            }}
-            onCancel={closeEventPipelineDrawer}
-          />
-        )}
-        {eventPipelineDrawerState.action === 'clone' && eventPipelineDrawerState?.data && (
-          <Add
-            initialValues={eventPipelineDrawerState.data}
-            onSaved={featchData}
-            onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
-            onOk={() => {
-              resetEventPipelineDrawerState();
-              featchData();
-            }}
-            onCancel={closeEventPipelineDrawer}
-          />
-        )}
+        <DrawerFooterContext.Provider value={drawerFooterContext}>
+          {eventPipelineDrawerState.action === 'add' && (
+            <Add
+              onSaved={featchData}
+              onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
+              onOk={() => {
+                resetEventPipelineDrawerState();
+                featchData();
+              }}
+              onCancel={closeEventPipelineDrawer}
+            />
+          )}
+          {eventPipelineDrawerState.action === 'edit' && eventPipelineDrawerState?.id && (
+            <Edit
+              runMutation={runMutation}
+              id={eventPipelineDrawerState.id}
+              onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
+              onOk={() => {
+                resetEventPipelineDrawerState();
+                featchData();
+              }}
+              onCancel={closeEventPipelineDrawer}
+            />
+          )}
+          {eventPipelineDrawerState.action === 'clone' && eventPipelineDrawerState?.data && (
+            <Add
+              initialValues={eventPipelineDrawerState.data}
+              onSaved={featchData}
+              onDirtyChange={(dirty) => (formDirtyRef.current = dirty)}
+              onOk={() => {
+                resetEventPipelineDrawerState();
+                featchData();
+              }}
+              onCancel={closeEventPipelineDrawer}
+            />
+          )}
+        </DrawerFooterContext.Provider>
       </Drawer>
     </>
   );

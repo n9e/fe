@@ -37,6 +37,7 @@ function interpolateQueryValue(
   step: number | undefined,
   scopedVars: import('@/pages/dashboard/types').ScopedVariables | undefined,
   variables?: import('@/pages/dashboard/Variables/types').IVariable[],
+  enableDorisSqlLike = false,
 ): unknown {
   if (typeof value === 'string') {
     return replaceTemplateVariables(value, {
@@ -44,20 +45,30 @@ function interpolateQueryValue(
       step,
       scopedVars,
       variables,
+      enableDorisSqlLike,
     });
   }
   if (Array.isArray(value)) {
-    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars, variables));
+    return value.map((item) => interpolateQueryValue(item, range, step, scopedVars, variables, enableDorisSqlLike));
   }
   if (value && typeof value === 'object') {
     return Object.keys(value).reduce<Record<string, unknown>>((result, key) => {
       if (!FORBIDDEN_REQUEST_FIELDS.has(key)) {
-        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars, variables);
+        result[key] = interpolateQueryValue((value as Record<string, unknown>)[key], range, step, scopedVars, variables, enableDorisSqlLike);
       }
       return result;
     }, {});
   }
   return value;
+}
+
+function interpolateExpression(expression: string, range: IRawTimeRange, step: number) {
+  const variables = new Map(getBuiltInVariables(range, { step }).map(({ name, value }) => [name, String(value ?? '')]));
+  // 只替换完整的内置变量名，保留 $A 等查询引用，避免与同名仪表盘变量冲突。
+  return expression.replace(/\$\{(__\w+)\}|\$(__\w+)|\[\[(__\w+)\]\]/g, (placeholder, bracedName, bareName, bracketName) => {
+    const name = bracedName ?? bareName ?? bracketName;
+    return variables.get(name) ?? placeholder;
+  });
 }
 
 function getRawDatasourceQueryPayload(target: ITarget, cate: string): JsonObject {
@@ -102,7 +113,7 @@ function getDatasourceQueryPayload(target: ITarget, cate: string, options: Build
       scopedVars: options.scopedVars,
     });
   }
-  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars, options.variables);
+  return interpolateQueryValue(payload, options.effectiveRange, step, options.scopedVars, options.variables, cate === 'doris');
 }
 
 export interface BuildDashboardQueryRequestOptions {
@@ -153,7 +164,13 @@ export function buildDashboardQueryRequest(options: BuildDashboardQueryRequestOp
       if (!expression.trim()) {
         return [];
       }
-      return [{ kind: 'expression', ref_id: refId, expression }];
+      const step = getDashboardQueryStep({
+        time: effectiveRange,
+        maxDataPoints: options.maxDataPoints,
+        panelWidth: options.panelWidth,
+        minStep: target.step,
+      });
+      return [{ kind: 'expression', ref_id: refId, expression: interpolateExpression(expression, effectiveRange, step) }];
     }
 
     const datasource = target.datasource ?? {

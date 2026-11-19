@@ -99,6 +99,7 @@ interface SiteInfo {
 
 export interface ICommonState {
   hideUsageDocs?: boolean;
+  homeMode?: ContentMode;
   emptyMode?: ContentMode;
   datasourceCateOptions: Cate[];
   groupedDatasourceList: {

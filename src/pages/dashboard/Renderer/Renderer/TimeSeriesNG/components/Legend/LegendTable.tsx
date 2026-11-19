@@ -6,6 +6,8 @@ import { useSize } from 'ahooks';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { isChineseLanguage } from '@/utils/n9eSiteDoc';
+
 import { IPanel } from '../../../../../types';
 import { DataItem } from '../../utils/getLegendData';
 import NameWithTooltip from '../NameWithTooltip';
@@ -53,7 +55,8 @@ function mockLegendData(data: DataItem[], count: number) {
 }
 
 export default function LegendTable(props: Props) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation('dashboard');
+  const legendLng = isChineseLanguage(i18n.language) ? i18n.language : 'en_US';
   const { panel, data, legendColumns, legendSortBy, legendSortDir, onRowClick } = props;
   const options = panel.options || {};
   const detailName = options.legend?.detailName;
@@ -72,7 +75,7 @@ export default function LegendTable(props: Props) {
   const columns: ColumnProps<DataItem>[] = useMemo(() => {
     const cols: ColumnProps<DataItem>[] = [
       {
-        title: `Series (${tableData.length})`,
+        title: `${t('panel.options.legend.series', { lng: legendLng })} (${tableData.length})`,
         dataIndex: 'name',
         width: '100%',
         render: (text: string, record: DataItem) => {
@@ -93,9 +96,7 @@ export default function LegendTable(props: Props) {
     ];
     _.forEach(legendColumns, (column) => {
       cols.push({
-        title: t(`panel.options.legend.${column}`, {
-          lng: 'en_US', // fixed to en_US, optimize column width
-        }),
+        title: t(`panel.options.legend.${column}`, { lng: legendLng }),
         dataIndex: column,
         sorter: (a, b) => a[column].stat - b[column].stat,
         sortOrder: sortState.column === column ? (sortState.dir === 'desc' ? 'descend' : 'ascend') : null,
@@ -105,7 +106,7 @@ export default function LegendTable(props: Props) {
       });
     });
     return cols;
-  }, [tableData.length, legendColumns, sortState.column, sortState.dir, t, detailName, detailUrl]);
+  }, [tableData.length, legendColumns, sortState.column, sortState.dir, t, legendLng, detailName, detailUrl]);
 
   useEffect(() => {
     setSortState({

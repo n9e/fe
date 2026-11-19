@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Drawer, Tabs, Tag } from 'antd';
+import { Alert, Drawer, Tabs, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Tooltip, Space } from 'antd';
 import { DownOutlined, RightOutlined, CopyOutlined } from '@ant-design/icons';
@@ -10,6 +10,8 @@ import { getTargetInformationByIdent } from '../services';
 import './style.less';
 
 interface IProps {
+  inline?: boolean;
+  inlineErrorMessage?: React.ReactNode;
   ident: string;
   targetNode?: React.ReactNode;
   /** 仅渲染抽屉，由父组件控制开关（如表格整行点击打开元信息） */
@@ -199,6 +201,7 @@ export default function TargetMetaDrawer(props: IProps) {
   const [visible, setVisible] = useState(false);
   const groupsName = ['platform', 'cpu', 'memory', 'network', 'filesystem'];
   const [information, setInformation] = useState({});
+  const [inlineLoadFailed, setInlineLoadFailed] = useState(false);
   const [activeTab, setActiveTab] = useState('meta');
 
   const drawerVisible = drawerOnly ? !!drawerOpen : visible;
@@ -206,6 +209,22 @@ export default function TargetMetaDrawer(props: IProps) {
   // 不靠 defaultActiveKey + destroyOnClose，那是把正确性押在别处的一个属性上
   const tabKeys = ['meta', ..._.map(extraTabs, 'key')];
   const currentTab = _.includes(tabKeys, activeTab) ? activeTab : 'meta';
+
+  useEffect(() => {
+    if (!props.inline || !ident) return;
+    let active = true;
+    setInlineLoadFailed(false);
+    getTargetInformationByIdent(ident)
+      .then((res) => {
+        if (active) setInformation(res);
+      })
+      .catch(() => {
+        if (active) setInlineLoadFailed(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [props.inline, ident]);
 
   useEffect(() => {
     if (drawerVisible) setActiveTab(defaultActiveTab || 'meta');
@@ -236,6 +255,8 @@ export default function TargetMetaDrawer(props: IProps) {
   // 元信息本体。抽成变量是为了让它既能直接渲染（没有额外页签时），
   // 又能作为「概览」页签的内容，两条路径共用同一段。
   const meta = _.map(groupsName, (groupName) => <Group key={groupName} name={groupName} data={information[groupName]} />);
+
+  if (props.inline) return inlineLoadFailed ? <Alert type='error' message={props.inlineErrorMessage} /> : <>{meta}</>;
 
   return (
     <>

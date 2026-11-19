@@ -276,7 +276,6 @@ const ko_KR = {
   "msg.sort.success": "순서를 바꿨습니다",
   "copy_success": "{{num}}건을 복사했습니다",
   "request_fail_msg": "네트워크 요청 시간이 초과되었습니다. 잠시 후 다시 시도하세요",
-  "trim_validator_msg": "앞뒤에 공백이 있습니다. 직접 지워 주세요",
   "tags_popover_title": "{{count}}개"
 };
 

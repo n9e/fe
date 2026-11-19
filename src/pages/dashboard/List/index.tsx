@@ -32,6 +32,8 @@ import { Dashboard as DashboardType } from '@/store/dashboardInterface';
 import { getBusiGroupsDashboards, getBusiGroupsPublicDashboards, cloneDashboard, removeDashboards, getDashboard, updateDashboardPublic } from '@/services/dashboardV2';
 import PageLayout from '@/components/pageLayout';
 import { CommonStateContext } from '@/App';
+import { IS_PLUS } from '@/utils/constant';
+import { openAuditHistory } from '@/utils/auditLink';
 import BusinessGroupSideBarWithAll, { getDefaultGidsInDashboard } from '@/components/BusinessGroup/BusinessGroupSideBarWithAll';
 import { getDashboardCompatibleGids } from '@/components/BusinessGroup/presetFilters';
 import EnhancedTable from '@/components/EnhancedTable';
@@ -53,6 +55,7 @@ import Export from './Export';
 import Import, { ModalType } from './Import';
 import { exportDataStringify } from './utils';
 import PublicForm from './PublicForm';
+import SaveToBuiltinModal from './SaveToBuiltinModal';
 
 import './style.less';
 
@@ -69,6 +72,8 @@ const getDefaultPublicSelectGids = (localKey: string) => {
 export default function index() {
   const { t } = useTranslation('dashboard');
   const { businessGroup, perms } = useContext(CommonStateContext);
+  const canViewAudits = IS_PLUS && (perms?.includes('/system/audits') ?? false);
+  const canSaveToBuiltin = perms?.includes('/components/add') ?? false;
   const history = useHistory();
   const location = useLocation();
   const queryParams = queryString.parse(location.search);
@@ -84,6 +89,11 @@ export default function index() {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => getDefaultColumnsConfigs(defaultColumnsConfigs, LOCAL_STORAGE_KEY));
   const columnOptions = buildColumnOptions(defaultColumnsConfigs, t);
   const [importData, setImportData] = useState<{ visible: boolean; busiId?: number; type?: ModalType }>({ visible: false });
+  const [builtinDashboard, setBuiltinDashboard] = useState<DashboardType>();
+
+  useEffect(() => {
+    if (!canSaveToBuiltin) setBuiltinDashboard(undefined);
+  }, [canSaveToBuiltin]);
 
   useUpdateEffect(() => {
     setGids(getDashboardCompatibleGids(businessGroup.ids));
@@ -389,6 +399,19 @@ export default function index() {
                     }
                   : undefined,
               ]) as RowAction[],
+              menu: [
+                {
+                  key: 'save-builtin',
+                  icon: 'dashboard',
+                  text: t('save_builtin.title'),
+                  collapsed: true,
+                  visible: canSaveToBuiltin,
+                  onClick: () => setBuiltinDashboard(record),
+                },
+                ...(canViewAudits
+                  ? [{ key: 'audit', icon: 'view' as const, text: t('common:btn.view_operation_history'), collapsed: true, onClick: () => openAuditHistory('board', record.id) }]
+                  : []),
+              ],
             })}
             actionColumn={{ title: t('common:table.operations'), width: 130 }}
             rowKey='id'
@@ -449,6 +472,7 @@ export default function index() {
           />
         </div>
       </div>
+      {canSaveToBuiltin && builtinDashboard && <SaveToBuiltinModal key={builtinDashboard.id} dashboard={builtinDashboard} onClose={() => setBuiltinDashboard(undefined)} />}
       {importData.busiId && importData.type && (
         <Import
           visible={importData.visible}

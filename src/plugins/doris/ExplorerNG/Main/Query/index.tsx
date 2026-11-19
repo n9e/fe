@@ -15,10 +15,14 @@ import normalizeLogStructures from '@/pages/logExplorer/utils/normalizeLogStruct
 import useFieldConfig from '@/pages/logExplorer/components/RenderValue/useFieldConfig';
 
 import { NAME_SPACE, NG_QUERY_LOGS_OPTIONS_CACHE_KEY, DEFAULT_LOGS_PAGE_SIZE, QUERY_LOGS_TABLE_COLUMNS_WIDTH_CACHE_KEY, HIGHLIGHT_FIELD } from '../../../constants';
-import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram } from '../../../services';
+import { getDorisLogsQuery as queryDorisLogs, getDorisHistogram, getDorisContextLogs } from '../../../services';
+import LogOrderContext from '@/pages/logExplorer/components/LogOrderContext';
+import LogOrderMeta, { omitLogOrderKeys, withoutLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/LogOrderMeta';
+import { getLogOrderAnchor } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import type { QueryRequest } from '@/components/AiQueryDock/usePendingQuery';
 import { Field } from '../../types';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
+import buildDorisLogsQueryRequest from '../../utils/logsQueryRequest';
 import filteredFields from '../../utils/filteredFields';
 import getValidIndexName from '../../utils/getValidIndexName';
 import { scrollToTop, getIsAtBottom } from '../../utils/tableElementMethods';
@@ -160,27 +164,25 @@ export default function index(props: Props) {
         timeParams = snapRangeRef.current as { from: number; to: number };
       }
       rangeRef.current = timeParams;
+      // 滚动加载下一页时带上最后一行的排序值：表支持原文顺序时后端按它翻页，跨页不乱序也不用从头扫
+      const lastRaw = data?.list?.[data.list.length - 1]?.___raw___;
+      const lastAnchor = appendRef.current && lastRaw && typeof lastRaw === 'object' ? getLogOrderAnchor(lastRaw, queryValues.time_field) : undefined;
       const queryStart = Date.now();
-      const reqData = {
+      const reqData = buildDorisLogsQueryRequest({
         cate: DatasourceCateEnum.doris,
-        datasource_id: datasourceValue,
-        query: [
-          {
-            database: queryValues.database,
-            table: queryValues.table,
-            time_field: queryValues.time_field,
-            query: queryValues.query,
-            query_builder_filter: queryValues.query_builder_filter,
-            from: timeParams.from,
-            to: timeParams.to,
-            lines: serviceParams.pageSize,
-            offset: (serviceParams.current - 1) * serviceParams.pageSize,
-            reverse: serviceParams.reverse,
-            default_field: defaultSearchField,
-            highlight: true,
-          },
-        ],
-      };
+        datasourceId: datasourceValue,
+        database: queryValues.database,
+        table: queryValues.table,
+        timeField: queryValues.time_field,
+        query: queryValues.query,
+        queryBuilderFilter: queryValues.query_builder_filter,
+        range: timeParams,
+        lines: serviceParams.pageSize,
+        offset: (serviceParams.current - 1) * serviceParams.pageSize,
+        reverse: serviceParams.reverse,
+        defaultField: defaultSearchField,
+        searchAfter: lastAnchor,
+      });
       queryStrRef.current = JSON.stringify(reqData);
       const logAnalysisSnapshot = IS_ENT ? captureDorisLogAnalysisRequest(reqData) : undefined;
       return getDorisLogsQuery(reqData)
@@ -217,6 +219,7 @@ export default function index(props: Props) {
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs, data?.colWidths),
               highlights: _.concat(data?.highlights || [], nextHighlights),
+              paginationSupported: res.pagination_supported,
             };
           } else {
             if (pageLoadMode === 'infiniteScroll') {
@@ -230,6 +233,7 @@ export default function index(props: Props) {
               hash: _.uniqueId('logs_'),
               colWidths: calcColWidthByData(newLogs),
               highlights: nextHighlights,
+              paginationSupported: res.pagination_supported,
             };
           }
         })
@@ -269,6 +273,7 @@ export default function index(props: Props) {
       hash: string;
       colWidths?: { [key: string]: number };
       highlights?: HighlightMap[];
+      paginationSupported?: boolean;
     },
     any
   >(service, {
@@ -377,6 +382,23 @@ export default function index(props: Props) {
     setExecuteLoading(loading || histogramLoading);
   }, [loading, histogramLoading]);
 
+  const renderOrderContext = (raw: Record<string, any> | undefined, variant: 'button' | 'icon') => (
+    <LogOrderContext
+      variant={variant}
+      log={raw}
+      orderSupported={data?.paginationSupported}
+      timeField={queryValues?.time_field}
+      organizeFields={organizeFields}
+      fetchPage={(req) =>
+        getDorisContextLogs({
+          cate: DatasourceCateEnum.doris,
+          datasource_id: datasourceValue,
+          query: [{ ...req, database: queryValues?.database, table: queryValues?.table, time_field: queryValues?.time_field }],
+        })
+      }
+    />
+  );
+
   return (
     <>
       {(!refreshFlag || (_.isEmpty(data?.list) && _.isEmpty(histogramData?.data))) && (
@@ -421,7 +443,7 @@ export default function index(props: Props) {
               organizeFields={organizeFields}
               setOrganizeFields={setOrganizeFields}
               filterFields={(fieldKeys) => {
-                return filteredFields(fieldKeys, organizeFields);
+                return filteredFields(omitLogOrderKeys(fieldKeys), organizeFields);
               }}
               supportsStacking
               histogramAddonBeforeRender={
@@ -605,6 +627,21 @@ export default function index(props: Props) {
               }}
               range={queryValues?.range}
               {...logAnalysisViewerProps}
+              logViewerFilterFields={withoutLogOrderFields}
+              logViewerRenderCustomTagsArea={(log) => <LogOrderMeta log={log} />}
+              logViewerExtraRender={(log) => (
+                // 企业版的 AI 分析按钮自带 Space（inline-flex），并排的按钮要放进同一个 Space 才能垂直对齐
+                <Space>
+                  {(logAnalysisViewerProps as { logViewerExtraRender?: (log: Record<string, any>) => React.ReactNode }).logViewerExtraRender?.(log)}
+                  {renderOrderContext(log?.___raw___, 'button')}
+                </Space>
+              )}
+              rowPrefixRender={(row) => (
+                <>
+                  {renderOrderContext(row?.___raw___, 'icon')}
+                  {(logAnalysisViewerProps as { rowPrefixRender?: (row: Record<string, any>) => React.ReactNode }).rowPrefixRender?.(row)}
+                </>
+              )}
             />
           ) : loading || histogramLoading ? (
             <div className='flex justify-center'>

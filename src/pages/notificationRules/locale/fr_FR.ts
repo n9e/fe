@@ -82,8 +82,12 @@ const fr_FR = {
     channel_tip: "Choisissez le média par lequel notifier les événements d'alerte. Si les médias existants ne conviennent pas, demandez à un administrateur d'en créer un",
     channel_msg: 'Choisissez un média de notification',
     template: 'Modèles de message',
+    callback_url: 'URL de rappel',
     template_tip: 'Modèle du contenu de la notification ; différents modèles peuvent servir selon les cas',
     template_msg: 'Choisissez un modèle de message',
+    summary_fields: {
+      bot_name: 'Nom du bot',
+    },
     severities: 'Gravités concernées',
     severities_tip:
       "Choisissez les niveaux de gravité à notifier ; seuls les niveaux cochés le sont. Si aucun des trois n'est coché, le média ne correspondra à aucun événement, ce qui revient à le désactiver",

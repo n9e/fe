@@ -51,6 +51,7 @@ const zh_HK = {
     cancel: '取消',
     close: '關閉',
     view: '檢視',
+    view_operation_history: '查看操作記錄',
     more: '更多操作',
     back: '返回',
     edit: '編輯',
@@ -271,7 +272,6 @@ const zh_HK = {
   'msg.sort.success': '排序成功',
   copy_success: '複製成功 {{num}} 條記錄',
   request_fail_msg: '請求失敗，請檢查網絡連線',
-  trim_validator_msg: '前後有空格，請手動刪除',
   tags_popover_title: '{{count}} 個',
 };
 

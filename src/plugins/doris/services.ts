@@ -4,6 +4,7 @@ import { RequestMethod } from '@/store/common';
 import { DorisDBParams, DorisDBTableParams } from './types';
 import { Field, FieldSampleParams, FilterConfig, AggregateConfig } from './ExplorerNG/types';
 import { getEnabledFilters } from './ExplorerNG/utils/filters';
+import type { LogContextPage, LogContextRequest } from '@/pages/logExplorer/components/LogOrderContext/utils';
 
 export type { Field };
 
@@ -167,12 +168,15 @@ export function getDorisLogsQuery(
       reverse: boolean;
       default_field?: string;
       highlight?: boolean;
+      /** 上一页最后一行的排序值；表支持原文顺序时代替 offset */
+      search_after?: { time: string; stream_id: string; seq: string };
     }[];
   },
   options?: Pick<RequestOptionsInit, 'errorHandler'>,
 ): Promise<{
   list: { [index: string]: string }[];
   total: number;
+  pagination_supported?: boolean;
 }> {
   return request('/api/n9e-plus/doris-logs-query', {
     ...options,
@@ -185,6 +189,18 @@ export function getDorisLogsQuery(
       })),
     },
   }).then((res) => res.dat || { list: [], total: 0 });
+}
+
+/** 锚点所在文件流前后的日志，按原文顺序返回；分页语义与 SLS 上下文一致 */
+export function getDorisContextLogs(data: {
+  cate: string;
+  datasource_id: number;
+  query: (LogContextRequest & { database: string; table: string; time_field: string })[];
+}): Promise<LogContextPage> {
+  return request('/api/n9e-plus/doris-context-logs-query', {
+    method: RequestMethod.Post,
+    data,
+  }).then((res) => res.dat);
 }
 
 export const getDsQuery2 = function (data: {
@@ -328,7 +344,7 @@ export function buildSql(data: {
         field: string;
         direction: string;
       }[];
-      limit: number;
+      limit?: number;
     },
   ];
 }): Promise<{
@@ -339,6 +355,8 @@ export function buildSql(data: {
 }> {
   return request('/api/n9e-plus/doris-query-builder', {
     method: RequestMethod.Post,
+    // The query workspace shows this failure inline, so a global notification would only duplicate it.
+    silence: true,
     data: {
       ...data,
       query: data.query.map((query) => ({

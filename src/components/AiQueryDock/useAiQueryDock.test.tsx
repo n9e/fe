@@ -25,6 +25,8 @@ jest.mock('./index', () => ({
     return <div data-testid='ai-dock' data-open={String(props.open)} />;
   },
 }));
+let mockCanAccess = true;
+jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
 const mockActions = { options: [] as AiActionsOptions[], cancel: jest.fn() };
 jest.mock('./useQueryDockActions', () => ({
   useQueryDockActions: (options: AiActionsOptions) => {
@@ -60,6 +62,7 @@ function Host(props: Pick<AiQueryDockOptions<Snapshot>, 'pageParams' | 'onToggle
 }
 
 beforeEach(() => {
+  mockCanAccess = true;
   mockActions.options = [];
   mockActions.cancel.mockClear();
   dockProps = undefined;
@@ -100,4 +103,25 @@ describe('useAiQueryDock', () => {
     expect(mockActions.cancel).toHaveBeenCalled();
     expect(screen.getByTestId('ai-dock')).toHaveAttribute('data-open', 'false');
   });
+});
+
+it('hides both the trigger and chat and disables page actions without access', () => {
+  mockCanAccess = false;
+  render(<Host />);
+  expect(screen.queryByRole('button', { name: 'dock.open' })).toBeNull();
+  expect(screen.queryByTestId('ai-dock')).toBeNull();
+  expect(mockActions.options.every((option) => !option.enabled)).toBe(true);
+});
+
+it('unmounts an open dock, cancels work and does not reopen after access returns', () => {
+  const { rerender } = render(<Host />);
+  fireEvent.click(screen.getByRole('button', { name: 'dock.open' }));
+  mockCanAccess = false;
+  rerender(<Host />);
+  expect(screen.queryByTestId('ai-dock')).toBeNull();
+  expect(mockActions.cancel).toHaveBeenCalled();
+  expect(mockActions.options[mockActions.options.length - 1].enabled).toBe(false);
+  mockCanAccess = true;
+  rerender(<Host />);
+  expect(screen.getByTestId('ai-dock')).toHaveAttribute('data-open', 'false');
 });

@@ -32,6 +32,7 @@ export default function index(props: IProps) {
   const { t } = useTranslation('dashboard');
   const { preNamePrefix = [], namePrefix = ['options', 'valueMappings'] } = props;
   const form = Form.useFormInstance();
+  // 字段注册使用 Form.List 相对路径，读写表单实例使用完整路径。
   const namePath = [...preNamePrefix, ...namePrefix];
   const [modalForm] = Form.useForm<{ valueMappings?: IValueMapping[] }>();
   const [modalVisible, setModalVisible] = useState(false);
@@ -44,22 +45,16 @@ export default function index(props: IProps) {
 
   return (
     <Panel header={t('panel.options.valueMappings.title')}>
-      <Form.Item noStyle shouldUpdate>
-        {({ getFieldValue }) => {
-          const valueMappings = (getFieldValue(namePath) || []) as IValueMapping[];
-
-          return (
-            <Preview
-              valueMappings={valueMappings}
-              editText={t('panel.options.valueMappings.edit_btn')}
-              onEdit={() => {
-                modalForm.resetFields();
-                modalForm.setFieldsValue({ valueMappings: _.cloneDeep(valueMappings) });
-                setModalVisible(true);
-              }}
-            />
-          );
-        }}
+      <Form.Item name={namePrefix} valuePropName='valueMappings' noStyle>
+        <Preview
+          editText={t('panel.options.valueMappings.edit_btn')}
+          onEdit={() => {
+            const valueMappings = (form.getFieldValue(namePath) || []) as IValueMapping[];
+            modalForm.resetFields();
+            modalForm.setFieldsValue({ valueMappings: _.cloneDeep(valueMappings) });
+            setModalVisible(true);
+          }}
+        />
       </Form.Item>
       <Modal
         forceRender
@@ -73,9 +68,7 @@ export default function index(props: IProps) {
         }}
         onOk={() => {
           modalForm.validateFields().then((values) => {
-            const valuesClone = _.cloneDeep(form.getFieldsValue());
-            _.set(valuesClone, namePath, _.cloneDeep(values.valueMappings || []));
-            form.setFieldsValue(valuesClone);
+            form.setFields([{ name: namePath, value: _.cloneDeep(values.valueMappings || []) }]);
             setModalVisible(false);
           });
         }}

@@ -78,6 +78,9 @@ const ru_RU = {
     enabled: 'Включено',
     disabled: 'Отключено',
   },
+  prom_status_link: 'Статус',
+  prom_status_tip: 'Смотреть сведения о работе и сборке этого Prometheus',
+  prom_status_open: 'Открыть в новом окне',
   form: {
     advanced_settings: 'Расширенные настройки',
     other: 'Другое',
@@ -254,6 +257,13 @@ const ru_RU = {
     group_option: '{{name}} ({{count}})',
     selected_count: 'Выбрано {{checked}} из {{total}}',
     datasource_bound: 'При импорте будет автоматически привязан источник «{{name}}»',
+    coverage: 'Покрытие {{hit}}/{{total}}',
+    coverage_covered: 'Покрытые метрики:',
+    coverage_missing: 'Отсутствующие метрики:',
+    recommended_tip: 'Отсортировано по покрытию метрик выбранных шаблонов сбора; рекомендованные элементы выбраны.',
+    coverage_unavailable: 'Не удалось рассчитать покрытие метрик. Шаблоны не отмечены.',
+    no_covered_dashboards: 'Нет шаблонов дашбордов, соответствующих метрикам выбранных шаблонов сбора.',
+    no_covered_alerts: 'Нет шаблонов правил оповещений, соответствующих метрикам выбранных шаблонов сбора.',
   },
 };
 

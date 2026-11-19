@@ -4,6 +4,8 @@ import { ChannelItem } from './types';
 
 export type { ChannelItem };
 
+export const SIMPLIFIED_ITEMS_CACHE_KEY = 'notification-channels-simplified-items';
+
 export function getItems(): Promise<ChannelItem[]> {
   return request('/api/n9e/notify-channel-configs', {
     method: RequestMethod.Get,

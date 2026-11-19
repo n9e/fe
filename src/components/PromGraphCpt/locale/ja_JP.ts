@@ -12,7 +12,7 @@ const ja_JP = {
   time: '時間',
   unit: '単位',
   enable_autocomplete: 'オートコンプリートを有効にする',
-  evaluation_time: '評価時間を選択',
+  evaluation_time: '現在時刻',
   tooltip_mode: 'ツールチップモード',
   tooltip_mode_single: '単一',
   tooltip_mode_all: 'すべて',

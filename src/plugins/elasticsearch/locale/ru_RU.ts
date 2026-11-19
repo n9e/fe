@@ -1,4 +1,6 @@
 const ru_RU = {
+  metadata_load_failed: 'Не удалось загрузить поля индекса. Запрос журналов не выполнен. Повторите попытку.',
+  metadata_retry: 'Повторить',
   query: {
     range: 'Query range',
     sql_required: 'SQL is required',

@@ -49,7 +49,7 @@ export default function ChatWebhook(props: Props) {
     <Row gutter={16}>
       <Col span={16}>
         <Form.Item
-          {...field}
+          {..._.omit(field, 'key')}
           label={label('webhook_url')}
           messageVariables={{ label: t(k('webhook_url')) }}
           name={[field.name, 'params', 'webhook_url']}
@@ -85,7 +85,7 @@ export default function ChatWebhook(props: Props) {
         </Form.Item>
       </Col>
       <Col span={8}>
-        <Form.Item {...field} label={label('bot_name')} name={[field.name, 'params', 'bot_name']}>
+        <Form.Item {..._.omit(field, 'key')} label={label('bot_name')} name={[field.name, 'params', 'bot_name']}>
           <Input placeholder={rule.namePlaceholder} />
         </Form.Item>
       </Col>

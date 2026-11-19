@@ -4,12 +4,13 @@ import { Item } from './types';
 
 export type { Item };
 
-export function getItems(notify_channel_ids?: string): Promise<Item[]> {
+export function getItems(notify_channel_ids?: string, options?: { silence?: boolean }): Promise<Item[]> {
   return request('/api/n9e/message-templates', {
     method: RequestMethod.Get,
     params: {
       notify_channel_ids,
     },
+    silence: options?.silence,
   }).then((res) => {
     return res.dat ?? [];
   });
@@ -61,9 +62,7 @@ export interface PreviewFieldResult {
  * 预览事件来源：历史事件需要环境里真有告警，模拟事件用于全新环境。
  * 与工作流试跑 / 通知规则测试同一套语义。
  */
-export type PreviewEventSource =
-  | { event_ids: number[]; use_mock_event?: false }
-  | { use_mock_event: true; mock_severity?: number; mock_is_recovered?: boolean };
+export type PreviewEventSource = { event_ids: number[]; use_mock_event?: false } | { use_mock_event: true; mock_severity?: number; mock_is_recovered?: boolean };
 
 export function preview(
   data: PreviewEventSource & {

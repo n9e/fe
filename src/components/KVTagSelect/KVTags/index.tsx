@@ -2,11 +2,13 @@ import React, { useEffect } from 'react';
 import { Form, Row, Col, Space, Tooltip } from 'antd';
 import { PlusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useRequest } from 'ahooks';
 import _ from 'lodash';
 
 import Markdown from '@/components/Markdown';
 
 import { getEventTagKeys } from '../services';
+import { EVENT_TAG_KEYS_CACHE_KEY, EVENT_TAG_KEYS_CACHE_STALE_TIME } from '../constants';
 import TagItem from './TagItem';
 
 interface Props {
@@ -48,12 +50,11 @@ export default function index(props: Props) {
     rules = [],
   } = props;
   const restField = _.omit(field, ['key', 'name']);
-  const [keyOptions, setKeyOptions] = React.useState<
-    {
-      label: string;
-      value: string | number;
-    }[]
-  >([]);
+  const { data: eventTagKeys } = useRequest<string[], []>(getEventTagKeys, {
+    cacheKey: EVENT_TAG_KEYS_CACHE_KEY,
+    staleTime: EVENT_TAG_KEYS_CACHE_STALE_TIME,
+  });
+  const keyOptions = React.useMemo(() => _.map(eventTagKeys ?? [], (item) => ({ label: item, value: item })), [eventTagKeys]);
 
   // 监听当前Form.List的值变化
   const currentFullName = _.concat(fullName, name);
@@ -84,16 +85,6 @@ export default function index(props: Props) {
       return () => clearTimeout(timer);
     }
   }, [currentValues, currentFullName]);
-
-  useEffect(() => {
-    getEventTagKeys()
-      .then((res) => {
-        setKeyOptions(_.map(res, (item) => ({ label: item, value: item })));
-      })
-      .catch(() => {
-        setKeyOptions([]);
-      });
-  }, []);
 
   return (
     <Form.List {...restField} name={name} rules={_.concat([validateUniqueKeys], rules)} initialValue={initialValue}>

@@ -32,39 +32,60 @@
   }
 }
 
-/** 以固定速度横移的渐变条仅表示查询活动，不表达实际进度。 */
+/**
+ * 高光从面板最左侧进入：左侧由细到粗，右侧由粗到细，两端都不硬切。
+ * 淡出后留出空白再循环。只表示查询仍在进行，不表达完成比例。
+ */
 @keyframes renderer-loading-bar-slide {
   from {
     transform: translateX(-50%);
   }
 
   to {
-    transform: translateX(100%);
+    transform: translateX(0);
   }
 }
 
 .renderer-loading-bar {
+  --renderer-loading-bar-rgb: var(--fc-fill-success-rgb);
   position: absolute;
   top: 0;
   left: 0;
   z-index: 2;
   width: 100%;
+  height: 2px;
+  overflow: hidden;
   pointer-events: none;
+}
+
+.renderer-loading-bar-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background-image: linear-gradient(
+    90deg,
+    rgb(var(--renderer-loading-bar-rgb) / 0) 0%,
+    rgb(var(--renderer-loading-bar-rgb)) 9%,
+    rgb(var(--renderer-loading-bar-rgb)) 15%,
+    rgb(var(--renderer-loading-bar-rgb) / 0) 26%,
+    rgb(var(--renderer-loading-bar-rgb) / 0) 50%,
+    rgb(var(--renderer-loading-bar-rgb)) 59%,
+    rgb(var(--renderer-loading-bar-rgb)) 65%,
+    rgb(var(--renderer-loading-bar-rgb) / 0) 76%,
+    rgb(var(--renderer-loading-bar-rgb) / 0) 100%
+  );
+  mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
   animation-name: renderer-loading-bar-slide;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   will-change: transform;
 }
 
-.renderer-loading-bar-gradient {
-  width: 28%;
-  height: 1px;
-  background: linear-gradient(90deg, rgb(var(--fc-primary-rgb) / 0) 0%, rgb(var(--fc-primary-rgb)) 80.75%, rgb(var(--fc-primary-rgb) / 0) 100%);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .renderer-loading-bar {
-    left: 36%;
+  .renderer-loading-bar-gradient {
     animation: none;
   }
 }

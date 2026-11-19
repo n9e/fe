@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import _ from 'lodash';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { Form, Card, Space, Input, Select, Switch, Button, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import AffixWrapper from '@/components/AffixWrapper';
@@ -9,22 +10,24 @@ import { Link, useLocation } from 'react-router-dom';
 
 import { getTeamInfoList } from '@/services/manage';
 import { getBusiGroupsAlertRules } from '@/services/warning';
+import { getEventTagKeys } from '@/components/KVTagSelect/services';
 import { SIZE } from '@/utils/constant';
 import { scrollToFirstError } from '@/utils';
 import { getPageFromSearch } from '@/utils/urlPage';
 import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/SectionCard';
-import { ChannelItem, getSimplifiedItems as getNotificationChannels } from '@/pages/notificationChannels/services';
+import { ChannelItem, getSimplifiedItems as getNotificationChannels, SIMPLIFIED_ITEMS_CACHE_KEY } from '@/pages/notificationChannels/services';
+import { EVENT_TAG_KEYS_CACHE_KEY, EVENT_TAG_KEYS_CACHE_STALE_TIME } from '@/components/KVTagSelect/constants';
 
 // @ts-ignore
 import ExtraConfig from 'plus:/parcels/notificationRules/ExtraConfig';
 
-import { NS, DEFAULT_VALUES } from '../../constants';
+import { NS, DEFAULT_VALUES, OPTIONS_CACHE_STALE_TIME } from '../../constants';
 import { RuleItem } from '../../types';
 import { normalizeFormValues } from '../../utils/normalizeValues';
-import { getEventTags } from '../../services';
 import RuleConfig from './RuleConfig';
 import EventPipelineConfigs from './EventPipelineConfigs';
 import { useGlobalState } from './Attributes/globalState';
+import { DrawerFooterContext } from '@/components/DrawerFooterContext';
 
 interface Props {
   disabled?: boolean;
@@ -48,11 +51,12 @@ function buildAutoName(channelName: string | undefined, notifyConfig: any, teams
 export default function FormCpt(props: Props) {
   const { t, i18n } = useTranslation(NS);
   const { disabled, initialValues, onOk, onCancel } = props;
+  const { setFooter: setDrawerFooter, refreshFooter } = useContext(DrawerFooterContext);
+  const isDrawer = !!onCancel;
   const location = useLocation();
   const [form] = Form.useForm();
   const [userGroups, setUserGroups] = useState<{ id: number; name: string }[]>([]);
   const [activeIndex, setActiveIndex] = useState<number>();
-  const [eventKeys, setEventKeys] = useState<string[]>([]);
   const [, setAlertRules] = useGlobalState('alertRules');
 
   const sections = useMemo(() => {
@@ -99,9 +103,60 @@ export default function FormCpt(props: Props) {
   const [noteVisible, setNoteVisible] = useState(() => !!initialValues?.description);
 
   // 媒介列表，按第 1 条通知配置的 channel_id 反查媒介名，用于自动生成规则名称
-  const [channels, setChannels] = useState<ChannelItem[]>([]);
+  const { data: channelData } = useRequest<ChannelItem[], []>(getNotificationChannels, {
+    cacheKey: SIMPLIFIED_ITEMS_CACHE_KEY,
+    staleTime: OPTIONS_CACHE_STALE_TIME,
+    onError: (error) => console.error(error),
+  });
+  const channels = useMemo(() => channelData ?? [], [channelData]);
+  const { data: eventTagData } = useRequest<string[], []>(getEventTagKeys, {
+    cacheKey: EVENT_TAG_KEYS_CACHE_KEY,
+    staleTime: EVENT_TAG_KEYS_CACHE_STALE_TIME,
+  });
+  const eventKeys = useMemo(() => eventTagData ?? [], [eventTagData]);
   const lastAutoNameRef = useRef<string>();
   const firstNotifyConfig = Form.useWatch(['notify_configs', 0], form);
+
+  const renderFooter = useMemoizedFn(() =>
+    disabled ? null : (
+      <Space>
+        <Button
+          type='primary'
+          onClick={() => {
+            form
+              .validateFields()
+              .then(async (values) => {
+                onOk && onOk(normalizeFormValues(values));
+              })
+              .catch((err) => {
+                console.error(err);
+                expandErrorSections(err?.errorFields);
+                scrollToFirstError();
+              });
+          }}
+        >
+          {t(isDrawer ? 'common:btn.ok' : 'common:btn.save')}
+        </Button>
+        {onCancel ? (
+          <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
+        ) : (
+          <Link to={{ pathname: `/${NS}`, search: `?page=${getPageFromSearch(location.search)}` }}>
+            <Button>{t('common:btn.cancel')}</Button>
+          </Link>
+        )}
+      </Space>
+    ),
+  );
+
+  useEffect(() => {
+    if (!isDrawer) return;
+    setDrawerFooter(() => renderFooter);
+    return () => setDrawerFooter(null);
+  }, [isDrawer, renderFooter, setDrawerFooter]);
+
+  useEffect(() => {
+    if (isDrawer) refreshFooter();
+  }, [disabled, isDrawer, refreshFooter]);
 
   useEffect(() => {
     getTeamInfoList().then((res) => {
@@ -112,20 +167,9 @@ export default function FormCpt(props: Props) {
         form.setFieldsValue({ user_group_ids: [teams[0].id] });
       }
     });
-    getEventTags().then((res) => {
-      setEventKeys(res ?? []);
-    });
     getBusiGroupsAlertRules().then((res) => {
       setAlertRules(_.map(res.dat, (item) => ({ id: item.id, name: item.name })));
     });
-    getNotificationChannels()
-      .then((res) => {
-        setChannels(res);
-      })
-      .catch((error) => {
-        console.error(error);
-        setChannels([]);
-      });
   }, []);
 
   // 自动命名：仅当名称为空或仍是上次自动生成值时覆盖，用户手动改过则不再干预
@@ -305,35 +349,10 @@ export default function FormCpt(props: Props) {
 
         <ExtraConfig eventKeys={eventKeys} baseIndex={3} toggleAllSignal={toggleAllSignal} />
       </div>
-      {!disabled && (
+      {!disabled && !isDrawer && (
         <AffixWrapper>
           <Card size='small' className='affix-bottom-shadow max-w-[1200px] mx-auto'>
-            <Space>
-              <Button
-                type='primary'
-                onClick={() => {
-                  form
-                    .validateFields()
-                    .then(async (values) => {
-                      onOk && onOk(normalizeFormValues(values));
-                    })
-                    .catch((err) => {
-                      console.error(err);
-                      expandErrorSections(err?.errorFields);
-                      scrollToFirstError();
-                    });
-                }}
-              >
-                {t('common:btn.save')}
-              </Button>
-              {onCancel ? (
-                <Button onClick={onCancel}>{t('common:btn.cancel')}</Button>
-              ) : (
-                <Link to={{ pathname: `/${NS}`, search: `?page=${getPageFromSearch(location.search)}` }}>
-                  <Button>{t('common:btn.cancel')}</Button>
-                </Link>
-              )}
-            </Space>
+            {renderFooter()}
           </Card>
         </AffixWrapper>
       )}

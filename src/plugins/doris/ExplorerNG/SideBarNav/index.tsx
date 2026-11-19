@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Form, Segmented } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -9,6 +9,7 @@ import Meta from '@/components/Meta';
 
 import { NAME_SPACE, DATE_TYPE_LIST } from '../../constants';
 import { getDorisIndex, getDorisTableConfig } from '../../services';
+import { filterLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/utils';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import getIndexTimeRange from '../utils/getIndexTimeRange';
@@ -30,6 +31,11 @@ interface Props {
   setStackByField: (field?: string) => void;
   defaultSearchField?: string;
   setDefaultSearchField: (field?: string) => void;
+
+  /** Settings the statement depends on changed: the manual editor takes over from the builder. */
+  onQueryContextChange?: () => void;
+  /** A statement was generated for the user, e.g. from a field statistic. */
+  onGeneratedSql?: () => void;
 }
 
 export default function index(props: Props) {
@@ -47,6 +53,9 @@ export default function index(props: Props) {
     setStackByField,
     defaultSearchField,
     setDefaultSearchField,
+
+    onQueryContextChange,
+    onGeneratedSql,
   } = props;
 
   const form = Form.useFormInstance();
@@ -55,6 +64,10 @@ export default function index(props: Props) {
   const database = Form.useWatch(['query', 'database']);
   const table = Form.useWatch(['query', 'table']);
   const refreshFlag = Form.useWatch('refreshFlag');
+  // `refreshFlag` is also cleared when a conversion merely applies a statement (no query ran), so watch the last
+  // value that marked a real run: the field list is not refetched on every convert.
+  const lastQueryFlag = useRef<string | number>();
+  if (refreshFlag) lastQueryFlag.current = refreshFlag;
 
   const navMode = 'fields';
 
@@ -66,6 +79,8 @@ export default function index(props: Props) {
       let fields: Field[] = [];
       try {
         fields = await getDorisIndex({ cate: DatasourceCateEnum.doris, datasource_id: datasourceValue, database, table, ...getIndexTimeRange(form) });
+        // 原文顺序字段只用于排序和上下文，不作为可检索、可统计的字段
+        fields = filterLogOrderFields(fields);
       } catch {
         // getDorisIndex 失败时继续执行，fields 保持空数组
       }
@@ -119,7 +134,7 @@ export default function index(props: Props) {
     },
     {
       // 选中库表后必须立即获取字段以填充 time_field；refreshFlag 仅用于查询提交后按当前时间范围重新获取字段。
-      refreshDeps: [datasourceValue, database, table, refreshFlag],
+      refreshDeps: [datasourceValue, database, table, lastQueryFlag.current],
       onError: () => {
         onIndexDataChange([]);
       },
@@ -176,9 +191,13 @@ export default function index(props: Props) {
               disabled={disabled}
               datasourceValue={datasourceValue}
               onChange={() => {
+                // The statement names the database it runs against: drop it with the context it belonged to and
+                // go back to writing SQL by hand.
+                onQueryContextChange?.();
                 form.setFieldsValue({
                   refreshFlag: undefined,
                   query: {
+                    sql: undefined,
                     stackByField: undefined,
                     defaultSearchField: undefined,
                     table: undefined,
@@ -194,9 +213,11 @@ export default function index(props: Props) {
               datasourceValue={datasourceValue}
               database={database}
               onChange={() => {
+                onQueryContextChange?.();
                 form.setFieldsValue({
                   refreshFlag: undefined,
                   query: {
+                    sql: undefined,
                     stackByField: undefined,
                     defaultSearchField: undefined,
                     time_field: undefined,
@@ -212,7 +233,10 @@ export default function index(props: Props) {
                 return _.includes(DATE_TYPE_LIST, item.type.toLowerCase());
               })}
               onChange={() => {
-                executeQuery();
+                onQueryContextChange?.();
+                form.setFieldsValue({ refreshFlag: undefined, query: { sql: undefined } });
+                // The statement was just dropped, so only a search-mode filter still has something to run.
+                if (syntax !== 'sql') executeQuery();
               }}
             />
           </Form.Item>
@@ -229,6 +253,7 @@ export default function index(props: Props) {
             setStackByField={setStackByField}
             defaultSearchField={defaultSearchField}
             setDefaultSearchField={setDefaultSearchField}
+            onGeneratedSql={onGeneratedSql}
           />
         </div>
       </div>

@@ -1,4 +1,6 @@
 import _ from 'lodash';
+// @ts-ignore 商业版扩展由 plusResolve 解析，开源版使用恒等转换。
+import { normalizeChannelFormValues, normalizeChannelInitialValues } from 'plus:/parcels/NotificationChannels';
 
 import { ChannelItem } from '../types';
 
@@ -28,7 +30,7 @@ export function normalizeFormValues(values: ChannelItem): any {
   const request_config = values.request_config ?? {};
   const http_request_config = request_config.http_request_config ?? {};
 
-  return {
+  return normalizeChannelFormValues({
     ...values,
     request_config: {
       ...omitBlankRequestConfigs(request_config),
@@ -43,7 +45,7 @@ export function normalizeFormValues(values: ChannelItem): any {
         },
       },
     },
-  };
+  });
 }
 
 export function normalizeInitialValues(values: any): ChannelItem {
@@ -51,7 +53,7 @@ export function normalizeInitialValues(values: any): ChannelItem {
   const request_config = values.request_config ?? {};
   const http_request_config = request_config.http_request_config ?? {};
 
-  return {
+  return normalizeChannelInitialValues({
     ...values,
     request_config: {
       ...request_config,
@@ -76,5 +78,5 @@ export function normalizeInitialValues(values: any): ChannelItem {
         },
       },
     },
-  };
+  });
 }

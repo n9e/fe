@@ -23,6 +23,11 @@ const en_US = {
     1. Query the number of log rows in the last 5 minutes SELECT count() as cnt from database.table WHERE date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)<br />
     2. Query the number of log rows in the selected time interval SELECT COUNT(*) AS \`cnt\` FROM \`database\`.\`table\` WHERE $__timeFilter(\`timestamp\`)<br />
     For more information about SQL mode, please refer to <a>Doris SQL Mode</a>`,
+    variable_format_tip:
+      'Advanced variable formats include ${variable:csv}, raw, regex, json, text, and sqlstring; text uses option labels. Doris-only LIKE: ${variable:sql_like_or:column} or ${variable:sql_like_and:column}.',
+    advanced_variable_formats: 'Advanced variable formats',
+    dashboard_variable_tip:
+      "Doris query variables: multi-value variables are converted by default to a comma-separated SQL value list in single quotes. For example, ${host} becomes 'host01', 'host02' and can be used in IN (${host}).<1/>Use ${variable:format} to specify an output format; text returns option labels. Doris-only LIKE formats are ${host:sql_like_or:description} and ${host:sql_like_and:table.column}.<1/>See <advanced>Advanced variable formats</advanced> for every format and example.<1/>Backend time macros are available, including $__timeFilter(...), $__timeFrom(), and $__timeTo(). See the <a>Query conditions</a> documentation for details.",
     query_placeholder: 'SELECT count(*) as count FROM db_name.table_name WHERE ts >= now() - 5m',
     execute: 'Execute',
     database: 'Database',
@@ -34,6 +39,7 @@ const en_US = {
     time_field_tip: '<span>To link this time picker, you need to use a time macro in the query condition</span><br/>Introduction to time macro usage: <a>Details</a>',
     query: 'Query',
     query_required: 'Query is required',
+    historical_records: 'Historical records',
     advancedSettings: {
       title: 'Auxiliary settings',
       tags_placeholder: 'Enter multiple tags by pressing Enter',

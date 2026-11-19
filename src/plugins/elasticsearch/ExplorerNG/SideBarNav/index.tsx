@@ -17,6 +17,7 @@ import { getIndices, getFullFields } from '../../services';
 import { HandleValueFilterParams, Field } from '../types';
 import { getOrganizeFieldsFromLocalstorage } from '../utils/organizeFieldsLocalstorage';
 import FieldsSidebar from './FieldsSidebar';
+import { filterLogOrderFields } from '@/pages/logExplorer/components/LogOrderContext/utils';
 
 interface Props {
   disabled?: boolean;
@@ -36,12 +37,15 @@ interface Props {
   };
 
   isOpenSearch?: boolean;
+
+  /** The index/date field changed: the builder and its statement belong to the old context. */
+  onQueryContextChange?: () => void;
 }
 
 export default function indexCpt(props: Props) {
   const { t } = useTranslation(NAME_SPACE);
   const { esIndexMode } = useContext(CommonStateContext);
-  const { disabled, executeQuery, organizeFields, setOrganizeFields, onIndexDataChange, handleValueFilter, requestParams, isOpenSearch } = props;
+  const { disabled, executeQuery, organizeFields, setOrganizeFields, onIndexDataChange, handleValueFilter, requestParams, isOpenSearch, onQueryContextChange } = props;
 
   const indexPatternsAuthorized = useIsAuthorized(['/log/index-patterns']);
 
@@ -71,7 +75,7 @@ export default function indexCpt(props: Props) {
         crossClusterEnabled: queryValues?.cross_cluster_enabled === 1,
       })
         .then((res) => {
-          const fieldData = _.map(res.allFields, (item) => {
+          const fieldData: Field[] = _.map(res.allFields, (item) => {
             return {
               ...item,
               indexable: true,
@@ -79,9 +83,11 @@ export default function indexCpt(props: Props) {
           });
           setDateFields(res.fields);
           onIndexDataChange(fieldData);
+          // 侧栏只展示可检索字段；indices 模式会提前 return，过滤后的数组必须在这里统一算好
+          const sidebarFieldData = filterLogOrderFields(fieldData);
           if (queryValues?.mode === 'indices') {
             const query = form.getFieldValue('query');
-            if (!query) return fieldData;
+            if (!query) return sidebarFieldData;
             const dateField = _.find(res.fields, { field: query.date_field })?.field;
             const defaultDateField = _.find(res.fields, { field: '@timestamp' })?.field || res.fields[0]?.field;
             const nextDateField = dateField || defaultDateField;
@@ -94,7 +100,7 @@ export default function indexCpt(props: Props) {
               });
             }
           }
-          return fieldData;
+          return sidebarFieldData;
         })
         .catch(() => {
           setDateFields([]);
@@ -255,8 +261,13 @@ export default function indexCpt(props: Props) {
                     )
                   }
                   onChange={() => {
+                    // The statement names the index it runs against: drop it with the context it belonged to.
+                    onQueryContextChange?.();
                     form.setFieldsValue({
                       refreshFlag: undefined,
+                      query: {
+                        sql: undefined,
+                      },
                     });
                   }}
                 />
@@ -281,7 +292,10 @@ export default function indexCpt(props: Props) {
                     };
                   })}
                   onChange={() => {
-                    executeQuery();
+                    onQueryContextChange?.();
+                    form.setFieldsValue({ refreshFlag: undefined, query: { sql: undefined } });
+                    // The statement was just dropped, so only a query-mode filter still has something to run.
+                    if (queryValues?.syntax !== 'sql') executeQuery();
                   }}
                 />
               </Form.Item>
@@ -381,9 +395,10 @@ export default function indexCpt(props: Props) {
                       queryValues.index = selected.name;
                       queryValues.allow_hide_system_indices = selected.allow_hide_system_indices;
                       queryValues.cross_cluster_enabled = selected.cross_cluster_enabled;
+                      onQueryContextChange?.();
                       form.setFieldsValue({
                         refreshFlag: undefined,
-                        query: queryValues,
+                        query: { ...queryValues, sql: undefined },
                         fieldConfig,
                       });
                     }

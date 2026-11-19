@@ -1,4 +1,6 @@
 const zh_CN = {
+  metadata_load_failed: '加载索引字段失败，日志查询未执行，请重试。',
+  metadata_retry: '重试',
   query: {
     range: '查询区间',
     sql_required: 'SQL 不能为空',

@@ -11,6 +11,7 @@ import { NAME_SPACE } from '../../constants';
 import renderFieldValue from '../../utils/renderFieldValue';
 import { Field, StatsResult, FieldActionOptions } from './types';
 import QuickViewPopover from './QuickViewPopover';
+import observeFieldActions from './observeFieldActions';
 
 const DEFAULT_TOP_NUMBER = 5;
 
@@ -112,28 +113,9 @@ export default function FieldsItem(props: Props) {
     };
   }, [fetchStats, field.field]);
 
-  // Keep every action in a fixed slot; only reserve label space for visible actions.
   useLayoutEffect(() => {
     const actions = actionsRef.current;
-    const row = actions?.parentElement;
-    if (!actions || !row) return;
-    const measure = () => {
-      const bounds = actions.getBoundingClientRect();
-      const activeButtons = Array.from(actions.querySelectorAll('button[aria-pressed="true"]'));
-      const activeWidth = activeButtons.length ? bounds.right - Math.min(...activeButtons.map((button) => button.getBoundingClientRect().left)) + 8 : 0;
-      row.style.setProperty('--log-field-actions-width', `${bounds.width + 8}px`);
-      row.style.setProperty('--log-field-active-width', `${activeWidth}px`);
-    };
-    measure();
-    const resize = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
-    resize?.observe(actions);
-    // Pressed state and action availability can change without resizing the group.
-    const mutations = new MutationObserver(measure);
-    mutations.observe(actions, { attributes: true, attributeFilter: ['aria-pressed'], childList: true, subtree: true });
-    return () => {
-      resize?.disconnect();
-      mutations.disconnect();
-    };
+    if (actions) return observeFieldActions(actions);
   }, [field.field]);
 
   const loadStats = () => {

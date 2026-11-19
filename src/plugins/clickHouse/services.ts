@@ -247,7 +247,7 @@ export function buildSql(
       field: string;
       direction: string;
     }[];
-    limit: number;
+    limit?: number;
   }>,
 ): Promise<{
   sql: string;

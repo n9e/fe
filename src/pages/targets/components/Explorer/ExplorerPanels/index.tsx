@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import moment from 'moment';
 import { Button } from 'antd';
 import { useGetState } from 'ahooks';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
@@ -19,32 +18,30 @@ export interface Record {
 }
 
 interface Props {
-  data?: Record;
+  data?: Record | Record[];
+  defaultDatasourceId?: number;
 }
 
 export default function ExplorerDrawer(props: Props) {
   const { t } = useTranslation('metricsBuiltin');
-  const { data } = props;
+  const { data, defaultDatasourceId } = props;
   const [panels, setPanels, getPanels] = useGetState<Record[]>([]);
   const [defaultType, setDefaultType] = useState<'table' | 'graph'>('table');
   const [defaultTime, setDefaultTime] = useState<undefined | IRawTimeRange>();
 
   useEffect(() => {
     if (data) {
-      const finded = _.find(panels, (panel) => panel.id === data.id && panel.expression === data.expression);
-      if (!finded) {
-        setPanels([
-          {
-            ...data,
-            uid: moment().unix(),
-          },
-          ...panels,
-        ]);
-      } else {
-        // 存在的面板再次点击后，移动到最前面
-        const newPanels = _.filter(panels, (panel) => panel.id !== data.id || panel.expression !== data.expression);
-        setPanels([finded, ...newPanels]);
+      let nextPanels = panels;
+      for (const metric of Array.isArray(data) ? data.slice().reverse() : [data]) {
+        const found = _.find(nextPanels, (panel) => panel.id === metric.id && panel.expression === metric.expression);
+        if (!found) {
+          nextPanels = [{ ...metric, uid: Math.max(Date.now(), ...nextPanels.map((panel) => panel.uid + 1)) }, ...nextPanels];
+        } else {
+          // 存在的面板再次点击后，移动到最前面
+          nextPanels = [found, ..._.filter(nextPanels, (panel) => panel.id !== metric.id || panel.expression !== metric.expression)];
+        }
       }
+      setPanels(nextPanels);
     }
   }, [data]);
 
@@ -73,6 +70,7 @@ export default function ExplorerDrawer(props: Props) {
               onDefaultTypeChange={setDefaultType}
               defaultTime={defaultTime}
               onDefaultTimeChange={setDefaultTime}
+              defaultDatasourceId={defaultDatasourceId}
             />
             {idx === 0 && panels.length > 1 && (
               <Button

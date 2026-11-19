@@ -19,7 +19,11 @@ function ValuesProbe({ form }: { form: ReturnType<typeof Form.useForm>[0] }) {
   return <output data-testid='form-values'>{JSON.stringify(values)}</output>;
 }
 
-function renderValueMappings(initialValues: Record<string, unknown>) {
+function getFormValues() {
+  return JSON.parse(screen.getByTestId('form-values').textContent || '{}');
+}
+
+function renderValueMappings(initialValues: Record<string, unknown>, isActive = true) {
   const formRef: { current?: ReturnType<typeof Form.useForm>[0] } = {};
 
   function Harness() {
@@ -28,7 +32,7 @@ function renderValueMappings(initialValues: Record<string, unknown>) {
 
     return (
       <Form form={form} initialValues={initialValues}>
-        <ValueMappings />
+        <ValueMappings isActive={isActive} />
         <ValuesProbe form={form} />
       </Form>
     );
@@ -45,6 +49,48 @@ const numericMapping: IValueMapping = {
 };
 
 describe('dashboard ValueMappings', () => {
+  it.each([undefined, null])('兼容已有配置中的空映射 %s', (valueMappings) => {
+    expect(() => renderValueMappings({ options: { valueMappings } })).not.toThrow();
+    expect(screen.getByRole('button', { name: 'panel.options.valueMappings.edit_btn' })).toBeInTheDocument();
+  });
+
+  it('折叠时已有映射仍进入预览订阅和保存结果', async () => {
+    const formRef = renderValueMappings({ options: { valueMappings: [numericMapping] } }, false);
+
+    await waitFor(() => {
+      expect(getFormValues()).toMatchObject({ options: { valueMappings: [numericMapping] } });
+    });
+    expect(await formRef.current?.validateFields()).toMatchObject({ options: { valueMappings: [numericMapping] } });
+  });
+
+  it('新增及删除映射都同步预览和保存，取消重开不会保留草稿', async () => {
+    const formRef = renderValueMappings({});
+    fireEvent.click(screen.getByRole('button', { name: 'panel.options.valueMappings.edit_btn' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'panel.options.valueMappings.btn' }));
+    fireEvent.change(screen.getByPlaceholderText('panel.options.valueMappings.value_placeholder'), { target: { value: '60' } });
+    fireEvent.change(screen.getByPlaceholderText('panel.options.valueMappings.text_placeholder'), { target: { value: 'QA_SIXTY' } });
+    fireEvent.click(screen.getByRole('button', { name: 'panel.options.valueMappings.update_btn' }));
+
+    const mapping = { type: 'special', match: { special: 60 }, result: { text: 'QA_SIXTY', color: 'text' } };
+    await waitFor(() => {
+      expect(getFormValues()).toMatchObject({ options: { valueMappings: [mapping] } });
+    });
+    expect(await formRef.current?.validateFields()).toMatchObject({ options: { valueMappings: [mapping] } });
+
+    fireEvent.click(screen.getByRole('button', { name: 'panel.options.valueMappings.edit_btn' }));
+    fireEvent.change(await screen.findByPlaceholderText('panel.options.valueMappings.text_placeholder'), { target: { value: 'UNSAVED' } });
+    fireEvent.click(screen.getByRole('button', { name: 'panel.options.valueMappings.cancel_btn' }));
+    fireEvent.click(screen.getByRole('button', { name: 'panel.options.valueMappings.edit_btn' }));
+    expect(await screen.findByPlaceholderText('panel.options.valueMappings.text_placeholder')).toHaveValue('QA_SIXTY');
+    fireEvent.click(screen.getByRole('button', { name: 'delete' }));
+    fireEvent.click(screen.getByRole('button', { name: 'panel.options.valueMappings.update_btn' }));
+
+    await waitFor(() => {
+      expect(getFormValues()).toMatchObject({ options: { valueMappings: [] } });
+    });
+    expect(await formRef.current?.validateFields()).toMatchObject({ options: { valueMappings: [] } });
+  });
+
   it('按值映射类型生成条件摘要', () => {
     expect(getValueMappingConditionText(numericMapping)).toBe('1');
     expect(getValueMappingConditionText({ type: 'textValue', match: { textValue: 'ok' }, result: { text: '', color: '' } })).toBe('ok');
@@ -74,6 +120,9 @@ describe('dashboard ValueMappings', () => {
     await waitFor(() => {
       expect(screen.getByText('Updated')).toBeInTheDocument();
       expect(formRef.current?.getFieldValue(['options', 'valueMappings', 0, 'result', 'text'])).toBe('Updated');
+      expect(getFormValues()).toMatchObject({
+        options: { valueMappings: [{ ...numericMapping, result: { ...numericMapping.result, text: 'Updated' } }] },
+      });
     });
   });
 
@@ -99,7 +148,9 @@ describe('dashboard ValueMappings', () => {
     const initialValues = {
       overrides: [
         {
+          matcher: { id: 'byFrameRefID', value: 'A' },
           properties: {
+            standardOptions: { decimals: 2 },
             valueMappings: [numericMapping],
           },
         },
@@ -113,13 +164,19 @@ describe('dashboard ValueMappings', () => {
 
       return (
         <Form form={form} initialValues={initialValues}>
-          <ValueMappings preNamePrefix={['overrides']} namePrefix={[0, 'properties', 'valueMappings']} />
+          <Form.List name='overrides'>
+            {(fields) =>
+              fields.map((field) => <ValueMappings key={field.key} preNamePrefix={['overrides']} namePrefix={[field.name, 'properties', 'valueMappings']} isActive={false} />)
+            }
+          </Form.List>
+          <ValuesProbe form={form} />
         </Form>
       );
     }
 
     render(<Harness />);
     expect(screen.getByText('1')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('panel.options.valueMappings.title', { selector: '.n9e-collapse-header' }));
 
     fireEvent.click(screen.getByRole('button', { name: 'panel.options.valueMappings.edit_btn' }));
     fireEvent.change(await screen.findByPlaceholderText('panel.options.valueMappings.text_placeholder'), { target: { value: 'Override updated' } });
@@ -127,6 +184,17 @@ describe('dashboard ValueMappings', () => {
 
     await waitFor(() => {
       expect(formRef.current?.getFieldValue(['overrides', 0, 'properties', 'valueMappings', 0, 'result', 'text'])).toBe('Override updated');
+      expect(getFormValues()).toMatchObject({
+        overrides: [{ properties: { valueMappings: [{ ...numericMapping, result: { ...numericMapping.result, text: 'Override updated' } }] } }],
+      });
+    });
+    expect(await formRef.current?.validateFields()).toEqual({
+      overrides: [
+        {
+          matcher: { id: 'byFrameRefID', value: 'A' },
+          properties: { standardOptions: { decimals: 2 }, valueMappings: [{ ...numericMapping, result: { ...numericMapping.result, text: 'Override updated' } }] },
+        },
+      ],
     });
   });
 });

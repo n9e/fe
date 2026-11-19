@@ -23,6 +23,10 @@ export default function AddTo() {
   }>({
     visible: false,
   });
+  const closeRecordingRuleDrawer = () => {
+    recordingRuleForm.resetFields();
+    setAddToRecordingRuleModalState({ visible: false });
+  };
 
   return (
     <>
@@ -38,6 +42,7 @@ export default function AddTo() {
             ]}
             onClick={({ key }) => {
               if (key === 'recording_rule') {
+                recordingRuleForm.resetFields();
                 setAddToRecordingRuleModalState({
                   visible: true,
                 });
@@ -54,24 +59,14 @@ export default function AddTo() {
         title={t('query.add_to.add_recording_rule_title')}
         width='80%'
         visible={addToRecordingRuleModalState.visible}
-        onClose={() => {
-          setAddToRecordingRuleModalState({
-            visible: false,
-          });
-        }}
+        onClose={closeRecordingRuleDrawer}
         footer={
           <ActionButtons
             form={recordingRuleForm}
             onOk={() => {
-              setAddToRecordingRuleModalState({
-                visible: false,
-              });
+              closeRecordingRuleDrawer();
             }}
-            onCancel={() => {
-              setAddToRecordingRuleModalState({
-                visible: false,
-              });
-            }}
+            onCancel={closeRecordingRuleDrawer}
           />
         }
         className='n9e-antd-drawer'

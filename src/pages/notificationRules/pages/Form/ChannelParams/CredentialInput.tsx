@@ -1,10 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { AutoComplete, Form, Input } from 'antd';
+import { useRequest } from 'ahooks';
 import _ from 'lodash';
 
-import { getCustomParamsValues } from '../../../services';
+import { getCustomParamsCacheKey, getCustomParamsValues } from '../../../services';
+import type { CustomParamValue } from '../../../services';
+import { CUSTOM_PARAMS_CACHE_TIME, OPTIONS_CACHE_STALE_TIME } from '../../../constants';
 
-type HistoryItem = { name: string; cname: string; value: string }[];
+type HistoryItem = CustomParamValue[];
 
 /** Webhook 地址的路径最后一段就是凭证，下拉里只显示掩码 */
 export function maskWebhookURL(raw?: string): string {
@@ -52,25 +55,27 @@ interface Props {
  * 历史数据来自 /notify-rule/custom-params，只回显媒介 param_config.custom.params 里声明过的 key。
  */
 export default function CredentialInput(props: Props) {
+  return <CredentialInputInner key={props.channelId ?? 'no-channel'} {...props} />;
+}
+
+function CredentialInputInner(props: Props) {
   const { id, value, onChange, onBlur, channelId, paramsPath, credentialKey, mask, placeholder, historyPlaceholder } = props;
   const form = Form.useFormInstance();
-  const [items, setItems] = useState<HistoryItem[]>([]);
-
-  useEffect(() => {
-    if (!channelId) {
-      setItems([]);
-      return;
-    }
-    let alive = true;
-    getCustomParamsValues(channelId)
-      .then((res: HistoryItem[]) => {
-        if (alive) setItems(_.filter(res, (item) => _.some(item, (p) => p.name === credentialKey && p.value)));
-      })
-      .catch(() => alive && setItems([]));
-    return () => {
-      alive = false;
-    };
-  }, [channelId, credentialKey]);
+  const { data, error } = useRequest<HistoryItem[], []>(
+    () => {
+      if (channelId == null) return Promise.resolve([]);
+      return getCustomParamsValues(channelId);
+    },
+    {
+      ready: channelId != null,
+      cacheKey: channelId != null ? getCustomParamsCacheKey(channelId) : undefined,
+      // 同一媒介的配置行复用已完成的历史凭证结果，减少重复请求。
+      staleTime: OPTIONS_CACHE_STALE_TIME,
+      cacheTime: CUSTOM_PARAMS_CACHE_TIME,
+      onError: () => {},
+    },
+  );
+  const items = useMemo(() => (error ? [] : _.filter(data ?? [], (item) => _.some(item, (p) => p.name === credentialKey && p.value))), [data, error, credentialKey]);
 
   const options = useMemo(
     () =>

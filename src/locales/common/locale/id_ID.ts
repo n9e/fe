@@ -276,7 +276,6 @@ const id_ID = {
   "msg.sort.success": "Berhasil diurutkan ulang",
   "copy_success": "{{num}} catatan berhasil disalin",
   "request_fail_msg": "Permintaan jaringan melewati batas waktu. Coba lagi nanti",
-  "trim_validator_msg": "Ada spasi di awal atau akhir; hapus secara manual",
   "tags_popover_title": "{{count}}"
 };
 

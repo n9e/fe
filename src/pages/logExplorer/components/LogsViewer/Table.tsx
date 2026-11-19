@@ -8,7 +8,7 @@ import moment from 'moment';
 
 import NavigableDrawer from '@/components/NavigableDrawer';
 
-import { NAME_SPACE } from '../../constants';
+import { LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY, NAME_SPACE } from '../../constants';
 import { Field } from '../../types';
 import { shouldIgnoreLogViewerClickAway } from './utils/clickAway';
 import getColumnsFromFields from './utils/getColumnsFromFields';
@@ -170,8 +170,7 @@ function Table(props: Props) {
   useClickAway(
     (event) => {
       // 忽略点击发生在 log viewer drawer 内的情况
-      const target = (event && (event as Event).target) as HTMLElement | null;
-      if (shouldIgnoreLogViewerClickAway(target)) {
+      if (shouldIgnoreLogViewerClickAway(event as Event)) {
         return;
       }
       // 只有当 Drawer 打开时才尝试关闭
@@ -239,6 +238,7 @@ function Table(props: Props) {
       <NavigableDrawer
         defaultSize='middle'
         className='log-explorer-ignore-click-away'
+        sizeStorageKey={LOG_VIEWER_DRAWER_SIZE_STORAGE_KEY}
         title={navigableDrawerTitle}
         extra={logViewerExtraRender && logViewerExtraRender(data[logViewerDrawerState.currentIndex])}
         placement='right'

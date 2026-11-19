@@ -159,6 +159,15 @@ export const defaultCustomValuesMap = {
     scheme: 'Blues',
   },
   iframe: {},
+  aiButton: {
+    style: 'capsule',
+    text: '',
+    type: 'primary',
+    size: 'middle',
+    autoExecute: false,
+    reuseConversation: false,
+    prompt: '',
+  },
   barchart: {
     calc: 'lastNotNull',
     xAxisField: 'Name',
@@ -178,6 +187,7 @@ export const defaultOptionsValuesMap: Record<PanelVisualizationType, PanelDefaul
   text: defaultOptionsValues,
   heatmap: defaultOptionsValues,
   iframe: defaultOptionsValues,
+  aiButton: defaultOptionsValues,
   barchart: defaultOptionsValues,
   gauge: {
     ...defaultOptionsValues,
