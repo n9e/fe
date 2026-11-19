@@ -42,7 +42,7 @@ export default function RetainedSidebar({
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(`${collapseLocalStorageKey}-retained-v2`) === '1');
   const [width, setWidth] = useState(() => Math.min(480, Math.max(minWidth, Number(localStorage.getItem(widthLocalStorageKey)) || defaultWidth)));
   const bodyRef = useRef<HTMLDivElement>(null);
-  const controlSummary = useControlSummary(bodyRef, autoSummary, t('view'));
+  const controlSummary = useControlSummary(bodyRef, autoSummary && summary === undefined, t('view'));
   const selection = summary ?? controlSummary;
   const action = t(collapsed ? 'expand' : 'collapse', { title });
   return (
