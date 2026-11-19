@@ -10,6 +10,8 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
+import { useCanAccessFiremap } from '@/components/FiremapAccess';
+import IconFont from '@/components/IconFont';
 import { IS_PLUS } from '@/utils/constant';
 import { openAuditHistory } from '@/utils/auditLink';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
@@ -28,7 +30,16 @@ import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY, FILTER_SESSION_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
 import EvalRecordsDrawer, { Props as EvalRecordsDrawerProps } from '@/pages/alertRules/List/EvalRecordsDrawer';
-import { matchSearch, matchTriggerType, TRIGGER_TYPE_OPTIONS, TriggerType } from '@/pages/alertRules/List/utils';
+import {
+  getNorthstarRuleName,
+  getProductRulePath,
+  hasProductRuleSpaceId,
+  isProductRule,
+  matchSearch,
+  matchTriggerType,
+  TRIGGER_TYPE_OPTIONS,
+  TriggerType,
+} from '@/pages/alertRules/List/utils';
 import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import { getAlertSeverityName } from '@/utils/alertSeverity';
 
@@ -69,6 +80,7 @@ export default function AlertRules(props: Props) {
   const { t, i18n } = useTranslation('alertRules');
   const { busiGroups, datasourceList, datasourceCateOptions, feats, perms } = useContext(CommonStateContext);
   const canViewAudits = IS_PLUS && (perms?.includes('/system/audits') ?? false);
+  const canAccessFiremap = useCanAccessFiremap();
   const { hideBusinessGroupColumn, showRowSelection, readonly, headerExtra, data, loading, setRefreshFlag, linkTarget, emptyGuide, gids, groupSwitchCount } = props;
   const { run: runMutation, pendingIds } = useRowMutation();
   const history = useHistory();
@@ -182,6 +194,29 @@ export default function AlertRules(props: Props) {
         },
         render: (data, record) => {
           const groupName = !hideBusinessGroupColumn ? _.find(busiGroups, { id: record.group_id })?.name : undefined;
+          // 北极星规则名称形如 northstar/<业务线 ID>/<真实规则名>，列表里只展示真实规则名
+          const displayName = record.prod === 'northstar' ? getNorthstarRuleName(record.name) ?? data : data;
+          // 灭火图 / 北极星规则不走通用编辑表单，名称直接跳回对应产品页面；缺少空间信息或无产品权限时降级为纯文本
+          if (isProductRule(record)) {
+            const productRulePath = getProductRulePath(record);
+            return (
+              <div className='flex flex-col gap-0.5'>
+                {productRulePath && (record.prod !== 'firemap' || canAccessFiremap) ? (
+                  <Link className='table-text' to={productRulePath} target={linkTarget}>
+                    {displayName}
+                  </Link>
+                ) : hasProductRuleSpaceId(record) ? (
+                  // 有空间但北极星名称里解析不出业务线 ID（或无灭火图权限）：只展示名称，不拼坏链接
+                  <span className='table-text'>{displayName}</span>
+                ) : (
+                  <Tooltip title={t('product_rule_missing_space_tip')}>
+                    <span className='table-text'>{displayName}</span>
+                  </Tooltip>
+                )}
+                {groupName && <span className='text-soft text-xs'>{groupName}</span>}
+              </div>
+            );
+          }
           return (
             <div className='flex flex-col gap-0.5'>
               <Link
@@ -202,7 +237,9 @@ export default function AlertRules(props: Props) {
       {
         title: t('table.severity'),
         dataIndex: 'severities',
-        render: (data) => {
+        render: (data, record) => {
+          // 灭火图 / 北极星规则没有有效告警级别（后端返回 0），这类规则不展示级别
+          if (isProductRule(record)) return null;
           return (
             <Tags
               type='fill'
@@ -236,6 +273,15 @@ export default function AlertRules(props: Props) {
         title: t('table.datasource_ids'),
         dataIndex: 'datasource_ids',
         render(value, record) {
+          // 灭火图 / 北极星规则不按数据源归类，数据源列展示产品类型（icon + 名称）
+          if (isProductRule(record)) {
+            return (
+              <Space>
+                <IconFont type={record.prod === 'firemap' ? 'icon-nav_firemaps_light' : 'icon-nav_polaris_light'} style={{ fontSize: 16 }} />
+                <span>{t(`AlertHisEvents:rule_prod.${record.prod}`)}</span>
+              </Space>
+            );
+          }
           if (!value) return null;
           const cate = _.find(allCates, { value: record.cate });
           const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
@@ -338,29 +384,38 @@ export default function AlertRules(props: Props) {
               disabledValue: 1,
             }),
             width: 80,
-            render: (disabled, record) => (
-              <Switch
-                loading={pendingIds.has(record.id)}
-                checked={disabled === AlertRuleStatus.Enable}
-                size='small'
-                onChange={() => {
-                  const { id, disabled } = record;
-                  runMutation([id], () =>
-                    updateAlertRules(
-                      {
-                        ids: [id],
-                        fields: {
-                          disabled: !disabled ? 1 : 0,
-                        },
-                      },
-                      record.group_id,
-                    ).then(() => {
-                      updateStatus([id], disabled ? 0 : 1);
-                    }),
-                  );
-                }}
-              />
-            ),
+            render: (disabled, record) => {
+              // 灭火图 / 北极星规则的启停由其产品维护，通用列表只展示当前状态
+              const productRule = isProductRule(record);
+              return (
+                <Tooltip title={productRule ? t('product_rule_readonly_tip') : undefined}>
+                  <span className='inline-flex'>
+                    <Switch
+                      loading={pendingIds.has(record.id)}
+                      checked={disabled === AlertRuleStatus.Enable}
+                      size='small'
+                      disabled={productRule}
+                      onChange={() => {
+                        const { id, disabled } = record;
+                        runMutation([id], () =>
+                          updateAlertRules(
+                            {
+                              ids: [id],
+                              fields: {
+                                disabled: !disabled ? 1 : 0,
+                              },
+                            },
+                            record.group_id,
+                          ).then(() => {
+                            updateStatus([id], disabled ? 0 : 1);
+                          }),
+                        );
+                      }}
+                    />
+                  </span>
+                </Tooltip>
+              );
+            },
           },
         ] as any),
   );
@@ -378,16 +433,9 @@ export default function AlertRules(props: Props) {
       const { datasourceIds, search, prod, severities, triggerType } = filter;
       const datasourceIdsWithoutHost = _.filter(datasourceIds, (id) => id !== -999);
       return (
-        // 列表数据排除 prod 为 firemap(灭火图)、northstar(北极星) 的记录
-        !_.includes(['firemap', 'northstar'], item.prod) &&
         matchSearch(item, search) &&
         ((prod && prod === item.prod) || !prod) &&
-        ((item.severities &&
-          _.some(item.severities, (severity) => {
-            if (_.isEmpty(severities)) return true;
-            return _.includes(severities, severity);
-          })) ||
-          !item.severities) &&
+        (!severities?.length || (!isProductRule(item) && (!item.severities || item.severities.some((severity) => severities.includes(severity))))) &&
         (_.some(item.datasource_ids, (id) => {
           if (includesProm(datasourceList, datasourceIdsWithoutHost) && id === 0) return true;
           return _.includes(datasourceIdsWithoutHost, id);
@@ -562,6 +610,10 @@ export default function AlertRules(props: Props) {
                   setSelectRowKeys(selectedRowKeys);
                   setSelectedRows(selectedRows);
                 },
+                // 灭火图 / 北极星规则不参与批量修改、批量删除等操作
+                getCheckboxProps: (record) => ({
+                  disabled: isProductRule(record),
+                }),
               }
             : undefined
         }
@@ -574,12 +626,17 @@ export default function AlertRules(props: Props) {
             ? undefined
             : (record: any) => {
                 const anomalyEnabled = _.get(record, ['rule_config', 'anomaly_trigger', 'enable']);
+                // 灭火图 / 北极星规则的修改、执行记录、克隆、删除都在各自产品里完成，列表只读
+                const productRule = isProductRule(record);
+                const productRuleTooltip = productRule ? t('product_rule_readonly_tip') : undefined;
                 return {
                   inline: _.compact([
                     {
                       key: 'clone',
                       icon: 'copy',
                       text: t('common:btn.clone'),
+                      disabled: productRule,
+                      tooltip: productRuleTooltip,
                       onClick: () => {
                         window.open(`/alert-rules/edit/${record.id}?mode=clone`, '_blank');
                       },
@@ -588,6 +645,8 @@ export default function AlertRules(props: Props) {
                       key: 'eval_records',
                       icon: 'history',
                       text: t('eval_records.btn'),
+                      disabled: productRule,
+                      tooltip: productRuleTooltip,
                       onClick: () => {
                         setEvalRecordsDrawerProps((prev) => ({
                           ...prev,
@@ -597,7 +656,7 @@ export default function AlertRules(props: Props) {
                         }));
                       },
                     },
-                    record.cate === 'prometheus' && anomalyEnabled === true
+                    !productRule && record.cate === 'prometheus' && anomalyEnabled === true
                       ? {
                           key: 'brain',
                           icon: 'ai',
@@ -612,8 +671,8 @@ export default function AlertRules(props: Props) {
                       icon: 'delete',
                       text: t('common:btn.delete'),
                       danger: true,
-                      disabled: record.disabled === 0,
-                      tooltip: record.disabled === 0 ? t('common:delete_disable_first') : undefined,
+                      disabled: productRule || record.disabled === 0,
+                      tooltip: productRule ? productRuleTooltip : record.disabled === 0 ? t('common:delete_disable_first') : undefined,
                       onClick: () => {
                         Modal.confirm({
                           title: t('common:confirm.delete'),

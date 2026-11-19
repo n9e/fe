@@ -4,6 +4,8 @@ const ko_KR = {
   "validate_metric_msg": "먼저 지표를 확인하세요",
   "smart_rule_limit_msg": "추가할 수 있는 지능형 알림 규칙 수가 한도에 도달했습니다. 고객 지원에 문의하세요",
   "title": "알림 규칙",
+  "product_rule_readonly_tip": "이 규칙은 해당 제품에서 관리됩니다. Firemap / Polaris 페이지에서 편집, 활성화/비활성화 또는 삭제하세요.",
+  "product_rule_missing_space_tip": "공간 ID가 없어 규칙 상세를 열 수 없습니다",
   "empty_guide": {
     "title": "아직 알림 규칙이 없습니다",
     "desc": "알림 규칙을 하나 추가하거나 내장 알림 규칙 템플릿을 한 번에 가져오세요.",
