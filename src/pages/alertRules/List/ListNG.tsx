@@ -12,7 +12,7 @@ import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
 import { useCanAccessFiremap } from '@/components/FiremapAccess';
 import IconFont from '@/components/IconFont';
-import { IS_PLUS } from '@/utils/constant';
+import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import { openAuditHistory } from '@/utils/auditLink';
 import { updateAlertRules, deleteStrategy } from '@/services/warning';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
@@ -30,16 +30,8 @@ import { AlertRuleType, AlertRuleStatus } from '@/pages/alertRules/types';
 import { defaultColumnsConfigs, LOCAL_STORAGE_KEY, FILTER_SESSION_STORAGE_KEY } from '@/pages/alertRules/List/constants';
 import EventsDrawer, { Props as EventsDrawerProps } from '@/pages/alertRules/List/EventsDrawer';
 import EvalRecordsDrawer, { Props as EvalRecordsDrawerProps } from '@/pages/alertRules/List/EvalRecordsDrawer';
-import {
-  getNorthstarRuleName,
-  getProductRulePath,
-  hasProductRuleSpaceId,
-  isProductRule,
-  matchSearch,
-  matchTriggerType,
-  TRIGGER_TYPE_OPTIONS,
-  TriggerType,
-} from '@/pages/alertRules/List/utils';
+import { getNorthstarBusinessWorkspaceMapping, type NorthstarBusinessWorkspace } from '@/pages/alertRules/List/services';
+import { getNorthstarRuleName, getProductRuleLink, isProductRule, matchSearch, matchTriggerType, TRIGGER_TYPE_OPTIONS, TriggerType } from '@/pages/alertRules/List/utils';
 import { getPageFromSearch, setPageInSearch, removePageFromSearch } from '@/utils/urlPage';
 import { getAlertSeverityName } from '@/utils/alertSeverity';
 
@@ -137,6 +129,8 @@ export default function AlertRules(props: Props) {
     },
   });
   const [notificationRules, setNotificationRules] = useState<NotificationRuleItem[]>();
+  // 北极星业务线 → 空间映射，用于拼北极星规则详情链接；非企业版保持空数组
+  const [northstarWorkspaceMapping, setNorthstarWorkspaceMapping] = useState<NorthstarBusinessWorkspace[]>([]);
   const [evalRecordsDrawerProps, setEvalRecordsDrawerProps] = useState<EvalRecordsDrawerProps>({
     visible: false,
     onClose: () => {
@@ -198,20 +192,20 @@ export default function AlertRules(props: Props) {
           const displayName = record.prod === 'northstar' ? getNorthstarRuleName(record.name) ?? data : data;
           // 灭火图 / 北极星规则不走通用编辑表单，名称直接跳回对应产品页面；缺少空间信息或无产品权限时降级为纯文本
           if (isProductRule(record)) {
-            const productRulePath = getProductRulePath(record);
+            const { path: productRulePath, missingSpace } = getProductRuleLink(record, northstarWorkspaceMapping);
             return (
               <div className='flex flex-col gap-0.5'>
                 {productRulePath && (record.prod !== 'firemap' || canAccessFiremap) ? (
                   <Link className='table-text' to={productRulePath} target={linkTarget}>
                     {displayName}
                   </Link>
-                ) : hasProductRuleSpaceId(record) ? (
-                  // 有空间但北极星名称里解析不出业务线 ID（或无灭火图权限）：只展示名称，不拼坏链接
-                  <span className='table-text'>{displayName}</span>
-                ) : (
+                ) : missingSpace ? (
                   <Tooltip title={t('product_rule_missing_space_tip')}>
                     <span className='table-text'>{displayName}</span>
                   </Tooltip>
+                ) : (
+                  // 北极星名称解析不出业务线 / 无灭火图权限：只展示名称，不拼坏链接
+                  <span className='table-text'>{displayName}</span>
                 )}
                 {groupName && <span className='text-soft text-xs'>{groupName}</span>}
               </div>
@@ -460,6 +454,18 @@ export default function AlertRules(props: Props) {
     getNotificationRules().then((res) => {
       setNotificationRules(res);
     });
+  }, []);
+
+  useEffect(() => {
+    // 只有企业版存在北极星业务线 → 空间映射；开源版不请求，保持空数组
+    if (!IS_ENT) return;
+    getNorthstarBusinessWorkspaceMapping()
+      .then((mapping) => {
+        setNorthstarWorkspaceMapping(Array.isArray(mapping) ? mapping : []);
+      })
+      .catch(() => {
+        setNorthstarWorkspaceMapping([]);
+      });
   }, []);
 
   return (
