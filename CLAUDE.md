@@ -24,6 +24,10 @@ src/
 └── main.tsx
 ```
 
+## 子仓库
+
+- 在本项目的对话和任务中，“子仓库”默认指 `fe` 根目录下的 `src/plus/`，即 `n9e-plus-fe` 的独立 Git 仓库。涉及子仓库的 Git 操作以 `src/plus/` 为工作目录，例如从 `fe` 根目录运行 `git -C src/plus status`。任务明确指定其他仓库或工作区时，以任务指定的位置为准。
+
 ## 技术栈与风格
 
 - TypeScript + React Hooks；优先函数组件，避免 class 组件。
