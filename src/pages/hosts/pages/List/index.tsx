@@ -156,7 +156,7 @@ export default function index() {
             {/* 视图开关摆在统计卡片上面：它决定下面整块内容是什么，
                 夹在卡片和筛选条中间的话，用户得先看完一屏图表才找得到「换一种看法」 */}
             {IS_PLUS && (
-              <div className='mb-2'>
+              <div className='mb-4'>
                 <HostTopoViewSwitch value={viewMode} onChange={changeViewMode} gids={gids} filters={hostFilters} onFiltersChange={setHostFilters} />
               </div>
             )}
@@ -166,9 +166,9 @@ export default function index() {
                 {/* 拓扑视图下 <List/> 整个不渲染，它那条工具栏也跟着没了。
                     这里挂同一个 HostFilters、共用同一份状态，切视图筛选不丢。
                     批量操作不搬过来：那是选中表格行之后的动作，图上没有对应语义。 */}
-                {/* 容器样式与 List.tsx 的工具栏逐字一致（bg + 边框 + p-4 + 内层 flex 行）：
-                    两个视图的筛选条切换时不该跳动，差一档 padding 就是 16px 的位移 */}
-                <div className='flex-shrink-0 bg-fc-100 fc-border rounded-lg p-4'>
+                {/* 内层结构与 List.tsx 的工具栏一致（同为 flex 换行行）：
+                    两个视图的筛选条切换时不该跳动 */}
+                <div className='flex-shrink-0'>
                   <div className='flex flex-wrap items-start justify-between gap-2'>
                     <div className='flex min-w-0 flex-1 flex-wrap items-center gap-2'>
                       {allCollapseNode}

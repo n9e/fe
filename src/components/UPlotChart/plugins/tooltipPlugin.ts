@@ -95,25 +95,25 @@ export default function tooltipPlugin(options: {
     // uplot.setCursor({ left: -10, top: -10 });
   }
 
-const handleOutsideClick = (event: MouseEvent) => {
-  if (isPinned) {
-    if (overlay === null) return;
-    if (!overlay.contains(event.target as Node)) {
-      closeOverlay();
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (isPinned) {
+      if (overlay === null) return;
+      if (!overlay.contains(event.target as Node)) {
+        closeOverlay();
+      }
     }
-  }
-};
+  };
 
-// 显示其他图表的 tooltip 容器（共享提示信息模式下，由当前悬停的图表调用）
-function showSiblingOverlays(sourceId: string, sourceUplot: uPlot) {
-  uplotsMap.forEach((uplot, uid) => {
-    if (uplot === sourceUplot || uid === sourceId) return;
-    const siblingOverlay = tooltipOverlays.get(uplot);
-    if (siblingOverlay) {
-      siblingOverlay.style.display = 'block';
-    }
-  });
-}
+  // 显示其他图表的 tooltip 容器（共享提示信息模式下，由当前悬停的图表调用）
+  function showSiblingOverlays(sourceId: string, sourceUplot: uPlot) {
+    uplotsMap.forEach((uplot, uid) => {
+      if (uplot === sourceUplot || uid === sourceId) return;
+      const siblingOverlay = tooltipOverlays.get(uplot);
+      if (siblingOverlay) {
+        siblingOverlay.style.display = 'block';
+      }
+    });
+  }
 
   return {
     hooks: {
@@ -126,7 +126,8 @@ function showSiblingOverlays(sourceId: string, sourceUplot: uPlot) {
         overlay.style.zIndex = _.toString(zIndex);
         overlay.style.display = 'none';
         overlay.style.position = 'absolute';
-        document.body.appendChild(overlay);
+        const container = u.root.closest('.ant-drawer') ?? document.body;
+        container.appendChild(overlay);
         tooltipOverlays.set(u, overlay);
         if (pinningEnabled) {
           document.addEventListener('mouseup', handleOutsideClick);
@@ -267,6 +268,13 @@ function showSiblingOverlays(sourceId: string, sourceUplot: uPlot) {
         const bTop = bbox.top;
         const anchor = { left: left + bLeft, top: top + bTop };
         (window as any).placement(overlay, anchor, 'right', 'start', { bound: document.body });
+        const container = overlay.parentElement;
+        if (container && container !== document.body) {
+          // placement returns page coordinates. The drawer positions its tooltip relative to its own padding box.
+          const bounds = container.getBoundingClientRect();
+          overlay.style.left = `${parseFloat(overlay.style.left) - window.scrollX - bounds.left - container.clientLeft + container.scrollLeft}px`;
+          overlay.style.top = `${parseFloat(overlay.style.top) - window.scrollY - bounds.top - container.clientTop + container.scrollTop}px`;
+        }
 
         // tooltip 排序
         if (options.sort !== 'none') {

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Button, Checkbox, Input, Dropdown } from 'antd';
-import { SettingOutlined, HolderOutlined, SearchOutlined } from '@ant-design/icons';
+import { HolderOutlined, SearchOutlined } from '@ant-design/icons';
+import { Settings2 } from 'lucide-react';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useTranslation } from 'react-i18next';
@@ -300,7 +301,16 @@ export default function TableColumnSelect(props: IProps) {
 
   return (
     <Dropdown visible={open} onVisibleChange={setOpen} trigger={['click']} overlay={dropdownContent} placement='bottomRight' overlayClassName='table-column-select-overlay'>
-      <Button size={buttonSize} icon={<SettingOutlined />}>
+      <Button
+        size={buttonSize}
+        className='inline-flex items-center justify-center'
+        icon={
+          <span className='anticon inline-flex items-center'>
+            <Settings2 size={14} />
+          </span>
+        }
+        aria-label={buttonText || t('displayColumns')}
+      >
         {buttonText}
       </Button>
     </Dropdown>

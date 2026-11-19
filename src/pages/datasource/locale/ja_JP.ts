@@ -256,6 +256,13 @@ const ja_JP = {
     group_option: '{{name}}（{{count}} 件）',
     selected_count: '{{checked}} / {{total}} 件選択中',
     datasource_bound: 'インポート時にデータソース「{{name}}」を自動でバインドします',
+    coverage: 'カバー率 {{hit}}/{{total}}',
+    coverage_covered: 'カバー済みメトリクス：',
+    coverage_missing: '不足している指標：',
+    recommended_tip: '選択した収集テンプレートの指標カバー率順に並べ、おすすめ項目を選択しました',
+    coverage_unavailable: '指標カバー率を計算できません。テンプレートは未選択のままです。',
+    no_covered_dashboards: '選択した収集テンプレートの指標に一致するダッシュボードテンプレートはありません。',
+    no_covered_alerts: '選択した収集テンプレートの指標に一致するアラートルールテンプレートはありません。',
   },
 };
 

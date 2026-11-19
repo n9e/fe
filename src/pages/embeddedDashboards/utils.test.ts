@@ -1,14 +1,14 @@
 import { adjustURL } from './utils';
 
 describe('adjustURL', () => {
+  it('supports embedded refresh settings without reading the ordinary dashboard cache', () => {
+    expect(adjustURL('https://grafana.example.com/d/foo?refresh=1m', false, { refreshIntervalSeconds: 10, windowSearch: '' })).toContain('refresh=10s');
+    expect(adjustURL('https://grafana.example.com/d/foo?refresh=1m', false, { refreshIntervalSeconds: 0, windowSearch: '' })).not.toContain('refresh=');
+  });
   it('保留无值 kiosk 参数，并过滤夜莺内部分页参数', () => {
-    expect(
-      adjustURL(
-        'http://localhost:3001/d/ad9lw88/new-dashboard?from=now-6h&to=now&timezone=browser&kiosk',
-        false,
-        { windowSearch: '?page=1' },
-      ),
-    ).toBe('http://localhost:3001/d/ad9lw88/new-dashboard?from=now-6h&to=now&timezone=browser&kiosk&theme=light');
+    expect(adjustURL('http://localhost:3001/d/ad9lw88/new-dashboard?from=now-6h&to=now&timezone=browser&kiosk', false, { windowSearch: '?page=1' })).toBe(
+      'http://localhost:3001/d/ad9lw88/new-dashboard?from=now-6h&to=now&timezone=browser&kiosk&theme=light',
+    );
   });
 
   it('同步外层的业务参数，同时不覆盖 iframe 中的无值参数', () => {
