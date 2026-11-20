@@ -48,9 +48,10 @@
     }
   }
 
-  &:hover > .fc-copyable-text__button,
-  &:focus-within > .fc-copyable-text__button,
-  > .fc-copyable-text__button--feedback {
+  &.fc-copyable-text--active > .fc-copyable-text__button,
+  &:not(.fc-copyable-text--floating):hover > .fc-copyable-text__button,
+  &:not(.fc-copyable-text--floating):focus-within > .fc-copyable-text__button,
+  &:not(.fc-copyable-text--floating) > .fc-copyable-text__button--feedback {
     opacity: 1;
     pointer-events: auto;
   }
@@ -74,6 +75,33 @@
       overflow-wrap: anywhere;
     }
   }
+
+  &.fc-copyable-text--floating {
+    position: relative;
+    gap: 0;
+    overflow: visible;
+    > .fc-copyable-text__button {
+      position: absolute;
+      left: var(--fc-copy-left, 0px);
+      top: var(--fc-copy-top, 0px);
+      right: auto;
+      transform: none;
+      width: var(--fc-copy-width, 24px);
+      height: var(--fc-copy-height, 24px);
+      font-size: 14px;
+      transition: opacity 80ms ease, color 0.15s ease;
+      background: var(--fc-copy-background, var(--fc-fill-2));
+      &:hover {
+        color: var(--fc-text-link);
+      }
+    }
+    // Keep the 4px path to an outward button hoverable without changing layout.
+    &[data-copy-side='outside'] > .fc-copyable-text__button::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 0 -4px;
+    }
+  }
 }
 
 .fc-copyable-tag {
@@ -91,7 +119,7 @@
       background: var(--fc-copy-tag-background, var(--fc-fill-3));
     }
   }
-  &:hover > .fc-copyable-text > .fc-copyable-text__button {
+  &:hover > .fc-copyable-text:not(.fc-copyable-text--floating) > .fc-copyable-text__button {
     opacity: 1;
     pointer-events: auto;
   }

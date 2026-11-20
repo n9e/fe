@@ -162,7 +162,11 @@ export default function Tags(props: Props) {
               onTagClick?.(tag);
             }}
           >
-            {props.copyable ? <CopyableTag text={tag} style={{ '--fc-copy-tag-background': type === 'fill' ? bgColor : 'var(--fc-fill-2)' } as React.CSSProperties} /> : tag}
+            {props.copyable ? (
+              <CopyableTag placement='inside' text={tag} style={{ '--fc-copy-tag-background': type === 'fill' ? bgColor : 'var(--fc-fill-2)' } as React.CSSProperties} />
+            ) : (
+              tag
+            )}
           </span>
         ))}
         {overflowCount > 0 && (
@@ -192,7 +196,7 @@ export default function Tags(props: Props) {
                       }}
                     >
                       {props.copyable ? (
-                        <CopyableTag text={tag} style={{ '--fc-copy-tag-background': type === 'fill' ? bgColor : 'var(--fc-fill-2)' } as React.CSSProperties} />
+                        <CopyableTag placement='inside' text={tag} style={{ '--fc-copy-tag-background': type === 'fill' ? bgColor : 'var(--fc-fill-2)' } as React.CSSProperties} />
                       ) : (
                         tag
                       )}

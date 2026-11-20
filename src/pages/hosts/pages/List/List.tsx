@@ -528,7 +528,7 @@ export default function List(props: Props) {
                   render: (ident, record) => {
                     const ipWidthSample = record.host_ip && isHostIpLikelyIpv6(record.host_ip) ? IDENT_IP_V6_MAX_SAMPLE : IDENT_IP_V4_MAX_SAMPLE;
                     const ipDisplay = record.host_ip ? `IP ${record.host_ip}` : '-';
-                    const identIpWidth = Math.max(getTextWidth(ipWidthSample), getTextWidth(ipDisplay) + (record.host_ip ? 28 : 0));
+                    const identIpWidth = Math.max(getTextWidth(ipWidthSample), getTextWidth(ipDisplay));
                     const identMetaWidth = getTextWidth(`256 ${t('cores')} ${IDENT_META_MAX_SAMPLE_SUFFIX}`) + 20; // 14 的 icon + 间距 + 容错
                     const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
                     const archDisplay = record.arch === '' ? '-' : record.arch;
@@ -542,7 +542,7 @@ export default function List(props: Props) {
                               'text-title': record.target_up !== 0,
                             })}
                           >
-                            <CopyableText value={ident} overlay />
+                            <CopyableText placement='inside' value={ident} />
                           </span>
                           {/* 两个图标各自直达详情抽屉的一个页签，顺序跟着页签走：
                               概览 · 拓扑 · 采集配置，所以拓扑在左、采集配置在右。
@@ -588,13 +588,13 @@ export default function List(props: Props) {
                         <Space size={4} className='flex flex-wrap items-center'>
                           {record.host_ip ? (
                             <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
-                              <CopyableText value={record.host_ip} placeholder='-'>
+                              <CopyableText placement='auto' value={record.host_ip} placeholder='-'>
                                 {ipDisplay}
                               </CopyableText>
                             </span>
                           ) : (
                             <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
-                              <CopyableText value={record.host_ip} placeholder='-'>
+                              <CopyableText placement='auto' value={record.host_ip} placeholder='-'>
                                 {ipDisplay}
                               </CopyableText>
                             </span>
@@ -987,7 +987,7 @@ export default function List(props: Props) {
                               'text-title': record.target_up !== 0,
                             })}
                           >
-                            <CopyableText value={val} />
+                            <CopyableText placement='auto' value={val} />
                           </div>
                         );
                       },
