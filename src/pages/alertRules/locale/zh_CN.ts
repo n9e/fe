@@ -3,6 +3,8 @@ const zh_CN = {
   validate_metric_msg: '请先校验指标',
   smart_rule_limit_msg: '可添加的智能告警规则数量已达上限，请联系客服',
   title: '告警规则',
+  product_rule_readonly_tip: '该规则由对应产品维护，请前往灭火图 / 北极星页面操作',
+  product_rule_missing_space_tip: '缺少空间 ID，无法打开规则详情',
   empty_guide: {
     title: '还没有告警规则',
     desc: '新增一条告警规则，或一键导入内置告警规则模板。',
