@@ -128,12 +128,6 @@ const en_US = {
   input_request: {
     title: 'It needs to check something first',
   },
-  action_frame: {
-    updating_query: 'AI is updating the current query',
-    acting: 'The assistant is working on this page',
-    done: 'Done',
-    stop: 'Stop',
-  },
   page_action: {
     title: 'Page action',
     malformed: 'This page action has no content and cannot run',

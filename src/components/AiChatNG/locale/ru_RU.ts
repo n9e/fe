@@ -128,12 +128,6 @@ const ru_RU = {
   input_request: {
     title: 'It needs to check something first',
   },
-  action_frame: {
-    updating_query: 'AI обновляет текущий запрос',
-    acting: 'The assistant is working on this page',
-    done: 'Done',
-    stop: 'Stop',
-  },
   page_action: {
     title: 'Page action',
     malformed: 'This page action has no content and cannot run',

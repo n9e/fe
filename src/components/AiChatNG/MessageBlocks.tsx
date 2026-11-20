@@ -295,6 +295,9 @@ export function ResponseBlocks(props: IAiChatResponseBlocksProps) {
             const request = response.param as IAiChatPageActionRequest | undefined;
             return <PageActionBlock key={`${response.content_type}-${index}`} request={request} outcome={request ? pageActionOutcomes?.[request.call_id] : undefined} />;
           }
+          // Looking at the page changes nothing on it, so there is nothing to show.
+          case EAiChatContentType.PageObserve:
+            return null;
           default: {
             return (
               <div key={`${response.content_type}-${index}`} className='rounded-lg border border-dashed border-fc-200 px-4 py-3 text-sm text-hint'>
@@ -376,16 +379,19 @@ function MessageItemComponent({ message, isStreaming, onActionClick, onOKForForm
 
   return (
     <div className='ai-chat-message-item w-full space-y-3'>
-      <div className={cn('flex', !slim && 'justify-end')}>
-        <div className={cn('max-w-[85%] rounded-lg bg-primary/10 px-2 py-1', slim ? 'text-[13px] leading-[1.72]' : 'text-sm')}>
-          <div className='whitespace-pre-wrap break-words'>
-            {message.query.content.replace(/<@([^>]+)>/g, (token, id: string) => {
-              const reference = message.query.references?.find((item) => item.id === id);
-              return reference ? `@${reference.name || reference.skill.name}` : token;
-            })}
+      {/* A page result going back to the model has no user text to show. */}
+      {!message.query.page_result && (
+        <div className={cn('flex', !slim && 'justify-end')}>
+          <div className={cn('max-w-[85%] rounded-lg bg-primary/10 px-2 py-1', slim ? 'text-[13px] leading-[1.72]' : 'text-sm')}>
+            <div className='whitespace-pre-wrap break-words'>
+              {message.query.content.replace(/<@([^>]+)>/g, (token, id: string) => {
+                const reference = message.query.references?.find((item) => item.id === id);
+                return reference ? `@${reference.name || reference.skill.name}` : token;
+              })}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div className={cn('space-y-3', slim && 'min-w-0 flex-1', isStreaming ? 'animate-in fade-in-50 duration-300' : '')}>
         <ResponseBlocks
           message={message}

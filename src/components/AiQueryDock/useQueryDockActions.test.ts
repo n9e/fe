@@ -33,7 +33,7 @@ const action: QueryDockAction = {
   followUpExample: '改成按 env 分组取平均',
   page: { title: 'Metric explorer', summary: 'One query panel.' },
 };
-const request = { call_id: 'call-1', name: 'set_metric_query', description: 'Fill and run the query', args: { promql: 'up' } };
+const request = { call_id: 'call-1', name: 'set_metric_query', args: { promql: 'up' } };
 function deferred<T>() {
   let resolve!: (value: T) => void;
   let reject!: (error: Error) => void;
@@ -205,6 +205,23 @@ it('restores the expression and time snapshot from immediately before the latest
   expect(box.restore).toHaveBeenCalledWith(snapshot);
   expect(result.current.canUndo).toBe(false);
   expect(result.current.progress.phase).toBe('undone');
+});
+it('undoes back to before the first write when one question takes several', async () => {
+  const { scope, result, box, snapshot } = setup();
+  let current = { ...snapshot };
+  box.snapshot = () => current;
+  const before = current;
+  await act(async () => {
+    await scope.executePageAction(request);
+  });
+  // The model saw the first result and refined the query within the same turn.
+  current = { ...snapshot, query: 'up' };
+  await act(async () => {
+    await scope.executePageAction({ ...request, call_id: 'call-2', args: { promql: 'up{job="node"}' } });
+  });
+  expect(box.fill).toHaveBeenCalledTimes(2);
+  act(() => result.current.undo());
+  expect(box.restore).toHaveBeenCalledWith(before);
 });
 it('closing or unmounting cancels an in-flight action before it can fill', async () => {
   const { scope, box, rerender, props } = setup();
