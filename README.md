@@ -61,6 +61,8 @@ npm run build
 
 ## Nginx Server
 
+For deployments under a URL prefix such as `/flashcat/`, see the [subpath deployment guide](./guides/SUBPATH_DEPLOYMENT.md).
+
 ```
 server {
     listen       8765;
