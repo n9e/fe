@@ -4,16 +4,6 @@ import { Modal } from 'antd';
 import { createDomFeedback, getSharedActionRuntime } from '@flashcatcloud/ai-kit/actions';
 import type { ConfirmRequest } from '@flashcatcloud/ai-kit/actions';
 
-import { NAME_SPACE } from './constants';
-
-/** The product's own colour, so the overlays look like part of the page.
- *  Read when the overlays are first drawn, once the theme stylesheet is in. */
-function accent(): string | undefined {
-  if (typeof document === 'undefined') return undefined;
-  const value = getComputedStyle(document.documentElement).getPropertyValue('--fc-fill-primary-rgb').trim();
-  return value ? value.split(/\s+/).join(',') : undefined;
-}
-
 /** Render the confirmation contract declared by a page action. */
 export function confirmUiAction(request: ConfirmRequest): Promise<boolean> {
   return new Promise((resolve) => {
@@ -90,21 +80,12 @@ export function confirmUiAction(request: ConfirmRequest): Promise<boolean> {
  */
 export const uiActionRuntime = getSharedActionRuntime({
   confirm: confirmUiAction,
-  // Ring the target and glide a cursor onto it. Writing a form field takes a
+  // Ring the target and put a cursor on it. Writing a form field takes a
   // millisecond, so without this an action is indistinguishable from the page
-  // glitching. The banner and the frame say it out loud: the assistant is
-  // acting on this page, and here is how to stop it.
-  feedback: createDomFeedback({
-    accent,
-    // Read at draw time, so a language switch is honoured.
-    banner: () => ({
-      acting: i18next.t(uiActionRuntime.pageContext()?.title === 'Metric explorer' ? 'action_frame.updating_query' : 'action_frame.acting', { ns: NAME_SPACE }),
-      done: i18next.t('action_frame.done', { ns: NAME_SPACE }),
-      cancel: i18next.t('action_frame.stop', { ns: NAME_SPACE }),
-    }),
-  }),
+  // glitching. Stopping is the chat surface's own stop button.
+  feedback: createDomFeedback(),
   controlledRegion: () => document.getElementById('root') ?? document.body,
-  // Writing a field takes milliseconds; two seconds is what it takes to read
-  // the banner and see the field lit.
+  // Writing a field takes milliseconds; two seconds is what it takes to see
+  // the field lit.
   feedbackHoldMs: 2000,
 });

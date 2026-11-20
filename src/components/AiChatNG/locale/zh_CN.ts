@@ -128,12 +128,6 @@ const zh_CN = {
   input_request: {
     title: '它想先确认一下',
   },
-  action_frame: {
-    updating_query: 'AI 正在更新当前查询',
-    acting: 'AI 正在操作页面',
-    done: '操作完成',
-    stop: '停止',
-  },
   page_action: {
     title: '页面操作',
     malformed: '这条页面操作缺少内容，无法执行',

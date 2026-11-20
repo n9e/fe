@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ActionManifestEntry, ActionResponse } from '@flashcatcloud/ai-kit/actions';
+import type { ActionManifestEntry, ActionResponse, PageContext } from '@flashcatcloud/ai-kit/actions';
 
 export type AiChatPageType = 'dashboards' | 'alert' | 'record' | 'explorer' | 'alert_rule' | 'alert_history' | 'active_alert' | 'notify_tpl' | 'datasource';
 
@@ -47,6 +47,24 @@ export interface IAiChatMessageQuery {
   references?: IAiChatSkillReference[];
   action?: IAiChatAction;
   page_from: IAiChatPageInfo;
+  /** Version of the page-result protocol; without it the model is given no page tools. */
+  page_runtime?: string;
+  /** What the page can do, attached up front by an entry opened to operate it. */
+  page_actions?: ActionManifestEntry[];
+  /** The page's answer to the request the previous message ended on. A message carrying it has no user text. */
+  page_result?: IAiChatPageResult;
+}
+
+/** The answer to a page_observe request: where the user is and what the page can do right now. */
+export interface IAiChatPageObservation {
+  page: PageContext | null;
+  actions: ActionManifestEntry[];
+}
+
+/** What the page sends back for a page request: an action's response, or an observation. */
+export interface IAiChatPageResult {
+  call_id: string;
+  content: ActionResponse | IAiChatPageObservation;
 }
 
 export enum EAiChatContentType {
@@ -61,6 +79,9 @@ export enum EAiChatContentType {
   /** The model asking the page to run one of the actions it declared. Always
    *  the last segment of a message: the turn ends on it. */
   PageAction = 'page_action',
+  /** The model asking the page what it can do right now. Like a page action,
+   *  always the last segment; the panel answers it without showing anything. */
+  PageObserve = 'page_observe',
   /** A run of consecutive tool calls, already folded by the backend; the
    *  calls are in `param.items`, each named for a reader. */
   ToolGroup = 'tool_group',
@@ -88,9 +109,12 @@ export interface IAiChatInputRequest {
 export interface IAiChatPageActionRequest {
   call_id: string;
   name: string;
-  /** The page's own description of the action, so the card needs no lookup. */
-  description: string;
   args: Record<string, unknown>;
+}
+
+/** `param` of a `page_observe` segment. */
+export interface IAiChatPageObserveRequest {
+  call_id: string;
 }
 
 export interface IAiChatStreamSegment {
@@ -139,9 +163,6 @@ export interface IAiChatCreateChatRequest extends IAiChatPageInfo {}
 export interface IAiChatSendMessageRequest {
   chat_id: string;
   query: IAiChatMessageQuery;
-  /** The actions the page behind the chat can run right now; the model
-   *  requests one through page_action. Forwarded from the action runtime as is. */
-  page_actions?: ActionManifestEntry[];
 }
 
 export interface IAiChatSendMessageResponse {
@@ -183,6 +204,7 @@ export interface IAiChatTurn {
   message: IAiChatMessage;
   /** Why a done turn ended, when not by finishing on its own. */
   reason?: 'stopped' | 'error';
+  /** The last page action this turn ran. */
   actionOutcome?: ActionResponse;
 }
 
@@ -225,9 +247,11 @@ export interface IAiChatProps {
   inputPrefix?: React.ReactNode;
   /** Slim only: rendered inside the input row, after the send button. */
   inputSuffix?: React.ReactNode;
-  /** Fires as a turn starts, progresses and ends. */
+  /** Fires as a turn starts, progresses and ends. A turn spans every request it takes: page results go back to the model without ending it. */
   onTurn?: (turn: IAiChatTurn) => void;
   prepareTurn?: () => IAiChatTurnScope | undefined;
+  /** Attach what the page can do to every message, for an entry opened to operate this page. Otherwise the model looks at the page only when it needs to. */
+  attachPageActions?: boolean;
   onConversationInteract?: () => void;
   onBusyChange?: (busy: boolean) => void;
   /** Closing an embedded surface stops its active turn but preserves history. */
