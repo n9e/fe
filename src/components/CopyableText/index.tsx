@@ -4,6 +4,8 @@ import { CheckOutlined, CopyOutlined, ExclamationCircleOutlined } from '@ant-des
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import { writeClipboard } from './clipboard';
+import { CopyPlacement } from './placement';
+import useCopyPlacement from './useCopyPlacement';
 import './style.less';
 
 export interface CopyableTextProps {
@@ -13,12 +15,17 @@ export interface CopyableTextProps {
   style?: React.CSSProperties;
   wrap?: boolean;
   overlay?: boolean;
+  /** Opt in to zero-width copy controls; omitted preserves existing consumers. */
+  placement?: CopyPlacement;
   placeholder?: React.ReactNode;
 }
 
-export default function CopyableText({ value, children, className, style, wrap, overlay, placeholder = '—' }: CopyableTextProps) {
+export default function CopyableText({ value, children, className, style, wrap, overlay, placement, placeholder = '—' }: CopyableTextProps) {
   const { t } = useTranslation('resourceCopy');
   const raw = value == null || String(value).trim() === '' ? undefined : String(value);
+  const floating = useCopyPlacement(placement, raw);
+  const [buttonActive, setButtonActive] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [status, setStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
   const sequence = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout>>();
@@ -56,34 +63,86 @@ export default function CopyableText({ value, children, className, style, wrap, 
       </span>
     );
   const tip = t(status === 'success' ? 'copied' : status === 'error' ? 'retry' : 'copy');
-  return (
-    <span className={classNames('fc-copyable-text', className, { 'fc-copyable-text--wrap': wrap, 'fc-copyable-text--overlay': overlay })} style={style}>
-      <Tooltip title={raw} mouseEnterDelay={0.4} overlayClassName='fc-copyable-text-tooltip'>
-        <span className='fc-copyable-text__content'>{children ?? raw}</span>
-      </Tooltip>
-      <Tooltip title={tip}>
-        <button
-          type='button'
-          className={classNames('fc-copyable-text__button', { 'fc-copyable-text__button--feedback': status === 'success' || status === 'error' })}
-          aria-label={`${tip}: ${raw}`}
-          aria-busy={status === 'pending'}
-          onClick={copy}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
-          }}
-        >
-          {status === 'success' ? <CheckOutlined /> : status === 'error' ? <ExclamationCircleOutlined /> : <CopyOutlined />}
-        </button>
-      </Tooltip>
+  const content = (
+    <span ref={floating.contentRef} className='fc-copyable-text__content'>
+      {children ?? raw}
     </span>
+  );
+  const button = (
+    <button
+      type='button'
+      className={classNames('fc-copyable-text__button', { 'fc-copyable-text__button--feedback': status === 'success' || status === 'error' })}
+      aria-label={`${tip}: ${raw}`}
+      aria-busy={status === 'pending'}
+      onMouseEnter={placement ? () => setButtonActive(true) : undefined}
+      onMouseLeave={placement ? () => setButtonActive(false) : undefined}
+      onFocus={placement ? () => setButtonActive(true) : undefined}
+      onBlur={placement ? () => setButtonActive(false) : undefined}
+      onMouseDown={placement ? (event) => event.preventDefault() : undefined}
+      onClick={copy}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
+      }}
+    >
+      {status === 'success' ? <CheckOutlined /> : status === 'error' ? <ExclamationCircleOutlined /> : <CopyOutlined />}
+    </button>
+  );
+  const root = (
+    <span
+      ref={floating.rootRef}
+      className={classNames('fc-copyable-text', className, {
+        'fc-copyable-text--wrap': wrap,
+        'fc-copyable-text--overlay': overlay && !placement,
+        'fc-copyable-text--floating': !!placement,
+        'fc-copyable-text--active': !!placement && floating.active,
+      })}
+      style={placement ? { ...style, ...floating.layout?.style } : style}
+      data-copy-side={placement ? floating.layout?.side : undefined}
+      onMouseEnter={floating.activate}
+      onMouseLeave={() => {
+        floating.deactivate();
+        if (placement) {
+          setButtonActive(false);
+          setTooltipOpen(false);
+        }
+      }}
+      onFocusCapture={floating.focus}
+      onBlurCapture={floating.blur}
+    >
+      {placement ? (
+        content
+      ) : (
+        <Tooltip title={raw} mouseEnterDelay={0.4} overlayClassName='fc-copyable-text-tooltip'>
+          {content}
+        </Tooltip>
+      )}
+      {placement ? button : <Tooltip title={tip}>{button}</Tooltip>}
+    </span>
+  );
+  return placement ? (
+    <Tooltip
+      title={floating.truncated ? raw : null}
+      visible={!buttonActive && floating.truncated && tooltipOpen}
+      onVisibleChange={setTooltipOpen}
+      mouseEnterDelay={0.4}
+      mouseLeaveDelay={0}
+      transitionName=''
+      destroyTooltipOnHide
+      trigger={['hover', 'focus']}
+      overlayClassName='fc-copyable-text-tooltip'
+    >
+      {root}
+    </Tooltip>
+  ) : (
+    root
   );
 }
 
 /** The host tag owns its background/padding; the button only covers the value's tail. */
-export function CopyableTag({ text, copyValue = text, style }: { text: string; copyValue?: string; style?: React.CSSProperties }) {
+export function CopyableTag({ text, copyValue = text, style, placement }: { text: string; copyValue?: string; style?: React.CSSProperties; placement?: CopyPlacement }) {
   return (
     <span className='fc-copyable-tag' style={style}>
-      <CopyableText value={copyValue} overlay>
+      <CopyableText value={copyValue} overlay placement={placement}>
         {text}
       </CopyableText>
     </span>

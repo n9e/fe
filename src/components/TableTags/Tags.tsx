@@ -1,4 +1,4 @@
-import { CopyableTag } from '@/components/CopyableText';
+import { CopyableTag, CopyableTextProps } from '@/components/CopyableText';
 import React, { useRef, useState, useLayoutEffect } from 'react';
 import { Button, Popover, Tooltip } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
@@ -21,6 +21,7 @@ interface Props<T = any> {
   onTagClick?: (item: string | T, index: number) => void;
   popoverTitle?: React.ReactNode | ((count: number) => React.ReactNode); // 自定义 popover 标题，可接收 data.length
   getCopyText?: (item: string | T, index: number) => string;
+  copyPlacement?: CopyableTextProps['placement'];
   hideLabel?: boolean; // 仅展示 icon，隐藏文字内容
 }
 
@@ -207,6 +208,7 @@ export default function Tags<T>(props: Props<T>) {
               {!hideLabel &&
                 (props.getCopyText ? (
                   <CopyableTag
+                    placement={props.copyPlacement}
                     text={getItemLabel(item, i)}
                     copyValue={props.getCopyText(item, i)}
                     style={{ '--fc-copy-tag-background': type === 'fill' ? resolveColor(props.bgColor, item, i, 'var(--fc-violet-3)') : 'var(--fc-fill-2)' } as React.CSSProperties}
@@ -258,6 +260,7 @@ export default function Tags<T>(props: Props<T>) {
                     {!hideLabel &&
                       (props.getCopyText ? (
                         <CopyableTag
+                          placement={props.copyPlacement}
                           text={getItemLabel(item, i)}
                           copyValue={props.getCopyText(item, i)}
                           style={
