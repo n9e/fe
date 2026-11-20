@@ -6,6 +6,7 @@ import CopyableText, { CopyableTag } from './index';
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 jest.mock('antd', () => ({ Tooltip: ({ children }: { children: React.ReactNode }) => children, message: { error: jest.fn() } }));
+jest.mock('./placement', () => ({ measureCopyPlacement: () => ({ side: 'outside', style: {} }) }));
 
 const writeText = jest.fn();
 beforeEach(() => {
@@ -14,12 +15,12 @@ beforeEach(() => {
   Object.defineProperty(document, 'execCommand', { configurable: true, value: jest.fn().mockReturnValue(false) });
 });
 
-test('copies the complete raw value without opening the row or changing link behavior', async () => {
+test.each([undefined, 'auto', 'inside'] as const)('copies the complete raw value without opening the row (%s)', async (placement) => {
   const open = jest.fn();
   const raw = '  支付/payment-api-' + 'a'.repeat(300) + '\n  ';
   render(
     <div onClick={open}>
-      <CopyableText value={raw}>
+      <CopyableText value={raw} placement={placement}>
         <a href='#detail'>payment…</a>
       </CopyableText>
     </div>,
@@ -29,6 +30,32 @@ test('copies the complete raw value without opening the row or changing link beh
   expect(open).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('link'));
   expect(open).toHaveBeenCalledTimes(1);
+});
+
+test('only opts selected consumers into floating controls', () => {
+  const { container } = render(
+    <>
+      <CopyableText value='cloud' />
+      <CopyableText value='network' overlay />
+      <CopyableText value='application' placement='auto' />
+    </>,
+  );
+  const items = container.querySelectorAll('.fc-copyable-text');
+  expect(items[0].className).toBe('fc-copyable-text');
+  expect(items[1].className).toBe('fc-copyable-text fc-copyable-text--overlay');
+  expect(items[2].className).toBe('fc-copyable-text fc-copyable-text--floating');
+});
+
+test('floating tags copy full KV without triggering filtering', async () => {
+  const filter = jest.fn();
+  const { container } = render(
+    <span onClick={filter}>
+      <CopyableTag text='retry=0' copyValue='retry:0' placement='auto' />
+    </span>,
+  );
+  fireEvent.click(screen.getByRole('button'));
+  await waitFor(() => expect(writeText).toHaveBeenCalledWith('retry:0'));
+  expect(filter).not.toHaveBeenCalled();
 });
 
 test('does not offer placeholder copies and preserves zero and false', async () => {
@@ -119,6 +146,25 @@ test('ignores repeated clicks while clipboard writing is pending', async () => {
   expect(writeText).toHaveBeenCalledTimes(1);
   await act(async () => finish());
   expect(screen.getByRole('button', { name: 'copied: pending-copy' })).toBeInTheDocument();
+});
+
+test('pointer copying does not steal focus or pin feedback after leaving', async () => {
+  jest.useFakeTimers();
+  const { container, unmount } = render(<CopyableText value='group-id' placement='auto' />);
+  const root = container.querySelector('.fc-copyable-text')!;
+  const button = screen.getByRole('button');
+  fireEvent.mouseEnter(root);
+  act(() => jest.advanceTimersByTime(200));
+  expect(fireEvent.mouseDown(button)).toBe(false);
+  await act(async () => fireEvent.click(button));
+  expect(writeText).toHaveBeenCalledWith('group-id');
+  expect(screen.getByRole('button', { name: 'copied: group-id' })).toBeInTheDocument();
+  expect(document.activeElement).not.toBe(button);
+  fireEvent.mouseLeave(root, { relatedTarget: document.body });
+  act(() => jest.advanceTimersByTime(100));
+  expect(root).not.toHaveClass('fc-copyable-text--active');
+  unmount();
+  jest.useRealTimers();
 });
 
 test('does not show an old copy result after a row changes identity', async () => {

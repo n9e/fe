@@ -86,7 +86,7 @@ function RenderInterfaces({ value }) {
                     <div className='target-information-interface-item-key'>{k}</div>
                     <div className='target-information-interface-item-value'>
                       <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>
-                        <CopyableText value={typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' ? v : undefined} wrap />
+                        <CopyableText placement='inside' value={typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' ? v : undefined} wrap />
                       </Tag>
                     </div>
                   </div>
@@ -107,12 +107,12 @@ function RenderFilesystem({ value }) {
         return (
           <div key={index} className='target-information-filesystem'>
             <div key={index} className='target-information-filesystem-name'>
-              <CopyableText value={item.name} />
+              <CopyableText placement='inside' value={item.name} />
             </div>
             <div className='target-information-filesystem-mounted_on'>mounted on</div>
             <div className='target-information-filesystem-mounted_on-value'>
               <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>
-                <CopyableText value={item.mounted_on} />
+                <CopyableText placement='inside' value={item.mounted_on} />
               </Tag>
             </div>
             <div className='target-information-filesystem-kb_size'>{bytesToSize(item.kb_size * 1024, 2)}</div>
@@ -169,7 +169,7 @@ function Group({ name, data }) {
                   {(typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') && (
                     <div className='target-information-group-content-item-value'>
                       <Tag color={darkMode ? 'rgb(50 53 69)' : '#f4f4f5'}>
-                        <CopyableText value={value} wrap>
+                        <CopyableText placement='inside' value={value} wrap>
                           {String(val)}
                         </CopyableText>
                       </Tag>
@@ -260,7 +260,7 @@ export default function TargetMetaDrawer(props: IProps) {
         destroyOnClose
         title={
           <span className='target-information-drawer__title'>
-            <span>{t('meta_title')} ·</span> <CopyableText value={ident} />
+            <span>{t('meta_title')} ·</span> <CopyableText placement='auto' value={ident} />
           </span>
         }
         width={800}
