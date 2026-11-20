@@ -67,6 +67,15 @@
   left: 50%;
 }
 
+.dashboard-detail-embedded {
+  height: max(360px, calc(100vh - 380px));
+  min-width: 0;
+
+  .dashboard-detail-content-header-container {
+    flex-shrink: 0;
+  }
+}
+
 .dashboard-detail-content {
   display: flex;
   flex-direction: column;

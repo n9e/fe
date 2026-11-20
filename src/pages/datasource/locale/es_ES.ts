@@ -257,6 +257,13 @@ const es_ES = {
     group_option: '{{name}} ({{count}})',
     selected_count: '{{checked}} / {{total}} seleccionados',
     datasource_bound: 'Al importar, se vinculará automáticamente el origen de datos «{{name}}»',
+    coverage: 'Cobertura {{hit}}/{{total}}',
+    coverage_covered: 'Métricas cubiertas:',
+    coverage_missing: 'Métricas no cubiertas:',
+    recommended_tip: 'Ordenadas según la cobertura de las plantillas de recolección seleccionadas; se marcaron las recomendadas.',
+    coverage_unavailable: 'No se puede calcular la cobertura de métricas. Las plantillas quedan sin seleccionar.',
+    no_covered_dashboards: 'Ninguna plantilla de dashboard coincide con las métricas de las plantillas de recolección seleccionadas.',
+    no_covered_alerts: 'Ninguna plantilla de reglas de alerta coincide con las métricas de las plantillas de recolección seleccionadas.',
   },
 };
 

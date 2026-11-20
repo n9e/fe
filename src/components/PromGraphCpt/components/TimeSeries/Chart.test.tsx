@@ -7,6 +7,8 @@ import type { Options } from 'uplot';
 import Chart from './Chart';
 import { getPlotData } from './data';
 import { parseRange } from '@/components/TimeRangePicker';
+import type { tooltipPlugin } from '@/components/UPlotChart';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 
 jest.mock('@/utils/constant', () => ({ FONT_FAMILY: '', THEME: { light: {}, dark: {} } }));
 jest.mock('@/components/TimeRangePicker', () => ({ parseRange: jest.fn(() => ({ start: new Date(100000), end: new Date(200000) })) }));
@@ -50,6 +52,29 @@ beforeEach(() => {
   capturedOptions.length = 0;
   mockChart.setScale.mockClear();
   (parseRange as jest.Mock).mockReturnValue({ start: new Date(100000), end: new Date(200000) });
+});
+
+it.each([false, true])('respects click-to-pin (%s) when the mouse leaves the chart', (pinningEnabled) => {
+  render(
+    <TooltipPinningContext.Provider value={pinningEnabled}>
+      <Chart {...props} />
+    </TooltipPinningContext.Provider>,
+  );
+  const plugin = capturedOptions[capturedOptions.length - 1].plugins![0] as ReturnType<typeof tooltipPlugin>;
+  const root = document.createElement('div');
+  const over = root.appendChild(document.createElement('div'));
+  plugin.hooks.init({ root, over, cursor: {} } as uPlot);
+  try {
+    const tooltip = document.getElementById('chart-tooltip');
+    fireEvent.mouseEnter(over);
+    expect(tooltip).toBeVisible();
+    fireEvent.mouseDown(over, { clientX: 30 });
+    fireEvent.mouseUp(over, { clientX: 30 });
+    fireEvent.mouseLeave(over);
+    expect(tooltip?.style.display).toBe(pinningEnabled ? 'block' : 'none');
+  } finally {
+    plugin.hooks.destroy();
+  }
 });
 
 it.each(['sparse', 'empty', 'single'] as const)('keeps the full query hour for a %s result', (kind) => {

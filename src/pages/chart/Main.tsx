@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import { CommonStateContext } from '@/App';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 
 import Renderer from '../dashboard/Renderer/Renderer';
 import { DashboardRuntimeProvider } from '../dashboard/globalState';
@@ -22,7 +23,9 @@ interface Props {
 export default function Main(props: Props) {
   return (
     <DashboardRuntimeProvider>
-      <MainContent {...props} />
+      <TooltipPinningContext.Provider value={false}>
+        <MainContent {...props} />
+      </TooltipPinningContext.Provider>
     </DashboardRuntimeProvider>
   );
 }

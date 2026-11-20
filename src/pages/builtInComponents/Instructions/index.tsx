@@ -7,18 +7,18 @@ interface Props {
   value?: string;
   onChange: (value: string) => void;
   editabled: boolean;
-  setReadmeEditabled: (editabled: boolean) => void;
 }
 
 export default function Instructions(props: Props) {
   const { darkMode } = useContext(CommonStateContext);
-  const { value, onChange, editabled, setReadmeEditabled } = props;
+  const { value, onChange, editabled } = props;
 
   return (
     <div className='builtin-w-md-editor' data-color-mode={darkMode ? 'dark' : 'light'}>
       {editabled ? (
         <MDEditor
           height='100%'
+          visibleDragbar={false}
           value={value}
           onChange={(newValue) => {
             onChange(newValue || '');

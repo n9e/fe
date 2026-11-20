@@ -5,11 +5,15 @@
 - After modifying source files, run `./node_modules/.bin/prettier --write` on the changed files and verify them with `./node_modules/.bin/prettier --check` before delivery. Follow `.prettierrc.json`; do not leave formatting-only violations in changed files.
 - Prefer native type-checking APIs over lodash for type narrowing: use `Array.isArray` instead of `_.isArray`, `typeof x === 'number'` instead of `_.isNumber`, `x == null` instead of `_.isNil`, etc. Lodash type guard functions are not recognized by TypeScript when `@types/lodash` is unavailable, leaving `unknown` types un-narrowed.
 
-## 页面修改原则
+## Subrepository
 
-- 所有页面修改都要检查视觉美观与周边协调，包括按钮间距、水平/垂直对齐、颜色、图标与文字的实际可见间距；不能只检查控件外框或功能是否可用。
-- 提示浮窗按内容调整宽度：不超过 20 个字的短句尽量保持一行，避免过窄造成无意义换行；长文案与窄视口仍须合理换行，不能溢出屏幕。背景与箭头使用系统 Tooltip 的主题、颜色及透明度，与“筛选”旁的提示一致，不单独硬编码不透明背景。
-- 所有修改都要控制影响范围，优先采用页面或组件局部作用域；检查相关状态、共用组件调用方与集成入口，避免修复一处却让其他位置回归，并完成与改动相关的验证。
+- In project conversations and tasks, “subrepository” or “subrepo” refers by default to `src/plus/` under the `fe` root, the separate `n9e-plus-fe` Git repository. Run Git commands for the subrepository in `src/plus/`. From the `fe` root, for example, run `git -C src/plus status`. Use the location specified by the task if it explicitly names a different repository or workspace.
+
+## Page changes
+
+- For every page change, check how it looks alongside the surrounding UI. Review button spacing, horizontal and vertical alignment, colors, and the visible gap between icons and text as well as control bounds and behavior.
+- Size tooltips to their content. Keep short messages of up to 20 characters on one line where space permits. Allow longer text to wrap and ensure tooltips fit within narrow viewports. Match the system Tooltip next to “Filter” by using its theme, colors, and opacity for the background and arrow. Avoid hardcoding an opaque background.
+- Keep changes scoped to the affected page or component whenever possible. Check related state, consumers of shared components, and integration entry points for regressions, and verify the affected behavior.
 
 ## React Router Routes and Deployment Prefixes
 
@@ -44,9 +48,3 @@
 - `sync-srm` intentionally excludes integrated base files such as `src/utils/request.tsx`. Changes to those files require a full integration refresh before acceptance; a successful incremental sync alone does not prove that new exports reached the generated workspace. After a full sync copies the primary plus checkout, restore this task's changed plus adapter/component files from its canonical feature worktree into the ignored cache and run `sync-srm` again. Never patch generated files directly.
 
 - Before pushing changes to FieldsList, field statistics/stacking providers, or filter editors, run `node --max-old-space-size=8192 scripts/check-log-explorer-types/index.js --with-plus` against the integrated source (or pass its workspace directory). Refresh the ignored plus cache from the canonical feature worktree first. This uses production TypeScript options, includes TSX tests and ambient declarations, and checks component/callback contracts; transpile-only Jest or `transpileModule` does not provide this assurance. The production config excludes `*.test.ts` but still compiles `*.test.tsx`; do not work around test fixture errors by disabling their checks.
-
-## 私有云品牌展示与功能权限
-
-- 新增或修改页面、入口、介绍文案、文档链接、空状态、自然语言查询及跨功能关联前，阅读 [私有云品牌展示与功能权限隐藏](docs/private-cloud-visibility-and-permissions.md)。
-- 品牌展示配置与 `/api/n9e-plus/self/perms` 产品权限分别判断；Admin 仅豁免功能权限，介绍仍受展示开关控制。复用文档中的公共 gate，并保留隐藏字段的已有配置。
-- 验收组件只在独立验收分支 / 工作区存在，不能进入正式发布；三个仓库同步维护该文档与相关入口覆盖。

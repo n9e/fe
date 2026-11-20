@@ -3,12 +3,14 @@ import { Resizable } from 're-resizable';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import { Input, Tree } from 'antd';
-import { LeftOutlined, RightOutlined, SettingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
+import { SettingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { getBusiGroups } from '@/services/common';
 import { CommonStateContext } from '@/App';
 import { listToTree2, getCollapsedKeys } from './utils';
 import '@/components/BusinessGroup/style.less';
+import BusinessGroupSidebarHeader from '@/components/BusinessGroup/SidebarHeader';
+import { getBusinessGroupSelectionLabel } from '@/components/BusinessGroup/utils';
 
 export { listToTree2, getCollapsedKeys };
 
@@ -49,8 +51,8 @@ export function setLocaleExpandedKeys(nodes: string[]) {
 export default function index(props: IProps) {
   const { t } = useTranslation();
   const { title = t('common:business_group'), renderHeadExtra, curBusiId, setCurBusiId } = props;
-  const [collapse, setCollapse] = useState(localStorage.getItem('leftlist') === '1');
-  const [width, setWidth] = useState(_.toNumber(localStorage.getItem('leftwidth') || 200));
+  const [collapse, setCollapse] = useState(localStorage.getItem('business-group-sidebar-collapse-v2') === '1');
+  const [width, setWidth] = useState(() => Math.min(480, Math.max(200, Number(localStorage.getItem('leftwidth')) || 200)));
   const { busiGroups } = useContext(CommonStateContext);
   const [businessGroupData, setBusinessGroupData] = useState<Node[]>([]);
 
@@ -60,10 +62,13 @@ export default function index(props: IProps) {
 
   return (
     <Resizable
+      className={`n9e-business-group-sidebar${collapse ? ' n9e-business-group-sidebar--collapsed' : ''}`}
       style={{
         marginRight: collapse ? 0 : 10,
       }}
-      size={{ width: collapse ? 0 : width, height: '100%' }}
+      size={{ width: collapse ? '100%' : width, height: collapse ? 40 : '100%' }}
+      maxWidth={collapse ? undefined : 480}
+      minWidth={collapse ? undefined : 200}
       enable={{
         right: collapse ? false : true,
       }}
@@ -76,26 +81,25 @@ export default function index(props: IProps) {
         localStorage.setItem('leftwidth', curWidth.toString());
       }}
     >
-      <div className={collapse ? 'n9e-biz-group-container collapse' : 'n9e-biz-group-container'}>
-        <div
-          className='collapse-btn'
-          onClick={() => {
-            localStorage.setItem('leftlist', !collapse ? '1' : '0');
+      <div className='n9e-biz-group-container n9e-biz-group-container--retained'>
+        <BusinessGroupSidebarHeader
+          title={title}
+          collapsed={collapse}
+          selection={getBusinessGroupSelectionLabel(curBusiId == null ? undefined : String(curBusiId), busiGroups, '-', [], t('BusinessGroup:sidebar.unselected'))}
+          onToggle={() => {
+            localStorage.setItem('business-group-sidebar-collapse-v2', collapse ? '0' : '1');
             setCollapse(!collapse);
           }}
-        >
-          {!collapse ? <LeftOutlined /> : <RightOutlined />}
-        </div>
-        <div className='n9e-biz-group-container-group group-shrink'>
-          {renderHeadExtra && renderHeadExtra()}
-          <div className='n9e-biz-group-container-group-title'>
-            {title}
-            {title === t('common:business_group') && (
+          actions={
+            title === t('common:business_group') ? (
               <Link to='/busi-groups' target='_blank'>
                 <SettingOutlined />
               </Link>
-            )}
-          </div>
+            ) : undefined
+          }
+        />
+        <div className='n9e-biz-group-container__body' hidden={collapse}>
+          {renderHeadExtra && renderHeadExtra()}
           <Input
             className='n9e-biz-group-container-group-search'
             prefix={<SearchOutlined />}

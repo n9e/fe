@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { useAntdTable, useDebounceFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +59,15 @@ export default function index() {
   } catch (e) {
     console.error(e);
   }
+  const [selectedSidebarFilter, setSelectedSidebarFilter] = useState<{ name: string; configs: string }>();
+  const sidebarFilterSummary = useMemo(() => {
+    if (!selectedSidebarFilter) return '';
+    try {
+      return [selectedSidebarFilter.name, filtersToStr(JSON.parse(selectedSidebarFilter.configs))].filter(Boolean).join(': ');
+    } catch {
+      return selectedSidebarFilter.name;
+    }
+  }, [selectedSidebarFilter]);
   const [filter, setFilter] = useState(defaultFilter as Filter);
   const [queryValue, setQueryValue] = useState(defaultFilter.query || '');
   const [typesList, setTypesList] = useState<string[]>([]);
@@ -319,15 +328,16 @@ export default function index() {
         icon={<SettingOutlined />}
         doc='https://flashcat.cloud/docs/content/flashcat-monitor/nightingale-v9/usage/data-query/metrics/metrics-built-in/'
       >
-        <div className='built-in-metrics-container'>
+        <div className='built-in-metrics-container fc-retained-layout'>
           <Collapse
             collapseLocalStorageKey='built-in-metrics-filters-collapse'
             widthLocalStorageKey='built-in-metrics-filters-width'
             defaultWidth={240}
             tooltip={t('filter.title')}
+            summary={sidebarFilterSummary}
           >
             <div className='fc-border rounded-lg p-4 built-in-metrics-filter'>
-              <Filters ref={filtersRef} />
+              <Filters ref={filtersRef} onSelectionChange={setSelectedSidebarFilter} />
             </div>
           </Collapse>
           <div className='fc-border rounded-lg p-4 built-in-metrics-main'>

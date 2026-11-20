@@ -1,9 +1,10 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState } from 'react';
 import { Button } from 'antd';
 import moment from 'moment';
 import type uPlot from 'uplot';
 import type { Options } from 'uplot';
 import UPlotChart, { axisBuilder, cursorBuider, getStackedDataAndBands, paddingSide, scalesBuilder, seriesBuider, tooltipPlugin, uplotsMap } from '@/components/UPlotChart';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 import { parseRange } from '@/components/TimeRangePicker';
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
 import type { IStandardOptions } from '@/pages/dashboard/types';
@@ -29,6 +30,7 @@ interface Props {
 
 export default function Chart(props: Props) {
   const { id, frames, series, colors, custom, tooltip, standardOptions, darkMode, onZoomRangeChange, zoomed } = props;
+  const pinningEnabled = useContext(TooltipPinningContext);
   const chartRef = useRef<uPlot>();
   const initialYRange = useRef<[number, number]>();
   const [localZoomed, setLocalZoomed] = useState(false);
@@ -54,7 +56,7 @@ export default function Chart(props: Props) {
           id,
           mode: mode === 'all' ? 'all' : 'single',
           sort: sort === 'asc' ? 'asc' : 'desc',
-          pinningEnabled: true,
+          pinningEnabled,
           graphTooltip: 'default',
           pointValueformatter: format,
         }),
@@ -91,7 +93,7 @@ export default function Chart(props: Props) {
         ],
       },
     };
-  }, [id, colors, series, stacked, frames, lineInterpolation, fillOpacity, mode, sort, unit, decimals, dateFormat, darkMode, xRange, onZoomRangeChange]);
+  }, [id, colors, series, stacked, frames, lineInterpolation, fillOpacity, mode, sort, pinningEnabled, unit, decimals, dateFormat, darkMode, xRange, onZoomRangeChange]);
   const options = useMemo<Options>(() => ({ ...baseOptions, width: props.width, height: props.height }), [baseOptions, props.width, props.height]);
 
   return (

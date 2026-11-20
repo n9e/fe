@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Form, Space, Tooltip, Segmented, Select, InputNumber } from 'antd';
+import { Form, Space, Tooltip, Segmented, Select } from 'antd';
 import { FormInstance } from 'antd/es/form';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import _ from 'lodash';
 import { SIZE, DatasourceCateEnum } from '@/utils/constant';
 import { parseRange } from '@/components/TimeRangePicker';
 import InputGroupWithFormItem from '@/components/InputGroupWithFormItem';
+import SQLBuilderLimit from '@/pages/logExplorer/components/SQLBuilderLimit';
 
 import { Field, FieldSampleParams } from '../../types';
 import { NAME_SPACE } from '../../../constants';
@@ -112,7 +113,7 @@ export default function QueryBuilder(props: Props) {
               <div className='h-[24px] flex items-center whitespace-nowrap'>{t('builder.display_label')}</div>
             </div>
             <div className='table-cell'>
-              <Space size={SIZE} wrap>
+              <Space size={SIZE} align='start' wrap>
                 <Form.Item name='mode' noStyle>
                   <Segmented
                     size='small'
@@ -139,11 +140,7 @@ export default function QueryBuilder(props: Props) {
                     />
                   </Form.Item>
                 </InputGroupWithFormItem>
-                <InputGroupWithFormItem size='small' label={t('builder.limit')}>
-                  <Form.Item name='limit' noStyle>
-                    <InputNumber size='small' className='w-[80px]' min={1} max={10000000} placeholder={t('log_explorer:query_workspace.unlimited')} />
-                  </Form.Item>
-                </InputGroupWithFormItem>
+                <SQLBuilderLimit datasourceId={datasourceValue} type='ck' label={t('builder.limit')} />
               </Space>
             </div>
           </div>

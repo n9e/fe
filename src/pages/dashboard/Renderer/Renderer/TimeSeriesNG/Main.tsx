@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useContext } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { AlignedData, Options } from 'uplot';
 import uPlot from 'uplot';
@@ -9,6 +9,7 @@ import querystring from 'query-string';
 import { useTranslation } from 'react-i18next';
 
 import UPlotChart, { tooltipPlugin, paddingSide, axisBuilder, seriesBuider, cursorBuider, scalesBuilder, getStackedDataAndBands, uplotsMap } from '@/components/UPlotChart';
+import { TooltipPinningContext } from '@/components/UPlotChart/TooltipPinningContext';
 import { IRawTimeRange } from '@/components/TimeRangePicker';
 import { hexPalette } from '@/pages/dashboard/config';
 
@@ -59,6 +60,7 @@ export default function index(props: Props) {
   const { t } = useTranslation('dashboard');
   const history = useHistory();
   const location = useLocation();
+  const pinningEnabled = useContext(TooltipPinningContext);
   const {
     frames,
     baseSeries,
@@ -143,7 +145,7 @@ export default function index(props: Props) {
           id,
           mode: options.tooltip?.mode ?? 'single',
           sort: options.tooltip?.sort ?? 'none',
-          pinningEnabled: true,
+          pinningEnabled,
           zIndex: isPreview ? 1999 : 999, // 预览模式下 z-index 需要超过编辑面板的 z-index(1000)
           graphTooltip: dashboardMeta.graphTooltip === 'sharedCrosshair' || dashboardMeta.graphTooltip === 'sharedTooltip' ? dashboardMeta.graphTooltip : 'default',
           timeZone: timezone,
@@ -342,6 +344,7 @@ export default function index(props: Props) {
     };
   }, [
     colors,
+    pinningEnabled,
     dashboardMeta.graphTooltip,
     dashboardMeta.graphZoom,
     stableCustom,

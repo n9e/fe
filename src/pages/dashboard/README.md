@@ -96,6 +96,7 @@ src/pages/dashboard/
 
 ## 相关文档
 
+- [在业务页面中嵌入仪表盘](./EMBEDDING.md)
 - [CHANGELOG.md](./CHANGELOG.md)：配置版本变更记录，含各版本不兼容更新说明
 - [VARIABLES.md](./VARIABLES.md)：变量子系统架构（依赖图、执行模型、插值）
 - [VARIABLE_VALUE_FLOW.md](./VARIABLE_VALUE_FLOW.md)：变量取值范围与 URL / localStorage 优先级

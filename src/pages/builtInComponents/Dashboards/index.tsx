@@ -239,13 +239,13 @@ export default function index(props: Props) {
           tagsColumn({
             title: t('tags'),
             dataIndex: 'tags',
-            maxWidth: 180,
+            maxWidth: 260,
             render: (val: string) => {
               const tags = _.compact(_.split(val, ' '));
               return (
                 <Tags
                   data={tags}
-                  maxWidth={180}
+                  maxWidth={260}
                   onTagClick={(tag: string) => {
                     const queryItem = _.compact(_.split(filter.query, ' '));
                     if (_.includes(queryItem, tag)) return;

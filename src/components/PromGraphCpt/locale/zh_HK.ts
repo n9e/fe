@@ -12,7 +12,7 @@ const zh_HK = {
   time: '時間',
   unit: '單位',
   enable_autocomplete: '啟用自動補全',
-  evaluation_time: '選擇時間',
+  evaluation_time: '目前時間',
   tooltip_mode: '提示模式',
   tooltip_mode_single: '單條',
   tooltip_mode_all: '全部',

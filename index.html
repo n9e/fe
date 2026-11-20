@@ -132,7 +132,7 @@
       if (!import.meta.env.VITE_IS_PRO && !import.meta.env.VITE_IS_PRO) {
         // 动态加载 Headway widget 脚本
         const script = document.createElement('script');
-        script.src = '/js/widget.js';
+        script.src = `${import.meta.env.BASE_URL}js/widget.js`;
         document.head.appendChild(script);
       }
     </script>

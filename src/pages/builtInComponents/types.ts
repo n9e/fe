@@ -31,6 +31,7 @@ export interface Payload {
   cate: string;
   name: string;
   content: string;
+  tags?: string;
 }
 
 export type PayloadPost = Omit<Payload, 'id'>;
