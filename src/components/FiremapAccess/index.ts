@@ -8,8 +8,7 @@ export interface FiremapAccessInput {
 }
 
 /** 产品入口权限来自 self/perms；空间内读写权限仍由原有逻辑控制。 */
-export function canAccessFiremap({ profile, perms, permsLoaded }: FiremapAccessInput): boolean {
-  if (profile?.admin || profile?.roles?.includes('Admin')) return true;
+export function canAccessFiremap({ perms, permsLoaded }: FiremapAccessInput): boolean {
   return permsLoaded !== false && !!perms?.includes('/firemap');
 }
 

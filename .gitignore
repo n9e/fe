@@ -20,6 +20,7 @@ public/bound
 coverage/
 .playwright-mcp/
 docs/*
+!docs/private-cloud-visibility-and-permissions.md
 midscene_run/
 test-results/
 fe+plus.code-workspace

@@ -4,8 +4,8 @@ import { IS_ENT } from '@/utils/constant';
 
 /** Enterprise integration replaces AiChat with SRM's permission-aware implementation. */
 export function useCanAccessFlashAiChat(): boolean {
-  const { perms, profile } = useContext(CommonStateContext);
-  return !IS_ENT || !!profile?.admin || !!profile?.roles?.includes('Admin') || !!perms?.some((perm) => perm === '/flashai' || perm === '/flashAI');
+  const { perms, permsLoaded } = useContext(CommonStateContext);
+  return !IS_ENT || (permsLoaded !== false && !!perms?.some((perm) => perm === '/flashai' || perm === '/flashAI'));
 }
 
 export function useCanShowFlashAiIntroduction(surface: 'home' | 'empty'): boolean {
