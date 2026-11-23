@@ -5,33 +5,30 @@ import type { ImportDeclaration } from 'ts-morph';
 /**
  * 查看态依赖边界测试。
  *
- * 图表注册表同时服务查看态和编辑器，因此查看态的静态依赖图里不能出现编辑器模块。
- * 这里从面板渲染入口出发，只沿 dashboard 内部的静态 import 遍历：
- * - 动态 import（注册表的 loadOptions）不会被跟随，
- *   这正是编辑器与编辑器选项面板保持按需加载的方式；
- * - 只用于类型的 import 在编译后会被移除，不算静态依赖。
+ * 从面板渲染入口出发，只沿 dashboard 内部的静态运行时 import 遍历。
+ * 编辑器选项组件的静态依赖由编辑器入口单独持有。
  */
 const DASHBOARD_ROOT = path.resolve(__dirname, '../..');
 const EDITOR_ROOT = path.resolve(DASHBOARD_ROOT, 'Editor');
 const VIEW_ENTRY = path.resolve(DASHBOARD_ROOT, 'Renderer/Renderer/index.tsx');
-const REGISTRY_ENTRY = path.resolve(__dirname, 'index.tsx');
+const OPTIONS_ENTRY = path.resolve(EDITOR_ROOT, 'Options/index.tsx');
 const TS_CONFIG_PATH = path.resolve(__dirname, '../../../../../tsconfig.json');
 
-/** 注册表需要动态加载的编辑器选项面板模块（相对 registry/index.tsx）。 */
+/** 编辑器选项入口静态导入的配置组件。 */
 const PANEL_OPTION_MODULES = [
-  '../../Editor/Options/Timeseries',
-  '../../Editor/Options/BarChart',
-  '../../Editor/Options/Stat',
-  '../../Editor/Options/TableNG',
-  '../../Editor/Options/Table',
-  '../../Editor/Options/Pie',
-  '../../Editor/Options/Hexbin',
-  '../../Editor/Options/BarGauge',
-  '../../Editor/Options/Text',
-  '../../Editor/Options/Gauge',
-  '../../Editor/Options/Heatmap',
-  '../../Editor/Options/Iframe',
-  '../../Editor/Options/AiButton',
+  './Timeseries',
+  './BarChart',
+  './Stat',
+  './TableNG',
+  './Table',
+  './Pie',
+  './Hexbin',
+  './BarGauge',
+  './Text',
+  './Gauge',
+  './Heatmap',
+  './Iframe',
+  './AiButton',
 ];
 
 /** 所有图表都由查看态静态引入，避免显示面板时再请求独立 chunk。 */
@@ -117,14 +114,15 @@ describe('panel view dependency boundary', () => {
     expect(editorDependencies).toEqual([]);
   });
 
-  it('loads every editor option panel through a dynamic import', () => {
-    const registrySource = new Project({ tsConfigFilePath: TS_CONFIG_PATH, skipAddingFilesFromTsConfig: true }).addSourceFileAtPath(REGISTRY_ENTRY);
-    const dynamicImportModules = registrySource
-      .getDescendantsOfKind(SyntaxKind.CallExpression)
-      .filter((call) => call.getExpression().getKind() === SyntaxKind.ImportKeyword)
-      .map((call) => call.getArguments()[0]?.getText() ?? '');
+  it('statically imports every options panel from the editor options entry', () => {
+    const optionsSource = new Project({ tsConfigFilePath: TS_CONFIG_PATH, skipAddingFilesFromTsConfig: true }).addSourceFileAtPath(OPTIONS_ENTRY);
+    const imports = optionsSource
+      .getImportDeclarations()
+      .filter(hasRuntimeDependency)
+      .map((declaration) => declaration.getModuleSpecifierValue());
 
-    expect(dynamicImportModules.slice().sort()).toEqual(PANEL_OPTION_MODULES.map((modulePath) => `'${modulePath}'`).sort());
+    expect(imports).toEqual(expect.arrayContaining(PANEL_OPTION_MODULES));
+    expect(optionsSource.getDescendantsOfKind(SyntaxKind.CallExpression).some((call) => call.getExpression().getKind() === SyntaxKind.ImportKeyword)).toBe(false);
   });
 
   it('statically loads every chart renderer in the view bundle', () => {

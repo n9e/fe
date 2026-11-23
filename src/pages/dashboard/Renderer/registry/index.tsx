@@ -23,10 +23,10 @@ export * from './panelTypes';
 export { defaultCustomValuesMap, defaultOptionsValuesMap, defaultOptionsValues, defaultThreshold, gaugeDefaultThresholds } from './defaults';
 
 /**
- * 图表注册表：统一图表类型、渲染器、编辑器选项面板加载器和默认配置。
+ * 图表注册表：统一图表类型、渲染器与默认配置。
  *
  * 约束：
- * - `loadOptions` 只允许动态 import，查看态（渲染器）引用本模块时不会静态引入编辑器；
+ * - 编辑器选项组件由 Editor/Options 注册，面板渲染入口不依赖编辑器；
  * - 所有图表渲染器静态加载，避免显示面板时动态加载模块失败；
  * - 类型顺序由 `panelTypes.ts` 的 `PANEL_VISUALIZATION_TYPES` 唯一定义。
  */
@@ -34,91 +34,78 @@ const panelTypeRegistry: Record<PanelVisualizationType, PanelTypeDefinition> = {
   timeseries: {
     type: 'timeseries',
     chart: TimeseriesPanel,
-    loadOptions: () => import('../../Editor/Options/Timeseries'),
     defaultCustom: defaultCustomValuesMap.timeseries,
     defaultOptions: defaultOptionsValuesMap.timeseries,
   },
   barchart: {
     type: 'barchart',
     chart: BarChartPanel,
-    loadOptions: () => import('../../Editor/Options/BarChart'),
     defaultCustom: defaultCustomValuesMap.barchart,
     defaultOptions: defaultOptionsValuesMap.barchart,
   },
   stat: {
     type: 'stat',
     chart: StatPanel,
-    loadOptions: () => import('../../Editor/Options/Stat'),
     defaultCustom: defaultCustomValuesMap.stat,
     defaultOptions: defaultOptionsValuesMap.stat,
   },
   tableNG: {
     type: 'tableNG',
     chart: TablePanelNG,
-    loadOptions: () => import('../../Editor/Options/TableNG'),
     defaultCustom: defaultCustomValuesMap.tableNG,
     defaultOptions: defaultOptionsValuesMap.tableNG,
   },
   table: {
     type: 'table',
     chart: TablePanel,
-    loadOptions: () => import('../../Editor/Options/Table'),
     defaultCustom: defaultCustomValuesMap.table,
     defaultOptions: defaultOptionsValuesMap.table,
   },
   pie: {
     type: 'pie',
     chart: PiePanel,
-    loadOptions: () => import('../../Editor/Options/Pie'),
     defaultCustom: defaultCustomValuesMap.pie,
     defaultOptions: defaultOptionsValuesMap.pie,
   },
   hexbin: {
     type: 'hexbin',
     chart: HexbinPanel,
-    loadOptions: () => import('../../Editor/Options/Hexbin'),
     defaultCustom: defaultCustomValuesMap.hexbin,
     defaultOptions: defaultOptionsValuesMap.hexbin,
   },
   barGauge: {
     type: 'barGauge',
     chart: BarGaugePanel,
-    loadOptions: () => import('../../Editor/Options/BarGauge'),
     defaultCustom: defaultCustomValuesMap.barGauge,
     defaultOptions: defaultOptionsValuesMap.barGauge,
   },
   text: {
     type: 'text',
     chart: TextPanel,
-    loadOptions: () => import('../../Editor/Options/Text'),
     defaultCustom: defaultCustomValuesMap.text,
     defaultOptions: defaultOptionsValuesMap.text,
   },
   gauge: {
     type: 'gauge',
     chart: GaugePanel,
-    loadOptions: () => import('../../Editor/Options/Gauge'),
     defaultCustom: defaultCustomValuesMap.gauge,
     defaultOptions: defaultOptionsValuesMap.gauge,
   },
   heatmap: {
     type: 'heatmap',
     chart: HeatmapPanel,
-    loadOptions: () => import('../../Editor/Options/Heatmap'),
     defaultCustom: defaultCustomValuesMap.heatmap,
     defaultOptions: defaultOptionsValuesMap.heatmap,
   },
   iframe: {
     type: 'iframe',
     chart: IframePanel,
-    loadOptions: () => import('../../Editor/Options/Iframe'),
     defaultCustom: defaultCustomValuesMap.iframe,
     defaultOptions: defaultOptionsValuesMap.iframe,
   },
   aiButton: {
     type: 'aiButton',
     chart: AiButtonPanel,
-    loadOptions: () => import('../../Editor/Options/AiButton'),
     defaultCustom: defaultCustomValuesMap.aiButton,
     defaultOptions: defaultOptionsValuesMap.aiButton,
   },

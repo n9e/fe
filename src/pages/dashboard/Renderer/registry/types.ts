@@ -2,7 +2,7 @@ import type { ComponentType, RefObject } from 'react';
 
 import type { IRawTimeRange } from '@/components/TimeRangePicker';
 
-import type { DashboardAnnotation, IOptions, IOverride, IPanel, ITarget, IType, JsonObject } from '../../types';
+import type { DashboardAnnotation, IOptions, IOverride, IPanel, IType, JsonObject } from '../../types';
 import type { DashboardSeries } from '../datasource/types';
 import type { CalculatedSeries } from '../utils/getCalculatedValuesBySeries';
 
@@ -53,11 +53,6 @@ export interface PanelChartProps {
 /** 图表适配组件：所有可视化类型的 props 都收敛为 PanelChartProps。 */
 export type PanelChartAdapter = ComponentType<PanelChartProps>;
 
-/** 编辑器选项面板统一接收的 props。 */
-export interface PanelOptionsProps {
-  targets: ITarget[];
-}
-
 type PartialOptionValue<T> = NonNullable<T> extends Array<unknown> ? NonNullable<T> : NonNullable<T> extends object ? Partial<NonNullable<T>> : T;
 
 /**
@@ -72,16 +67,10 @@ export type PanelDefaultOptions = {
   [K in keyof IOptions]?: PartialOptionValue<IOptions[K]>;
 };
 
-/**
- * 注册表中的单个可视化类型定义。
- *
- * `loadOptions` 必须是动态 import：查看态只引用注册表本身，
- * 不能因为注册表而把编辑器选项面板打进同一份同步依赖。
- */
+/** 图表渲染注册表中的单个可视化类型定义。 */
 export interface PanelTypeDefinition {
   type: PanelVisualizationType;
   chart: PanelChartAdapter;
-  loadOptions: () => Promise<{ default: ComponentType<PanelOptionsProps> }>;
   /** 新建该类型面板时的 custom 默认值 */
   defaultCustom: JsonObject;
   /** 新建该类型面板时的 options 默认值 */
