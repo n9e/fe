@@ -48,3 +48,9 @@
 - `sync-srm` intentionally excludes integrated base files such as `src/utils/request.tsx`. Changes to those files require a full integration refresh before acceptance; a successful incremental sync alone does not prove that new exports reached the generated workspace. After a full sync copies the primary plus checkout, restore this task's changed plus adapter/component files from its canonical feature worktree into the ignored cache and run `sync-srm` again. Never patch generated files directly.
 
 - Before pushing changes to FieldsList, field statistics/stacking providers, or filter editors, run `node --max-old-space-size=8192 scripts/check-log-explorer-types/index.js --with-plus` against the integrated source (or pass its workspace directory). Refresh the ignored plus cache from the canonical feature worktree first. This uses production TypeScript options, includes TSX tests and ambient declarations, and checks component/callback contracts; transpile-only Jest or `transpileModule` does not provide this assurance. The production config excludes `*.test.ts` but still compiles `*.test.tsx`; do not work around test fixture errors by disabling their checks.
+
+## 私有云品牌展示与功能权限
+
+- 新增或修改入口、介绍、文档及跨功能关联前，阅读 [私有云品牌展示与功能权限隐藏](docs/private-cloud-visibility-and-permissions.md)。
+- FlashAI、灭火图及关联入口按 `/api/n9e-plus/self/perms` 判断，Admin 不豁免；其它功能的管理员规则保持独立。品牌展示开关另行判断，隐藏字段保留已有配置。
+- 验收模拟组件仅放在独立验收工作区，不得进入正式分支。
