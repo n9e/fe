@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useContext, useImperativeHandle } from 'react';
 import { AllCommunityModule, ModuleRegistry, themeBalham, CellClickedEvent, DomLayoutType, GridApi, ICellRendererParams, RowNode } from 'ag-grid-community';
+import type { ITooltipParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { AG_GRID_LOCALE_CN, AG_GRID_LOCALE_HK, AG_GRID_LOCALE_EN, AG_GRID_LOCALE_JP } from '@ag-grid-community/locale';
 import _ from 'lodash';
@@ -270,6 +271,7 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
       <AgGridReact
         headerHeight={showHeader ? headerHeight : 0}
         enableCellTextSelection
+        enableBrowserTooltips
         suppressMovableColumns
         suppressColumnVirtualisation
         animateRows={false}
@@ -342,6 +344,11 @@ function index(props: Props, ref: React.Ref<{ exportCsv: () => void }>) {
               cellClassRules: {
                 'n9e-dashboard-panel-table-ng-cell-link': () => (options.links ? options.links.length === 1 : showUnderline),
                 'n9e-dashboard-panel-table-ng-cell-links': () => (options.links ? options.links.length > 1 : false),
+              },
+              tooltipValueGetter: ({ data }: ITooltipParams<TableGridRow, TextObject>) => {
+                const fieldValue = data?.[item];
+                if (fieldValue?.value == null || !fieldValue.text.trim()) return undefined;
+                return fieldValue.text;
               },
               comparator: (_value1: TextObject | undefined, _value2: TextObject | undefined, node1: RowNode<TableGridRow>, node2: RowNode<TableGridRow>) => {
                 // 手动获取字段值，解决字段名包含"点"时无法正确获取的问题
