@@ -214,8 +214,6 @@ const SideMenu = (props: SideMenuProps) => {
         }
         const filteredChildren = menu.children
           .map((child) => {
-            // Admin 保留灭火图入口；其它角色继续遵守各子菜单权限。
-            if (menu.key === 'firemap' && (profile?.admin || profile?.roles?.includes('Admin'))) return child;
             if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
               return child;
             }

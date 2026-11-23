@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { Form, Input } from 'antd';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import WorkflowForm from './index';
@@ -48,11 +49,12 @@ it.each([
   const stored = { typ: 'ai_summary', config: { prompt_template: 'keep me', llm_config_id: 7 } };
   const onOk = jest.fn();
   render(
-    <WorkflowForm
-      onOk={onOk}
-      onCancel={jest.fn()}
-      initialValues={{ name: 'existing', team_ids: [1], processors: [{ typ: 'callback' }, stored, { typ: 'event_drop' }, { typ: 'event_update' }] } as any}
-    />,
+    <MemoryRouter>
+      <WorkflowForm
+        onOk={onOk}
+        initialValues={{ name: 'existing', team_ids: [1], processors: [{ typ: 'callback' }, stored, { typ: 'event_drop' }, { typ: 'event_update' }] } as any}
+      />
+    </MemoryRouter>,
   );
   expect(screen.getByTestId('sort-1')).toHaveAttribute('data-disabled', 'true');
   act(() => mockSortEnd({ oldIndex, newIndex }));
