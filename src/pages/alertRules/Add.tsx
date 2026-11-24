@@ -24,6 +24,9 @@ import { generateQueryNameByIndex } from '@/components/QueryName';
 import Form from './FormNG';
 import { defaultValues } from './Form/constants';
 import { getPageFromSearch } from '@/utils/urlPage';
+import { IS_PLUS } from '@/utils/constant';
+// @ts-ignore
+import * as alertUtils from 'plus:/parcels/AlertRule/utils';
 
 export default function Add() {
   const { t } = useTranslation('alertRules');
@@ -61,6 +64,16 @@ export default function Add() {
           },
         ],
       },
+    };
+  }
+
+  // 商业版页面带参数新建规则（如从 AI 应用页新建告警），由 plus 根据 URL 参数给出规则类型和条件
+  const plusValues = IS_PLUS && _.isFunction(alertUtils.getInitialValuesBySearch) ? alertUtils.getInitialValuesBySearch(location.search) : undefined;
+  if (plusValues) {
+    initialValues = {
+      ...defaultValues,
+      group_id: Number(bgid),
+      ...plusValues,
     };
   }
 

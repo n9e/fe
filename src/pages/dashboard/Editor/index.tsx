@@ -98,13 +98,15 @@ function index(props: IProps) {
   const handleAddChart = async () => {
     if (formRef.current && formRef.current.getFormInstance) {
       const formInstance = formRef.current.getFormInstance();
-      formInstance.validateFields().then(async (values: IPanel) => {
-        values.targets = formInstance.getFieldValue('targets') ?? values.targets;
-        // TODO: 渲染 hexbin 图时，colorRange 需要从 string 转换为 array
-        if (values.type === 'hexbin' && typeof values.custom.colorRange === 'string') {
-          _.set(values, 'custom.colorRange', _.split(values.custom.colorRange, ','));
-        }
-        const formData = normalizeDashboardPanelForPersist(values);
+      formInstance.validateFields().then((values: IPanel) => {
+        // 整组选项没有已注册的控件时，从表单存储补齐缺失的顶层配置。
+        const custom: IPanel['custom'] = values.custom ?? formInstance.getFieldValue('custom') ?? {};
+        const formData = normalizeDashboardPanelForPersist({
+          ...values,
+          targets: formInstance.getFieldValue('targets') ?? values.targets,
+          custom: values.type === 'hexbin' && typeof custom.colorRange === 'string' ? { ...custom, colorRange: custom.colorRange.split(',') } : custom,
+          options: values.options ?? formInstance.getFieldValue('options') ?? {},
+        });
         if (!formData.id) {
           formData.id = uuidv4();
         }

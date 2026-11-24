@@ -9,7 +9,7 @@ import { CommonStateContext } from '@/App';
 import AffixWrapper from '@/components/AffixWrapper';
 import DataSourceTypeList from '@/components/DataSourceSelection/DataSourceTypeList';
 import KVTagSelect, { validatorOfKVTagSelect } from '@/components/KVTagSelect';
-import { getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
+import { allCates, getCateByValue, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import { addStrategy, EditStrategy } from '@/services/warning';
 import { scrollToFirstError } from '@/utils';
 import { IS_PLUS } from '@/utils/constant';
@@ -88,6 +88,7 @@ export default function FormNG(props: IProps) {
   const cate = Form.useWatch('cate', form);
   const notifyVersion = Form.useWatch('notify_version', form);
   const showAdvanced = shouldShowAdvancedSettings(notifyVersion, cate);
+  const datasourceless = !!getCateByValue(cate)?.datasourceless;
   const [sidebarVisible, setSidebarVisible] = useState(() => localStorage.getItem('alert_rule_form_ng_sidebar_visible') !== 'false');
 
   const alertDatasourceCates = useMemo(() => {
@@ -119,9 +120,12 @@ export default function FormNG(props: IProps) {
       const index = sortedCateValues.indexOf(item.value);
       return index === -1 ? 999 : index;
     });
+    // datasourceCateOptions 只含已有数据源实例的类型，不需要数据源的类型（如商业版 AI 应用）从全量类型里补上
+    const datasourcelessCates = allCates.filter((item) => item.datasourceless && item.alertRule && (item.alertPro ? IS_PLUS : true));
 
     return [
       ...sortedCates,
+      ...datasourcelessCates,
       {
         value: 'host',
         label: 'Host',
@@ -528,7 +532,7 @@ export default function FormNG(props: IProps) {
                       }}
                     />
                   </Form.Item>
-                  {prod !== 'host' && (
+                  {prod !== 'host' && !datasourceless && (
                     <DatasourceValueSelect datasourceList={groupedDatasourceList[cate] || []} reloadGroupedDatasourceList={reloadGroupedDatasourceList} showExtra />
                   )}
                 </SectionCard>
