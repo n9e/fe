@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import { Button, Tooltip } from 'antd';
 
 import { useAiChatOpenWithPrompt } from '@/components/AiChatNG/FlashAiButton';
@@ -31,6 +32,7 @@ function isAntdButtonType(value: unknown): value is (typeof ANTD_BUTTON_TYPES)[n
 
 export default function AiButton(props: IProps) {
   const { values } = props;
+  const canAccessFlashAi = useCanAccessFlashAiChat();
   const custom = (values.custom ?? {}) as Partial<IAiButtonStyles>;
   const style = custom.style === 'icon' || custom.style === 'antd' ? custom.style : 'capsule';
   const label = custom.text?.trim() || DEFAULT_LABEL;
@@ -54,6 +56,7 @@ export default function AiButton(props: IProps) {
           <Tooltip title={label}>
             <button
               type='button'
+              disabled={!canAccessFlashAi}
               aria-label={label}
               onClick={openAiChat}
               style={{ width: circleSize, height: circleSize }}
@@ -63,11 +66,12 @@ export default function AiButton(props: IProps) {
             </button>
           </Tooltip>
         ) : style === 'antd' ? (
-          <Button type={buttonType} size={size} onClick={openAiChat}>
+          <Button disabled={!canAccessFlashAi} type={buttonType} size={size} onClick={openAiChat}>
             {label}
           </Button>
         ) : (
           <Button
+            disabled={!canAccessFlashAi}
             icon={gifIcon}
             size={size}
             onClick={openAiChat}
