@@ -21,7 +21,8 @@ import Raw from './Raw';
 import Table from './Table';
 import ClusteringTable, { LogClusting } from './Clustering/Table';
 import ClusteringHistogram from './Clustering/Histogram';
-import { OptionsType, OnValueFilterParams } from './types';
+import { OptionsType, OnValueFilterParams, TextSelectionField } from './types';
+import type { HighlightRange } from '../../utils/highlight/highlight_html';
 
 import './style.less';
 import ResultsScrollListener from './ResultsScrollListener';
@@ -123,6 +124,8 @@ export interface Props {
     isIndex: boolean;
     indexName: string;
   };
+  resolveTextSelectionField?: (params: { fieldName: string; value: string; from: number; to: number; indexData: Field[] }) => TextSelectionField | undefined;
+  resolveNestedHighlightRanges?: (fieldName: string, text: string, highlights: Record<string, string[]>) => HighlightRange[] | undefined;
   drilldownContext?: DrilldownInitialValues;
   /** 为 true 时字段值不按 delimiter 分词，划选文本后弹出与点击 token 相同的菜单（与分词互斥） */
   enableLogTextSelectMenu?: boolean;
@@ -142,6 +145,8 @@ interface LogsViewerState {
   rangeStart?: number;
   rangeEnd?: number;
   getAddToQueryInfo?: Props['getAddToQueryInfo'];
+  resolveTextSelectionField?: Props['resolveTextSelectionField'];
+  resolveNestedHighlightRanges?: Props['resolveNestedHighlightRanges'];
   drilldownContext?: Props['drilldownContext'];
   openAddDrilldownLink?: (params: { linkField: string; linkName: string }) => void;
   enableLogTextSelectMenu?: boolean;
@@ -282,11 +287,25 @@ export default function LogsViewer(props: Props) {
       rangeStart: parsedRange ? moment(parsedRange.start).unix() : 0,
       rangeEnd: parsedRange ? moment(parsedRange.end).unix() : 0,
       getAddToQueryInfo: props.getAddToQueryInfo,
+      resolveTextSelectionField: props.resolveTextSelectionField,
+      resolveNestedHighlightRanges: props.resolveNestedHighlightRanges,
       drilldownContext,
       openAddDrilldownLink: drilldownContext ? openAddDrilldownLink : undefined,
       enableLogTextSelectMenu,
     };
-  }, [id_key, raw_key, props.fieldConfig, props.indexData, props.range, props.getAddToQueryInfo, drilldownContext, openAddDrilldownLink, enableLogTextSelectMenu]);
+  }, [
+    id_key,
+    raw_key,
+    props.fieldConfig,
+    props.indexData,
+    props.range,
+    props.getAddToQueryInfo,
+    props.resolveTextSelectionField,
+    props.resolveNestedHighlightRanges,
+    drilldownContext,
+    openAddDrilldownLink,
+    enableLogTextSelectMenu,
+  ]);
 
   usePinnedHistogram(histogramRef, histogramPinned && !hideHistogram && !patternHistogramState.visible);
   const histogramActions = (

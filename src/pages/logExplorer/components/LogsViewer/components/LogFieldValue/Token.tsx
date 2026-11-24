@@ -4,18 +4,26 @@ import { useTranslation } from 'react-i18next';
 import purify from 'dompurify';
 
 import { Link } from '@/pages/explorer/components/Links';
-import { getHighlightHtml, getTokenHighlights } from '@/pages/logExplorer/utils/highlight/highlight_html';
+import { getHighlightHtml, getHighlightPartsByRanges, getTokenHighlights } from '@/pages/logExplorer/utils/highlight/highlight_html';
 import { LOG_FIELD_SELECT_POPOVER_CLASS, LOG_VIEWER_IGNORE_CLICK_AWAY_CLASS } from '@/pages/logExplorer/components/LogsViewer/utils/clickAway';
 import { NAME_SPACE } from '@/pages/logExplorer/constants';
 
 import { TokenActionMenuContent } from './tokenActionMenu';
 import { getHighlightSource, getTokenDisplayValue } from './tokenValue';
-import { getNodeDebugName, getSelectionTextWithinRoot, getTextSelectionPopoverResult, isNodeInside, isTextSelectDebugEnabled } from './textSelect';
+import {
+  getFieldSelectionOffsets,
+  getNodeDebugName,
+  getSelectionRangeWithinRoot,
+  getSelectionTextWithinRoot,
+  getTextSelectionPopoverResult,
+  isNodeInside,
+  isTextSelectDebugEnabled,
+} from './textSelect';
 import { toString } from './util';
 import { LogsViewerStateContext } from '../../index';
 import { Field } from '../../../../types';
 import renderFieldValue from '../../../../utils/renderFieldValue';
-import { OnValueFilterParams, FieldValueType } from '../../types';
+import { OnValueFilterParams, FieldValueType, TextSelectionField } from '../../types';
 
 interface Props {
   segmented: boolean;
@@ -61,6 +69,8 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
     rangeStart,
     rangeEnd,
     getAddToQueryInfo,
+    resolveTextSelectionField,
+    resolveNestedHighlightRanges,
     drilldownContext,
     openAddDrilldownLink: openAddDrilldownLinkFromContext,
   } = useContext(LogsViewerStateContext);
@@ -87,7 +97,7 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
 
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [anchorRect, setAnchorRect] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
-  const [selectedFragment, setSelectedFragment] = useState('');
+  const [textSelection, setTextSelection] = useState<{ text: string; field?: TextSelectionField }>({ text: '' });
   const hostRef = useRef<HTMLSpanElement>(null);
   const rootRef = useRef<HTMLSpanElement>(null);
   const selectionStartedInsideRef = useRef(false);
@@ -123,9 +133,20 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
 
   const highlightSource = getHighlightSource(highlightKey, highlight);
   const tokenHighlights = getTokenHighlights(fieldValue, highlightSource, tokenStart, tokenEnd);
+  const nestedHighlightRanges = useMemo(() => {
+    if (interactionMode === 'textSelect' && typeof displayValue === 'string' && displayValue === fieldValue && highlight) {
+      return resolveNestedHighlightRanges?.(highlightKey, displayValue, highlight);
+    }
+  }, [displayValue, fieldValue, highlight, highlightKey, interactionMode, resolveNestedHighlightRanges]);
 
   const adjustedValue = adjustFieldValue ? (
     adjustFieldValue(displayValue, tokenHighlights)
+  ) : nestedHighlightRanges?.length && typeof displayValue === 'string' ? (
+    <span>
+      {getHighlightPartsByRanges(displayValue, tokenHighlights, nestedHighlightRanges).map(({ text, highlighted }, index) =>
+        highlighted ? <mark key={index}>{text}</mark> : text,
+      )}
+    </span>
   ) : tokenHighlights ? (
     <span dangerouslySetInnerHTML={{ __html: purify.sanitize(getHighlightHtml(displayValue, tokenHighlights)) }} />
   ) : (
@@ -161,7 +182,8 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
     const selection = window.getSelection();
     const root = rootRef.current;
     const debugEnabled = isTextSelectDebugEnabled();
-    const selectionTextWithinRoot = selection && root ? getSelectionTextWithinRoot(selection, root) : '';
+    const selectedRange = selection && root ? getSelectionRangeWithinRoot(selection, root) : undefined;
+    const selectionTextWithinRoot = selectedRange?.toString() ?? '';
 
     if (debugEnabled) {
       console.log('[TokenTextSelect] before-evaluate', {
@@ -197,8 +219,14 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
       return;
     }
 
+    let field: TextSelectionField | undefined;
+    if (resolveTextSelectionField && selection && selectedRange && root && typeof fieldValue === 'string') {
+      const offsets = getFieldSelectionOffsets(root, selectedRange, fieldValue, selection.toString());
+      if (offsets) field = resolveTextSelectionField({ fieldName: highlightKey, value: fieldValue, ...offsets, indexData });
+    }
+
     setAnchorRect(result.anchorRect);
-    setSelectedFragment(result.selectedFragment);
+    setTextSelection({ text: result.selectedFragment, field });
     setPopoverVisible(true);
 
     if (debugEnabled) {
@@ -208,7 +236,7 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
         anchorRect: result.anchorRect,
       });
     }
-  }, []);
+  }, [name, highlightKey, fieldValue, indexData, resolveTextSelectionField]);
 
   useEffect(() => {
     if (interactionMode !== 'textSelect') return;
@@ -260,8 +288,9 @@ const TokenWithContext = React.memo(function TokenWithContext(props: Props & { i
       close={closePopover}
       name={name}
       fieldValue={fieldValue}
-      fragmentValue={interactionMode === 'textSelect' ? selectedFragment : value}
-      showFragmentFilters={interactionMode === 'textSelect' ? !!selectedFragment.trim() && selectedFragment !== fieldValue : segmented}
+      fragmentValue={interactionMode === 'textSelect' ? textSelection.text : value}
+      fragmentField={interactionMode === 'textSelect' ? textSelection.field : undefined}
+      showFragmentFilters={interactionMode === 'textSelect' ? !!textSelection.text.trim() && textSelection.text !== fieldValue : segmented}
       onTokenClick={onTokenClick}
       indexInfo={indexInfo}
       showExistsAction={showExistsAction}

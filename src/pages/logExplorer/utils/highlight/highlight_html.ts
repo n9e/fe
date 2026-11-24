@@ -13,6 +13,11 @@ interface HighlightSegment {
   afterText: string;
 }
 
+export interface HighlightRange {
+  from: number;
+  to: number;
+}
+
 function getFieldText(fieldValue: string | number | boolean | object | null | undefined) {
   if (fieldValue === null || fieldValue === undefined) {
     return '';
@@ -72,6 +77,26 @@ function parseHighlightParts(highlight: string): HighlightPart[] {
   }
 
   return parts;
+}
+
+/** Align each backend fragment, including its surrounding text, to a single field value. */
+export function getHighlightFragmentRanges(text: string, highlights: string[]): HighlightRange[] {
+  return highlights.flatMap((highlight) => {
+    const parts = parseHighlightParts(highlight);
+    const fragment = parts.map((part) => part.text).join('');
+    if (!fragment) return [];
+    let offset = text.indexOf(fragment);
+    // The backend sends fragment text without offsets. Avoid guessing when the context repeats.
+    if (offset < 0 || text.indexOf(fragment, offset + 1) !== -1) return [];
+
+    const ranges: HighlightRange[] = [];
+    for (const part of parts) {
+      const end = offset + part.text.length;
+      if (part.highlighted) ranges.push({ from: offset, to: end });
+      offset = end;
+    }
+    return ranges;
+  });
 }
 
 function getHighlightSegments(highlights: string[] | undefined | null): HighlightSegment[] {
@@ -224,6 +249,38 @@ export function getTokenHighlights(
   }
 
   return [`${highlightTags.pre}${tokenText}${highlightTags.post}`];
+}
+
+export function getHighlightPartsByRanges(text: string, highlights: string[] | undefined, ranges: HighlightRange[]): HighlightPart[] {
+  const combinedRanges = [...ranges];
+  // Keep the original direct-field matches when descendants also contribute ranges.
+  for (const highlight of getHighlightFragments(highlights)) {
+    const match = stripHighlightTags(highlight);
+    if (!match) continue;
+    for (let offset = text.indexOf(match); offset !== -1; offset = text.indexOf(match, offset + match.length)) {
+      combinedRanges.push({ from: offset, to: offset + match.length });
+    }
+  }
+
+  const merged: HighlightRange[] = [];
+  for (const range of combinedRanges.sort((a, b) => a.from - b.from)) {
+    const previous = merged[merged.length - 1];
+    if (previous && range.from <= previous.to) {
+      previous.to = Math.max(previous.to, range.to);
+    } else {
+      merged.push({ ...range });
+    }
+  }
+
+  const parts: HighlightPart[] = [];
+  let cursor = 0;
+  for (const { from, to } of merged) {
+    if (cursor < from) parts.push({ text: text.slice(cursor, from), highlighted: false });
+    parts.push({ text: text.slice(from, to), highlighted: true });
+    cursor = to;
+  }
+  if (cursor < text.length) parts.push({ text: text.slice(cursor), highlighted: false });
+  return parts;
 }
 
 export function getHighlightHtml(fieldValue: string | number | boolean | null | object, highlights: string[] | undefined | null) {
