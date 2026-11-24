@@ -13,6 +13,7 @@ import { CommonStateContext } from '@/App';
 import { cn } from '@/utils';
 import { getAlertSeverityName } from '@/utils/alertSeverity';
 import { getTargetList } from '@/services/targets';
+import { getCateByValue, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
 import PromQLInputNG from '@/components/PromQLInputNG';
 
 // @ts-ignore
@@ -362,7 +363,7 @@ function HostMachinePreviewSummary(props: { queries: any[] }) {
 
 // ---- 数据源卡片 ----
 function DatasourceSummary({ datasourceList }: { datasourceList: { id: number; name: string }[] }) {
-  const { t } = useTranslation('alertRules');
+  const { t, i18n } = useTranslation('alertRules');
   const cate = Form.useWatch('cate');
   const datasourceQueries = Form.useWatch('datasource_queries');
 
@@ -394,7 +395,7 @@ function DatasourceSummary({ datasourceList }: { datasourceList: { id: number; n
         <SectionTitle>{t('datasource_configs')}</SectionTitle>
         <Field>
           <FieldLabel>{t('table.cate')}</FieldLabel>
-          <FieldValue>{cateNameMap[cate] || cate}</FieldValue>
+          <FieldValue>{cateNameMap[cate] || getCateDisplayLabel(getCateByValue(cate), i18n.language) || cate}</FieldValue>
         </Field>
         {instanceNames.length > 0 && (
           <Field noMargin>
