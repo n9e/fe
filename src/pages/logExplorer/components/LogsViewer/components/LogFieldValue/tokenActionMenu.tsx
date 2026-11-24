@@ -12,7 +12,7 @@ import ExistsIcon from '@/pages/explorer/components/RenderValue/ExistsIcon';
 import { normalizeRawValueForNav } from './tokenActionMenu.utils';
 import { toString } from './util';
 import { NAME_SPACE } from '../../../../constants';
-import { OnValueFilterParams, FieldValueType } from '../../types';
+import { OnValueFilterParams, FieldValueType, TextSelectionField } from '../../types';
 
 /** handleNav / 外链菜单用到的 fieldConfig 子集 */
 export interface TokenMenuFieldConfig {
@@ -25,6 +25,7 @@ interface TokenActionMenuContentProps {
   name: string;
   fieldValue: FieldValueType;
   fragmentValue: FieldValueType;
+  fragmentField?: TextSelectionField;
   showFragmentFilters: boolean;
   onTokenClick?: (parmas: OnValueFilterParams) => void;
   indexInfo: { isIndex: boolean; indexName: string };
@@ -44,6 +45,7 @@ export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
     name,
     fieldValue,
     fragmentValue,
+    fragmentField,
     showFragmentFilters,
     onTokenClick,
     indexInfo,
@@ -55,6 +57,13 @@ export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
     fieldConfig,
     onAddDrilldownLink,
   } = props;
+
+  const fragmentFilter = {
+    key: fragmentField?.fieldName ?? name,
+    value: fragmentField?.value ?? fragmentValue,
+    assignmentOperator: ':' as const,
+    indexName: fragmentField?.fieldName ?? indexInfo.indexName,
+  };
 
   return (
     <ul className='ant-dropdown-menu ant-dropdown-menu-root ant-dropdown-menu-vertical ant-dropdown-menu-light'>
@@ -84,52 +93,46 @@ export function TokenActionMenuContent(props: TokenActionMenuContentProps) {
       </li>
       {onTokenClick && (
         <>
+          {(fragmentField || indexInfo.isIndex) && showFragmentFilters && fragmentValue !== fieldValue && (
+            <>
+              <li
+                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                onClick={() => {
+                  close();
+                  onTokenClick?.({
+                    ...fragmentFilter,
+                    operator: 'AND',
+                  });
+                }}
+              >
+                <Space>
+                  <PlusCircleOutlined />
+                  {t('logs.filterAnd', {
+                    token: toString(fragmentValue),
+                  })}
+                </Space>
+              </li>
+              <li
+                className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
+                onClick={() => {
+                  close();
+                  onTokenClick?.({
+                    ...fragmentFilter,
+                    operator: 'NOT',
+                  });
+                }}
+              >
+                <Space>
+                  <MinusCircleOutlined />
+                  {t('logs.filterNot', {
+                    token: toString(fragmentValue),
+                  })}
+                </Space>
+              </li>
+            </>
+          )}
           {indexInfo.isIndex && (
             <>
-              {showFragmentFilters && fragmentValue !== fieldValue && (
-                <>
-                  <li
-                    className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-                    onClick={() => {
-                      close();
-                      onTokenClick?.({
-                        key: name,
-                        value: fragmentValue,
-                        assignmentOperator: ':',
-                        operator: 'AND',
-                        indexName: indexInfo.indexName,
-                      });
-                    }}
-                  >
-                    <Space>
-                      <PlusCircleOutlined />
-                      {t('logs.filterAnd', {
-                        token: toString(fragmentValue),
-                      })}
-                    </Space>
-                  </li>
-                  <li
-                    className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
-                    onClick={() => {
-                      close();
-                      onTokenClick?.({
-                        key: name,
-                        value: fragmentValue,
-                        assignmentOperator: ':',
-                        operator: 'NOT',
-                        indexName: indexInfo.indexName,
-                      });
-                    }}
-                  >
-                    <Space>
-                      <MinusCircleOutlined />
-                      {t('logs.filterNot', {
-                        token: toString(fragmentValue),
-                      })}
-                    </Space>
-                  </li>
-                </>
-              )}
               <li
                 className='ant-dropdown-menu-item ant-dropdown-menu-item-only-child'
                 onClick={() => {

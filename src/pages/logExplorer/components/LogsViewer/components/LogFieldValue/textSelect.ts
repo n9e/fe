@@ -52,13 +52,13 @@ export function isNodeInside(root: HTMLElement, node: Node | null): boolean {
   return root.contains(el);
 }
 
-export function getSelectionTextWithinRoot(selection: Selection, root: HTMLElement): string {
-  if (!selection.rangeCount) return '';
+export function getSelectionRangeWithinRoot(selection: Selection, root: HTMLElement): Range | undefined {
+  if (!selection.rangeCount) return;
 
   const selectedRange = selection.getRangeAt(0).cloneRange();
-  if (!selectedRange.intersectsNode(root)) return '';
+  if (!selectedRange.intersectsNode(root)) return;
 
-  const rootRange = document.createRange();
+  const rootRange = root.ownerDocument.createRange();
   rootRange.selectNodeContents(root);
 
   if (selectedRange.compareBoundaryPoints(Range.START_TO_START, rootRange) < 0) {
@@ -68,9 +68,27 @@ export function getSelectionTextWithinRoot(selection: Selection, root: HTMLEleme
     selectedRange.setEnd(rootRange.endContainer, rootRange.endOffset);
   }
 
-  if (selectedRange.collapsed) return '';
+  return selectedRange.collapsed ? undefined : selectedRange;
+}
 
-  return selectedRange.toString();
+export function getSelectionTextWithinRoot(selection: Selection, root: HTMLElement): string {
+  return getSelectionRangeWithinRoot(selection, root)?.toString() ?? '';
+}
+
+/** Map a range clipped to the field into offsets in its unformatted value. */
+export function getFieldSelectionOffsets(root: HTMLElement, rangeWithinRoot: Range, fieldValue: string, selectionText: string): { from: number; to: number } | undefined {
+  if (root.textContent !== fieldValue) return;
+
+  const textWithinRoot = rangeWithinRoot.toString();
+  const fragment = textWithinRoot.trim();
+  if (!fragment || selectionText.trim() !== fragment) return;
+
+  const beforeSelection = root.ownerDocument.createRange();
+  beforeSelection.selectNodeContents(root);
+  beforeSelection.setEnd(rangeWithinRoot.startContainer, rangeWithinRoot.startOffset);
+  const leadingWhitespace = textWithinRoot.length - textWithinRoot.trimStart().length;
+  const from = beforeSelection.toString().length + leadingWhitespace;
+  return { from, to: from + fragment.length };
 }
 
 export function isTextSelectDebugEnabled(): boolean {
