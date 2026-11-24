@@ -45,8 +45,12 @@ function useAiEntClickHandler(options?: {
   const [, setParamsAiAction] = useParamsAiAction();
 
   const { onExecuteQueryForQueryContent, promptList, queryPageFrom, queryAction, custom } = options ?? {};
+  const canAccess = useCanAccessFlashAiChat();
+  const accessRef = React.useRef(canAccess);
+  accessRef.current = canAccess;
 
   return React.useCallback(() => {
+    if (IS_ENT && !accessRef.current) return;
     setAiChatVisible(true);
     setAiHandleEvent({ onExecuteQueryForQueryContent });
     setAiExternalConfig({ promptList });

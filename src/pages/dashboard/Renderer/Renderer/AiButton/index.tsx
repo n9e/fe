@@ -49,8 +49,6 @@ export default function AiButton(props: IProps) {
   const buttonType = isAntdButtonType(custom.type) ? custom.type : 'primary';
   const gifIcon = <img src='/image/ai-chat/ai.gif' alt='' style={{ width: capsuleIconSize, height: capsuleIconSize }} className='mr-2' />;
 
-  if (!canAccess) return null;
-
   return (
     <div className='best-looking-scroll h-full w-full overflow-x-auto overflow-y-hidden'>
       <div className='flex h-full w-max min-w-full items-center justify-center'>
@@ -58,6 +56,7 @@ export default function AiButton(props: IProps) {
           <Tooltip title={label}>
             <button
               type='button'
+              disabled={!canAccess}
               aria-label={label}
               onClick={openAiChat}
               style={{ width: circleSize, height: circleSize }}
@@ -67,11 +66,12 @@ export default function AiButton(props: IProps) {
             </button>
           </Tooltip>
         ) : style === 'antd' ? (
-          <Button type={buttonType} size={size} onClick={openAiChat}>
+          <Button disabled={!canAccess} type={buttonType} size={size} onClick={openAiChat}>
             {label}
           </Button>
         ) : (
           <Button
+            disabled={!canAccess}
             icon={gifIcon}
             size={size}
             onClick={openAiChat}

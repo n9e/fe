@@ -6,6 +6,9 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import AiButton from './index';
 import type { IPanel } from '../../../types';
 
+let mockCanAccess = true;
+jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
+
 const mockOpen = jest.fn();
 
 jest.mock('@/utils/constant', () => ({
@@ -51,6 +54,7 @@ function renderButton(custom: IPanel['custom']) {
 }
 
 beforeEach(() => {
+  mockCanAccess = true;
   mockOpen.mockClear();
 });
 
@@ -121,4 +125,19 @@ test('passes execution and conversation preferences to the launch handler', () =
   renderButton({ style: 'capsule', prompt: '$host', autoExecute: true, reuseConversation: true });
   fireEvent.click(screen.getByRole('button'));
   expect(mockOpen).toHaveBeenCalledWith('web-1', expect.objectContaining({ autoExecute: true, reuseConversation: true }));
+});
+
+test.each(['capsule', 'icon', 'antd'] as const)('keeps existing %s configuration visible but prevents execution without access', (style) => {
+  const panel = createPanel({ style, text: 'Saved action', prompt: 'saved prompt', autoExecute: true });
+  const snapshot = JSON.stringify(panel);
+  mockCanAccess = false;
+  const { rerender } = render(<AiButton values={panel} series={[]} />);
+  expect(screen.getByRole('button', { name: 'Saved action' })).toBeDisabled();
+  fireEvent.click(screen.getByRole('button', { name: 'Saved action' }));
+  expect(mockOpen).not.toHaveBeenCalled();
+  mockCanAccess = true;
+  rerender(<AiButton values={panel} series={[]} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Saved action' }));
+  expect(mockOpen).toHaveBeenCalledWith('saved prompt', expect.objectContaining({ autoExecute: true }));
+  expect(JSON.stringify(panel)).toBe(snapshot);
 });

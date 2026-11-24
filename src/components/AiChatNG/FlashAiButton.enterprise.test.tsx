@@ -5,6 +5,12 @@ import { act, fireEvent, render, renderHook, screen } from '@testing-library/rea
 import { AiButton, useAiChatOpenWithPrompt } from './FlashAiButton';
 import { EPageType } from '../AiChat/config';
 
+let mockCanAccess = true;
+jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
+beforeEach(() => {
+  mockCanAccess = true;
+});
+
 const mockSetVisible = jest.fn();
 const mockSetExternalConfig = jest.fn();
 const mockSetParamsAiAction = jest.fn();
@@ -16,6 +22,7 @@ jest.mock('react-router-dom', () => ({ useLocation: () => ({ pathname: '/' }) })
 jest.mock('./context', () => ({ useAiChatContext: () => ({ openAiChat: jest.fn(), cachedSessionId: 'nightingale-session' }) }));
 jest.mock('./recommend', () => ({ buildPageFrom: jest.fn(), getCurrentPageUrl: jest.fn(), getRecommendByUrl: jest.fn() }));
 jest.mock('../AiChat/utils/useHook', () => ({
+  useAiHandleEvent: () => [undefined, jest.fn()],
   useAiChatVisible: () => [false, mockSetVisible],
   useAiExternalConfig: () => [undefined, mockSetExternalConfig],
   useParamsAiAction: () => [undefined, mockSetParamsAiAction],
@@ -65,4 +72,18 @@ test('preserves other AI button launch options', () => {
     page: EPageType.Custom,
     custom: { content: 'explain', prefillOnly: false, createNew: true, forceDrawer: true },
   });
+});
+
+test('a retained launch callback respects revocation and reauthorization', () => {
+  const { result, rerender } = renderHook(() => useAiChatOpenWithPrompt('analyze'));
+  const launch = result.current;
+  mockCanAccess = false;
+  rerender();
+  act(() => launch());
+  expect(mockSetVisible).not.toHaveBeenCalled();
+  expect(mockSetParamsAiAction).not.toHaveBeenCalled();
+  mockCanAccess = true;
+  rerender();
+  act(() => launch());
+  expect(mockSetVisible).toHaveBeenCalledWith(true);
 });
