@@ -127,6 +127,7 @@ export interface Props {
   resolveTextSelectionField?: (params: { fieldName: string; value: string; from: number; to: number; indexData: Field[] }) => TextSelectionField | undefined;
   resolveNestedHighlightRanges?: (fieldName: string, text: string, highlights: Record<string, string[]>) => HighlightRange[] | undefined;
   drilldownContext?: DrilldownInitialValues;
+  onDrilldownSaved?: () => void;
   /** 为 true 时字段值不按 delimiter 分词，划选文本后弹出与点击 token 相同的菜单（与分词互斥） */
   enableLogTextSelectMenu?: boolean;
   hideTypeIcon?: boolean;
@@ -554,6 +555,7 @@ export default function LogsViewer(props: Props) {
             onVisibleChange={handleDrilldownVisibleChange}
             initialMode='add'
             initialValues={drilldownInitialValues}
+            onChanged={props.onDrilldownSaved}
           />
         )}
       </>

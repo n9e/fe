@@ -48,6 +48,7 @@ declare module 'plus:/pages/LogExploreLinkSetting/components/DrilldownBtn' {
     onVisibleChange?: (visible: boolean) => void;
     initialMode?: DrilldownMode;
     initialValues?: DrilldownInitialValues;
+    onChanged?: () => void;
   }>;
 
   export default DrilldownBtn;

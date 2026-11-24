@@ -21,6 +21,7 @@ interface Props {
   typeMap: Record<string, string>;
   field: Field;
   enableStats: boolean;
+  showTopNRatio?: boolean;
   disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: string; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
@@ -86,6 +87,7 @@ export default function FieldsItem(props: Props) {
     renderStatsPopoverTitleExtra,
     renderFieldNameExtra,
     onStatisticClick,
+    showTopNRatio = true,
     disableEmptyValueClick = true,
   } = props;
   const [topNVisible, setTopNVisible] = useState<boolean>(false);
@@ -235,18 +237,20 @@ export default function FieldsItem(props: Props) {
                     >
                       <a className='text-base'>{t('field_values_topn.quick_view_count')}</a>
                     </QuickViewPopover>
-                    <QuickViewPopover
-                      options={{
-                        func: 'ratio',
-                        group_by: field.field,
-                        field: field.field,
-                        ref: `top${topNumber}`,
-                      }}
-                      onStatisticClick={onStatisticClick}
-                      setTopNVisible={setTopNVisible}
-                    >
-                      <a className='text-base'>{t('field_values_topn.quick_view_ratio')}</a>
-                    </QuickViewPopover>
+                    {showTopNRatio && (
+                      <QuickViewPopover
+                        options={{
+                          func: 'ratio',
+                          group_by: field.field,
+                          field: field.field,
+                          ref: `top${topNumber}`,
+                        }}
+                        onStatisticClick={onStatisticClick}
+                        setTopNVisible={setTopNVisible}
+                      >
+                        <a className='text-base'>{t('field_values_topn.quick_view_ratio')}</a>
+                      </QuickViewPopover>
+                    )}
                   </Space>
                 )}
               </div>
@@ -284,19 +288,23 @@ export default function FieldsItem(props: Props) {
                         <div style={{ width: 'calc(100% - 50px)' }} className='truncate flex items-center'>
                           <Progress percent={percent} size='small' showInfo={false} strokeColor={PRIMARY_COLOR} />
                         </div>
-                        <QuickViewPopover
-                          options={{
-                            func: 'ratio',
-                            field: field.field,
-                            field_filter: fieldValue,
-                          }}
-                          onStatisticClick={onStatisticClick}
-                          setTopNVisible={setTopNVisible}
-                        >
-                          <Button type='link' size='small' className='p-0' disabled={emptyValueNotSupported}>
-                            {percent}%
-                          </Button>
-                        </QuickViewPopover>
+                        {showTopNRatio ? (
+                          <QuickViewPopover
+                            options={{
+                              func: 'ratio',
+                              field: field.field,
+                              field_filter: fieldValue,
+                            }}
+                            onStatisticClick={onStatisticClick}
+                            setTopNVisible={setTopNVisible}
+                          >
+                            <Button type='link' size='small' className='p-0' disabled={emptyValueNotSupported}>
+                              {percent}%
+                            </Button>
+                          </QuickViewPopover>
+                        ) : (
+                          <span>{percent}%</span>
+                        )}
                       </div>
                     </div>
                     {onValueFilter && (

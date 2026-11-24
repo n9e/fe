@@ -64,7 +64,7 @@ const ja_JP = {
     median: '中央値',
     p95: 'パーセンタイル (P95)',
   },
-  field_popover_info_alert: '値をクリックして統計チャートとSQLを表示',
+  field_popover_info_alert: '値をクリックして統計チャートとクエリを表示',
   field_search_placeholder: 'フィールドを検索',
   field_list: {
     show_fields: 'フィールドを表示',
