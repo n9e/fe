@@ -27,6 +27,7 @@ import { RollbackOutlined, SettingOutlined, FullscreenOutlined, DownOutlined, Sh
 import { RefreshToolbar, TimeRangePickerWithRefresh, IRawTimeRange, timeRangeUnix } from '@/components/TimeRangePicker';
 import { GRAFANA_REFRESH_OPTIONS } from '@/components/TimeRangePicker/AutoRefresh';
 import { CommonStateContext } from '@/App';
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import { IS_ENT } from '@/utils/constant';
 import { getBusiGroupsDashboards } from '@/services/dashboardV2';
 import { AiButton } from '@/components/AiChatNG/FlashAiButton';
@@ -83,6 +84,7 @@ const cachePageTitle = document.title || 'Nightingale';
 
 export default function Title(props: IProps) {
   const { t, i18n } = useTranslation('dashboard');
+  const canAccessFlashAi = useCanAccessFlashAiChat();
   const {
     dashboard,
     dashboardLinks,
@@ -333,22 +335,29 @@ export default function Title(props: IProps) {
                       trigger={['click']}
                       overlay={
                         <Menu
-                          items={_.map(_.concat([{ type: 'importPanel' }], [{ type: 'row', name: 'row' }], visualizations), (item) => ({
-                            key: item.type,
-                            label: (
-                              <Space align='center' style={{ lineHeight: 1 }}>
-                                {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
-                                {t(`visualizations.${item.type}`)}
-                              </Space>
+                          items={_.map(
+                            _.concat(
+                              [{ type: 'importPanel' }],
+                              [{ type: 'row', name: 'row' }],
+                              visualizations.filter((item) => item.type !== 'aiButton' || canAccessFlashAi),
                             ),
-                            onClick: () => {
-                              if (item.type === 'importPanel') {
-                                void openImportPanelModal();
-                              } else {
-                                onAddPanel(item.type);
-                              }
-                            },
-                          }))}
+                            (item) => ({
+                              key: item.type,
+                              label: (
+                                <Space align='center' style={{ lineHeight: 1 }}>
+                                  {item.type !== 'importPanel' && <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />}
+                                  {t(`visualizations.${item.type}`)}
+                                </Space>
+                              ),
+                              onClick: () => {
+                                if (item.type === 'importPanel') {
+                                  void openImportPanelModal();
+                                } else {
+                                  onAddPanel(item.type);
+                                }
+                              },
+                            }),
+                          )}
                         />
                       }
                     >
