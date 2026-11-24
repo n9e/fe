@@ -3,6 +3,13 @@ import React, { forwardRef, useImperativeHandle } from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import Editor from './index';
+let mockCanAccess = true;
+let mockValidate: ((values: any) => Promise<any>) | undefined;
+jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
+beforeEach(() => {
+  mockCanAccess = true;
+  mockValidate = undefined;
+});
 import type { IPanel } from '../types';
 
 jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: { prometheus: 'prometheus' }, SIZE: 8 }));
@@ -21,8 +28,14 @@ jest.mock('antd', () => {
       </div>
     ) : null;
   Modal.confirm = jest.fn();
-  const Select = ({ value, onChange }: any) => <button onClick={() => onChange('timeseries')}>type:{value}</button>;
-  Select.Option = () => null;
+  const Select = ({ value, onChange, children }: any) => (
+    <div>
+      <button onClick={() => onChange('timeseries')}>type:{value}</button>
+      <button onClick={() => onChange('aiButton')}>choose AI</button>
+      {children}
+    </div>
+  );
+  Select.Option = ({ value }: any) => <span>option:{value}</span>;
   return { Modal, Select, Space: ({ children }: any) => <div>{children}</div>, Button: ({ children, onClick }: any) => <button onClick={onClick}>{children}</button> };
 });
 jest.mock('@/components/TimeRangePicker', () => ({
@@ -44,7 +57,7 @@ jest.mock('./Form', () => ({
       getFormInstance: () => ({
         getFieldsValue: () => initialValues,
         getFieldValue: (name: string) => initialValues[name],
-        validateFields: () => Promise.resolve(initialValues),
+        validateFields: () => (mockValidate ? mockValidate(initialValues) : Promise.resolve(initialValues)),
       }),
     }));
     return (
@@ -108,4 +121,37 @@ test('retains a saved type when the updated panel is reopened', async () => {
   rerender(<Editor {...props} onOK={onOK} visible={false} />);
   rerender(<Editor {...props} onOK={onOK} initialValues={savedPanel} />);
   expect(screen.getByRole('button', { name: 'type:timeseries' })).toBeInTheDocument();
+});
+
+test('hides AI from new panels and blocks a stale type selection', () => {
+  mockCanAccess = false;
+  render(<Editor {...props} mode='add' initialValues={{ ...panel, type: 'timeseries', targets: [{ refId: 'A' }] } as any} />);
+  expect(screen.queryByText('option:aiButton')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'choose AI' }));
+  expect(screen.getByText('form:timeseries range:now-6h label:original')).toBeInTheDocument();
+});
+
+test('round trips an existing AI panel without access', async () => {
+  mockCanAccess = false;
+  const onOK = jest.fn();
+  render(<Editor {...props} onOK={onOK} />);
+  expect(screen.getByText('option:aiButton')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'common:btn.save' }));
+  await waitFor(() => expect(onOK).toHaveBeenCalledWith(expect.objectContaining({ type: 'aiButton', custom: panel.custom }), 'edit'));
+});
+
+test('revocation during validation blocks saving a new AI panel', async () => {
+  let complete!: (values: any) => void;
+  mockValidate = () =>
+    new Promise((resolve) => {
+      complete = resolve;
+    });
+  const onOK = jest.fn();
+  const { rerender } = render(<Editor {...props} mode='add' onOK={onOK} />);
+  fireEvent.click(screen.getByRole('button', { name: 'common:btn.save' }));
+  mockCanAccess = false;
+  rerender(<Editor {...props} mode='add' onOK={onOK} />);
+  complete(panel);
+  await waitFor(() => expect(screen.queryByText('option:aiButton')).not.toBeInTheDocument());
+  expect(onOK).not.toHaveBeenCalled();
 });

@@ -35,6 +35,7 @@ import { useGlobalState } from '../globalState';
 import normalizeData from '../Renderer/Renderer/TableNG/utils/normalizeData';
 import { normalizeDashboardPanelForPersist } from './normalization';
 
+import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import './style.less';
 
 interface IProps {
@@ -54,12 +55,17 @@ interface IProps {
 
 function index(props: IProps) {
   const { t } = useTranslation('dashboard');
+  const canAccessFlashAi = useCanAccessFlashAiChat();
+  const canUseAiType = canAccessFlashAi || (props.mode === 'edit' && props.initialValues.type === 'aiButton');
+  const canUseAiTypeRef = useRef(canUseAiType);
+  canUseAiTypeRef.current = canUseAiType;
   const formRef = useRef<EditorFormHandle>(null);
   const { panelWidth, mode, visible, setVisible, id, time, timezone, setTimezone } = props;
   const [initialValues, setInitialValues] = useState<IPanel>(_.cloneDeep(props.initialValues));
   const [series] = useGlobalState('series');
   const [range, setRange] = useState<IRawTimeRange>(time);
   const changeVisualization = (val: string, migrateLegacyTable = false) => {
+    if (val === 'aiButton' && !canUseAiTypeRef.current) return;
     if (!formRef.current?.getFormInstance) return;
     const formInstance = formRef.current.getFormInstance();
     const values = {
@@ -97,6 +103,7 @@ function index(props: IProps) {
     if (formRef.current && formRef.current.getFormInstance) {
       const formInstance = formRef.current.getFormInstance();
       formInstance.validateFields().then(async (values: IPanel) => {
+        if (values.type === 'aiButton' && !canUseAiTypeRef.current) return;
         values.targets = formInstance.getFieldValue('targets') ?? values.targets;
         // TODO: 渲染 hexbin 图时，colorRange 需要从 string 转换为 array
         if (values.type === 'hexbin' && typeof values.custom.colorRange === 'string') {
@@ -157,16 +164,19 @@ function index(props: IProps) {
                 changeVisualization(val);
               }}
             >
-              {_.map(visualizations, (item) => {
-                return (
-                  <Select.Option value={item.type} key={item.type}>
-                    <Space align='center' style={{ lineHeight: 1 }}>
-                      <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />
-                      {t(`visualizations.${item.type}`)}
-                    </Space>
-                  </Select.Option>
-                );
-              })}
+              {_.map(
+                visualizations.filter((item) => item.type !== 'aiButton' || canUseAiType),
+                (item) => {
+                  return (
+                    <Select.Option value={item.type} key={item.type}>
+                      <Space align='center' style={{ lineHeight: 1 }}>
+                        <img height={16} alt={item.type} src={`/image/dashboard/${item.type}.svg`} />
+                        {t(`visualizations.${item.type}`)}
+                      </Space>
+                    </Select.Option>
+                  );
+                },
+              )}
             </Select>
             <TimeRangePicker
               dateFormat='YYYY-MM-DD HH:mm:ss'

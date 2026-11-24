@@ -1,10 +1,12 @@
 /** @jest-environment jsdom */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
 import Title from './Title';
+let mockCanAccess = true;
+jest.mock('@/components/AiChat/hooks/useFlashAiAccess', () => ({ useCanAccessFlashAiChat: () => mockCanAccess }));
 
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (value: string) => value, i18n: { language: 'zh-CN' } }) }));
 jest.mock('@/App', () => {
@@ -23,7 +25,7 @@ jest.mock('@/components/AiChatNG/recommend', () => ({ getDashboardDetailPrompts:
 jest.mock('../globalState', () => ({ useGlobalState: () => [[]] }));
 jest.mock('../DashboardLinks', () => () => null);
 jest.mock('../config', () => ({ AddPanelIcon: () => null }));
-jest.mock('../Editor/config', () => ({ visualizations: [] }));
+jest.mock('../Editor/config', () => ({ visualizations: [{ type: 'aiButton' }, { type: 'timeseries' }] }));
 jest.mock('../List/FormModal', () => () => null);
 jest.mock('../List/ImportGrafanaURLFormModal', () => () => null);
 jest.mock('../List/SharingLinkModal', () => () => null);
@@ -64,4 +66,65 @@ test('fullscreen header only renders the dashboard title and time range picker',
   expect(screen.getByTestId('time-range-picker')).toBeInTheDocument();
   expect(screen.queryByText('add_panel')).not.toBeInTheDocument();
   expect(screen.queryByText('common:btn.edit')).not.toBeInTheDocument();
+});
+
+test('new-panel menu follows authorization and retains ordinary panel choices', async () => {
+  mockCanAccess = false;
+  const { rerender } = render(
+    <MemoryRouter>
+      <Title
+        dashboard={{ id: 1, name: 'CPU Overview', configs: {} } as never}
+        setDashboardLinks={jest.fn()}
+        handleUpdateDashboardConfigs={jest.fn()}
+        range={{ start: 'now-1h', end: 'now' }}
+        setRange={jest.fn()}
+        timezone='Asia/Shanghai'
+        setTimezone={jest.fn()}
+        setIntervalSeconds={jest.fn()}
+        onAddPanel={jest.fn()}
+        onImportPanel={jest.fn()}
+        isPreview={false}
+        isBuiltin={false}
+        isAuthorized
+        onToggleFullscreen={jest.fn()}
+        editable
+        allowedLeave
+        hasUnsavedChanges={false}
+        saving={false}
+        onSave={jest.fn()}
+        routerPromptRef={{ current: { showPrompt: jest.fn() } } as never}
+      />
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole('button', { name: /add_panel/ }));
+  await waitFor(() => expect(screen.getByText('visualizations.timeseries')).toBeInTheDocument());
+  expect(screen.queryByText('visualizations.aiButton')).not.toBeInTheDocument();
+  mockCanAccess = true;
+  rerender(
+    <MemoryRouter>
+      <Title
+        dashboard={{ id: 1, name: 'CPU Overview', configs: {} } as never}
+        setDashboardLinks={jest.fn()}
+        handleUpdateDashboardConfigs={jest.fn()}
+        range={{ start: 'now-1h', end: 'now' }}
+        setRange={jest.fn()}
+        timezone='Asia/Shanghai'
+        setTimezone={jest.fn()}
+        setIntervalSeconds={jest.fn()}
+        onAddPanel={jest.fn()}
+        onImportPanel={jest.fn()}
+        isPreview={false}
+        isBuiltin={false}
+        isAuthorized
+        onToggleFullscreen={jest.fn()}
+        editable
+        allowedLeave
+        hasUnsavedChanges={false}
+        saving={false}
+        onSave={jest.fn()}
+        routerPromptRef={{ current: { showPrompt: jest.fn() } } as never}
+      />
+    </MemoryRouter>,
+  );
+  await waitFor(() => expect(screen.getByText('visualizations.aiButton')).toBeInTheDocument());
 });
