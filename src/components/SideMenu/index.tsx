@@ -218,10 +218,10 @@ const SideMenu = (props: SideMenuProps) => {
               return child;
             }
             if (menu.key === '/flashduty') {
-              if (perms?.includes('/flashduty')) {
-                return child;
-              }
+              return perms?.includes('/flashduty') ? child : null;
             }
+            // External links have no permission point in this app; the menu definition decides whether they are shown.
+            if (child.pathType === 'absolute') return child;
             if (child.type === 'tabs' && child.children) {
               const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
               if (filteredTabs.length > 0) {
