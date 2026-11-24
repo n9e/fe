@@ -17,6 +17,7 @@ const LOG_CAPABLE_CATES = [
   'aliyun-sls',
   'tencent-cls',
   'volc-tls',
+  'guance',
   'huawei-lts',
   'bce-bls',
   'cloudwatchlogs',

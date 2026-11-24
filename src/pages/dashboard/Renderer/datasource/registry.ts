@@ -17,6 +17,7 @@ export const DASHBOARD_DATASOURCE_CATES = [
   'aliyun-sls',
   'tencent-cls',
   'volc-tls',
+  'guance',
   'huawei-lts',
   'bce-bls',
   'cloudwatchlogs',
@@ -60,6 +61,7 @@ const LOG_CAPABLE_DATASOURCES = new Set<string>([
   'aliyun-sls',
   'tencent-cls',
   'volc-tls',
+  'guance',
   'huawei-lts',
   'bce-bls',
   'cloudwatchlogs',
@@ -102,6 +104,12 @@ const DEFAULT_TARGETS: Partial<Record<(typeof DASHBOARD_DATASOURCE_CATES)[number
     },
   },
   'volc-tls': {
+    query: {
+      mode: 'timeSeries',
+      removeFirstAndLastPoints: false,
+    },
+  },
+  guance: {
     query: {
       mode: 'timeSeries',
       removeFirstAndLastPoints: false,
@@ -195,6 +203,7 @@ const QUERY_READINESS: Partial<Record<DashboardDatasourceCate, (target: ITarget)
   // 也保持相同前置条件，避免刚选择数据源即发送空查询。
   'tencent-cls': (target) => Boolean(target.query?.topic_id),
   'volc-tls': (target) => Boolean(target.query?.topic_id || target.query?.topic),
+  guance: (target) => hasQueryText(target),
   'huawei-lts': (target) => Boolean(target.query?.stream_id),
   'bce-bls': (target) => Boolean(target.query?.logstore),
   zabbix: (target) => {
@@ -235,6 +244,14 @@ const serializeTarget = (target: ITarget, cate: DashboardDatasourceCate) => {
   delete payload.builderConfig;
   if (SQL_QUERY_DATASOURCE_CATES.has(cate)) {
     serializeSQLQuery(payload, cate);
+  }
+  if (cate === 'guance') {
+    if (payload.mode === 'raw' || !payload.interval) {
+      delete payload.interval;
+    } else if (typeof payload.interval === 'string') {
+      const match = /^([1-9]\d*)(s|m|h)$/.exec(payload.interval.trim());
+      if (match) payload.interval = Number(match[1]) * (match[2] === 'h' ? 3600 : match[2] === 'm' ? 60 : 1);
+    }
   }
   if (_.includes(['elasticsearch', 'opensearch'], cate)) {
     if (payload.syntax !== 'sql') {

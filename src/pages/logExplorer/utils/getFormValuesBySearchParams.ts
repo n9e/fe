@@ -336,6 +336,21 @@ export default function getFormValuesBySearchParams(params: { [index: string]: s
         };
       }
     }
+    if (data_source_name === DatasourceCateEnum.guance) {
+      const index = params.index;
+      return {
+        ...formValues,
+        query: {
+          range,
+          index: index || undefined,
+          query,
+          organizeFields,
+          ...(params.mode === 'metric' ? { mode: 'metric' } : {}),
+          ...(params.submode === 'timeSeries' ? { submode: 'timeSeries' } : {}),
+          ...(params.stat_filter != null ? { statistic: { filter: params.stat_filter, ratio: params.stat_ratio === 'true' } } : {}),
+        },
+      };
+    }
     if (data_source_name === DatasourceCateEnum.volcTLS) {
       const mode = _.get(params, 'mode');
       const submode = _.get(params, 'submode');
@@ -559,6 +574,16 @@ export function getLocationSearchByFormValues(formValues: FormValue) {
     if (formValues.query?.organizeFields && Array.isArray(formValues.query?.organizeFields) && formValues.query?.organizeFields.length > 0) {
       query.organize_fields = formValues.query?.organizeFields;
     }
+    return queryString.stringify(query);
+  }
+  if (data_source_name === DatasourceCateEnum.guance) {
+    query.index = formValues.query?.index;
+    query.query = formValues.query?.query;
+    query.organize_fields = formValues.query?.organizeFields;
+    query.mode = formValues.query?.mode;
+    query.submode = formValues.query?.submode;
+    query.stat_filter = formValues.query?.statistic?.filter;
+    query.stat_ratio = formValues.query?.statistic?.ratio;
     return queryString.stringify(query);
   }
   if (data_source_name === DatasourceCateEnum.volcTLS) {

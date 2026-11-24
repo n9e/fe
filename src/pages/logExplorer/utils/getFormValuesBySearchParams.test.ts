@@ -10,6 +10,7 @@ const datasourceCateEnum = {
   cloudwatchLogs: 'cloudwatchLogs',
   bceBLS: 'bceBLS',
   volcTLS: 'volc-tls',
+  guance: 'guance',
 };
 
 jest.mock('@/utils/constant', () => ({ DatasourceCateEnum: datasourceCateEnum }));
@@ -73,4 +74,30 @@ describe('火山云 TLS 分享链接参数', () => {
       },
     });
   });
+});
+
+it('round-trips the Guance index, filter, time range and displayed fields', () => {
+  const formValues = {
+    datasourceCate: 'guance',
+    datasourceValue: 15,
+    query: {
+      index: 'nginx-access',
+      query: 'status = "error"',
+      range: { start: 'now-1h', end: 'now' },
+      organizeFields: ['message', 'status'],
+    },
+  };
+  const search = getLocationSearchByFormValues(formValues);
+  expect(search).toContain('index=nginx-access');
+  expect(
+    getFormValuesBySearchParams({
+      data_source_name: formValues.datasourceCate,
+      data_source_id: String(formValues.datasourceValue),
+      index: formValues.query.index,
+      query: formValues.query.query,
+      start: formValues.query.range.start,
+      end: formValues.query.range.end,
+      organize_fields: formValues.query.organizeFields as unknown as string,
+    }),
+  ).toEqual(formValues);
 });

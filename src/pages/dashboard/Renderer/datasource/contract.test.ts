@@ -80,6 +80,7 @@ describe('dashboard unified query contract', () => {
       'aliyun-sls',
       'tencent-cls',
       'volc-tls',
+      'guance',
       'huawei-lts',
       'bce-bls',
       'cloudwatchlogs',
@@ -407,6 +408,27 @@ describe('dashboard unified query contract', () => {
       { ref_id: 'B', query: { interval: 7200 } },
     ]);
     expect(JSON.stringify(request)).not.toContain('"interval_unit"');
+  });
+
+  it('sends a Guance time-series interval in seconds only when selected', () => {
+    const request = buildDashboardQueryRequest({
+      time: {
+        start: moment('2026-07-24T00:00:00.000Z'),
+        end: moment('2026-07-24T01:00:00.000Z'),
+      },
+      targets: [
+        { refId: 'A', kind: 'query', datasource: { cate: 'guance', id: 12 }, query: { query: 'L("access")::*:(count(*))', mode: 'timeSeries', interval: '5m' } },
+        { refId: 'B', kind: 'query', datasource: { cate: 'guance', id: 12 }, query: { query: 'L("access")::*:(*)', mode: 'raw', interval: '10s' } },
+      ],
+      datasourceList: [],
+    });
+
+    expect(request.queries).toMatchObject([
+      { ref_id: 'A', query: { query: 'L("access")::*:(count(*))', interval: 300 } },
+      { ref_id: 'B', result_type: 'logs', query: { query: 'L("access")::*:(*)' } },
+    ]);
+    expect(request.queries[1]).not.toHaveProperty('query.interval');
+    expect(request.queries[0]).not.toHaveProperty('query.index');
   });
 
   it('propagates the V2 Elasticsearch interval to normalized time-series results', () => {
