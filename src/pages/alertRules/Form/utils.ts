@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import { mapOptionToRelativeTimeRange, mapRelativeTimeRangeToOption } from '@/components/TimeRangePicker';
 import { DatasourceCateEnum, IS_PLUS } from '@/utils/constant';
+import { getDatasourceCategoryByValue } from '@/utils/datasourceRegistry';
 
 import { getDefaultRuleConfig, datasourceDefaultValue, defaultValues } from './constants';
 import { normalizeServiceCalConfigs, formatServiceCalConfigs } from './serviceCalConfigs';
@@ -209,8 +210,10 @@ export function processInitialValues(values) {
     });
   }
   const isHostRule = values?.cate === 'host' || values?.prod === 'host';
-  if (!isHostRule && Array.isArray(values?.rule_config?.triggers)) {
-    // 指标类阈值条件以 exp 作为后端实际执行表达式；host trigger 使用 type/duration，不要求 exp。
+  const isDatasourcelessRule = !!getDatasourceCategoryByValue(values?.cate)?.datasourceless;
+  if (!isHostRule && !isDatasourcelessRule && Array.isArray(values?.rule_config?.triggers)) {
+    // 指标类阈值条件以 exp 作为后端实际执行表达式；host trigger 使用 type/duration，不要求 exp；
+    // 不需要数据源的类型（如商业版 AI 应用）的 trigger 结构由其表单定义，也不要求 exp。
     values.rule_config.triggers = values.rule_config.triggers.filter((trigger) => {
       return typeof trigger?.exp === 'string' && trigger.exp.trim().length > 0;
     });

@@ -276,8 +276,17 @@ export default function AlertRules(props: Props) {
               </Space>
             );
           }
-          if (!value) return null;
           const cate = _.find(allCates, { value: record.cate });
+          // 不需要数据源的类型（如商业版 AI 应用）没有数据源，展示类型（icon + 名称）
+          if (cate?.datasourceless) {
+            return (
+              <Space>
+                {cate.logo && <img alt={record.cate} src={cate.logo} height={18} />}
+                <span>{getCateDisplayLabel(cate, i18n.language)}</span>
+              </Space>
+            );
+          }
+          if (!value) return null;
           const cateLabel = record.cate === 'host' ? 'Host' : getCateDisplayLabel(cate, i18n.language);
           let logoSrc = cate?.logo;
           if (record.cate === 'host') {

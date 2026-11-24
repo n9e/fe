@@ -51,6 +51,7 @@ const getN9eConfig = async () => {
   return {};
 };
 const getDefaultValuesByCate = () => {};
+const getInitialValuesBySearch = () => undefined;
 const autoDatasourcetype = [];
 const AuthList = [];
 const extraColumns = () => {};
@@ -113,6 +114,7 @@ export {
   getLicense,
   getN9eConfig,
   getDefaultValuesByCate,
+  getInitialValuesBySearch,
   autoDatasourcetype,
   AuthList,
   extraColumns,
