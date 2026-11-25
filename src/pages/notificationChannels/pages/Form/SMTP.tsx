@@ -31,12 +31,24 @@ export default function SMTP() {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.username')} tooltip={t('smtp_request_config.username_tip')} name={[...names, 'username']} rules={[{ required: isRequired }]}>
+          {/* 用户名和密码都留空时不做 SMTP 认证，用于允许内网匿名发信的服务器 */}
+          <Form.Item
+            label={t('smtp_request_config.username')}
+            tooltip={t('smtp_request_config.username_tip')}
+            name={[...names, 'username']}
+            dependencies={[[...names, 'password']]}
+            rules={[
+              ({ getFieldValue }) => ({
+                validator: (_, v?: string) =>
+                  !isRequired || !!v === !!getFieldValue([...names, 'password']) ? Promise.resolve() : Promise.reject(new Error(t('smtp_request_config.auth_incomplete'))),
+              }),
+            ]}
+          >
             <Input />
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label={t('smtp_request_config.password')} tooltip={t('smtp_request_config.password_tip')} name={[...names, 'password']} rules={[{ required: isRequired }]}>
+          <Form.Item label={t('smtp_request_config.password')} tooltip={t('smtp_request_config.password_tip')} name={[...names, 'password']}>
             <Input.Password />
           </Form.Item>
         </Col>

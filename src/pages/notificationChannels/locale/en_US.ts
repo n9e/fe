@@ -89,9 +89,11 @@ const en_US = {
     port: 'Port',
     port_tip: 'The port number of the SMTP server. Common ports are 25, 465 (SSL), 587 (STARTTLS), please confirm the correct port with the provider',
     username: 'Username',
-    username_tip: 'The username required to log in to the SMTP server, usually an email address',
+    username_tip:
+      'The username required to log in to the SMTP server, usually an email address. Leave both the username and the password empty if the server accepts mail without authentication',
     password: 'Password',
     password_tip: 'The login password or authorization code corresponding to the SMTP username. It is recommended to use an authorization code to enhance security',
+    auth_incomplete: 'Fill in both the username and the password, or leave both empty',
     from: 'From',
     from_tip:
       'The sender name or email alias displayed in the email, which can help the recipient better identify the email source, format example: Flashcat <no-reply@notice.flashcat.cloud>',
