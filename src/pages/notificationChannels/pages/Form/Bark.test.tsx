@@ -70,6 +70,14 @@ it('requires username and password together and round-trips saved settings', asy
   expect(await validate()).toContain('request_config.bark_request_config.server_url');
 });
 
+it('keeps credentials made of spaces, as bark-server compares them as entered', async () => {
+  render(<Editor initialValues={preset} />);
+  fireEvent.change(screen.getByLabelText('bark_request_config.username'), { target: { value: 'n9e' } });
+  fireEvent.change(screen.getByLabelText('bark_request_config.password'), { target: { value: ' ' } });
+  expect(await validate()).toEqual([]);
+  expect(normalizeFormValues(form.getFieldsValue()).request_config.bark_request_config).toMatchObject({ username: 'n9e', password: ' ' });
+});
+
 it('does not block other media types with hidden Bark fields', async () => {
   render(<Editor initialValues={{ request_type: 'ntfy', request_config: { bark_request_config: { username: 'only-user', server_url: 'bad' } } }} />);
   expect(await validate()).toEqual([]);

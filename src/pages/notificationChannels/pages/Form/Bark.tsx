@@ -8,6 +8,8 @@ import NativeNetworkSettings from './NativeNetworkSettings';
 import NativeApiUrl from './NativeApiUrl';
 
 const names = ['request_config', 'bark_request_config'];
+// bark-server 原样比对用户名密码，全是空格的密码也是合法值，所以不 trim
+const filled = (v?: string) => v != null && v !== '';
 
 /** Bark 媒介放服务地址和认证，全部可以留空（公共服务 api.day.app）；Device Key 跟着人走，每个人在个人信息的联系方式里填。 */
 export default function Bark() {
@@ -30,7 +32,7 @@ export default function Bark() {
           rules={[
             ({ getFieldValue }) => ({
               validator: (_, v?: string) =>
-                !active || !!v?.trim() === !!getFieldValue([...names, 'password'])?.trim() ? Promise.resolve() : Promise.reject(new Error(label('basic_incomplete'))),
+                !active || filled(v) === filled(getFieldValue([...names, 'password'])) ? Promise.resolve() : Promise.reject(new Error(label('basic_incomplete'))),
             }),
           ]}
         >
