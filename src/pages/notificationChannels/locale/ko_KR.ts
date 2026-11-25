@@ -213,10 +213,10 @@ const ko_KR = {
     insecure_tip: '자체 서명 인증서를 쓰는 자체 호스팅 ntfy 서버라면 켜세요',
   },
   bark_request_config: {
-    top_tip:
-      'iPhone의 Bark 앱으로 알림을 푸시합니다. 서버를 비워 두면 공개 서버 api.day.app을 사용하며, 자체 호스팅 bark-server를 입력할 수도 있습니다. 디바이스 키는 사람마다 다릅니다. 각 수신자가 프로필의 연락처에 자신의 Bark Device Key를 입력하고, 알림 규칙에서는 사용자 또는 팀을 선택합니다. 레벨은 고정입니다: S1은 시간 민감(집중 모드 통과), S2/S3는 일반, 복구 알림은 조용히 전달됩니다.',
+    contact_hint: '각 수신자가 프로필에 자신의 Bark Device Key를 입력합니다',
     server_url: '서버 URL',
-    server_url_tip: '디바이스 키를 제외한 bark-server의 루트 주소입니다. 비워 두면 https://api.day.app을 사용합니다.',
+    server_url_tip: '디바이스 키를 제외한 bark-server의 루트 주소입니다.',
+    server_url_hint: '비워 두면 공개 서버 api.day.app 사용',
     username: '사용자 이름',
     username_tip: '자체 호스팅 bark-server의 Basic 인증(--user / --password)입니다. 인증이 필요 없는 서버라면 둘 다 비워 두세요. {{.변수명}}을 지원합니다.',
     password: '비밀번호',

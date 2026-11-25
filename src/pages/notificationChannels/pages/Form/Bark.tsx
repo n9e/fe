@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Form, Input, Space } from 'antd';
+import { Form, Input, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { NS } from '../../constants';
@@ -20,9 +20,15 @@ export default function Bark() {
 
   return (
     <div style={{ display: active ? 'block' : 'none' }}>
-      <Alert className='mb-4' type='info' showIcon message={label('top_tip')} />
-      <ContactKeysSelect showSearch optionFilterProp='label' />
-      <NativeApiUrl name={[...names, 'server_url']} defaultUrl='https://api.day.app' active={active} label={label('server_url')} tip={label('server_url_tip')} />
+      <ContactKeysSelect showSearch optionFilterProp='label' hint={label('contact_hint')} />
+      <NativeApiUrl
+        name={[...names, 'server_url']}
+        defaultUrl='https://api.day.app'
+        active={active}
+        label={label('server_url')}
+        tip={label('server_url_tip')}
+        hint={label('server_url_hint')}
+      />
       <Space align='start'>
         <Form.Item
           label={label('username')}

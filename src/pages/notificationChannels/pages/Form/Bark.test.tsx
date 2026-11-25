@@ -47,6 +47,8 @@ const preset = {
 it('works with an empty config and reads the device key from the Bark contact', async () => {
   render(<Editor initialValues={preset} />);
   expect(await screen.findByTitle('Bark Device Key')).toBeTruthy();
+  expect(screen.getByText('bark_request_config.contact_hint')).toBeTruthy();
+  expect(screen.getByText('bark_request_config.server_url_hint')).toBeTruthy();
   expect(await validate()).toEqual([]);
   const submitted = normalizeFormValues(form.getFieldsValue());
   expect(submitted.param_config.user_info.contact_key).toBe('bark_device_key');
@@ -56,7 +58,7 @@ it('works with an empty config and reads the device key from the Bark contact', 
 it('requires username and password together and round-trips saved settings', async () => {
   const saved = { server_url: 'https://bark.example.com', username: 'n9e', password: 'secret', sound: 'alarm', group: 'Nightingale', retry_times: 0 };
   render(<Editor initialValues={{ ...preset, request_config: { bark_request_config: saved } }} />);
-  expect((screen.getByLabelText('bark_request_config.server_url') as HTMLInputElement).value).toBe('https://bark.example.com');
+  expect((screen.getByLabelText(/^bark_request_config\.server_url/) as HTMLInputElement).value).toBe('https://bark.example.com');
   expect((screen.getByLabelText('bark_request_config.sound') as HTMLInputElement).value).toBe('alarm');
   expect(await validate()).toEqual([]);
   expect(normalizeFormValues(form.getFieldsValue()).request_config.bark_request_config).toMatchObject(saved);
@@ -66,7 +68,7 @@ it('requires username and password together and round-trips saved settings', asy
   fireEvent.change(screen.getByLabelText('bark_request_config.username'), { target: { value: '' } });
   expect(await validate()).toEqual([]);
 
-  fireEvent.change(screen.getByLabelText('bark_request_config.server_url'), { target: { value: 'api.day.app' } });
+  fireEvent.change(screen.getByLabelText(/^bark_request_config\.server_url/), { target: { value: 'api.day.app' } });
   expect(await validate()).toContain('request_config.bark_request_config.server_url');
 });
 

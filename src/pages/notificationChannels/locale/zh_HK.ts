@@ -208,10 +208,10 @@ const zh_HK = {
     insecure_tip: '自建的 ntfy 服務使用自簽憑證時開啟',
   },
   bark_request_config: {
-    top_tip:
-      '把告警推送到 iPhone 上的 Bark App。服務地址留空使用公共服務 api.day.app，也可以填寫自建的 bark-server。Device Key 跟著人走：每個接收人在「個人資訊 → 聯絡方式」裡填寫自己的 Bark Device Key，通知規則裡選擇使用者或團隊。級別固定：S1 為時效性通知（可穿透專注模式），S2/S3 為普通通知，恢復通知靜默送達。',
+    contact_hint: '每個接收人在個人資訊裡填寫自己的 Bark Device Key',
     server_url: '服務地址',
-    server_url_tip: 'bark-server 的根地址，不帶 Device Key。留空使用 https://api.day.app。',
+    server_url_tip: 'bark-server 的根地址，不帶 Device Key。',
+    server_url_hint: '留空使用公共服務 api.day.app',
     username: '使用者名稱',
     username_tip: '自建 bark-server 的 Basic 認證（--user / --password）。服務不需要認證時都留空。支援 {{.變數名}} 引用。',
     password: '密碼',

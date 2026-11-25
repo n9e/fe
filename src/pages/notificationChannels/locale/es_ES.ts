@@ -218,10 +218,10 @@ const es_ES = {
     insecure_tip: 'Actívalo para un servidor ntfy propio con certificado autofirmado',
   },
   bark_request_config: {
-    top_tip:
-      'Envía las alertas a la app Bark en el iPhone. Deje el servidor vacío para usar el servidor público api.day.app, o indique su bark-server autoalojado. Una clave de dispositivo pertenece a una persona: cada destinatario rellena su Bark Device Key en su perfil, en Contactos, y las reglas de notificación seleccionan usuarios o equipos. Los niveles son fijos: S1 es urgente (atraviesa el modo Concentración), S2/S3 son normales y las recuperaciones llegan en silencio.',
+    contact_hint: 'Cada destinatario rellena su Bark Device Key en su perfil',
     server_url: 'URL del servidor',
-    server_url_tip: 'Dirección raíz del bark-server, sin la clave de dispositivo. Déjela vacía para usar https://api.day.app.',
+    server_url_tip: 'Dirección raíz del bark-server, sin la clave de dispositivo.',
+    server_url_hint: 'Déjela vacía para usar el servidor público api.day.app',
     username: 'Usuario',
     username_tip: 'Autenticación Basic de un bark-server autoalojado (--user / --password). Deje ambos vacíos para servidores sin autenticación. Admite {{.nombre_variable}}.',
     password: 'Contraseña',

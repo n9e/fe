@@ -216,10 +216,10 @@ const id_ID = {
     insecure_tip: 'Aktifkan untuk server ntfy milik sendiri dengan sertifikat self-signed',
   },
   bark_request_config: {
-    top_tip:
-      'Mengirim peringatan ke aplikasi Bark di iPhone. Kosongkan server untuk memakai server publik api.day.app, atau isi bark-server yang Anda host sendiri. Kunci perangkat milik satu orang: setiap penerima mengisi Bark Device Key miliknya di profil, bagian Kontak, dan aturan notifikasi memilih pengguna atau tim. Level bersifat tetap: S1 sensitif waktu (menembus mode Fokus), S2/S3 normal, dan pemulihan dikirim secara senyap.',
+    contact_hint: 'Setiap penerima mengisi Bark Device Key di profilnya',
     server_url: 'URL server',
-    server_url_tip: 'Alamat root bark-server, tanpa kunci perangkat. Kosongkan untuk memakai https://api.day.app.',
+    server_url_tip: 'Alamat root bark-server, tanpa kunci perangkat.',
+    server_url_hint: 'Kosongkan untuk memakai server publik api.day.app',
     username: 'Nama pengguna',
     username_tip:
       'Autentikasi Basic untuk bark-server yang di-host sendiri (--user / --password). Kosongkan keduanya untuk server tanpa autentikasi. Mendukung {{.nama_variabel}}.',

@@ -217,10 +217,10 @@ const ja_JP = {
     insecure_tip: '自己署名証明書を使うセルフホストの ntfy サーバーの場合にオンにします',
   },
   bark_request_config: {
-    top_tip:
-      'iPhone の Bark アプリにアラートをプッシュします。サーバーを空欄にすると公開サーバー api.day.app を使用し、セルフホストの bark-server を指定することもできます。デバイスキーは個人ごとのものです。各受信者がプロフィールの連絡先に自分の Bark Device Key を入力し、通知ルールではユーザーまたはチームを選択します。レベルは固定です：S1 はタイムセンシティブ（集中モードを貫通）、S2/S3 は通常、回復通知はサイレントで届きます。',
+    contact_hint: '各受信者がプロフィールに自分の Bark Device Key を入力します',
     server_url: 'サーバー URL',
-    server_url_tip: 'bark-server のルートアドレス（デバイスキーは含めない）。空欄の場合は https://api.day.app を使用します。',
+    server_url_tip: 'bark-server のルートアドレス（デバイスキーは含めない）。',
+    server_url_hint: '空欄の場合は公開サーバー api.day.app を使用',
     username: 'ユーザー名',
     username_tip: 'セルフホストの bark-server の Basic 認証（--user / --password）。認証不要のサーバーでは両方空欄にしてください。{{.変数名}} を使用できます。',
     password: 'パスワード',
