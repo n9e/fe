@@ -47,7 +47,7 @@ const pt_BR = {
     "last_day": "Último dia",
     "days_of_month_msg": "Selecione os dias",
     "month_cross_midnight_msg": "Não pode passar da meia-noite",
-    "month_cross_midnight_tip": "Um período mensal não pode passar da meia-noite. Divida-o em duas linhas, por exemplo último dia 23:00~23:59 e dia 1 00:00~03:00",
+    "month_cross_midnight_tip": "Um período mensal não pode passar da meia-noite. Divida-o em duas linhas, por exemplo último dia 23:00~00:00 e dia 1 00:00~03:00",
     "month_missing_days_tip": "Alguns meses não têm os dias 29, 30 ou 31, e nesses meses o silenciamento não se aplica nesse dia. Escolha \"Último dia\" para silenciar no fim de todo mês",
     "next_windows": "Próximos períodos"
   },

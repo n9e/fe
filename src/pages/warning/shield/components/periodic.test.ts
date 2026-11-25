@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import { LAST_DAY_OF_MONTH, sortDaysOfMonth, toPeriodicMuteRow, hasMissingDaysOfMonth, getNextPeriodicWindows, formatWindow } from './periodic';
+import { LAST_DAY_OF_MONTH, sortDaysOfMonth, toPeriodicMuteRow, hasMissingDaysOfMonth, isCrossMidnight, getNextPeriodicWindows, formatWindow } from './periodic';
 
 const at = (s: string) => moment(s, 'YYYY-MM-DD HH:mm');
 const windows = (rows, now: string, count = 3) => getNextPeriodicWindows(rows, at(now), count).map(formatWindow);
@@ -16,6 +16,16 @@ describe('hasMissingDaysOfMonth', () => {
   it('选了 29~31 号才提示', () => {
     expect(hasMissingDaysOfMonth([1, 28, LAST_DAY_OF_MONTH])).toBe(false);
     expect(hasMissingDaysOfMonth([29])).toBe(true);
+  });
+});
+
+describe('isCrossMidnight', () => {
+  const row = (stime: string, etime: string) => ({ enable_stime: at(`2026-01-01 ${stime}`), enable_etime: at(`2026-01-01 ${etime}`) });
+
+  it('开始晚于结束算跨天，结束于 00:00 表示到当天结束', () => {
+    expect(isCrossMidnight(row('23:00', '03:00'))).toBe(true);
+    expect(isCrossMidnight(row('23:00', '00:00'))).toBe(false);
+    expect(isCrossMidnight(row('00:00', '00:00'))).toBe(false);
   });
 });
 
@@ -74,6 +84,15 @@ describe('getNextPeriodicWindows', () => {
       '2026-11-23 22:00 ~ 24:00',
       '2026-11-30 00:00 ~ 02:00',
     ]);
+  });
+
+  it('结束于 00:00 的行不产生空时段', () => {
+    expect(windows([{ cycle: 'week', enable_days_of_week: '1', enable_stime: '22:00', enable_etime: '00:00' }], '2026-11-25 10:00')).toEqual([
+      '2026-11-30 22:00 ~ 24:00',
+      '2026-12-07 22:00 ~ 24:00',
+      '2026-12-14 22:00 ~ 24:00',
+    ]);
+    expect(windows([monthly([LAST_DAY_OF_MONTH], '23:00', '00:00')], '2026-11-25 10:00', 1)).toEqual(['2026-11-30 23:00 ~ 24:00']);
   });
 
   it('混合按周和按月，按时间排序', () => {

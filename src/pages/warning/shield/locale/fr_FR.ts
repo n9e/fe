@@ -47,7 +47,7 @@ const fr_FR = {
     "last_day": "Dernier jour",
     "days_of_month_msg": "Sélectionnez les jours",
     "month_cross_midnight_msg": "Ne peut pas passer minuit",
-    "month_cross_midnight_tip": "Une plage mensuelle ne peut pas passer minuit. Divisez-la en deux lignes, par exemple dernier jour 23:00~23:59 et jour 1 00:00~03:00",
+    "month_cross_midnight_tip": "Une plage mensuelle ne peut pas passer minuit. Divisez-la en deux lignes, par exemple dernier jour 23:00~00:00 et jour 1 00:00~03:00",
     "month_missing_days_tip": "Certains mois n’ont pas de 29, 30 ou 31, et la mise en sourdine ne s’applique pas ce jour-là ces mois-là. Choisissez « Dernier jour » pour la fin de chaque mois",
     "next_windows": "Prochaines plages"
   },

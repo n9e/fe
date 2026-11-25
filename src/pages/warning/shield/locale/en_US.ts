@@ -47,7 +47,7 @@ const en_US = {
     last_day: 'Last day',
     days_of_month_msg: 'Days are required',
     month_cross_midnight_msg: 'Cannot span midnight',
-    month_cross_midnight_tip: 'A monthly time range cannot span midnight. Split it into two rows, e.g. last day 23:00~23:59 and day 1 00:00~03:00',
+    month_cross_midnight_tip: 'A monthly time range cannot span midnight. Split it into two rows, e.g. last day 23:00~00:00 and day 1 00:00~03:00',
     month_missing_days_tip: 'Some months have no day 29, 30 or 31, and the mute does not apply on those days in those months. Pick "Last day" to mute at the end of every month',
     next_windows: 'Upcoming',
   },

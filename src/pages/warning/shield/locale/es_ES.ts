@@ -47,7 +47,7 @@ const es_ES = {
     "last_day": "Último día",
     "days_of_month_msg": "Selecciona los días",
     "month_cross_midnight_msg": "No puede pasar de medianoche",
-    "month_cross_midnight_tip": "Una franja mensual no puede pasar de la medianoche. Divídela en dos filas, por ejemplo último día 23:00~23:59 y día 1 00:00~03:00",
+    "month_cross_midnight_tip": "Una franja mensual no puede pasar de la medianoche. Divídela en dos filas, por ejemplo último día 23:00~00:00 y día 1 00:00~03:00",
     "month_missing_days_tip": "Algunos meses no tienen los días 29, 30 o 31, y en esos meses el silenciamiento no se aplica ese día. Elige \"Último día\" para silenciar al final de cada mes",
     "next_windows": "Próximas franjas"
   },

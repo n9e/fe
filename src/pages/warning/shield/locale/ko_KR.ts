@@ -47,7 +47,7 @@ const ko_KR = {
     "last_day": "마지막 날",
     "days_of_month_msg": "날짜를 선택하세요",
     "month_cross_midnight_msg": "자정을 넘길 수 없음",
-    "month_cross_midnight_tip": "매월 시간대는 자정을 넘길 수 없습니다. 두 줄로 나누세요(예: 마지막 날 23:00~23:59, 1일 00:00~03:00)",
+    "month_cross_midnight_tip": "매월 시간대는 자정을 넘길 수 없습니다. 두 줄로 나누세요(예: 마지막 날 23:00~00:00, 1일 00:00~03:00)",
     "month_missing_days_tip": "29일, 30일, 31일이 없는 달에는 해당 날짜에 차단이 적용되지 않습니다. 매월 말일에 차단하려면 \"마지막 날\"을 선택하세요",
     "next_windows": "다음 적용 시간"
   },

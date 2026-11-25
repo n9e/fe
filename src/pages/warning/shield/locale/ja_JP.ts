@@ -47,7 +47,7 @@ const ja_JP = {
     last_day: '月末',
     days_of_month_msg: '日付を選択してください',
     month_cross_midnight_msg: '日をまたげません',
-    month_cross_midnight_tip: '毎月の時間帯は日をまたげません。2 行に分けてください（例：月末 23:00~23:59 と 1 日 00:00~03:00）',
+    month_cross_midnight_tip: '毎月の時間帯は日をまたげません。2 行に分けてください（例：月末 23:00~00:00 と 1 日 00:00~03:00）',
     month_missing_days_tip: '29・30・31 日がない月は、その日の抑制は適用されません。毎月の月末に抑制する場合は「月末」を選択してください',
     next_windows: '次回の適用',
   },

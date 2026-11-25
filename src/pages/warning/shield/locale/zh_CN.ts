@@ -47,7 +47,7 @@ const zh_CN = {
     last_day: '最后一天',
     days_of_month_msg: '生效日期不能为空',
     month_cross_midnight_msg: '不能跨天',
-    month_cross_midnight_tip: '按月的时段不能跨天，请拆成两行，例如最后一天 23:00~23:59 和 1 号 00:00~03:00',
+    month_cross_midnight_tip: '按月的时段不能跨天，请拆成两行，例如最后一天 23:00~00:00 和 1 号 00:00~03:00',
     month_missing_days_tip: '部分月份没有 29、30、31 号，这些月份当天不生效；如需每月月末生效，请选择“最后一天”',
     next_windows: '接下来生效',
   },

@@ -47,7 +47,7 @@ const id_ID = {
     "last_day": "Hari terakhir",
     "days_of_month_msg": "Pilih hari",
     "month_cross_midnight_msg": "Tidak boleh lewat tengah malam",
-    "month_cross_midnight_tip": "Periode bulanan tidak boleh melewati tengah malam. Pisahkan menjadi dua baris, misalnya hari terakhir 23:00~23:59 dan tanggal 1 00:00~03:00",
+    "month_cross_midnight_tip": "Periode bulanan tidak boleh melewati tengah malam. Pisahkan menjadi dua baris, misalnya hari terakhir 23:00~00:00 dan tanggal 1 00:00~03:00",
     "month_missing_days_tip": "Beberapa bulan tidak memiliki tanggal 29, 30, atau 31, dan pada bulan tersebut peredaman tidak berlaku di tanggal itu. Pilih \"Hari terakhir\" untuk meredam di akhir setiap bulan",
     "next_windows": "Periode berikutnya"
   },

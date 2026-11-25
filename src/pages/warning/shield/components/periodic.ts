@@ -43,11 +43,12 @@ export const hasMissingDaysOfMonth = (days?: number[]): boolean => {
 };
 
 /**
- * 表单里的一行是否跨天（开始晚于结束）
+ * 表单里的一行是否跨天（开始晚于结束）；结束于 00:00 表示到当天结束，不算跨天，与后端校验一致
  */
 export const isCrossMidnight = (item: any): boolean => {
   if (!item?.enable_stime || !item?.enable_etime) return false;
-  return moment(item.enable_stime).format('HH:mm') > moment(item.enable_etime).format('HH:mm');
+  const etime = moment(item.enable_etime).format('HH:mm');
+  return etime !== '00:00' && moment(item.enable_stime).format('HH:mm') > etime;
 };
 
 const matchDay = (row: PeriodicMuteRow, day: moment.Moment): boolean => {
@@ -87,7 +88,8 @@ export const getNextPeriodicWindows = (rows: PeriodicMuteRow[], now: moment.Mome
     _.forEach(
       _.sortBy(segments, ([start]) => start.valueOf()),
       (segment) => {
-        if (result.length < count && segment[1].isAfter(now)) result.push(segment);
+        // 结束于 00:00 的跨天行会切出一个 00:00~00:00 的空时段，跳过
+        if (result.length < count && segment[0].isBefore(segment[1]) && segment[1].isAfter(now)) result.push(segment);
       },
     );
   }
