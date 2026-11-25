@@ -22,9 +22,8 @@ export function filterOutBuilderSuggestionBlockedFields<T extends { field?: stri
 
 export default function filteredFields(fieldKeys: string[], organizeFields?: string[]) {
   const availableFields = filterOutBuiltinFields(fieldKeys);
-  const fields = !organizeFields || organizeFields.length === 0 ? availableFields : _.filter(organizeFields, (field) => _.includes(availableFields, field));
-  // The message body is the primary content of a log line: keep it in the first column
-  // and leave the rest in their original order. Both the origin list and the table view
-  // go through this function (LogsViewer's filterFields), so ordering is defined once.
-  return [..._.filter(fields, (field) => field === '_msg'), ..._.filter(fields, (field) => field !== '_msg')];
+  // Keep the incoming order: the "display fields" column settings let users drag
+  // fields into any order, so the visible field list must not reorder them here.
+  if (!organizeFields || organizeFields.length === 0) return availableFields;
+  return _.filter(organizeFields, (field) => _.includes(availableFields, field));
 }
