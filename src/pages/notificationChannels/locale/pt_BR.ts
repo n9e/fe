@@ -41,6 +41,7 @@ const pt_BR = {
     ntfy: 'Configuração do ntfy',
     splunk_oncall: 'Configuração do Splunk On-Call',
     line: 'Configuração do LINE',
+    bark: 'Configuração do Bark',
     teams: 'Configuração do Microsoft Teams',
     twilio: 'Configuração do Twilio',
     jsm_alert: 'Configuração do JSM Alert',
@@ -215,6 +216,22 @@ const pt_BR = {
     proxy_tip: 'Preencha se o ntfy só for acessível por meio de um proxy, por exemplo http://127.0.0.1:7890',
     insecure_tip: 'Ative para um servidor ntfy próprio com certificado autoassinado',
   },
+  bark_request_config: {
+    top_tip:
+      'Envia os alertas para o app Bark no iPhone. Deixe o servidor vazio para usar o servidor público api.day.app, ou informe seu bark-server auto-hospedado. Uma chave de dispositivo pertence a uma pessoa: cada destinatário preenche sua Bark Device Key no perfil, em Contatos, e as regras de notificação selecionam usuários ou equipes. Os níveis são fixos: S1 é sensível ao tempo (ignora o modo Foco), S2/S3 são normais e as recuperações chegam em silêncio.',
+    server_url: 'URL do servidor',
+    server_url_tip: 'Endereço raiz do bark-server, sem a chave de dispositivo. Deixe vazio para usar https://api.day.app.',
+    username: 'Usuário',
+    username_tip: 'Autenticação Basic de um bark-server auto-hospedado (--user / --password). Deixe ambos vazios para servidores sem autenticação. Suporta {{.nome_variavel}}.',
+    password: 'Senha',
+    basic_incomplete: 'Preencha o usuário e a senha',
+    sound: 'Som',
+    sound_tip: 'Nome de um som do Bark, como alarm. Deixe vazio para usar o som escolhido no app Bark.',
+    group: 'Grupo',
+    group_tip: 'Agrupa as notificações na Central de Notificações. Deixe vazio para usar o grupo padrão do Bark.',
+    proxy_tip: 'Preencha se o servidor Bark só puder ser acessado por um proxy, por exemplo http://127.0.0.1:7890',
+    insecure_tip: 'Ative para um bark-server auto-hospedado com certificado autoassinado',
+  },
   splunk_oncall_request_config: {
     top_tip:
       'Os alertas são enviados ao Splunk On-Call (antigo VictorOps) pela integração REST endpoint. A chave de API pertence a toda a organização e é configurada aqui; a chave de roteamento define qual equipe é acionada e é preenchida em cada regra de notificação. Quando o alerta é recuperado, o incidente é resolvido.',
@@ -297,6 +314,7 @@ const pt_BR = {
     ntfy: 'ntfy',
     splunk_oncall: 'Splunk On-Call',
     line: 'LINE',
+    bark: 'Bark',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',

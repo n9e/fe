@@ -39,6 +39,7 @@ const zh_HK = {
     ntfy: 'ntfy 配置',
     splunk_oncall: 'Splunk On-Call 配置',
     line: 'LINE 配置',
+    bark: 'Bark 配置',
     teams: 'Microsoft Teams 配置',
     twilio: 'Twilio 配置',
     jsm_alert: 'JSM 告警設定',
@@ -206,6 +207,22 @@ const zh_HK = {
     proxy_tip: '存取 ntfy 需要經過代理時填寫，如 http://127.0.0.1:7890',
     insecure_tip: '自建的 ntfy 服務使用自簽憑證時開啟',
   },
+  bark_request_config: {
+    top_tip:
+      '把告警推送到 iPhone 上的 Bark App。服務地址留空使用公共服務 api.day.app，也可以填寫自建的 bark-server。Device Key 跟著人走：每個接收人在「個人資訊 → 聯絡方式」裡填寫自己的 Bark Device Key，通知規則裡選擇使用者或團隊。級別固定：S1 為時效性通知（可穿透專注模式），S2/S3 為普通通知，恢復通知靜默送達。',
+    server_url: '服務地址',
+    server_url_tip: 'bark-server 的根地址，不帶 Device Key。留空使用 https://api.day.app。',
+    username: '使用者名稱',
+    username_tip: '自建 bark-server 的 Basic 認證（--user / --password）。服務不需要認證時都留空。支援 {{.變數名}} 引用。',
+    password: '密碼',
+    basic_incomplete: '使用者名稱和密碼需要同時填寫',
+    sound: '提示音',
+    sound_tip: 'Bark 的鈴聲名稱，如 alarm。留空使用接收人在 Bark App 裡選擇的鈴聲。',
+    group: '分組',
+    group_tip: '在通知中心裡按分組歸類推送。留空使用 Bark 的預設分組。',
+    proxy_tip: '存取 Bark 服務需要經過代理時填寫，如 http://127.0.0.1:7890',
+    insecure_tip: '自建的 bark-server 使用自簽名憑證時開啟',
+  },
   splunk_oncall_request_config: {
     top_tip:
       '告警透過 REST 整合發到 Splunk On-Call（原 VictorOps）。API Key 屬於整個組織，在這裡配置；Routing Key 決定通知哪個團隊，在每條通知規則裡填寫。告警恢復時對應的事件會自動解決。',
@@ -286,6 +303,7 @@ const zh_HK = {
     ntfy: 'ntfy',
     splunk_oncall: 'Splunk On-Call',
     line: 'LINE',
+    bark: 'Bark',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',

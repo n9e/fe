@@ -41,6 +41,7 @@ const id_ID = {
     ntfy: 'Konfigurasi ntfy',
     splunk_oncall: 'Konfigurasi Splunk On-Call',
     line: 'Konfigurasi LINE',
+    bark: 'Konfigurasi Bark',
     teams: 'Konfigurasi Microsoft Teams',
     twilio: 'Konfigurasi Twilio',
     jsm_alert: 'Konfigurasi JSM Alert',
@@ -214,6 +215,23 @@ const id_ID = {
     proxy_tip: 'Isi jika ntfy hanya bisa diakses lewat proksi, misalnya http://127.0.0.1:7890',
     insecure_tip: 'Aktifkan untuk server ntfy milik sendiri dengan sertifikat self-signed',
   },
+  bark_request_config: {
+    top_tip:
+      'Mengirim peringatan ke aplikasi Bark di iPhone. Kosongkan server untuk memakai server publik api.day.app, atau isi bark-server yang Anda host sendiri. Kunci perangkat milik satu orang: setiap penerima mengisi Bark Device Key miliknya di profil, bagian Kontak, dan aturan notifikasi memilih pengguna atau tim. Level bersifat tetap: S1 sensitif waktu (menembus mode Fokus), S2/S3 normal, dan pemulihan dikirim secara senyap.',
+    server_url: 'URL server',
+    server_url_tip: 'Alamat root bark-server, tanpa kunci perangkat. Kosongkan untuk memakai https://api.day.app.',
+    username: 'Nama pengguna',
+    username_tip:
+      'Autentikasi Basic untuk bark-server yang di-host sendiri (--user / --password). Kosongkan keduanya untuk server tanpa autentikasi. Mendukung {{.nama_variabel}}.',
+    password: 'Kata sandi',
+    basic_incomplete: 'Isi nama pengguna dan kata sandi sekaligus',
+    sound: 'Suara',
+    sound_tip: 'Nama suara Bark, misalnya alarm. Kosongkan untuk memakai suara yang dipilih di aplikasi Bark.',
+    group: 'Grup',
+    group_tip: 'Mengelompokkan notifikasi di Pusat Notifikasi. Kosongkan untuk memakai grup bawaan Bark.',
+    proxy_tip: 'Isi jika server Bark hanya dapat diakses melalui proxy, mis. http://127.0.0.1:7890',
+    insecure_tip: 'Aktifkan untuk bark-server yang di-host sendiri dengan sertifikat self-signed',
+  },
   splunk_oncall_request_config: {
     top_tip:
       'Alert dikirim ke Splunk On-Call (dulu VictorOps) melalui integrasi REST endpoint. Kunci API milik seluruh organisasi dan diatur di sini; kunci routing menentukan tim mana yang dipanggil dan diisi di tiap aturan notifikasi. Saat alert pulih, insidennya diselesaikan.',
@@ -296,6 +314,7 @@ const id_ID = {
     ntfy: 'ntfy',
     splunk_oncall: 'Splunk On-Call',
     line: 'LINE',
+    bark: 'Bark',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',

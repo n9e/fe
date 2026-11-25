@@ -54,6 +54,7 @@ export const NATIVE_TPL_KEYS: Record<string, string[]> = {
   ntfy: ['content'],
   splunk_oncall: ['title', 'content'],
   line: ['content'],
+  bark: ['content'],
   slackwebhook: ['content'],
   mattermostwebhook: ['content'],
   jsm_alert: ['title', 'content'],
@@ -187,7 +188,7 @@ export function buildStarterContent(channel: ChannelLike | undefined, texts: Sta
         'Nightingale: S{{$event.Severity}} {{if $event.IsRecovered}}Recovered{{else}}Triggered{{end}}. {{$event.RuleName}}.{{if $event.TargetIdent}} Target: {{$event.TargetIdent}}.{{end}}{{if and $event.TriggerValue (not $event.IsRecovered)}} Value: {{$event.TriggerValue}}.{{end}}',
     };
   }
-  if (channel?.request_type === 'pushover' || channel?.request_type === 'ntfy' || channel?.request_type === 'line') {
+  if (channel?.request_type === 'pushover' || channel?.request_type === 'ntfy' || channel?.request_type === 'line' || channel?.request_type === 'bark') {
     return {
       // 级别、状态和规则名在通知标题里，事件详情链接由媒介带上；手机推送的预览只有几行，正文保持简短
       content: [

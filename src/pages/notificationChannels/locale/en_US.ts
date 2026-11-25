@@ -41,6 +41,7 @@ const en_US = {
     ntfy: 'ntfy configuration',
     splunk_oncall: 'Splunk On-Call configuration',
     line: 'LINE configuration',
+    bark: 'Bark configuration',
     teams: 'Microsoft Teams configuration',
     twilio: 'Twilio configuration',
     jsm_alert: 'JSM Alert configuration',
@@ -216,6 +217,22 @@ const en_US = {
     proxy_tip: 'Set this if ntfy can only be reached through a proxy, e.g. http://127.0.0.1:7890',
     insecure_tip: 'Turn on for a self-hosted ntfy server with a self-signed certificate',
   },
+  bark_request_config: {
+    top_tip:
+      'Pushes alerts to the Bark app on iPhone. Leave the server empty to use the public server api.day.app, or fill in your self-hosted bark-server. A device key belongs to one person: each recipient fills in their Bark Device Key in their profile under Contacts, and notification rules select users or teams. Levels are fixed: S1 is time-sensitive (breaks through Focus), S2/S3 are normal and recoveries arrive silently.',
+    server_url: 'Server URL',
+    server_url_tip: 'Root address of the bark-server, without the device key. Leave empty to use https://api.day.app.',
+    username: 'Username',
+    username_tip: 'Basic authentication of a self-hosted bark-server (--user / --password). Leave both empty for servers without authentication. Supports {{.variable_name}}.',
+    password: 'Password',
+    basic_incomplete: 'Fill in both the username and the password',
+    sound: 'Sound',
+    sound_tip: 'Name of a Bark sound such as alarm. Leave empty to use the sound chosen in the Bark app.',
+    group: 'Group',
+    group_tip: 'Groups the pushes in Notification Center. Leave empty to use the Bark default.',
+    proxy_tip: 'Set this if the Bark server can only be reached through a proxy, e.g. http://127.0.0.1:7890',
+    insecure_tip: 'Turn on for a self-hosted bark-server with a self-signed certificate',
+  },
   splunk_oncall_request_config: {
     top_tip:
       'Alerts go to Splunk On-Call (formerly VictorOps) through the REST endpoint integration. The API key belongs to the whole organization and is set here; the routing key decides which team is paged and is filled in each notification rule. When an alert recovers, its incident is resolved.',
@@ -299,6 +316,7 @@ const en_US = {
     ntfy: 'ntfy',
     splunk_oncall: 'Splunk On-Call',
     line: 'LINE',
+    bark: 'Bark',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',

@@ -39,6 +39,7 @@ const zh_CN = {
     ntfy: 'ntfy 配置',
     splunk_oncall: 'Splunk On-Call 配置',
     line: 'LINE 配置',
+    bark: 'Bark 配置',
     teams: 'Microsoft Teams \u914d\u7f6e',
     twilio: 'Twilio \u914d\u7f6e',
     jsm_alert: 'JSM 告警配置',
@@ -206,6 +207,22 @@ const zh_CN = {
     proxy_tip: '访问 ntfy 需要经过代理时填写，如 http://127.0.0.1:7890',
     insecure_tip: '自建的 ntfy 服务使用自签名证书时开启',
   },
+  bark_request_config: {
+    top_tip:
+      '把告警推送到 iPhone 上的 Bark App。服务地址留空使用公共服务 api.day.app，也可以填写自建的 bark-server。Device Key 跟着人走：每个接收人在「个人信息 → 联系方式」里填写自己的 Bark Device Key，通知规则里选择用户或团队。级别固定：S1 为时效性通知（可穿透专注模式），S2/S3 为普通通知，恢复通知静默送达。',
+    server_url: '服务地址',
+    server_url_tip: 'bark-server 的根地址，不带 Device Key。留空使用 https://api.day.app。',
+    username: '用户名',
+    username_tip: '自建 bark-server 的 Basic 认证（--user / --password）。服务不需要认证时都留空。支持 {{.变量名}} 引用。',
+    password: '密码',
+    basic_incomplete: '用户名和密码需要同时填写',
+    sound: '提示音',
+    sound_tip: 'Bark 的铃声名称，如 alarm。留空使用接收人在 Bark App 里选择的铃声。',
+    group: '分组',
+    group_tip: '在通知中心里按分组归类推送。留空使用 Bark 的默认分组。',
+    proxy_tip: '访问 Bark 服务需要经过代理时填写，如 http://127.0.0.1:7890',
+    insecure_tip: '自建的 bark-server 使用自签名证书时开启',
+  },
   splunk_oncall_request_config: {
     top_tip:
       '告警通过 REST 集成发到 Splunk On-Call（原 VictorOps）。API Key 属于整个组织，在这里配置；Routing Key 决定通知哪个团队，在每条通知规则里填写。告警恢复时对应的事件会自动解决。',
@@ -287,6 +304,7 @@ const zh_CN = {
     ntfy: 'ntfy',
     splunk_oncall: 'Splunk On-Call',
     line: 'LINE',
+    bark: 'Bark',
     teams: 'Microsoft Teams',
     twilio: 'Twilio',
     flashduty: 'FlashDuty',
