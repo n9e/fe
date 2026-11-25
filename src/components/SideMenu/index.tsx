@@ -34,6 +34,10 @@ import './menu.less';
 import './locale';
 import '@/components/pageLayout/locale';
 
+// Pages that frame another product have no permission point here: that product enforces its own
+// permissions. `/duty-embed/` is the enterprise overlay's page that frames the duty console.
+const isFramedPageKey = (key: string) => key.startsWith(`${embeddedProductDetailPath}/`) || key.startsWith('/duty-embed/');
+
 const calcUrlPath = (url: string) => {
   const urlPath = url.split('?')[0];
   return urlPath;
@@ -216,7 +220,7 @@ const SideMenu = (props: SideMenuProps) => {
           .map((child) => {
             // Admin 保留灭火图入口；其它角色继续遵守各子菜单权限。
             if (menu.key === 'firemap' && (profile?.admin || profile?.roles?.includes('Admin'))) return child;
-            if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
+            if (isFramedPageKey(child.key)) {
               return child;
             }
             if (menu.key === '/flashduty') {
@@ -259,7 +263,7 @@ const SideMenu = (props: SideMenuProps) => {
           }
           return item
             .children!.filter((child) => {
-              if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
+              if (isFramedPageKey(child.key)) {
                 return child;
               }
               if (child.type === 'tabs' && child.children && child.children.length > 0) {
