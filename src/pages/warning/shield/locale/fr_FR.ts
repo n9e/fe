@@ -38,7 +38,18 @@ const fr_FR = {
     "start_msg": "L'heure de début est obligatoire",
     "end": "Fin",
     "end_msg": "L'heure de fin est obligatoire",
-    "periodic_tip": "Une mise en sourdine récurrente reste valable indéfiniment : chaque semaine, les alertes tombant dans la plage indiquée sont mises en sourdine. Un début et une fin identiques signifient toute la journée"
+    "periodic_tip": "Une mise en sourdine récurrente reste valable indéfiniment : les alertes tombant dans les jours et plages indiqués sont mises en sourdine. Un début et une fin identiques signifient toute la journée",
+    "days_of_week_msg": "Sélectionnez les jours",
+    "cycle": "Répétition",
+    "cycle_week": "Hebdomadaire",
+    "cycle_month": "Mensuelle",
+    "day_of_month": "Jour {{day}}",
+    "last_day": "Dernier jour",
+    "days_of_month_msg": "Sélectionnez les jours",
+    "month_cross_midnight_msg": "Ne peut pas passer minuit",
+    "month_cross_midnight_tip": "Une plage mensuelle ne peut pas passer minuit. Divisez-la en deux lignes, par exemple dernier jour 23:00~23:59 et jour 1 00:00~03:00",
+    "month_missing_days_tip": "Certains mois n’ont pas de 29, 30 ou 31, et la mise en sourdine ne s’applique pas ce jour-là ces mois-là. Choisissez « Dernier jour » pour la fin de chaque mois",
+    "next_windows": "Prochaines plages"
   },
   "mute_method": {
     "0": "Mettre en sourdine l'événement et la notification",
@@ -73,7 +84,7 @@ const fr_FR = {
   "filter_configs": "Filtres",
   "filter_configs_desc": "Détermine quels événements sont mis en sourdine : groupe métier, source de données, gravité et étiquettes. Les conditions se combinent par ET, et celles laissées vides n'imposent aucune restriction",
   "mute_configs": "Réglages de la mise en sourdine",
-  "mute_configs_desc": "Détermine quand et jusqu'où mettre en sourdine : sur une période fixe ou sur une plage qui revient chaque semaine",
+  "mute_configs_desc": "Détermine quand et jusqu'où mettre en sourdine : sur une période fixe ou sur une plage qui revient chaque semaine ou chaque mois",
   "alert_content": "Pour éviter qu'une règle mal configurée ne fasse taire toutes les alertes de l'entreprise, celle-ci ne s'applique qu'aux événements d'un groupe métier donné",
   "preview_muted_title": "Aperçu des événements concernés",
   "preview_muted_desc": "Voici les événements d'alerte déjà présents qui correspondent aux filtres de cette règle. Une fois enregistrée, elle mettra en sourdine les nouveaux événements du même type ; ceux qui existent déjà ne disparaîtront pas d'eux-mêmes, mais vous pouvez les supprimer ici.",

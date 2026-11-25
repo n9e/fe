@@ -38,6 +38,8 @@ import SectionCard, { SectionItem } from '@/pages/alertRules/FormNG/components/S
 
 import { processFormValues, buildMuteScopeText, formatMuteTag, formatSeverities, formatDuration, isMuteScopeUnlimited } from './utils';
 import DaysOfWeekSelect from './DaysOfWeekSelect';
+import DaysOfMonthSelect from './DaysOfMonthSelect';
+import { getNextPeriodicWindows, formatWindow, hasMissingDaysOfMonth, isCrossMidnight, toPeriodicMuteRow } from './periodic';
 import PreviewMutedEvents from './PreviewMutedEvents';
 import '../index.less';
 
@@ -184,6 +186,11 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
     _.isEmpty(_.compact(_.map(tags, formatMuteTag))) ? t('summary.tags_none') : t('summary.tags_count', { count: _.size(_.compact(_.map(tags, formatMuteTag))) }),
   ]).join(' · ');
 
+  const nextPeriodicWindows = useMemo(() => {
+    if (muteTimeType !== 1) return [];
+    return getNextPeriodicWindows(_.map(periodicMutes, toPeriodicMuteRow), moment());
+  }, [muteTimeType, periodicMutes]);
+
   const muteSummary = (() => {
     const methodText = t(`mute_method.${muteType ?? 0}`);
     if (muteTimeType === 1) {
@@ -281,13 +288,16 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
           periodic_mutes: detail?.periodic_mutes
             ? _.map(detail?.periodic_mutes, (item) => {
                 return {
-                  enable_days_of_week: _.split(item.enable_days_of_week, ' '),
+                  cycle: item.cycle || 'week',
+                  enable_days_of_week: item.enable_days_of_week ? _.split(item.enable_days_of_week, ' ') : [],
+                  enable_days_of_month: item.enable_days_of_month || [],
                   enable_stime: moment(item.enable_stime, 'HH:mm'),
                   enable_etime: moment(item.enable_etime, 'HH:mm'),
                 };
               })
             : [
                 {
+                  cycle: 'week',
                   enable_days_of_week: ['1', '2', '3', '4', '5', '6', '0'],
                   enable_stime: moment('00:00', 'HH:mm'),
                   enable_etime: moment('00:00', 'HH:mm'),
@@ -478,10 +488,11 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                 {(fields, { add, remove }) => (
                   <>
                     <Space>
-                      <div style={{ width: 450 }}>
+                      <div style={{ width: 100 }}>{t('mute_type.cycle')}</div>
+                      <div style={{ width: 350 }}>
                         <Space align='baseline'>
                           {t('mute_type.days_of_week')}
-                          <PlusCircleOutlined className='leading-[32px]' onClick={() => add()} />
+                          <PlusCircleOutlined className='leading-[32px]' onClick={() => add({ cycle: 'week' })} />
                         </Space>
                       </div>
                       <div style={{ width: 110 }}>
@@ -510,19 +521,43 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                         }}
                         align='baseline'
                       >
-                        <Form.Item
-                          {...restField}
-                          name={[name, 'enable_days_of_week']}
-                          style={{ width: 450 }}
-                          rules={[
-                            {
-                              required: muteTimeType === 1,
-                              message: t('mute_type.days_of_week_msg'),
-                            },
-                          ]}
-                        >
-                          <DaysOfWeekSelect />
+                        <Form.Item {...restField} name={[name, 'cycle']} style={{ width: 100 }}>
+                          <Select
+                            options={[
+                              { label: t('mute_type.cycle_week'), value: 'week' },
+                              { label: t('mute_type.cycle_month'), value: 'month' },
+                            ]}
+                          />
                         </Form.Item>
+                        {periodicMutes?.[name]?.cycle === 'month' ? (
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'enable_days_of_month']}
+                            style={{ width: 350 }}
+                            rules={[
+                              {
+                                required: muteTimeType === 1,
+                                message: t('mute_type.days_of_month_msg'),
+                              },
+                            ]}
+                          >
+                            <DaysOfMonthSelect />
+                          </Form.Item>
+                        ) : (
+                          <Form.Item
+                            {...restField}
+                            name={[name, 'enable_days_of_week']}
+                            style={{ width: 350 }}
+                            rules={[
+                              {
+                                required: muteTimeType === 1,
+                                message: t('mute_type.days_of_week_msg'),
+                              },
+                            ]}
+                          >
+                            <DaysOfWeekSelect />
+                          </Form.Item>
+                        )}
                         <Form.Item
                           {...restField}
                           name={[name, 'enable_stime']}
@@ -540,11 +575,26 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                           {...restField}
                           name={[name, 'enable_etime']}
                           style={{ width: 110 }}
+                          dependencies={[
+                            ['periodic_mutes', name, 'enable_stime'],
+                            ['periodic_mutes', name, 'cycle'],
+                          ]}
                           rules={[
                             {
                               required: muteTimeType === 1,
                               message: t('mute_type.end_msg'),
                             },
+                            ({ getFieldValue }) => ({
+                              // 按月的时段不能跨天，与后端校验一致
+                              validator(_rule, value) {
+                                const row = getFieldValue(['periodic_mutes', name]);
+                                if (muteTimeType !== 1 || row?.cycle !== 'month' || !value || !row?.enable_stime) return Promise.resolve();
+                                if (isCrossMidnight({ ...row, enable_etime: value })) {
+                                  return Promise.reject(new Error(t('mute_type.month_cross_midnight_msg')));
+                                }
+                                return Promise.resolve();
+                              },
+                            }),
                           ]}
                         >
                           <TimePicker format='HH:mm' />
@@ -555,6 +605,15 @@ const OperateForm: React.FC<Props> = ({ detail = {}, type }: any) => {
                   </>
                 )}
               </Form.List>
+              {_.some(periodicMutes, (item) => item?.cycle === 'month' && isCrossMidnight(item)) && <div className='text-soft'>{t('mute_type.month_cross_midnight_tip')}</div>}
+              {_.some(periodicMutes, (item) => item?.cycle === 'month' && hasMissingDaysOfMonth(item?.enable_days_of_month)) && (
+                <div className='text-soft'>{t('mute_type.month_missing_days_tip')}</div>
+              )}
+              {!_.isEmpty(nextPeriodicWindows) && (
+                <div className='text-soft'>
+                  {t('mute_type.next_windows')}: {_.map(nextPeriodicWindows, formatWindow).join(' · ')}
+                </div>
+              )}
               <div className='text-soft'>{t('mute_type.periodic_tip')}</div>
             </div>
           </SectionCard>
