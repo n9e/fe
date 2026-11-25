@@ -37,6 +37,7 @@ import { getBrainLicense } from 'plus:/components/License/services';
 export interface Props {
   title?: string;
   rid?: number;
+  initialFilter?: { query?: string; rule_prods?: string[] };
   visible: boolean;
   onClose: () => void;
 }
@@ -66,8 +67,8 @@ export default function index(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
   const { datasourceList, feats } = useContext(CommonStateContext);
   const history = useHistory();
-  const { title, rid, visible, onClose } = props;
-  const [filter, setFilter] = useState<any>({});
+  const { title, rid, initialFilter, visible, onClose } = props;
+  const [filter, setFilter] = useState<any>(initialFilter ?? {});
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [refreshFlag, setRefreshFlag] = useState<string>(_.uniqueId('refresh_'));
   const [alertEscalationEnable, setAlertEscalationEnable] = useState(false);
