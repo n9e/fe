@@ -88,9 +88,11 @@ const es_ES = {
     port: 'Puerto',
     port_tip: 'Puerto del servidor SMTP. Los más habituales son el 25, el 465 (SSL) y el 587 (STARTTLS); confírmalo con tu proveedor',
     username: 'Nombre de usuario',
-    username_tip: 'Usuario para autenticarse en el servidor SMTP, normalmente la dirección de correo',
+    username_tip:
+      'Usuario para autenticarse en el servidor SMTP, normalmente la dirección de correo. Deja vacíos el usuario y la contraseña si el servidor acepta correo sin autenticación',
     password: 'Contraseña',
     password_tip: 'Contraseña o contraseña de aplicación del usuario SMTP; te recomendamos la de aplicación por ser más segura',
+    auth_incomplete: 'Rellena el usuario y la contraseña, o deja ambos vacíos',
     from: 'Remitente',
     from_tip:
       'Nombre o alias que se muestra como remitente y que ayuda al destinatario a reconocer el origen del mensaje. Ejemplo de formato: Flashcat <no-reply@notice.flashcat.cloud>',
