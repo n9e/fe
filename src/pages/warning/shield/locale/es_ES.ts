@@ -38,7 +38,18 @@ const es_ES = {
     "start_msg": "El inicio no puede estar vacío",
     "end": "Fin",
     "end_msg": "El fin no puede estar vacío",
-    "periodic_tip": "El silenciamiento recurrente no caduca: cada semana se silencian las alertas que caigan en las franjas indicadas. Un inicio y un fin iguales significan todo el día"
+    "periodic_tip": "El silenciamiento recurrente no caduca: se silencian las alertas que caigan en los días y franjas indicados. Un inicio y un fin iguales significan todo el día",
+    "days_of_week_msg": "Selecciona los días",
+    "cycle": "Repetición",
+    "cycle_week": "Semanal",
+    "cycle_month": "Mensual",
+    "day_of_month": "Día {{day}}",
+    "last_day": "Último día",
+    "days_of_month_msg": "Selecciona los días",
+    "month_cross_midnight_msg": "No puede pasar de medianoche",
+    "month_cross_midnight_tip": "Una franja mensual no puede pasar de la medianoche. Divídela en dos filas, por ejemplo último día 23:00~00:00 y día 1 00:00~03:00",
+    "month_missing_days_tip": "Algunos meses no tienen los días 29, 30 o 31, y en esos meses el silenciamiento no se aplica ese día. Elige \"Último día\" para silenciar al final de cada mes",
+    "next_windows": "Próximas franjas"
   },
   "mute_method": {
     "0": "Silenciar el evento y la notificación",
@@ -73,7 +84,7 @@ const es_ES = {
   "filter_configs": "Filtros",
   "filter_configs_desc": "Determina qué eventos se silencian: grupo de negocio, origen de datos, severidad y etiquetas. Las condiciones se combinan con Y; si se dejan vacías, no hay restricción",
   "mute_configs": "Configuración del silenciamiento",
-  "mute_configs_desc": "Determina cuándo y hasta qué punto silenciar: un periodo fijo o una franja semanal recurrente",
+  "mute_configs_desc": "Determina cuándo y hasta qué punto silenciar: un periodo fijo o una franja semanal o mensual recurrente",
   "alert_content": "Para evitar que una configuración errónea silencie todas las alertas de la empresa, esta regla solo se aplica a los eventos de un grupo de negocio concreto",
   "preview_muted_title": "Ver los eventos relacionados",
   "preview_muted_desc": "Abajo están los eventos de alerta ya existentes que cumplen estos filtros. Tras guardar, los eventos nuevos del mismo tipo se silenciarán, pero los que ya existen no desaparecen solos; si quieres, elimínalos aquí.",

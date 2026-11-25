@@ -1,10 +1,10 @@
 .target-information-group {
   margin-bottom: 20px;
-  .anticon-copy {
+  .target-information-group-header .anticon-copy {
     display: none;
   }
   &:hover {
-    .anticon-copy {
+    .target-information-group-header .anticon-copy {
       display: inline-block;
     }
   }
@@ -20,22 +20,21 @@
 .target-information-group-content {
   margin-left: 24px;
 }
-.target-information-group-content-item,.target-information-interface-item {
+.target-information-group-content-item,
+.target-information-interface-item {
   display: flex;
   margin-bottom: 4px;
 }
-.target-information-group-content-item-key,.target-information-interface-item-key {
+.target-information-group-content-item-key,
+.target-information-interface-item-key {
   flex-shrink: 0;
   color: var(--fc-text-3);
 }
-.target-information-group-content-item-value,.target-information-interface-item-value,.target-information-filesystem-mounted_on-value {
+.target-information-group-content-item-value,
+.target-information-interface-item-value,
+.target-information-filesystem-mounted_on-value {
   .ant-tag-has-color {
-    color: #6C53B1;
-    cursor: pointer;
-  }
-  .ant-tag-has-color:hover {
-    color: #fff;
-    background-color: #6C53B1 !important;
+    color: var(--fc-violet-11);
   }
 }
 .target-information-group-content-item {
@@ -62,11 +61,38 @@
 }
 .target-information-filesystem-mounted_on-value {
   .ant-tag-has-color {
-    color: #6C53B1;
+    color: var(--fc-violet-11);
     padding: 0 2px;
     margin-right: 0;
   }
 }
-.target-information-filesystem-mounted_on,.target-information-filesystem-kb_size {
+.target-information-filesystem-mounted_on,
+.target-information-filesystem-kb_size {
   white-space: nowrap;
+}
+
+.target-information-drawer {
+  .ant-drawer-header-title,
+  .ant-drawer-title {
+    min-width: 0;
+  }
+  .target-information-drawer__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    > span:first-child {
+      flex-shrink: 0;
+    }
+  }
+  .target-information-group-content-item-value,
+  .target-information-interface-item-value,
+  .target-information-filesystem-name,
+  .target-information-filesystem-mounted_on-value {
+    min-width: 0;
+    .ant-tag {
+      max-width: 100%;
+      white-space: normal;
+    }
+  }
 }

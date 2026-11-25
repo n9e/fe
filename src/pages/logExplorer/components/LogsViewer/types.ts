@@ -14,6 +14,11 @@ export interface OptionsType {
 
 export type FieldValueType = string | number | boolean | null;
 
+export interface TextSelectionField {
+  fieldName: string;
+  value: string;
+}
+
 export interface OnValueFilterParams {
   key: string;
   value: FieldValueType;

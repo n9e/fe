@@ -527,6 +527,13 @@ function ChatPanelContent(props: IAiChatProps) {
       const generation = ++turnGenerationRef.current;
       const pending = { scope: prepareTurn?.(), content, locator: undefined as IAiChatMessageLocator | undefined };
       pendingTurnRef.current = pending;
+      // Ends this turn's scope at most once: paths that bump the generation
+      // (reset, stop, unmount) have already cancelled it and cleared the ref.
+      const endScope = (how: 'cancel' | 'finish') => {
+        if (pendingTurnRef.current !== pending) return;
+        pendingTurnRef.current = undefined;
+        pending.scope?.[how]?.();
+      };
       const pageFrom = currentPageFrom();
       setSubmitting(true);
       setPendingContent(content);
@@ -536,11 +543,12 @@ function ChatPanelContent(props: IAiChatProps) {
         const currentChat = chatId && activeChat?.chat_id !== chatId ? undefined : activeChat;
         const chat = currentChat || (chatId ? { chat_id: chatId, title: '', last_update: 0, page_from: currentPageFrom() } : await createNewChat(generation));
         if (generation !== turnGenerationRef.current || !activeRef.current) {
+          endScope('cancel');
           return;
         }
         if (!chat) {
           setInputValue((draft) => draft || content);
-          pendingTurnRef.current = undefined;
+          endScope('finish');
           setSubmitting(false);
           setPendingContent(undefined);
           return;
@@ -574,6 +582,7 @@ function ChatPanelContent(props: IAiChatProps) {
         // Acceptance survives closing the dock before the response arrives.
         acceptedChatIdsRef.current.add(chat.chat_id);
         if (generation !== turnGenerationRef.current || !activeRef.current) {
+          endScope('cancel');
           void cancelMessage({ chat_id: result.chat_id, seq_id: result.seq_id }).catch(handleError);
           return;
         }
@@ -612,10 +621,10 @@ function ChatPanelContent(props: IAiChatProps) {
         }
       } catch (error) {
         if (generation !== turnGenerationRef.current || !activeRef.current) {
+          endScope('cancel');
           return;
         }
-        pendingTurnRef.current?.scope?.finish?.();
-        pendingTurnRef.current = undefined;
+        endScope('finish');
         setSubmitting(false);
         setPendingContent(undefined);
         if (!pending.locator) setInputValue((draft) => draft || content);
