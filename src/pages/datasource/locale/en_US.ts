@@ -109,6 +109,19 @@ const en_US = {
     cluster_confirm_cancel: 'Associate',
     cluster_not_found:
       'The associated alerting engine has been disabled, so alerting no longer works for this data source. Check the alerting engine configuration or associate the data source with another alerting engine',
+    edge_query: 'Query via edge',
+    edge_query_tip:
+      'Center will not connect directly to this data source; instead queries are forwarded over a persistent connection to the associated edge alerting engine cluster.',
+    edge_cluster_required: 'An alerting engine cluster is required when "Query via edge" is enabled',
+    edge_skip_test_tip: 'Data sources queried via edge take effect after syncing to edge nodes; connectivity check is skipped on save',
+    edge_status_connected: 'Edge connected ({{count}} instance(s))',
+    edge_status_standby: 'Engine heartbeat online (will connect automatically after saving an edge-queried data source)',
+    edge_status_offline: 'Edge offline (no online instances in this cluster)',
+    edge_status_disabled: 'Edge query is disabled on center',
+    edge_query_disabled_tip: 'Edge query is disabled in center configuration and cannot be enabled; if this data source already has it enabled, turn off the switch to save.',
+    edge_query_unavailable_tip: 'Unable to verify Edge query availability on the center. Retry or turn off Edge queries before saving.',
+    edge_query_retry: 'Retry status check',
+    edge_status_unavailable: 'Edge status unavailable; click refresh to retry',
     protocol: 'Protocol',
     secure_connection: 'Secure connection (SSL/TLS)',
     url_no_spaces_msg: 'Spaces are not allowed in the URL',
@@ -134,6 +147,9 @@ const en_US = {
       version: 'Version',
       version_placeholder: 'Leave blank to auto-detect the version. To specify one, use x.y.z format (e.g. 7.10.2)',
       version_tip: 'Leave blank to auto-detect the version. To specify one, use x.y.z format (e.g. 7.10.2)',
+      version_edge_placeholder: 'Auto-detection is disabled for edge queries; enter x.y.z manually (e.g. 7.10.2)',
+      version_edge_tip:
+        'When "Query via edge" is enabled, ES version is not auto-detected on save. Enter the version in x.y.z format (e.g. 7.10.2) if you use version-dependent features such as ES SQL.',
       max_shard: 'Max concurrent shard requests',
       min_interval: 'Min time interval (s)',
       min_interval_tip:

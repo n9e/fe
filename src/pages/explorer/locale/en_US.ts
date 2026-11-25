@@ -48,6 +48,7 @@ const en_US = {
       organize_fields: 'Specified fields',
       organize_fields_placeholder: 'All fields by default',
       createSuccess: 'Task created successfully',
+      edge_not_supported: 'Log download is not yet supported for edge-queried data sources',
     },
     log_export: {
       status_doing: 'Exporting',

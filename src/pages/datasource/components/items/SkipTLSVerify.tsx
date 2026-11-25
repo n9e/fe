@@ -1,14 +1,15 @@
 import React from 'react';
 import { Space, Form, Switch } from 'antd';
+import type { SwitchProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-export default function SkipTLSVerify() {
+export default function SkipTLSVerify({ size }: Pick<SwitchProps, 'size'>) {
   const { t } = useTranslation('datasourceManage');
   return (
     <Space className='mb-2'>
       <span>{t('form.skip_ssl_verify')}</span>
       <Form.Item name={['http', `tls`, 'skip_tls_verify']} valuePropName='checked' noStyle>
-        <Switch />
+        <Switch size={size} />
       </Form.Item>
     </Space>
   );

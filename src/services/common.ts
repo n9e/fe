@@ -21,7 +21,9 @@ import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
 
 // 匿名获取数据源列表
-export function getDatasourceBriefList(): Promise<{ name: string; id: number; plugin_type: string; is_default: boolean; plugin_type_name: string }[]> {
+export function getDatasourceBriefList(): Promise<
+  { name: string; id: number; plugin_type: string; is_default: boolean; plugin_type_name: string; settings?: { use_edge?: boolean; [key: string]: unknown } }[]
+> {
   const url = '/api/n9e/datasource/brief';
   return request(url, {
     method: RequestMethod.Get,

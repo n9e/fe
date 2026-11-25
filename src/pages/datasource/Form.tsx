@@ -74,7 +74,7 @@ export default function FormCpt() {
       plugin_type: type,
       id: data?.id,
       is_enable: data ? undefined : true,
-      force_save: saveMode === 'save',
+      force_save: saveMode === 'save' || (isPlus && Boolean(values?.settings?.use_edge)),
     })
       .then(async (dat) => {
         // 新数据源要立刻进全局列表，否则弹窗里点「探索这些数据」跳过去认不出这个 id
@@ -149,11 +149,12 @@ export default function FormCpt() {
             data={data}
             onFinish={(values, clusterInstance) => {
               if (
-                (type === 'prometheus' && !values.cluster_name) ||
-                (type === 'elasticsearch' && !values.cluster_name && isPlus) ||
-                (type === 'influxdb' && !values.cluster_name) ||
-                (type === 'ck' && !values.cluster_name) ||
-                (type === 'aliyun-sls' && !values.cluster_name)
+                !(isPlus && values?.settings?.use_edge) &&
+                ((type === 'prometheus' && !values.cluster_name) ||
+                  (type === 'elasticsearch' && !values.cluster_name && isPlus) ||
+                  (type === 'influxdb' && !values.cluster_name) ||
+                  (type === 'ck' && !values.cluster_name) ||
+                  (type === 'aliyun-sls' && !values.cluster_name))
               ) {
                 Modal.confirm({
                   title: t('form.cluster_confirm'),
