@@ -1,3 +1,4 @@
+import CopyableText from '@/components/CopyableText';
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -150,7 +151,6 @@ interface Props {
 
 export default function List(props: Props) {
   const { t, i18n } = useTranslation(NS);
-  const { t: tTargets } = useTranslation('targets');
   const { darkMode, siteInfo } = useContext(CommonStateContext);
   const history = useHistory();
   const location = useLocation();
@@ -474,7 +474,12 @@ export default function List(props: Props) {
                   dataIndex: 'ident',
                   title: (
                     <Space>
-                      {t('ident')}
+                      <span className='inline-flex items-center gap-1'>
+                        {t('ident')}
+                        <Tooltip title={t('ident_meta_tip')} trigger={['hover', 'focus']}>
+                          <QuestionCircleOutlined className='text-hint' tabIndex={0} aria-label={t('ident_meta_tip')} />
+                        </Tooltip>
+                      </span>
                       <Dropdown
                         trigger={['click']}
                         overlay={
@@ -522,25 +527,23 @@ export default function List(props: Props) {
                   ),
                   render: (ident, record) => {
                     const ipWidthSample = record.host_ip && isHostIpLikelyIpv6(record.host_ip) ? IDENT_IP_V6_MAX_SAMPLE : IDENT_IP_V4_MAX_SAMPLE;
-                    const identIpWidth = getTextWidth(ipWidthSample);
-                    const identMetaWidth = getTextWidth(`256 ${t('cores')} ${IDENT_META_MAX_SAMPLE_SUFFIX}`) + 20; // 14 的 icon + 间距 + 容错
                     const ipDisplay = record.host_ip ? `IP ${record.host_ip}` : '-';
+                    const identIpWidth = Math.max(getTextWidth(ipWidthSample), getTextWidth(ipDisplay));
+                    const identMetaWidth = getTextWidth(`256 ${t('cores')} ${IDENT_META_MAX_SAMPLE_SUFFIX}`) + 20; // 14 的 icon + 间距 + 容错
                     const coresDisplay = record.cpu_num === -1 ? '-' : `${record.cpu_num} ${t('cores')}`;
                     const archDisplay = record.arch === '' ? '-' : record.arch;
 
                     return (
                       <div>
                         <div className='flex items-center'>
-                          <Tooltip title={tTargets('meta_tip')} placement='left'>
-                            <span
-                              className={classNames('mb-[2px]', {
-                                'text-soft': record.target_up === 0,
-                                'text-title': record.target_up !== 0,
-                              })}
-                            >
-                              {ident}
-                            </span>
-                          </Tooltip>
+                          <span
+                            className={classNames('mb-[2px] min-w-0', {
+                              'text-soft': record.target_up === 0,
+                              'text-title': record.target_up !== 0,
+                            })}
+                          >
+                            <CopyableText placement='inside' value={ident} />
+                          </span>
                           {/* 两个图标各自直达详情抽屉的一个页签，顺序跟着页签走：
                               概览 · 拓扑 · 采集配置，所以拓扑在左、采集配置在右。
                               常驻而不是 hover 才显形：这是「从机器出发看/配采集」的入口，
@@ -552,7 +555,7 @@ export default function List(props: Props) {
                             // 而且在数据探索里已经是「下钻」的意思
                             <Tooltip title={t('host_topology')}>
                               <Button
-                                className='ml-2'
+                                className='ml-2 flex-shrink-0'
                                 size='small'
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -569,7 +572,7 @@ export default function List(props: Props) {
                             // 「配置采集」按钮一致——同一件事在三处用同一个字形
                             <Tooltip title={t('view_collects')}>
                               <Button
-                                className='ml-2'
+                                className='ml-2 flex-shrink-0'
                                 size='small'
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -585,11 +588,15 @@ export default function List(props: Props) {
                         <Space size={4} className='flex flex-wrap items-center'>
                           {record.host_ip ? (
                             <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
-                              {ipDisplay}
+                              <CopyableText placement='auto' value={record.host_ip} placeholder='-'>
+                                {ipDisplay}
+                              </CopyableText>
                             </span>
                           ) : (
                             <span className='inline-block min-w-0 truncate align-bottom text-soft' style={{ width: identIpWidth }}>
-                              {ipDisplay}
+                              <CopyableText placement='auto' value={record.host_ip} placeholder='-'>
+                                {ipDisplay}
+                              </CopyableText>
                             </span>
                           )}
                           <Divider type='vertical' />
@@ -755,6 +762,7 @@ export default function List(props: Props) {
                       <div className='w-[200px]' style={{ minWidth }}>
                         <Tags
                           type='outline'
+                          copyable
                           data={tags}
                           fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
                           onTagClick={(tag) => {
@@ -788,6 +796,7 @@ export default function List(props: Props) {
                       <div className='w-[200px]' style={{ minWidth }}>
                         <Tags
                           type='outline'
+                          copyable
                           data={tags}
                           fontColor={record.target_up === 0 ? 'text-soft' : 'text-title'}
                           onTagClick={(tag) => {
@@ -978,7 +987,7 @@ export default function List(props: Props) {
                               'text-title': record.target_up !== 0,
                             })}
                           >
-                            {val}
+                            <CopyableText placement='auto' value={val} />
                           </div>
                         );
                       },

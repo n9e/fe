@@ -1,3 +1,4 @@
+import { CopyableTag, CopyableTextProps } from '@/components/CopyableText';
 import React, { useRef, useState, useLayoutEffect } from 'react';
 import { Button, Popover, Tooltip } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
@@ -19,6 +20,8 @@ interface Props<T = any> {
   getTooltipTitle?: (item: string | T, index: number) => string | undefined; // 返回 undefined 不显示 tooltip
   onTagClick?: (item: string | T, index: number) => void;
   popoverTitle?: React.ReactNode | ((count: number) => React.ReactNode); // 自定义 popover 标题，可接收 data.length
+  getCopyText?: (item: string | T, index: number) => string;
+  copyPlacement?: CopyableTextProps['placement'];
   hideLabel?: boolean; // 仅展示 icon，隐藏文字内容
 }
 
@@ -192,7 +195,7 @@ export default function Tags<T>(props: Props<T>) {
       {/* 可见布局层 */}
       <div className='flex flex-wrap gap-0.5 content-start'>
         {(data as (string | T)[]).slice(0, visibleCount).map((item, i) => (
-          <Tooltip key={getItemKey(item, i)} title={getTooltipTitle ? getTooltipTitle(item, i) : getItemLabel(item, i)}>
+          <Tooltip key={getItemKey(item, i)} title={props.getCopyText ? undefined : getTooltipTitle ? getTooltipTitle(item, i) : getItemLabel(item, i)}>
             <span
               className={visibleTagClass}
               style={getTagStyle(item, i)}
@@ -202,7 +205,17 @@ export default function Tags<T>(props: Props<T>) {
               }}
             >
               {icon && <span className={`${hideLabel ? '' : 'mr-[3px]'} flex items-center shrink-0`}>{resolveIcon(icon, item, i)}</span>}
-              {!hideLabel && <span className='overflow-hidden text-ellipsis'>{getItemLabel(item, i)}</span>}
+              {!hideLabel &&
+                (props.getCopyText ? (
+                  <CopyableTag
+                    placement={props.copyPlacement}
+                    text={getItemLabel(item, i)}
+                    copyValue={props.getCopyText(item, i)}
+                    style={{ '--fc-copy-tag-background': type === 'fill' ? resolveColor(props.bgColor, item, i, 'var(--fc-violet-3)') : 'var(--fc-fill-2)' } as React.CSSProperties}
+                  />
+                ) : (
+                  <span className='overflow-hidden text-ellipsis'>{getItemLabel(item, i)}</span>
+                ))}
             </span>
           </Tooltip>
         ))}
@@ -244,7 +257,19 @@ export default function Tags<T>(props: Props<T>) {
                     }}
                   >
                     {icon && <span className={`${hideLabel ? '' : 'mr-[3px]'} flex items-center`}>{resolveIcon(icon, item, i)}</span>}
-                    {!hideLabel && getItemLabel(item, i)}
+                    {!hideLabel &&
+                      (props.getCopyText ? (
+                        <CopyableTag
+                          placement={props.copyPlacement}
+                          text={getItemLabel(item, i)}
+                          copyValue={props.getCopyText(item, i)}
+                          style={
+                            { '--fc-copy-tag-background': type === 'fill' ? resolveColor(props.bgColor, item, i, 'var(--fc-violet-3)') : 'var(--fc-fill-2)' } as React.CSSProperties
+                          }
+                        />
+                      ) : (
+                        getItemLabel(item, i)
+                      ))}
                   </span>
                 ))}
               </div>

@@ -1,4 +1,5 @@
 const en_US = {
+  ident_meta_tip: 'Click an identifier to view host metadata',
   title: 'Hosts',
   default_filter: 'Preset filters',
   ungrouped_targets: 'Ungrouped hosts',
