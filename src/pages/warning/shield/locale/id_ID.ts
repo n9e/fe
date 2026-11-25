@@ -38,7 +38,18 @@ const id_ID = {
     "start_msg": "Waktu mulai tidak boleh kosong",
     "end": "Selesai",
     "end_msg": "Waktu selesai tidak boleh kosong",
-    "periodic_tip": "Peredaman berulang berlaku terus-menerus: setiap minggu, alert yang jatuh pada periode di atas diredam. Waktu mulai yang sama dengan waktu selesai berarti sepanjang hari"
+    "periodic_tip": "Peredaman berulang berlaku terus-menerus: alert yang jatuh pada hari dan periode di atas diredam. Waktu mulai yang sama dengan waktu selesai berarti sepanjang hari",
+    "days_of_week_msg": "Pilih hari",
+    "cycle": "Pengulangan",
+    "cycle_week": "Mingguan",
+    "cycle_month": "Bulanan",
+    "day_of_month": "Tanggal {{day}}",
+    "last_day": "Hari terakhir",
+    "days_of_month_msg": "Pilih hari",
+    "month_cross_midnight_msg": "Tidak boleh lewat tengah malam",
+    "month_cross_midnight_tip": "Periode bulanan tidak boleh melewati tengah malam. Pisahkan menjadi dua baris, misalnya hari terakhir 23:00~00:00 dan tanggal 1 00:00~03:00",
+    "month_missing_days_tip": "Beberapa bulan tidak memiliki tanggal 29, 30, atau 31, dan pada bulan tersebut peredaman tidak berlaku di tanggal itu. Pilih \"Hari terakhir\" untuk meredam di akhir setiap bulan",
+    "next_windows": "Periode berikutnya"
   },
   "mute_method": {
     "0": "Redam event dan notifikasi",
@@ -73,7 +84,7 @@ const id_ID = {
   "filter_configs": "Filter",
   "filter_configs_desc": "Menentukan event alert mana yang diredam: grup bisnis, sumber data, tingkat keparahan event, dan label event. Antar kondisi berlaku DAN, dan yang dikosongkan tidak membatasi apa pun",
   "mute_configs": "Pengaturan peredaman",
-  "mute_configs_desc": "Menentukan kapan peredaman berlaku dan sejauh apa: sebuah rentang waktu tetap, atau periode yang berulang tiap minggu",
+  "mute_configs_desc": "Menentukan kapan peredaman berlaku dan sejauh apa: sebuah rentang waktu tetap, atau periode yang berulang tiap minggu atau tiap bulan",
   "alert_content": "Agar aturan yang salah konfigurasi tidak meredam seluruh alert perusahaan, aturan ini hanya berlaku bagi event alert di grup bisnis tertentu",
   "preview_muted_title": "Pratinjau event terkait",
   "preview_muted_desc": "Berikut event alert yang sudah ada dan cocok dengan filter aturan ini. Setelah disimpan, event sejenis yang baru akan diredam, sedangkan event yang sudah ada tidak hilang sendiri dan bisa dihapus sekaligus di sini.",

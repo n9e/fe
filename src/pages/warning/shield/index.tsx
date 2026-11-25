@@ -44,6 +44,7 @@ import DocumentDrawer from '@/components/DocumentDrawer';
 import UsageDocs from '@/components/UsageDocs';
 import EmptyGuide from '@/components/EmptyGuide';
 import DeleteMutesModal from './components/DeleteMutesModal';
+import { LAST_DAY_OF_MONTH, sortDaysOfMonth } from './components/periodic';
 
 import './locale';
 import './index.less';
@@ -230,11 +231,20 @@ const Shield: React.FC = () => {
                       <div>
                         {item.enable_stime} ~ {item.enable_etime}
                       </div>
-                      <Space>
-                        {_.map(_.split(item.enable_days_of_week, ' '), (item) => {
-                          return t(`common:time.weekdays.${item}`);
-                        })}
-                      </Space>
+                      {item.cycle === 'month' ? (
+                        <div>
+                          {t('mute_type.cycle_month')}{' '}
+                          {_.map(sortDaysOfMonth(item.enable_days_of_month), (day) =>
+                            day === LAST_DAY_OF_MONTH ? t('mute_type.last_day') : t('mute_type.day_of_month', { day }),
+                          ).join(', ')}
+                        </div>
+                      ) : (
+                        <Space>
+                          {_.map(_.split(item.enable_days_of_week, ' '), (item) => {
+                            return t(`common:time.weekdays.${item}`);
+                          })}
+                        </Space>
+                      )}
                     </Space>
                   </div>
                 );

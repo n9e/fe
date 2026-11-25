@@ -38,7 +38,18 @@ const pt_BR = {
     "start_msg": "O início não pode ficar vazio",
     "end": "Fim",
     "end_msg": "O fim não pode ficar vazio",
-    "periodic_tip": "O silenciamento recorrente não expira: toda semana, os alertas que caírem nos períodos acima são silenciados. Início e fim iguais significam o dia inteiro"
+    "periodic_tip": "O silenciamento recorrente não expira: os alertas que caírem nos dias e períodos acima são silenciados. Início e fim iguais significam o dia inteiro",
+    "days_of_week_msg": "Selecione os dias",
+    "cycle": "Repetição",
+    "cycle_week": "Semanal",
+    "cycle_month": "Mensal",
+    "day_of_month": "Dia {{day}}",
+    "last_day": "Último dia",
+    "days_of_month_msg": "Selecione os dias",
+    "month_cross_midnight_msg": "Não pode passar da meia-noite",
+    "month_cross_midnight_tip": "Um período mensal não pode passar da meia-noite. Divida-o em duas linhas, por exemplo último dia 23:00~00:00 e dia 1 00:00~03:00",
+    "month_missing_days_tip": "Alguns meses não têm os dias 29, 30 ou 31, e nesses meses o silenciamento não se aplica nesse dia. Escolha \"Último dia\" para silenciar no fim de todo mês",
+    "next_windows": "Próximos períodos"
   },
   "mute_method": {
     "0": "Silenciar evento e notificação",
@@ -73,7 +84,7 @@ const pt_BR = {
   "filter_configs": "Filtros",
   "filter_configs_desc": "Define quais eventos são silenciados: grupo de negócio, fonte de dados, severidade e rótulos. As condições são combinadas com E; em branco, não há restrição",
   "mute_configs": "Configuração do silenciamento",
-  "mute_configs_desc": "Define quando e em que medida silenciar: um período fixo ou uma janela semanal recorrente",
+  "mute_configs_desc": "Define quando e em que medida silenciar: um período fixo ou uma janela semanal ou mensal recorrente",
   "alert_content": "Para evitar que uma configuração equivocada silencie todos os alertas da empresa, esta regra vale apenas para os eventos de um grupo de negócio específico",
   "preview_muted_title": "Visualizar eventos relacionados",
   "preview_muted_desc": "Abaixo estão os eventos de alerta já existentes que atendem a estes filtros. Depois de salvar, novos eventos do mesmo tipo serão silenciados, mas os que já existem não desaparecem sozinhos; se quiser, exclua-os aqui.",
