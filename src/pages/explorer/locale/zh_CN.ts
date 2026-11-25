@@ -48,6 +48,7 @@ const zh_CN = {
       organize_fields: '指定字段',
       organize_fields_placeholder: '默认全部字段',
       createSuccess: '任务创建成功',
+      edge_not_supported: '经 edge 查询的数据源一期暂不支持日志下载',
     },
     log_export: {
       status_doing: '导出中',

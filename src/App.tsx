@@ -74,6 +74,10 @@ interface Datasource {
   plugin_type: string;
   is_default: boolean;
   identifier?: string;
+  settings?: {
+    use_edge?: boolean;
+    [key: string]: unknown;
+  };
 }
 
 interface SiteInfo {

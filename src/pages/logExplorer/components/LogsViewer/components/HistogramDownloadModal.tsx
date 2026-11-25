@@ -13,7 +13,14 @@ export default function HistogramDownloadModal(props: Props) {
   return (
     <DownloadModal
       {...props}
-      renderTrigger={(open) => <HistogramActionButton title={t('log.log_download.title')} icon={<Download size={14} strokeWidth={1.5} />} onClick={open} />}
+      renderTrigger={(open, disabled?: boolean, disabledReason?: string) => (
+        <HistogramActionButton
+          title={disabled && disabledReason ? disabledReason : t('log.log_download.title')}
+          icon={<Download size={14} strokeWidth={1.5} />}
+          disabled={disabled}
+          onClick={open}
+        />
+      )}
     />
   );
 }

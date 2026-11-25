@@ -52,7 +52,7 @@ export interface DataSourceType {
   status: string;
   plugin_type: string;
   plugin_type_name: string;
-  settings: Partial<MysqltableType>;
+  settings: Partial<MysqltableType> & { use_edge?: boolean };
   created_at: number;
   updated_at: number;
   connectionStatus?: string;
