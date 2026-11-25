@@ -15,6 +15,8 @@ export default function ContactKeysSelect(
   props: SelectProps & {
     field?: FormListFieldData;
     namePath?: (string | number)[];
+    /** 跟在标签图标后面的灰色短提示 */
+    hint?: string;
   },
 ) {
   const { field = {}, namePath = ['param_config', 'user_info'] } = props;
@@ -71,11 +73,12 @@ export default function ContactKeysSelect(
                 e.preventDefault();
               }}
             />
+            {props.hint && <span className='text-hint'>{props.hint}</span>}
           </Space>
         }
       >
         <Select
-          {...(props || {})}
+          {..._.omit(props, ['hint'])}
           options={_.map(data, (item) => {
             return {
               label: item.label,

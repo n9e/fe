@@ -12,6 +12,7 @@ export interface DatasourceCategory {
   dashboardVariable: boolean; // 是否支持仪表盘变量
   graphPro: boolean; // Pro版本
   alertPro: boolean; // Pro版本
+  datasourceless?: boolean; // 告警规则不需要选择数据源实例（如商业版 AI 应用）
   logo?: string;
 }
 

@@ -211,8 +211,8 @@ describe('buildStarterContent', () => {
     expect(content.content).not.toContain('**');
   });
 
-  it('Pushover / ntfy / LINE 的起步正文是不带标记的短文本', () => {
-    for (const request_type of ['pushover', 'ntfy', 'line']) {
+  it('Pushover / ntfy / LINE / Bark 的起步正文是不带标记的短文本', () => {
+    for (const request_type of ['pushover', 'ntfy', 'line', 'bark']) {
       expect(getExpectedTplKeys({ request_type }).keys).toEqual(['content']);
       const content = buildStarterContent({ request_type }, TEXTS);
       expect(Object.keys(content)).toEqual(['content']);

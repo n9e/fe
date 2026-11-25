@@ -250,6 +250,34 @@ describe('ChatPanel turn cancellation and completion', () => {
     expect(scope.executePageAction).not.toHaveBeenCalled();
     expect(execute).not.toHaveBeenCalled();
     expect(services.cancelMessage).toHaveBeenCalledWith({ chat_id: 'chat-1', seq_id: 2 });
+    expect(scope.cancel).toHaveBeenCalledTimes(1);
+  });
+  it('finishes the turn scope exactly once when chat creation fails', async () => {
+    const services = jest.requireMock('./services');
+    services.createChat.mockRejectedValueOnce(new Error('boom'));
+    const scope = { executePageAction: jest.fn(), cancel: jest.fn(), finish: jest.fn() };
+    render(<ChatPanel active queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={() => scope} />);
+    send();
+    await waitFor(() => expect(scope.finish).toHaveBeenCalled());
+    expect(scope.finish).toHaveBeenCalledTimes(1);
+    expect(scope.cancel).not.toHaveBeenCalled();
+    expect(services.sendMessage).not.toHaveBeenCalled();
+  });
+  it('ends the turn scope exactly once when the panel closes during chat creation', async () => {
+    const services = jest.requireMock('./services');
+    const creating = pending<any>();
+    services.createChat.mockReturnValueOnce(creating.promise);
+    const scope = { executePageAction: jest.fn(), cancel: jest.fn(), finish: jest.fn() };
+    const prepareTurn = () => scope;
+    const { rerender } = render(<ChatPanel active queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={prepareTurn} />);
+    send();
+    await waitFor(() => expect(services.createChat).toHaveBeenCalled());
+    rerender(<ChatPanel active={false} queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={prepareTurn} />);
+    await act(async () => {
+      creating.resolve({ chat_id: 'chat-1', title: '', last_update: 0 });
+    });
+    expect(services.sendMessage).not.toHaveBeenCalled();
+    expect(scope.cancel.mock.calls.length + scope.finish.mock.calls.length).toBe(1);
   });
   it('keeps stop available until the page action has completed', async () => {
     const action = pending<any>();

@@ -876,6 +876,16 @@ export const getNotificationChannelTypes = () => {
         request_config: { line_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
       },
     },
+    bark: {
+      logo: '/image/logos/bark.svg',
+      type: 'bark',
+      default_values: {
+        request_type: 'bark',
+        // Device Key 是每个人的联系方式，与后端内置的 Bark 媒介一致；规则里选人或团队
+        param_config: { user_info: { contact_key: 'bark_device_key' } },
+        request_config: { bark_request_config: { timeout: 10000, retry_times: 3, retry_sleep: 1000 } },
+      },
+    },
     slackwebhook: {
       logo: '/image/logos/slack.png',
       type: 'slackwebhook',

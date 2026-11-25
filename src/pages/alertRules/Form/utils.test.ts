@@ -49,6 +49,10 @@ jest.mock('../constants', () => ({
 
 jest.mock('plus:/parcels/AlertRule/utils', () => ({}), { virtual: true });
 
+jest.mock('@/utils/datasourceRegistry', () => ({
+  getDatasourceCategoryByValue: (cate: string) => (cate === 'agentobs' ? { value: 'agentobs', datasourceless: true } : undefined),
+}));
+
 // ---------- parseTimeToValueAndUnit 单元测试 ----------
 
 describe('parseTimeToValueAndUnit', () => {
@@ -205,6 +209,20 @@ describe('processInitialValues', () => {
     const triggers = [{ type: 'target_miss', severity: 2, duration: 30 }];
     const result = processInitialValues({
       prod: 'host',
+      rule_config: { triggers },
+    });
+
+    expect(result.rule_config.triggers).toEqual(triggers);
+  });
+
+  it('不需要数据源的类型（datasourceless）应保留无 exp 的 trigger', () => {
+    const triggers = [
+      { severity: 1, op: '>', threshold: 10 },
+      { severity: 2, op: '>', threshold: 5 },
+    ];
+    const result = processInitialValues({
+      prod: 'agentobs',
+      cate: 'agentobs',
       rule_config: { triggers },
     });
 
