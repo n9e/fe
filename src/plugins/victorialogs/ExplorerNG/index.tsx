@@ -7,7 +7,7 @@ import { DefaultFormValuesControl, RenderCommonSettings } from '@/pages/logExplo
 
 import { NAME_SPACE } from '../constants';
 import { METRIC_DEFAULT_QUERY, QUERY_CACHE_KEY, RAW_DEFAULT_QUERY } from './constants';
-import { classifyExplorerMode } from './utils/logsQL';
+import { resolveExecutedQuery } from './utils/mode';
 import Main from './Main';
 
 import './style.less';
@@ -30,10 +30,12 @@ export default function index(props: Props) {
         .validateFields()
         .then((values) => {
           const queryValues = values.query || {};
-          const userQL = _.trim(queryValues.query);
-          const nextMode = classifyExplorerMode(userQL);
+          // Respect the view the user explicitly selected; only an aggregation query
+          // forces the chart view, and an empty chart query gets a default aggregation.
+          const { mode: nextMode, query: nextQueryText } = resolveExecutedQuery(queryValues);
           const nextQueryValues = {
             ...queryValues,
+            query: nextQueryText,
             mode: nextMode,
             ...(nextMode === 'metric' && queryValues.mode !== 'metric' ? { vizType: 'table' } : {}),
           };
@@ -62,12 +64,7 @@ export default function index(props: Props) {
     const query = form.getFieldValue('query');
     const defaultQuery = defaultFormValuesControl?.defaultFormValues?.query;
     // 仅清理标签初始化时持久化的旧 Builder 状态；视图选择恢复的 Builder 配置必须保留。
-    if (
-      defaultFormValuesControl?.isInited &&
-      defaultQuery &&
-      _.isEqual(query, defaultQuery) &&
-      (query?.builder || query?.builderStatus || query?.querySource)
-    ) {
+    if (defaultFormValuesControl?.isInited && defaultQuery && _.isEqual(query, defaultQuery) && (query?.builder || query?.builderStatus || query?.querySource)) {
       form.setFieldsValue({
         query: {
           ...query,
