@@ -35,7 +35,7 @@ import './locale';
 import '@/components/pageLayout/locale';
 
 // Pages that frame another product have no permission point here: that product enforces its own
-// permissions. `/duty-embed/` is the enterprise overlay's page that frames the duty console.
+// permissions. `/duty-embed/` is the page that frames the duty console.
 const isFramedPageKey = (key: string) => key.startsWith(`${embeddedProductDetailPath}/`) || key.startsWith('/duty-embed/');
 
 const calcUrlPath = (url: string) => {
