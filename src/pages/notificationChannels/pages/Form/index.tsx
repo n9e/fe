@@ -35,6 +35,7 @@ import Pushover from './Pushover';
 import Ntfy from './Ntfy';
 import SplunkOnCall from './SplunkOnCall';
 import Line from './Line';
+import Bark from './Bark';
 import MattermostWebhook from './MattermostWebhook';
 import JSMAlert from './JSMAlert';
 import TestModal from './TestModal';
@@ -184,6 +185,7 @@ export default function FormCpt(props: Props) {
                   <Ntfy />
                   <SplunkOnCall />
                   <Line />
+                  <Bark />
                   <MattermostWebhook />
                   <JSMAlert />
                 </div>
