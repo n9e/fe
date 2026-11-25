@@ -7,7 +7,10 @@ beforeEach(() => {
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+import type { ActionManifestEntry, PageContext } from '@flashcatcloud/ai-kit/actions';
+
 import ChatPanel from './ChatPanel';
+import { PAGE_RUNTIME } from './constants';
 import { IAiChatMessage, IAiChatStreamChunk } from './types';
 
 const startStream = jest.fn();
@@ -68,10 +71,12 @@ jest.mock('react-i18next', () => ({
 }));
 
 const execute = jest.fn();
-const manifest = jest.fn(() => [] as unknown[]);
+const manifest = jest.fn((_options?: { continuation?: boolean }): ActionManifestEntry[] => []);
+const pageContext = jest.fn((): PageContext | null => null);
 jest.mock('./uiActionRuntime', () => ({
   uiActionRuntime: {
-    manifest: () => manifest(),
+    manifest: (options?: { continuation?: boolean }) => manifest(options),
+    pageContext: () => pageContext(),
     execute: (...args: unknown[]) => execute(...args),
     has: () => true,
   },
@@ -84,8 +89,16 @@ const pageActionDone: IAiChatMessage = {
   query: { content: '每台主机的 CPU', page_from: { url: '/metric/explorer' } },
   response: [
     { content_type: 'markdown', content: '找到了', is_finish: true },
-    { content_type: 'page_action', content: 'fill', is_finish: true, param: { call_id: 'call-7', name: 'set_metric_query', description: 'fill', args: { promql: 'up' } } },
+    { content_type: 'page_action', content: '', is_finish: true, param: { call_id: 'call-7', name: 'set_metric_query', args: { promql: 'up' } } },
   ],
+};
+
+const answered: IAiChatMessage = {
+  chat_id: 'chat-1',
+  seq_id: 3,
+  is_finish: true,
+  query: { content: '', page_from: { url: '/metric/explorer' } },
+  response: [{ content_type: 'markdown', content: 'No host reported in the last hour.', is_finish: true }],
 };
 
 describe('ChatPanel 页面动作', () => {
@@ -93,30 +106,150 @@ describe('ChatPanel 页面动作', () => {
     execute.mockReset();
     execute.mockResolvedValue({ ok: true, status: 'ok', action: 'set_metric_query' });
     manifest.mockReset();
-    manifest.mockReturnValue([{ name: 'set_metric_query', description: 'fill', inputSchema: {} }]);
+    manifest.mockReturnValue([{ name: 'set_metric_query', description: 'fill', inputSchema: { type: 'object', properties: {} } }]);
+    pageContext.mockReset();
+    pageContext.mockReturnValue(null);
     getMessageDetail.mockReset();
   });
 
-  it('runs the action the model asked for, once, on the turn this panel sent', async () => {
+  // A question that ends on `last`; the page result sent back gets the model's reply.
+  function serveTurn(last: IAiChatMessage['response']) {
     const services = jest.requireMock('./services');
     services.createChat.mockResolvedValue({ chat_id: 'chat-1', title: '', last_update: 0 });
-    services.sendMessage.mockResolvedValue({ chat_id: 'chat-1', seq_id: 2 });
-    getMessageDetail.mockResolvedValue(pageActionDone);
+    services.sendMessage
+      .mockReset()
+      .mockImplementation(({ query }: { query: { page_result?: unknown } }) => Promise.resolve({ chat_id: 'chat-1', seq_id: query.page_result ? 3 : 2 }));
+    getMessageDetail.mockImplementation((locator: { seq_id: number }) => Promise.resolve(locator.seq_id === 2 ? { ...pageActionDone, response: last } : answered));
+    return services;
+  }
+  function ask(question: string) {
+    const box = screen.getByPlaceholderText('input.placeholder');
+    fireEvent.change(box, { target: { value: question } });
+    fireEvent.keyDown(box, { key: 'Enter' });
+  }
+
+  it('runs the action once and hands its result back as the answer to that call', async () => {
+    const services = serveTurn(pageActionDone.response);
     const onTurn = jest.fn();
 
     render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} onTurn={onTurn} />);
-    const box = screen.getByPlaceholderText('input.placeholder');
-    fireEvent.change(box, { target: { value: '每台主机的 CPU' } });
-    fireEvent.keyDown(box, { key: 'Enter' });
+    ask('每台主机的 CPU');
 
-    // The page's actions ride along with the message.
+    // The question says the page can be operated; the model looks at it when it needs to.
     await waitFor(() =>
-      expect(services.sendMessage).toHaveBeenCalledWith(expect.objectContaining({ page_actions: [{ name: 'set_metric_query', description: 'fill', inputSchema: {} }] })),
+      expect(services.sendMessage).toHaveBeenNthCalledWith(1, expect.objectContaining({ query: expect.objectContaining({ page_runtime: PAGE_RUNTIME, page_actions: undefined }) })),
     );
     await waitFor(() => expect(execute).toHaveBeenCalledWith({ callId: 'call-7', name: 'set_metric_query', args: { promql: 'up' } }));
+    await waitFor(() =>
+      expect(services.sendMessage).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          query: expect.objectContaining({
+            content: '',
+            page_runtime: PAGE_RUNTIME,
+            page_result: { call_id: 'call-7', content: { ok: true, status: 'ok', action: 'set_metric_query' } },
+          }),
+        }),
+      ),
+    );
+    await waitFor(() => expect(onTurn).toHaveBeenCalledWith(expect.objectContaining({ phase: 'done', message: answered, actionOutcome: expect.objectContaining({ ok: true }) })));
     expect(execute).toHaveBeenCalledTimes(1);
-    await waitFor(() => expect(onTurn).toHaveBeenCalledWith(expect.objectContaining({ phase: 'done' })));
-    expect(onTurn.mock.calls[0][0].phase).toBe('running');
+    expect(onTurn.mock.calls.filter(([turn]) => turn.phase === 'done')).toHaveLength(1);
+    // Only the user's question starts a turn; the result sent back stays inside it.
+    expect(manifest.mock.calls.map(([options]) => options)).toEqual([{ continuation: false }, { continuation: true }]);
+  });
+
+  it('attaches what the page can do to every request of an entry opened to operate it', async () => {
+    const services = serveTurn(pageActionDone.response);
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} attachPageActions />);
+    ask('每台主机的 CPU');
+
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(2));
+    for (const [request] of services.sendMessage.mock.calls) {
+      expect(request.query.page_actions).toEqual([expect.objectContaining({ name: 'set_metric_query' })]);
+    }
+  });
+
+  it('still hands the result back when the action took the page away with its actions', async () => {
+    const services = serveTurn(pageActionDone.response);
+    manifest.mockReturnValueOnce([{ name: 'set_metric_query', description: 'fill', inputSchema: { type: 'object', properties: {} } }]).mockReturnValue([]);
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} />);
+    ask('每台主机的 CPU');
+
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(2));
+    expect(services.sendMessage.mock.calls[1][0].query).toEqual(
+      expect.objectContaining({ page_runtime: PAGE_RUNTIME, page_result: expect.objectContaining({ call_id: 'call-7' }) }),
+    );
+  });
+
+  it('says nothing about the page when it has no actions', async () => {
+    manifest.mockReturnValue([]);
+    const services = serveTurn([{ content_type: 'markdown', content: 'hi', is_finish: true }]);
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} attachPageActions />);
+    ask('hello');
+
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+    expect(services.sendMessage.mock.calls[0][0].query).not.toHaveProperty('page_runtime');
+  });
+
+  it('ends the turn on an action the user declined instead of sending it back', async () => {
+    const services = serveTurn(pageActionDone.response);
+    execute.mockResolvedValue({ ok: false, status: 'declined', action: 'set_metric_query', message: 'changed' });
+    const onTurn = jest.fn();
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} onTurn={onTurn} />);
+    ask('每台主机的 CPU');
+
+    await waitFor(() => expect(onTurn).toHaveBeenCalledWith(expect.objectContaining({ phase: 'done', actionOutcome: expect.objectContaining({ status: 'declined' }) })));
+    expect(services.sendMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('answers a request to look at the page with what the page can do', async () => {
+    pageContext.mockReturnValue({ title: 'Metric explorer' });
+    const observation = { page: { title: 'Metric explorer' }, actions: [{ name: 'set_metric_query', description: 'fill', inputSchema: { type: 'object', properties: {} } }] };
+    const services = serveTurn([{ content_type: 'page_observe', content: '', is_finish: true, param: { call_id: 'look-1' } }]);
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} />);
+    ask('改成按服务分组');
+
+    await waitFor(() =>
+      expect(services.sendMessage).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ query: expect.objectContaining({ page_result: { call_id: 'look-1', content: observation } }) }),
+      ),
+    );
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it('ends the turn once and cancels the accepted page result when following it fails', async () => {
+    const services = serveTurn(pageActionDone.response);
+    services.cancelMessage.mockReset().mockResolvedValue(undefined);
+    getMessageDetail.mockImplementation((locator: { seq_id: number }) => (locator.seq_id === 2 ? Promise.resolve(pageActionDone) : Promise.reject(new Error('offline'))));
+    const onTurn = jest.fn();
+    const onError = jest.fn();
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} onTurn={onTurn} onError={onError} />);
+    ask('每台主机的 CPU');
+
+    await waitFor(() => expect(onTurn).toHaveBeenCalledWith(expect.objectContaining({ phase: 'done', reason: 'error' })));
+    expect(onTurn.mock.calls.filter(([turn]) => turn.phase === 'done')).toHaveLength(1);
+    expect(services.cancelMessage).toHaveBeenCalledWith({ chat_id: 'chat-1', seq_id: 3 });
+    expect(onError).toHaveBeenCalled();
+  });
+
+  it('cancels a page result that is accepted after the user stopped', async () => {
+    const services = serveTurn(pageActionDone.response);
+    let accept!: (value: { chat_id: string; seq_id: number }) => void;
+    services.sendMessage.mockImplementationOnce(() => Promise.resolve({ chat_id: 'chat-1', seq_id: 2 }));
+    services.sendMessage.mockImplementationOnce(() => new Promise((resolve) => (accept = resolve)));
+    services.cancelMessage.mockReset().mockResolvedValue(undefined);
+    render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} />);
+    ask('每台主机的 CPU');
+
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(2));
+    fireEvent.click(screen.getByRole('button', { name: 'input.stop' }));
+    await act(async () => {
+      accept({ chat_id: 'chat-1', seq_id: 3 });
+    });
+    expect(services.cancelMessage).toHaveBeenCalledWith({ chat_id: 'chat-1', seq_id: 3 });
+    expect(getMessageDetail).not.toHaveBeenCalledWith({ chat_id: 'chat-1', seq_id: 3 });
   });
 
   it('keeps the conversation running when the caller hands it an equal but new page-info object', async () => {
@@ -218,11 +351,21 @@ describe('ChatPanel turn cancellation and completion', () => {
   beforeEach(() => {
     const services = jest.requireMock('./services');
     services.createChat.mockResolvedValue({ chat_id: 'chat-1', title: '', last_update: 0 });
-    services.sendMessage.mockResolvedValue({ chat_id: 'chat-1', seq_id: 2 });
+    // A question ends on a page action; the page result sent back gets the model's reply.
+    // Generated ids start high so they never meet the ids a test resolves by hand.
+    let sequence = 10;
+    const pageResults = new Set<number>();
+    services.sendMessage.mockReset().mockImplementation(({ query }: { query: { page_result?: unknown } }) => {
+      sequence += 1;
+      if (query.page_result) pageResults.add(sequence);
+      return Promise.resolve({ chat_id: 'chat-1', seq_id: sequence });
+    });
     services.cancelMessage.mockReset();
     services.cancelMessage.mockResolvedValue(undefined);
     getMessageDetail.mockReset();
-    getMessageDetail.mockResolvedValue(pageActionDone);
+    getMessageDetail.mockImplementation((locator: { chat_id: string; seq_id: number }) =>
+      Promise.resolve(pageResults.has(locator.seq_id) ? { ...answered, ...locator } : { ...pageActionDone, ...locator }),
+    );
     execute.mockReset();
     execute.mockResolvedValue({ ok: true, status: 'ok', action: 'set_metric_query' });
     streamCallbacks = {};
@@ -316,6 +459,7 @@ describe('ChatPanel turn cancellation and completion', () => {
     const onTurn = jest.fn();
     getMessageDetail.mockResolvedValueOnce({ ...pageActionDone, is_finish: false, response: [{ content_type: 'markdown', content: '', stream_id: 'stream-2' }] });
     getMessageDetail.mockReturnValueOnce(first.promise).mockReturnValueOnce(second.promise);
+    jest.requireMock('./services').sendMessage.mockResolvedValueOnce({ chat_id: 'chat-1', seq_id: 2 });
     render(<ChatPanel queryPageFrom={{ url: '/metric/explorer' }} prepareTurn={() => scope} onTurn={onTurn} />);
     send();
     await waitFor(() => expect(startStream).toHaveBeenCalledWith('stream-2'));
@@ -438,7 +582,9 @@ describe('ChatPanel turn cancellation and completion', () => {
     await act(async () => {
       creating.resolve({ chat_id: 'chat-1', title: '', last_update: 0 });
     });
-    await waitFor(() => expect(services.sendMessage).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(services.sendMessage).toHaveBeenCalled());
+    // The question goes out once; anything after it only carries page results back.
+    expect(services.sendMessage.mock.calls.filter(([request]: [{ query: { page_result?: unknown } }]) => !request.query.page_result)).toHaveLength(1);
   });
 
   it('reads the page info at send time when given a reader', async () => {

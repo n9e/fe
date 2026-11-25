@@ -4,12 +4,13 @@ import type { TextAreaRef } from 'antd/lib/input/TextArea';
 import { LoadingOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { CornerDownLeft, SendHorizontal, Square } from 'lucide-react';
+import type { ActionResponse } from '@flashcatcloud/ai-kit/actions';
 
 import { useCanAccessFlashAiChat } from '@/components/AiChat/hooks/useFlashAiAccess';
 import IconFont from '@/components/IconFont';
 
 import { cancelMessage, createChat, getMessageDetail, getMessageHistory, sendMessage } from './services';
-import { NAME_SPACE } from './constants';
+import { NAME_SPACE, PAGE_RUNTIME } from './constants';
 import { EmptyConversation, MessageItem } from './MessageBlocks';
 import {
   AiChatPageActionOutcomes,
@@ -18,7 +19,10 @@ import {
   IAiChatHistoryItem,
   IAiChatMessage,
   IAiChatMessageLocator,
+  IAiChatMessageQuery,
   IAiChatPageActionRequest,
+  IAiChatPageObserveRequest,
+  IAiChatPageResult,
   IAiChatProps,
   IAiChatStreamSegment,
   IAiChatTurnScope,
@@ -65,6 +69,7 @@ function ChatPanelContent(props: IAiChatProps) {
     prepareTurn,
     onConversationInteract,
     onBusyChange,
+    attachPageActions = false,
     active = true,
   } = props;
   const slim = variant === 'slim';
@@ -78,6 +83,19 @@ function ChatPanelContent(props: IAiChatProps) {
   const currentPageFrom = () => {
     const source = queryPageFromRef.current;
     return typeof source === 'function' ? source() : source;
+  };
+  const attachPageActionsRef = useRef(attachPageActions);
+  attachPageActionsRef.current = attachPageActions;
+  // What every request of a turn says about the page: the protocol version when
+  // the page has actions, so the model is given page tools at all, and the
+  // actions themselves when this entry was opened to operate the page.
+  // `continuation` is false only for the user's own message: that is the turn
+  // boundary that expires confirm approvals, while the page results sent back
+  // inside the turn keep them.
+  const pageQuery = (continuation: boolean): Pick<IAiChatMessageQuery, 'page_runtime' | 'page_actions'> => {
+    const actions = uiActionRuntime.manifest({ continuation });
+    if (!actions.length) return {};
+    return { page_runtime: PAGE_RUNTIME, page_actions: attachPageActionsRef.current ? actions : undefined };
   };
   const [activeChat, setActiveChat] = useState<IAiChatHistoryItem>();
   const [messages, setMessages] = useState<IAiChatMessage[]>([]);
@@ -96,7 +114,7 @@ function ChatPanelContent(props: IAiChatProps) {
     }
   }, [slim, active]);
   const turnGenerationRef = useRef(0);
-  const pendingTurnRef = useRef<{ scope?: IAiChatTurnScope; locator?: IAiChatMessageLocator; content: string }>();
+  const pendingTurnRef = useRef<{ scope?: IAiChatTurnScope; locator?: IAiChatMessageLocator; content: string; actionOutcome?: ActionResponse }>();
   const finishingTurnsRef = useRef(new Set<string>());
   const [inputValue, setInputValue] = useState('');
   const [messagesLoading, setMessagesLoading] = useState(false);
@@ -134,9 +152,18 @@ function ChatPanelContent(props: IAiChatProps) {
   const onTurnRef = useRef(onTurn);
   onTurnRef.current = onTurn;
 
-  const runPageAction = useCallback(async (message: IAiChatMessage) => {
+  // Answers the page request a live turn ended on: runs the action, or reports
+  // what the page can do right now.
+  const runPageRequest = useCallback(async (message: IAiChatMessage): Promise<IAiChatPageResult | undefined> => {
     if (!liveTurnsRef.current.has(`${message.chat_id}:${message.seq_id}`)) return;
     const last = message.response?.[message.response.length - 1];
+    if (last?.content_type === EAiChatContentType.PageObserve) {
+      const request = last.param as IAiChatPageObserveRequest | undefined;
+      if (!request?.call_id || executedCallsRef.current.has(request.call_id)) return;
+      executedCallsRef.current.add(request.call_id);
+      if (!activeRef.current) return;
+      return { call_id: request.call_id, content: { page: uiActionRuntime.pageContext(), actions: uiActionRuntime.manifest({ continuation: true }) } };
+    }
     if (last?.content_type !== EAiChatContentType.PageAction) return;
     const request = last.param as IAiChatPageActionRequest | undefined;
     if (!request?.call_id || !request.name || executedCallsRef.current.has(request.call_id)) return;
@@ -146,8 +173,9 @@ function ChatPanelContent(props: IAiChatProps) {
       ? await pendingTurnRef.current.scope.executePageAction(request)
       : await uiActionRuntime.execute({ callId: request.call_id, name: request.name, args: request.args ?? {} });
     setPageActionOutcomes((previous) => ({ ...previous, [request.call_id]: outcome }));
-    return outcome;
+    return { call_id: request.call_id, content: outcome };
   }, []);
+  const continueTurnRef = useRef<(previous: IAiChatMessage, result: IAiChatPageResult) => Promise<void>>();
 
   // 在会话切换提交后、异步回调执行前同步更新 ref，避免旧会话回包写回当前界面。
   useLayoutEffect(() => {
@@ -271,18 +299,33 @@ function ChatPanelContent(props: IAiChatProps) {
           locator: undefined,
           segments: [],
         };
-        const actionOutcome = detail.err_code ? undefined : await runPageAction(detail);
+        const pageResult = detail.err_code ? undefined : await runPageRequest(detail);
         if (!isCurrentTurn()) return false;
+        const pending = pendingTurnRef.current;
+        const outcome = pageResult && 'status' in pageResult.content ? pageResult.content : undefined;
+        if (pending && outcome) pending.actionOutcome = outcome;
+        // The result goes back to the model, which carries the same turn on. A
+        // declined action is the user's decision — they stopped it, refused it,
+        // or changed the panel under it — and the turn ends there instead.
+        if (pageResult && outcome?.status !== 'declined') {
+          void continueTurnRef.current?.(detail, pageResult);
+          return false;
+        }
         setSubmitting(false);
         setPendingContent(undefined);
-        pendingTurnRef.current?.scope?.finish?.();
+        pending?.scope?.finish?.();
         pendingTurnRef.current = undefined;
-        onTurnRef.current?.({ phase: 'done', message: detail, actionOutcome, reason: detail.err_code === -2 ? 'stopped' : detail.err_code ? 'error' : undefined });
+        onTurnRef.current?.({
+          phase: 'done',
+          message: detail,
+          actionOutcome: pending?.actionOutcome,
+          reason: detail.err_code === -2 ? 'stopped' : detail.err_code ? 'error' : undefined,
+        });
       }
 
       return !detail.is_finish;
     },
-    [cleanupPolling, isCurrentChat, mergeMessage, runPageAction],
+    [cleanupPolling, isCurrentChat, mergeMessage, runPageRequest],
   );
 
   const { start: startStream, stop: stopStream } = useAiChatStream({
@@ -570,15 +613,7 @@ function ChatPanelContent(props: IAiChatProps) {
           page_from: pageFrom || chat.page_from,
         };
 
-        // What the page can do right now. Read at send time: registrations
-        // come and go with the page, and this is also what closes a confirm
-        // scope of 'turn' in the runtime.
-        const pageActions = uiActionRuntime.manifest();
-        const result = await sendMessage({
-          chat_id: chat.chat_id,
-          query,
-          page_actions: pageActions.length ? pageActions : undefined,
-        });
+        const result = await sendMessage({ chat_id: chat.chat_id, query: { ...query, ...pageQuery(false) } });
         // Acceptance survives closing the dock before the response arrives.
         acceptedChatIdsRef.current.add(chat.chat_id);
         if (generation !== turnGenerationRef.current || !activeRef.current) {
@@ -651,6 +686,55 @@ function ChatPanelContent(props: IAiChatProps) {
       t,
     ],
   );
+
+  // Sends the page's result back as the answer to the call the model made,
+  // then follows the turn on. It carries no user text, so it shows no bubble.
+  const continueTurn = useCallback(
+    async (previous: IAiChatMessage, pageResult: IAiChatPageResult) => {
+      const pending = pendingTurnRef.current;
+      const generation = turnGenerationRef.current;
+      const isCurrent = () => generation === turnGenerationRef.current && activeRef.current && pendingTurnRef.current === pending;
+      if (!pending || !isCurrent()) return;
+      // The result answers a call this protocol made, so it carries the version
+      // even when the page has since lost its actions (an action that navigated away).
+      const query: IAiChatMessageQuery = {
+        content: '',
+        page_from: currentPageFrom() || previous.query.page_from,
+        ...pageQuery(true),
+        page_runtime: PAGE_RUNTIME,
+        page_result: pageResult,
+      };
+      let accepted: IAiChatMessageLocator | undefined;
+      try {
+        const result = await sendMessage({ chat_id: previous.chat_id, query });
+        const locator = { chat_id: result.chat_id, seq_id: result.seq_id };
+        accepted = locator;
+        if (!isCurrent()) {
+          void cancelMessage(locator).catch(handleError);
+          return;
+        }
+        pending.locator = locator;
+        liveTurnsRef.current.add(`${locator.chat_id}:${locator.seq_id}`);
+        const message: IAiChatMessage = { ...locator, query, response: [], cur_step: t('message.generating'), is_finish: false, recommend_action: [], err_code: 0 };
+        mergeMessage(message);
+        onTurnRef.current?.({ phase: 'running', message });
+        if (await syncMessageDetail(locator, { startStream: true })) {
+          startPolling(locator);
+        }
+      } catch (error) {
+        if (!isCurrent()) return;
+        // The turn is given up here; a message the server already took must not run on unwatched.
+        if (accepted) void cancelMessage(accepted).catch(() => {});
+        pending.scope?.finish?.();
+        pendingTurnRef.current = undefined;
+        setSubmitting(false);
+        onTurnRef.current?.({ phase: 'done', message: previous, actionOutcome: pending.actionOutcome, reason: 'error' });
+        handleError(error instanceof Error ? error : new Error('send page result failed'));
+      }
+    },
+    [handleError, mergeMessage, startPolling, syncMessageDetail, t],
+  );
+  continueTurnRef.current = continueTurn;
 
   useEffect(() => {
     if (initialMessage && !initialMessageSentRef.current) {

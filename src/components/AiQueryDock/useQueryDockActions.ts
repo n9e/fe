@@ -197,7 +197,8 @@ export function useQueryDockActions<S extends QueryDockSnapshot = QueryDockSnaps
             report(turn, { phase: 'applying', stage: 'unchanged' });
             await ctx.feedback.moveCursor(control.queryInput());
             guard();
-            undoRef.current = { snapshot: control.snapshot(), datasource: turn.datasource, revision: turn.revision };
+            // One user question can take several writes; undo goes back to before the first.
+            if (turn.stage === 'unchanged') undoRef.current = { snapshot: control.snapshot(), datasource: turn.datasource, revision: turn.revision };
             ctx.feedback.highlight(control.queryInput());
             const settings = Object.fromEntries(
               (action.settings ?? []).flatMap((setting) => {

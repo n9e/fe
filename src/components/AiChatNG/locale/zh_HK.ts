@@ -128,12 +128,6 @@ const zh_HK = {
   input_request: {
     title: '它想先確認一下',
   },
-  action_frame: {
-    updating_query: 'AI 正在更新目前查詢',
-    acting: 'AI 正在操作頁面',
-    done: '操作完成',
-    stop: '停止',
-  },
   page_action: {
     title: '頁面操作',
     malformed: '這條頁面操作缺少內容，無法執行',

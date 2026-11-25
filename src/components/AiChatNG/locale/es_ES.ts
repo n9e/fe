@@ -127,12 +127,6 @@ const es_ES = {
   "input_request": {
     "title": "It needs to check something first"
   },
-  "action_frame": {
-    "updating_query": "La IA está actualizando la consulta actual",
-    "acting": "The assistant is working on this page",
-    "done": "Done",
-    "stop": "Stop"
-  },
   "page_action": {
     "title": "Page action",
     "malformed": "This page action has no content and cannot run",

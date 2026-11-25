@@ -36,7 +36,8 @@ const turn = (over: Partial<IAiChatTurn['message']>, extra?: Partial<IAiChatTurn
   ...extra,
 });
 
-const pageAction = { content_type: 'page_action', content: 'fill', param: { call_id: 'k1', name: 'set_metric_query', description: 'fill', args: { promql: 'up' } } };
+const pageAction = { content_type: 'page_action', content: '', param: { call_id: 'k1', name: 'set_metric_query', args: { promql: 'up' } } };
+const reply = { content_type: 'markdown', content: 'Nothing reported in the last hour.', is_finish: true };
 
 function renderDock(open = true) {
   const onClose = jest.fn();
@@ -212,10 +213,20 @@ it('keeps the list open when a delivered action has not completed', () => {
   expect(screen.getByTestId('list').hidden).toBe(false);
   expect(screen.queryByText('dock.success')).toBeNull();
 });
-it('collapses after a successful action that returns no data', () => {
+it('collapses when the query the assistant ran returned data', () => {
   renderDock();
-  act(() => panelProps!.onTurn!(turn({ response: [pageAction] }, { actionOutcome: { ok: true, status: 'ok', action: 'set_metric_query', result: { empty: true } } })));
+  act(() => panelProps!.onTurn!(turn({ response: [reply] }, { actionOutcome: { ok: true, status: 'ok', action: 'set_metric_query', result: { empty: false } } })));
   expect(screen.getByTestId('list').hidden).toBe(true);
+});
+it('stays open when the query came back empty, so the assistant can suggest the next step', () => {
+  renderDock();
+  act(() => panelProps!.onTurn!(turn({ response: [reply] }, { actionOutcome: { ok: true, status: 'ok', action: 'set_metric_query', result: { empty: true } } })));
+  expect(screen.getByTestId('list').hidden).toBe(false);
+});
+it('shows the assistant still working after the page reported back', () => {
+  render(<AiQueryDock open pageFrom={{ url: '/metric/explorer' }} onClose={jest.fn()} progress={{ phase: 'empty', stage: 'queried' }} />);
+  act(() => panelProps!.onTurn!(turn({ is_finish: false, response: [] }, { phase: 'running' })));
+  expect(screen.queryByText('dock.empty')).toBeNull();
 });
 it.each([
   ['failed', { actionOutcome: { ok: false, status: 'failed' as const, action: 'set_metric_query', message: 'query unavailable' } }],

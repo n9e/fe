@@ -127,12 +127,6 @@ const ko_KR = {
   "input_request": {
     "title": "It needs to check something first"
   },
-  "action_frame": {
-    "updating_query": "AI가 현재 쿼리를 업데이트하고 있습니다",
-    "acting": "The assistant is working on this page",
-    "done": "Done",
-    "stop": "Stop"
-  },
   "page_action": {
     "title": "Page action",
     "malformed": "This page action has no content and cannot run",

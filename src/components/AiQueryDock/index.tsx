@@ -124,9 +124,10 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     onNewConversation?.();
   };
 
-  // A successful page action has already waited for the page query result.
-  // Fold the conversation then so the result is visible, even if the user
-  // opened or read the conversation while the action was running.
+  // When the query the assistant ran came back with data, the data is the
+  // answer: fold the conversation so it is visible, even if the user opened
+  // or read the conversation meanwhile. An empty or failed query stays open,
+  // because what the assistant suggests next is the useful part.
   const handleTurn = useCallback((next: IAiChatTurn) => {
     setTurn(next);
     setSendError(undefined);
@@ -135,7 +136,8 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       return;
     }
     setStartedAt(undefined);
-    if (delivered(next.message) && next.actionOutcome?.ok) setExpanded(false);
+    const outcome = next.actionOutcome;
+    if (outcome?.ok && !(outcome.result as { empty?: boolean } | undefined)?.empty) setExpanded(false);
   }, []);
 
   useSoleOpenDock(open, onClose);
@@ -157,7 +159,10 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     return () => document.removeEventListener('click', collapseOutside, true);
   }, [open, expanded, !!turn, busy]);
 
-  const running = progress?.phase === 'applying' || progress?.phase === 'querying' || (turn?.phase === 'running' && (!progress || progress.phase === 'idle'));
+  const acting = progress?.phase === 'applying' || progress?.phase === 'querying';
+  // The assistant keeps working after the page reports back, so a running turn
+  // outranks the result of the step before it.
+  const running = acting || turn?.phase === 'running';
   const message = turn?.message;
   let tone: 'idle' | 'running' | 'ok' | 'warn' | 'error' = 'idle';
   let status: React.ReactNode = t('dock.idle');
@@ -207,7 +212,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
     tone = 'running';
     status = <>{t('dock.understanding')}…</>;
   }
-  if (progress && progress.phase !== 'idle') {
+  if (progress && progress.phase !== 'idle' && (acting || !running)) {
     const phase = progress.phase;
     tone = phase === 'success' || phase === 'empty' || phase === 'undone' ? 'ok' : phase === 'failed' ? 'error' : phase === 'applying' || phase === 'querying' ? 'running' : 'warn';
     const key = phase === 'stopped' && progress.stage ? `stopped_${progress.stage}` : phase;
@@ -250,6 +255,7 @@ export default function AiQueryDock(props: AiQueryDockProps) {
       <ChatPanel
         key={generation}
         variant='slim'
+        attachPageActions
         initialSkill='explorer-query'
         active={open}
         onBusyChange={setBusy}
