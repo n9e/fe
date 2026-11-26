@@ -85,7 +85,15 @@ export default function QueryInput(props: Props) {
             absolute: queryBuilderPinned,
           })}
         >
-          <Form.Item name={['query', 'query']} rules={[{ required: true, whitespace: true, message: t(`${logExplorerNS}:query_is_required`) }]}>
+          <Form.Item
+            name={['query', 'query']}
+            rules={[
+              ({ getFieldValue }) => {
+                const required = getFieldValue(['query', 'mode']) !== 'metric';
+                return { required, whitespace: required, message: t(`${logExplorerNS}:query_is_required`) };
+              },
+            ]}
+          >
             <SharedQueryInput
               onChange={handleCommit}
               onEnterPress={(value) => {

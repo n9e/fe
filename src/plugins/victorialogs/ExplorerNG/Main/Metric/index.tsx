@@ -30,7 +30,7 @@ import { Field } from '../../types';
 import { dsQuery, logsQuery } from '../../services';
 import filteredFields, { filterOutBuiltinFields } from '../../utils/filteredFields';
 import { getOptionsFromLocalstorage, setOptionsToLocalstorage } from '../../utils/optionsLocalstorage';
-import { classifyExplorerMode, inferMetricTimeseriesKeysFromQuery } from '../../utils/logsQL';
+import { hasStatsPipe, inferMetricTimeseriesKeysFromQuery } from '../../utils/logsQL';
 import renderBuiltinFields from '../../utils/renderBuiltinFields';
 import renderLogViewerFieldValueWithoutFilters from '../../utils/renderLogViewerFieldValueWithoutFilters';
 import ResetZoomButton from './ResetZoomButton';
@@ -201,10 +201,7 @@ export default function Metric(props: Props) {
   });
   const pageLoadMode = options.pageLoadMode || 'pagination';
   const inferredKeys = useMemo(() => inferMetricTimeseriesKeysFromQuery(queryValues?.query), [queryValues?.query]);
-  // The chart view can only render aggregations (stats/uniq pipes). When the user
-  // switches back to a plain query while staying in this view, say so instead of
-  // silently jumping to raw logs.
-  const isAggregationQuery = useMemo(() => classifyExplorerMode(_.trim(queryValues?.query || '')) === 'metric', [queryValues?.query]);
+  const isAggregationQuery = useMemo(() => hasStatsPipe(queryValues?.query), [queryValues?.query]);
   const valueKeyOptions = useMemo(() => {
     return _.map(_.uniq([...(queryValues?.keys?.valueKey || []), ...inferredKeys.valueKey]), (item) => ({ label: item, value: item }));
   }, [JSON.stringify(queryValues?.keys?.valueKey), JSON.stringify(inferredKeys.valueKey)]);
@@ -331,7 +328,7 @@ export default function Metric(props: Props) {
 
   useEffect(() => {
     const requestId = ++timeseriesRequestIdRef.current;
-    if (!refreshFlag || !datasourceValue || !queryValues?.range || !_.trim(queryValues?.query) || queryValues?.vizType !== 'timeseries') {
+    if (!refreshFlag || !datasourceValue || !queryValues?.range || !isAggregationQuery || queryValues?.vizType !== 'timeseries') {
       setTimeseriesLoading(false);
       return;
     }
@@ -541,12 +538,15 @@ export default function Metric(props: Props) {
 
   if (!isAggregationQuery) {
     return (
-      <div className='h-full flex items-center justify-center px-6'>
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={<span className='max-w-[420px] text-center text-xs text-hint'>{t('explorer.metric_requires_aggregation')}</span>}
-        />
-      </div>
+      <>
+        <div className='flex justify-between pb-2'>{vizTypeRadio}</div>
+        <div className='flex-1 min-h-0 flex items-center justify-center px-6'>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={<span className='max-w-[420px] text-center text-xs text-hint'>{t('explorer.metric_requires_aggregation')}</span>}
+          />
+        </div>
+      </>
     );
   }
 
