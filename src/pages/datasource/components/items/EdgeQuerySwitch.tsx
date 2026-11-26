@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Button, Form, Space, Spin, Switch, Tag, Typography } from 'antd';
-import { ReloadOutlined } from '@ant-design/icons';
+import { Button, Form, Spin, Switch, Tag, Typography } from 'antd';
+import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
 
@@ -9,6 +9,10 @@ import { EdgeClusterStatus, getEdgeQueryStatus } from '../../services';
 
 const EDGE_STATUS_POLL_INTERVAL_MS = 8000;
 const MAX_CONSECUTIVE_POLL_FAILURES = 3;
+
+function EdgeStatusSpinner() {
+  return <Spin style={{ display: 'flex' }} indicator={<LoadingOutlined aria-hidden style={{ fontSize: 12 }} />} />;
+}
 
 export function EdgeClusterStatusBadge({ clusterName }: { clusterName?: string }) {
   const { t } = useTranslation('datasourceManage');
@@ -113,7 +117,7 @@ export function EdgeClusterStatusBadge({ clusterName }: { clusterName?: string }
   }
   const activeStatus = statusInfo?.cluster_name === clusterName ? statusInfo : null;
   if (loading && !activeStatus && !loadFailed) {
-    return <Spin size='small' />;
+    return <EdgeStatusSpinner />;
   }
   if (!activeStatus && !loadFailed) {
     return null;
@@ -133,10 +137,10 @@ export function EdgeClusterStatusBadge({ clusterName }: { clusterName?: string }
   }
 
   return (
-    <Space size={4}>
+    <span className='inline-flex items-center gap-1'>
       {tag}
       <ReloadOutlined spin={loading} className='cursor-pointer text-xs' onClick={() => setRefreshTick((v) => v + 1)} />
-    </Space>
+    </span>
   );
 }
 
@@ -179,7 +183,7 @@ export default function EdgeQuerySwitch({ form }: { form: FormInstance }) {
 
   return (
     <div className='mb-4'>
-      <Space wrap>
+      <div className='inline-flex flex-wrap items-center gap-2'>
         <span>{t('form.edge_query')}</span>
         <Form.Item
           name={['settings', 'use_edge']}
@@ -193,15 +197,21 @@ export default function EdgeQuerySwitch({ form }: { form: FormInstance }) {
         >
           <Switch size='small' aria-label={t('form.edge_query')} disabled={!featureEnabled && !useEdge} />
         </Form.Item>
-        {availability === 'loading' && <Spin size='small' />}
+        {availability === 'loading' && <EdgeStatusSpinner />}
         {availability === 'disabled' && <Tag color='default'>{t('form.edge_status_disabled')}</Tag>}
         {availability === 'unavailable' && (
-          <Button type='link' size='small' icon={<ReloadOutlined aria-hidden />} onClick={() => setRetryCount((count) => count + 1)}>
+          <Button
+            type='link'
+            size='small'
+            className='flex h-auto items-center border-0 p-0'
+            icon={<ReloadOutlined aria-hidden />}
+            onClick={() => setRetryCount((count) => count + 1)}
+          >
             {t('form.edge_query_retry')}
           </Button>
         )}
         {featureEnabled && useEdge && <EdgeClusterStatusBadge clusterName={clusterName} />}
-      </Space>
+      </div>
       <div>
         <Typography.Text type={availability === 'disabled' || availability === 'unavailable' ? 'warning' : 'secondary'} className='text-xs'>
           {availability === 'loading' || featureEnabled ? t('form.edge_query_tip') : warning}
