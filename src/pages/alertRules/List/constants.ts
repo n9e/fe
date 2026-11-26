@@ -26,6 +26,11 @@ export const defaultColumnsConfigs = [
     visible: true,
   },
   {
+    name: 'id',
+    i18nKey: 'ID',
+    visible: false,
+  },
+  {
     name: 'name',
     i18nKey: 'table.name',
     visible: true,

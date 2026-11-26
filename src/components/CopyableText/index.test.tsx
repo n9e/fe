@@ -1,6 +1,7 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { message } from 'antd';
 import CopyableText, { CopyableTag } from './index';
 
@@ -148,23 +149,51 @@ test('ignores repeated clicks while clipboard writing is pending', async () => {
   expect(screen.getByRole('button', { name: 'copied: pending-copy' })).toBeInTheDocument();
 });
 
-test('pointer copying does not steal focus or pin feedback after leaving', async () => {
+test.each([undefined, 'auto'] as const)('pointer copying fades out the check mark and restores copying on the next hover (%s)', async (placement) => {
   jest.useFakeTimers();
-  const { container, unmount } = render(<CopyableText value='group-id' placement='auto' />);
+  const { container, unmount } = render(<CopyableText value='group-id' placement={placement} />);
   const root = container.querySelector('.fc-copyable-text')!;
   const button = screen.getByRole('button');
   fireEvent.mouseEnter(root);
   act(() => jest.advanceTimersByTime(200));
   expect(fireEvent.mouseDown(button)).toBe(false);
-  await act(async () => fireEvent.click(button));
+  await act(async () => fireEvent.click(button, { detail: 1 }));
   expect(writeText).toHaveBeenCalledWith('group-id');
   expect(screen.getByRole('button', { name: 'copied: group-id' })).toBeInTheDocument();
   expect(document.activeElement).not.toBe(button);
+  act(() => jest.advanceTimersByTime(1800));
+  expect(root).toHaveClass('fc-copyable-text--dismissed');
+  expect(screen.getByRole('img', { name: 'check' })).toBeInTheDocument();
   fireEvent.mouseLeave(root, { relatedTarget: document.body });
   act(() => jest.advanceTimersByTime(100));
   expect(root).not.toHaveClass('fc-copyable-text--active');
+  fireEvent.mouseEnter(root);
+  expect(root).not.toHaveClass('fc-copyable-text--dismissed');
+  expect(screen.getByRole('img', { name: 'copy' })).toBeInTheDocument();
   unmount();
   jest.useRealTimers();
+});
+
+test.each([undefined, 'auto'] as const)('preserves keyboard focus visibility when the focused copy button is clicked (%s)', async (placement) => {
+  jest.useFakeTimers();
+  try {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    render(<CopyableText value='group-id' placement={placement} />);
+    const button = screen.getByRole('button', { name: 'copy: group-id' });
+
+    await user.tab();
+    expect(button).toHaveFocus();
+    expect(fireEvent.mouseDown(button)).toBe(false);
+    await act(async () => fireEvent.click(button, { detail: 1 }));
+    expect(button).toHaveAccessibleName('copied: group-id');
+    act(() => jest.advanceTimersByTime(1800));
+
+    expect(button).toHaveFocus();
+    expect(button.closest('.fc-copyable-text')).not.toHaveClass('fc-copyable-text--dismissed');
+    expect(screen.getByRole('img', { name: 'copy' })).toBeInTheDocument();
+  } finally {
+    jest.useRealTimers();
+  }
 });
 
 test('does not show an old copy result after a row changes identity', async () => {
