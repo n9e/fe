@@ -3,6 +3,7 @@ const zh_CN = {
     execute: '查询',
     query: '查询条件',
     query_required: '查询条件不能为空',
+    metric_requires_aggregation: '统计图表需要聚合查询：请在查询末尾添加 `| stats ...`，或使用查询构建器的「统计图表」配置分组与指标。',
     query_lanaguage_docs: '查询语言文档',
     limit: '限制数量',
     hits: '匹配结果',

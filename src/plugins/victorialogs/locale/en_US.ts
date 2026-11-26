@@ -3,6 +3,7 @@ const en_US = {
     execute: 'Execute',
     query: 'Query',
     query_required: 'Please enter a valid Query and execute it',
+    metric_requires_aggregation: 'Statistical charts require an aggregation query. Append `| stats ...` or configure Group by / aggregations in the query builder.',
     query_lanaguage_docs: 'Query language docs',
     limit: 'Limit entries',
     hits: 'Total hits',

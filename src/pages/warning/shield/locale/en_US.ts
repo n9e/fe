@@ -38,7 +38,18 @@ const en_US = {
     start_msg: 'Start time is required',
     end: 'End time',
     end_msg: 'End time is required',
-    periodic_tip: 'A periodic mute never expires, alerts matched in the time ranges above are muted every week. Same start and end time means the whole day',
+    periodic_tip: 'A periodic mute never expires, alerts matched on the days and time ranges above are muted. Same start and end time means the whole day',
+    days_of_week_msg: 'Days are required',
+    cycle: 'Repeat',
+    cycle_week: 'Weekly',
+    cycle_month: 'Monthly',
+    day_of_month: 'Day {{day}}',
+    last_day: 'Last day',
+    days_of_month_msg: 'Days are required',
+    month_cross_midnight_msg: 'Cannot span midnight',
+    month_cross_midnight_tip: 'A monthly time range cannot span midnight. Split it into two rows, e.g. last day 23:00~00:00 and day 1 00:00~03:00',
+    month_missing_days_tip: 'Some months have no day 29, 30 or 31, and the mute does not apply on those days in those months. Pick "Last day" to mute at the end of every month',
+    next_windows: 'Upcoming',
   },
   mute_method: {
     hint_title: 'Which mute method should I pick?',
@@ -81,7 +92,7 @@ const en_US = {
   filter_configs_desc:
     'Decide which alert events are muted: business group, data source, severity and event tags. Conditions are combined with AND, an empty one means no restriction',
   mute_configs: 'Mute settings',
-  mute_configs_desc: 'Decide when and how the alerts are muted: a fixed time range, or time ranges repeated every week',
+  mute_configs_desc: 'Decide when and how the alerts are muted: a fixed time range, or time ranges repeated every week or month',
   alert_content:
     'To prevent a misconfigured mute rule from muting all alerts across the company, a mute rule only takes effect on the alerts of a specific business group',
   preview_muted_title: 'Preview related events',

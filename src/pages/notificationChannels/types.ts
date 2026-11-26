@@ -161,6 +161,14 @@ export interface LineRequestConfig extends NativeNetworkConfig {
   channel_access_token: string;
 }
 
+export interface BarkRequestConfig extends NativeNetworkConfig {
+  server_url?: string;
+  username?: string;
+  password?: string;
+  sound?: string;
+  group?: string;
+}
+
 export interface ChannelItem {
   id: number;
   name: string;
@@ -192,7 +200,8 @@ export interface ChannelItem {
     | 'pushover'
     | 'ntfy'
     | 'splunk_oncall'
-    | 'line';
+    | 'line'
+    | 'bark';
   request_config: {
     http_request_config: HttpRequestConfig;
     smtp_request_config: SmtpRequestConfig;
@@ -208,6 +217,7 @@ export interface ChannelItem {
     ntfy_request_config?: NtfyRequestConfig;
     splunk_oncall_request_config?: SplunkOnCallRequestConfig;
     line_request_config?: LineRequestConfig;
+    bark_request_config?: BarkRequestConfig;
     jira_request_config?: JiraRequestConfig;
     discord_request_config?: DiscordRequestConfig;
     jsm_alert_request_config?: JSMAlertRequestConfig;

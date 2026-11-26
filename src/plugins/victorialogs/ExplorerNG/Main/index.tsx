@@ -11,6 +11,7 @@ import { OnValueFilterParams } from '@/pages/logExplorer/components/LogsViewer/t
 
 import { NAME_SPACE } from '../../constants';
 import { BUILDER_PINNED_CACHE_KEY, METRIC_DEFAULT_QUERY, RAW_DEFAULT_QUERY } from '../constants';
+import { buildMetricQueryOnSwitch } from '../utils/mode';
 import { Field } from '../types';
 import Builder from '../Builder';
 import { inferMetricTimeseriesKeys } from '../utils/logsQL';
@@ -97,6 +98,9 @@ export default function Main(props: Props) {
                           ...queryValues,
                           mode: nextMode,
                           query: RAW_DEFAULT_QUERY,
+                          // The query no longer matches the builder form after this reset.
+                          querySource: 'code',
+                          builderStatus: 'stale',
                         },
                       });
                     },
@@ -107,7 +111,10 @@ export default function Main(props: Props) {
                   query: {
                     ...queryValues,
                     mode: nextMode,
-                    query: isDefaultQuery ? (nextMode === 'metric' ? METRIC_DEFAULT_QUERY : RAW_DEFAULT_QUERY) : queryValues?.query,
+                    query: nextMode === 'metric' ? buildMetricQueryOnSwitch(currentQuery) : isDefaultQuery ? RAW_DEFAULT_QUERY : queryValues?.query,
+                    // The query no longer matches the builder form after this reset.
+                    querySource: 'code',
+                    builderStatus: 'stale',
                   },
                 });
               }}
