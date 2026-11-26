@@ -1,13 +1,16 @@
+import moment from 'moment';
 import React, { useState, useContext, useRef } from 'react';
 import { Form, Row, Col, Button, Segmented } from 'antd';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { CommonStateContext } from '@/App';
 import { SIZE } from '@/utils/constant';
 import TimeRangePicker from '@/components/TimeRangePicker';
+import DocumentDrawer from '@/components/DocumentDrawer';
+import { useShowUsageDocs } from '@/components/UsageDocs';
 import { NAME_SPACE as logExplorerNS, QUERY_INPUT_MIN_WIDTH } from '@/pages/logExplorer/constants';
 
-import { NAME_SPACE } from '../../constants';
+import { DORIS_SQL_MODE_DOC_URL, NAME_SPACE } from '../../constants';
 import QueryWorkspace from '@/pages/logExplorer/components/QueryWorkspace';
 import QueryBuilder from '../components/QueryBuilder';
 import type { DorisQueryWorkspace } from '../useQueryWorkspace';
@@ -49,7 +52,8 @@ interface Props {
 
 /** Render doris query controls and the active result mode inside the pinned page region. */
 export default function index(props: Props) {
-  const { t } = useTranslation(NAME_SPACE);
+  const { t, i18n } = useTranslation(NAME_SPACE);
+  const showUsageDocs = useShowUsageDocs();
   const { logsDefaultRange, darkMode } = useContext(CommonStateContext);
 
   const {
@@ -164,7 +168,48 @@ export default function index(props: Props) {
           <Col flex='none'>
             <Form.Item name={['query', 'range']} initialValue={logsDefaultRange} noStyle>
               <TimeRangePicker
+                resolvedRange={
+                  rangeRef.current?.from != null && rangeRef.current?.to != null ? { start: moment(rangeRef.current.from), end: moment(rangeRef.current.to) } : undefined
+                }
                 showMillisecond
+                timeRangeTooltipInteractive={syntax === 'sql' && showUsageDocs}
+                timeRangeTooltip={
+                  syntax === 'sql' ? (
+                    showUsageDocs ? (
+                      <Trans
+                        ns={NAME_SPACE}
+                        i18nKey='query.time_field_tip'
+                        components={{
+                          span: <span style={{ color: 'var(--fc-fill-gold, #ffbc0d)' }} />,
+                          br: <br />,
+                          a: (
+                            <a
+                              href={DORIS_SQL_MODE_DOC_URL}
+                              style={{ color: 'var(--fc-text-link-light, #a186f4)' }}
+                              onClick={(event) => {
+                                event.preventDefault();
+                                DocumentDrawer({
+                                  language: i18n.language === 'zh_CN' ? 'zh_CN' : 'en_US',
+                                  darkMode,
+                                  title: t('common:document_link'),
+                                  type: 'iframe',
+                                  documentPath: DORIS_SQL_MODE_DOC_URL,
+                                  anchor: '#2-时间宏',
+                                });
+                              }}
+                            />
+                          ),
+                        }}
+                      />
+                    ) : (
+                      <span style={{ color: 'var(--fc-fill-gold, #ffbc0d)' }}>
+                        {t('query.time_field_tip')
+                          .split(/<br\s*\/?\s*>/i)[0]
+                          .replace(/<[^>]+>/g, '')}
+                      </span>
+                    )
+                  ) : undefined
+                }
                 onChange={() => {
                   snapRangeRef.current = {
                     from: undefined,
