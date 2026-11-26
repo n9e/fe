@@ -1,4 +1,4 @@
-import { classifyExplorerMode, formatLogsQL, getPipeName, renderMetricLogsQL, splitLogsQLPipes } from './logsQL';
+import { classifyExplorerMode, formatLogsQL, getPipeName, hasStatsPipe, renderMetricLogsQL, splitLogsQLPipes } from './logsQL';
 
 describe('VictoriaLogs ExplorerNG logsQL utils', () => {
   test.each([
@@ -27,6 +27,21 @@ describe('VictoriaLogs ExplorerNG logsQL utils', () => {
     ['* | sort by (count desc)', 'metric'],
   ])('classifies %s as %s', (query, mode) => {
     expect(classifyExplorerMode(query)).toBe(mode);
+  });
+
+  test.each([
+    ['level:error', false],
+    ['* | filter level:error', false],
+    ['* | fields _msg | limit 10', false],
+    ['* | uniq by (level)', false],
+    ['_msg:"* | stats count()"', false],
+    ['* | filter level:in(* | stats count())', false],
+    ['* | filter level:error | stats count() | fields count', true],
+    ['* | STATS(level) count()', true],
+    ['* | count()', true],
+    ['* | by (level) sum(size)', true],
+  ] as const)('detects a stats pipe in %s as %s', (query, expected) => {
+    expect(hasStatsPipe(query)).toBe(expected);
   });
 
   it('does not split pipes inside quotes or parentheses', () => {

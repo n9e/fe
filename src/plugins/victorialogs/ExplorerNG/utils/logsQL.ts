@@ -4,6 +4,32 @@ import { VictoriaLogsAggregation, VictoriaLogsFilter, VictoriaLogsMetricBuilderS
 
 const AGGREGATION_PIPE_NAMES = ['stats', 'uniq', 'rate', 'histogram'];
 const RAW_EXPLORER_COMPATIBLE_PIPE_NAMES = ['filter', 'extract', 'replace', 'json', 'pack_json', 'unpack_json'];
+const STATS_FUNCTION_NAMES = new Set([
+  'any',
+  'avg',
+  'count',
+  'count_empty',
+  'count_uniq',
+  'count_uniq_hash',
+  'field_max',
+  'field_min',
+  'histogram',
+  'json_values',
+  'max',
+  'median',
+  'min',
+  'quantile',
+  'rate',
+  'rate_sum',
+  'row_any',
+  'row_max',
+  'row_min',
+  'stddev',
+  'sum',
+  'sum_len',
+  'uniq_values',
+  'values',
+]);
 
 interface RenderLogsQLOptions {
   multiline?: boolean;
@@ -93,6 +119,18 @@ export function classifyExplorerMode(userQL?: string): 'raw' | 'metric' {
     return 'raw';
   }
   return 'metric';
+}
+
+export function hasStatsPipe(query?: string) {
+  return splitLogsQLPipes(query ?? '')
+    .slice(1)
+    .some((pipe) => {
+      if (/^stats(?:_remote)?(?:\s|\(|$)/i.test(pipe)) return true;
+
+      // LogsQL allows the stats keyword to be omitted, as in `| by (level) count()`.
+      const functionName = pipe.match(/^(?:(?:by\s*)?\([^)]*\)\s*)?([a-z_]+)\s*\(/i)?.[1];
+      return functionName !== undefined && STATS_FUNCTION_NAMES.has(functionName.toLowerCase());
+    });
 }
 
 function escapeValue(value: any) {
