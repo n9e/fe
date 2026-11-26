@@ -34,6 +34,10 @@ import './menu.less';
 import './locale';
 import '@/components/pageLayout/locale';
 
+// Pages that frame another product have no permission point here: that product enforces its own
+// permissions. `/duty-embed/` is the page that frames the duty console.
+const isFramedPageKey = (key: string) => key.startsWith(`${embeddedProductDetailPath}/`) || key.startsWith('/duty-embed/');
+
 const calcUrlPath = (url: string) => {
   const urlPath = url.split('?')[0];
   return urlPath;
@@ -214,7 +218,7 @@ const SideMenu = (props: SideMenuProps) => {
         }
         const filteredChildren = menu.children
           .map((child) => {
-            if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
+            if (isFramedPageKey(child.key)) {
               return child;
             }
             if (menu.key === '/flashduty') {
@@ -257,7 +261,7 @@ const SideMenu = (props: SideMenuProps) => {
           }
           return item
             .children!.filter((child) => {
-              if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
+              if (isFramedPageKey(child.key)) {
                 return child;
               }
               if (child.type === 'tabs' && child.children && child.children.length > 0) {

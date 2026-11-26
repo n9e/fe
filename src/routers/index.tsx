@@ -154,6 +154,8 @@ export default function Content() {
       !location.pathname.includes('/settings/infrastructure/add') &&
       !location.pathname.includes('/settings/source/') &&
       !location.pathname.startsWith('/nightingale-ai') &&
+      // The duty console framed here checks its own permissions.
+      !location.pathname.startsWith('/duty-embed/') &&
       !location.pathname.includes('/403')
     ) {
       if (profile?.roles.indexOf('Admin') === -1) {
