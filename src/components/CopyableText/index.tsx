@@ -17,16 +17,17 @@ export interface CopyableTextProps {
   overlay?: boolean;
   /** Opt in to zero-width copy controls; omitted preserves existing consumers. */
   placement?: CopyPlacement;
+  showValueTooltip?: boolean;
   placeholder?: React.ReactNode;
 }
 
-export default function CopyableText({ value, children, className, style, wrap, overlay, placement, placeholder = '—' }: CopyableTextProps) {
+export default function CopyableText({ value, children, className, style, wrap, overlay, placement, showValueTooltip = true, placeholder = '—' }: CopyableTextProps) {
   const { t } = useTranslation('resourceCopy');
   const raw = value == null || String(value).trim() === '' ? undefined : String(value);
   const floating = useCopyPlacement(placement, raw);
   const [buttonActive, setButtonActive] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'pending' | 'success' | 'dismissed' | 'error'>('idle');
   const sequence = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout>>();
   useEffect(() => {
@@ -41,14 +42,18 @@ export default function CopyableText({ value, children, className, style, wrap, 
     event.preventDefault();
     event.stopPropagation();
     if (raw === undefined || status === 'pending') return;
+    const trigger = event.currentTarget;
+    const dismissAfterCopy = event.detail > 0 && !window.matchMedia('(hover: none), (pointer: coarse)').matches;
     const current = ++sequence.current;
     clearTimeout(timer.current);
     setStatus('pending');
     try {
-      await writeClipboard(raw, event.currentTarget);
+      await writeClipboard(raw, trigger);
       if (current !== sequence.current) return;
       setStatus('success');
-      timer.current = setTimeout(() => setStatus('idle'), 1800);
+      timer.current = setTimeout(() => {
+        setStatus(dismissAfterCopy && !trigger.matches(':focus') ? 'dismissed' : 'idle');
+      }, 1800);
     } catch {
       if (current !== sequence.current) return;
       setStatus('error');
@@ -63,6 +68,9 @@ export default function CopyableText({ value, children, className, style, wrap, 
       </span>
     );
   const tip = t(status === 'success' ? 'copied' : status === 'error' ? 'retry' : 'copy');
+  const restoreCopyButton = () => {
+    if (status === 'dismissed') setStatus('idle');
+  };
   const content = (
     <span ref={floating.contentRef} className='fc-copyable-text__content'>
       {children ?? raw}
@@ -78,13 +86,13 @@ export default function CopyableText({ value, children, className, style, wrap, 
       onMouseLeave={placement ? () => setButtonActive(false) : undefined}
       onFocus={placement ? () => setButtonActive(true) : undefined}
       onBlur={placement ? () => setButtonActive(false) : undefined}
-      onMouseDown={placement ? (event) => event.preventDefault() : undefined}
+      onMouseDown={(event) => event.preventDefault()}
       onClick={copy}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') event.stopPropagation();
       }}
     >
-      {status === 'success' ? <CheckOutlined /> : status === 'error' ? <ExclamationCircleOutlined /> : <CopyOutlined />}
+      {status === 'success' || status === 'dismissed' ? <CheckOutlined /> : status === 'error' ? <ExclamationCircleOutlined /> : <CopyOutlined />}
     </button>
   );
   const root = (
@@ -95,10 +103,14 @@ export default function CopyableText({ value, children, className, style, wrap, 
         'fc-copyable-text--overlay': overlay && !placement,
         'fc-copyable-text--floating': !!placement,
         'fc-copyable-text--active': !!placement && floating.active,
+        'fc-copyable-text--dismissed': status === 'dismissed',
       })}
       style={placement ? { ...style, ...floating.layout?.style } : style}
       data-copy-side={placement ? floating.layout?.side : undefined}
-      onMouseEnter={floating.activate}
+      onMouseEnter={() => {
+        restoreCopyButton();
+        floating.activate();
+      }}
       onMouseLeave={() => {
         floating.deactivate();
         if (placement) {
@@ -106,20 +118,23 @@ export default function CopyableText({ value, children, className, style, wrap, 
           setTooltipOpen(false);
         }
       }}
-      onFocusCapture={floating.focus}
+      onFocusCapture={(event) => {
+        restoreCopyButton();
+        floating.focus(event);
+      }}
       onBlurCapture={floating.blur}
     >
-      {placement ? (
+      {placement || !showValueTooltip ? (
         content
       ) : (
         <Tooltip title={raw} mouseEnterDelay={0.4} overlayClassName='fc-copyable-text-tooltip'>
           {content}
         </Tooltip>
       )}
-      {placement ? button : <Tooltip title={tip}>{button}</Tooltip>}
+      {placement ? button : <Tooltip title={status === 'dismissed' ? null : tip}>{button}</Tooltip>}
     </span>
   );
-  return placement ? (
+  return placement && showValueTooltip ? (
     <Tooltip
       title={floating.truncated ? raw : null}
       visible={!buttonActive && floating.truncated && tooltipOpen}

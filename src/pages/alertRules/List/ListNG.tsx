@@ -11,6 +11,7 @@ import { Link, useHistory, useLocation } from 'react-router-dom';
 import useRowMutation from '@/components/EnhancedTable/useRowMutation';
 import { CommonStateContext } from '@/App';
 import { useCanAccessFiremap } from '@/components/FiremapAccess';
+import CopyableText from '@/components/CopyableText';
 import IconFont from '@/components/IconFont';
 import { IS_ENT, IS_PLUS } from '@/utils/constant';
 import { openAuditHistory } from '@/utils/auditLink';
@@ -180,6 +181,11 @@ export default function AlertRules(props: Props) {
       },
     ],
     [
+      {
+        title: 'ID',
+        dataIndex: 'id',
+        render: (_value, record) => <CopyableText value={record.id} showValueTooltip={false} />,
+      },
       {
         title: t('table.name'),
         dataIndex: 'name',

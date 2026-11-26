@@ -103,7 +103,7 @@ const ruleModal: React.FC<props> = (props) => {
 
   const filterData = () => {
     const data = JSON.parse(JSON.stringify(currentStrategyDataAll));
-    // 与告警规则列表页共用搜索逻辑（名称、标签、查询语句，不区分大小写），保持 search_placeholder 提示语与行为一致
+    // 与告警规则列表页共用搜索逻辑和提示语
     const res = data.filter((item) => matchSearch(item, query));
     setCurrentStrategyData(res || []);
   };

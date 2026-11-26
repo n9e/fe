@@ -48,12 +48,14 @@
     }
   }
 
-  &.fc-copyable-text--active > .fc-copyable-text__button,
-  &:not(.fc-copyable-text--floating):hover > .fc-copyable-text__button,
-  &:not(.fc-copyable-text--floating):focus-within > .fc-copyable-text__button,
-  &:not(.fc-copyable-text--floating) > .fc-copyable-text__button--feedback {
-    opacity: 1;
-    pointer-events: auto;
+  &:not(.fc-copyable-text--dismissed) {
+    &.fc-copyable-text--active > .fc-copyable-text__button,
+    &:not(.fc-copyable-text--floating):hover > .fc-copyable-text__button,
+    &:not(.fc-copyable-text--floating):focus-within > .fc-copyable-text__button,
+    &:not(.fc-copyable-text--floating) > .fc-copyable-text__button--feedback {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   &.fc-copyable-text--overlay {
@@ -119,7 +121,7 @@
       background: var(--fc-copy-tag-background, var(--fc-fill-3));
     }
   }
-  &:hover > .fc-copyable-text:not(.fc-copyable-text--floating) > .fc-copyable-text__button {
+  &:hover > .fc-copyable-text:not(.fc-copyable-text--floating):not(.fc-copyable-text--dismissed) > .fc-copyable-text__button {
     opacity: 1;
     pointer-events: auto;
   }

@@ -13,7 +13,7 @@ const ja_JP = {
   name_placeholder: 'ルール名を入力してください',
   group_id_placeholder: 'ビジネスグループを選択してください',
   note_placeholder: 'アラート発火時の処理提案、関連ドキュメントリンク、当直情報などを入力',
-  search_placeholder: '名前、タグまたはクエリを検索',
+  search_placeholder: 'ID、名前、タグ、クエリで検索',
   status_triggered: 'アラート中',
   status_normal: '正常',
   notify_rule_not_found: '対応する通知ルールが見つかりません',
@@ -59,7 +59,8 @@ const ja_JP = {
     recover: '回復',
     truncated: '容量上限を超えたため、生データは一部切り捨てられました',
     var_query: '変数展開クエリ',
-    empty: 'この時間範囲に実行記録はありません。\n記録はアラートエンジンのローカルディスクに保存され、デフォルトで 8 日間保持されます。旧バージョンのエンジンや EvalLog が無効の場合、記録はありません。',
+    empty:
+      'この時間範囲に実行記録はありません。\n記録はアラートエンジンのローカルディスクに保存され、デフォルトで 8 日間保持されます。旧バージョンのエンジンや EvalLog が無効の場合、記録はありません。',
     load_more: 'さらに古い記録を読み込む',
     node_error_title: '一部のアラートエンジンノードへの照会に失敗したため、以下のノードの記録は結果に含まれていません',
     node_error_hint:
