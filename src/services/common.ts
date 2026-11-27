@@ -61,7 +61,7 @@ export function getMenuPerm() {
     method: RequestMethod.Get,
   }).then((res) => {
     // TODO 这里是为了处理一些菜单地址不便设置为权限点，但是又希望走统一的权限控制逻辑
-    const whitelist = ['/event-pipelines-executions'];
+    const whitelist = ['/event-pipelines-executions', '/integrations'];
     let perms = _.concat(res.dat || [], whitelist);
     // 如果存在 /embedded-products 权限点时就插入 /embedded-product 权限点，确保集成系统的详情页权限控制正常
     if (_.includes(perms, '/embedded-products')) {
