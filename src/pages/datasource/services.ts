@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
+import { IS_PRO } from '@/utils/constant';
 import _ from 'lodash';
 
 interface IItem {
@@ -35,10 +36,7 @@ export const getDataSourceDetailById = (id: string | number) => {
 };
 
 export const submitRequest = (body) => {
-  let url = `${apiPrefix}/upsert`;
-  if (import.meta.env['VITE_IS_PRO']) {
-    url = ' /api/n9e-plus/datasource/upsert';
-  }
+  const url = IS_PRO ? '/api/n9e-plus/datasource/upsert' : `${apiPrefix}/upsert`;
   return request(url, {
     method: RequestMethod.Post,
     data: body,
@@ -63,6 +61,33 @@ export const getServerClusters = () => {
   return request('/api/n9e/server-clusters', {
     method: RequestMethod.Get,
   }).then((res) => res.dat);
+};
+
+export interface EdgeClusterStatus {
+  cluster_name: string;
+  feature_enabled?: boolean;
+  ws_online_count: number;
+  heartbeat_online_count: number;
+  status: 'connected' | 'standby' | 'offline' | 'disabled';
+}
+
+export interface EdgeQueryStatusResponse {
+  featureEnabled: boolean;
+  clusters: Record<string, EdgeClusterStatus>;
+}
+
+export const getEdgeQueryStatus = (cluster?: string): Promise<EdgeQueryStatusResponse> => {
+  return request('/api/n9e-plus/edge-clusters/status', {
+    method: RequestMethod.Get,
+    params: cluster ? { cluster } : undefined,
+    silence: true,
+  }).then((res) => {
+    if (typeof res?.feature_enabled !== 'boolean') {
+      throw new Error('Missing Edge query capability');
+    }
+    const clusters: Record<string, EdgeClusterStatus> = res?.dat || {};
+    return { featureEnabled: res.feature_enabled, clusters };
+  });
 };
 
 export const getDatasourceLabelMapping = (ds_id) => {

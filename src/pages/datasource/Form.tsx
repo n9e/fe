@@ -9,6 +9,7 @@ import PageLayout, { HelpLink } from '@/components/pageLayout';
 import BreadCrumb from '@/components/BreadCrumb';
 import { CommonStateContext } from '@/App';
 import { allCates, getCateDisplayLabel } from '@/components/AdvancedWrap/utils';
+import { IS_PRO } from '@/utils/constant';
 
 import { getDataSourceDetailById, getDataSourceList, submitRequest } from './services';
 import Form from './Datasources/Form';
@@ -74,7 +75,7 @@ export default function FormCpt() {
       plugin_type: type,
       id: data?.id,
       is_enable: data ? undefined : true,
-      force_save: saveMode === 'save',
+      force_save: saveMode === 'save' || (IS_PRO && values?.settings?.use_edge === true),
     })
       .then(async (dat) => {
         // 新数据源要立刻进全局列表，否则弹窗里点「探索这些数据」跳过去认不出这个 id
@@ -149,11 +150,12 @@ export default function FormCpt() {
             data={data}
             onFinish={(values, clusterInstance) => {
               if (
-                (type === 'prometheus' && !values.cluster_name) ||
-                (type === 'elasticsearch' && !values.cluster_name && isPlus) ||
-                (type === 'influxdb' && !values.cluster_name) ||
-                (type === 'ck' && !values.cluster_name) ||
-                (type === 'aliyun-sls' && !values.cluster_name)
+                !(IS_PRO && values?.settings?.use_edge === true) &&
+                ((type === 'prometheus' && !values.cluster_name) ||
+                  (type === 'elasticsearch' && !values.cluster_name && isPlus) ||
+                  (type === 'influxdb' && !values.cluster_name) ||
+                  (type === 'ck' && !values.cluster_name) ||
+                  (type === 'aliyun-sls' && !values.cluster_name))
               ) {
                 Modal.confirm({
                   title: t('form.cluster_confirm'),

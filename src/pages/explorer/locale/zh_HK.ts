@@ -48,6 +48,7 @@ const zh_HK = {
       organize_fields: '指定欄位',
       organize_fields_placeholder: '預設全部欄位',
       createSuccess: '任務創建成功',
+      edge_not_supported: '經 edge 查詢的資料來源一期暫不支援日誌下載',
     },
     log_export: {
       status_doing: '匯出中',
