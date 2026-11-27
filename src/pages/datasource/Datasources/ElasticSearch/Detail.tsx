@@ -3,6 +3,7 @@ import { Row, Col, Space } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import AdvancedWrap from '@/components/AdvancedWrap';
+import { IS_PRO } from '@/utils/constant';
 import { EdgeClusterStatusBadge } from '../../components/items/EdgeQuerySwitch';
 
 interface Props {
@@ -83,18 +84,20 @@ export default function Index(props: Props) {
           </Col>
         </Row>
         <AdvancedWrap var='VITE_IS_PRO,VITE_IS_ENT'>
-          <Row gutter={16} className='mt-2'>
-            <Col span={24}>{t('form.edge_query')}：</Col>
-            <Col span={24} className='second-color'>
-              {data?.settings?.use_edge ? t('form.yes') : t('form.no')}
-            </Col>
-            <Col span={24} className='mt-2'>
-              {t('form.cluster')}：
-            </Col>
+          {IS_PRO && (
+            <Row gutter={16} className='mt-2 mb-2'>
+              <Col span={24}>{t('form.edge_query')}：</Col>
+              <Col span={24} className='second-color'>
+                {data?.settings?.use_edge ? t('form.yes') : t('form.no')}
+              </Col>
+            </Row>
+          )}
+          <Row gutter={16}>
+            <Col span={24}>{t('form.cluster')}：</Col>
             <Col span={24} className='second-color'>
               <Space>
                 <span>{data?.cluster_name || '-'}</span>
-                {data?.settings?.use_edge && <EdgeClusterStatusBadge clusterName={data?.cluster_name} />}
+                {IS_PRO && data?.settings?.use_edge && <EdgeClusterStatusBadge clusterName={data?.cluster_name} />}
               </Space>
             </Col>
           </Row>

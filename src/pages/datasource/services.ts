@@ -1,5 +1,6 @@
 import request from '@/utils/request';
 import { RequestMethod } from '@/store/common';
+import { IS_PRO } from '@/utils/constant';
 import _ from 'lodash';
 
 interface IItem {
@@ -35,10 +36,7 @@ export const getDataSourceDetailById = (id: string | number) => {
 };
 
 export const submitRequest = (body) => {
-  let url = `${apiPrefix}/upsert`;
-  if (import.meta.env['VITE_IS_PRO']) {
-    url = ' /api/n9e-plus/datasource/upsert';
-  }
+  const url = IS_PRO ? '/api/n9e-plus/datasource/upsert' : `${apiPrefix}/upsert`;
   return request(url, {
     method: RequestMethod.Post,
     data: body,

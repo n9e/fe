@@ -1,10 +1,10 @@
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Form, Card } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-import { CommonStateContext } from '@/App';
 import { scrollToFirstError } from '@/utils';
+import { IS_PRO } from '@/utils/constant';
 import Name from '@/pages/datasource/components/items/Name';
 import Description from '@/pages/datasource/components/items/Description';
 import Footer from '@/pages/datasource/components/items/Footer';
@@ -16,11 +16,10 @@ import './style.less';
 
 export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
   const { t } = useTranslation();
-  const { isPlus } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const clusterRef = useRef<any>();
   const useEdgeValue = Form.useWatch(['settings', 'use_edge'], form);
-  const useEdge = isPlus && Boolean(useEdgeValue);
+  const useEdge = IS_PRO && useEdgeValue === true;
 
   return (
     <Form
@@ -32,7 +31,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       onFinishFailed={() => {
         scrollToFirstError();
       }}
-      initialValues={isPlus ? { ...data, settings: { ...data?.settings, use_edge: data?.settings?.use_edge ?? false } } : data}
+      initialValues={IS_PRO ? { ...data, settings: { ...data?.settings, use_edge: data?.settings?.use_edge ?? false } } : data}
       className='settings-source-form'
     >
       <Card title={t(`datasourceManage:${action}_title`)}>

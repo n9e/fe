@@ -1,10 +1,10 @@
-import React, { useContext, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Form, Input, Select, InputNumber, Tooltip, Row, Col, Card, Space, Switch } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { CommonStateContext } from '@/App';
 import { scrollToFirstError } from '@/utils';
+import { IS_PRO } from '@/utils/constant';
 import Name from '../../components/items/Name';
 import HTTP from '../../components/items/HTTP';
 import BasicAuth from '../../components/items/BasicAuth';
@@ -17,11 +17,10 @@ import EdgeQuerySwitch from '../../components/items/EdgeQuerySwitch';
 
 export default function FormCpt({ action, data, onFinish, submitLoading }: any) {
   const { t } = useTranslation('datasourceManage');
-  const { isPlus } = useContext(CommonStateContext);
   const [form] = Form.useForm();
   const clusterRef = useRef<any>();
   const useEdgeValue = Form.useWatch(['settings', 'use_edge'], form);
-  const useEdge = isPlus && Boolean(useEdgeValue);
+  const useEdge = IS_PRO && useEdgeValue === true;
 
   return (
     <Form
@@ -33,7 +32,7 @@ export default function FormCpt({ action, data, onFinish, submitLoading }: any) 
       onFinishFailed={() => {
         scrollToFirstError();
       }}
-      initialValues={isPlus ? { ...data, settings: { ...data?.settings, use_edge: data?.settings?.use_edge ?? false } } : data}
+      initialValues={IS_PRO ? { ...data, settings: { ...data?.settings, use_edge: data?.settings?.use_edge ?? false } } : data}
       className='settings-source-form'
     >
       <Card title={t(`${action}_title`)}>

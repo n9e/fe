@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form, Spin, Switch, Tag, Typography } from 'antd';
 import { LoadingOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { FormInstance } from 'antd/es/form';
 import { useTranslation } from 'react-i18next';
 
-import { CommonStateContext } from '@/App';
+import { IS_PRO } from '@/utils/constant';
 import { EdgeClusterStatus, getEdgeQueryStatus } from '../../services';
 
 const EDGE_STATUS_POLL_INTERVAL_MS = 8000;
@@ -16,7 +16,6 @@ function EdgeStatusSpinner() {
 
 export function EdgeClusterStatusBadge({ clusterName }: { clusterName?: string }) {
   const { t } = useTranslation('datasourceManage');
-  const { isPlus } = useContext(CommonStateContext);
   const [loading, setLoading] = useState(false);
   const [statusInfo, setStatusInfo] = useState<EdgeClusterStatus | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -34,7 +33,7 @@ export function EdgeClusterStatusBadge({ clusterName }: { clusterName?: string }
   }, [clusterName]);
 
   useEffect(() => {
-    if (!isPlus || !clusterName || clusterName === 'no_assigned_engine') {
+    if (!IS_PRO || !clusterName || clusterName === 'no_assigned_engine') {
       reqSeqRef.current += 1;
       setStatusInfo(null);
       setLoadFailed(false);
@@ -110,9 +109,9 @@ export function EdgeClusterStatusBadge({ clusterName }: { clusterName?: string }
       cancelled = true;
       clearTimer();
     };
-  }, [isPlus, clusterName, refreshTick]);
+  }, [clusterName, refreshTick]);
 
-  if (!isPlus || !clusterName || clusterName === 'no_assigned_engine') {
+  if (!IS_PRO || !clusterName || clusterName === 'no_assigned_engine') {
     return null;
   }
   const activeStatus = statusInfo?.cluster_name === clusterName ? statusInfo : null;
@@ -146,14 +145,13 @@ export function EdgeClusterStatusBadge({ clusterName }: { clusterName?: string }
 
 export default function EdgeQuerySwitch({ form }: { form: FormInstance }) {
   const { t } = useTranslation('datasourceManage');
-  const { isPlus } = useContext(CommonStateContext);
   const useEdge = Form.useWatch(['settings', 'use_edge'], form);
   const clusterName = Form.useWatch('cluster_name', form);
   const [availability, setAvailability] = useState<'loading' | 'enabled' | 'disabled' | 'unavailable'>('loading');
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    if (!isPlus) {
+    if (!IS_PRO) {
       return;
     }
     let cancelled = false;
@@ -172,17 +170,28 @@ export default function EdgeQuerySwitch({ form }: { form: FormInstance }) {
     return () => {
       cancelled = true;
     };
-  }, [isPlus, retryCount]);
+  }, [retryCount]);
 
-  if (!isPlus) {
+  useEffect(() => {
+    if (!IS_PRO) {
+      return;
+    }
+    if (form.getFieldError(['settings', 'use_edge']).length > 0) {
+      form.validateFields([['settings', 'use_edge']]).catch(() => undefined);
+    }
+  }, [availability, form]);
+
+  if (!IS_PRO) {
     return null;
   }
 
   const featureEnabled = availability === 'enabled';
+  const showWarningTip = availability === 'disabled' || availability === 'unavailable';
   const warning = availability === 'disabled' ? t('form.edge_query_disabled_tip') : t('form.edge_query_unavailable_tip');
+  const validationMessage = availability === 'loading' ? t('form.edge_query_loading_tip') : warning;
 
   return (
-    <div className='mb-4'>
+    <Form.Item style={{ marginBottom: 16 }}>
       <div className='inline-flex flex-wrap items-center gap-2'>
         <span>{t('form.edge_query')}</span>
         <Form.Item
@@ -190,7 +199,7 @@ export default function EdgeQuerySwitch({ form }: { form: FormInstance }) {
           valuePropName='checked'
           rules={[
             {
-              validator: (_, value) => (value === true && !featureEnabled ? Promise.reject(warning) : Promise.resolve()),
+              validator: (_, value) => (value === true && !featureEnabled ? Promise.reject(validationMessage) : Promise.resolve()),
             },
           ]}
           noStyle
@@ -212,11 +221,21 @@ export default function EdgeQuerySwitch({ form }: { form: FormInstance }) {
         )}
         {featureEnabled && useEdge && <EdgeClusterStatusBadge clusterName={clusterName} />}
       </div>
-      <div>
-        <Typography.Text type={availability === 'disabled' || availability === 'unavailable' ? 'warning' : 'secondary'} className='text-xs'>
-          {availability === 'loading' || featureEnabled ? t('form.edge_query_tip') : warning}
-        </Typography.Text>
-      </div>
-    </div>
+      <Form.Item shouldUpdate noStyle>
+        {({ getFieldError }) => {
+          const hasError = getFieldError(['settings', 'use_edge']).length > 0;
+          if (showWarningTip && hasError) {
+            return null;
+          }
+          return (
+            <div>
+              <Typography.Text type={showWarningTip ? 'warning' : 'secondary'} className='text-xs'>
+                {showWarningTip ? warning : t('form.edge_query_tip')}
+              </Typography.Text>
+            </div>
+          );
+        }}
+      </Form.Item>
+    </Form.Item>
   );
 }

@@ -116,6 +116,7 @@ const zh_HK = {
     edge_status_disabled: '中心已關閉 Edge 查詢功能',
     edge_query_disabled_tip: '中心端已關閉 Edge 查詢功能，暫不可新開啟；若目前資料來源已開啟，可關閉此開關後儲存',
     edge_query_unavailable_tip: '暫無法確認中心 Edge 查詢功能狀態。請重試，或關閉經 Edge 查詢後儲存。',
+    edge_query_loading_tip: '正在檢查中心 Edge 查詢功能狀態，請稍候再儲存',
     edge_query_retry: '重試狀態檢查',
     edge_status_unavailable: 'Edge 狀態暫不可用，請點擊重新整理重試',
     protocol: '協議',

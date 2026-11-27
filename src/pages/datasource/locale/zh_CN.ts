@@ -116,6 +116,7 @@ const zh_CN = {
     edge_status_disabled: '中心已关闭 Edge 查询功能',
     edge_query_disabled_tip: '中心端已关闭 Edge 查询功能，暂不可新开启；若当前数据源已开启，可关闭此开关后保存',
     edge_query_unavailable_tip: '暂无法确认中心 Edge 查询功能状态。请重试，或关闭经 Edge 查询后保存。',
+    edge_query_loading_tip: '正在检查中心 Edge 查询功能状态，请稍候再保存',
     edge_query_retry: '重试状态检查',
     edge_status_unavailable: 'Edge 状态暂不可用，请点击刷新重试',
     protocol: '协议',

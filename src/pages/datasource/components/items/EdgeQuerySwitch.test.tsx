@@ -7,10 +7,14 @@ import { Form } from 'antd';
 
 import { getEdgeQueryStatus, getServerClusters } from '../../services';
 import Cluster from './Cluster';
-import EdgeQuerySwitch from './EdgeQuerySwitch';
+import EdgeQuerySwitch, { EdgeClusterStatusBadge } from './EdgeQuerySwitch';
 
-jest.mock('@/App', () => ({
-  CommonStateContext: require('react').createContext({ isPlus: true }),
+let mockIsPro = true;
+
+jest.mock('@/utils/constant', () => ({
+  get IS_PRO() {
+    return mockIsPro;
+  },
 }));
 jest.mock('../../services', () => ({ getEdgeQueryStatus: jest.fn(), getServerClusters: jest.fn() }));
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
@@ -42,8 +46,22 @@ function TestForm({
 }
 
 beforeEach(() => {
+  mockIsPro = true;
   statusMock.mockReset();
   clustersMock.mockReset();
+});
+
+it('hides Edge controls and skips status requests outside PRO', () => {
+  mockIsPro = false;
+  render(
+    <>
+      <TestForm />
+      <EdgeClusterStatusBadge clusterName='edge' />
+    </>,
+  );
+
+  expect(screen.queryByRole('switch')).not.toBeInTheDocument();
+  expect(statusMock).not.toHaveBeenCalled();
 });
 
 it('blocks enabling Edge query until the center confirms support', async () => {
@@ -70,19 +88,87 @@ it('allows an existing Edge setting to be turned off when capability verificatio
   const user = userEvent.setup();
   const onFinish = jest.fn();
   const onFinishFailed = jest.fn();
-  render(<TestForm initialUseEdge onFinish={onFinish} onFinishFailed={onFinishFailed} />);
+  const { container } = render(<TestForm initialUseEdge onFinish={onFinish} onFinishFailed={onFinishFailed} />);
 
   await screen.findByText('form.edge_query_unavailable_tip');
   const save = screen.getByRole('button', { name: 'Save' });
   await user.click(save);
   await waitFor(() => expect(onFinishFailed).toHaveBeenCalledTimes(1));
   expect(onFinish).not.toHaveBeenCalled();
+  await waitFor(() => expect(container.querySelector('.ant-form-item-has-error')).toBeInTheDocument());
+  expect(container.querySelector('.ant-form-item-explain-error')).toHaveTextContent('form.edge_query_unavailable_tip');
+  expect(screen.getAllByText('form.edge_query_unavailable_tip')).toHaveLength(1);
 
   const toggle = screen.getByRole('switch');
   expect(toggle).toBeEnabled();
   await user.click(toggle);
+  await waitFor(() => expect(container.querySelector('.ant-form-item-has-error')).not.toBeInTheDocument());
+  expect(screen.getAllByText('form.edge_query_unavailable_tip')).toHaveLength(1);
   await user.click(save);
   await waitFor(() => expect(onFinish).toHaveBeenCalledTimes(1));
+});
+
+it('shows an error without duplicating warning text when center disables Edge query for an enabled datasource', async () => {
+  statusMock.mockResolvedValue({ featureEnabled: false, clusters: {} });
+  const user = userEvent.setup();
+  const onFinish = jest.fn();
+  const onFinishFailed = jest.fn();
+  const { container } = render(<TestForm initialUseEdge onFinish={onFinish} onFinishFailed={onFinishFailed} />);
+
+  await screen.findByText('form.edge_status_disabled');
+  await user.click(screen.getByRole('button', { name: 'Save' }));
+  await waitFor(() => expect(onFinishFailed).toHaveBeenCalledTimes(1));
+  expect(onFinish).not.toHaveBeenCalled();
+  await waitFor(() => expect(container.querySelector('.ant-form-item-has-error')).toBeInTheDocument());
+  expect(container.querySelector('.ant-form-item-explain-error')).toHaveTextContent('form.edge_query_disabled_tip');
+  expect(screen.getAllByText('form.edge_query_disabled_tip')).toHaveLength(1);
+});
+
+it('shows loading validation error on submit while checking status and clears it once confirmed enabled', async () => {
+  let resolveStatus!: (value: { featureEnabled: boolean; clusters: Record<string, never> }) => void;
+  statusMock.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveStatus = resolve;
+      }),
+  );
+  const user = userEvent.setup();
+  const onFinish = jest.fn();
+  const onFinishFailed = jest.fn();
+  const { container } = render(<TestForm initialUseEdge onFinish={onFinish} onFinishFailed={onFinishFailed} />);
+
+  const save = screen.getByRole('button', { name: 'Save' });
+  await user.click(save);
+  await waitFor(() => expect(onFinishFailed).toHaveBeenCalledTimes(1));
+  expect(onFinish).not.toHaveBeenCalled();
+  await waitFor(() => expect(container.querySelector('.ant-form-item-has-error')).toBeInTheDocument());
+  expect(container.querySelector('.ant-form-item-explain-error')).toHaveTextContent('form.edge_query_loading_tip');
+
+  resolveStatus({ featureEnabled: true, clusters: {} });
+  await waitFor(() => expect(container.querySelector('.ant-form-item-has-error')).not.toBeInTheDocument());
+  await user.click(save);
+  await waitFor(() => expect(onFinish).toHaveBeenCalledTimes(1));
+});
+
+it('updates loading validation error to disabled message when center turns out to be disabled', async () => {
+  let resolveStatus!: (value: { featureEnabled: boolean; clusters: Record<string, never> }) => void;
+  statusMock.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolveStatus = resolve;
+      }),
+  );
+  const user = userEvent.setup();
+  const onFinish = jest.fn();
+  const onFinishFailed = jest.fn();
+  const { container } = render(<TestForm initialUseEdge onFinish={onFinish} onFinishFailed={onFinishFailed} />);
+
+  await user.click(screen.getByRole('button', { name: 'Save' }));
+  await waitFor(() => expect(container.querySelector('.ant-form-item-explain-error')).toHaveTextContent('form.edge_query_loading_tip'));
+
+  resolveStatus({ featureEnabled: false, clusters: {} });
+  await waitFor(() => expect(container.querySelector('.ant-form-item-explain-error')).toHaveTextContent('form.edge_query_disabled_tip'));
+  expect(screen.getAllByText('form.edge_query_disabled_tip')).toHaveLength(1);
 });
 
 it.each([false, true])('keeps the default cluster on entering Edge mode only if explicitly selected (%s)', async (explicitSelection) => {
