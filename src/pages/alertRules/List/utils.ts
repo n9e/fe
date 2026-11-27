@@ -123,8 +123,9 @@ export function getProductRuleLink(rule?: ProductRuleLike, northstarMapping?: No
 // 查询语句所在字段：与规则摘要（FormNG/components/Sidebar/ruleConditionSummary.ts）的 QUERY_TEXT_KEYS 一致，另加 Elasticsearch/OpenSearch 的 filter
 const QUERY_TEXT_KEYS = ['prom_ql', 'query', 'sql', 'promql', 'query_string', 'expression', 'filter'];
 
-// 判断告警规则的名称、附加标签或查询语句是否包含搜索词（不区分大小写的子串匹配）
-export function matchSearch(rule: Pick<AlertRuleType<any>, 'name' | 'append_tags' | 'rule_config'>, search?: string): boolean {
+// 规则 ID 精确匹配，名称、附加标签和查询语句按不区分大小写的子串匹配
+export function matchSearch(rule: Pick<AlertRuleType<any>, 'id' | 'name' | 'append_tags' | 'rule_config'>, search?: string): boolean {
+  if (search?.trim() === String(rule.id)) return true;
   const lowerCaseSearch = search?.toLowerCase() || '';
   const queryTexts = _.flatMap(rule.rule_config?.queries, (query) => _.map(QUERY_TEXT_KEYS, (key) => query?.[key]));
   return _.some([rule.name, _.join(rule.append_tags, ' '), ...queryTexts], (text) => typeof text === 'string' && text.toLowerCase().includes(lowerCaseSearch));

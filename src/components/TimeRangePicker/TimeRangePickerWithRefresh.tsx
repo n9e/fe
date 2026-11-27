@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-import React from 'react';
-import { Space, Tooltip } from 'antd';
+import React, { useContext } from 'react';
+import { CommonStateContext } from '@/App';
 import _ from 'lodash';
 
 import { useGlobalVar } from '@/utils/useHook';
@@ -26,57 +26,74 @@ import { ITimeRangePickerWithRefreshProps } from './types';
 import { valueAsString } from './utils';
 
 export default function TimeRangePickerWithRefresh(props: ITimeRangePickerWithRefreshProps) {
-  const { value, onChange, style, refreshTooltip, intervalTooltip, timeRangeTooltip, showRefreshButton = true, dateFormat = 'YYYY-MM-DD HH:mm', localKey, onRefresh } = props;
+  const { value, onChange, style, refreshTooltip, intervalTooltip, showRefreshButton = true, localKey, onRefresh } = props;
   const [globalVar] = useGlobalVar();
-  const [timeRangeTooltipVisible, setTimeRangeTooltipVisible] = React.useState(false);
+  const { rangePickerShowSecond } = useContext(CommonStateContext);
+  const dateFormat =
+    props.dateFormat || (props.showMillisecond ? 'YYYY-MM-DD HH:mm:ss.SSS' : props.showSecond ?? rangePickerShowSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm');
+
+  const picker = (
+    <TimeRangePicker
+      showSecond={rangePickerShowSecond}
+      dateFormat={dateFormat}
+      limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
+      {..._.omit(props, [
+        'style',
+        'refreshAlign',
+        'refreshMode',
+        'refreshTooltip',
+        'intervalTooltip',
+        'loading',
+        'showRefreshButton',
+        'intervalSeconds',
+        'intervalOptions',
+        'onIntervalSecondsChange',
+        'onRefresh',
+      ])}
+      onChange={(val) => {
+        if (localKey) {
+          localStorage.setItem(
+            localKey,
+            val
+              ? JSON.stringify({
+                  start: valueAsString(val.start, 'YYYY-MM-DD HH:mm:ss.SSS'),
+                  end: valueAsString(val.end, 'YYYY-MM-DD HH:mm:ss.SSS'),
+                })
+              : '',
+          );
+        }
+        if (onChange) {
+          onChange(val);
+        }
+      }}
+    />
+  );
+
+  if (!showRefreshButton) return <span style={{ display: 'inline-flex', ...style }}>{picker}</span>;
 
   return (
-    <Space style={style}>
-      {showRefreshButton && (
-        <AutoRefresh
-          localKey={localKey && `${localKey}_refresh`}
-          tooltip={refreshTooltip}
-          intervalTooltip={intervalTooltip}
-          onRefresh={() => {
-            if (value && onChange) {
-              onChange({
-                ...value,
-                refreshFlag: _.uniqueId('refreshFlag_'),
-              });
-            }
-            if (onRefresh) {
-              onRefresh();
-            }
-          }}
-          intervalSeconds={props.intervalSeconds}
-          intervalOptions={props.intervalOptions}
-          onIntervalSecondsChange={props.onIntervalSecondsChange}
-        />
-      )}
-      <Tooltip title={timeRangeTooltip} visible={timeRangeTooltip ? timeRangeTooltipVisible : false} onVisibleChange={setTimeRangeTooltipVisible}>
-        <span style={{ display: 'inline-flex' }} onClickCapture={() => setTimeRangeTooltipVisible(false)}>
-          <TimeRangePicker
-            limitHour={globalVar.RangePickerHour ? Number(globalVar.RangePickerHour) : undefined}
-            {..._.omit(props, ['style', 'refreshTooltip', 'intervalTooltip', 'timeRangeTooltip', 'showRefreshButton', 'intervalSeconds', 'intervalOptions', 'onIntervalSecondsChange', 'onRefresh'])}
-            onChange={(val) => {
-              if (localKey) {
-                localStorage.setItem(
-                  localKey,
-                  val
-                    ? JSON.stringify({
-                        start: valueAsString(val.start, dateFormat),
-                        end: valueAsString(val.end, dateFormat),
-                      })
-                    : '',
-                );
-              }
-              if (onChange) {
-                onChange(val);
-              }
-            }}
-          />
-        </span>
-      </Tooltip>
-    </Space>
+    <AutoRefresh
+      align={props.refreshAlign}
+      mode={props.refreshMode}
+      style={style}
+      after={picker}
+      disabled={props.disabled}
+      loading={props.loading}
+      localKey={localKey && `${localKey}_refresh`}
+      tooltip={refreshTooltip}
+      intervalTooltip={intervalTooltip}
+      onRefresh={() => {
+        if (value && onChange) {
+          onChange({
+            ...value,
+            refreshFlag: _.uniqueId('refreshFlag_'),
+          });
+        }
+        return onRefresh?.();
+      }}
+      intervalSeconds={props.intervalSeconds}
+      intervalOptions={props.intervalOptions}
+      onIntervalSecondsChange={props.onIntervalSecondsChange}
+    />
   );
 }

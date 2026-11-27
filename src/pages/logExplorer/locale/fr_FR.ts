@@ -65,7 +65,7 @@ const fr_FR = {
     median: 'Médiane',
     p95: 'Centile (P95)',
   },
-  field_popover_info_alert: 'Cliquez sur une valeur pour voir le graphique statistique et le SQL',
+  field_popover_info_alert: 'Cliquez sur une valeur pour voir le graphique statistique et la requête',
   field_search_placeholder: 'Rechercher un champ',
   field_list: {
     show_fields: 'Champs affichés',

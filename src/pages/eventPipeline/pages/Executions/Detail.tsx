@@ -41,6 +41,8 @@ export default function ItemDetaildrawer(props: Props) {
     <Spin spinning={loading}>
       <div className='mb-4'>
         <AutoRefresh
+          align='start'
+          loading={loading}
           onRefresh={() => {
             run();
           }}

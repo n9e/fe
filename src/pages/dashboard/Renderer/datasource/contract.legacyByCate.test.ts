@@ -106,6 +106,9 @@ const assertLegacyQueryPayload = (cate: string, query: Record<string, unknown>) 
     case 'volc-tls':
       expect(query).toMatchObject({ project: 'volc-prod', topic: 'nginx-log', query: 'status:200', mode: 'timeSeries', removeFirstAndLastPoints: false });
       break;
+    case 'guance':
+      expect(query).toMatchObject({ index: 'access', query: 'L::*:(count(*) AS hits) BY host', mode: 'timeSeries' });
+      break;
     case 'huawei-lts':
       expect(query).toMatchObject({ group_id: 'lts-group-1', stream_id: 'lts-stream-1', query: 'status:200', mode: 'timeSeries', removeFirstAndLastPoints: false });
       break;
@@ -157,6 +160,9 @@ const assertLegacyLogsQueryPayload = (cate: string, query: Record<string, unknow
       break;
     case 'volc-tls':
       expect(query).toMatchObject({ project: 'volc-prod', topic: 'nginx-log', query: 'status:500', mode: 'raw' });
+      break;
+    case 'guance':
+      expect(query).toMatchObject({ index: 'access', query: 'status = "error"', mode: 'raw' });
       break;
     case 'huawei-lts':
       expect(query).toMatchObject({ group_id: 'lts-group-1', stream_id: 'lts-stream-1', query: 'status:500', mode: 'raw' });
@@ -235,6 +241,7 @@ describe('legacy dashboard query contract by cate', () => {
     'aliyun-sls': [{ query: { mode: 'timeSeries' } }],
     'tencent-cls': [{ query: { mode: 'timeSeries' } }],
     'volc-tls': [{ query: { mode: 'timeSeries' } }],
+    guance: [{ query: { mode: 'timeSeries' } }],
     'huawei-lts': [{ query: { mode: 'timeSeries' } }],
     'bce-bls': [{ query: { mode: 'timeSeries' } }],
     cloudwatchlogs: [{ query: { region: 'us-east-1', log_group_names: ['app'] } }],

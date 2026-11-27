@@ -23,6 +23,7 @@ export interface Resource {
   cls_resource?: ClsResource;
   lts_resource?: LtsResource;
   bls_resource?: BlsResource;
+  guance_resource?: { index: string };
 }
 
 export interface EsResource {

@@ -65,6 +65,7 @@ const fetchData = (rid, filter, { current, pageSize }) => {
 
 export default function index(props: Props) {
   const { t } = useTranslation('AlertCurEvents');
+  const { t: interactionT } = useTranslation('timePickerInteraction');
   const { datasourceList, feats } = useContext(CommonStateContext);
   const history = useHistory();
   const { title, rid, initialFilter, visible, onClose } = props;
@@ -228,6 +229,7 @@ export default function index(props: Props) {
       <Row justify='space-between' style={{ width: '100%' }}>
         <Space>
           <TimeRangePicker
+            emptyLabel={interactionT('allTime')}
             allowClear
             value={filter.range}
             onChange={(val) => {

@@ -64,7 +64,7 @@ const ko_KR = {
     median: '중앙값',
     p95: '백분위수 (P95)',
   },
-  field_popover_info_alert: '값을 누르면 통계 그래프와 SQL을 볼 수 있습니다',
+  field_popover_info_alert: '값을 누르면 통계 그래프와 쿼리를 볼 수 있습니다',
   field_search_placeholder: '필드 검색',
   field_list: {
     show_fields: '표시할 필드',

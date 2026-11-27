@@ -18,6 +18,7 @@ export interface Resource {
   sls_resource?: SlsResource;
   doris_resource?: DorisResource;
   bls_resource?: BlsResource;
+  guance_resource?: { index: string };
 }
 
 export interface EsResource {

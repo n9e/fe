@@ -21,6 +21,19 @@ test('lets the real Drawer handle Escape while the copy button has focus', () =>
 
 jest.mock('./placement', () => ({ measureCopyPlacement: () => ({ side: 'outside', style: {} }) }));
 
+test('hides the value tooltip on request and keeps the copy button tooltip', () => {
+  jest.useFakeTimers();
+  const { unmount } = render(<CopyableText value={123} showValueTooltip={false} />);
+  fireEvent.mouseEnter(screen.getByText('123'));
+  act(() => jest.advanceTimersByTime(500));
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  fireEvent.mouseEnter(screen.getByRole('button', { name: 'copy: 123' }));
+  act(() => jest.advanceTimersByTime(500));
+  expect(screen.getByRole('tooltip')).toHaveTextContent('copy');
+  unmount();
+  jest.useRealTimers();
+});
+
 test('keeps the copy control active while hiding the text tooltip on the button', () => {
   jest.useFakeTimers();
   const { container, unmount } = render(<CopyableText value='full-resource-name' placement='auto' />);

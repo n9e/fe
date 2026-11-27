@@ -56,7 +56,7 @@ describe('TRIGGER_TYPE_OPTIONS', () => {
 });
 
 describe('matchSearch', () => {
-  const searchRule = (rule_config?: unknown) => ({ name: 'CPU 使用率过高', append_tags: ['team=infra', 'env=prod'], rule_config });
+  const searchRule = (rule_config?: unknown) => ({ id: 1234, name: 'CPU 使用率过高', append_tags: ['team=infra', 'env=prod'], rule_config });
 
   it('未输入搜索词时返回 true（不参与过滤）', () => {
     expect(matchSearch(searchRule(), undefined)).toBe(true);
@@ -67,6 +67,12 @@ describe('matchSearch', () => {
     expect(matchSearch(searchRule(), 'cpu')).toBe(true);
     expect(matchSearch(searchRule(), 'ENV=PROD')).toBe(true);
     expect(matchSearch(searchRule(), 'memory')).toBe(false);
+  });
+
+  it('按完整规则 ID 匹配，忽略首尾空格', () => {
+    expect(matchSearch(searchRule(), '1234')).toBe(true);
+    expect(matchSearch(searchRule(), ' 1234 ')).toBe(true);
+    expect(matchSearch(searchRule(), '123')).toBe(false);
   });
 
   it('命中 Prometheus 普通模式 prom_ql 中的片段', () => {
@@ -103,7 +109,7 @@ describe('matchSearch', () => {
     expect(matchSearch(searchRule({ queries: [{ expression: 'SUM(METRICS())' }] }), 'metrics()')).toBe(true);
   });
 
-  it('没有查询语句的规则只按名称和标签匹配', () => {
+  it('忽略空查询和非字符串查询字段', () => {
     expect(matchSearch(searchRule(), 'node_')).toBe(false);
     expect(matchSearch(searchRule({}), 'node_')).toBe(false);
     // 主机类规则的查询不含查询语句字段，字段名和非字符串值都不参与匹配

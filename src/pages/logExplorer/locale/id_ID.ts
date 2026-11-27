@@ -64,7 +64,7 @@ const id_ID = {
     median: 'Median',
     p95: 'Persentil (P95)',
   },
-  field_popover_info_alert: 'Klik sebuah nilai untuk melihat grafik statistik dan SQL-nya',
+  field_popover_info_alert: 'Klik sebuah nilai untuk melihat grafik statistik dan kuerinya',
   field_search_placeholder: 'Cari field',
   field_list: {
     show_fields: 'Field yang ditampilkan',
