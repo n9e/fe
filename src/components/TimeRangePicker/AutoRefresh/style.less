@@ -8,12 +8,20 @@
     }
   }
 
+  // Overlap only joined controls; standalone settings keep their spacing.
+  &:not(.auto-refresh-container--settings) .ant-dropdown-trigger {
+    margin-left: -1px;
+  }
+
   .ant-dropdown-trigger {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
     border-width: 1px !important;
     border-style: solid !important;
-    border-left: 0px !important;
+
+    &:hover {
+      border-left-color: var(--fc-primary-color) !important;
+    }
   }
 
   .ant-btn-icon-only {
