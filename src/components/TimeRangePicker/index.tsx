@@ -35,11 +35,13 @@ import AutoRefresh from './AutoRefresh';
 import './locale';
 
 export { AutoRefresh };
+export { default as RefreshToolbar } from './AutoRefresh/Toolbar';
 
 export default function index(props: ITimeRangePickerProps) {
+  const { localKey, onChange } = props;
   const { rangePickerShowSecond } = useContext(CommonStateContext);
-  const defaultDateFormat = props.showMillisecond ? 'YYYY-MM-DD HH:mm:ss.SSS' : rangePickerShowSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm';
-  const { localKey, dateFormat = defaultDateFormat, onChange } = props;
+  const dateFormat =
+    props.dateFormat || (props.showMillisecond ? 'YYYY-MM-DD HH:mm:ss.SSS' : props.showSecond ?? rangePickerShowSecond ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD HH:mm');
   const [globalVar] = useGlobalVar();
 
   return (
@@ -54,8 +56,8 @@ export default function index(props: ITimeRangePickerProps) {
             localKey,
             val
               ? JSON.stringify({
-                  start: valueAsString(val.start, dateFormat),
-                  end: valueAsString(val.end, dateFormat),
+                  start: valueAsString(val.start, 'YYYY-MM-DD HH:mm:ss.SSS'),
+                  end: valueAsString(val.end, 'YYYY-MM-DD HH:mm:ss.SSS'),
                 })
               : '',
           );

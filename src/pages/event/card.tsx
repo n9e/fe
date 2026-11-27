@@ -6,6 +6,7 @@ import { ReactNode } from 'react-markdown/lib/react-markdown';
 import _, { throttle } from 'lodash';
 import moment from 'moment';
 import { useDebounceFn } from 'ahooks';
+import { useReportQueryLoading } from '@/components/TimeRangePicker/RefreshScope';
 import queryString from 'query-string';
 import { useTranslation } from 'react-i18next';
 import { getAlertCards, getCardDetail } from '@/services/warning';
@@ -51,6 +52,8 @@ function Card(props: Props, ref) {
   const { groupedDatasourceList } = useContext(CommonStateContext);
   const Ref = useRef<HTMLDivElement>(null);
   const history = useHistory();
+  const [pending, setPending] = useState(0);
+  useReportQueryLoading(pending > 0);
   const [span, setSpan] = useState<number>(4);
   const [rule, setRule] = useState<string>();
   const [cardList, setCardList] = useState<CardType[]>();
@@ -72,9 +75,12 @@ function Card(props: Props, ref) {
         params.stime = moment(parsedRange.start).unix();
         params.etime = moment(parsedRange.end).unix();
       }
-      getAlertCards(params).then((res) => {
-        setCardList(res.dat);
-      });
+      setPending((count) => count + 1);
+      getAlertCards(params)
+        .then((res) => {
+          setCardList(res.dat);
+        })
+        .finally(() => setPending((count) => count - 1));
     },
     {
       wait: 500,

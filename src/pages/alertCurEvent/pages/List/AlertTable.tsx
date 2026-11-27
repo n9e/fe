@@ -6,6 +6,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import queryString from 'query-string';
 import { useAntdTable } from 'ahooks';
+import { useReportQueryLoading } from '@/components/TimeRangePicker/RefreshScope';
 
 import { CommonStateContext } from '@/App';
 import { parseRange } from '@/components/TimeRangePicker';
@@ -291,6 +292,8 @@ export default function AlertTable(props: IProps) {
       setNewFullscreenEventKeys(nextNewEventKeys);
     },
   });
+
+  useReportQueryLoading(!!tableProps.loading);
 
   const pagination = usePagination({ PAGESIZE_KEY: EVENTS_TABLE_PAGESIZE_CACHE_KEY });
 

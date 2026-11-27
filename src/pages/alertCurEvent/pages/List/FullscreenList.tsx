@@ -19,6 +19,7 @@ interface IProps {
 
 export default function FullscreenList({ title, children, range, onRangeChange, onRefresh, onExit }: IProps) {
   const { t } = useTranslation(NS);
+  const { t: interactionT } = useTranslation('timePickerInteraction');
   const [refreshInterval, setRefreshInterval] = useState(30);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +48,7 @@ export default function FullscreenList({ title, children, range, onRangeChange, 
           </div>
           <Space>
             <TimeRangePickerWithRefresh
+              emptyLabel={interactionT('allTime')}
               allowClear
               value={range}
               onChange={onRangeChange}
