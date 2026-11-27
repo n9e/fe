@@ -1,6 +1,8 @@
 import React from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { EdgeClusterStatusBadge } from '@/pages/datasource/components/items/EdgeQuerySwitch';
+import { IS_PRO } from '@/utils/constant';
 
 import { NAME_SPACE } from '../constants';
 import { DataSourceType } from './types';
@@ -69,9 +71,20 @@ export default function MysqlLike(props: Props) {
       <div className='page-title'>{t('datasourceManage:form.other')}</div>
       <div className='flash-cat-block'>
         <Row gutter={16}>
+          {IS_PRO && (
+            <>
+              <Col span={24}>{t('datasourceManage:form.edge_query')}</Col>
+              <Col span={24} className='second-color mb-2'>
+                {data?.settings?.use_edge ? t('datasourceManage:form.yes') : t('datasourceManage:form.no')}
+              </Col>
+            </>
+          )}
           <Col span={24}>{t('datasourceManage:form.cluster')}</Col>
           <Col span={24} className='second-color'>
-            {data?.cluster_name || '-'}
+            <Space>
+              <span>{data?.cluster_name || '-'}</span>
+              {IS_PRO && data?.settings?.use_edge && <EdgeClusterStatusBadge clusterName={data?.cluster_name} />}
+            </Space>
           </Col>
         </Row>
       </div>
