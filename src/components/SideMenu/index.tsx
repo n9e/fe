@@ -14,6 +14,7 @@ import { DarkModeMenuItems } from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
+import { beforeLogout } from '@/utils/authSession';
 import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
@@ -33,6 +34,10 @@ import { getSidebarProfileDisplay } from './profile';
 import './menu.less';
 import './locale';
 import '@/components/pageLayout/locale';
+
+// Pages that frame another product have no permission point here: that product enforces its own
+// permissions. `/duty-embed/` is the page that frames the duty console.
+const isFramedPageKey = (key: string) => key.startsWith(`${embeddedProductDetailPath}/`) || key.startsWith('/duty-embed/');
 
 const calcUrlPath = (url: string) => {
   const urlPath = url.split('?')[0];
@@ -216,14 +221,14 @@ const SideMenu = (props: SideMenuProps) => {
           .map((child) => {
             // Admin 保留灭火图入口；其它角色继续遵守各子菜单权限。
             if (menu.key === 'firemap' && (profile?.admin || profile?.roles?.includes('Admin'))) return child;
-            if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
+            if (isFramedPageKey(child.key)) {
               return child;
             }
             if (menu.key === '/flashduty') {
-              if (perms?.includes('/flashduty')) {
-                return child;
-              }
+              return perms?.includes('/flashduty') ? child : null;
             }
+            // External links have no permission point in this app; the menu definition decides whether they are shown.
+            if (child.pathType === 'absolute') return child;
             if (child.type === 'tabs' && child.children) {
               const filteredTabs = child.children.filter((tab) => perms?.includes(tab.key));
               if (filteredTabs.length > 0) {
@@ -259,7 +264,7 @@ const SideMenu = (props: SideMenuProps) => {
           }
           return item
             .children!.filter((child) => {
-              if (child.key.startsWith(`${embeddedProductDetailPath}/`)) {
+              if (isFramedPageKey(child.key)) {
                 return child;
               }
               if (child.type === 'tabs' && child.children && child.children.length > 0) {
@@ -425,16 +430,21 @@ const SideMenu = (props: SideMenuProps) => {
         key='logout'
         icon={<LogoutOutlined />}
         onClick={() => {
-          Logout().then((res) => {
-            localStorage.removeItem(AccessTokenKey);
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('curBusiId');
-            if (res.dat && typeof res.dat === 'string') {
-              window.location.href = res.dat;
-            } else {
-              history.push('/login');
-            }
-          });
+          // End bundled products' sessions first, while this one is still valid; never hold up
+          // signing out for long.
+          const timeout = new Promise<void>((resolve) => setTimeout(resolve, 1500));
+          Promise.race([beforeLogout().catch(() => undefined), timeout])
+            .then(() => Logout())
+            .then((res) => {
+              localStorage.removeItem(AccessTokenKey);
+              localStorage.removeItem('refresh_token');
+              localStorage.removeItem('curBusiId');
+              if (res.dat && typeof res.dat === 'string') {
+                window.location.href = res.dat;
+              } else {
+                history.push('/login');
+              }
+            });
         }}
       >
         {t('logout', { ns: 'pageLayout' })}
