@@ -72,6 +72,7 @@ const en_US = {
     runbook_url: 'Runbook URL',
     notify_rules: 'Notification rules',
     detail_url: 'Detail URL',
+    condition_edit_url: 'Anomaly conditions',
     host: {
       trigger: 'Trigger',
     },
