@@ -15,6 +15,10 @@ interface Props {
   setRefreshFlag: (flag?: string) => void;
 }
 
+/**
+ * Edits Explorer SQL, the time range, and an optional database override.
+ * Requests a query refresh when Enter is pressed in the SQL input.
+ */
 export default function QueryBuilder(props: Props) {
   const { t } = useTranslation('db_iotdb');
   const { extra, setRefreshFlag } = props;
@@ -49,6 +53,11 @@ export default function QueryBuilder(props: Props) {
                 setRefreshFlag(_.uniqueId('refreshFlag_'));
               }}
             />
+          </Form.Item>
+        </InputGroupWithFormItem>
+        <InputGroupWithFormItem label='Database'>
+          <Form.Item name={['query', 'database']}>
+            <Input placeholder='Optional; uses datasource default database' />
           </Form.Item>
         </InputGroupWithFormItem>
         <Form.Item name={['query', 'range']} initialValue={{ start: 'now-1h', end: 'now' }}>

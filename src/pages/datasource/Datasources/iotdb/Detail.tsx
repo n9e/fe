@@ -7,6 +7,10 @@ interface Props {
   data: any;
 }
 
+/**
+ * Displays IoTDB HTTP and table-model RPC settings, including fallback values.
+ * Masks the saved password when showing authentication details.
+ */
 export default function Index(props: Props) {
   const { t } = useTranslation('datasourceManage');
   const { data } = props;
@@ -19,6 +23,23 @@ export default function Index(props: Props) {
           <Col span={24}>URL：</Col>
           <Col span={24} className='second-color'>
             {data?.http?.url}
+          </Col>
+        </Row>
+      </div>
+      <div className='page-title'>RPC / Table Model</div>
+      <div className='flash-cat-block'>
+        <Row gutter={16}>
+          <Col span={8}>RPC address：</Col>
+          <Col span={8}>Default database：</Col>
+          <Col span={8}>Query timeout：</Col>
+          <Col span={8} className='second-color'>
+            {data?.settings?.['iotdb.rpc_addr'] || 'derived from URL:6667'}
+          </Col>
+          <Col span={8} className='second-color'>
+            {data?.settings?.['iotdb.database'] || '-'}
+          </Col>
+          <Col span={8} className='second-color'>
+            {data?.settings?.['iotdb.timeout'] || data?.http?.timeout || 30000} ms
           </Col>
         </Row>
       </div>

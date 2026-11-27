@@ -6,8 +6,12 @@ import { useTranslation } from 'react-i18next';
 import TimeRangePicker, { IRawTimeRange, parseRange } from '@/components/TimeRangePicker';
 import Timeseries from '@/pages/dashboard/Renderer/Renderer/Timeseries';
 import { getDsQuery } from '../../services';
-import { getSerieName } from '../../utils';
+import { getSerieName, getValueKey } from '../../utils';
 
+/**
+ * Previews an IoTDB alert query for the selected time range and database.
+ * Loads results while the preview is visible and displays query errors inline.
+ */
 export default function GraphPreview({ cate, datasourceValue, query }) {
   const { t } = useTranslation('db_iotdb');
   const divRef = useRef<HTMLDivElement>(null);
@@ -38,6 +42,10 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
       },
     },
   };
+  /**
+   * Requests preview series using normalized value keys and the current range.
+   * Replaces the displayed series on success and clears them on failure.
+   */
   const fetchData = () => {
     if (datasourceValue && query?.query) {
       const parsedRange = parseRange(range);
@@ -49,8 +57,9 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
         query: _.map([query], (q) => {
           return {
             query: q.query,
+            database: q.database,
             keys: {
-              metricKey: _.isArray(q.keys?.metricKey) ? _.join(q.keys?.metricKey, ' ') : q.keys?.metricKey,
+              valueKey: getValueKey(q.keys),
               labelKey: _.isArray(q.keys?.labelKey) ? _.join(q.keys?.labelKey, ' ') : q.keys?.labelKey,
               timeKey: q.keys?.timeKey,
               timeFormat: q.keys?.timeFormat,
@@ -85,7 +94,7 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
     if (visible) {
       fetchData();
     }
-  }, [JSON.stringify(range)]);
+  }, [visible, datasourceValue, cate, query, JSON.stringify(range)]);
 
   return (
     <div ref={divRef}>
@@ -134,7 +143,6 @@ export default function GraphPreview({ cate, datasourceValue, query }) {
           ghost
           onClick={() => {
             if (!visible) {
-              fetchData();
               setVisible(true);
             }
           }}
