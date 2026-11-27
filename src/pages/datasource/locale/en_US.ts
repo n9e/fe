@@ -120,6 +120,7 @@ const en_US = {
     edge_status_disabled: 'Edge query is disabled on center',
     edge_query_disabled_tip: 'Edge query is disabled in center configuration and cannot be enabled; if this data source already has it enabled, turn off the switch to save.',
     edge_query_unavailable_tip: 'Unable to verify Edge query availability on the center. Retry or turn off Edge queries before saving.',
+    edge_query_loading_tip: 'Checking Edge query availability on the center. Please wait before saving.',
     edge_query_retry: 'Retry status check',
     edge_status_unavailable: 'Edge status unavailable; click refresh to retry',
     protocol: 'Protocol',
