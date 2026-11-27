@@ -183,6 +183,41 @@ export default function DetailNG(props: Props) {
               );
             },
           },
+          ...(eventDetail?.rule_prod === 'firemap'
+            ? [
+                {
+                  label: t('detail.condition_edit_url'),
+                  key: 'rule_config',
+                  render(val) {
+                    let conditionEditUrl = _.get(val, 'condition_edit_url');
+                    if (!conditionEditUrl) {
+                      const detailUrl = _.get(val, 'detail_url');
+                      if (typeof detailUrl === 'string' && detailUrl) {
+                        try {
+                          const url = new URL(detailUrl, window.location.origin);
+                          const cardId = url.searchParams.get('cardId');
+                          if (cardId && Number.isSafeInteger(Number(cardId)) && Number(cardId) > 0) {
+                            url.searchParams.delete('time');
+                            url.searchParams.delete('cardId');
+                            url.searchParams.set('editCardId', cardId);
+                            conditionEditUrl = url.toString();
+                          }
+                        } catch {
+                          return null;
+                        }
+                      }
+                    }
+                    if (!conditionEditUrl) return null;
+                    if (!canAccessFiremap) return conditionEditUrl;
+                    return (
+                      <a href={conditionEditUrl} target='_blank' rel='noopener noreferrer'>
+                        {conditionEditUrl}
+                      </a>
+                    );
+                  },
+                },
+              ]
+            : []),
         ]),
     { label: t('detail.rule_note'), key: 'rule_note' },
     ...(!_.includes(['firemap', 'northstar'], eventDetail?.rule_prod)

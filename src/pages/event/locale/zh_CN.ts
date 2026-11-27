@@ -72,6 +72,7 @@ const zh_CN = {
     runbook_url: '预案链接',
     notify_rules: '通知规则',
     detail_url: '详情链接',
+    condition_edit_url: '异常条件',
     host: {
       trigger: '触发',
     },
