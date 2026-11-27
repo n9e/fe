@@ -100,7 +100,7 @@ const zh_HK = {
     median: '中位數',
     p95: '百分位數(P95)',
   },
-  field_popover_info_alert: '點擊數值可查看統計圖表和 SQL',
+  field_popover_info_alert: '點擊數值可查看統計圖表和查詢語句',
   field_search_placeholder: '搜索字段',
   field_list: {
     remove_field: '移除查詢結果中展示的欄位',

@@ -100,7 +100,7 @@ const en_US = {
     median: 'Median',
     p95: 'Percentile (P95)',
   },
-  field_popover_info_alert: 'Click the value to view statistical charts and SQL',
+  field_popover_info_alert: 'Click a value to view statistical charts and the query',
   field_search_placeholder: 'Search fields',
   field_list: {
     add_field: 'Add a field displayed in query results',

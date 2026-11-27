@@ -109,6 +109,7 @@ export default function FormNG(props: IProps) {
       'aliyun-sls',
       'tencent-cls',
       'volc-tls',
+      'guance',
       'huawei-lts',
       'bce-bls',
       'tdengine',

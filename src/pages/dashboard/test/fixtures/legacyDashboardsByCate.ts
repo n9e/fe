@@ -15,7 +15,7 @@ const CLOUDWATCH_QUERY_ITEM = {
 /**
  * 每种受支持数据源 cate 的最小合法「老版本 3.4.0」target。
  * 旧形态：target 无 refId / kind / datasource / resultType，数据源挂在 panel 级。
- * 覆盖 registry.ts 中 DASHBOARD_DATASOURCE_CATES 的全部 22 个 cate。
+ * 覆盖 registry.ts 中 DASHBOARD_DATASOURCE_CATES 的全部 23 个 cate。
  */
 export const LEGACY_TARGET_BY_CATE = {
   prometheus: [{ expr: 'up' }],
@@ -75,6 +75,7 @@ export const LEGACY_TARGET_BY_CATE = {
       },
     },
   ],
+  guance: [{ query: { index: 'access', query: 'L::*:(count(*) AS hits) BY host', mode: 'timeSeries' } }],
   'huawei-lts': [
     {
       query: {
@@ -132,6 +133,7 @@ export const LEGACY_LOGS_TARGET_BY_CATE = {
   'aliyun-sls': [{ query: { project: 'n9e-prod', logstore: 'app-access', query: 'status in [400 599]', mode: 'raw' } }],
   'tencent-cls': [{ query: { logset_id: 'cls-8f3c2b', topic_id: 'topic-app', query: 'status:500', mode: 'raw' } }],
   'volc-tls': [{ query: { project: 'volc-prod', topic: 'nginx-log', query: 'status:500', mode: 'raw' } }],
+  guance: [{ query: { index: 'access', query: 'status = "error"', mode: 'raw' } }],
   'huawei-lts': [{ query: { group_id: 'lts-group-1', stream_id: 'lts-stream-1', query: 'status:500', mode: 'raw' } }],
   'bce-bls': [{ query: { project: 'bce-prod', logstore: 'bls-log', logstream: 'bls-stream', query: 'status:500', mode: 'raw' } }],
   cloudwatchlogs: [{ query: { region: 'us-east-1', log_group_names: ['app'], query_string: 'fields @message', mode: 'raw' } }],
@@ -177,10 +179,10 @@ const buildSpecs = (targetsByCate: Record<string, ReadonlyArray<unknown>>, panel
   return specs;
 };
 
-/** 全部 22 个 cate 的时序面板规格（datasourceValue 取 cate 在注册表数组中的序号，稳定不随手写漂移） */
+/** 全部 23 个 cate 的时序面板规格（datasourceValue 取 cate 在注册表数组中的序号，稳定不随手写漂移） */
 export const legacyPanelSpecByCate = buildSpecs(LEGACY_TARGET_BY_CATE, 'timeseries');
 
-/** 15 个日志类 cate 的 raw 面板规格 */
+/** 16 个日志类 cate 的 raw 面板规格 */
 export const legacyLogsPanelSpecByCate = buildSpecs(LEGACY_LOGS_TARGET_BY_CATE, 'timeseries');
 
 export const catesUnderTest = [...DASHBOARD_DATASOURCE_CATES];
