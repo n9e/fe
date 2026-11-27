@@ -365,6 +365,7 @@ export function buildRuleConditionSummary({ cate, queries, triggers, version, no
           if (cate === 'cloudwatchlogs') return buildCloudWatchLogsQuery(index, query, labels);
           if (cate === 'gcm') return buildGcmQuery(index, query, labels);
           if (cate === 'elasticsearch' || cate === 'opensearch') return buildElasticsearchQuery(index, query, labels);
+          if (cate === 'guance') return createQueryItem(index, query, getTitleParts(query, labels), [], query?.query);
           if (['aliyun-sls', 'tencent-cls', 'volc-tls', 'bce-bls', 'huawei-lts'].includes(cate || '')) return buildLogServiceQuery(index, query, labels, cate);
           if (cate === 'loki') return buildLokiQuery(index, query, labels);
           return buildGenericQuery(index, query, labels, cate);

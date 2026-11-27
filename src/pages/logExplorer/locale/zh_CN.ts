@@ -100,7 +100,7 @@ const zh_CN = {
     median: '中位数',
     p95: '百分位数(P95)',
   },
-  field_popover_info_alert: '点击数值可查看统计图表和 SQL',
+  field_popover_info_alert: '点击数值可查看统计图表和查询语句',
   field_search_placeholder: '搜索字段',
   field_list: {
     add_field: '添加查询结果中展示的字段',

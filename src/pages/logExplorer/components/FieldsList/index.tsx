@@ -23,6 +23,7 @@ interface Props {
   onOperClick?: (field: string, type: 'show' | 'available') => void;
   fields: Field[];
   enableStats?: boolean;
+  showTopNRatio?: boolean;
   disableEmptyValueClick?: boolean;
   onValueFilter?: (parmas: { key: string; value: any; operator: string }) => void;
   fetchStats?: (field: Field) => Promise<StatsResult>;
@@ -59,6 +60,7 @@ export default function index(props: Props) {
     renderStatsPopoverTitleExtra,
     renderFieldNameExtra,
     onStatisticClick,
+    showTopNRatio,
   } = props;
   const statsCache = useFieldStatsCache(props.statsCacheKey, fetchStats, props.fetchUniqueCount);
   const [fieldsSearch, setFieldsSearch] = useState('');
@@ -120,6 +122,7 @@ export default function index(props: Props) {
                         renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                         renderFieldNameExtra={renderFieldNameExtra}
                         onStatisticClick={onStatisticClick}
+                        showTopNRatio={showTopNRatio}
                       />
                     );
                   },
@@ -161,6 +164,7 @@ export default function index(props: Props) {
                       renderStatsPopoverTitleExtra={renderStatsPopoverTitleExtra}
                       renderFieldNameExtra={renderFieldNameExtra}
                       onStatisticClick={onStatisticClick}
+                      showTopNRatio={showTopNRatio}
                     />
                   );
                 },

@@ -65,7 +65,7 @@ const pt_BR = {
     median: 'Mediana',
     p95: 'Percentil (P95)',
   },
-  field_popover_info_alert: 'Clique no valor para ver o gráfico estatístico e o SQL',
+  field_popover_info_alert: 'Clique no valor para ver o gráfico estatístico e a consulta',
   field_search_placeholder: 'Buscar campos',
   field_list: {
     show_fields: 'Campos exibidos',
