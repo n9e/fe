@@ -14,6 +14,7 @@ import { DarkModeMenuItems } from '@/components/DarkModeSelect';
 import { getSideMenuBgColor } from '@/components/pageLayout/SideMenuColorSetting';
 import LanguageIcon from '@/components/pageLayout/icons/LanguageIcon';
 import { Logout } from '@/services/login';
+import { beforeLogout } from '@/utils/authSession';
 import { AccessTokenKey, IS_ENT, IS_PLUS } from '@/utils/constant';
 import { getEmbeddedProducts } from '@/pages/embeddedProduct/services';
 import { eventBus, EVENT_KEYS } from '@/pages/embeddedProduct/eventBus';
@@ -429,16 +430,21 @@ const SideMenu = (props: SideMenuProps) => {
         key='logout'
         icon={<LogoutOutlined />}
         onClick={() => {
-          Logout().then((res) => {
-            localStorage.removeItem(AccessTokenKey);
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('curBusiId');
-            if (res.dat && typeof res.dat === 'string') {
-              window.location.href = res.dat;
-            } else {
-              history.push('/login');
-            }
-          });
+          // End bundled products' sessions first, while this one is still valid; never hold up
+          // signing out for long.
+          const timeout = new Promise<void>((resolve) => setTimeout(resolve, 1500));
+          Promise.race([beforeLogout().catch(() => undefined), timeout])
+            .then(() => Logout())
+            .then((res) => {
+              localStorage.removeItem(AccessTokenKey);
+              localStorage.removeItem('refresh_token');
+              localStorage.removeItem('curBusiId');
+              if (res.dat && typeof res.dat === 'string') {
+                window.location.href = res.dat;
+              } else {
+                history.push('/login');
+              }
+            });
         }}
       >
         {t('logout', { ns: 'pageLayout' })}
