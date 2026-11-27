@@ -5,7 +5,8 @@ body:not(.theme-dark) .log-explorer-ng-header {
   line-height: 50px;
 
   .log-explorer-ng-tabs {
-    flex: 1;
+    // Keep the add button next to the tabs while allowing overflow to shrink the list.
+    flex: 0 1 auto;
     .ant-tabs-nav {
       margin-bottom: 0 !important;
     }
@@ -13,8 +14,13 @@ body:not(.theme-dark) .log-explorer-ng-header {
     .ant-tabs-tab {
       height: 51px !important;
       margin-left: 0 !important;
-      margin-right: -1px !important;
+      margin-right: 0 !important;
       background-color: var(--fc-fill-2) !important;
+
+      // Overlap adjacent borders without shortening the measured end of the tab list.
+      & + .ant-tabs-tab {
+        margin-left: -1px !important;
+      }
 
       &:hover {
         .log-explorer-ng-tab-drag-handle {
